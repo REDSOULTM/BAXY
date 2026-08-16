@@ -28,6 +28,23 @@ No es una demo que funciona cuando le preguntas lo correcto. Es un asistente que
 alguien abre por la mañana y usa hasta la noche, con lo que se le ocurra, en el
 idioma que le salga, y que se gana quedarse instalado.
 
+**Este sprint no es el adorno final: es la prueba del producto.** Cuando al dueño
+se le preguntó qué evita una quinta reescritura del proyecto, respondió *que el
+producto se use*, y qué tendría que pasar en un año para decir «esto sí quedó»:
+*que lo use a diario sin pensarlo*. Los nueve sprints anteriores existen para
+llegar hasta aquí; si BAXY sale de este sprint sin usarse, no sirvió ninguno.
+
+Y hay una forma concreta en que este sprint se rompe: **la fricción de arrancarlo
+es lo que lo mata**. Por eso BAXY vive en la bandeja del sistema, arranca con
+Windows y escucha siempre. Lo que hay que quitarle de encima al usuario, en sus
+palabras, es *levantarse del teclado*.
+
+Lee `documentacion/00_IDENTIDAD.md`. Y comprueba en uso —no en el código— tres
+decisiones que sólo se verifican viviendo con el producto: los **dos modos**
+(normal, que confirma sólo si se destruyen datos; y *bypass*, que se activa con un
+ajuste consciente y sigue encendido hasta apagarlo), la **narración** de lo que
+hace, y que **buscar en la web** funcione sin que salga nada del usuario.
+
 ## Qué haces
 
 Usarlo. De verdad, durante días, para cosas reales. Y arreglar lo que salga.

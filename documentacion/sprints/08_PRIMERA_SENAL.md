@@ -34,6 +34,33 @@ O la **mejor frontera Pareto demostrable**, si mides que el techo es inalcanzabl
 sin ceder exactitud o seguridad. Un rechazo medido cierra el sprint igual que un
 éxito; un número inventado, no.
 
+## El listón real del dueño, y por qué cambia la forma de la señal
+
+Los números de arriba son el objetivo de diseño. El listón crudo, en sus
+palabras, es otro: **más de 3 s sin señal y cierra la ventana y lo hace a mano**.
+Y sobre cuánto puede tardar BAXY, respondió **«depende de la tarea»** — abrir
+Spotify es instantáneo, una misión compuesta puede tardar y está bien.
+
+Eso significa que lo que hay que garantizar no es un tiempo de respuesta uniforme:
+es que **nunca pasen 3 s en silencio**, en ninguna tarea, incluidas las largas.
+
+Y hay una decisión suya que cambia cuándo se emite la señal, no sólo cuánto tarda:
+
+> Si va a tardar poco, calla y responde. Si va a tardar, avisa.
+
+O sea: **la señal temprana no es incondicional**. En un turno que va a resolverse
+en 900 ms, un acuse previo es ruido. BAXY tiene que estimar antes de responder si
+va a pasarse del silencio tolerable, y avisar sólo entonces. Cómo se estima eso
+—coste del camino elegido, número de pasos de la misión, historial— es tuyo.
+
+**Y la señal temprana nunca afirma un resultado.** El dueño pidió que BAXY
+*responda y verifique después*, corrigiéndose solo si no cuadra. Eso convive con
+«nada se afirma sin verificar» de una sola manera: lo temprano dice que entendió y
+está en ello; la afirmación de que algo pasó llega verificada, siempre; y si la
+verificación desmiente lo dicho, BAXY se corrige solo sin que se lo pregunten. Una
+señal temprana que diga «abriendo Spotify» y acabe sin Spotify abierto **es una
+mentira**, aunque llegue rápido.
+
 ## Dónde está hoy
 
 La latencia mala es exactamente la de los turnos que caen al camino por modelo —

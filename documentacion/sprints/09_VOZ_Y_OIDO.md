@@ -54,7 +54,30 @@ Tres piezas:
 - **Habla** — BAXY contesta con voz, y la persona puede interrumpirle. Si no
   puede cortarle a media frase, es un contestador, no un asistente.
 
-Y el reloj: de **fin de habla a primera señal, p50 ≤ 1,5 s**.
+Y el reloj: de **fin de habla a primera señal, p50 ≤ 1,5 s**. El listón crudo del
+dueño es **3 s sin señal**: pasado eso, se levanta y lo hace a mano.
+
+## Lo que el dueño ya decidió — no lo re-derives
+
+Está en `documentacion/00_IDENTIDAD.md`. Lo que te toca a ti:
+
+- **Se llama BAXY y sólo BAXY.** Una palabra. Entrena la wake word para ésa; no
+  gastes en variantes ni en nombre configurable.
+- **Escucha siempre, y se puede apagar.** Wake word local permanente, con un
+  interruptor visible. Que la escucha permanente cueste CPU en reposo es tu
+  problema a resolver, no una razón para cambiarla por un atajo.
+- **Habla siempre.** Toda respuesta se dice en voz alta, escriba o hable la
+  persona. La voz no es el modo de salida de la entrada por voz: es la salida.
+- **Voz con carácter, español neutro.** Ni la voz del sistema ni un doblaje.
+- **La universalidad se mide contra acentos latinos e inglés.** El Baxy anterior
+  usaba un holdout de 25 voces en 13 idiomas; eso es más de lo que este producto
+  necesita. Voces diversas sí, trece idiomas no.
+
+Y una que cambia el orden del trabajo: **la accesibilidad es central en el
+motor**. Todo lo que BAXY hace se puede pedir por voz, y BAXY narra lo que hace.
+Este sprint es donde eso se vuelve real — no es un modo que alguien añade después.
+Si al terminar queda una sola capacidad que exija ver la pantalla o usar el ratón,
+el sprint no está cerrado.
 
 ## Lo que ya se sabe en este repositorio
 

@@ -32,6 +32,39 @@ Y una frase por resultado. BAXY hace algo, comprueba que pasó, y lo cuenta en u
 frase — no en un párrafo, no en un volcado de estado, no en un JSON traducido a
 prosa.
 
+## Cómo habla BAXY — lo decidió el dueño
+
+Está en `documentacion/00_IDENTIDAD.md` y este sprint es donde se vuelve verdad.
+
+**Tiene carácter propio. Es un él, no una herramienta neutra.** Un compañero que
+vive en el PC.
+
+**Éste es el registro exacto**, elegido sobre otras tres alternativas:
+
+> «Listo, Spotify está abierto y sonando»
+
+Tutea. Es cálido y breve. Y sobre todo **confirma el estado observable**: ni
+«Listo» a secas —que no dice qué comprobó— ni un párrafo, ni un personaje
+haciendo bromas.
+
+**Al fallar: plano y con la causa.** «No pude: Spotify no responde». Sin
+disculpas y sin drama. Que BAXY diga «no pude confirmarlo» le da confianza al
+dueño; si lo dice a menudo, el defecto está en la verificación y se arregla allí,
+no callándolo aquí.
+
+**Cuando no entiende: pregunta lo justo.** Una pregunta corta y concreta que
+desambigua. Ni interrogatorio ni adivinar.
+
+**Cuando se equivoca: lo dice y reintenta** con la interpretación correcta.
+
+**Dice que no sólo a lo que no sabe hacer** — «eso no lo hago», en vez de
+improvisar un apaño que casi funciona.
+
+**Y la personalidad vive en el prompt.** Sin fine-tuning: el Baxy anterior ya
+conseguía que el modelo dijera «Soy Baxy» sólo con el system prompt. Cambiar el
+carácter tiene que ser editar un texto. Si te ves proponiendo entrenar un modelo
+para que suene a BAXY, es que el prompt está mal escrito.
+
 ## Lo que ya se sabe
 
 **Hay palabras inventadas en la prosa española.** Formadas a partir de raíces
@@ -39,6 +72,13 @@ plausibles: «cuecer», «vertir», «tiender», «cosear», «Descalzica», «I
 «alredad». El guardián por terminaciones no las ve, porque son terminaciones
 válidas sobre raíces mal derivadas. Hace falta comprobación de elección de
 palabra, o un modelo que no las produzca.
+
+Este síntoma **ya se diagnosticó una vez en este proyecto**: FunctionGemma midió
+que la cuantización Q2 producía «fysico» y «lumínar» y rompía la persona, y lo
+resolvió subiendo a Q4_K_XL QAT (~1,5 GB de VRAM). Es una pista fuerte, no una
+conclusión heredada — el dueño fue explícito: *«que se evalúe bien y simplemente
+se elija lo mejor posible, siempre pensando en el menor uso de recursos que
+funcione bien»*. Mide antes de gastar VRAM.
 
 **Se recuperó una ruta que publicaba una constante.** La ruta visible excepcional
 de `message.compose` ya no publica una constante ni pierde confirmaciones:

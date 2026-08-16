@@ -31,6 +31,23 @@ esa regla y se dedica exactamente a eso — los caminos de error, las fragilidad
 la regresión completa sobre el árbol final. Es donde se cobra la deuda que los
 diez fueron dejando, y después de él BAXY es un producto terminado.
 
+## Antes de nada: la identidad
+
+`documentacion/00_IDENTIDAD.md` es **lectura obligatoria de todos los sprints**.
+No son preferencias: son decisiones tomadas por el dueño del producto, con los
+cuatro intentos anteriores sobre la mesa. Si una decisión de diseño tuya la
+contradice, la que cambia es la tuya.
+
+Tres de esas decisiones cambian sprints concretos y conviene saberlas ya:
+
+- **La accesibilidad es central en el motor y modo en la interfaz.** Todo lo que
+  BAXY hace se puede pedir por voz, y BAXY narra lo que hace. No se construye el
+  producto y se le añade accesibilidad después.
+- **El catálogo se consolida** —una herramienta hace una cosa, lo demás se
+  encadena— y el criterio es **cubrir el PC, no las apps**. El número y la forma
+  los mide el sprint 03.
+- **Buscar en la web está permitido**; enviar contenido del usuario, no.
+
 ## Las reglas que llevan los diez
 
 **Permisos totales.** Acceso completo al PC. Descarga, instala, sobrescribe,
@@ -97,6 +114,8 @@ arranque y purge en cuenta desechable; certificado de firma. Detalle en
 3. Estados terminales honestos.
 4. La confirmación se liga a la invocación exacta.
 5. Cero respuestas visibles fijas.
-6. Local y privado. Sin nube, sin APIs de pago.
+6. Local y privado. El modelo corre en la máquina, sin nube y sin APIs de pago.
+   BAXY **sí puede consultar la web** cuando no sabe algo; lo que no puede es
+   enviar contenido del usuario. La línea es de dirección, no de conexión.
 
 Todo lo demás se re-deriva midiendo en esta máquina.

@@ -61,6 +61,31 @@ modelos de hace ocho meses decidió entre candidatos que hoy no son los mejores,
 una decisión tomada sobre un supuesto que cambió hay que rehacerla. Distinguir lo
 vigente de lo caducado es parte del mapa.
 
+## Cuatro cosas concretas que hay que ir a buscar
+
+`documentacion/00_IDENTIDAD.md` sale de leer estos mismos repositorios, y dejó
+localizadas cuatro herencias que ya no son opcionales. Empieza por ellas:
+
+1. **La accesibilidad del Baxy anterior** — control por voz para movilidad
+   reducida y narración de cada acción para personas no videntes. Se perdió por el
+   camino y el dueño la quiere de vuelta como identidad del motor. Averigua qué
+   había implementado de verdad y qué era promesa de README.
+2. **La cascada UIA → OCR → visión** para operar cualquier aplicación abierta. Es
+   núcleo, no extra: sin ella no existe el `Click X` de las misiones compuestas.
+3. **El set consolidado de 16 herramientas de Carter v4** y la medición que le dio
+   −68 % de tokens sin perder calidad. El sprint 03 la necesita como punto de
+   partida, no como anécdota.
+4. **Lo que FunctionGemma midió sobre cuantización y prosa** — Q2 produce palabras
+   inventadas y rompe la persona; Q4_K_XL QAT lo arregla en ~1,5 GB. El BAXY
+   actual tiene hoy el mismo síntoma.
+
+Y una advertencia de genealogía que ahorra confusión: **no son proyectos
+distintos**. El README de `Probando Gemma 4` lo dice literalmente — el proyecto se
+renombró a Baxy, antes Gemma 4 Agent, brevemente Carter. Es el mismo proyecto
+reescrito cuatro veces, así que los errores documentados son de esta casa. La
+excepción es `JRVS`, que es otro producto (operaciones self-hosted para equipos) y
+no hereda nada.
+
 Pistas de dónde mirar primero, por si ahorran tiempo: `Probando Gemma 4` tiene
 `captures/`, `checkpoints/` y entornos de LiveKit y de entrenamiento de router;
 `FunctionGemma` tiene `speech_model/` y `router/`; `Carter OS AI` tiene un

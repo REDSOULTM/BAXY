@@ -15,11 +15,18 @@ Todo local. Sin nube, sin APIs de pago, sin enviar datos a ningún lado.
 La sensación de Jarvis no viene de terminar rápido. Viene de tres cosas, y si
 falla una, no hay producto:
 
-1. **Nunca hay silencio muerto.** Primera señal en p50 ≤ 1,0 s.
+1. **Nunca hay silencio muerto.** Primera señal en p50 ≤ 1,0 s. El listón del
+   dueño es más crudo: *más de 3 s sin señal y cierro la ventana y lo hago a
+   mano*. Lo que mata no es la espera — es el silencio.
 2. **Nunca miente.** Nada se afirma sin que un verificador independiente lo
-   confirme.
+   confirme. Y BAXY actúa sobre el PC: por eso mentir aquí no es un detalle.
 3. **Entiende a la primera.** En los tres idiomas, sin depender de las palabras
    exactas del catálogo.
+
+Quién es BAXY, cómo habla, qué nunca hace y qué se decidió sobre catálogo, voz,
+accesibilidad y privacidad está en
+[`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md). Es lectura
+obligatoria antes de cualquier sprint.
 
 ## Por dónde se empieza
 
@@ -74,8 +81,10 @@ implementación:
 4. **La confirmación se liga a la invocación exacta**, no a la intención
    aproximada.
 5. **Cero respuestas visibles fijas.** El modelo formula cada mensaje.
-6. **Local y privado.** La persona inspecciona, corrige y borra todo lo que BAXY
-   sabe de ella.
+6. **Local y privado.** El modelo corre en la máquina. BAXY puede consultar la
+   web cuando no sabe algo, pero no envía contenido de la persona a ningún lado —
+   la línea es de dirección, no de conexión. Y la persona inspecciona, corrige y
+   borra todo lo que BAXY sabe de ella.
 
 Todo lo demás —modelo decisor, cuantización, runtime, recuperador, reconocedor,
 planner, wake word, STT, TTS— se re-deriva midiendo en la máquina de destino.
@@ -93,6 +102,8 @@ asistente.
 
 ## Cómo se trabaja aquí
 
+- [`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md) — qué es BAXY.
+  Decisiones tomadas, no preferencias. Léelo primero.
 - [`documentacion/sprints/`](documentacion/sprints/) — los once prompts.
 - [`documentacion/APLAZADOS.md`](documentacion/APLAZADOS.md) — lo que los sprints
   01–10 ven y no persiguen; el 11 lo vacía.

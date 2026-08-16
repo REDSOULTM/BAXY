@@ -336,4 +336,163 @@ que decidieras reescribirlo otra vez, y cómo lo evitamos?
 
 ## Respuestas
 
-<!-- Responde aquí abajo, por número. No hace falta orden ni todas de una vez. -->
+Respondidas el 2026-08-16, en sesión, una por una. **La 12 y la 14 quedaron
+absorbidas** por la 48 y la 13 respectivamente y no se preguntaron aparte.
+
+El documento que manda es [`00_IDENTIDAD.md`](00_IDENTIDAD.md) — esto de abajo es
+el acta literal.
+
+### A. Quién es BAXY
+
+**1.** «Es un tipo Jarvis, un compañero que vive en mi PC, que logra hacer lo que
+le pido.»
+
+**2.** Carácter propio. Es un **él**.
+
+**3.** *«Listo, Spotify está abierto y sonando»* — confirma el estado observable,
+cálido pero breve, y tutea.
+
+**4.** Al fallar: plano y con la causa. Sin disculpas, sin drama.
+
+**5.** Nunca: inventar que hizo algo · actuar sin que se lo pidan · mandar datos
+fuera.
+
+**6.** Sólo **BAXY**. Un nombre, un asistente.
+
+### B. Para qué existe
+
+**7.** Abrir y manejar apps · audio, ventanas y sistema · buscar cosas · recordar
+y avisar. Y una corrección importante: *«eso depende del usuario, no de mí, yo
+solo soy uno más»*.
+
+**8.** Lo que más frustra: **levantarse del teclado**.
+
+**9.** **Producto para cualquiera**, limitado a español, inglés y spanglish.
+
+**10.** Que **esté siempre ahí**. La fricción de arrancarlo es lo que lo mata.
+
+**11.** Las tres a la vez: abrir un juego y llegar adentro · manejar el PC sin
+tocarlo · entender a la primera siempre.
+
+### C. El alcance
+
+**13.** El criterio del set consolidado: **cubrir el PC, no las apps**. Todo lo
+que Windows permite hacer; nada específico de una app concreta.
+
+**15.** Sí, **con o sin confirmación según el modo**: un modo normal que confirma
+y un modo *bypass* sin frenos.
+
+**16.** Confirma **sólo si destruye datos**.
+
+**48.** Ni consolidar por consolidar ni mantener 158: **un set consolidado que
+cubra el máximo de casos, una herramienta = una cosa**, y lo que no cabe en una
+herramienta se resuelve **encadenando** (`Open App` → `Click X`).
+
+**49.** La forma exacta —paramétrica o específica— **la mide el sprint 03**.
+
+### D. Velocidad
+
+**17.** **Depende de la tarea.** Abrir Spotify es instantáneo; una misión
+compuesta puede tardar.
+
+**18.** **Según lo que tarde**: si va a tardar poco, calla y responde; si va a
+tardar, avisa.
+
+**19.** Demasiado es **más de 3 s sin señal**. Lo que mata es el silencio, no la
+espera.
+
+**20.** **Quitar sobrecarga primero.**
+
+### E. Honestidad
+
+**21.** Viene de que **actúa sobre el PC**. Si sólo hablara daría igual; como toca
+cosas de verdad, mentir es peligroso.
+
+**22.** **Responde y verifica después**, corrigiéndose solo si no cuadra.
+
+**23.** Que diga «no sé» da **confianza**.
+
+**24.** Si se equivoca: **lo dice y reintenta**.
+
+### F. La voz
+
+**25.** **Los dos por igual.** Voz y texto; ninguno es secundario.
+
+**26.** **«BAXY»** a secas.
+
+**27.** **Escucha siempre, y se puede apagar** con un interruptor visible.
+
+**28.** **Siempre habla.**
+
+**29.** Voz **con carácter, español neutro**.
+
+### G. Memoria y privacidad
+
+**30.** Recuerda: mis preferencias · lo que suelo pedir · la conversación
+reciente.
+
+**31.** **Ver, editar y borrar** todo lo que sabe de mí.
+
+**32.** *«Baxy debe poder buscar en la web, pero mas no enviar nada de mi; por ej,
+si no sabe algo, lo busca sin problema.»*
+
+**33.** **Sí, cuando lo necesita** — pantalla y ficheros, diciéndolo.
+
+### H. Cómo se ve
+
+**34.** **Bandeja del sistema.**
+
+**35.** **Resultado, con el detalle si lo pido.**
+
+**36.** **Arranca con Windows** y vive ahí.
+
+### I. Los límites
+
+**37.** Cuando no entiende: **pregunta lo justo** — una pregunta corta y concreta.
+
+**38.** Dice que no **sólo a lo que no sabe hacer**. No se niega a lo peligroso ni
+a lo ambiguo: para eso están el modo y la pregunta.
+
+**39.** **Actúa solo y me cuenta.**
+
+**40.** En un año: **que lo use a diario sin pensarlo**.
+
+### J. Lo que no se repite
+
+**41.** El momento de «esto no va»: **cuando no acertaba la herramienta**.
+
+**42.** *«No quiero que nada se apile, solo que se coloquen las piezas bien. Lo
+que pasó es que al empezar no sabía lo grande que era el proyecto, entonces por
+eso tantos routers, porque 1 para solucionar el anterior y así. La idea es
+aprender de todos los errores y lograr un BAXY en su estado puro.»*
+
+**43.** La línea roja: **que vuelva a apilarse**.
+
+### K. Lo que se perdió
+
+**44.** La accesibilidad vuelve como **identidad central**.
+
+**45.** Resuelto en la pregunta extra de abajo: **central en el motor, modo en la
+interfaz**.
+
+**46.** Universalidad: **acentos latinos + inglés**.
+
+**47.** Operar cualquier aplicación (UIA → OCR → visión): **sí, es el núcleo**.
+
+**50.** *«Que se evalúe bien y simplemente se elija lo mejor posible, siempre
+pensando en el menor uso de recursos que funcione bien.»* No se adopta Q4 por
+herencia: se mide.
+
+**51.** La personalidad vive **en el prompt**.
+
+**52.** Lo que evita la quinta reescritura: **que el producto se use**.
+
+### Preguntas extra, nacidas de contradicciones entre respuestas
+
+**E1. Tensión 44 vs 45 (identidad central vs modo).** Resuelta:
+**central en el motor, modo en la interfaz**. El motor siempre se puede manejar
+entero por voz y narra lo que hace; el modo sólo cambia cómo se presenta. Nada de
+accesibilidad se añade después.
+
+**E2. Cómo se entra en el modo bypass.** **Un ajuste que el usuario activa**
+conscientemente, y que se queda encendido hasta que lo apague.

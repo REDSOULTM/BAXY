@@ -101,6 +101,45 @@ listas mantenidas a mano y crecen una superficie cada vez. La puerta deja 49 de
 158 operaciones sin ninguna regla curada. Si eliges esa vía, mide primero la
 cobertura por operación y di por qué esa cuenta termina.
 
+## El catálogo también es palanca tuya — y ésta la decidió el dueño
+
+Lee `documentacion/00_IDENTIDAD.md` antes de tocar nada de esto.
+
+El catálogo de BAXY creció por acumulación y nadie decidió el crecimiento: 67
+herramientas → 31 en el set lean → **16 en Carter v4** → **158 operaciones hoy**.
+Carter midió que consolidar a 16 daba **−68 % de tokens sin perder calidad**. Y
+cuando el dueño dijo «esto no va» en el intento anterior, fue exactamente **cuando
+no acertaba la herramienta**. Es tu bloqueante, con otro nombre.
+
+La decisión ya tomada, literal:
+
+> Un set consolidado que cubra el máximo de casos, sin herramientas que no tienen
+> sentido. Una herramienta hace una cosa. Y lo que no se logra con una, se logra
+> con misiones compuestas: «Abre Steam y ve a la biblioteca» → `Open App` →
+> `Click X`.
+
+Lo que decides **tú, midiendo**, no por preferencia:
+
+- **El número.** Cuántas operaciones quedan.
+- **La forma.** Paramétrica (`audio.control(accion, valor)`) contra específica
+  (`subir_volumen`, `bajar_volumen`, `silenciar`). Compara ambas con datos reales
+  y quédate con la que más acierte por token.
+
+El criterio de qué entra lo fijó el dueño y no se negocia: **cubrir el PC, no las
+apps**. Todo lo que Windows permite hacer —ventanas, audio, ficheros,
+aplicaciones, sistema—; nada específico de una aplicación concreta. Cero listas de
+apps a mano: fue un antipatrón que Carter se documentó a sí mismo, contra su
+propio valor declarado.
+
+Lo que hoy no cabe en una operación **no se resuelve añadiendo una operación**: se
+resuelve encadenando, y de eso vive el sprint 07. Si consolidar te deja un hueco,
+comprueba primero si el hueco lo cierra una cadena.
+
+Cuidado con una trampa: consolidar sube el acierto de la decisión y baja la
+expresividad del argumento. Si mueves trabajo del catálogo al relleno de
+parámetros, mídelo ahí también — un acierto de herramienta del 100 % con
+argumentos mal rellenados no es una mejora, es la misma pérdida en otro sitio.
+
 ## Cómo mides sin engañarte
 
 Necesitas un oráculo que **pueda contener el fallo**. El corpus vigente lo generó

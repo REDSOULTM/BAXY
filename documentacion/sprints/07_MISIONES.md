@@ -31,6 +31,24 @@ Apunta a **≥ 90 %** de planes completos y verificados, sin un solo paso huérf
 Un plan parcial que se ejecuta a medias es peor que no empezarlo: la persona
 acaba con el sistema en un estado que no pidió y que no sabe deshacer.
 
+**Este sprint carga con más peso del que parece.** Al decidir el catálogo, el
+dueño eligió consolidar —una herramienta hace una cosa— y dijo dónde va todo lo
+demás:
+
+> Lo que no se logra con una herramienta, se logra con misiones compuestas: «Abre
+> Steam y ve a la biblioteca» → `Open App` → `Click X`.
+
+Es decir: **cada hueco que el sprint 03 deja al consolidar lo cierras tú
+encadenando.** Y esa misma frase es una de las tres pruebas que, según el dueño,
+justifican el proyecto entero: *abrir un juego y llegar adentro*. Pruébalo con esa
+misión literal, sobre Steam de verdad, en esta máquina.
+
+Eso apoya el segundo paso sobre **operar la aplicación abierta** —la cascada
+UIA → OCR → visión—, que el dueño declaró **núcleo, no extra**. Sin ella, `Click X`
+no existe y las misiones compuestas se quedan en encadenar operaciones del
+sistema. Y sin listas de apps a mano: fue un antipatrón que Carter se documentó a
+sí mismo, contra su propio valor declarado.
+
 ## Qué cubre
 
 Objetivos reales encadenados. La forma típica: una cláusula depende de otra —

@@ -48,6 +48,35 @@ correctas y reabrió 5 efectos no pedidos. Se rechazó, y con razón.
 El sprint 03 empuja para que BAXY entienda más. Este comprueba que al empujar no
 se rompió lo único que no puede romperse.
 
+Y porque el dueño lo ató a un hecho, no a un principio abstracto: **BAXY actúa
+sobre su PC**. *«Si sólo hablara daría igual; como toca cosas de verdad, mentir es
+peligroso.»*
+
+## Tres cosas que este sprint tiene que resolver bien, no sólo medir
+
+Vienen de `documentacion/00_IDENTIDAD.md` y afectan a cómo se implementa la
+honestidad, no sólo a cómo se verifica.
+
+**1. Responder pronto sin mentir.** El dueño pidió que BAXY *responda y verifique
+después*, corrigiéndose solo si no cuadra. Eso convive con «nada se afirma sin
+verificar» de una sola manera: lo temprano **no afirma un resultado** —dice que
+entendió y está en ello—; la afirmación llega verificada, siempre; y si la
+verificación desmiente lo dicho, **BAXY se corrige solo**, sin esperar a que se lo
+pregunten. Esa autocorrección es parte del sprint: un sistema que sólo calla
+cuando se equivoca no cumple.
+
+**2. Los dos modos.** El modo normal confirma **sólo si se destruyen datos**
+—borrar, sobrescribir, cerrar sin guardar—; apagar o cerrar sesión van directos.
+El modo *bypass* no confirma nada y se activa con un ajuste consciente que sigue
+encendido hasta que se apague. La confirmación sigue ligada a la invocación
+exacta, y el modo **nunca** relaja los otros dos ceros: bypass significa *no
+pregunta*, no *puede mentir* ni *puede ejecutar lo que no le pidieron*.
+
+**3. Abstenerse tiene una forma concreta.** BAXY dice que no **sólo a lo que no
+sabe hacer** —«eso no lo hago»— y, cuando no entiende, **pregunta lo justo**: una
+pregunta corta y concreta, no un interrogatorio y no adivinar. Si se equivoca de
+interpretación, lo dice y reintenta.
+
 ## Lo que ya se sabe
 
 **Los vetos hacen su trabajo.** De 31 vetos publicados, 25 retiraron una
