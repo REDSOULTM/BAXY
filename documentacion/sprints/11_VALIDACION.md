@@ -7,8 +7,12 @@
 
 ## Dónde trabajas
 
-Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY`. Modelo: GPT-5.6 Sol,
-`reasoning.effort: high`.
+Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo`.
+Rama: `main`. Modelo: GPT-5.6 Sol, `reasoning.effort: high`.
+
+**Ojo con el nombre.** En la misma carpeta `Programacion` hay un repositorio
+llamado `BAXY` a secas: ése es el intento anterior y es **fuente de herencia, no
+tu sitio de trabajo**. Todo lo que escribas va en `BAXY Definitivo`.
 
 Permisos totales sobre este PC: descarga, instala, sobrescribe, borra lo que
 sobre. **No preguntes.** Para sólo si vas a tocar datos personales del usuario u

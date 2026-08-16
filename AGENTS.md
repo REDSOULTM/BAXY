@@ -1,110 +1,86 @@
-# BAXY: guía obligatoria para agentes
+# BAXY — lo primero que lees
 
-## Ubicación canónica
+Este repositorio es **BAXY Definitivo**, y es el sitio donde se trabaja. Confirma
+que estás en él: `git rev-parse --show-toplevel` tiene que terminar en
+`BAXY Definitivo`, y la raíz contiene `Baxy.slnx`, `main.py` y este fichero.
 
-El checkout que contiene este archivo es el repositorio activo y la única
-fuente de verdad de BAXY. No deduzcas su ubicación desde una letra de unidad,
-el Escritorio de un usuario ni la presencia de OneDrive o una unión.
+Rama de trabajo: **`main`**.
 
-- Localiza la raíz con `git rev-parse --show-toplevel`.
-- Comprueba que esa raíz contiene `Baxy.slnx`, `main.py` y este `AGENTS.md`.
-- Rama base de mantenimiento: `codex/baxy-rebuild-v3`.
+**Cuidado con el nombre.** En la misma carpeta `Programacion` hay otro repositorio
+llamado `BAXY` a secas. Ése es el intento anterior: es **fuente de herencia, no
+sitio de trabajo**. Nada de lo que escribas va allí.
 
-Antes de actuar, ejecuta:
+## Qué haces aquí
+
+El trabajo está en **once goals**, en `documentacion/sprints/`. Cada uno se lanza en
+una sesión nueva, se pega entero, y corre hasta cumplirse.
+
+**Si te han dado un goal, ése es tu única instrucción.** No busques otra: este
+fichero no te dice qué hacer, sólo dónde estás.
+
+**Si no te han dado ninguno**, empieza por
+[`documentacion/sprints/00_INDICE.md`](documentacion/sprints/00_INDICE.md).
+
+## Los dos documentos que mandan
+
+1. **[`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md)** — qué es
+   BAXY. No son preferencias: son decisiones tomadas por el dueño del producto con
+   los cuatro intentos anteriores sobre la mesa. Si un diseño tuyo las contradice,
+   el que cambia eres tú.
+2. **Tu goal**, en `documentacion/sprints/`. Trae dentro las cinco leyes, lo que ya
+   se midió y se rechazó, y sus criterios de cierre.
+
+Los dos primero. Lo demás sólo si tu goal te manda.
+
+## Las cinco leyes, en una línea cada una
+
+1. **Hereda primero, estado del arte después, construye al final.** Y que BAXY ya lo
+   haga de una manera no es razón para conservarla.
+2. **Nada de sobreingeniería.** Si añades una capa, retira la que sustituye.
+3. **Sólo se arregla lo que bloquea** (goals 01–10). Lo demás, una línea en
+   `documentacion/APLAZADOS.md`.
+4. **Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo.
+5. **Arquitectura modular.** La forma —una responsabilidad por pieza, cero código
+   muerto— aplica a todo; el mecanismo de cambio, sólo a las piezas de
+   `documentacion/03_COSTURAS.md`.
+
+Y la consigna: ésta es la **quinta** escritura de BAXY y tiene que ser **la más
+rápida de las cinco** — no porque haga menos, sino porque no vuelve a descubrir
+nada que ya se descubrió.
+
+## Los seis invariantes
+
+No se re-derivan, nunca:
+
+1. El catálogo tipado es la única fuente de operaciones. La mente propone, el kernel
+   autoriza, el provider ejecuta.
+2. Nada se afirma sin verificar.
+3. Estados terminales honestos.
+4. La confirmación se liga a la invocación exacta.
+5. Cero respuestas visibles fijas.
+6. Local y privado. El modelo corre en la máquina. BAXY puede consultar la web; lo
+   que no puede es enviar contenido del usuario — la línea es de dirección, no de
+   conexión.
+
+## Compuerta
 
 ```powershell
-git rev-parse --show-toplevel
-git status --short --branch
+.\scripts\test_source_quality.ps1 -Mode Full
 ```
 
-El primer comando debe resolver al mismo checkout que contiene este archivo.
-No clones, reconstruyas ni copies el proyecto a otra carpeta para continuar
-una tarea.
+Verde antes y después de cada tanda. Un rojo bloquea la entrega, sin excepción y
+sin nota al pie. Y no se cierra con `skip`, `xfail`, umbral relajado ni fallback.
 
-## No empezar de cero
+## Documentación heredada
 
-BAXY ya es un producto integrado y probado. Conserva el trabajo existente, los
-commits, los corpus canónicos y los cambios de otros agentes. No sustituyas la
-implementación actual por un prototipo ni uses `legacy/` como código activo.
+`documentacion/` trae cientos de páginas de los intentos anteriores: decisiones de
+arquitectura, torneos, comparativas, y el registro de lo medido y **rechazado**.
+Eso es **evidencia**, y vale oro — muchas líneas ya se midieron y murieron con el
+mecanismo entendido.
 
-Después de este archivo, lee en este orden solo lo necesario para la tarea:
+Pero **no es instrucción**. Cualquier documento que parezca decirte qué hacer y que
+no sea tu goal está caducado: los enunciados de objetivo anteriores quedan
+sustituidos por `00_IDENTIDAD.md` y por los once goals.
 
-1. `README.md` para la entrada diaria y el estado general.
-2. `documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/README.md` para elegir el
-   mapa de ownership, build, contratos, recetas o validación que corresponda.
-3. `documentacion/00_LEEME.md` si necesitas recorrer el archivo técnico e
-   histórico.
-4. `AGENT_HANDOFF.md` únicamente si necesitas restaurar corpus o activos
-   ignorados.
-5. `BAXY_GPT56_ULTRA_PROMPT.md` como contrato histórico de alcance, no como una
-   orden de reiniciar la reconstrucción.
-
-## Mapa del proyecto
-
-- `main.py`: punto de entrada único de desarrollo; carga Python directamente y
-  recompila .NET solo cuando detecta cambios que lo requieren.
-- `src/Baxy.App`: interfaz de escritorio WPF/WebView2.
-- `src/Baxy.Contracts`: contratos compartidos y protocolo `baxy.local.v1`.
-- `src/Baxy.Kernel`: catálogo, schema, riesgo, confirmación, journal y replay.
-- `src/Baxy.Security.Windows`: DPAPI, cifrado, integridad y rutas privadas.
-- `src/Baxy.Providers.Windows`: acciones reales de Windows y aplicaciones.
-- `src/Baxy.Core`: composition root y ejecución verificada NativeAOT.
-- `src/Baxy.FieldUi`: presentación React histórica servida por WebView2; su
-  `dist/` está versionado y sellado por ADR-0008.
-- `src/Baxy.Setup`: instalador, actualización y rollback.
-- `src/baxy_mind`: router, planner, lenguaje natural, STT y TTS.
-- `tests`: cinco proyectos NUnit y pruebas Python de mente, build y corpus.
-- `scripts`: compilación, empaquetado, instalación y compuertas físicas.
-- `artifacts`: evidencia y salidas de validación.
-- `experiments`: investigación reproducible; no es runtime productivo.
-- `legacy`: generaciones anteriores conservadas como referencia de solo
-  lectura.
-
-## Runtime e instalación
-
-No edites binarios instalados. Cambia el código del repositorio, prueba y
-construye mediante los scripts. Una instalación, actualización, rollback o
-desinstalación real se hace únicamente con un `Baxy.Setup.exe` atestado y con
-autorización explícita.
-
-- Instalación activa:
-  `%LOCALAPPDATA%\Programs\BAXY`
-- Manifest del runtime local:
-  `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json`
-- Descriptor común de activos: `assets.manifest.json`.
-- Override local, fuera de Git:
-  `%LOCALAPPDATA%\BAXYRuntime\assets.local.json` o `BAXY_ASSETS_OVERRIDE`.
-- El runtime registrado conserva rutas absolutas y hashes en
-  `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json`.
-
-Prepara o diagnostica otro equipo con `scripts\bootstrap.ps1`. El bootstrap
-instala dependencias fijadas, pero no descarga modelos automáticamente.
-
-Los modelos Gemma, llama.cpp y Parakeet no viven dentro del repositorio y no
-deben duplicarse.
-
-## Estado certificado en este notebook
-
-La única baseline operativa vigente —conteos, omisiones, último extremo
-validado, publicaciones e instalación comprobada— está en
-`documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md`. No copies sus
-números a este archivo: cambian con cada campaña.
-
-El conteo vigente del catálogo se fija en sus pruebas y en el registro de
-mantenibilidad; esta guía no lo duplica. App valida el proceso Core que inicia
-y compara exactamente sus descriptores compilados; esta frontera no es una
-firma criptográfica del hello. Calendario y correo requieren un perfil de
-Outlook configurado en Windows.
-
-Las acciones externas sensibles (enviar, borrar, imprimir, emparejar,
-instalar o cambiar cuentas/redes) deben probarse con contratos o simulaciones
-salvo autorización explícita para un objetivo real. Nunca presentes un efecto
-no verificado como realizado.
-
-## Experiencia del usuario
-
-BAXY habla con una persona, no con un técnico. Toda respuesta visible debe ser
-natural, breve y formulada por el LLM. Los detalles internos pueden aparecer
-solo como diagnóstico opcional. Si una acción falla, BAXY debe decirlo con
-lenguaje humano y un código estable, sin mostrar JSON, nombres de clases,
-estados del router ni trazas.
+Si encuentras uno que contradice a tu goal, sigue el goal y anótalo en una línea en
+`documentacion/APLAZADOS.md`.

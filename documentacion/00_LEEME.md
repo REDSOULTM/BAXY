@@ -1,5 +1,13 @@
 # Documentación de BAXY
 
+> **Si acabas de llegar, esto no es por donde se empieza.** Se empieza por
+> [`00_IDENTIDAD.md`](00_IDENTIDAD.md) —qué es BAXY— y por
+> [`sprints/00_INDICE.md`](sprints/00_INDICE.md) —los once goals—. Esta carpeta es
+> **evidencia**: sirve para no repetir una corrida ya pagada, no para saber qué
+> hacer. Algunos documentos que este índice nombra ya no existen: eran enunciados
+> de objetivo de sesiones anteriores, sustituidos por la identidad y los goals, y
+> se conservan en el repositorio `BAXY` de al lado.
+
 Esta carpeta es el puente entre todo lo aprendido desde Carter y la
 reconstrucción definitiva de BAXY.
 

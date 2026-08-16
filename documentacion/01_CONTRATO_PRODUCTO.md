@@ -1,5 +1,10 @@
 # Contrato de producto de BAXY
 
+> **Si algo de aquí contradice a [`00_IDENTIDAD.md`](00_IDENTIDAD.md), manda la
+> identidad.** Este contrato es anterior y se conserva porque su parte técnica
+> —invariantes, estados terminales, contratos— sigue siendo exacta. Lo que quedó
+> sustituido son los enunciados de qué es BAXY y para quién.
+
 ## Definición
 
 BAXY es un asistente local y privado para Windows. La persona habla o escribe

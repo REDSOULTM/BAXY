@@ -1,8 +1,17 @@
-# Meta vigente de BAXY
+# Meta de BAXY — sustituida, conservada como evidencia
 
-Estado: **vigente desde 2026-08-01**. Sustituye cualquier enunciado de objetivo
-anterior. No sustituye el contrato de producto ni la decisión de arquitectura:
-los presupone.
+> **Este documento ya no fija el objetivo.** Lo sustituyeron
+> [`00_IDENTIDAD.md`](00_IDENTIDAD.md) y los once goals de
+> [`sprints/`](sprints/), el 2026-08-16.
+>
+> Se conserva entero porque **su evidencia sigue siendo válida y valiosa**: la
+> lista de lo que se midió y se rechazó, el §7 sobre la disciplina de sellado, y
+> los rechazos de la línea de wake word. Varios goals lo citan por eso.
+>
+> Léelo para no repetir una corrida ya pagada. No lo leas para saber qué hacer.
+
+Estado del enunciado original: vigente desde 2026-08-01, ahora superado. No
+sustituye el contrato de producto ni la decisión de arquitectura: los presupone.
 
 El estado ejecutable del MVP del 11 de agosto, con su recuperación de contexto,
 está indexado en [00_MVP_2026-08-11.md](00_MVP_2026-08-11.md). Es un adelanto y

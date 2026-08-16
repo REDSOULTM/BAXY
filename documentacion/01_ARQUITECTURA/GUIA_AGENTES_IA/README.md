@@ -1,4 +1,10 @@
-# Guía canónica para agentes de IA
+# Guía técnica del repositorio
+
+> **Esto es referencia, no instrucción.** Lo que hay que hacer lo dice tu goal, en
+> `documentacion/sprints/`; qué es BAXY lo dice `documentacion/00_IDENTIDAD.md`.
+> Esta carpeta responde a «¿dónde está esto y cómo se construye?», y por eso vale
+> — te ahorra reconstruir el mapa. Si algo de aquí contradice a tu goal, manda el
+> goal, y lo anotas en una línea en `documentacion/APLAZADOS.md`.
 
 Esta carpeta explica cómo está formado BAXY, cómo se construye, dónde reside
 cada responsabilidad y qué debe validar un agente antes de entregar un cambio.
