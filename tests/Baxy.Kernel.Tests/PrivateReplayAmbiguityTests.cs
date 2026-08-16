@@ -25,7 +25,7 @@ public sealed class PrivateReplayAmbiguityTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new AcceptingEnvelopeAuthenticator());
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() });
         OperationRequest request = CreateMemoryRequest();
 
         OperationResponse first = await engine.ExecuteAsync(
@@ -59,7 +59,7 @@ public sealed class PrivateReplayAmbiguityTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new AcceptingEnvelopeAuthenticator());
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() });
         OperationRequest request = CreateMemoryRequest();
 
         OperationResponse first = await engine.ExecuteAsync(
@@ -86,7 +86,7 @@ public sealed class PrivateReplayAmbiguityTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new AcceptingEnvelopeAuthenticator());
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() });
         OperationRequest request = CreateMemoryRequest();
 
         OperationResponse first = await engine.ExecuteAsync(
@@ -128,7 +128,7 @@ public sealed class PrivateReplayAmbiguityTests
             using (var engine = new MissionEngine(
                 new OperationRegistry([handler]),
                 journal,
-                new AcceptingEnvelopeAuthenticator()))
+                                    new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() }))
             {
                 first = await engine.ExecuteAsync(request, CancellationToken.None);
             }
@@ -143,7 +143,7 @@ public sealed class PrivateReplayAmbiguityTests
             using (var engine = new MissionEngine(
                 new OperationRegistry([replayHandler]),
                 journal,
-                new AcceptingEnvelopeAuthenticator()))
+                                    new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() }))
             {
                 OperationResponse replay = await engine.ExecuteAsync(
                     request with { RequestId = Guid.NewGuid().ToString("D") },

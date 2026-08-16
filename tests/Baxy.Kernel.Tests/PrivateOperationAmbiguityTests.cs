@@ -29,7 +29,7 @@ public sealed class PrivateOperationAmbiguityTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new AcceptingEnvelopeAuthenticator());
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() });
 
         OperationResponse response = await engine.ExecuteAsync(
             CreateMemoryRequest(),
@@ -53,7 +53,7 @@ public sealed class PrivateOperationAmbiguityTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new AcceptingEnvelopeAuthenticator());
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() });
 
         OperationResponse response = await engine.ExecuteAsync(
             CreateMemoryRequest(),
@@ -75,7 +75,7 @@ public sealed class PrivateOperationAmbiguityTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new AcceptingEnvelopeAuthenticator());
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() });
 
         OperationResponse response = await engine.ExecuteAsync(
             CreateMemoryRequest(),
@@ -99,7 +99,7 @@ public sealed class PrivateOperationAmbiguityTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new AcceptingEnvelopeAuthenticator());
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() });
 
         OperationResponse response = await engine.ExecuteAsync(
             CreateMemoryRequest(),

@@ -170,8 +170,7 @@ internal static class Program
         using var engine = new MissionEngine(
             registry,
             journal,
-            new MemoryEnvelopeAuthenticator(memoryCodec, memoryExportWriter),
-            ProductOperationNarrator.Instance);
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new MemoryEnvelopeAuthenticator(memoryCodec, memoryExportWriter), Narrator = ProductOperationNarrator.Instance });
         await using Stream input = Console.OpenStandardInput();
         await using Stream output = Console.OpenStandardOutput();
         var lineReader = new BoundedLineReader(input, MaximumLineBytes);

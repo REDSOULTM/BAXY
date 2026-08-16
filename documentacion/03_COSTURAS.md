@@ -140,20 +140,20 @@ mentirosa.
 
 | Pieza | Borde | Qué decide el cambio | Elegido hoy | Goal | Fecha |
 |---|---|---|---|---|---|
-| **LLM decisor** | Proceso | | | 03 | |
-| **Cuantización** | Proceso | | | 06 | |
-| **Runtime de inferencia** | Proceso | | | 03 | |
-| Recuperador / embeddings | Datos | | | 03 | |
+| **LLM decisor** | Proceso | Pendiente el corpus del goal 03. Lo que ya está medido: el candidato heredado gasta 200–400 tokens de *thinking* antes de cada respuesta (6,3–11,4 s/turno) contra un listón de 3 s de silencio — la medición tiene que incluir **latencia hasta la primera señal**, no sólo acierto | Gemma-4-E2B-it QAT Q4_K_XL, **heredado, no elegido**. `assets.manifest.json` ya lista Qwen3-4B por delante | 01 → 03 | 2026-08-16 |
+| **Cuantización** | Proceso | A/B de prosa española sobre el mismo modelo: seguimiento de instrucción, degeneración por repetición, palabras inventadas y latencia | Q4_K_XL QAT sobre Q2_K_XL: Q2 degenera («problemas de conexión o problemas de conexión»), incumple «en cuatro frases» y **no es más rápido**. Sondeo de 6 prompts, no corpus | 01 → 06 | 2026-08-16 |
+| **Runtime de inferencia** | Proceso | | llama.cpp b9980 (CUDA 12.4). Aviso medido: `--reasoning-budget 0` no quita el *thinking*, hace que el borrador en inglés sea la respuesta | 01 → 03 | 2026-08-16 |
+| Recuperador / embeddings | Datos | Tool recall sobre holdout. Precedente vigente: encoder-67 y encoder-31 midieron **0,9521 los dos** — reducir el catálogo no costó recuperación | e5-small multilingüe en producción. Candidato heredado: MiniLM-L12 384-dim fine-tuneado, 2,1 ms/frase | 01 → 03 | 2026-08-16 |
 | Reconocedor determinista | Contrato | | | 03 | |
-| Forma del catálogo | Datos | | | 03 | |
+| Forma del catálogo | Datos | **Cobertura y cuenta a la vez**, más pass-rate end-to-end. Precedente que obliga: consolidar a ≤16 costó 75,93 % → 62,96 % y cuadruplicó los fallos, con el daño en follow-ups, multilingüe y encadenado | ~170 operaciones en `ProductCatalog.cs`, 31 familias | 01 → 03 | 2026-08-16 |
 | Planificador de misiones | Contrato | | | 07 | |
 
 ### La pila de voz
 
 | Pieza | Borde | Qué decide el cambio | Elegido hoy | Goal | Fecha |
 |---|---|---|---|---|---|
-| **Wake word** | Proceso | | | 09 | |
-| **STT** | Proceso | | | 09 | |
+| **Wake word** | Proceso | Corpus positivo y negativo con voz real: máximo de score en cada uno y falsos disparos por hora. Medido hoy sobre el modelo heredado: positivo **0,916**, negativo **0,225 con 0 disparos**, RTF 0,026 | `baxy.onnx` (openWakeWord: mel → embedding → cabeza) + verificador logreg. **Funciona pero está apagado**: `wake_manifest` es `null` | 01 → 09 | 2026-08-16 |
+| **STT** | Proceso | WER en español, inglés y spanglish, RTF y **recuperación de nombres propios** — que es donde está el fallo, no en la palabra común | Parakeet TDT 0.6b v3 int8: RTF 0,065–0,087, 1 error en 47 palabras de español. Pero transcribe «BAXY» como «Maxi» / «Bacxi» | 01 → 09 | 2026-08-16 |
 | **TTS** | Proceso | | | 09 | |
 
 ### La pila que actúa sobre la máquina
@@ -161,8 +161,8 @@ mentirosa.
 | Pieza | Borde | Qué decide el cambio | Elegido hoy | Goal | Fecha |
 |---|---|---|---|---|---|
 | Verificación de efectos | Contrato | | | 05 | |
-| Automatización de apps (UIA) | Contrato | | | 07 | |
-| OCR | Proceso | | | 07 | |
+| Automatización de apps (UIA) | Contrato | | Sólo `WindowsDeviceControlAdapter.cs` toca UIA en C#; el UIA real vive en `DesktopClickVisible.ps1` y `DesktopSelectAll.ps1`, ya sin nombre de aplicación | 01 → 07 | 2026-08-16 |
+| OCR | Proceso | | Tesseract 5.4.0 vía `CaptureVisionAdapter.cs`. **Le falta `spa.traineddata`**: hoy sólo tiene `eng` y `osd` | 01 → 07 | 2026-08-16 |
 | Motor de visión | Proceso | | | 07 | |
 
 ### El producto alrededor

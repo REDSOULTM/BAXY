@@ -409,7 +409,7 @@ public sealed class MemoryHandlersTests
         using var engine = new MissionEngine(
             new OperationRegistry(harness.Handlers.Values),
             journal,
-            new MemoryEnvelopeAuthenticator(harness.Codec, harness.ExportWriter));
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new MemoryEnvelopeAuthenticator(harness.Codec, harness.ExportWriter) });
 
         OperationResponse challenge = await engine.ExecuteAsync(
             request,

@@ -23,7 +23,7 @@ public sealed class OperationOutcomeNarrationTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            narrator);
+                               new MissionEngineOptions { Narrator = narrator });
         var request = new OperationRequest(
             ProtocolTypes.OperationRequest,
             Guid.NewGuid().ToString("D"),

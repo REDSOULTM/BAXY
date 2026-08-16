@@ -18,14 +18,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly Func<MissionInputRoute, RoutedOperation?>? _testTurnResolver;
     private readonly Func<MindSidecarClient> _mindClientFactory;
     private readonly CancellationTokenSource _mindLifetimeCancellation = new();
-    private readonly object _pendingModelMessagesLock = new();
-    private readonly Queue<PendingModelMessage> _pendingModelMessages = new();
+    private readonly PendingModelMessageQueue _modelMessages;
     private RetryableOperationRegistry? _retryableOperations;
     private DurablePlanStore? _planStore;
     private CoreProcessClient? _coreClient;
     private MindSidecarClient? _mindClient;
     private Task? _mindInitializationTask;
-    private Task? _pendingModelMessageTask;
     private volatile MindStartupState _mindStartupState;
     private DateTime _mindRetryAfterUtc = DateTime.MinValue;
     private bool _isListening;
@@ -73,7 +71,35 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindClientFactory =
             mindClientFactory ?? (static () => new MindSidecarClient());
         Messages = new ObservableCollection<ConversationMessage>();
+        _modelMessages = new PendingModelMessageQueue(
+            WaitForMindReadyAsync,
+            PublishComposedMessageAsync,
+            failure => InvokeOnUiAsync(() => LastMessageCompositionFailure = failure),
+            OnModelMessageQueued);
     }
+
+    private void OnModelMessageQueued()
+    {
+        IsBusy = true;
+        StatusText = "Trabajando";
+        // The Field UI already renders a non-linguistic thinking animation.
+        // Leave prose empty until a policy-checked model response is available.
+        StatusDescription = string.Empty;
+    }
+
+    private async Task PublishComposedMessageAsync(string text, string? failure) =>
+        await InvokeOnUiAsync(
+            () =>
+            {
+                if (_isDisposed)
+                {
+                    return;
+                }
+
+                LastMessageCompositionFailure = failure;
+                AddMessageCore("BAXY", text, isUser: false);
+                RestorePresentationState();
+            });
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -143,16 +169,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal string? LastMessageCompositionFailure { get; private set; }
 
-    internal int PendingModelMessageCount
-    {
-        get
-        {
-            lock (_pendingModelMessagesLock)
-            {
-                return _pendingModelMessages.Count;
-            }
-        }
-    }
+    internal int PendingModelMessageCount => _modelMessages.Count;
 
     public async Task InitializeAsync(CancellationToken cancellationToken)
     {
@@ -248,7 +265,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 AddMessage(
                     "BAXY",
-                    CreateMindPlanRecoveryPrompt(_pendingMindPlan),
+                    MissionNarration.CreateRecoveryPrompt(_pendingMindPlan),
                     isUser: false,
                     messageEvent: UserMessageEvent.Confirmation);
             }
@@ -458,7 +475,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 case MemoryParseOutcome.Clarify:
                     AddMessage(
                         "BAXY",
-                        CreateMemoryClarification(memory),
+                        PrivateOperationNarration.CreateMemoryClarification(memory),
                         isUser: false,
                         messageEvent: UserMessageEvent.Clarification);
                     return;
@@ -698,7 +715,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                CreateMemoryRecoveryPrompt(pending),
+                PrivateOperationNarration.CreateMemoryRecoveryPrompt(pending),
                 isUser: false,
                 messageEvent: UserMessageEvent.Confirmation);
             return;
@@ -777,7 +794,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             AddMessage(
                 "BAXY",
-                CreateMemoryConfirmationPrompt(
+                PrivateOperationNarration.CreateMemoryConfirmationPrompt(
                     prepared,
                     challenge.ReconciliationRequired),
                 isUser: false,
@@ -835,7 +852,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         AddMessage(
             "BAXY",
-            CreateMemoryFailureMessage(prepared.OperationName, response),
+            PrivateOperationNarration.CreateMemoryFailureMessage(prepared.OperationName, response),
             isUser: false,
             messageEvent: UserMessageEvent.Error(
                 UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -982,75 +999,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         && string.Equals(left.IdentityKey, right.IdentityKey, StringComparison.Ordinal)
         && string.Equals(left.MissionId, right.MissionId, StringComparison.Ordinal)
         && string.Equals(left.InvocationId, right.InvocationId, StringComparison.Ordinal);
-
-    private static string CreateMemoryClarification(MemoryParseResult result)
-    {
-        if (result.MustNotDelete)
-        {
-            return "No borraré nada todavía. Indica exactamente qué recuerdo quieres eliminar.";
-        }
-
-        if (result.MustNotPersist)
-        {
-            return "No guardaré nada todavía. Indica exactamente qué dato quieres conservar y por cuánto tiempo.";
-        }
-
-        if (result.MustNotInvent)
-        {
-            return "No inventaré recuerdos. Formula una consulta concreta sobre lo que quieres que revise.";
-        }
-
-        return "Necesito una petición de memoria más concreta. No guardé, borré ni consulté información.";
-    }
-
-    internal static string CreateMemoryConfirmationPrompt(
-        PreparedOperation prepared,
-        bool reconciliationRequired = false) =>
-        reconciliationRequired
-            ? "Esta acción pudo haber comenzado antes de perderse la respuesta. Responde únicamente «confirmar / confirm» para reconciliar exactamente el mismo intento; no iniciaré otra acción mientras el resultado siga incierto."
-            : prepared.OperationName switch
-            {
-                "memory.sensitive.save" =>
-                    "Guardar este dato sensible supone un riesgo de privacidad. Responde únicamente «confirmar / confirm» para guardarlo o «cancelar / cancel» para descartarlo.",
-                "memory.forget" =>
-                    "Esta acción eliminaría memoria local y no se puede deshacer. Responde únicamente «confirmar / confirm» o «cancelar / cancel».",
-                "memory.enable" =>
-                    "Habilitar la memoria local permitirá conservar datos que pidas recordar. Responde únicamente «confirmar / confirm» o «cancelar / cancel».",
-                "memory.export" =>
-                    "Exportar memoria a Documentos/BAXY puede exponer información privada; esa carpeta puede estar redirigida o sincronizada según tu configuración de Windows. Responde únicamente «confirmar / confirm» o «cancelar / cancel».",
-                _ =>
-                    "Esta acción de memoria requiere confirmación. Responde únicamente «confirmar / confirm» o «cancelar / cancel».",
-            };
-
-    internal static string CreateMemoryFailureMessage(
-        string operationName,
-        OperationResponse response)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(operationName);
-        ArgumentNullException.ThrowIfNull(response);
-        if (string.Equals(operationName, "memory.export", StringComparison.Ordinal)
-            && response.Replayed)
-        {
-            return "No pude corroborar de nuevo el resultado anterior. Puede existir un archivo en Documentos/BAXY, pero no afirmaré que siga presente e íntegro; solicita una nueva exportación.";
-        }
-
-        return response.Status switch
-        {
-            OperationStatuses.Pending =>
-                "La petición sobre la memoria local sigue pendiente de una comprobación segura. No afirmaré que terminó.",
-            OperationStatuses.Rejected =>
-                "No hice el cambio solicitado en la memoria local porque no superó las comprobaciones de seguridad.",
-            OperationStatuses.Failed when string.Equals(
-                response.ErrorCode,
-                "memory_disabled",
-                StringComparison.Ordinal) =>
-                "La memoria local está deshabilitada. Habilítala primero si quieres guardar o consultar datos.",
-            OperationStatuses.Failed =>
-                "No pude completar la petición sobre la memoria local de forma segura.",
-            _ =>
-                "No recibí una respuesta segura para la petición sobre la memoria local.",
-        };
-    }
 
     private async Task HandlePendingAudioOperationAsync(
         string text,
@@ -2052,7 +2000,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         JsonObject groundedArguments;
-        if (RequiresMindArgumentExtraction(descriptor))
+        if (MindArgumentNormalization.RequiresExtraction(descriptor))
         {
             MindArgumentResult? extraction = await mind.ExtractArgumentResultAsync(
                 operationName,
@@ -2083,7 +2031,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return true;
             }
 
-            groundedArguments = NormalizeMindArguments(
+            groundedArguments = MindArgumentNormalization.Normalize(
                 operationName,
                 route.Text,
                 extraction.Arguments);
@@ -2105,40 +2053,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         PersistMindPlan(execution);
         await ExecuteMindPlanAsync(execution, registry, cancellationToken);
         return true;
-    }
-
-    internal static bool RequiresMindArgumentExtraction(
-        ProductOperationDescriptor descriptor)
-    {
-        ArgumentNullException.ThrowIfNull(descriptor);
-        return descriptor.ArgumentsSchema.Properties.Count > 0;
-    }
-
-    internal static JsonObject NormalizeMindArguments(
-        string operationName,
-        string objective,
-        JsonObject extractedArguments)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(operationName);
-        ArgumentException.ThrowIfNullOrWhiteSpace(objective);
-        ArgumentNullException.ThrowIfNull(extractedArguments);
-        if (string.Equals(operationName, "app.open", StringComparison.Ordinal)
-            && extractedArguments["appId"] is JsonValue value
-            && value.TryGetValue(out string? extractedAppId)
-            && !string.IsNullOrWhiteSpace(extractedAppId)
-            && NaturalApplicationRequestParser.TryNormalizeKnownAlias(
-                extractedAppId,
-                out string canonicalAppId))
-        {
-            // The model may preserve a natural alias such as "notepad".
-            // Normalize at the common execution boundary so both direct and
-            // compound plans receive the same canonical identity.
-            JsonObject normalized = extractedArguments.DeepClone().AsObject();
-            normalized["appId"] = canonicalAppId;
-            return normalized;
-        }
-
-        return extractedArguments;
     }
 
     private async Task ExecuteMindPlanAsync(
@@ -2221,7 +2135,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
             }
 
-            arguments = NormalizeMindArguments(
+            arguments = MindArgumentNormalization.Normalize(
                 step.Operation,
                 execution.Objective,
                 arguments);
@@ -2352,7 +2266,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         ClearMindPlan();
         AddMessage(
             "BAXY",
-            CreateMindPlanCompletionMessage(execution.CompletedMessages),
+            MissionNarration.CreateCompletionMessage(execution.CompletedMessages),
             isUser: false);
     }
 
@@ -2370,23 +2284,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 : $"El paso {execution.NextIndex + 1} requiere tu confirmación. Responde únicamente «confirmar / confirm» o «cancelar / cancel». Aún no ejecuté ese efecto.",
             isUser: false,
             messageEvent: UserMessageEvent.Confirmation);
-    }
-
-    internal static string CreateMindPlanRecoveryPrompt(
-        PendingMindPlanExecution execution)
-    {
-        ArgumentNullException.ThrowIfNull(execution);
-        if (MindPlanBoundary.CanRefreshConfirmationChallenge(execution))
-        {
-            return "Hay una misión multipaso cuyo paso actual ya había comenzado y puede haber producido un efecto. Conservé su evidencia de recuperación. Di «confirmar / confirm» para comprobar exactamente el mismo intento; «cancelar / cancel» detiene los pasos nuevos, pero no borra la evidencia incierta.";
-        }
-
-        if (execution.PendingEffectMayHaveOccurred)
-        {
-            return "Hay una misión multipaso con un efecto anterior que puede haber ocurrido. Conservé su evidencia de recuperación y no repetiré ni continuaré la misión hasta comprobarlo con el estado real.";
-        }
-
-        return "Hay una misión multipaso pendiente de una sesión anterior. Di «continuar» para reanudarla desde el último paso guardado o «cancelar» para detener sus pasos restantes.";
     }
 
     private async Task HandlePendingMindPlanAsync(
@@ -2616,73 +2513,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         ClearMindPlan();
         AddMessage(
             "BAXY",
-            CreateMindPlanFailureMessage(execution.CompletedMessages, reason),
+            MissionNarration.CreateFailureMessage(execution.CompletedMessages, reason),
             isUser: false,
             messageEvent: UserMessageEvent.Error(
                 UserMessageDiagnosticCodes.ActionNotCompleted));
-    }
-
-    internal static string CreateMindPlanCompletionMessage(
-        IReadOnlyList<string> completedMessages)
-    {
-        ArgumentNullException.ThrowIfNull(completedMessages);
-        if (completedMessages.Count == 0)
-        {
-            throw new ArgumentException(
-                "Una misión completada debe contener al menos un resultado.",
-                nameof(completedMessages));
-        }
-
-        if (completedMessages.Count == 1)
-        {
-            return completedMessages[0].Trim();
-        }
-
-        return string.Concat(
-            $"Completé y verifiqué los {completedMessages.Count} pasos de la misión.\n",
-            CreateMindPlanOutcomeList(completedMessages));
-    }
-
-    internal static string CreateMindPlanFailureMessage(
-        IReadOnlyList<string> completedMessages,
-        string reason)
-    {
-        ArgumentNullException.ThrowIfNull(completedMessages);
-        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
-        if (completedMessages.Count == 0)
-        {
-            return reason.Trim();
-        }
-
-        return string.Concat(
-            "No pude completar toda la misión. ",
-            $"Antes de detenerla, completé y verifiqué {completedMessages.Count} paso(s):\n",
-            CreateMindPlanOutcomeList(completedMessages),
-            "\nMotivo: ",
-            reason.Trim());
-    }
-
-    private static string CreateMindPlanOutcomeList(
-        IReadOnlyList<string> completedMessages)
-    {
-        return string.Join(
-            '\n',
-            completedMessages.Select(static (message, index) =>
-                $"• Paso {index + 1}: {NormalizeMindPlanOutcome(message)}"));
-    }
-
-    private static string NormalizeMindPlanOutcome(string message)
-    {
-        if (string.IsNullOrWhiteSpace(message))
-        {
-            return "Completado y verificado.";
-        }
-
-        return string.Join(
-            ' ',
-            message.Split(
-                ['\r', '\n'],
-                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
     }
 
     private void PersistMindPlan(PendingMindPlanExecution execution)
@@ -2863,7 +2697,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             AddMessage(
                 "BAXY",
-                CreateAudioRecoveryPrompt(pending),
+                PrivateOperationNarration.CreateAudioRecoveryPrompt(pending),
                 isUser: false,
                 messageEvent: UserMessageEvent.Confirmation);
         }
@@ -2941,25 +2775,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         StatusDescription = "Esperando comprobar la memoria";
         AddMessage(
             "BAXY",
-            CreateMemoryRecoveryPrompt(_pendingMemoryOperation),
+            PrivateOperationNarration.CreateMemoryRecoveryPrompt(_pendingMemoryOperation),
             isUser: false,
             messageEvent: UserMessageEvent.Confirmation);
-    }
-
-    internal static string CreateMemoryRecoveryPrompt(PreparedOperation prepared)
-    {
-        string category = prepared.OperationName switch
-        {
-            "memory.enable" or "memory.disable" => "un cambio de configuración de memoria",
-            "memory.save" or "memory.sensitive.save" or "memory.correct" =>
-                "una actualización de memoria privada",
-            "memory.forget" or "memory.session.clear" => "un borrado de memoria privada",
-            "memory.recall" or "memory.list" or "memory.status" =>
-                "una consulta de memoria privada",
-            "memory.export" => "una exportación de memoria privada",
-            _ => "una petición de memoria privada",
-        };
-        return $"Quedó pendiente comprobar {category}. Responde «continuar / continue / retry» para reenviar exactamente la misma petición; no iniciaré otra acción mientras su resultado siga incierto.";
     }
 
     private void RecoverPendingNoteInteraction(bool announce)
@@ -3028,16 +2846,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _isDisposed = true;
         IsReady = false;
         _mindLifetimeCancellation.Cancel();
-        if (_pendingModelMessageTask is not null)
-        {
-            try
-            {
-                await _pendingModelMessageTask;
-            }
-            catch (OperationCanceledException)
-            {
-            }
-        }
+        await _modelMessages.CloseAsync();
         if (_mindInitializationTask is not null)
         {
             try
@@ -3147,28 +2956,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal static bool IsAudioOperation(string operationName) => operationName is
         "audio.mute" or "audio.volume";
 
-    private static string CreateAudioRecoveryPrompt(PreparedOperation operation)
-    {
-        JsonElement arguments = operation.Arguments;
-        if (string.Equals(operation.OperationName, "audio.volume", StringComparison.Ordinal)
-            && arguments.TryGetProperty("level", out JsonElement level)
-            && level.ValueKind == JsonValueKind.Number
-            && level.TryGetInt32(out int requestedLevel))
-        {
-            return $"Quedó pendiente confirmar el volumen solicitado ({requestedLevel} %). Responde «continuar / continue / retry» o repite esa misma petición para reconciliarla; no iniciaré otra acción mientras siga incierto.";
-        }
-
-        if (string.Equals(operation.OperationName, "audio.mute", StringComparison.Ordinal)
-            && arguments.TryGetProperty("state", out JsonElement state)
-            && state.ValueKind is JsonValueKind.True or JsonValueKind.False)
-        {
-            string requestedState = state.GetBoolean() ? "silenciar" : "reactivar";
-            return $"Quedó pendiente confirmar el intento de {requestedState} el audio. Responde «continuar / continue / retry» o repite esa misma petición para reconciliarlo; no iniciaré otra acción mientras siga incierto.";
-        }
-
-        return "Quedó pendiente confirmar un ajuste de audio. Responde «continuar / continue / retry» o repite la misma petición para reconciliarlo; no iniciaré otra acción mientras siga incierto.";
-    }
-
     private static bool IsDurableStoreFailure(Exception exception) =>
         exception is IOException
             or InvalidDataException
@@ -3202,7 +2989,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 messageEvent ?? UserMessageEvent.Status);
             string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
                 ?? string.Empty;
-            JsonObject facts = CreateMessageCompositionFacts(draft);
+            JsonObject facts = ModelMessageComposer.CreateFacts(draft);
             var pending = new PendingModelMessage(
                 draft,
                 userText,
@@ -3219,7 +3006,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 ModelMessageCompositionOutcome outcome;
                 try
                 {
-                    outcome = ComposeModelAuthoredMessageAsync(
+                    outcome = ModelMessageComposer.ComposeAsync(
                             draft,
                             userText,
                             facts,
@@ -3231,7 +3018,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         .GetResult();
                 }
                 catch (Exception exception) when (
-                    IsTransientMessageCompositionFailure(exception))
+                    ModelMessageComposer.IsTransientFailure(exception))
                 {
                     outcome = new ModelMessageCompositionOutcome(
                         null,
@@ -3255,306 +3042,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 {
                     LastMessageCompositionFailure = outcome.Failure;
                     pending.Attempts = 1;
-                    QueuePendingModelMessage(pending);
+                    _modelMessages.Enqueue(pending, _mindLifetimeCancellation.Token);
                 }
                 return;
             }
 
             LastMessageCompositionFailure = "composer_unavailable";
-            QueuePendingModelMessage(pending);
+            _modelMessages.Enqueue(pending, _mindLifetimeCancellation.Token);
             return;
         }
 
         AddMessageCore(speaker, body, isUser);
-    }
-
-    private static JsonObject CreateMessageCompositionFacts(UserMessageDraft draft)
-    {
-        var facts = new JsonObject { ["situation"] = draft.Source };
-        var forbiddenResponseTerms = new JsonArray();
-        foreach (string term in UserMessagePolicy.ForbiddenResponseTerms)
-        {
-            forbiddenResponseTerms.Add(term);
-        }
-        facts["forbiddenResponseTerms"] = forbiddenResponseTerms;
-        if (draft.Intent is "status" or "error")
-        {
-            facts["mustNotAskFollowUp"] = true;
-            IReadOnlyList<string> requiredActions =
-                UserMessagePolicy.RequiredBaxyActions(draft.Source);
-            if (requiredActions.Count > 0)
-            {
-                facts["actor"] = "BAXY (yo, primera persona)";
-                facts["mustPreserveFirstPerson"] = true;
-                facts["requiredAction"] = requiredActions[0];
-                var actions = new JsonArray();
-                foreach (string action in requiredActions)
-                {
-                    actions.Add(action);
-                }
-
-                facts["requiredActions"] = actions;
-            }
-            IReadOnlyList<string> requiredFacts =
-                UserMessagePolicy.RequiredFactualFragments(draft.Source);
-            IReadOnlyList<string> requiredLiteralFacts =
-                UserMessagePolicy.RequiredLiteralFacts(draft.Source);
-            if (requiredFacts.Count > 0 || requiredLiteralFacts.Count > 0)
-            {
-                var factualFragments = new JsonArray();
-                foreach (string fact in requiredFacts.Concat(requiredLiteralFacts))
-                {
-                    factualFragments.Add(fact);
-                }
-
-                facts["requiredFacts"] = factualFragments;
-                if (draft.Intent == "error" && requiredFacts.Count > 0)
-                {
-                    facts["partialMission"] = true;
-                }
-            }
-        }
-        else if (draft.Intent == "confirmation")
-        {
-            var requiredWords = new JsonArray();
-            foreach (string word in UserMessagePolicy.RequiredConfirmationWords(
-                         draft.Source))
-            {
-                requiredWords.Add(word);
-            }
-
-            facts["requiredResponseWords"] = requiredWords;
-        }
-
-        return facts;
-    }
-
-    internal static UserMessageDraft CreateModelCompositionRecoveryDraft() =>
-        UserMessagePolicy.Create(
-            "No pude presentar esa respuesta sin perder información verificada. "
-                + "No repetiré ninguna acción a ciegas.",
-            UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
-
-    internal static async Task<ModelMessageCompositionOutcome>
-        ComposeModelAuthoredMessageAsync(
-            UserMessageDraft draft,
-            string userText,
-            JsonObject facts,
-            Func<string, string, JsonObject, TimeSpan, CancellationToken,
-                Task<MindComposedMessage?>> compose,
-            bool cpuFallback,
-            bool allowRecovery,
-            CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(draft);
-        ArgumentNullException.ThrowIfNull(facts);
-        ArgumentNullException.ThrowIfNull(compose);
-
-        MindComposedMessage? composed = await compose(
-            userText,
-            draft.Intent,
-            facts,
-            SelectMessageCompositionTimeout(draft, facts, cpuFallback),
-            cancellationToken).ConfigureAwait(false);
-        string? accepted = UserMessagePolicy.AcceptModelAuthoredResponse(
-            composed?.Text,
-            draft);
-        if (accepted is not null)
-        {
-            return new ModelMessageCompositionOutcome(
-                accepted,
-                Failure: null,
-                UsedRecovery: false);
-        }
-
-        string originalFailure = UserMessagePolicy.ModelResponseRejectionReason(
-            composed?.Text,
-            draft) ?? "model_response_rejected";
-        // A generic apology is terminal. It may replace a status or error that
-        // could not be rendered, but never a welcome, clarification or
-        // confirmation whose exact wording is required for the next turn.
-        bool canUseTerminalRecovery = allowRecovery
-            && draft.Intent is "status" or "error";
-        if (!canUseTerminalRecovery)
-        {
-            return new ModelMessageCompositionOutcome(
-                null,
-                originalFailure,
-                UsedRecovery: false);
-        }
-
-        // The deterministic sentence below is evidence for a second model call;
-        // it is never shown. This is the model-authored apology required when a
-        // factual result cannot be rendered without losing its contract.
-        UserMessageDraft recoveryDraft = CreateModelCompositionRecoveryDraft();
-        JsonObject recoveryFacts = CreateMessageCompositionFacts(recoveryDraft);
-        MindComposedMessage? recovered = await compose(
-            userText,
-            recoveryDraft.Intent,
-            recoveryFacts,
-            SelectMessageCompositionTimeout(recoveryDraft, recoveryFacts, cpuFallback),
-            cancellationToken).ConfigureAwait(false);
-        string? acceptedRecovery = UserMessagePolicy.AcceptModelAuthoredResponse(
-            recovered?.Text,
-            recoveryDraft);
-        if (acceptedRecovery is not null)
-        {
-            return new ModelMessageCompositionOutcome(
-                acceptedRecovery,
-                originalFailure,
-                UsedRecovery: true);
-        }
-
-        string recoveryFailure = UserMessagePolicy.ModelResponseRejectionReason(
-            recovered?.Text,
-            recoveryDraft) ?? "model_response_rejected";
-        return new ModelMessageCompositionOutcome(
-            null,
-            $"{originalFailure};recovery:{recoveryFailure}",
-            UsedRecovery: true);
-    }
-
-    private static TimeSpan SelectMessageCompositionTimeout(
-        UserMessageDraft draft,
-        JsonObject facts,
-        bool cpuFallback) =>
-        draft.Intent == "welcome"
-            ? MindSidecarClient.SelectWelcomeCompositionTimeout(cpuFallback)
-            : MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback);
-
-    private static bool IsTransientMessageCompositionFailure(Exception exception) =>
-        exception is IOException
-            or InvalidDataException
-            or InvalidOperationException
-            or TimeoutException
-            or JsonException;
-
-    private void QueuePendingModelMessage(PendingModelMessage pending)
-    {
-        bool startWorker;
-        lock (_pendingModelMessagesLock)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            _pendingModelMessages.Enqueue(pending);
-            startWorker = _pendingModelMessageTask is null
-                || _pendingModelMessageTask.IsCompleted;
-            if (startWorker)
-            {
-                _pendingModelMessageTask = Task.Run(
-                    () => ProcessPendingModelMessagesAsync(
-                        _mindLifetimeCancellation.Token));
-            }
-        }
-
-        IsBusy = true;
-        StatusText = "Trabajando";
-        // The Field UI already renders a non-linguistic thinking animation.
-        // Leave prose empty until a policy-checked model response is available.
-        StatusDescription = string.Empty;
-    }
-
-    private async Task ProcessPendingModelMessagesAsync(
-        CancellationToken cancellationToken)
-    {
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            PendingModelMessage? pending;
-            lock (_pendingModelMessagesLock)
-            {
-                pending = _pendingModelMessages.Count > 0
-                    ? _pendingModelMessages.Peek()
-                    : null;
-            }
-
-            if (pending is null)
-            {
-                return;
-            }
-
-            MindSidecarClient? mind = await WaitForMindReadyAsync(cancellationToken)
-                .ConfigureAwait(false);
-            if (mind is null)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken)
-                    .ConfigureAwait(false);
-                continue;
-            }
-
-            if (pending.Attempts > 0)
-            {
-                int delaySeconds = Math.Min(10, 1 << Math.Min(3, pending.Attempts - 1));
-                await Task.Delay(TimeSpan.FromSeconds(delaySeconds), cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            ShellTraceSink.Record(
-                ShellTraceScopes.Turn,
-                pending.TraceId,
-                ShellTraceStages.ComposeStart,
-                pending.Draft.Intent);
-            ModelMessageCompositionOutcome outcome;
-            try
-            {
-                outcome = await ComposeModelAuthoredMessageAsync(
-                    pending.Draft,
-                    pending.UserText,
-                    pending.Facts,
-                    mind.ComposeUserMessageAsync,
-                    MindSidecarClient.IsCpuFallbackProfile,
-                    allowRecovery: true,
-                    cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception exception) when (
-                IsTransientMessageCompositionFailure(exception))
-            {
-                outcome = new ModelMessageCompositionOutcome(
-                    null,
-                    "composer_request_failed",
-                    UsedRecovery: false);
-            }
-            finally
-            {
-                ShellTraceSink.Record(
-                    ShellTraceScopes.Turn,
-                    pending.TraceId,
-                    ShellTraceStages.ComposeEnd);
-            }
-
-            if (outcome.Text is null)
-            {
-                pending.Attempts++;
-                await InvokeOnUiAsync(
-                    () => LastMessageCompositionFailure = outcome.Failure)
-                    .ConfigureAwait(false);
-                continue;
-            }
-
-            lock (_pendingModelMessagesLock)
-            {
-                if (_pendingModelMessages.Count > 0
-                    && ReferenceEquals(_pendingModelMessages.Peek(), pending))
-                {
-                    _pendingModelMessages.Dequeue();
-                }
-            }
-
-            await InvokeOnUiAsync(
-                () =>
-                {
-                    if (_isDisposed)
-                    {
-                        return;
-                    }
-
-                    LastMessageCompositionFailure = outcome.Failure;
-                    AddMessageCore("BAXY", outcome.Text, isUser: false);
-                    RestorePresentationState();
-                }).ConfigureAwait(false);
-        }
     }
 
     private Task<bool> InvokeOnUiAsync(Action action)
@@ -3653,20 +3151,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         PreparedOperation Predecessor,
         string Objective,
         MissionInputSource Source);
-
-    private sealed record PendingModelMessage(
-        UserMessageDraft Draft,
-        string UserText,
-        JsonObject Facts,
-        string TraceId)
-    {
-        public int Attempts { get; set; }
-    }
-
-    internal sealed record ModelMessageCompositionOutcome(
-        string? Text,
-        string? Failure,
-        bool UsedRecovery);
 
     private enum MindStartupState
     {

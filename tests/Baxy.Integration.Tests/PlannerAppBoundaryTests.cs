@@ -31,10 +31,10 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(noArguments, Is.Not.Null);
             Assert.That(requiredArgument, Is.Not.Null);
             Assert.That(
-                MainWindowViewModel.RequiresMindArgumentExtraction(noArguments!),
+                MindArgumentNormalization.RequiresExtraction(noArguments!),
                 Is.False);
             Assert.That(
-                MainWindowViewModel.RequiresMindArgumentExtraction(requiredArgument!),
+                MindArgumentNormalization.RequiresExtraction(requiredArgument!),
                 Is.True);
         });
     }
@@ -340,7 +340,7 @@ public sealed class PlannerAppBoundaryTests
             "Creé la nota «Resumen final».",
         ];
 
-        string source = MainWindowViewModel.CreateMindPlanCompletionMessage(outcomes);
+        string source = MissionNarration.CreateCompletionMessage(outcomes);
         IReadOnlyList<string> requiredFacts =
             UserMessagePolicy.RequiredFactualFragments(source);
         UserMessageDraft draft = UserMessagePolicy.Create(
@@ -374,7 +374,7 @@ public sealed class PlannerAppBoundaryTests
             "Creé la nota «Clave Alfa».",
             "Puse el volumen en 35 %.",
         ];
-        string source = MainWindowViewModel.CreateMindPlanFailureMessage(
+        string source = MissionNarration.CreateFailureMessage(
             outcomes,
             "No pude completar el paso 4; detuve los pasos restantes sin repetir acciones.");
         UserMessageDraft draft = UserMessagePolicy.Create(
@@ -477,8 +477,8 @@ public sealed class PlannerAppBoundaryTests
             "Lo siento, no pude presentar esa respuesta sin perder información "
             + "verificada, así que no repetiré ninguna acción a ciegas.";
 
-        MainWindowViewModel.ModelMessageCompositionOutcome outcome =
-            await MainWindowViewModel.ComposeModelAuthoredMessageAsync(
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
                 draft,
                 "Abre la calculadora",
                 facts,
@@ -502,7 +502,7 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(observedIntents, Is.EqualTo(new[] { "status", "error" }));
             Assert.That(
                 outcome.Text,
-                Is.Not.EqualTo(MainWindowViewModel.CreateModelCompositionRecoveryDraft().Source),
+                Is.Not.EqualTo(ModelMessageComposer.CreateRecoveryDraft().Source),
                 "La evidencia fija nunca puede convertirse en el texto visible.");
         });
     }
@@ -515,8 +515,8 @@ public sealed class PlannerAppBoundaryTests
             UserMessageEvent.Status);
         var facts = new JsonObject { ["situation"] = draft.Source };
 
-        MainWindowViewModel.ModelMessageCompositionOutcome outcome =
-            await MainWindowViewModel.ComposeModelAuthoredMessageAsync(
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
                 draft,
                 "Abre la calculadora",
                 facts,
@@ -542,8 +542,8 @@ public sealed class PlannerAppBoundaryTests
         var facts = new JsonObject { ["situation"] = draft.Source };
         int calls = 0;
 
-        MainWindowViewModel.ModelMessageCompositionOutcome outcome =
-            await MainWindowViewModel.ComposeModelAuthoredMessageAsync(
+        ModelMessageCompositionOutcome outcome =
+            await ModelMessageComposer.ComposeAsync(
                 draft,
                 "Borra la nota",
                 facts,
@@ -813,15 +813,15 @@ public sealed class PlannerAppBoundaryTests
     {
         var extracted = new JsonObject { ["appId"] = "notepad" };
 
-        JsonObject normalized = MainWindowViewModel.NormalizeMindArguments(
+        JsonObject normalized = MindArgumentNormalization.Normalize(
             "app.open",
             "abre notepad",
             extracted);
-        JsonObject unrelated = MainWindowViewModel.NormalizeMindArguments(
+        JsonObject unrelated = MindArgumentNormalization.Normalize(
             "web.search",
             "busca notepad en la web",
             extracted);
-        JsonObject compound = MainWindowViewModel.NormalizeMindArguments(
+        JsonObject compound = MindArgumentNormalization.Normalize(
             "app.open",
             "Abre notepad y después dime la hora",
             extracted);
@@ -2178,7 +2178,7 @@ public sealed class PlannerAppBoundaryTests
         };
         execution.RequireConfirmation(confirmation!);
 
-        string recoveryPrompt = MainWindowViewModel.CreateMindPlanRecoveryPrompt(execution);
+        string recoveryPrompt = MissionNarration.CreateRecoveryPrompt(execution);
         UserMessageDraft recoveryDraft = UserMessagePolicy.Create(
             recoveryPrompt,
             UserMessageEvent.Confirmation);

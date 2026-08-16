@@ -434,7 +434,7 @@ public sealed class MemoryOperationProtectionTests
         using var engine = new MissionEngine(
             new OperationRegistry([new ConfirmationOnlyMemoryHandler()]),
             journal,
-            new MemoryEnvelopeAuthenticator(codec));
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new MemoryEnvelopeAuthenticator(codec) });
         var protector = new MemoryOperationProtector(
             codec,
             Guid.NewGuid().ToString("D"));

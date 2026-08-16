@@ -93,7 +93,7 @@ public sealed class MemoryAppFlowTests
             null,
             "narration_coverage_probe");
 
-        string message = MainWindowViewModel.CreateMemoryFailureMessage(
+        string message = PrivateOperationNarration.CreateMemoryFailureMessage(
             "memory.recall",
             response);
         UserMessageDraft draft = UserMessagePolicy.Create(
@@ -214,7 +214,7 @@ public sealed class MemoryAppFlowTests
                     ["includeSecrets"] = false,
                 })).Prepared;
 
-        string prompt = MainWindowViewModel.CreateMemoryConfirmationPrompt(prepared);
+        string prompt = PrivateOperationNarration.CreateMemoryConfirmationPrompt(prepared);
 
         Assert.Multiple(() =>
         {
@@ -248,7 +248,7 @@ public sealed class MemoryAppFlowTests
             }),
             "verification_failed");
 
-        string message = MainWindowViewModel.CreateMemoryFailureMessage(
+        string message = PrivateOperationNarration.CreateMemoryFailureMessage(
             "memory.export",
             response);
 
@@ -278,7 +278,7 @@ public sealed class MemoryAppFlowTests
             null,
             "memory_disabled");
 
-        string message = MainWindowViewModel.CreateMemoryFailureMessage(
+        string message = PrivateOperationNarration.CreateMemoryFailureMessage(
             "memory.recall",
             response);
         UserMessageDraft draft = UserMessagePolicy.Create(
@@ -423,7 +423,7 @@ public sealed class MemoryAppFlowTests
             Assert.That(outboxText, Does.Not.Contain(token));
             Assert.That(pending.ToString(), Does.Not.Contain(token));
             Assert.That(
-                MainWindowViewModel.CreateMemoryConfirmationPrompt(durable),
+                PrivateOperationNarration.CreateMemoryConfirmationPrompt(durable),
                 Does.Not.Contain(Canary));
         });
     }
@@ -457,7 +457,7 @@ public sealed class MemoryAppFlowTests
 
         PreparedOperation preserved = currentRegistry.SnapshotPendingOperations().Single();
         MemoryOperationInspection preservedInspection = current.InspectForRecovery(preserved);
-        string prompt = MainWindowViewModel.CreateMemoryRecoveryPrompt(preserved);
+        string prompt = PrivateOperationNarration.CreateMemoryRecoveryPrompt(preserved);
         string outboxText = File.ReadAllText(outbox, Encoding.UTF8);
 
         Assert.Multiple(() =>

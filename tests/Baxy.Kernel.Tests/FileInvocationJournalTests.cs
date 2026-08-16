@@ -778,7 +778,7 @@ public sealed class FileInvocationJournalTests
         using (var engine = new MissionEngine(
                    new OperationRegistry([handler]),
                    journal,
-                   new StubPrivateAuthenticator(authenticateArguments: true, authenticateResult: false)))
+                                new MissionEngineOptions { PrivateEnvelopeAuthenticator = new StubPrivateAuthenticator(authenticateArguments: true, authenticateResult: false) }))
         {
             response = await engine.ExecuteAsync(request, CancellationToken.None);
         }
@@ -849,7 +849,7 @@ public sealed class FileInvocationJournalTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new StubPrivateAuthenticator(authenticateArguments: true, authenticateResult: false));
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new StubPrivateAuthenticator(authenticateArguments: true, authenticateResult: false) });
 
         OperationResponse replay = await engine.ExecuteAsync(
             request with { RequestId = Guid.NewGuid().ToString("D") },
@@ -896,7 +896,7 @@ public sealed class FileInvocationJournalTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new StubPrivateAuthenticator(authenticateArguments: true, authenticateResult: true));
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new StubPrivateAuthenticator(authenticateArguments: true, authenticateResult: true) });
 
         OperationResponse replay = await engine.ExecuteAsync(
             request with { RequestId = Guid.NewGuid().ToString("D") },

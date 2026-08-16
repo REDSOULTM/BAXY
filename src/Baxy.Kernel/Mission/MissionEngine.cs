@@ -19,114 +19,22 @@ public sealed class MissionEngine : IDisposable
     private readonly IOperationResponseNarrator _narrator;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
 
-    public MissionEngine(OperationRegistry registry, IInvocationJournal journal)
-        : this(
-            registry,
-            journal,
-            new InMemoryConfirmationAuthority(),
-            privateEnvelopeAuthenticator: null,
-            DefaultOperationResponseNarrator.Instance)
-    {
-    }
-
+    /// <summary>
+    /// Único constructor. Lo obligatorio va por parámetro; lo opcional, en
+    /// <see cref="MissionEngineOptions"/>, para que añadir una dependencia no
+    /// vuelva a duplicar el número de combinaciones.
+    /// </summary>
     public MissionEngine(
         OperationRegistry registry,
         IInvocationJournal journal,
-        IPrivateOperationEnvelopeAuthenticator privateEnvelopeAuthenticator)
-        : this(
-            registry,
-            journal,
-            new InMemoryConfirmationAuthority(),
-            privateEnvelopeAuthenticator
-                ?? throw new ArgumentNullException(nameof(privateEnvelopeAuthenticator)),
-            DefaultOperationResponseNarrator.Instance)
-    {
-    }
-
-    public MissionEngine(
-        OperationRegistry registry,
-        IInvocationJournal journal,
-        IOperationResponseNarrator narrator)
-        : this(
-            registry,
-            journal,
-            new InMemoryConfirmationAuthority(),
-            privateEnvelopeAuthenticator: null,
-            narrator ?? throw new ArgumentNullException(nameof(narrator)))
-    {
-    }
-
-    public MissionEngine(
-        OperationRegistry registry,
-        IInvocationJournal journal,
-        IPrivateOperationEnvelopeAuthenticator privateEnvelopeAuthenticator,
-        IOperationResponseNarrator narrator)
-        : this(
-            registry,
-            journal,
-            new InMemoryConfirmationAuthority(),
-            privateEnvelopeAuthenticator
-                ?? throw new ArgumentNullException(nameof(privateEnvelopeAuthenticator)),
-            narrator ?? throw new ArgumentNullException(nameof(narrator)))
-    {
-    }
-
-    public MissionEngine(
-        OperationRegistry registry,
-        IInvocationJournal journal,
-        TimeProvider timeProvider)
-        : this(
-            registry,
-            journal,
-            new InMemoryConfirmationAuthority(
-                timeProvider ?? throw new ArgumentNullException(nameof(timeProvider))),
-            privateEnvelopeAuthenticator: null,
-            DefaultOperationResponseNarrator.Instance)
-    {
-    }
-
-    public MissionEngine(
-        OperationRegistry registry,
-        IInvocationJournal journal,
-        TimeProvider timeProvider,
-        IPrivateOperationEnvelopeAuthenticator privateEnvelopeAuthenticator)
-        : this(
-            registry,
-            journal,
-            new InMemoryConfirmationAuthority(
-                timeProvider ?? throw new ArgumentNullException(nameof(timeProvider))),
-            privateEnvelopeAuthenticator
-                ?? throw new ArgumentNullException(nameof(privateEnvelopeAuthenticator)),
-            DefaultOperationResponseNarrator.Instance)
-    {
-    }
-
-    internal MissionEngine(
-        OperationRegistry registry,
-        IInvocationJournal journal,
-        InMemoryConfirmationAuthority confirmationAuthority)
-        : this(
-            registry,
-            journal,
-            confirmationAuthority,
-            privateEnvelopeAuthenticator: null,
-            DefaultOperationResponseNarrator.Instance)
-    {
-    }
-
-    internal MissionEngine(
-        OperationRegistry registry,
-        IInvocationJournal journal,
-        InMemoryConfirmationAuthority confirmationAuthority,
-        IPrivateOperationEnvelopeAuthenticator? privateEnvelopeAuthenticator,
-        IOperationResponseNarrator narrator)
+        MissionEngineOptions? options = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _journal = journal ?? throw new ArgumentNullException(nameof(journal));
-        _confirmationAuthority = confirmationAuthority
-            ?? throw new ArgumentNullException(nameof(confirmationAuthority));
-        _privateEnvelopeAuthenticator = privateEnvelopeAuthenticator;
-        _narrator = narrator ?? throw new ArgumentNullException(nameof(narrator));
+        _confirmationAuthority = options?.ConfirmationAuthority
+            ?? new InMemoryConfirmationAuthority(options?.TimeProvider);
+        _privateEnvelopeAuthenticator = options?.PrivateEnvelopeAuthenticator;
+        _narrator = options?.Narrator ?? DefaultOperationResponseNarrator.Instance;
     }
 
     public async ValueTask<OperationResponse> ExecuteAsync(

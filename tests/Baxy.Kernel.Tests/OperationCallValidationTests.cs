@@ -66,7 +66,7 @@ public sealed class OperationCallValidationTests
         using var engine = new MissionEngine(
             new OperationRegistry(handlers),
             journal,
-            new SchemaGeneratedPrivateAuthenticator());
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = new SchemaGeneratedPrivateAuthenticator() });
 
         foreach (ProductOperationDescriptor descriptor in ProductCatalog.ToolDescriptors)
         {
@@ -123,7 +123,7 @@ public sealed class OperationCallValidationTests
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            authenticator);
+                               new MissionEngineOptions { PrivateEnvelopeAuthenticator = authenticator });
         OperationRequest request = PrivateRequest("memory.status");
 
         OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);

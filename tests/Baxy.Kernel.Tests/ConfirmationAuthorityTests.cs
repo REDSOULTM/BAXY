@@ -38,7 +38,8 @@ public sealed class ConfirmationAuthorityTests
         using var journal = new InMemoryInvocationJournal();
         var handler = new CountingHandler(OperationRisk.External);
         var authority = new InMemoryConfirmationAuthority(clock);
-        using var engine = new MissionEngine(new OperationRegistry([handler]), journal, authority);
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
+                               new MissionEngineOptions { ConfirmationAuthority = authority });
         OperationRequest request = CreateRequest("{\"destination\":\"equipo\"}");
 
         OperationResponse first = await engine.ExecuteAsync(request, CancellationToken.None);
@@ -155,7 +156,8 @@ public sealed class ConfirmationAuthorityTests
         var authority = new InMemoryConfirmationAuthority(
             clock,
             TimeSpan.FromSeconds(30));
-        using var engine = new MissionEngine(new OperationRegistry([handler]), journal, authority);
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
+                               new MissionEngineOptions { ConfirmationAuthority = authority });
         OperationRequest request = CreateRequest("{}");
         OperationResponse first = await engine.ExecuteAsync(request, CancellationToken.None);
         string expiredToken = RequiredToken(first);
@@ -188,7 +190,8 @@ public sealed class ConfirmationAuthorityTests
         using var journal = new InMemoryInvocationJournal();
         var handler = new CountingHandler(OperationRisk.External);
         var authority = new InMemoryConfirmationAuthority(capacity: 2);
-        using var engine = new MissionEngine(new OperationRegistry([handler]), journal, authority);
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
+                               new MissionEngineOptions { ConfirmationAuthority = authority });
         OperationRequest firstRequest = CreateRequest("{\"slot\":1}");
         OperationResponse first = await engine.ExecuteAsync(firstRequest, CancellationToken.None);
         OperationResponse second = await engine.ExecuteAsync(
@@ -244,7 +247,8 @@ public sealed class ConfirmationAuthorityTests
         using var journal = new InMemoryInvocationJournal();
         var handler = new RetryableOnceExternalHandler();
         var authority = new InMemoryConfirmationAuthority();
-        using var engine = new MissionEngine(new OperationRegistry([handler]), journal, authority);
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
+                               new MissionEngineOptions { ConfirmationAuthority = authority });
         OperationRequest request = CreateRequest("{\"destination\":\"equipo\"}");
         string token = RequiredToken(await engine.ExecuteAsync(request, CancellationToken.None));
         OperationRequest confirmed = request with
@@ -357,7 +361,8 @@ public sealed class ConfirmationAuthorityTests
         using var journal = new InMemoryInvocationJournal();
         var handler = new CountingHandler(OperationRisk.Forbidden);
         var authority = new InMemoryConfirmationAuthority();
-        using var engine = new MissionEngine(new OperationRegistry([handler]), journal, authority);
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
+                               new MissionEngineOptions { ConfirmationAuthority = authority });
         OperationRequest request = CreateRequest("{}");
 
         OperationResponse first = await engine.ExecuteAsync(request, CancellationToken.None);
