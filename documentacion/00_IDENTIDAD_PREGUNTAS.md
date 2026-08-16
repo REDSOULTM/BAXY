@@ -15,6 +15,69 @@ varias sesiones.
 No parto de cero. Esto es lo que dicen los repositorios de la misma carpeta, y
 condiciona varias de las preguntas.
 
+### No son proyectos distintos: son el mismo, cuatro veces
+
+El README de `Probando Gemma 4` lo dice literalmente:
+
+> el proyecto se renombró a **Baxy** (antes **Gemma 4 Agent**, brevemente
+> **Carter**)
+
+La genealogía real es **Gemma 4 Agent → Carter → Baxy → BAXY actual**. Cada uno
+reescribió al anterior. Eso significa que los errores no son ajenos: son de este
+proyecto, cuatro veces.
+
+`JRVS` es la excepción — no es este linaje. Es un asistente de operaciones
+self-hosted para equipos en industrias reguladas, con Google Workspace y auditoría
+de cumplimiento. Otro producto, otro cliente.
+
+### Lo que el Baxy anterior era y el actual ya no
+
+Esto es lo que más me llamó la atención al leer, porque **se perdió por el
+camino**:
+
+- **Accesibilidad como característica de primera clase.** Control 100 % por voz
+  para movilidad reducida, y narración de cada acción para personas no videntes.
+  No aparece por ningún lado en el BAXY actual.
+- **4 GB de VRAM como identidad declarada**, no como techo aspiracional: *«el
+  target real es una laptop Windows con GPU NVIDIA de 4 GB, o incluso sin GPU
+  dedicada»*.
+- **Universalidad medida**: la wake word se evaluaba contra un holdout de **25
+  voces en 13 idiomas**.
+- **«Inteligencia, no árboles de `if`»** como principio explícito: lo determinista
+  se limitaba a embeddings multilingües, guardas estructurales y lectura del
+  estado del SO.
+- **Operar cualquier aplicación** por accesibilidad, con la cascada UIA → OCR →
+  visión nativa de Gemma.
+
+### El catálogo creció sin que nadie lo decidiera
+
+Los números, en orden cronológico:
+
+| Momento | Herramientas |
+|---|---:|
+| Baxy (`tool_schemas_full.json`) | 67 |
+| Baxy lean (`tool_schemas_lean.json`) | 31 |
+| Carter v4 consolidado | **16** |
+| BAXY hoy | **158 operaciones** |
+
+Carter midió que consolidar a 16 daba **−68 % de tokens con la misma calidad**. Y
+el mayor problema de BAXY hoy es exactamente ése: la decisión ve hasta 28
+candidatos y elige mal.
+
+### Un diagnóstico que ya estaba hecho y se repitió
+
+FunctionGemma documentó, midiendo, que la cuantización Q2 rompía el modelo de
+habla: *«glitches: bleed latino, faltas ("fysico", "lumínar")»* y pérdida de
+persona. La conclusión fue subir a **Q4_K_XL QAT** (~1,5 GB de VRAM), con la que
+el modelo obedece el system prompt y **dice «Soy Baxy» sin necesidad de
+fine-tuning**.
+
+El BAXY actual arrastra hoy palabras inventadas en su prosa española —«cuecer»,
+«vertir», «cosear», «alredad»—. Es el mismo síntoma que ya se había diagnosticado
+y resuelto una vez.
+
+### Carter, la identidad escrita más clara
+
 **Carter** dejó escrita la identidad más clara de todas. Define el asistente por
 una secuencia:
 
@@ -225,6 +288,49 @@ por reemplazo»*. ¿Lo reconoces? ¿Qué crees que lo causó?
 
 **43.** ¿Qué es lo único que, si vuelve a pasar, significaría que este BAXY
 también falló?
+
+---
+
+---
+
+## K. Lo que se perdió por el camino
+
+**44. Accesibilidad.** El Baxy anterior declaraba como característica de primera
+clase el control 100 % por voz para movilidad reducida y la narración de cada
+acción para personas no videntes. Eso no está en el BAXY actual. ¿Se cayó por
+descuido o por decisión? ¿Vuelve?
+
+**45.** Si la accesibilidad vuelve, ¿es un modo que se activa, o cambia el diseño
+de todo el producto desde el principio?
+
+**46.** El Baxy anterior evaluaba la wake word contra **25 voces en 13 idiomas**.
+¿Ese nivel de universalidad sigue siendo el objetivo, o BAXY es para ti y para
+gente que hable como tú?
+
+**47.** «Operar cualquier aplicación abierta» vía accesibilidad, OCR y visión era
+una capacidad declarada. ¿La quieres, o prefieres que BAXY haga bien lo que sabe
+hacer y no toque lo demás?
+
+**48. El catálogo creció solo.** 67 herramientas → 31 en el set lean → 16 en
+Carter v4 → 158 operaciones hoy. Nadie decidió ese crecimiento; se acumuló.
+¿Cuál de esos cuatro números se parece más a lo que quieres?
+
+**49.** ¿Prefieres una herramienta que haga muchas cosas con parámetros —«controla
+el audio»— o muchas herramientas específicas —«sube volumen», «baja volumen»,
+«silencia»—? Carter midió que consolidar ahorra el 68 % de tokens.
+
+**50. Las palabras inventadas.** FunctionGemma ya había diagnosticado que la
+cuantización Q2 producía «fysico», «lumínar» y rompía la persona, y lo resolvió
+subiendo a Q4. El BAXY actual vuelve a tener ese problema. ¿Aceptas gastar ~0,4 GB
+más de VRAM para que la prosa salga limpia, o prefieres buscar otra vía?
+
+**51.** El Baxy anterior conseguía que el modelo dijera «Soy Baxy» **sólo con el
+system prompt**, sin fine-tuning. ¿La personalidad de BAXY debe vivir en el
+prompt, o quieres un modelo entrenado para ser BAXY?
+
+**52.** Cuatro veces se reescribió este proyecto desde cero. ¿Qué te hace pensar
+que esta vez no habrá una quinta? Dicho de otro modo: ¿qué tendría que pasar para
+que decidieras reescribirlo otra vez, y cómo lo evitamos?
 
 ---
 
