@@ -39,14 +39,14 @@ V8_EVIDENCE_SHA256 = {
     ),
 }
 
-# Files bound by the V8 preregistration that are no longer what it froze. No
-# program is in here: any runtime file drifting would fail the comparison below.
+# Runtime files bound by the V8 preregistration that are no longer what it
+# froze. Only data is in here: any program drifting would fail the comparison
+# below. Test files are excluded for the same reason the published audit calls
+# the runtime identical while recording tests/test_veto_reach_v8.py as changed —
+# a test is not what the campaign executed.
 V8_DRIFTED_SINCE_THE_CAMPAIGN = {
     "src/baxy_mind/data/catalog_operation_aliases.v1.json": (
         "e8fc3ca7bb94224b24f653eb267d4426165554e78947e261fddbaf046b17a5a4"
-    ),
-    "tests/test_veto_reach_v8.py": (
-        "d913e08dc07f9f96f0cb405d826d02e4b1c3db800090098ba6df0a75ad638102"
     ),
 }
 
@@ -108,15 +108,14 @@ def test_published_split_and_ceiling_are_the_numbers_r144_reported() -> None:
 
     integrity = report["integrity"]
     assert integrity["v8_artifacts"]["observed"] == V8_EVIDENCE_SHA256
-    # Every program V8 executed is still byte-identical. The two files that
-    # moved are not runtime code: the catalogue aliases moved with the catalogue
-    # (157 -> 158 operations), and the published audit already recorded
-    # test_veto_reach_v8.py as drifted while calling the runtime identical.
+    # Every program V8 executed is still byte-identical. The only runtime file
+    # that moved is data: the catalogue aliases moved with the catalogue
+    # (157 -> 158 operations).
     identity = integrity["program_identity"]
     assert {
         row["file"]: row["observed_sha256"]
         for row in identity["files"]
-        if not row["identical"]
+        if not row["identical"] and not row["file"].startswith("tests/")
     } == V8_DRIFTED_SINCE_THE_CAMPAIGN
 
     split = report["question_1_vetos_by_what_they_retired"]

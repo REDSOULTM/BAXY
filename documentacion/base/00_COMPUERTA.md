@@ -223,7 +223,44 @@ Se rehicieron los cuatro desde el índice (`git checkout`). Ninguna constante se
 tocó — es exactamente la regla que el propio R278 escribe: *restaurar sólo cuando
 el hash LF es la constante publicada y el de disco no lo es.*
 
-## 12. Qué necesita un clon limpio
+## 12. Lo que sólo se ve clonando
+
+El árbol de trabajo ya pasaba entera dos veces cuando el clon puso **8 pruebas en
+rojo**. El lado .NET fue verde en el clon a la primera; las 8 son de Python y
+ninguna era regresión.
+
+**Siete leen `tests/data/turn_evidence_runtime.v1.jsonl`.** Ese fichero está en
+`.gitignore` **por nombre**, no por patrón, y `TURN_EVIDENCE_DATA_NOTICE.md` lo
+clasifica como dato privado local que no debe publicarse como dataset. Lo
+concluyente es que el propio constructor de R234 lo exige:
+
+```python
+if not is_git_ignored(RUNTIME):
+    raise RuntimeError("restored runtime corpus must remain ignored")
+```
+
+O sea: versionarlo rompería la prueba que lo usa. La exclusión es la decisión,
+no el descuido. Sus contrapartes públicas —`turn_evidence_public_holdout.v1.jsonl`
+y su manifiesto— sí están versionadas y se siguen comprobando en cualquier
+máquina.
+
+**Una reconstruye el oráculo de idioma desde `Programacion/FunctionGemma`**, un
+checkout hermano. `scripts/build_historical_corpus.py` lee los repositorios de
+los intentos anteriores como hermanos de éste; no son contenido de este árbol.
+
+`tests/local_evidence.py` nombra las dos exclusiones una sola vez y las convierte
+en «environment». La diferencia se ve al medirla:
+
+| | Pasan | Se saltan |
+|---|---:|---:|
+| Árbol de trabajo | 55 | **0** |
+| Clon limpio | 47 | 8 |
+
+Donde el dato está, las ocho se ejecutan de verdad. Es exactamente la propiedad
+que pedía el criterio de cierre: **una máquina sin los datos locales no cuenta
+regresiones falsas**, y una que sí los tiene no pierde cobertura.
+
+## 13. Qué necesita un clon limpio
 
 Nada de esto es defecto del repositorio; es provisión, y la compuerta nombra ella
 misma lo que falta cuando falta:
