@@ -9,7 +9,7 @@
 ## Dónde trabajas
 
 Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo`.
-Rama: `main`. Modelo: GPT-5.6 Sol, `reasoning.effort: high`.
+Rama: `main`. Modelo: **Claude Opus 5**, en Claude Code.
 
 **Ojo con el nombre.** En la misma carpeta `Programacion` hay un repositorio
 llamado `BAXY` a secas: ése es el intento anterior y es **fuente de herencia, no
@@ -21,6 +21,16 @@ otros proyectos de la carpeta `Programacion`.
 
 No recopiles contexto exhaustivo antes de empezar: lee lo justo para dar el paso
 siguiente. Si algo ya está documentado en estos repositorios, decide con eso.
+
+Dos cosas del entorno, para que no te frenen:
+
+- **Los permisos los pide Claude Code, no tú.** Si salta una confirmación, es del
+  harness — no es una duda tuya que haya que resolver preguntándole al usuario.
+  Lanza la sesión en un modo que no interrumpa a cada herramienta y sigue.
+- **Una sesión larga se compacta.** Este goal puede durar horas. No guardes el
+  estado sólo en la conversación: deja lo aprendido **escrito en el repositorio**
+  a medida que avanzas —el mapa, la medición, el registro—, para que una
+  compactación no te borre el trabajo pensado.
 
 ## Qué es BAXY
 
@@ -145,6 +155,38 @@ descubrir nada que ya se descubrió**.
 Cada hora que gastes re-derivando algo que ya está medido en estos repositorios es
 una hora que este proyecto ya pagó una vez. Si te encuentras diseñando desde cero
 algo que suena a que alguien ya resolvió, para y ve a buscarlo primero.
+
+## Cuatro ajustes propios de Opus 5
+
+No son preferencias de estilo: son comportamientos medidos de este modelo que
+chocan con las leyes de arriba si no se dicen en voz alta.
+
+**No verifiques de más.** Opus 5 comprueba su propio trabajo sin que se lo pidan.
+No añadas pasos de verificación por encima de los que este goal pide, ni delegues
+en un subagente la revisión de lo que acabas de hacer. Ojo con la confusión: la
+verificación que **sí** es obligatoria es la del producto —que BAXY compruebe los
+efectos que afirma— y ésa no se toca. Lo que sobra es que **tú** te revises a ti
+mismo de más.
+
+**No amplíes el encargo.** Entrega lo que el goal pide, al alcance que pide.
+Interpreta la ambigüedad como lo haría un colega con criterio: resuelve tú lo
+rutinario, y cuando dos lecturas lleven a trabajos distintos, elige la razonable y
+anótala. Si crees que el encargo está mal, dilo en una frase y sigue — no lo
+estreches, no lo amplíes, no lo transformes. Y **termina el goal entero**: si una
+parte queda bloqueada, haz todo lo demás y di claramente qué falta y por qué.
+Declara cumplido sólo lo que esté cumplido de verdad.
+
+**Delega poco.** Un subagente re-establece contexto, re-explora, te informa, y tú
+vuelves a leer su informe: multiplica coste y tiempo. Úsalos sólo para trabajo
+grande y de verdad independiente —una investigación que abarca muchos ficheros a
+la vez—. Nunca para algo que resuelves con unas cuantas lecturas, y nunca para
+revisar tu propio trabajo. Si delegas, confía: no rehagas lo que el subagente hizo.
+
+**Escribe corto lo que alguien va a leer.** Vale para tus mensajes y para los
+documentos que dejes en el repositorio: cubre lo que hace falta y para. Nada de
+secciones de relleno, resúmenes redundantes ni recapitulaciones de lo que ya
+dijiste. Y no narres tus propias correcciones: si te equivocaste en algo que no
+cambia el resultado, corrígelo y sigue.
 
 ---
 

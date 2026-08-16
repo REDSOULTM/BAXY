@@ -3,7 +3,23 @@
 Once goals. Cada uno se lanza en una sesión nueva, se pega entero, y **se deja
 correr hasta que se cumple**. Cuando uno entrega, lanzas el siguiente.
 
-Escritos para **GPT-5.6 Sol, `reasoning.effort: high`**.
+## Con qué modelo se lanza cada uno
+
+| Goals | Modelo | Dónde |
+|---|---|---|
+| **01–04** | **Claude Opus 5** | Esta carpeta. Son los que están en uso. |
+| 01–04 (versión anterior) | GPT-5.6 Sol, `reasoning.effort: high` | [`sol/`](sol/), por si vuelve el acceso a Codex |
+| 05–11 | GPT-5.6 Sol | Esta carpeta. Se convertirán a Opus cuando toquen. |
+
+La conversión a Opus no es un cambio de nombre de modelo: `reasoning.effort` no
+existe en Claude Code, el harness pide permisos y compacta sesiones largas, y Opus
+5 tiene cuatro tendencias medidas —verificar de más, ampliar el encargo, delegar
+demasiado, escribir largo— que chocan con las cinco leyes si no se nombran. Los
+goals de Opus llevan un bloque que las corrige. Detalle en
+[`sol/00_LEEME.md`](sol/00_LEEME.md).
+
+**El contenido no cambia entre versiones**: mismo objetivo, misma evidencia
+heredada, mismos criterios de cierre.
 
 ## Los once
 
@@ -132,11 +148,17 @@ las ideas de mejora.
 
 ## Por qué están escritos así
 
-Sol es proactivo y persistente por defecto: reanuda tras un fallo de herramienta
-sin que se lo pidan, encadena ediciones y paraleliza cuando le conviene. No
-necesita que lo empujen — necesita saber **dónde está la frontera** y **cuándo ha
-terminado**. Por eso cada prompt dice el destino, el límite y los criterios de
-cierre, y no los pasos.
+Los dos modelos comparten lo que importa aquí: son proactivos y persistentes por
+defecto —reanudan tras un fallo de herramienta, encadenan ediciones, paralelizan
+cuando conviene— y ninguno necesita que lo empujen. Lo que necesitan es saber
+**dónde está la frontera** y **cuándo han terminado**. Por eso cada prompt dice el
+destino, el límite y los criterios de cierre, y no los pasos.
+
+Se separan en las tendencias, y ahí sí hay que hablarles distinto. Sol tiende a
+seguir el prompt al pie de la letra y a quedarse corto si no le dices el alcance;
+Opus 5 tiende a lo contrario — verifica de más, amplía el encargo, delega
+demasiado y escribe largo. Por eso los goals de Opus llevan un bloque de cuatro
+correcciones que los de Sol no necesitan.
 
 Cada prompt lleva además **lo que ya se midió y se rechazó**, para que ningún
 agente pague dos veces la misma corrida. Eso no es andamiaje: es evidencia.
