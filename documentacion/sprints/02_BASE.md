@@ -202,9 +202,52 @@ un número que no se puede reproducir no es un número.
 Es el goal más corto de los once. Trátalo así: entra, arregla, cierra. Si te ves
 rediseñando algo, te has salido del goal.
 
-## Dónde está hoy — la mitad del trabajo ya está hecha
+## Lo primero: el goal 01 ya corrió y dejó trabajo sin comprometer
 
-Quince pruebas rojas, todas diagnosticadas. Su causa está publicada en R279 y
+Lee **`documentacion/herencia/00_MAPA.md`** antes de tocar nada — es el mapa que
+dejó, y te ahorra medio goal. Y mira `documentacion/APLAZADOS.md`: sus anotaciones
+son evidencia fresca sobre esta misma compuerta.
+
+En el árbol hay cambios suyos sin comprometer: `MainWindowViewModel` descompuesto
+(cuatro ficheros nuevos en `src/Baxy.App/`), `MissionEngine` con un solo
+constructor, y diez ficheros de prueba adaptados. **Compromételos primero**, en su
+propio commit, antes de empezar el tuyo. Si mezclas tu trabajo con el suyo, nadie
+podrá revertir uno sin el otro.
+
+## Dónde está hoy — medido el 2026-08-16
+
+**El lado .NET está en 3.864 verdes y una roja.** Compila en Release con 0
+advertencias. La roja es una sola:
+
+**`MainWindowShellContractTests.FieldSourceAndRebuiltPayloadMatchTheCurrentSeal`**
+— el sello de `src/Baxy.FieldUi` espera **38 ficheros** y SHA `0F6C38D1…`; el árbol
+comprometido tiene **35** y `12929F7A…`. Falla desde el commit inicial de este
+repositorio, con el directorio limpio.
+
+La causa es conocida y no es del código: al crear `BAXY Definitivo` se podaron
+artefactos de compilación, y en esa poda cayeron ficheros que el sello cubre. Sobra
+además un `prototype.css.prereskin.bak`.
+
+**No se arregla subiendo la constante.** Un sello existe para que un cambio
+silencioso ponga la compuerta en rojo; subir el número a lo que hay convierte el
+mecanismo en decoración. Hay que **decidir cuál de los dos árboles es el correcto**
+—recuperando del repositorio `BAXY` los tres ficheros que faltan, o retirando del
+sello lo que ya no forma parte del producto— y volver a sellar sobre esa decisión.
+Déjala escrita.
+
+Un aviso del goal 01 sobre otra familia: nueve pruebas de `MindShellEndToEndTests`
+dependen de un intérprete en ruta fija (`.venv` del spike, o `C:\Windows\py.exe`).
+En una máquina limpia fallan **por entorno, no por código** — y eso importa aquí,
+porque uno de tus criterios de cierre es un clon limpio. Que el fallo diga
+«entorno» en vez de contarse como regresión es trabajo tuyo.
+
+## El lado Python no está medido — mídelo tú
+
+Lo que sigue viene del repositorio anterior y **no se ha vuelto a correr aquí**.
+Trátalo como diagnóstico heredado, no como estado actual: corre la compuerta
+entera primero y compara.
+
+Quince pruebas rojas, todas diagnosticadas allí. Su causa está publicada en R279 y
 R280; léela antes de empezar:
 
 - **Nueve** comparan un preregistro histórico contra lo que su constructor
@@ -260,8 +303,13 @@ seguro es que hay una capa vieja que sobra.
 
 ## Criterios de cierre
 
+- [ ] El trabajo del goal 01 comprometido en su propio commit, antes del tuyo.
+- [ ] El sello de `Baxy.FieldUi` cuadra, **con la decisión escrita** de qué árbol
+      es el correcto y por qué — no con la constante subida a lo que había.
 - [ ] La compuerta pasa **entera** dos veces seguidas sobre un árbol congelado.
 - [ ] Pasa una tercera vez sobre un **clon limpio** del repositorio.
+- [ ] Los fallos por entorno se distinguen de las regresiones: una máquina sin el
+      `.venv` del spike no cuenta nueve regresiones falsas.
 - [ ] Ningún rojo se cerró con `skip`, `xfail`, umbral relajado ni fallback.
 - [ ] El artefacto .NET dependiente del estado local ya no lo es, o está declarado
       con su causa.
