@@ -1,0 +1,54 @@
+{
+  "schema": "baxy.cuda-module-loading-verdict.v1",
+  "date": "2026-07-29",
+  "baseline": {
+    "CUDA_MODULE_LOADING": "LAZY"
+  },
+  "candidate": {
+    "CUDA_MODULE_LOADING": "EAGER"
+  },
+  "design": {
+    "fresh_servers": 4,
+    "orders": [
+      "lazy-then-eager",
+      "eager-then-lazy"
+    ],
+    "cache_type_k": "q8_0",
+    "cache_type_v": "q8_0",
+    "flash_attention": true,
+    "same_payloads": true,
+    "raw_tokens_checked": true
+  },
+  "quality": {
+    "exact_equivalence": true,
+    "mode_contracts": true,
+    "stage_coverage": true
+  },
+  "latency": {
+    "lazy_then_eager": {
+      "eager_minus_lazy_server_ready_seconds": 1.7798286999968695,
+      "eager_minus_lazy_first_turn_seconds": -0.07890079999924637,
+      "eager_minus_lazy_startup_to_first_response_seconds": 1.7009223999993992,
+      "eager_minus_lazy_startup_to_workload_complete_seconds": 2.4157326000058674,
+      "eager_minus_lazy_case_p50_seconds": 0.12880450000011479,
+      "eager_minus_lazy_case_total_seconds": 0.6359437000064645
+    },
+    "eager_then_lazy": {
+      "eager_minus_lazy_server_ready_seconds": 0.21334669999487232,
+      "eager_minus_lazy_first_turn_seconds": 0.09507789999770466,
+      "eager_minus_lazy_startup_to_first_response_seconds": 0.30843279999680817,
+      "eager_minus_lazy_startup_to_workload_complete_seconds": 0.4676143000033335,
+      "eager_minus_lazy_case_p50_seconds": -0.08342035000532633,
+      "eager_minus_lazy_case_total_seconds": 0.25424319999001455
+    }
+  },
+  "verdict": {
+    "cold_total_improvement": false,
+    "no_turn_regression": false,
+    "promotion_gate_passed": false,
+    "decision": "reject",
+    "reason": "EAGER preserved exact outputs but increased launch-to-ready, launch-to-first-response, and launch-to-workload-complete latency in both execution orders."
+  },
+  "production_changed": false,
+  "source_artifact": "artifacts/fixes/cuda_module_loading_ab_20260729.json"
+}

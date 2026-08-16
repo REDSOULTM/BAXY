@@ -1,0 +1,725 @@
+{
+  "schema": "baxy.voxcpm2-gguf-wake-ipa-pilot.v1",
+  "measured_at_utc": "2026-08-04T14:12:39.778357+00:00",
+  "scope": "development_only_synthetic_positive_pronunciation_audit",
+  "source_manifest": "D:/BAXYRuntime/experiments/wakeword/voxcpm2_baxy_guided_32_v1/manifest.v1.json",
+  "source_manifest_sha256": "00e1929b338268e1d3d2e963afd4e312c5d06c7c3a28e6cf28580eedab661353",
+  "source_runtime": {
+    "repository": "https://github.com/tc-mb/llama.cpp-omni",
+    "commit": "6e9ae1a06be74e1e05ada646d106fe174b4498ef",
+    "server_exe": "D:/BAXYRuntime/experiments/wakeword/llama.cpp-omni/build-voxcpm2-cuda/bin/Release/llama-tts-server.exe",
+    "server_sha256": "c918138064d733042ba3986788a5590f211b624a6fcd6565d0f57977a02713d7"
+  },
+  "source_model": {
+    "repository": "DennisHuang648/VoxCPM2-GGUF",
+    "revision": "169f64d8b98bbaab1761e4ca3a83e6af653456cc",
+    "base_lm": "D:/BAXYRuntime/experiments/wakeword/voxcpm2_gguf_169f64d/VoxCPM2-BaseLM-Q8_0.gguf",
+    "base_lm_sha256": "0113177abd11303503bf0b705e1613ec5f0a8508cc74a7dfd0f99312b962a962",
+    "acoustic": "D:/BAXYRuntime/experiments/wakeword/voxcpm2_gguf_169f64d/VoxCPM2-Acoustic-F16.gguf",
+    "acoustic_sha256": "5bde898488ad635ff55d24da53543768fa33d5e5cdc538ce190e5ef831038e85"
+  },
+  "source_generation": {
+    "target_display_text": "Baxy.",
+    "persona_suffix": "Pronounce Baxy exactly as back-see, with an audible final ee vowel",
+    "persona_count": 8,
+    "seeds": [
+      11,
+      29,
+      42,
+      73
+    ],
+    "cfg_value": 2.0,
+    "inference_timesteps": 8,
+    "temperature": 1.0
+  },
+  "phoneme_recognizer": {
+    "model_id": "facebook/wav2vec2-lv-60-espeak-cv-ft",
+    "revision": "ae45363bf3413b374fecd9dc8bc1df0e24c3b7f4",
+    "local_model_directory": "D:/BAXYRuntime/experiments/wakeword/phoneme_audit/facebook-wav2vec2-lv-60-espeak-cv-ft-ae45363b",
+    "pytorch_model_sha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "transformers": "5.14.1",
+    "torch": "2.10.0+cu130",
+    "device": "cuda",
+    "ctc_batch_padding_logits_decoded": false
+  },
+  "accepted_normalized_target_sequences": [
+    [
+      "b",
+      "a",
+      "k",
+      "s",
+      "i"
+    ],
+    [
+      "b",
+      "æ",
+      "k",
+      "s",
+      "i"
+    ],
+    [
+      "b",
+      "ɑ",
+      "k",
+      "s",
+      "i"
+    ]
+  ],
+  "metrics": {
+    "clip_count": 32,
+    "exact_target_count": 12,
+    "exact_target_rate": 0.375,
+    "edit_distance_lte_1_count": 27,
+    "edit_distance_lte_1_rate": 0.84375,
+    "edit_distance_counts": {
+      "0": 12,
+      "1": 15,
+      "2": 4,
+      "3": 1
+    },
+    "legacy_single_sequence_comparison": {
+      "sequence": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "exact_target_count": 10,
+      "exact_target_rate": 0.3125,
+      "edit_distance_lte_1_count": 24,
+      "edit_distance_lte_1_rate": 0.75
+    },
+    "by_persona": {
+      "british_woman": {
+        "clip_count": 4,
+        "exact_target_count": 1,
+        "exact_target_rate": 0.25,
+        "edit_distance_lte_1_count": 3,
+        "edit_distance_lte_1_rate": 0.75
+      },
+      "neutral_adult": {
+        "clip_count": 4,
+        "exact_target_count": 2,
+        "exact_target_rate": 0.5,
+        "edit_distance_lte_1_count": 3,
+        "edit_distance_lte_1_rate": 0.75
+      },
+      "older_man": {
+        "clip_count": 4,
+        "exact_target_count": 2,
+        "exact_target_rate": 0.5,
+        "edit_distance_lte_1_count": 4,
+        "edit_distance_lte_1_rate": 1.0
+      },
+      "older_woman": {
+        "clip_count": 4,
+        "exact_target_count": 3,
+        "exact_target_rate": 0.75,
+        "edit_distance_lte_1_count": 3,
+        "edit_distance_lte_1_rate": 0.75
+      },
+      "spanish_man": {
+        "clip_count": 4,
+        "exact_target_count": 2,
+        "exact_target_rate": 0.5,
+        "edit_distance_lte_1_count": 3,
+        "edit_distance_lte_1_rate": 0.75
+      },
+      "spanish_woman": {
+        "clip_count": 4,
+        "exact_target_count": 0,
+        "exact_target_rate": 0.0,
+        "edit_distance_lte_1_count": 3,
+        "edit_distance_lte_1_rate": 0.75
+      },
+      "young_man": {
+        "clip_count": 4,
+        "exact_target_count": 2,
+        "exact_target_rate": 0.5,
+        "edit_distance_lte_1_count": 4,
+        "edit_distance_lte_1_rate": 1.0
+      },
+      "young_woman": {
+        "clip_count": 4,
+        "exact_target_count": 0,
+        "exact_target_rate": 0.0,
+        "edit_distance_lte_1_count": 4,
+        "edit_distance_lte_1_rate": 1.0
+      }
+    }
+  },
+  "records": [
+    {
+      "index": 0,
+      "persona_id": "neutral_adult",
+      "seed": 11,
+      "output_file": "clip_000000.wav",
+      "source_wav_sha256": "cb7073d600e03df73b2c45ffa67bd2a8ee159906439aa5f3a32979f8426100de",
+      "source_duration_seconds": 1.6,
+      "decoded_ipa": "v ɛ k s i",
+      "normalized_tokens": [
+        "v",
+        "ɛ",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 2,
+      "legacy_edit_distance": 2
+    },
+    {
+      "index": 1,
+      "persona_id": "neutral_adult",
+      "seed": 29,
+      "output_file": "clip_000001.wav",
+      "source_wav_sha256": "015ef47dd0c2673379f05db236d20d8411b5dd24e99b734fee1c4e86184494a3",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "b æ s i",
+      "normalized_tokens": [
+        "b",
+        "æ",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 2
+    },
+    {
+      "index": 2,
+      "persona_id": "neutral_adult",
+      "seed": 42,
+      "output_file": "clip_000002.wav",
+      "source_wav_sha256": "a26c1c1ea69d1eb462c6d80a42373588d84b74089888739e7b5b6a7667d95432",
+      "source_duration_seconds": 1.28,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 3,
+      "persona_id": "neutral_adult",
+      "seed": 73,
+      "output_file": "clip_000003.wav",
+      "source_wav_sha256": "30304c569b8dbb92dc6c59fc9b78c2efdc3b7e640c0f704dc3e0ffb4fb304d4a",
+      "source_duration_seconds": 0.96,
+      "decoded_ipa": "b æ k s i",
+      "normalized_tokens": [
+        "b",
+        "æ",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 4,
+      "persona_id": "young_woman",
+      "seed": 11,
+      "output_file": "clip_000004.wav",
+      "source_wav_sha256": "530f9eac92d6fc2eed9e0a9cf4db10fe07de59f612cee5fa26ddef12e32ad1bd",
+      "source_duration_seconds": 0.64,
+      "decoded_ipa": "a k s i",
+      "normalized_tokens": [
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 5,
+      "persona_id": "young_woman",
+      "seed": 29,
+      "output_file": "clip_000005.wav",
+      "source_wav_sha256": "1632f4605ca466d8e86812e2712b2b50ee1a6182e65578a299561be163f49067",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "a k s iː",
+      "normalized_tokens": [
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 6,
+      "persona_id": "young_woman",
+      "seed": 42,
+      "output_file": "clip_000006.wav",
+      "source_wav_sha256": "335e10ccbf71575d1335d26d3e001312b743d66bbd57ce1519c3a58c251c084b",
+      "source_duration_seconds": 0.64,
+      "decoded_ipa": "a k s i",
+      "normalized_tokens": [
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 7,
+      "persona_id": "young_woman",
+      "seed": 73,
+      "output_file": "clip_000007.wav",
+      "source_wav_sha256": "ccd6e4bd12c77da28959694b21be0b952bf6781879bf40c06ea6f5a8154657c6",
+      "source_duration_seconds": 0.64,
+      "decoded_ipa": "a k s i",
+      "normalized_tokens": [
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 8,
+      "persona_id": "young_man",
+      "seed": 11,
+      "output_file": "clip_000008.wav",
+      "source_wav_sha256": "99483691e4926f5c1d2a06d26881f55e3e41c73c8aaf493440b2c283c46342a7",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 9,
+      "persona_id": "young_man",
+      "seed": 29,
+      "output_file": "clip_000009.wav",
+      "source_wav_sha256": "14062bdfc2fe1041b628e5a69957083df13ea4eef626e9025c47b693e6b8620f",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "a k s i",
+      "normalized_tokens": [
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 10,
+      "persona_id": "young_man",
+      "seed": 42,
+      "output_file": "clip_000010.wav",
+      "source_wav_sha256": "a952a899d00c372f71637eb1b4a54723088b5e5727af64f769b5d33df5e59fcc",
+      "source_duration_seconds": 0.64,
+      "decoded_ipa": "a k s i",
+      "normalized_tokens": [
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 11,
+      "persona_id": "young_man",
+      "seed": 73,
+      "output_file": "clip_000011.wav",
+      "source_wav_sha256": "e4057a9b30507c97d8d25332cf436dcfd4547d3c7c4d47f02b09fe8f7f431bbf",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 12,
+      "persona_id": "older_woman",
+      "seed": 11,
+      "output_file": "clip_000012.wav",
+      "source_wav_sha256": "ca74d9835cefd5f6896c8527437ce437ba86239d146ee164f5430626e12ba8a0",
+      "source_duration_seconds": 1.92,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 13,
+      "persona_id": "older_woman",
+      "seed": 29,
+      "output_file": "clip_000013.wav",
+      "source_wav_sha256": "994498668fd1679833e909cc145d093facd9732dc102ec8546beb11167afd65c",
+      "source_duration_seconds": 1.6,
+      "decoded_ipa": "d a k s k i",
+      "normalized_tokens": [
+        "d",
+        "a",
+        "k",
+        "s",
+        "k",
+        "i"
+      ],
+      "target_edit_distance": 2,
+      "legacy_edit_distance": 2
+    },
+    {
+      "index": 14,
+      "persona_id": "older_woman",
+      "seed": 42,
+      "output_file": "clip_000014.wav",
+      "source_wav_sha256": "2b56dadabd59864e91d932d7e72fd4e96c6826109089de847f7480f277040f94",
+      "source_duration_seconds": 1.92,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 15,
+      "persona_id": "older_woman",
+      "seed": 73,
+      "output_file": "clip_000015.wav",
+      "source_wav_sha256": "e31207a49c3c6b5a3c43b3229465283ac6d52c4ea974b0cde616a5feaf97eecb",
+      "source_duration_seconds": 2.08,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 16,
+      "persona_id": "older_man",
+      "seed": 11,
+      "output_file": "clip_000016.wav",
+      "source_wav_sha256": "8294f607206a0a5313e79fdf024d634f88c5f749b21feaf689c17f397b0f9fe1",
+      "source_duration_seconds": 0.96,
+      "decoded_ipa": "p æ k s i",
+      "normalized_tokens": [
+        "p",
+        "æ",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 2
+    },
+    {
+      "index": 17,
+      "persona_id": "older_man",
+      "seed": 29,
+      "output_file": "clip_000017.wav",
+      "source_wav_sha256": "394804dba30863e752a222c0d56e989b8d9d48a5a79537ec74ed3166cf277c57",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 18,
+      "persona_id": "older_man",
+      "seed": 42,
+      "output_file": "clip_000018.wav",
+      "source_wav_sha256": "da4bc846518678b40830456b2b6cbc4a9aa8c6958262fa324004fd0286025b8d",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 19,
+      "persona_id": "older_man",
+      "seed": 73,
+      "output_file": "clip_000019.wav",
+      "source_wav_sha256": "6e2e316f3d296510da86372b4613a9f17b8c95c8098fdd6085a0b92472347a31",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "v a k s i",
+      "normalized_tokens": [
+        "v",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 20,
+      "persona_id": "british_woman",
+      "seed": 11,
+      "output_file": "clip_000020.wav",
+      "source_wav_sha256": "6be995a5956a933510ac6667bdd84bceef3403e012bb544f9ac176491f44eba9",
+      "source_duration_seconds": 0.96,
+      "decoded_ipa": "b æ k s i",
+      "normalized_tokens": [
+        "b",
+        "æ",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 21,
+      "persona_id": "british_woman",
+      "seed": 29,
+      "output_file": "clip_000021.wav",
+      "source_wav_sha256": "9c868f7ff2a5f100acbdecb9608db9c1b74e7e116938e3cf1945d666f8082263",
+      "source_duration_seconds": 3.52,
+      "decoded_ipa": "a ʔ aː k s iː h",
+      "normalized_tokens": [
+        "a",
+        "ʔ",
+        "a",
+        "k",
+        "s",
+        "i",
+        "h"
+      ],
+      "target_edit_distance": 3,
+      "legacy_edit_distance": 3
+    },
+    {
+      "index": 22,
+      "persona_id": "british_woman",
+      "seed": 42,
+      "output_file": "clip_000022.wav",
+      "source_wav_sha256": "12fc32cb4c7c77be3a38e87ce268f6201a0c36359a06112be63fb78c0c8f0bce",
+      "source_duration_seconds": 0.96,
+      "decoded_ipa": "p a k s i",
+      "normalized_tokens": [
+        "p",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 23,
+      "persona_id": "british_woman",
+      "seed": 73,
+      "output_file": "clip_000023.wav",
+      "source_wav_sha256": "45b68868b5d63d5cbedcda596e46ec1e7440c3c923d0461eabd5a52cf2b0accb",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "a k s i",
+      "normalized_tokens": [
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 24,
+      "persona_id": "spanish_woman",
+      "seed": 11,
+      "output_file": "clip_000024.wav",
+      "source_wav_sha256": "a893ccb11b27edbf0da12aa962924c6bffd08f1c2e3ae9a67d3cd80bb6c0ed20",
+      "source_duration_seconds": 1.76,
+      "decoded_ipa": "v a k s i",
+      "normalized_tokens": [
+        "v",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 25,
+      "persona_id": "spanish_woman",
+      "seed": 29,
+      "output_file": "clip_000025.wav",
+      "source_wav_sha256": "3b34fbbf33e38a809b3233cac89ff2dfda539561f198b7a726c971224f319da2",
+      "source_duration_seconds": 2.08,
+      "decoded_ipa": "d æ k s i",
+      "normalized_tokens": [
+        "d",
+        "æ",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 2
+    },
+    {
+      "index": 26,
+      "persona_id": "spanish_woman",
+      "seed": 42,
+      "output_file": "clip_000026.wav",
+      "source_wav_sha256": "ac7cfdaeb0d9897bc3177bf697030eeb744244a3e7133a2112cca343950684fa",
+      "source_duration_seconds": 1.6,
+      "decoded_ipa": "æ t s i",
+      "normalized_tokens": [
+        "æ",
+        "t",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 2,
+      "legacy_edit_distance": 3
+    },
+    {
+      "index": 27,
+      "persona_id": "spanish_woman",
+      "seed": 73,
+      "output_file": "clip_000027.wav",
+      "source_wav_sha256": "73003ed499b12a54b914daa16181e373e0cd8c3d13f1abc1761ab6d43d002f4c",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "b a t s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "t",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 28,
+      "persona_id": "spanish_man",
+      "seed": 11,
+      "output_file": "clip_000028.wav",
+      "source_wav_sha256": "0a3493c94216c51dc8241441e3b13fd22f54190c01d077fffe5abb0ca4a8d9c2",
+      "source_duration_seconds": 1.28,
+      "decoded_ipa": "a k s",
+      "normalized_tokens": [
+        "a",
+        "k",
+        "s"
+      ],
+      "target_edit_distance": 2,
+      "legacy_edit_distance": 2
+    },
+    {
+      "index": 29,
+      "persona_id": "spanish_man",
+      "seed": 29,
+      "output_file": "clip_000029.wav",
+      "source_wav_sha256": "4c378e9aacdb6ff1080a847e2d16799b90fa6dfce6d9e3cad692995fba08e340",
+      "source_duration_seconds": 1.44,
+      "decoded_ipa": "p a k s i",
+      "normalized_tokens": [
+        "p",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 1,
+      "legacy_edit_distance": 1
+    },
+    {
+      "index": 30,
+      "persona_id": "spanish_man",
+      "seed": 42,
+      "output_file": "clip_000030.wav",
+      "source_wav_sha256": "286961f9aef3c1d30d21b0d12c5e50089a3836aa5d525ddd389ec195e6f7fe3e",
+      "source_duration_seconds": 0.96,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    },
+    {
+      "index": 31,
+      "persona_id": "spanish_man",
+      "seed": 73,
+      "output_file": "clip_000031.wav",
+      "source_wav_sha256": "9ebf519cb26e6fe73e1efdff64abc2c95dd5b7de259b8dc31523cef610a2a75e",
+      "source_duration_seconds": 0.8,
+      "decoded_ipa": "b a k s i",
+      "normalized_tokens": [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      "target_edit_distance": 0,
+      "legacy_edit_distance": 0
+    }
+  ],
+  "blind_human_partition_accessed": false,
+  "candidate_model_training_started": false,
+  "effects_executed": 0
+}

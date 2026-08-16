@@ -1,0 +1,45 @@
+{
+  "schema": "baxy.supervised-reranker-domain.r242-preregistration.v1",
+  "authority": "sealed_before_model_import_training_or_r228_opening",
+  "hypothesis": {
+    "model": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "architecture": "supervised query-to-typed-family-document cross-encoder",
+    "difference_from_r241": "learns explicit positive family pairs and real OOS negative query-family pairs; it is not a threshold adjustment to the zero-shot score",
+    "device": "isolated_cuda_development_environment",
+    "optimizer": "AdamW full-model fine tuning, one epoch, fixed seed"
+  },
+  "training": {
+    "positive_source": "R207 development pairs, mapped to current typed family documents",
+    "negative_source": "deterministic R207 negatives plus public PRESTO/MASSIVE train rows with no BAXY family paired against every family document",
+    "no_r228": true,
+    "no_public_holdout": true
+  },
+  "development_evaluation": {
+    "inside": 256,
+    "outside": 256,
+    "selection": "SHA-256 ordered rows disjoint from the R236/R241 256+256 selections and from training OOS rows",
+    "threshold": "nextafter below minimum fresh inside maximum score; OOS excluded from selection",
+    "acceptance": {
+      "inside_rows_lost": 0,
+      "outside_zero_candidates": 256
+    }
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r238_sha256": "9e148c026438c242d8c96dfc8c21af801997f53da6ebad3d74d58121d900c5cb",
+    "r234_sha256": "10ebd512df812aacc1db458ef4c7771076b861af26810a9568e8f9ef4c8f2bab",
+    "r207_sha256": "6be518643a188bc5402c4ced73e4da3049d43ed0dbd3a0d8114f6130784fa8b0",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "r228_sha256": "fe094331bce2045a7f2bc0afa18fdd20636678d66bafd69b569976af811cfc2a",
+    "runner_sha256": "e694c90f9871c6d415c9c244d3a6908da83c4c706295d5b7333882ab548edf55",
+    "program_sha256": "8b5ecef66f9feff5e7cb569b8063dee042c57a725637f66b3c612e0ff206295f"
+  }
+}

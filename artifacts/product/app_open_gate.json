@@ -1,0 +1,36 @@
+{
+  "schema": "baxy-app-open-gate-v1",
+  "observed_utc": "2026-07-15T01:41:38.7599422Z",
+  "scope": "core_provider_direct",
+  "build": {
+    "created_utc": "2026-07-15T01:40:55.3707273Z",
+    "file_count": 14,
+    "total_bytes": 50546916,
+    "app_sha256": "a531f1c90d401c7277d1ee63cd1eee29ecfe1cca664efbddd50b168425c08e0c",
+    "core_sha256": "e9a7a3939066279eb397aa21967b6f5ae08f7fc266aa71b27f21b39892c98d51",
+    "manifest_sha256": "3a414d3370176c56aab719f64457e3405fd931435bb6198b6aa5d14e9ea8bb0b"
+  },
+  "gate_script_sha256": "9e06c75ce6c4162c2873ad9ffb7096ce0f8a3ff21193ce9e2c6920f27064287b",
+  "result": {
+    "status": "skipped",
+    "reason": "preexisting_notepad",
+    "exit_code": 2,
+    "preexisting_count": 1,
+    "preexisting_process_ids": [
+      5472
+    ],
+    "preexisting_preserved": true,
+    "destructive_cleanup_requested": false
+  },
+  "approvals": {
+    "fresh_launch": false,
+    "same_invocation_replay": false,
+    "survival_after_core_job_close": false,
+    "gui_end_to_end": false
+  },
+  "limitations": [
+    "The safe precondition rejected the run because Notepad was already open.",
+    "This gate starts the core directly; it does not exercise the WPF parser or CoreProcessClient Job integration."
+  ],
+  "notes_capture_sha256": "2c5937acb8960577541578975c3b7ff01d5ae519f5f600571afb18e8d6d8a902"
+}

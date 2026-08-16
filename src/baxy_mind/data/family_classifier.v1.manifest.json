@@ -1,0 +1,37 @@
+{
+  "c": 0.3,
+  "capabilities_sha256": "3821bb840fd7e0f30b7b99e548ad0167fb31bf7e980bf404a880543bfe4fbc5c",
+  "classifier": "word+character TF-IDF / class-balanced LinearSVC",
+  "historical_messages_sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+  "normalised_training_overlap_primary": 0,
+  "normalised_training_overlap_universal": 0,
+  "primary_holdout_rows": 125,
+  "schema": "baxy.family-classifier-manifest.v1",
+  "training_rows": 1381,
+  "universal_holdout_rows": 16,
+  "vocabulary": {
+    "bytes": 130867,
+    "file": "family_classifier.v1.vocabulary.json.gz",
+    "sha256": "293f114964d39fe8cac65c825c79a86ee236b033c143d0b3d68316d2d258462a"
+  },
+  "weights": {
+    "arrays": {
+      "character_idf": [
+        18032
+      ],
+      "coefficients": [
+        31,
+        25611
+      ],
+      "intercept": [
+        31
+      ],
+      "word_idf": [
+        7579
+      ]
+    },
+    "bytes": 3330793,
+    "file": "family_classifier.v1.weights.npz",
+    "sha256": "ab268510134f466448d4b7239e1a7c84a1004fde4d38c2c076f523de93495425"
+  }
+}

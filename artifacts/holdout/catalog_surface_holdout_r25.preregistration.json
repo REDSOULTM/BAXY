@@ -1,0 +1,113 @@
+{
+  "authority": "turn_decision_and_private_parser_evaluation_only",
+  "blind_holdout": true,
+  "catalog": {
+    "operations": 169,
+    "sha256": "67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41"
+  },
+  "measurement_status": "unopened",
+  "method": {
+    "matrix": "post_r24_systemic_gratitude_fix_fresh_tail_for_every_operation",
+    "maximum_unsafe_effects": 0,
+    "minimum_cases": 169,
+    "minimum_exact_turn_accuracy": 0.99,
+    "one_sided_95_binomial_lower_if_zero_failures": 0.9824299588612365,
+    "references": [],
+    "statistical_scope": "Exact operation coverage is claimed only for this sealed surface; R21 supplies the larger family-level generalization population.",
+    "test_types": [
+      "all_operation_surface_invariance"
+    ]
+  },
+  "output": {
+    "path": "artifacts\\holdout\\catalog_surface_holdout_r25.jsonl",
+    "rows": 169,
+    "sha256": "10eb17458532083c59a628b4a84ac53f335e329cd2c2b1e33d7f80db54ccbde0"
+  },
+  "planned_measurement": {
+    "effects_executed": 0,
+    "memory_trx": "artifacts\\holdout\\catalog_surface_holdout_r25_memory.trx",
+    "mind_output": "artifacts\\holdout\\catalog_surface_holdout_r25_mind.json",
+    "mind_raw_audit": "artifacts\\holdout\\catalog_surface_holdout_r25_mind.raw.jsonl",
+    "product_output": "artifacts\\holdout\\catalog_surface_holdout_r25_product.json"
+  },
+  "population": {
+    "authenticated_operations_covered": 169,
+    "case_types": {
+      "single_action": 169
+    },
+    "cases": 169,
+    "languages": {
+      "en": 42,
+      "es": 85,
+      "spanglish": 42
+    },
+    "normalized_prior_overlap": 0,
+    "owners": {
+      "app_private_memory_parser": 11,
+      "mind_sidecar": 158
+    },
+    "public_families": 31,
+    "surfaces": {
+      "alternate_gratitude_social_closure": 169
+    }
+  },
+  "preregistered_before_measurement": true,
+  "schema": "baxy.catalog-surface-preregistration.r25",
+  "sources": {
+    "builder": "scripts\\build_catalog_surface_holdout_r25.py",
+    "builder_dependencies_sha256": {
+      "scripts\\build_catalog_surface_holdout_r22.py": "40b17def77155dc4ba4c6a1eb369a82d5865f0f0d5c5376be64d9ae28c1c0274",
+      "scripts\\build_generalization_product_holdout_r2.py": "a5241e1858bde5456404b2c4c36654208f754b87d35811cf5ed59842e528b96f",
+      "scripts\\catalog_seen_scenarios_v1.py": "ecd4d5070e13a9286e92bb157e912a7becd9e78b864260be84eda62d7ca1dc8f"
+    },
+    "builder_sha256": "94c91511d5f11a8d4af9f89d2b10cb7fa9120242cb7f041872ca9ed00bb14475",
+    "measurement_sha256": {
+      "experiments\\mind_router_spike\\analyze_catalog_surface_holdout_r25.py": "ebc3789cbaa3094b127eb8662fc5df098dac57f7f6b41fe34c3ba5a68061d296",
+      "experiments\\mind_router_spike\\analyze_generalization_product_holdout_r2.py": "54d4b9241e8c68dedb6f2255736585d5be3faed791065416190573e84a9c67d4",
+      "experiments\\mind_router_spike\\probe_catalog_surface_holdout_r25.py": "0527f6a5eff7aeac4b6993f2183b2c80779795a706984cb33090e3925f7c6136",
+      "experiments\\mind_router_spike\\probe_current_catalog_review.py": "9c6ff5baafb234167d87c353c3990ad56d18a9a57dd21f4ef49d1b1fc5a9c255",
+      "experiments\\mind_router_spike\\probe_generalization_product_holdout_r2.py": "1ac65a52201fb05cc6f6686024e57dd625864fdb93ac30f797876046881b90e2",
+      "scripts\\baxy_runtime_config.py": "ef463439836b87094fa24ac48ce4e1bb31f404a5a0d6eb5fe4b9e3ccf3f03711",
+      "scripts\\measure_mind_budget.py": "4fa3e8af0707e5045e8b919714d61dbc6fc699ac45df8f3f934974ada8650b0b",
+      "tests\\Baxy.Integration.Tests\\NaturalMemoryRequestParserTests.cs": "29fa6b6468bf29c0efba4370ce8f80346d277b238b6856ef29e721d99dd619b0"
+    },
+    "policy_sha256": {
+      "src\\Baxy.App\\NaturalMemoryRequestParser.cs": "c793a8dab9ab04b9f7a65aee8d550e4481b15e0fbf6cbbdc4a1266945f32e727",
+      "src\\Baxy.Kernel\\Operations\\ProductCatalog.cs": "b577462ec8a15b1c5cf12309a7e344c936c14fffe24d115c053499167063696d",
+      "src\\baxy_mind\\__main__.py": "bd97578fdbafd54356b7f132e5b7b40d52d611f20a50e15365f170cef78a6e72",
+      "src\\baxy_mind\\catalog_operation_aliases.py": "f23ba6913311ef0e0b3fd6e7786dd0521b29ef2b3b47e344e3673646b780a928",
+      "src\\baxy_mind\\data\\catalog_operation_aliases.v1.json": "bd1a50e071de746b2536e21234306b159a2329e805b91e8261e5c6cdf4e9cc73",
+      "src\\baxy_mind\\effect_intent.py": "9643ff3c19bf4615f8f440047f65f727850f706d889f7e6b625c18c7a327ebaf",
+      "src\\baxy_mind\\llm.py": "42bf2b264f40a364f5a195645b4c026d8aee15f450b048962193b531310910bb",
+      "src\\baxy_mind\\planner.py": "5116664fffb089d537d95f4162e99f4d69672e9bf29ae7318d29111437600986",
+      "src\\baxy_mind\\router.py": "bb81d576b6afd4660be8daca616b60949afc952715b0ca50576bc975a7ee7a9a",
+      "src\\baxy_mind\\turn_evidence.py": "2bb879c080efc7f0699264b8d8243a7aa791a94594eaf177f20df35d3e2ad13d"
+    },
+    "prior_corpora_sha256": {
+      "artifacts\\development\\catalog_seen_scenarios_r2_dependency_complete.jsonl": "cbe9fc751ccfddf60ba1a66e5ca149ec1c0f29cec02783e2566444294ff51978",
+      "artifacts\\holdout\\catalog_surface_holdout_r22.jsonl": "bf601f724f16252c39c089811de8ecbd936ee1d5d109b24934c25fbb6ebd292e",
+      "artifacts\\holdout\\catalog_surface_holdout_r23.jsonl": "86a980b9490f3680bfb5b8b96583a45e3be4f9575b948a7c83354ce135e41a6e",
+      "artifacts\\holdout\\catalog_surface_holdout_r24.jsonl": "cef505850034947dd2fd370e59cf1e100c7687b41d1c6b2799a057c115272eff",
+      "artifacts\\holdout\\generalization_product_holdout_v10.jsonl": "dc530adb9821ba5b414ea49492b58f2705ba32cfa3d6f947b23652d033d4b233",
+      "artifacts\\holdout\\generalization_product_holdout_v11.jsonl": "d1a83b25ed258f939531543bdd89809cdfa305b308e93ada14f9a7cbc846efa7",
+      "artifacts\\holdout\\generalization_product_holdout_v12.jsonl": "7de41c60dc387187ee740f8d884c8ba707b11c469cc572110f35ef2bcc35bf7a",
+      "artifacts\\holdout\\generalization_product_holdout_v13.jsonl": "50d87c394c3c80cbac54251a060779435d4a3531bfd26d754e73072cf7a5ebdb",
+      "artifacts\\holdout\\generalization_product_holdout_v14.jsonl": "9d3d02dafbb1db65d6608bbd10f8d4526c9c715d65ee19c3d22ce1a725547a30",
+      "artifacts\\holdout\\generalization_product_holdout_v15.jsonl": "78652541c875d47f5eef8f4e72f1c1ae4ac5d86715a97c63520f50dc91e7ad83",
+      "artifacts\\holdout\\generalization_product_holdout_v16.jsonl": "56cc8c6acf9fed096bcdf22f46f1ed77cd9bd1e88102249fb36abd2f163d9db6",
+      "artifacts\\holdout\\generalization_product_holdout_v17.jsonl": "069a20fea016423c3880292023b1464ec7300c0de2bac40cdf2d6c56846fc394",
+      "artifacts\\holdout\\generalization_product_holdout_v18.jsonl": "f498650260ada7d4f173726563ceb66badbcbf46daa57b15ebba693006e15313",
+      "artifacts\\holdout\\generalization_product_holdout_v19.jsonl": "265bbaac39a6f4a264c92661ccd5c5dd8b45a2cc17157b8477ba023d2fb09fee",
+      "artifacts\\holdout\\generalization_product_holdout_v2.jsonl": "c020d14872343acdfcaa1359f9df5fdb096b3802d8fba8bb08d777f0df20ff01",
+      "artifacts\\holdout\\generalization_product_holdout_v20.jsonl": "257c6cbe1fc88ccbbba549926e85bfeeae76d47bb3b98ad95f3b276eb94f08b4",
+      "artifacts\\holdout\\generalization_product_holdout_v21.jsonl": "be085d3bb7a857fc66f97f23a9c748aaa920177558429eaff4d4358496f78c32",
+      "artifacts\\holdout\\generalization_product_holdout_v3.jsonl": "cb79baf06faaa3117513a19a554f967f5c9f2fe9dade39ed8479c457635bfdf6",
+      "artifacts\\holdout\\generalization_product_holdout_v4.jsonl": "92bbcefc767accfde39acff5b061bd8ff3ce1531a657ea8c7cf1310bb0d2f361",
+      "artifacts\\holdout\\generalization_product_holdout_v5.jsonl": "3bf8a5e982c64aca8f6b827fae47b074e9d49587ad78db97fd9f3481f3bd3405",
+      "artifacts\\holdout\\generalization_product_holdout_v6.jsonl": "d227ff86fbdb497d3505cd3cabd9bbd5b963661174d6c6d47f697d0d3b445038",
+      "artifacts\\holdout\\generalization_product_holdout_v7.jsonl": "85881b5f281cf124899e4a4a74eda68fc3fc1fdc390eb6beeee96c21506568f8",
+      "artifacts\\holdout\\generalization_product_holdout_v8.jsonl": "ec9d411ef6d28834000add47a791110b3f3653f4335446d8e71bdc21c6aa54bc",
+      "artifacts\\holdout\\generalization_product_holdout_v9.jsonl": "82c00d5970689459961dda3ddfcd17d0f259cf2548671f8dd6d4f7e9a50334a0"
+    }
+  }
+}

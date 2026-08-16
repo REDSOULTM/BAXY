@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-07-16T11:08:00Z",
+  "scope": "planner_checkpoint_confirmation_and_effect_once",
+  "cases": [
+    "checkpoint_encrypted_and_tamper_closed",
+    "restart_restores_exact_mission_and_invocation_identity",
+    "confirmation_bound_to_prepared_invocation_and_expiry",
+    "confirmed_pending_without_effect_reuses_same_identity",
+    "pending_possible_effect_blocks_retry_and_replan",
+    "terminal_possible_effect_retains_durable_checkpoint",
+    "clean_failure_allows_at_most_two_safe_replans",
+    "completed_prefix_cannot_be_reintroduced",
+    "untrusted_observation_text_is_not_reinjected",
+    "private_then_public_continuation_starts_only_after_verified_memory_success"
+  ],
+  "focused_dotnet": { "passed": 46, "failed": 0 },
+  "global_dotnet": { "passed": 1866, "failed": 0 },
+  "python": { "passed": 144, "subtests_passed": 179, "failed": 0 },
+  "status": "passed"
+}

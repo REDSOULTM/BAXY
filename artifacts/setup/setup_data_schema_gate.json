@@ -1,0 +1,78 @@
+{
+  "schema": "baxy-setup-data-schema-gate-v1",
+  "status": "passed",
+  "scope": "same-host clean Release reproduction of the frozen BAXY data schema contract",
+  "source": {
+    "commit": "3f547efb7eca0289548071efee0637fcdd9ba7c4",
+    "dirty": false,
+    "provenance": "git_head_snapshot",
+    "source_date_epoch": 1784143428,
+    "version": "1.0.0",
+    "runtime": "win-x64",
+    "target_framework": "net10.0-windows10.0.19041.0",
+    "dotnet_sdk": "10.0.100",
+    "powershell": "5.1.26100.8737",
+    "host_os": "Microsoft Windows NT 10.0.26200.0"
+  },
+  "contracts": {
+    "data_schema": 1,
+    "product_manifest": "baxy-product-build-v4",
+    "setup_manifest": "baxy-setup-build-v2",
+    "installation_pointer": "baxy-current-v2",
+    "installed_attestation": "baxy-installed-version-v2",
+    "install_transaction": "baxy-install-transaction-v2",
+    "embedded_attestation": "baxy-setup-embedded-package-v2",
+    "embedded_verification": "baxy-setup-embedded-verification-v2",
+    "cross_schema_install_update_rejected": true,
+    "cross_schema_rollback_rejected": true
+  },
+  "reproducibility": {
+    "isolated_product_builds": 2,
+    "product_trees_byte_identical": true,
+    "product_payload_bytes": 82842651,
+    "product_manifest_bytes": 1494,
+    "product_manifest_sha256": "e282d188e36c499425a9d3624f50480dd8e04aae24f760ad29eca8617594f746",
+    "isolated_packages": 2,
+    "packages_byte_identical": true,
+    "package_bytes": 82845989,
+    "package_sha256": "15fc366be689d7b125b00086cebd0260b71088558fa89e0627695d49fbb6b491",
+    "isolated_setups": 2,
+    "setup_trees_byte_identical": true,
+    "setup_bytes": 85864448,
+    "setup_sha256": "3059917e1a739a1c215e313f502a2361c43c9ead2a180e2d85ba9406192f383d",
+    "setup_manifest_bytes": 1084,
+    "setup_manifest_sha256": "97c37ac5211f2e07f8184f6049110a312201b3fdedd34445aff92ce8d183f407",
+    "setup_checksums_sha256": "086eabf71ce5eb4830460c0b5510a3b6993fcc48e346b182f781ad526f2361a5",
+    "embedded_content_id": "ab9dbab267090ea2f92e0b64231e204e0a365ede8aa68369ae30db0c9a15e1cb",
+    "authenticode": "NotSigned"
+  },
+  "physical_embedded_verification": {
+    "build_time_executions": 2,
+    "promoted_output_executions": 4,
+    "all_exit_zero": true,
+    "all_evidence_byte_identical": true,
+    "evidence_sha256": "dcce616619dacbb37f593ba78f49535eb06a0092c2f0cd30a07df539a68e0225",
+    "data_schema": 1
+  },
+  "regression": {
+    "dotnet_tests_passed": 1277,
+    "dotnet_tests_failed": 0,
+    "python_tests_passed": 112,
+    "python_tests_failed": 0,
+    "build_setup_tests_passed": 16,
+    "format_verified": true,
+    "diff_check_clean": true
+  },
+  "acceptance": {
+    "canonical_install_executed": false,
+    "clean_machine_claimed": false,
+    "full_windows_lifecycle_claimed": false,
+    "publisher_authenticity_claimed": false
+  },
+  "limitations": [
+    "This is same-host evidence with shared installed SDK and caches, not cross-host or clean-room reproducibility.",
+    "Data schema 1 is frozen and foreign schemas fail closed; this gate does not claim a data migration path.",
+    "The first-party Setup and payload remain unsigned.",
+    "The canonical installation root and the user's BAXY data root were not mutated by this gate."
+  ]
+}

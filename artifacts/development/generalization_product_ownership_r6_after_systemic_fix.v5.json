@@ -1,0 +1,315 @@
+{
+  "blind_holdout": false,
+  "certification_claim": false,
+  "effects_executed": 0,
+  "label_audit": [],
+  "measured_at_utc": "2026-08-03T16:08:02.475298+00:00",
+  "metrics": {
+    "app_private_memory_parser": {
+      "accuracy": 1.0,
+      "cases": 12,
+      "passed": 12,
+      "seconds_max": 0.2077479,
+      "seconds_p50": 0.0021184999999999997,
+      "seconds_p95": 0.2077479
+    },
+    "contract_audited_product_behavior": {
+      "accuracy": 1.0,
+      "cases": 600,
+      "correct": 600,
+      "failed": 0,
+      "label_corrections": 0,
+      "unsafe_effects": 0
+    },
+    "mind_sidecar": {
+      "by_case_type": {
+        "clarification": {
+          "cases": 20,
+          "contract_correct": 20,
+          "original_exact": 20,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "cases": 120,
+          "contract_correct": 120,
+          "original_exact": 120,
+          "unsafe_effects": 0
+        },
+        "conversation": {
+          "cases": 88,
+          "contract_correct": 88,
+          "original_exact": 88,
+          "unsafe_effects": 0
+        },
+        "single_action": {
+          "cases": 360,
+          "contract_correct": 360,
+          "original_exact": 360,
+          "unsafe_effects": 0
+        }
+      },
+      "by_family": {
+        "app": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "audio": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "backup": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "bluetooth": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "browser": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "calendar": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "capture": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "clipboard": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "cases": 120,
+          "contract_correct": 120,
+          "original_exact": 120,
+          "unsafe_effects": 0
+        },
+        "email": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "filesystem": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "game": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "input": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "media": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "message": {
+          "cases": 32,
+          "contract_correct": 32,
+          "original_exact": 32,
+          "unsafe_effects": 0
+        },
+        "network": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "note": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "notification": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "ocr": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "office": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "out_of_scope": {
+          "cases": 88,
+          "contract_correct": 88,
+          "original_exact": 88,
+          "unsafe_effects": 0
+        },
+        "package": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "peripheral": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "reminder": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "routine": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "streaming": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "system": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "task": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "vision": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "web": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "wifi": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        },
+        "window": {
+          "cases": 12,
+          "contract_correct": 12,
+          "original_exact": 12,
+          "unsafe_effects": 0
+        }
+      },
+      "by_language": {
+        "en": {
+          "cases": 200,
+          "contract_correct": 200,
+          "original_exact": 200,
+          "unsafe_effects": 0
+        },
+        "es": {
+          "cases": 200,
+          "contract_correct": 200,
+          "original_exact": 200,
+          "unsafe_effects": 0
+        },
+        "spanglish": {
+          "cases": 188,
+          "contract_correct": 188,
+          "original_exact": 188,
+          "unsafe_effects": 0
+        }
+      },
+      "by_surface": {
+        "addressed": {
+          "cases": 294,
+          "contract_correct": 294,
+          "original_exact": 294,
+          "unsafe_effects": 0
+        },
+        "plain": {
+          "cases": 294,
+          "contract_correct": 294,
+          "original_exact": 294,
+          "unsafe_effects": 0
+        }
+      },
+      "cases": 588,
+      "contract_accuracy": 1.0,
+      "contract_correct": 588,
+      "label_corrections": 0,
+      "original_accuracy": 1.0,
+      "original_exact": 588,
+      "total_seconds": 79.67,
+      "turn_decide_seconds_max": 2.068847,
+      "turn_decide_seconds_p50": 0.003776,
+      "turn_decide_seconds_p95": 0.773481,
+      "unsafe_effects": 0
+    },
+    "original_preregistered_oracle": {
+      "accuracy": 1.0,
+      "cases": 600,
+      "exact": 600,
+      "failed": 0,
+      "unsafe_effects": 0
+    }
+  },
+  "ownership_aware": true,
+  "schema": "baxy.generalization-product-ownership-r6-development.v1",
+  "scope": "opened_r6_population_post_holdout_development_only",
+  "sources": {
+    "analyzer": "experiments\\mind_router_spike\\analyze_generalization_product_r6_development.py",
+    "analyzer_sha256": "a9da37bb4a9399484f7250663ad4825b169b6c887900f5e4cb1fd46e6bf9e715",
+    "app_parser_sha256": "41a2cc5f56b26e1e3796813ee37344737adb6d5eff781d49c726d7aed9e33154",
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v6.jsonl",
+    "corpus_sha256": "d227ff86fbdb497d3505cd3cabd9bbd5b963661174d6c6d47f697d0d3b445038",
+    "memory_trx": "artifacts\\development\\generalization_product_r6_memory_after_systemic_fix.v1.trx",
+    "memory_trx_sha256": "a8e820ccf08ead3de7a576cef6f2031a8856d765dff55cd8d145504366851932",
+    "mind_entrypoint_sha256": "63cb6df34c65e48f24681c8182aae412a90d89978a6ff0734bafd8d9963d2171",
+    "mind_policy_sha256": "e0ed014c76c49860276b7fb90fd20d1fbbc699f2f44dbf17f04c622d669dae40",
+    "sidecar_report": "artifacts\\development\\generalization_product_r6_replay_after_systemic_fix.v5.json",
+    "sidecar_report_sha256": "8c1926fbebeccb3f800609a21c22e934b5af231f411eeee048092500df46d432"
+  }
+}

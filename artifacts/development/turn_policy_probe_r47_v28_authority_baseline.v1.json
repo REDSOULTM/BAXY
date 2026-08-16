@@ -1,0 +1,523 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v28_authority_baseline.v1.raw.jsonl",
+    "sha256": "45d32d50a207a7c8fbab8fbde789810eade850d6843998757b7a5e764380a025"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:11331",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-ab4d45ea0e94d79376c02b67",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0095,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:2156",
+      "expected_families": [
+        "system"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5556f5282bd53235b743ded2",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0072,
+        "operation": "system.time",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7397",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-22831dca3cbc18a5fcebf06d",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.006,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7598",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3d8d9ff590d807ca9b6dcdf4",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.9412,
+        "operation": null,
+        "question": "What is the start time and duration for the meeting with Fred on the next available day?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8320",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-4753182e7232a61c2ebaef46",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.3305,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I hear you're interested in learning more about the parade this weekend.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9669",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-770ae1979c5f2b7f09338a6b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0035,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10045",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-f846772024580845f85003a9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.615,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo proporcionar una receta casera de sopa de fideos con pollo, ya que no tengo acceso a información específica o personalizada sobre ingredientes o métodos de preparación.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10055",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-1c0c481d3c0cba71adc30f58",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.7969,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "La receta del pollo frito incluye marinado con especias, batido con huevos y paprika, y frito en aceite caliente. ¿Quieres más detalles sobre el proceso o los ingredientes exactos?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11665",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-4b54019d5afa81e2774d304b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0044,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11782",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-e325d449cf622ae3f44ba6bc",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0049,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:3020",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-94b2a998f2dcda6f3ac34aab",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0046,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:5411",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-19c5b989ae20956079e2182e",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0044,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:6220",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5785b36e4dbbbcdaf91b6bb9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.3308,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar pregunta tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:7565",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-43f5d08f6a4577d4c6074777",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.274,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar recordatorioo de reunión tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9632",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-1e872c1a199070b6a1553b76",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.9677,
+        "operation": null,
+        "question": "¿Qué tipo de emisora te gustaría escuchar?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:c5a51c303fb72fd54913b04a3b1051adf4ff0b6d03226c684e82c4d41aede66b",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-07dee3f327b914ad0291d8c7",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0057,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:04702dc6fbd19f6e481b14878eb6dfd9c062d3c8038ad8c7771c0410b831c18a",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-119b7600f400a00fd45c3f50",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.9208,
+        "operation": null,
+        "question": "¿Qué contenido debo escribir en la nota compartida?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:59eccf3c03b9d73fd4af8b8771a0a62033320ea2d1cbd6319341c5c533f38fec",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5d315cd00154399fc57603af",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.7472,
+        "operation": null,
+        "question": "¿cuál es la nota que me quieres leer?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:672c0c778a851be92a57e09b910a5d03f29c7fd78e858f81c201395ed2e89981",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-37af878992140cc1ac78567c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.354,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar el nivel 4 no mejor nivel 2 tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:687a68db575766ad6fd82925c1df1a3c491935d5bde86569a2ab40a726ee6055",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-451fe84e2251f725eaa4681a",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0039,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:94cd94bcdbe682ccecf846c718d738270b182df1e707b5810b338ee142b995b3",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-2efc8d53937e228c60bd8f82",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2308,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar debito tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ce888fb2b040fbfa100075de2dfc9506822fff7d62762fd32f66dd469cf669e7",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-6c2ff9a52484639f31201d3d",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.659,
+        "operation": null,
+        "question": "¿Cuál es el contenido de la nota?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T05:18:08.547571+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 22,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

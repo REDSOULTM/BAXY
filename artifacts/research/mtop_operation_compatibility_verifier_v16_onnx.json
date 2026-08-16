@@ -1,0 +1,41 @@
+{
+  "calibrated_onnx": {
+    "compatible_accuracy": 0.992784125,
+    "incompatible_accuracy": 0.991581479,
+    "threshold": 0.906282544
+  },
+  "cpu_latency_seconds": {
+    "cases": 198,
+    "maximum": 0.080792,
+    "mean": 0.052827,
+    "p50": 0.051212,
+    "p95": 0.068852,
+    "threads": 4
+  },
+  "measured_at": "2026-08-02T19:19:09.041812+00:00",
+  "model": {
+    "bytes": 1116285156,
+    "checker_passed": true,
+    "export_seconds": 13.567833,
+    "path": "D:\\BAXYRuntime\\experiments\\mtop-operation-compatibility-verifier-v16-onnx\\model.fp32.onnx",
+    "sha256": "680c0343169c113e0dd13d2d2b8e4385636de393a5a552be0805d3a537d0d24e"
+  },
+  "parity": {
+    "argmax_equal": 3312,
+    "cases": 3326,
+    "maximum_compatible_probability_delta": 0.998963371,
+    "threshold_decision_equal": 3306
+  },
+  "schema": "baxy.mtop-operation-compatibility-onnx.v1",
+  "scope": "development_validation_only_mtop_test_remains_sealed",
+  "source": {
+    "calibration": "artifacts\\research\\mtop_operation_compatibility_verifier_v16_calibration.json",
+    "calibration_sha256": "c099d07fcfa0878f50ec8be858bfffee1331ba678cf5913ae3cac80d9fc3aabd",
+    "checkpoint": "D:\\BAXYRuntime\\experiments\\mtop-operation-compatibility-verifier-v16",
+    "mtop_development_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "mtop_manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "mtop_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "mtop_test_content_read": false
+  },
+  "status": "rejected"
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "baxy.split-alias-localized-qbt-binding.v2",
+  "createdAtUtc": "2026-08-11T19:30:25.2303328Z",
+  "role": "opened_development_localized_split_alias_qbt_preregistration",
+  "programSha256": "b209a25f18831db3172ca1817bcd55bdb56f7350c1eab35adf89002fde64326a",
+  "test": {
+    "path": "D:/BAXY/source/tests/test_evaluate_split_alias_localized_qbt_v2.py",
+    "sha256": "d5b84d382369f71cf9a558d5ef30f055a1a51ab3fdf6c1e0c3c1bb81fc7373c9",
+    "result": "5/5 passed"
+  },
+  "base": {
+    "bindingPath": "D:/BAXY/source/artifacts/research/baxy_split_alias_ctc_guard_binding_20260811.json",
+    "bindingSha256": "cc0bff8da5cd897148f9bea16d14293df676edb9fd6e4aca6efd7ce83dda10a4",
+    "reportPath": "D:/BAXYRuntime/research/baxy_split_alias_ctc_guard_v1/report.v1.json",
+    "reportSha256": "1c10c98396c43e9e466be164a56f638b8ca6445692d7dba63a970cad10298fde"
+  },
+  "plannedOutput": "D:/BAXYRuntime/research/baxy_split_alias_localized_qbt_v2/report.v2.json",
+  "contract": {
+    "route": "bounded_split_phonetic_alias",
+    "locator": "parakeet_leading_two_words_mapped_to_original_audio",
+    "score": "ctc_target_vs_declared_confusable_qbt_margin",
+    "contextFrames": 10,
+    "decisionMarginGte": 0.5,
+    "allOtherRoutesUnchanged": true,
+    "positivePreservationRequired": true,
+    "negativeFalseActivationsRequired": 0,
+    "physicalV17Read": false,
+    "runtimeModificationAllowed": false,
+    "promotionEligible": false,
+    "effectsExecuted": 0
+  }
+}

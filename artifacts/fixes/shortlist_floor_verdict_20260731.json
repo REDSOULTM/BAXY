@@ -1,0 +1,92 @@
+{
+ "schema": "baxy.shortlist-floor-verdict.v1",
+ "measured_at_utc": "2026-07-31",
+ "state": "PROMOVIDO",
+ "component": "baxy_mind/planner.PlannerCatalog.shortlist, family ranking",
+ "why_this_and_not_the_model": "the policy schema's enum only admits shortlisted operations, so an operation the shortlist omits is one the model physically cannot name. A measurement of the policy's tool calling (policy_tool_quality_verdict_20260731.json) found the expected operation was never offered on 39.5% of turns whose answer is known: the model was losing before it was consulted. No prompt, schema or example change touches one of those turns.",
+ "defect": "the turn-evidence family expansion is advisory by contract -- its own docstring says it `never predicts a turn mode or selects an operation` -- but it ranked ABOVE the catalog's own semantic score. It returns up to MAX_CANDIDATE_FAMILIES (12) labels and each label pulls in up to three related families, so its two preference tiers could fill all ten family slots by themselves and the catalog's best semantic match never reached the model. In effect the advisory path was selecting which operations exist.",
+ "evidence_of_the_mechanism": {
+  "artifact": "shortlist_recall_20260731.json",
+  "detector": "scripts/detect_shortlist_recall.py",
+  "offline": "over the 57 frozen oracle cases: the catalog's own ranking offers the expected operation in 50, the product with the expansion in 34. 16 turns lost to the expansion, 0 rescued by it. The expansion's measured contribution on this corpus is strictly negative.",
+  "faithfulness": "59.6% offline matches the 60.5% measured live, so the offline reproduction is faithful and the knobs can be swept without the model.",
+  "examples": [
+   "`Haz una captura de pantalla`: not one candidate of the capture family was offered; P answered audio.microphone.mute, the least bad option it was given",
+   "`¿Cómo está el Wi-Fi?`: wifi.ensure.connected offered, wifi.status not",
+   "`Lista mis tareas pendientes`: the whole task family absent while the note family appears three times"
+  ]
+ },
+ "change": "MAX_CATALOG_GUARANTEED_FAMILIES reserves family slots for the catalog's own ranking before the preference tiers fill the rest. The expansion keeps contributing; it can no longer overrule the authenticated catalog.",
+ "knob_sweep": {
+  "method": "27 combinations of floor x per-family window x relevance band over the frozen oracle, in one process. Recall never travels alone: the mean shortlist length goes with it, because every added operation is prefill and this campaign already measured that putting the catalog in the system prefix made prefill worse (369.5 -> 420.9 ms).",
+  "chosen": {
+   "floor": 8,
+   "family_window": 3,
+   "relevance_band": 0.035
+  },
+  "why": "recall 50/57 -- the catalog's own ceiling -- at a mean shortlist of 20.6, which is no larger than today's. The window and the band are left untouched, keeping the blast radius to one knob.",
+  "rejected_with_mechanism": "relevance band 0.15 reaches 54/57, the best recall measured, and is REJECTED: it costs about seven more operations per prompt (mean 20.6 -> 27.25, against a cap of 28) and those extra operations are near-synonym siblings, which is exactly the population measured below to make the model choose wrongly. Four points of recall are not worth feeding the confusion.",
+  "reserve_retracted": "an earlier reading of this work worried that a floor of 8 would leave the expansion inert. The sweep refutes it: the expansion rescues 0 cases at EVERY floor and costs cases at every floor below 8. Two of ten slots is generous, not stingy."
+ },
+ "physical_ab": {
+  "artifact": "policy_tool_quality_20260731.json",
+  "method": "ABBA over whole sessions, 456 turns, the deterministic recogniser suspended so each frozen text is decided by P as an unrecognised paraphrase would be. The baseline arm sets the floor to zero, which reproduces the previous ranking exactly.",
+  "expected_operation_offered": {
+   "baseline": 0.605,
+   "candidate": 0.877
+  },
+  "accuracy_exact": {
+   "baseline": 0.447,
+   "candidate": 0.557
+  },
+  "mean_shortlist": {
+   "baseline": 21.3,
+   "candidate": 21.0
+  },
+  "prefill_ms_p50": {
+   "baseline": 292.1,
+   "candidate": 271.2
+  },
+  "decode_ms_p50": {
+   "baseline": 1644.7,
+   "candidate": 1667.6
+  },
+  "policy_calls": {
+   "baseline": 241,
+   "candidate": 233
+  },
+  "cases_improved": 10,
+  "cases_regressed": 3,
+  "reading": "+27.2 points of retrieval and +11.0 points of end accuracy, with the prompt no larger and prefill slightly better. The decode delta of +23 ms is within this workload's noise and is not claimed as an effect."
+ },
+ "regressions_not_hidden": {
+  "cases": [
+   {
+    "text": "Abre Opera",
+    "expected": "app.open",
+    "model_chose": "browser.navigate.named"
+   },
+   {
+    "text": "Abre Spotify",
+    "expected": "app.open",
+    "model_chose": "media.play.query"
+   },
+   {
+    "text": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+    "expected": "reminder.create",
+    "model_chose": "notification.schedule"
+   }
+  ],
+  "severity": "`Abre Spotify` -> media.play.query is not an accuracy point: it is playing music when the person asked to open an application. It is named here as an effect change, not as a score.",
+  "attribution": "NOT a retrieval failure. The expected operation was offered 4 of 4 times in BOTH arms. The floor changed which OTHER operations accompany it and the model preferred a near-synonym sibling.",
+  "ordering_hypothesis_refuted": "tested directly: on the reminder case the expected operation moved from position 10 to position 0 and the model still chose the one at position 9. The model is sensitive to the candidate SET, not to its order, so no reordering fixes this.",
+  "production_scope": "all three texts are owned by the deterministic recogniser in production and never reach P. The probe suspends it deliberately, so these regressions are real for paraphrases the recogniser misses and hypothetical for these exact strings.",
+  "verdict": "this belongs to the model bucket -- the right candidate was offered, at position 0 in one case, and was not chosen. It is the next target, and no retrieval change can address it."
+ },
+ "why_promoted_despite_them": "10 cases improved against 3 regressed, +27.2 points of retrieval, no prompt or prefill cost, and the three regressions are unchanged between floor 5 and floor 8 rather than aggravated by the larger floor. Holding the fix would keep 45 of 114 turns losing before the model is consulted in order to avoid three turns the recogniser already owns.",
+ "raises_the_ceiling": "every later prompt, schema or example change acts only on the turns where the candidate is present. Those went from 60.5% to 87.7% of the corpus, so this change also raises the ceiling of the model work that follows it.",
+ "effects_executed": 0,
+ "installation_touched": false,
+ "rollback": "set MAX_CATALOG_GUARANTEED_FAMILIES back to 0 in src/baxy_mind/planner.py; the named constants MAX_FAMILY_OPERATIONS and FAMILY_RELEVANCE_BAND are a behaviour-neutral refactor of the literals 3 and 0.035 and can stay.",
+ "gate": "test_source_quality.ps1 -Mode Full: 11/11 stages green. Python 2099 passed / 2 sanctioned skips / 382 subtests; .NET 2282 passed / 18 environmental skips (Contracts 54/0, Kernel 109/2, Providers 432/5, Setup 469/8, Integration 1218/3); Release build 0 warnings, 0 errors. R19 changes the shortlist ORDER, not its contract, so it adds no tests: its evidence is the retrieval oracle and the physical A/B."
+}

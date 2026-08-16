@@ -1,0 +1,1637 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-07-16T14:30:05.700887+00:00",
+  "complete": true,
+  "scope": "all_natural_historical_cases_planner_only_no_tool_execution",
+  "source_audit": "artifacts/planner_recovery/historical_compound_audit.json",
+  "model": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+  "core_catalog_count": 105,
+  "startup_and_total_seconds": 129.589,
+  "cases": [
+    {
+      "mission_id": "mission_user_mission_app_close_media_play_08bac768b9",
+      "objective": "cierra Spotify",
+      "historical_operations": [
+        "app.close",
+        "media.play"
+      ],
+      "seconds": 0.001,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "window.resolve",
+        "app.close"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_app_close_office_document_16c5c06b11",
+      "objective": "cierra Word",
+      "historical_operations": [
+        "app.close",
+        "office.document"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "window.resolve",
+        "app.close"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_app_close_streaming_navigate_window_manag_9dc8262180",
+      "objective": "cierra la ventana de YouTube",
+      "historical_operations": [
+        "app.close",
+        "streaming.navigate",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_close_window_manage_ab45b98b84",
+      "objective": "Cierra la pestaña o ventana que abriste para example.com",
+      "historical_operations": [
+        "app.close",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_browser_navigate_fi_a08c068b6a",
+      "objective": "abre Spotify, pon una playlist, baja el volumen, abre el navegador, ve a Google Docs y crea un documento nuevo",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "browser.navigate",
+        "filesystem.read",
+        "filesystem.write",
+        "media.play",
+        "office.document"
+      ],
+      "seconds": 0.006,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_browser_navigate_me_0a6ab5ccd7",
+      "objective": "abre Spotify, pon una playlist de estudio, baja el volumen y abre el navegador en Google Docs",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "browser.navigate",
+        "media.play"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_browser_navigate_me_5ca1d9c837",
+      "objective": "open Spotify, play a playlist, lower the volume, open the browser, go to Google Docs and create a new document",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "browser.navigate",
+        "media.play",
+        "office.document"
+      ],
+      "seconds": 0.001,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_media_play_2a6f74dd8b",
+      "objective": "abre Spotify, pon música y baja volumen a 20",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "media.play"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_media_play_message__e0f519e0dc",
+      "objective": "manda un whatsapp a Ana avisando que llego, pon una alarma en 30 minutos, abre Spotify, pon musica y baja el volumen, y baja el brillo",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "media.play",
+        "message.send",
+        "notification.manage",
+        "system.settings"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_media_play_notifica_b9a34c31da",
+      "objective": "text Ana on WhatsApp that I'm here, set an alarm for 30 minutes, open Spotify, play music and turn the volume down, and lower the brightness",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "media.play",
+        "notification.manage",
+        "system.settings"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_a526ca21a3",
+      "objective": "abre Chrome y ve a google.com",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_media_play_web__d59de51fa8",
+      "objective": "connect to wifi, open Spotify, play a playlist, open the browser and search the song lyrics",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "media.play",
+        "web.search",
+        "wifi.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_office_document_0b4ae0862a",
+      "objective": "abre el navegador, ve a YouTube, busca un tutorial de Excel, reproducelo, abre Excel y crea una tabla nueva",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "office.document",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "seconds": 5.365,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_streaming_navig_214f0ffd14",
+      "objective": "abre web de YouTube aunque exista app parcial",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "streaming.navigate"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "streaming.navigate"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_web_search_f3d47b7021",
+      "objective": "abre Chrome y busca Carter",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_wifi_manage_985fbd6ba2",
+      "objective": "conecta el wifi y abre Chrome",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "wifi.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_calendar_manage_6844c1d031",
+      "objective": "open notepad and write meeting notes",
+      "historical_operations": [
+        "app.open",
+        "calendar.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_filesystem_read_filesystem_write_4015e9f8cf",
+      "objective": "abre Word, escribe el titulo y guarda el documento",
+      "historical_operations": [
+        "app.open",
+        "filesystem.read",
+        "filesystem.write",
+        "office.document"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_filesystem_read_office_document_d84d1a839e",
+      "objective": "Abre Word y ayúdame a escribir un documento”.",
+      "historical_operations": [
+        "app.open",
+        "filesystem.read",
+        "office.document"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_filesystem_write_office_document_7644ef9458",
+      "objective": "open Word, type the heading and save the file",
+      "historical_operations": [
+        "app.open",
+        "filesystem.write",
+        "office.document"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_game_install_cfd81173a7",
+      "objective": "abre steam y instala fall guys",
+      "historical_operations": [
+        "app.open",
+        "game.install"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_game_install_game_manage_43cfcafc43",
+      "objective": "abre Steam, busca el juego y empieza la descarga",
+      "historical_operations": [
+        "app.open",
+        "game.install",
+        "game.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_game_launch_8c0c012bed",
+      "objective": "Abre Steam y ejecuta el juego instalado Portal",
+      "historical_operations": [
+        "app.open",
+        "game.launch"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "game.catalog.list",
+        "game.launch"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_game_manage_5b5794d5e4",
+      "objective": "abre Steam, ve a biblioteca, busca Batman y dime si está instalado",
+      "historical_operations": [
+        "app.open",
+        "game.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "game.catalog.list"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_media_play_9c6b7bbb66",
+      "objective": "abre la app predeterminada de música",
+      "historical_operations": [
+        "app.open",
+        "media.play"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_media_play_web_search_c4c89b18b7",
+      "objective": "podrias abrir spotify y buscar a bad bunny",
+      "historical_operations": [
+        "app.open",
+        "media.play",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_office_document_7692beba1b",
+      "objective": "abre Word y escribe el titulo del informe",
+      "historical_operations": [
+        "app.open",
+        "office.document"
+      ],
+      "seconds": 3.854,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "office.document.create"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_peripheral_manage_streaming_navi_bf9230f092",
+      "objective": "Si daleee, necesito que pruebes todooo en vivo, todas las funciones que presentare mñn pruebas end to end , en vivo, quiero ver como escribes por wsp y discord, como muteas el microfono en discord como le hablas a \"Shootercoc\" , quiero ver las tareas y notas, quiero verte abrir steam, quiero ver que pongas una serie en disney o netflix, quiero escucahr a baxy y cada respuesta , leer pantalla, buscar en internet, control de mediaa, alarmas recordatorios, estaado del pc , TODO!!!",
+      "historical_operations": [
+        "app.open",
+        "peripheral.manage",
+        "streaming.navigate",
+        "task.manage",
+        "vision.describe",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_task_manage_eca6600a29",
+      "objective": "que haya son entrenamientos focalizados cien por ciento en el español. Obviamente, eso no quiere decir que comandos como abre Steam no funcionen porque tiene la palabra Steam. ¿Me entiendes? Entonces, focalízalo todo en el español para lograr el mayor la mayor cantidad de funcionalidad en español, y ya próximamente expandiremos y haremos un entrenamiento basado para cada idioma.",
+      "historical_operations": [
+        "app.open",
+        "task.manage"
+      ],
+      "seconds": 4.294,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_vision_describe_ba7cdf625f",
+      "objective": "abre la app de cámara",
+      "historical_operations": [
+        "app.open",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_audio_volume_7922df2746",
+      "objective": "sube el volumen y silencia las notificaciones",
+      "historical_operations": [
+        "audio.mute",
+        "audio.volume"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_media_control_media_play_006ff8e7cd",
+      "objective": "silencia el sonido y pausa la cancion",
+      "historical_operations": [
+        "audio.mute",
+        "media.control",
+        "media.play"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "audio.mute",
+        "media.control"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_media_play_notification_manage_a97677f29f",
+      "objective": "baja el brillo, silencia el sonido, pon no molestar, abre el lector de PDF, abrelo en pantalla completa y pon un temporizador de 25 minutos",
+      "historical_operations": [
+        "audio.mute",
+        "media.play",
+        "notification.manage",
+        "system.settings",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_media_play_system_settings_395c5af3c1",
+      "objective": "baja el brillo, silencia el sonido, pon no molestar y abre el lector de PDF",
+      "historical_operations": [
+        "audio.mute",
+        "media.play",
+        "system.settings"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_peripheral_manage_221202e63a",
+      "objective": "unmute my microphone in Discord",
+      "historical_operations": [
+        "audio.mute",
+        "peripheral.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_vision_describe_72de07643d",
+      "objective": "mute the sound and dim the screen",
+      "historical_operations": [
+        "audio.mute",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_bluetooth_manage_6e37d93ede",
+      "objective": "conecta el bluetooth y sube el volumen",
+      "historical_operations": [
+        "audio.volume",
+        "bluetooth.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_browser_navigate_media_play__79d82d7beb",
+      "objective": "open the browser, go to YouTube, search lofi, play it and lower the volume",
+      "historical_operations": [
+        "audio.volume",
+        "browser.navigate",
+        "media.play",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "seconds": 8.022,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_browser_navigate_streaming_n_27c8b87253",
+      "objective": "abre el navegador, ve a YouTube, busca lofi, ponla a sonar y baja el volumen",
+      "historical_operations": [
+        "audio.volume",
+        "browser.navigate",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_media_play_9c98045d04",
+      "objective": "turn up the volume and play some jazz",
+      "historical_operations": [
+        "audio.volume",
+        "media.play"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_media_play_peripheral_manage_548412dc33",
+      "objective": "AEC con señal de referencia — cuando el Echo reproduce música, RESTA del micrófono lo que él mismo está emitiendo. Por eso le hablás encima de la música a todo volumen. Esto NO es el modelo: es el truco de señal. Nosotros aún no lo tenemos (es el P1 del roadmap, investigado y documentado).\n\n\nEntonces aplica esto mientras",
+      "historical_operations": [
+        "audio.volume",
+        "media.play",
+        "peripheral.manage",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_peripheral_manage_2f461bf083",
+      "objective": "pon el volumen del micrófono a 10",
+      "historical_operations": [
+        "audio.volume",
+        "peripheral.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_streaming_navigate_31e94256b8",
+      "objective": "bajá el volumen y poné una peli en Netflix",
+      "historical_operations": [
+        "audio.volume",
+        "streaming.navigate"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_system_settings_156adfca8c",
+      "objective": "subí el volumen y bajá el brillo",
+      "historical_operations": [
+        "audio.volume",
+        "system.settings"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_filesystem_trash_48ef24633d",
+      "objective": "hacé un backup antes de borrar esta carpeta",
+      "historical_operations": [
+        "backup.manage",
+        "filesystem.trash"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_filesystem_write_be5c04579d",
+      "objective": "crea backup, edita archivo y corre test afectado",
+      "historical_operations": [
+        "backup.manage",
+        "filesystem.write"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_media_control_window_manage_d95d7d22f8",
+      "objective": "Restaura el respaldo anterior",
+      "historical_operations": [
+        "backup.manage",
+        "media.control",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_task_manage_window_manage_a80ca5f8ca",
+      "objective": "Debe aplicarse antes de iniciar BAXY y requiere reiniciar el proceso. El flag apagado no abre ni migra `BAXY_TOOLING_V2_DATA`; el estado v2 se conserva para una reactivación posterior. El rollback restaura compatibilidad legacy, no sus garantías de outbox, claim/ACK o privacidad, y no debe usarse para “resolver” una entrega v2 pendiente sin inspeccionarla primero.",
+      "historical_operations": [
+        "backup.manage",
+        "task.manage",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_window_manage_ad7ed099a9",
+      "objective": "restaura la última ventana minimizada por Carter",
+      "historical_operations": [
+        "backup.manage",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_bluetooth_manage_system_settings_vision_d_118ea77611",
+      "objective": "device_settings\t27\twifi/bluetooth/brillo — se solapa con system\nSi solapa unelas en una \nbrowser_real\t17\tPlaywright; tenés DOS browsers (browser+browser_real) → fusionar a uno\nSi haz eso \nOKey perfectoo daleee, crees que ahora cuando hagas eso, seremos capaces de finetunear el llm y el encoder con esta nueva vision y obtener mejores resultados?, que tan mejores?",
+      "historical_operations": [
+        "bluetooth.manage",
+        "system.settings",
+        "vision.describe",
+        "wifi.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_bluetooth_manage_web_search_c1eb71dd6f",
+      "objective": "Busca en MercadoLibre audífonos bluetooth",
+      "historical_operations": [
+        "bluetooth.manage",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_calendar_manage_web_sear_4a09364d02",
+      "objective": "connect to wifi, open my email, read the last message, open the browser, search the address and add it to the calendar",
+      "historical_operations": [
+        "browser.navigate",
+        "calendar.manage",
+        "web.search",
+        "wifi.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_media_control_fd058c5fe1",
+      "objective": "abre google.com y resume la página",
+      "historical_operations": [
+        "browser.navigate",
+        "media.control"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_media_play_streaming_nav_052d53121b",
+      "objective": "Abre youtube y pon un video",
+      "historical_operations": [
+        "browser.navigate",
+        "media.play",
+        "streaming.navigate"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_media_play_streaming_nav_c330bd70c1",
+      "objective": "abre YouTube y busca música lofi",
+      "historical_operations": [
+        "browser.navigate",
+        "media.play",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_media_play_web_search_f9f6138de6",
+      "objective": "abre el navegador, busca Python y reproduce un tutorial",
+      "historical_operations": [
+        "browser.navigate",
+        "media.play",
+        "web.search"
+      ],
+      "seconds": 0.581,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_streaming_navigate_0c5564401f",
+      "objective": "abre YouTube",
+      "historical_operations": [
+        "browser.navigate",
+        "streaming.navigate"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "streaming.navigate"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_streaming_navigate_web_s_42766ae002",
+      "objective": "abre YouTube y busca lofi",
+      "historical_operations": [
+        "browser.navigate",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_streaming_navigate_web_s_ae9124587f",
+      "objective": "abre YouTube, busca música lofi y no reproduzcas nada",
+      "historical_operations": [
+        "browser.navigate",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_web_search_9220c7f947",
+      "objective": "abre el navegador y busca Python",
+      "historical_operations": [
+        "browser.navigate",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_media_control_6a2a97fd9f",
+      "objective": "El evento de la Bienal Encuentros 04 con la ceremonia de bendicion de la Bienal de Singapur 2006 tuvo lugar aqui el 1 de diciembre de 2005 .\nSimplifica el texto anterior.",
+      "historical_operations": [
+        "calendar.manage",
+        "media.control"
+      ],
+      "seconds": 4.382,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_reminder_create_ece9b5b808",
+      "objective": "abre el calendario, agenda una reunion el lunes y ponme un recordatorio",
+      "historical_operations": [
+        "calendar.manage",
+        "reminder.create"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_vision_describe_95c2a7e17b",
+      "objective": "OK, but could you describe an event in Europe ?",
+      "historical_operations": [
+        "calendar.manage",
+        "vision.describe"
+      ],
+      "seconds": 4.693,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_clipboard_manage_ce7e1fdc11",
+      "objective": "take a screenshot and copy it to the clipboard",
+      "historical_operations": [
+        "capture.screenshot",
+        "clipboard.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_vision_describe_554e8d2305",
+      "objective": "toma screenshot de pantalla completa",
+      "historical_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "capture.screenshot"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_web_search_bec82f9b3d",
+      "objective": "Many tools require a numeric ID you don't have. NEVER ask the user for an ID. Instead, ALWAYS rewrite to: search(query) → screenshot → vision_describe_dialog → click first result.",
+      "historical_operations": [
+        "capture.screenshot",
+        "web.search"
+      ],
+      "seconds": 3.622,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_window_manage_7a81131a17",
+      "objective": "toma screenshot de la ventana actual",
+      "historical_operations": [
+        "capture.screenshot",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_search_office_document_d26cf82b34",
+      "objective": "find the spreadsheet with the budget in my documents folder",
+      "historical_operations": [
+        "filesystem.search",
+        "office.document"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_search_task_manage_web_search_12c60070ce",
+      "objective": "busca archivo en todo el disco C",
+      "historical_operations": [
+        "filesystem.search",
+        "task.manage",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_search_web_search_304d3917b6",
+      "objective": "busca un archivo llamado ContextoCarter.md",
+      "historical_operations": [
+        "filesystem.search",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "filesystem.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_transfer_window_manage_d057d84333",
+      "objective": "mueve archivo X a Y",
+      "historical_operations": [
+        "filesystem.transfer",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_write_note_manage_bea17f9b4a",
+      "objective": "crea archivo sandbox/carter_test/nota.txt con hola",
+      "historical_operations": [
+        "filesystem.write",
+        "note.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "filesystem.write.text"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_write_office_document_95e94c4b7f",
+      "objective": "crea un documento, escribe el resumen y exportalo a PDF",
+      "historical_operations": [
+        "filesystem.write",
+        "office.document"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_write_window_manage_90e9e2f0bf",
+      "objective": "crea una carpeta Viaje, mueve las fotos ahi, comprimela y mandala por correo",
+      "historical_operations": [
+        "filesystem.write",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_game_install_media_play_95cbd6216a",
+      "objective": "Instálame Batman Arkham Knight en Steam y pon una canción de Michael",
+      "historical_operations": [
+        "game.install",
+        "media.play"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_game_install_web_search_667ad93882",
+      "objective": "Descarga Worms Rumble en Steam. IMPORTANTE: primero busca el AppID via https://store.steampowered.co",
+      "historical_operations": [
+        "game.install",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_media_play_dd65cb1f6d",
+      "objective": "pausa la musica",
+      "historical_operations": [
+        "media.control",
+        "media.play"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "media.control"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_office_document_6a36dbe45a",
+      "objective": "Porque esta wake word sera mejor que la anterior?",
+      "historical_operations": [
+        "media.control",
+        "office.document"
+      ],
+      "seconds": 4.534,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_streaming_navigate_7d7d93499c",
+      "objective": "¿A cuál categoría pertenece la siguiente pregunta?: ¿Cuál fue la primera película de Bond en la que actuó Daniel Craig?",
+      "historical_operations": [
+        "media.control",
+        "streaming.navigate"
+      ],
+      "seconds": 3.361,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_streaming_navigate_vision_d_ea46b2b497",
+      "objective": "[external unsupported block: image]\n\n[external unsupported block: image]\n\nNo esta funcionando bien despues de algunos turnos, ese \"close\" fue un \"hola\" y el mansaje anterior era \"Cuando salio la serie superman y lois\", creo que el llm se esta cegando por los turnos anteriores (QWEN)",
+      "historical_operations": [
+        "media.control",
+        "streaming.navigate",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_task_manage_bab0a2b7a2",
+      "objective": "resume log largo sin cargar todo si no hace falta",
+      "historical_operations": [
+        "media.control",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_vision_describe_f4c59321c3",
+      "objective": "“Phone’s screen is broken, I want my money back” what is the sentiment of the previous statement?",
+      "historical_operations": [
+        "media.control",
+        "vision.describe"
+      ],
+      "seconds": 2.604,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_window_manage_f393735304",
+      "objective": "switch to the previous window",
+      "historical_operations": [
+        "media.control",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_message_send_22d94e802e",
+      "objective": "manda un whatsapp a Música que diga ya voy",
+      "historical_operations": [
+        "media.play",
+        "message.send"
+      ],
+      "seconds": 5.629,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_message_send_notification_mana_e8ae272e24",
+      "objective": "manda un whatsapp a Juan, dile que ya voy y pon una alarma en 10 minutos",
+      "historical_operations": [
+        "media.play",
+        "message.send",
+        "notification.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_message_send_task_manage_3321bd1477",
+      "objective": "Listo ya no estoy jugando, me voy a dormir mi pc es todo tuyo, si mandas mensajesa wsp manda al canal \"Música\" , si mandas a discord manda a \"**ShooterCOCK**\" tienes permisos totales en mi pc, te dejo confio en ti.",
+      "historical_operations": [
+        "media.play",
+        "message.send",
+        "task.manage"
+      ],
+      "seconds": 3.721,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_notification_manage_e93ed75e5c",
+      "objective": "Pon una alarma para las 7 de la mañana en el reloj",
+      "historical_operations": [
+        "media.play",
+        "notification.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_office_document_ddaa6814c9",
+      "objective": "Ahora quiero que inicies el wake word y toido el sistema de transcripcion, voy a usar el pc , hablar , poner videoos, si se detecta un \"Baxy\", es falso, porque no lo dire y los videos que vere no diran es apalabra\nmonitorie constante",
+      "historical_operations": [
+        "media.play",
+        "office.document"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_streaming_navigate_9ba7f2433d",
+      "objective": "pon cualquier video de YouTube",
+      "historical_operations": [
+        "media.play",
+        "streaming.navigate"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_streaming_navigate_web_search_f46c6adade",
+      "objective": "Busca en YouTube lofi hip hop y reproduce el primer video",
+      "historical_operations": [
+        "media.play",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search",
+        "streaming.navigate"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_system_power_561953e137",
+      "objective": "restart Spotify",
+      "historical_operations": [
+        "media.play",
+        "system.power"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_system_settings_1167fea25c",
+      "objective": "pon musica y sube el brillo",
+      "historical_operations": [
+        "media.play",
+        "system.settings"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_task_manage_50a71c6e26",
+      "objective": "⏳ Pendiente (30 segundos, cuando estés libre): \"Baxy\" ENCIMA de música fuerte, crudo vs cancelado — el A/B final antes de encender el flag.\n\nDale como lo hago, corro la gui?",
+      "historical_operations": [
+        "media.play",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_vision_describe_47fe2dfbef",
+      "objective": "Pon mi pantalla a 60hz pls",
+      "historical_operations": [
+        "media.play",
+        "vision.describe"
+      ],
+      "seconds": 5.208,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_web_search_307f6c74ab",
+      "objective": "spotify:track:<id>`, `spotify:album:<id>`, `spotify:playlist:<id>`, `spotify:artist:<id>`, `spotify:search:<query>` (URL-encoded)",
+      "historical_operations": [
+        "media.play",
+        "web.search"
+      ],
+      "seconds": 5.416,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_window_manage_23bd79ecd1",
+      "objective": "Cambia a la ventana de Spotify",
+      "historical_operations": [
+        "media.play",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "window.resolve",
+        "window.focus"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_message_send_office_document_peripheral_m_6284ec7c55",
+      "objective": "[external unsupported block: image]\n\nBaxy se esta activando incluso con el microfono en off \n\nTambien muchas veces se envia un mensaje al llm sin pasar por el wake word, porque no suena el soinido de wake word y se manda un mensaje igual",
+      "historical_operations": [
+        "message.send",
+        "office.document",
+        "peripheral.manage",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_message_send_task_manage_bfb9c75e5f",
+      "objective": "Dame un prompt paraa que codex gpt 5.5 ponga en prueba todo esto resalmente end to end, tu no lo hiciste, en ningun momento vi a whatsapp abrirse para mandar un mensaje  por ej, asi que dejemos que chat gpt codex haga la validicacion denuevo y que arregle si es que encuentra algun error",
+      "historical_operations": [
+        "message.send",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_message_send_web_search_c1fca2423e",
+      "objective": "Dame un prompt para codex para mandar a buscar solucion a lo de discord, dile que investigue papers/documentos, usaurios reales y lo arregle mientras nosotros seguimos en otros temas",
+      "historical_operations": [
+        "message.send",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_note_manage_reminder_create_b5106ca21b",
+      "objective": "creá una nota con la lista del súper y ponéme un recordatorio para mañana a las 9",
+      "historical_operations": [
+        "note.manage",
+        "reminder.create"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_ocr_read_system_status_vision_describe_ce21a79678",
+      "objective": "OCR PaddleOCR full-screen (CPU)",
+      "historical_operations": [
+        "ocr.read",
+        "system.status",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_ocr_read_vision_describe_84bc963b69",
+      "objective": "lee el texto en mi pantalla",
+      "historical_operations": [
+        "ocr.read",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_office_document_task_manage_89d766a24f",
+      "objective": "Mientras revisa todo el sistema de wake word y transcripciones , quiero que lo audites, in vesitges papers, documentos, sigue claude.md , llevalo a su techo, sin reentrenar el wake word pls",
+      "historical_operations": [
+        "office.document",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_office_document_web_search_104ef62591",
+      "objective": "Sinceramente el wake word ya esta entrenado, intenta encontrar otra razon para los fake, investiga en internet , documentos, papers, usuarios, etc",
+      "historical_operations": [
+        "office.document",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_reminder_create_task_manage_d4de6e9442",
+      "objective": "OKey quiero ahora que te pongas un recordatorio de 30min cada uno , solo para revisar la velocidad, para verificar que todo vaya bien con el training pls",
+      "historical_operations": [
+        "reminder.create",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_reminder_create_vision_describe_8c52ebb3ad",
+      "objective": "generá una imagen de un atardecer y avisame cuando esté lista",
+      "historical_operations": [
+        "reminder.create",
+        "vision.describe"
+      ],
+      "seconds": 13.595,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_routine_manage_task_manage_c919790a8d",
+      "objective": "programá una tarea que se repita todos los días a las 9",
+      "historical_operations": [
+        "routine.manage",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_streaming_navigate_task_manage_919ed25b40",
+      "objective": "motor importa y resuelve plataformas; reproducción real pendiente de prueba con sesión de streaming activa",
+      "historical_operations": [
+        "streaming.navigate",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_streaming_navigate_web_search_75de56f9cb",
+      "objective": "**Verificado en vivo (sesión elevada):** perfil BAXY borrado -> re-seed -> 298 archivos, cookies_ok=True (VSS copió Cookies; único skip: Cookies-journal, transitorio) -> Netflix /search?q=dark, Disney+ /browse/search y Prime Video HOME cargan los tres LOGUEADOS, sin login wall. El navegador del usuario nunca se tocó. Suite 60 passed + 1 skip (5 tests de seed nuevos: layout Opera plano y Chrome Default, source ausente, skip de gigantes, cadena de fallback a VSS).",
+      "historical_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_streaming_navigate_window_manage_1175105e0d",
+      "objective": "cerrá la ventana de YouTube",
+      "historical_operations": [
+        "streaming.navigate",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_power_task_manage_431e304aa6",
+      "objective": "Okey reinicia mi pc , te  permiso , quiero que al rieniciarlo a la vuleta de la sesion cierres absolutamente todo, y dejes solo visual estudio, apollo y el ft, para hacer que el training sea lo mas rapido posible, te parece bien?",
+      "historical_operations": [
+        "system.power",
+        "task.manage"
+      ],
+      "seconds": 13.268,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_settings_vision_describe_067dc6c902",
+      "objective": "NEcesito casos de uso que aporten a un apresentacion de pre tesis, por ej : \nBrillo de pantalla\t81\t\"subí el brillo\", \"bajá el brillo\", \"brillo al 50\"\nQué hora es\t52\t\"qué hora es\", \"dame la hora\"\nNo me sirven\nSIno las categorias en sii, cosas llamativas",
+      "historical_operations": [
+        "system.settings",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_status_task_manage_f0bd85f343",
+      "objective": "GPU\t4,4GB (QAT)\t4,4GB (igual — mismo modelo)\nQat no pesa 4,4gb\nEso es falso, puedes cargar una parte de ram?¡ para mantenerlo abajo de 3gb de vram el programa completo? incluyendolo todo pls",
+      "historical_operations": [
+        "system.status",
+        "task.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_status_task_manage_vision_describe_aede6cbeac",
+      "objective": "Modelo FT Q4_K_M (no el QAT), visión residente en GPU, ctx 12288.\nPero yo quiero que el vram sea el que tiene cat y todo los cambios que hicismos",
+      "historical_operations": [
+        "system.status",
+        "task.manage",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_status_vision_describe_3c64075a19",
+      "objective": "[external unsupported block: image]\n\nQueria saber como iba, la gpu aun esta en uso, escribi lo ultimo por error la pregunta era, como va?",
+      "historical_operations": [
+        "system.status",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_status_web_search_b495fd8988",
+      "objective": "busca precios actuales de una GPU",
+      "historical_operations": [
+        "system.status",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_task_manage_vision_describe_44a2cc2edd",
+      "objective": "<ide_opened_file>The user opened the file %USERPROFILE%\\Desktop\\ETC\\Programacion\\BAXY\\main.py in the IDE. This may or may not be related to the current task.</ide_opened_file>\n\n[external unsupported block: image]\n\n[external unsupported block: image]\n\nRevisa los ultimos logs de baxy, esta funcionando horrible",
+      "historical_operations": [
+        "task.manage",
+        "vision.describe"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_task_manage_vision_describe_window_manage_005a4a16bc",
+      "objective": "<ide_opened_file>The user opened the file %USERPROFILE%\\Desktop\\ETC\\Programacion\\BAXY\\main.py in the IDE. This may or may not be related to the current task.</ide_opened_file>\n\n[external unsupported block: image]\n\nArregla esto, baxy se inicia con todo ese contorno sin usar cuando realmente deberia adaptarse al contorno de la ventana",
+      "historical_operations": [
+        "task.manage",
+        "vision.describe",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_task_manage_web_search_f7a0ea83b3",
+      "objective": "Neesito que el sistema tenga skills como cualquier bien llm como chatgpt o claude, investiga como hacerlo posible y llevarlo a su techo maximo, investigando en internet, documentos , papers ,etc \n4. NO, 1ero consolidamos todo lo que tenemos y despues nos expandimos a mas tools\n5. Si , llevalo a su techo maximo\n6. Llevalo a su techo maximo y arreglalo\nHaz todo c tambien , menos el 10, porque eso lo dejamos para despues",
+      "historical_operations": [
+        "task.manage",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "conversation",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_task_manage_window_manage_f8c89d935b",
+      "objective": "si la ventana activa dice Steam no respondas todo como Steam",
+      "historical_operations": [
+        "task.manage",
+        "window.manage"
+      ],
+      "seconds": 3.714,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_vision_describe_web_search_442e2144d8",
+      "objective": "busca imagen de corte bob lino",
+      "historical_operations": [
+        "vision.describe",
+        "web.search"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    },
+    {
+      "mission_id": "mission_user_mission_vision_describe_window_manage_ef3156ecb2",
+      "objective": "observa la pantalla y dime qué ventana está activa",
+      "historical_operations": [
+        "vision.describe",
+        "window.manage"
+      ],
+      "seconds": 15.014,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": []
+    },
+    {
+      "mission_id": "mission_user_mission_web_search_window_manage_a71db076d9",
+      "objective": "La ventana activa es Steam; busca Batman en Google",
+      "historical_operations": [
+        "web.search",
+        "window.manage"
+      ],
+      "seconds": 0.0,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search"
+      ]
+    }
+  ],
+  "summary": {
+    "evaluated": 123,
+    "kind_counts": {
+      "plan": 27,
+      "clarify": 71,
+      "conversation": 25
+    },
+    "safe_rejections": 0,
+    "request_errors": 0,
+    "private_operations_accepted": 0,
+    "tools_executed": 0,
+    "status": "passed"
+  },
+  "stderr": "W0716 10:28:03.225000 59776 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs.\n"
+}

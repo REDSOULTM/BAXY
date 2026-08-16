@@ -1,0 +1,61 @@
+{
+  "schema": "baxy.hyperspotter-fusion-lexical-guard-development.v3",
+  "measuredAtUtc": "2026-08-06T12:46:32.971106+00:00",
+  "scope": "legacy_and_open_negative_selected_expanded_excluded_product_capture",
+  "sources": {
+    "expandedCorpusManifestSha256": "8c505d4abbf092404f71aa9c313ff2b4054a8c15f68721bbb4ccdae076a9c2b2",
+    "stage1ModelSha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "ctcVerifierManifestSha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+    "legacyProductReportSha256": "1a90944356541b811353ff0656eb88f519ffcccab91d42b4e1689db61d8db6f5",
+    "negativeHoldoutReportSha256": "8c582921eba872a0af001770857d011519cab8ae5efa935da05bce60f4a1b43f",
+    "linearNegativeRegressionSha256": "1e455700066cf22b0dfabe7b1ffb1bf5ec3048095dc1903fc177ca0722fd95bf",
+    "rawFusionAuditSha256": "8785325ea493024cedac143301fa3fa40987c452da946ca123d9c7120999ab70",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf"
+  },
+  "policy": {
+    "formula": "established_ctc OR (continuous_fusion AND exact_lexical_target)",
+    "selectionPartition": "human_legacy_plus_previously_opened_negative_regression",
+    "expandedPartitionUsedForSelection": false,
+    "establishedCtcLegacyPositiveHits": 14,
+    "establishedCtcLegacyPositiveTotal": 14,
+    "establishedCtcLegacyFalseHits": 0,
+    "eligibleNegativeTranscripts": 5854,
+    "eligibleNegativeExactLexicalTargets": 0,
+    "linearFusionNegativeFalseActivations": 17
+  },
+  "expandedStage1": {
+    "positiveProposals": 3,
+    "negativeProposals": 5,
+    "positiveExactLexicalTargets": 1,
+    "negativeExactLexicalTargets": 0
+  },
+  "expandedEstablishedCtc": {
+    "positiveHits": 1,
+    "positiveTotal": 4,
+    "falseHits": 0,
+    "negativeTotal": 8,
+    "gatePassed": false
+  },
+  "expandedContinuousFusion": {
+    "positiveHits": 2,
+    "positiveTotal": 4,
+    "falseHits": 0,
+    "negativeTotal": 8,
+    "gatePassed": false
+  },
+  "expandedGuardedPolicy": {
+    "positiveHits": 1,
+    "positiveTotal": 4,
+    "falseHits": 0,
+    "negativeTotal": 8,
+    "gatePassed": false
+  },
+  "runtimeSeconds": 24.177909499965608,
+  "expandedHumanDevelopmentAudioAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "audioTranscriptsOrFilenamesRetained": false,
+  "candidateFrozen": true,
+  "productOperatingPoint": false,
+  "effectsExecuted": 0
+}

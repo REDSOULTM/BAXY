@@ -1,0 +1,164 @@
+{
+  "schema": "baxy-voice-system-gate-v1",
+  "measured_at": "2026-07-27T06:21:50.023661+00:00",
+  "status": "failed",
+  "architecture": {
+    "wake": "LiveKit WakeWord ONNX acoustic detector + 2 s pre-roll; no ASR activation",
+    "stt": "Parakeet TDT 0.6B v3 int8 final/AEC; Nemotron 3.5 Streaming only partial after an authorized turn",
+    "streaming_preview_requested": false,
+    "vad": "Silero VAD 6.2.1 ONNX/CPU",
+    "tts": "Windows SAPI installed voice",
+    "aec": "WASAPI loopback + delay/direct-path + NLMS",
+    "barge_in": "VAD onset + loopback echo correlation + SAPI purge"
+  },
+  "probe": {
+    "available": true,
+    "input": true,
+    "stt": true,
+    "vad": true,
+    "tts": true,
+    "aec": true,
+    "ducking": true,
+    "missing": [],
+    "sttModel": "parakeet-tdt-0.6b-v3-int8",
+    "streamingStt": false,
+    "streamingSttModel": null,
+    "wakeWord": false,
+    "wakeBackend": "unavailable",
+    "wakeWordModel": null,
+    "wakeWordPhrase": null,
+    "wakeWordError": "wake_word_manifest_missing",
+    "lexicalWakeFallback": false
+  },
+  "distributions": [
+    {
+      "distribution": "sherpa-onnx",
+      "expected": "1.13.4",
+      "actual": "1.13.4",
+      "license": "Apache-2.0",
+      "ok": true
+    },
+    {
+      "distribution": "livekit-wakeword",
+      "expected": "0.2.1",
+      "actual": "0.2.1",
+      "license": "Apache-2.0",
+      "ok": true
+    },
+    {
+      "distribution": "silero-vad",
+      "expected": "6.2.1",
+      "actual": "6.2.1",
+      "license": "MIT",
+      "ok": true
+    },
+    {
+      "distribution": "sounddevice",
+      "expected": "0.5.5",
+      "actual": "0.5.5",
+      "license": "MIT",
+      "ok": true
+    },
+    {
+      "distribution": "pywin32",
+      "expected": "311",
+      "actual": "311",
+      "license": "PSF",
+      "ok": true
+    },
+    {
+      "distribution": "PyAudioWPatch",
+      "expected": "0.2.12.8",
+      "actual": "0.2.12.8",
+      "license": "Apache-2.0",
+      "ok": true
+    },
+    {
+      "distribution": "pycaw",
+      "expected": "20251023",
+      "actual": "20251023",
+      "license": "MIT",
+      "ok": true
+    }
+  ],
+  "forbidden_product_imports": [],
+  "wake": {
+    "backend": "unavailable",
+    "model": null,
+    "phrase": null,
+    "error": "wake_word_manifest_missing",
+    "calibrated_model_required": true,
+    "lexical_fallback": {
+      "role": "explicit compatibility fallback / post-KWS prefix cleanup",
+      "cases": [
+        {
+          "matched": true,
+          "expected_match": true,
+          "command_ok": true
+        },
+        {
+          "matched": true,
+          "expected_match": true,
+          "command_ok": true
+        },
+        {
+          "matched": false,
+          "expected_match": false,
+          "command_ok": true
+        },
+        {
+          "matched": false,
+          "expected_match": false,
+          "command_ok": true
+        }
+      ],
+      "passed": true
+    }
+  },
+  "aec": {
+    "erle_db": 61.01,
+    "passed": true
+  },
+  "ducking": {
+    "ducked": true,
+    "restored": true,
+    "level_reduced": true,
+    "exact_restore": true,
+    "passed": true
+  },
+  "hardware": {
+    "load_seconds": 3.995,
+    "ready_event": true,
+    "input_opened": true,
+    "loopback_active": true,
+    "wake_backend": "unavailable",
+    "wake_word_model": null,
+    "transcript_events_count_only": 0,
+    "last_error": null,
+    "historical_user_clip": {
+      "available": true,
+      "stt_nonempty": true,
+      "entity_recovered": false,
+      "passed": false
+    },
+    "passed": false
+  },
+  "tts": {
+    "physical_output": true,
+    "available": true,
+    "accepted": true,
+    "observed_speaking": true,
+    "cancelled": true,
+    "state_transitions": [
+      true,
+      false
+    ],
+    "stopped": true,
+    "last_error": null,
+    "passed": true
+  },
+  "requires_user_voice": [
+    "custom acoustic Baxy model evaluated for recall, false-reject rate and false activations in the user's room",
+    "acoustic human barge-in over loudspeaker playback"
+  ]
+}

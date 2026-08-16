@@ -1,0 +1,23 @@
+{
+    "schema":  "baxy.audit.privacy-readonly-sanitized.v1",
+    "operation":  "network.ip.list",
+    "core_version":  "1.0.8",
+    "catalog_count":  168,
+    "confirmation_followed":  true,
+    "response_count":  2,
+    "terminal_status":  "completed",
+    "terminal_verified":  true,
+    "terminal_error":  null,
+    "result_property_names":  [
+                                  "version",
+                                  "count",
+                                  "addresses",
+                                  "authority"
+                              ],
+    "array_counts":  {
+                         "addresses":  1
+                     },
+    "elapsed_seconds":  0.3273113999985071,
+    "process_exit_code":  0,
+    "stderr":  ""
+}

@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "D:\BAXY\source\experiments\wake_validation\evaluate_exclusive_expanded_route_guard_v1.py", line 408, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\BAXY\source\experiments\wake_validation\evaluate_exclusive_expanded_route_guard_v1.py", line 391, in main
+    result = evaluate(args)
+             ^^^^^^^^^^^^^^
+  File "D:\BAXY\source\experiments\wake_validation\evaluate_exclusive_expanded_route_guard_v1.py", line 324, in evaluate
+    positive = _evaluate_group(
+               ^^^^^^^^^^^^^^^^
+  File "D:\BAXY\source\experiments\wake_validation\evaluate_exclusive_expanded_route_guard_v1.py", line 219, in _evaluate_group
+    measured = _replay_logmel_record(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\BAXY\source\experiments\wake_validation\evaluate_exclusive_expanded_route_guard_v1.py", line 174, in _replay_logmel_record
+    raise ValueError("exclusive_expanded_logmel_replay_mismatch")
+ValueError: exclusive_expanded_logmel_replay_mismatch

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\TestInfrastructure\NtfsTestJunction.cs" Link="TestInfrastructure\NtfsTestJunction.cs" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <ProjectReference Include="..\..\src\Baxy.Contracts\Baxy.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Baxy.Kernel\Baxy.Kernel.csproj" />
+  </ItemGroup>
+</Project>

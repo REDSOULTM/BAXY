@@ -1,0 +1,99 @@
+{
+  "schema": "baxy.contextual-hyperspotter-fusion-negative-regression.v2",
+  "measuredAtUtc": "2026-08-06T17:39:59.002124+00:00",
+  "scope": "previously_opened_100h_sentinel_rescan_contextual_guard_regression",
+  "sources": {
+    "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+    "ctcVerifierManifestSha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "cudaParityReportSha256": "ec9664826eb1f8f7291f59e30b47ee33d3042f5ad351c39db9611c4cfe171b3f",
+    "teacherWeightsSha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "priorHoldoutReportSha256": "8c582921eba872a0af001770857d011519cab8ae5efa935da05bce60f4a1b43f",
+    "priorStage1ScanSha256": "8854b5b489d4d2be9c761de9acbfe1535e767204bb27db295ac6deb4395c3b04",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "stage1ModelSha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "actualFfmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "sentinelThreshold": "0.01",
+    "fixedViewStarts": "40000,64000",
+    "stage1ExactBoundaryGuard": "0.0001",
+    "stt:encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+    "stt:decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+    "stt:joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+    "stt:tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+  },
+  "contract": {
+    "observedMaximumNormalizedScoreDrift": 0.001852023889695456,
+    "cpuRescoringBelt": 0.25,
+    "empiricalSafetyMultiplier": 134.9874596062093,
+    "priorStage1MaximaReusedForSafePrefilterOnly": true,
+    "everySentinelCandidateRescannedAtRuntimeSchedule": true,
+    "firstSentinelCrossingUsedForCapture": true,
+    "stage1OverlapScreenExactBoundaryGuard": 0.0001,
+    "stage1BoundaryViewsRescoredByOriginalCpuPath": true,
+    "fixedFusionViewStarts": [
+      40000,
+      64000
+    ],
+    "everyFusionViewWithinBeltRescoredByExactCpuOnnx": true,
+    "contextualAsrRestrictedToExactAcousticFalseCandidates": true,
+    "priorEstablishedCtcFalseActivations": 0,
+    "freshHoldoutClaimSupported": false,
+    "farCertificationSupported": false
+  },
+  "metrics": {
+    "descriptiveExposureHours": 100.59087964444444,
+    "corpusUtterances": 28539,
+    "sentinelCandidates": 28139,
+    "verificationViews": 56278,
+    "cpuRescoredViews": 36,
+    "rawFusionFalseActivations": 34,
+    "contextualLexicalEvidenceAmongRawFalse": 1,
+    "guardedNegativeFalseActivations": 1,
+    "guardedDescriptivePointFalseActivationsPerHour": 0.009941259123438129,
+    "maximumCudaScreenDecisionMargin": 5.774011115282465,
+    "maximumCpuRescoredDecisionMargin": 5.77393999676955,
+    "minimumCpuRescoredDecisionMargin": -0.0766924066450998
+  },
+  "runtime": {
+    "cudaDevice": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "torch": "2.10.0+cu130",
+    "onnxruntime": "1.28.0",
+    "cudaBatchSize": 32,
+    "recordBatchSize": 64,
+    "stage1Workers": 16,
+    "screeningSeconds": 14240.457308800018,
+    "cpuRescoreSeconds": 34.45657070027664,
+    "contextualDecodeSeconds": 91.44773740001256,
+    "decodeMillisecondsPerCandidate": {
+      "p50": 1806.0616999864578,
+      "p95": 3778.826889971969,
+      "maximum": 7302.658900036477,
+      "mean": 1809.791779430712
+    },
+    "hyperMillisecondsPerView": {
+      "p50": 28.151600010460243,
+      "p95": 62.206960030016454,
+      "maximum": 559.6749000251293,
+      "mean": 33.19622904874605
+    },
+    "cudaCtcMillisecondsPerView": {
+      "p50": 19.05496875042445,
+      "p95": 19.62564375025977,
+      "maximum": 66.57061250007246,
+      "mean": 19.23961792529872
+    },
+    "cpuCtcMillisecondsPerRescoredView": {
+      "p50": 960.5383999878541,
+      "p95": 1156.680524989497,
+      "maximum": 1199.779500020668,
+      "mean": 957.1269638965734
+    }
+  },
+  "regressionPassed": false,
+  "candidateDevelopmentUse": true,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "negativeCorpusPreviouslyAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "recordsTranscriptsOrFilenamesRetained": false,
+  "effectsExecuted": 0
+}

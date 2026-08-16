@@ -1,0 +1,22 @@
+[
+  {"text":"¿Qué hora es?","expectedKind":"action","expectedOperation":"system.time"},
+  {"text":"¿Cómo está el equipo?","expectedKind":"action","expectedOperation":"system.status"},
+  {"text":"Lista los procesos que más memoria usan","expectedKind":"action","expectedOperation":"system.process.list"},
+  {"text":"¿Cómo está la red?","expectedKind":"action","expectedOperation":"network.status"},
+  {"text":"¿En qué volumen está el computador?","expectedKind":"action","expectedOperation":"audio.status"},
+  {"text":"Pon el volumen al 8 por ciento","expectedKind":"action","expectedOperation":"audio.volume"},
+  {"text":"Abre el Bloc de notas","expectedKind":"action","expectedOperation":"app.open"},
+  {"text":"¿Qué ventana está activa?","expectedKind":"action","expectedOperation":"window.active"},
+  {"text":"Escribe literalmente prueba BAXY","expectedKind":"action","expectedOperation":"input.text.type"},
+  {"text":"Lee el portapapeles","expectedKind":"action","expectedOperation":"clipboard.read.text"},
+  {"text":"Copia la selección","expectedKind":"action","expectedOperation":"clipboard.copy"},
+  {"text":"Haz una captura de pantalla","expectedKind":"action","expectedOperation":"capture.screenshot"},
+  {"text":"Lista mis notas","expectedKind":"action","expectedOperation":"note.list"},
+  {"text":"Crea una tarea llamada Auditoría","expectedKind":"action","expectedOperation":"task.create"},
+  {"text":"Lista mis tareas pendientes","expectedKind":"action","expectedOperation":"task.list"},
+  {"text":"Lista mis recordatorios","expectedKind":"action","expectedOperation":"reminder.list"},
+  {"text":"Recarga la página","expectedKind":"action","expectedOperation":"browser.control"},
+  {"text":"¿Qué música está sonando?","expectedKind":"action","expectedOperation":"media.status"},
+  {"text":"Lista los dispositivos Bluetooth","expectedKind":"action","expectedOperation":"bluetooth.device.list"},
+  {"text":"¿Cómo está el Wi-Fi?","expectedKind":"action","expectedOperation":"wifi.status"}
+]

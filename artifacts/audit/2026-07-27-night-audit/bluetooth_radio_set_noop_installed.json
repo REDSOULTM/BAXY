@@ -1,0 +1,36 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74282,
+  "operation": "bluetooth.radio.set",
+  "arguments": {
+    "state": true
+  },
+  "confirmation_followed": true,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "4b88fddc-e4bb-44c2-b84a-9c5cea22cdb5",
+      "missionId": "20c96416-627c-4712-a256-2412e8057a40",
+      "invocationId": "e39341e9-0775-4188-b407-76c5399c19b0",
+      "status": "completed",
+      "message": "Listo, Bluetooth está encendido y verificado.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "state": true,
+        "changed": false,
+        "radioCount": 1,
+        "authority": "windows_radio_api_postread"
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 0.327032600000166,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-07-22T03:47:00Z",
+  "operation": "network.ip.list",
+  "status": "pass",
+  "environment": "current_windows_network_interfaces",
+  "provider": "WindowsNetworkIpProvider",
+  "verification": {
+    "two_observations_identical": true,
+    "address_count_greater_than_zero": true,
+    "all_addresses_parseable": true,
+    "interface_names_exposed": false,
+    "address_values_redacted_from_artifact": true
+  },
+  "authority": "windows_active_unicast_addresses_secondread"
+}

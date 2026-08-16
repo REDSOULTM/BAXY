@@ -1,0 +1,93 @@
+{
+  "schema": "baxy.mswc-spanish-qbye-fresh-gate-preregistration.v2",
+  "measured_at_utc": "2026-08-06T05:02:29.993406+00:00",
+  "scope": "freeze_hard_tail_candidate_before_fresh_open_word_evaluation",
+  "sources": {
+    "fresh_feature_manifest_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_fresh_eval_layer16_features_v2/features.manifest.v1.json",
+    "fresh_feature_manifest_sha256": "fad6d2dd20ddd3b92d4c4de0aa9ed9f7af00de50e0f4aa4f11a08c53ec236bda"
+  },
+  "contract": {
+    "fresh_word_classes": 200,
+    "fresh_enrollments": 800,
+    "fresh_queries": 2400,
+    "gate_thresholds": {
+      "minimum_top1_accuracy": 0.94,
+      "minimum_pair_auc": 0.997,
+      "maximum_equal_error_rate": 0.025,
+      "minimum_true_pair_recall_at_zero_false_pairs": 0.2,
+      "minimum_top1_delta_over_reference": -0.005,
+      "minimum_pair_auc_delta_over_reference": -0.0005,
+      "maximum_equal_error_rate_delta_over_reference": 0.005,
+      "minimum_zero_false_recall_delta_over_reference": 0.0
+    },
+    "single_aggregate_open": true,
+    "no_individual_query_export": true,
+    "no_post_evaluation_candidate_switching": true
+  },
+  "candidate": {
+    "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hardtail_c256_w1_m02_v1/training.report.v1.json",
+    "training_report_sha256": "cb1f0d33bcd0b2ce9ee75f77bf32a6d49c5278bc8e6742fe2682b463203b0cc4",
+    "training_feature_manifest_sha256": "3fc5d1ed75c850409aa88f7f343e83e9523ff40adc815db5b9167d07e6dcb3b7",
+    "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hardtail_c256_w1_m02_v1/mswc-spanish-qbye-angleproto-v1.pt",
+    "checkpoint_sha256": "76c251f4418700e840649156d1abef1c940852136a4110cc897d1f308976b127",
+    "layer": 16,
+    "objective": "hybrid_angular_prototypical_arcface",
+    "seed": 3513,
+    "maximum_frames": 50,
+    "embedding_size": 128,
+    "best_epoch": 8,
+    "tuning_metrics": {
+      "classes": 100,
+      "enrollments": 400,
+      "queries": 1200,
+      "top1_accuracy": 0.9516666666666667,
+      "macro_class_accuracy": 0.9516666666666665,
+      "mean_true_minus_maximum_impostor_margin": 0.2892005852636177,
+      "median_true_minus_maximum_impostor_margin": 0.31209436474676155,
+      "positive_margin_queries": 1142,
+      "pair_auc": 0.9977047699214365,
+      "equal_error_rate": 0.01832070707070706,
+      "equal_error_threshold": 0.42469506507962534,
+      "zero_false_pair_threshold": 0.8927830358267427,
+      "true_pairs_accepted_at_zero_false_pairs": 319,
+      "true_pairs": 1200,
+      "impostor_pairs": 118800
+    }
+  },
+  "reference": {
+    "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_emb128_v1/training.report.v1.json",
+    "training_report_sha256": "8c2a82555a785e744fb635c47b66f0e7b703faa2fc161a4054e4d10f852b2ce5",
+    "training_feature_manifest_sha256": "3fc5d1ed75c850409aa88f7f343e83e9523ff40adc815db5b9167d07e6dcb3b7",
+    "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_emb128_v1/mswc-spanish-qbye-angleproto-v1.pt",
+    "checkpoint_sha256": "6aca3a7c9cef64d2ed37846f14f48568fb06f360861dc609583e36d01aa17bfb",
+    "layer": 16,
+    "objective": "hybrid_angular_prototypical_arcface",
+    "seed": 3501,
+    "maximum_frames": 50,
+    "embedding_size": 128,
+    "best_epoch": 18,
+    "tuning_metrics": {
+      "classes": 100,
+      "enrollments": 400,
+      "queries": 1200,
+      "top1_accuracy": 0.9466666666666667,
+      "macro_class_accuracy": 0.9466666666666665,
+      "mean_true_minus_maximum_impostor_margin": 0.2762599988032692,
+      "median_true_minus_maximum_impostor_margin": 0.29549092722149034,
+      "positive_margin_queries": 1136,
+      "pair_auc": 0.9974943672839507,
+      "equal_error_rate": 0.01749999999999998,
+      "equal_error_threshold": 0.431771155174625,
+      "zero_false_pair_threshold": 0.8854268205392567,
+      "true_pairs_accepted_at_zero_false_pairs": 272,
+      "true_pairs": 1200,
+      "impostor_pairs": 118800
+    }
+  },
+  "fresh_examples_scored": false,
+  "fresh_evaluation_open_count": 0,
+  "baxy_human_examples_scored": false,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "baxy.mdc-stt-acquisition-plan.v1",
+  "createdAtUtc": "2026-08-11T12:57:15.722326+00:00",
+  "role": "authenticated_download_without_archive_open",
+  "api": {
+    "baseUrl": "https://dev.mozilladatacollective.com/api",
+    "authenticationEnvironment": "MDC_API_KEY",
+    "termsAgreement": "required_out_of_band_through_mdc_web_interface",
+    "downloadProtocol": "POST /datasets/:datasetId/download",
+    "presignedUrlRangeResume": true
+  },
+  "bindings": {
+    "commonVoiceContract": {
+      "path": "artifacts/research/common_voice_sps_v4_reservation_preopen_contract_v1.json",
+      "sha256": "2b6a30a7beb29fe89c453ef6ddc8fc0afe5f344fc42404684a4b00e039a3e6bb"
+    },
+    "bangorSourceAudit": {
+      "path": "artifacts/research/bangor_miami_stt_source_v1.json",
+      "sha256": "4e281a990134a620e7fa5a351bcc23a9e1c9ccd7c67043fd445350aae393cb59"
+    },
+    "bangorPreregistration": {
+      "path": "artifacts/research/bangor_miami_stt_preregistration_v1.json",
+      "sha256": "00692fd26ac1e1e8966f5f7b93e5eb4838189c3ce376cae895b156d4b7906677"
+    }
+  },
+  "outputRoot": "D:/BAXYRuntime/experiments/stt_holdout_sources/mdc_official_20260811",
+  "datasets": [
+    {
+      "label": "common_voice_sps4_es",
+      "datasetId": "cmqi28y2v004imf076oh7e5zs",
+      "archiveFilename": "common-voice-spontaneous-speech-4-0-span-c5b31fca.tar.gz",
+      "bytes": 28931716,
+      "datasetPage": "https://mozilladatacollective.com/datasets/cmqi28y2v004imf076oh7e5zs"
+    },
+    {
+      "label": "common_voice_sps4_en",
+      "datasetId": "cmqialpeo0077nr077xqdqo0j",
+      "archiveFilename": "common-voice-spontaneous-speech-4-0-engl-c643378f.tar.gz",
+      "bytes": 522005930,
+      "datasetPage": "https://mozilladatacollective.com/datasets/cmqialpeo0077nr077xqdqo0j"
+    },
+    {
+      "label": "bangor_miami_es_en",
+      "datasetId": "cmmfulo4r018bnz07py4q9t09",
+      "archiveFilename": "bangor-miami-spanish-english-corpus-36d9f971.tar.gz",
+      "bytes": 1199355238,
+      "datasetPage": "https://mozilladatacollective.com/datasets/cmmfulo4r018bnz07py4q9t09"
+    }
+  ],
+  "archiveOpened": false,
+  "audioDecoded": false,
+  "referenceTranscriptsOpened": false,
+  "modelInvoked": false,
+  "credentialsPersisted": false,
+  "baxyOperationsExecuted": 0
+}

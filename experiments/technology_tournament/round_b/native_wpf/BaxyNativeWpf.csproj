@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyName>baxy-dotnet-wpf-slice</AssemblyName>
+    <RootNamespace>Baxy.Tournament.RoundB.Dotnet</RootNamespace>
+    <ApplicationIcon>..\tauri_rust\src-tauri\icons\icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\dotnet_webview\CoreBridge.cs" Link="CoreBridge.cs" />
+  </ItemGroup>
+</Project>

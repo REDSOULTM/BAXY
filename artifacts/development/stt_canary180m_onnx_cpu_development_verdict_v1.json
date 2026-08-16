@@ -1,0 +1,78 @@
+{
+  "schema": "baxy.stt-canary180m-onnx-development-verdict.v1",
+  "publishedAtUtc": "2026-08-11T04:49:54.821757+00:00",
+  "status": "rejected",
+  "candidate": {
+    "name": "nvidia/canary-180m-flash int8",
+    "runtime": "sherpa-onnx 1.13.4 CPU",
+    "threadsPerRecognizer": 8,
+    "loadedLanguages": [
+      "en",
+      "es"
+    ]
+  },
+  "evidence": {
+    "audioArenaCanary": {
+      "path": "artifacts/development/stt_audio_arena_canary180m_onnx_cpu_development_v1.json",
+      "sha256": "dcb65bc07592ed2682f5f07771bc2cf19e39dddb89d3e4d06c4cd8e1b22248dc"
+    },
+    "minds14Canary": {
+      "path": "artifacts/development/stt_minds14_canary180m_onnx_cpu_development_v1.json",
+      "sha256": "12bf7dfa0b938af103c5a7c74067fbdd5c77c5aa54d11085644ce5d5e87ce8a2"
+    },
+    "minds14Parakeet": {
+      "path": "artifacts/development/stt_minds14_parakeet_greedy_development_v2.json",
+      "sha256": "05e99f99ff6f7ee129a083acd11a6ad6c3a4fef13b701cc696851a55471651d8"
+    },
+    "minds14Nemotron": {
+      "path": "artifacts/development/stt_minds14_nemotron_auto_development_v3.json",
+      "sha256": "a41bc2d2f6de29e8b33dd17086b340ce1a8cf3e854a9b9e4b9ef8f5408715cbd"
+    }
+  },
+  "results": {
+    "audioArena": {
+      "cases": 12,
+      "corpusWer": 0.13125,
+      "criticalAnchors": 18,
+      "criticalAnchorsPreserved": 14,
+      "criticalAnchorRecall": 0.777778,
+      "latencyP50Seconds": 0.707946,
+      "latencyP95Seconds": 2.027518
+    },
+    "minds14": {
+      "cases": 84,
+      "nonemptyRate": 0.857143,
+      "transcriptIntentAccuracy": 0.833333,
+      "intentSemanticPreservation": 0.845238,
+      "finalizationLatencyP95Seconds": 2.81829,
+      "realTimeFactorP95": 0.178847,
+      "peakRssBytesObserved": 1337143296,
+      "emptyTranscripts": 12,
+      "parakeetIntentRescues": [
+        "minds14-en-US-0196",
+        "minds14-en-US-0399",
+        "minds14-es-ES-0370"
+      ],
+      "uniqueIntentRescuesBeyondNemotron": []
+    }
+  },
+  "decision": {
+    "primaryEngine": "rejected",
+    "fallbackEngine": "rejected",
+    "candidatePromoted": false,
+    "reasons": [
+      "audio_arena_critical_anchor_recall_below_0_99",
+      "minds14_nonempty_rate_below_1_0",
+      "minds14_intent_accuracy_below_0_95",
+      "minds14_semantic_preservation_below_0_99",
+      "no_unique_minds14_intent_rescue_beyond_nemotron",
+      "explicit_language_required_and_code_switch_not_supported"
+    ],
+    "nextArchitecture": "multilingual auto-language acoustic consensus with direct semantic evidence"
+  },
+  "developmentOnly": true,
+  "blindHoldoutOpened": false,
+  "thresholdsChanged": false,
+  "wakeProgramTreeSha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0",
+  "effectsExecuted": 0
+}

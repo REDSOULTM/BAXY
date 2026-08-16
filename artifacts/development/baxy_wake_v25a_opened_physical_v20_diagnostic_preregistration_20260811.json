@@ -1,0 +1,59 @@
+{
+  "schema": "baxy.wake-opened-physical-development-diagnostic-preregistration.v1",
+  "createdAtUtc": "2026-08-11T16:58:30Z",
+  "purpose": "quantify_current_frozen_candidate_on_independent_opened_v20_physical_development_corpus_after_v17_rejection",
+  "role": "development_diagnostic_only",
+  "promotionEligible": false,
+  "v17Trigger": {
+    "receipt": "artifacts/holdout/baxy_wake_v25a_physical_v17_combined_receipt_v2.json",
+    "sha256": "2424832fe29dfe5028d7443b6a3311f1eb02b89d0a94f58665203300ab451d50",
+    "validationPassed": false,
+    "positiveHits": 46,
+    "positiveFiles": 48,
+    "negativeFalseActivations": 0,
+    "negativeFiles": 96,
+    "failureClass": "lexical_verifier_rejected_acoustic_candidates"
+  },
+  "frozenCandidate": {
+    "manifest": "D:\\BAXYRuntime\\experiments\\wakeword\\baxy_wake_routed_cascade_v25a_endpoint_development\\baxy-wake-cascade-v2.json",
+    "sha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "sttDirectory": "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
+  },
+  "openedDevelopmentCorpus": {
+    "directory": "D:\\BAXYRuntime\\experiments\\wakeword\\controlled_physical_room_reserved_raw_v20_development",
+    "manifestSha256": "a18e19dcf175994418f3f838c69032f17a1666fb61cfc2076075719ff3fdfbc6",
+    "seed": 20260814,
+    "positiveFiles": 48,
+    "negativeFiles": 96,
+    "positiveRootSha256": "2b3fea4364a56964d05628dbd0de1c174488b2e80176eea566367cdee0cfea95",
+    "negativeRootSha256": "0515393f1df9e9d7c0fb415cb4e726d43b4e18a4dda69e824877d78a214a4370",
+    "capturedBeforeV17Opened": true,
+    "blindHumanPartitionAccessed": false,
+    "developmentOnly": true
+  },
+  "frozenProgramTree": {
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "evaluation": {
+    "blockSamples": 512,
+    "cascadePolicy": "cascade",
+    "combinedPolicy": "cascade_or_endpoint",
+    "retainTranscriptText": false,
+    "retainFilenames": false,
+    "adjustThresholds": false,
+    "retrain": false,
+    "repeatV17": false
+  },
+  "plannedOutputs": {
+    "cascade": "artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json",
+    "endpoint": "artifacts/development/baxy_endpoint_v25a_opened_physical_v20_development_diagnostic_20260811.json",
+    "fusion": "artifacts/development/baxy_fusion_v25a_opened_physical_v20_development_diagnostic_20260811.json"
+  },
+  "interpretationRules": [
+    "This opened development diagnostic cannot promote any candidate.",
+    "V17 records or transcripts cannot be used to choose a threshold, alias, or training example.",
+    "Any future change requires independent development evidence and a fresh disjoint holdout preregistered before scoring."
+  ],
+  "effectsExecuted": 0
+}

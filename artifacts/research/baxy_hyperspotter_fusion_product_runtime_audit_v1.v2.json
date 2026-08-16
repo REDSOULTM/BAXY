@@ -1,0 +1,124 @@
+{
+  "schema": "baxy.hyperspotter-fusion-product-runtime-audit.v1",
+  "measuredAtUtc": "2026-08-06T11:58:08.571129+00:00",
+  "scope": "raw_human_development_fixed_policy_cpu_onnxruntime",
+  "sources": {
+    "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+    "ctcVerifierManifestSha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "humanSourceManifestSha256": "982dc455fc1f75802397a221ba485b93cf2783a5716ef0e0acc058cdcf7dd037"
+  },
+  "runtime": {
+    "providers": [
+      "CPUExecutionProvider"
+    ],
+    "threads": 4,
+    "hyperSessionLoadSeconds": 2.1480375999817625,
+    "ctcSessionLoadSeconds": 2.647337400005199,
+    "residentBytes": {
+      "baseline": 61308928,
+      "afterHyperSession": 137945088,
+      "afterCtcSession": 1386840064,
+      "afterWarmup": 1490010112,
+      "afterAudit": 1535836160
+    },
+    "torchImported": false
+  },
+  "latencyMilliseconds": {
+    "audioDecodeMs": {
+      "p50": 0.8512999920640141,
+      "p95": 1.3691699947230513,
+      "maximum": 1.9489999976940453,
+      "mean": 0.8682933325568835
+    },
+    "logmelMs": {
+      "p50": 2.2518500045407563,
+      "p95": 4.537359994719734,
+      "maximum": 29.990899958647788,
+      "mean": 3.3267733349930495
+    },
+    "hyperOnnxMs": {
+      "p50": 22.378499998012558,
+      "p95": 26.230710005620494,
+      "maximum": 45.059500029310584,
+      "mean": 23.46690667133468
+    },
+    "ctcPreprocessMs": {
+      "p50": 0.43960000039078295,
+      "p95": 0.7542800070950761,
+      "maximum": 0.8412000024691224,
+      "mean": 0.44458665846226114
+    },
+    "ctcOnnxMs": {
+      "p50": 833.6831500055268,
+      "p95": 1025.680965007632,
+      "maximum": 1110.7330999802798,
+      "mean": 847.8578966712424
+    },
+    "ctcMarginMs": {
+      "p50": 148.86844996362925,
+      "p95": 204.52798999613148,
+      "maximum": 251.72900001052767,
+      "mean": 156.98467000426413
+    },
+    "warmComputeMs": {
+      "p50": 1011.5422999951988,
+      "p95": 1223.0698549828958,
+      "maximum": 1336.2212000065483,
+      "mean": 1032.0808333402965
+    },
+    "warmEndToEndMs": {
+      "p50": 1012.3565499961842,
+      "p95": 1224.068950000219,
+      "maximum": 1337.2764000087045,
+      "mean": 1032.949943341858
+    }
+  },
+  "scoreRanges": {
+    "hyperMinimum": -2.535794258117676,
+    "hyperMaximum": 7.764337062835693,
+    "ctcMarginMinimum": -6.952699809997853,
+    "ctcMarginMaximum": 5.576492295471354,
+    "combinedMinimum": -3.747846940348537,
+    "combinedMaximum": 9.027350350300889
+  },
+  "legacyDevelopment": {
+    "positiveTotal": 14,
+    "negativeTotal": 4,
+    "positiveHits": 14,
+    "falseHits": 0,
+    "recall": 1.0,
+    "minimumPositiveDecisionMargin": 0.09262979043676056,
+    "maximumNegativeDecisionMargin": -0.04999999999999982,
+    "minimumAcceptedDecisionMargin": 0.09262979043676056,
+    "maximumRejectedDecisionMargin": -0.04999999999999982
+  },
+  "expandedIndependentDevelopment": {
+    "positiveTotal": 4,
+    "negativeTotal": 8,
+    "positiveHits": 4,
+    "falseHits": 0,
+    "recall": 1.0,
+    "minimumPositiveDecisionMargin": 0.6224462247286207,
+    "maximumNegativeDecisionMargin": -4.131032605130655,
+    "minimumAcceptedDecisionMargin": 0.6224462247286207,
+    "maximumRejectedDecisionMargin": -4.131032605130655
+  },
+  "allHumanDevelopment": {
+    "positiveTotal": 18,
+    "negativeTotal": 12,
+    "positiveHits": 18,
+    "falseHits": 0,
+    "recall": 1.0,
+    "minimumPositiveDecisionMargin": 0.09262979043676056,
+    "maximumNegativeDecisionMargin": -0.04999999999999982,
+    "minimumAcceptedDecisionMargin": 0.09262979043676056,
+    "maximumRejectedDecisionMargin": -0.04999999999999982
+  },
+  "rawProductParityPassed": true,
+  "humanDevelopmentAudioAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "audioOrFilenamesRetained": false,
+  "approved": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0
+}

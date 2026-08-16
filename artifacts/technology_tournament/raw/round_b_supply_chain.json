@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "protocol_id": "baxy-technology-tournament-v1",
+  "round": "b_supply_chain",
+  "provenance": {
+    "generator": {
+      "path": "experiments/technology_tournament/generate_round_b_sbom.py",
+      "bytes": 21516,
+      "sha256": "9a00b743f1add6c3b523ec01a3069a8e3f52ea1fd0faa031a63191abe8724fef"
+    },
+    "protocol": {
+      "path": "artifacts/technology_tournament/protocol.json",
+      "bytes": 10962,
+      "sha256": "383a9e54cfc5a186de61f060aeb2a6cd013bab3ec21bdeb387063d935d99a892"
+    },
+    "package_evidence": {
+      "dotnet-wpf": {
+        "path": "artifacts/technology_tournament/raw/round_b_package_dotnet_wpf.json",
+        "bytes": 18307,
+        "sha256": "bfd81e5e6f1bf4e8b662ad808a95678bcb05deee7b7fa37379329bbb1c07887a"
+      },
+      "dotnet-wpf-rust": {
+        "path": "artifacts/technology_tournament/raw/round_b_package_dotnet_wpf_rust.json",
+        "bytes": 18312,
+        "sha256": "24276c876512d8e098d48cf280c84a959ebbb9e20b49a83b79796236931689e2"
+      }
+    },
+    "build_inputs": {
+      "dotnet_pin": {
+        "path": "global.json",
+        "bytes": 105,
+        "sha256": "0aa4b85ae248d59bbc4138f346d952b7fae4fe18cc701d921fa1c003211be777"
+      },
+      "dotnet_project": {
+        "path": "experiments/technology_tournament/dotnet_windows_core/BaxySlice.csproj",
+        "bytes": 665,
+        "sha256": "2affecd515599d348e293335504c2cbd0998a6a3e19bb1a773aab15ff5d5a125"
+      },
+      "rust_toolchain": {
+        "path": "experiments/technology_tournament/rust_core/rust-toolchain.toml",
+        "bytes": 88,
+        "sha256": "d75946e625349a847423d70b9570a96e80997d711baa8978f5d7f398af0a16f9"
+      },
+      "rust_manifest": {
+        "path": "experiments/technology_tournament/rust_core/Cargo.toml",
+        "bytes": 235,
+        "sha256": "67e3c470a7c94f6c810e433fc9f4037f60c7c75085367414fe347c5ab9e8787a"
+      },
+      "rust_lock": {
+        "path": "experiments/technology_tournament/rust_core/Cargo.lock",
+        "bytes": 2647,
+        "sha256": "9587a3e22873eccb6677dfd98c689d7e857115bedb06dbc2c7f275a0c45ff5ff"
+      }
+    }
+  },
+  "systems": [
+    {
+      "system_id": "dotnet-wpf",
+      "package_manifest_sha256": "4426e560276a890cd176a4215266cd8177ad70b842032323b81ad5b184537f59",
+      "package_bytes": 70890462,
+      "shell_sha256": "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47",
+      "core_sha256": "27d566f7cdeb4f8bdd0cd7f1cadf4b89f8244aabc6f6e87b8174ee5e33bd403e",
+      "core_imports": [
+        "advapi32.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "bcrypt.dll",
+        "kernel32.dll",
+        "ole32.dll"
+      ],
+      "runtime_external_packages": 0,
+      "cargo_lock_external_packages": 0,
+      "first_party_license_declared": false,
+      "authenticode": {
+        "shell": "NotSigned",
+        "core": "NotSigned"
+      },
+      "authenticode_source": "round_b_package_lifecycle.signatures",
+      "manifest_authenticity": "not_provided",
+      "package_gates_passed": 8,
+      "manifest_file_count": 10,
+      "manifest_all_files_verified": true,
+      "runtime_framework_packs": 2,
+      "external_application_packages": 0,
+      "sbom_component_count": 5,
+      "sbom_path": "artifacts/technology_tournament/round_b_sbom_dotnet_wpf.cdx.json",
+      "sbom_sha256": "ea26e7c9d40450421a0629c222cbef731ee6f54b1892004b0c11c73b82695396"
+    },
+    {
+      "system_id": "dotnet-wpf-rust",
+      "package_manifest_sha256": "0592219c17ef8184c3f36885ef54cd6fde6b239298a15d6197383841fda5bb77",
+      "package_bytes": 69453280,
+      "shell_sha256": "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47",
+      "core_sha256": "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063",
+      "core_imports": [
+        "api-ms-win-core-synch-l1-2-0.dll",
+        "bcryptprimitives.dll",
+        "kernel32.dll",
+        "ntdll.dll"
+      ],
+      "runtime_external_packages": 5,
+      "cargo_lock_external_packages": 11,
+      "first_party_license_declared": false,
+      "authenticode": {
+        "shell": "NotSigned",
+        "core": "NotSigned"
+      },
+      "authenticode_source": "round_b_package_lifecycle.signatures",
+      "manifest_authenticity": "not_provided",
+      "package_gates_passed": 8,
+      "manifest_file_count": 10,
+      "manifest_all_files_verified": true,
+      "runtime_framework_packs": 2,
+      "external_application_packages": 5,
+      "sbom_component_count": 12,
+      "sbom_path": "artifacts/technology_tournament/round_b_sbom_dotnet_wpf_rust.cdx.json",
+      "sbom_sha256": "c51876e4bb51433a139e3e03a910d7f7e4de6c81e56a8b01a921df792f04ddf6"
+    }
+  ],
+  "known_gaps": [
+    "First-party license is not declared.",
+    "BAXY executables are not Authenticode signed.",
+    "Package manifests are not signed and do not prove authenticity.",
+    "The statically linked Rust core lacks an exact MSVC/UCRT link manifest.",
+    "The embedded icon has no recorded author, license or provenance."
+  ]
+}

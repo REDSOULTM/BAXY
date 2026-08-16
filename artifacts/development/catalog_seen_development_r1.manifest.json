@@ -1,0 +1,22 @@
+{
+  "authority": "development_only_no_execution_authority_not_blind",
+  "blind_holdout": false,
+  "catalog": {
+    "operations": 169,
+    "sha256": "67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41"
+  },
+  "output": {
+    "bytes": 112763,
+    "path": "D:\\BAXY\\source\\artifacts\\development\\catalog_seen_development_r1.jsonl",
+    "sha256": "b710774f558399a18112b568d07d86e90d0438a53d93ed4bb438c4b5c8c11835"
+  },
+  "review": {
+    "all_rows_derived_from_authenticated_catalog": true,
+    "all_rows_explicitly_reviewed": false,
+    "outcome_counts": {
+      "action": 169
+    },
+    "rows": 169
+  },
+  "schema": "baxy.catalog-seen-development-manifest.v1"
+}

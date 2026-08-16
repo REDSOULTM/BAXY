@@ -1,0 +1,610 @@
+{
+  "schema": "baxy.native-override-gate-analysis.v1",
+  "scope": "opened_r4_development_only_no_promotion",
+  "cases": 198,
+  "specialist_correct": 184,
+  "specialist_accuracy": 0.929293,
+  "best": [
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top3",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top3",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_is_specialist_second",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_is_specialist_second",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_is_v1_top1",
+        "same_effect_family"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_is_v2_top1",
+        "same_effect_family"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_effect",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_effect",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_in_specialist_top2",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_in_specialist_top2",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_in_specialist_top3",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_in_specialist_top3",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_is_specialist_second",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_is_specialist_second",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_is_v1_top1",
+        "same_effect_family"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "lexical_top1_agreement",
+        "native_is_v2_top1",
+        "same_effect_family"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_in_specialist_top2",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_in_specialist_top2",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_in_specialist_top3",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_in_specialist_top3",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_in_v1_top2",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_in_v1_top2",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_in_v2_top2",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_in_v2_top2",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_specialist_second",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_specialist_second",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_v1_top1",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_v1_top1",
+        "same_effect_family"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_v1_top1",
+        "specialist_is_effect"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_v2_top1",
+        "same_effect_family"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_effect",
+        "native_is_v2_top1",
+        "specialist_is_effect"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_in_specialist_top3",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_in_specialist_top3",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_in_v1_top2",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_in_v1_top2",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_in_v2_top2",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_in_v2_top2",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_specialist_second",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_specialist_second",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_v1_top1",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_v1_top1",
+        "same_effect_family"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_v1_top1",
+        "specialist_is_effect"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_v2_top1",
+        "same_effect_family"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top2",
+        "native_is_v2_top1",
+        "specialist_is_effect"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top3",
+        "native_in_v1_top2",
+        "native_is_v1_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    },
+    {
+      "predicates": [
+        "native_in_specialist_top3",
+        "native_in_v1_top2",
+        "native_is_v2_top1"
+      ],
+      "overrides": 3,
+      "corrections": 3,
+      "regressions": 0,
+      "result_correct": 187,
+      "result_accuracy": 0.944444
+    }
+  ],
+  "best_zero_regression": {
+    "predicates": [
+      "native_effect",
+      "native_is_v1_top1"
+    ],
+    "overrides": 3,
+    "corrections": 3,
+    "regressions": 0,
+    "result_correct": 187,
+    "result_accuracy": 0.944444
+  }
+}

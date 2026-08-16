@@ -1,0 +1,54 @@
+{
+  "schema": "baxy.phonetic-prosody-domain-loco-binding.v1",
+  "createdAtUtc": "2026-08-11T19:00:01.6253017Z",
+  "role": "opened_development_architecture_screen_only",
+  "programSha256": "522e5a2487fc5ec4a196f4de9729142c79c2afa1472c0ade65cc79fc85c75001",
+  "testSha256": "4d205994def8e3055939ecaae84a0fe0ffd654a8a326323bcfd57415d527d86e",
+  "featureRoot": "D:/BAXYRuntime/research/baxy_opened_phonetic_prosody_features_v1",
+  "featureManifestSha256": "5aa2ef9afbcd6dac2378ef8bcd475b67064d093696047e7a9b95f8a47b13f956",
+  "plannedOutputRoot": "D:/BAXYRuntime/research/baxy_phonetic_prosody_domain_loco_v1",
+  "variants": [
+    "phonetic_only",
+    "dual_stream"
+  ],
+  "seeds": [
+    20260811,
+    20260812
+  ],
+  "epochs": 20,
+  "batchSize": 32,
+  "learningRate": 0.001,
+  "contract": {
+    "outerEvaluation": "leave_one_complete_physical_corpus_out",
+    "calibrationSplit": "every_fifth_hash_sorted_record_within_each_training_corpus_and_label",
+    "thresholdSelection": "nextafter_maximum_calibration_negative_score",
+    "baselinePolicy": "baseline_decision_and_new_discriminator",
+    "passRequires": "every seed and fold preserves every baseline positive and reduces combined false activations to zero",
+    "physicalV17Read": false,
+    "runtimeModificationAllowed": false,
+    "candidateFreezeAllowed": false,
+    "freshPhysicalHoldoutRequiredAfterPass": true,
+    "promotionEligible": false,
+    "effectsExecuted": 0
+  },
+  "baselineReports": [
+    {
+      "corpus": "endpoint_confusable",
+      "path": "D:/BAXY/source/artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json",
+      "sha256": "7b6a11cddf142a2964a4637c268baf4a0986802f975e7f3766d9980eb007daa0",
+      "decisionKey": "accepted"
+    },
+    {
+      "corpus": "physical_v20",
+      "path": "D:/BAXY/source/artifacts/development/baxy_fusion_v25a_opened_physical_v20_development_diagnostic_20260811.json",
+      "sha256": "a89ebe723df2530b069e03108f5217c3e4617104044f8f8a6128f3153311d3f5",
+      "decisionKey": "cascadeOrEndpoint"
+    },
+    {
+      "corpus": "human_v14",
+      "path": "D:/BAXY/source/artifacts/development/baxy_cascade_endpoint_scoregated_human_v14_regression_v1.json",
+      "sha256": "34d173a7c4a68152d0616360c5052d99f6120963b241f14c981f48f4efb0bb73",
+      "decisionKey": "cascadeOrEndpoint"
+    }
+  ]
+}

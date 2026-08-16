@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-07-27T07:07:37.905700+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "d8b3aa5ff903266aa8a786b18bea0c30f7fd4b21cd2791c6e27c6a7f6344614b",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+      "bytes": 2620370976
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 168,
+  "total_seconds": 73.475,
+  "cases": [
+    {
+      "case": "deterministic_file_write",
+      "planner_path": "deterministic_skeleton",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create"
+      ],
+      "steps": [],
+      "seconds": 3.113,
+      "status": "failed",
+      "error": "planner operations did not exactly cover the bounded objective"
+    },
+    {
+      "case": "llm_note_roundtrip",
+      "planner_path": "real_llm_skeleton_and_grounding",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false
+        },
+        {
+          "id": "step2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "title"
+          ],
+          "grounded": false,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 7.406,
+      "status": "passed"
+    },
+    {
+      "case": "office_roundtrip",
+      "planner_path": "deterministic_skeleton_real_llm_grounding",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "office.document.create"
+      ],
+      "steps": [],
+      "seconds": 6.24,
+      "status": "failed",
+      "error": "planner operations did not exactly cover the bounded objective"
+    },
+    {
+      "case": "capture_ocr_grounding",
+      "planner_path": "deterministic_skeleton_real_llm_grounding",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "browser.page.read"
+      ],
+      "steps": [],
+      "seconds": 4.442,
+      "status": "failed",
+      "error": "planner operations did not exactly cover the bounded objective"
+    },
+    {
+      "case": "llm_steam_catalog_status",
+      "planner_path": "real_llm_skeleton",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "game.catalog.list",
+        "game.install.status"
+      ],
+      "steps": [
+        {
+          "id": "step1",
+          "operation": "game.catalog.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false
+        },
+        {
+          "id": "step2",
+          "operation": "game.install.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "appId"
+          ],
+          "grounded": false,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 14.622,
+      "status": "passed"
+    },
+    {
+      "case": "web_search_and_navigation",
+      "planner_path": "deterministic_bounded_skeleton",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "web.search",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "query"
+          ],
+          "grounded": false,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false
+        },
+        {
+          "id": "step_2",
+          "operation": "browser.navigate",
+          "risk": "external_communication",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "url"
+          ],
+          "grounded": false,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 8.549,
+      "status": "passed"
+    },
+    {
+      "case": "streaming_and_search",
+      "planner_path": "deterministic_bounded_skeleton",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "browser.navigate"
+      ],
+      "steps": [],
+      "seconds": 7.155,
+      "status": "failed",
+      "error": "planner operations did not exactly cover the bounded objective"
+    },
+    {
+      "case": "llm_calendar_read",
+      "planner_path": "real_llm_skeleton",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "calendar.event.list"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "calendar.event.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "endUtc",
+            "startUtc"
+          ],
+          "grounded": false,
+          "confirmed": false,
+          "status": "failed",
+          "verified": false,
+          "error": "outlook_profile_not_configured",
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 4.319,
+      "status": "failed",
+      "error": "outlook_profile_not_configured"
+    },
+    {
+      "case": "spotify_exact_then_pause",
+      "planner_path": "deterministic_bounded_skeleton",
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "media.play.query",
+        "media.status",
+        "media.status"
+      ],
+      "steps": [],
+      "seconds": 10.614,
+      "status": "failed",
+      "error": "planner operations did not exactly cover the bounded objective"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 6,
+    "total": 9,
+    "verified_steps": 6,
+    "real_llm_plan_cases": 3,
+    "real_llm_plan_cases_passed": 2,
+    "model_grounded_steps": 0,
+    "ambiguous_effects": 0,
+    "status": "failed"
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

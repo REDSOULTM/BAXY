@@ -1,0 +1,824 @@
+{
+  "catalog_operations": 168,
+  "effects_executed": 0,
+  "elapsed_total_seconds": 262.037,
+  "latency_seconds": {
+    "max": 20.4401,
+    "p50": 7.4808,
+    "p95_nearest_rank": 20.1954
+  },
+  "llama_server_override": null,
+  "measured_at_utc": "2026-07-30T09:36:26.885736+00:00",
+  "observations": [
+    {
+      "case_id": "turn-00",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 8.3184,
+      "semantic_reply_sha256": "ad6fcd3062666cd571599dde3d3ab7d7cdee66f01b81adf944a3b75e789f0568",
+      "validation_error": null,
+      "visible_reply_sha256": "1489a6ea415f5e6cf92f57ac1adca1ae5c14836444090005f9781aeac1451d4c"
+    },
+    {
+      "case_id": "turn-01",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 10.1649,
+      "semantic_reply_sha256": "ddcd9db003a5d4bd778bb53ae34a1dc4cfad937c2687a149db3af4af5e3029b1",
+      "validation_error": null,
+      "visible_reply_sha256": "18bf18ddf4860b097625a198c84893a03ffffb038af776a8512458a18f7c2811"
+    },
+    {
+      "case_id": "turn-02",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 12.8663,
+      "semantic_reply_sha256": "f27ac1544d55459f08b587b0fcd3effbadac7e8f49140e678c23aebb134e336e",
+      "validation_error": null,
+      "visible_reply_sha256": "f550d8e6d882ae72ef0d69982c32f11b4ce55742cef57007b0801adb8a9ca799"
+    },
+    {
+      "case_id": "turn-03",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "plan",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "565993a4f7ad83a2382c8bc7ec6e806a315717cc2f860b93abe53935d029b9d3",
+      "elapsed_seconds": 6.8144,
+      "semantic_reply_sha256": "95bb8d7e914fbed89ad6ea8471b87140fe9f171975f762e2ae69a0014df6b91e",
+      "validation_error": null,
+      "visible_reply_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case_id": "turn-04",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "clarify",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": null,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 2
+      },
+      "effect_projection_sha256": "31a07618d89f90d48a4877dccbb3c6319569fd2a9d0ecb3e87cb1d54daef3453",
+      "elapsed_seconds": 20.1954,
+      "semantic_reply_sha256": "b09782758b1ada5fdd94231514ed354e5a3f12d7235b75fd582c74d34a4f4a06",
+      "validation_error": null,
+      "visible_reply_sha256": "fe6ebd54d3a5c00c83fb80de1fbbb3cf2452f978dc22cb71e16cf505d308a1d4"
+    },
+    {
+      "case_id": "turn-05",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 10.5661,
+      "semantic_reply_sha256": "7e33ae902ea517822a320ced3913d16617fbcae3433a55d05b289b5ba33642fd",
+      "validation_error": null,
+      "visible_reply_sha256": "bd77311532d3a6267e600f7b9fa5a6a9807ba78c3690b93d64f26ee40dd2c298"
+    },
+    {
+      "case_id": "turn-06",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "clarify",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": null,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 2
+      },
+      "effect_projection_sha256": "31a07618d89f90d48a4877dccbb3c6319569fd2a9d0ecb3e87cb1d54daef3453",
+      "elapsed_seconds": 19.8217,
+      "semantic_reply_sha256": "b09782758b1ada5fdd94231514ed354e5a3f12d7235b75fd582c74d34a4f4a06",
+      "validation_error": null,
+      "visible_reply_sha256": "fe6ebd54d3a5c00c83fb80de1fbbb3cf2452f978dc22cb71e16cf505d308a1d4"
+    },
+    {
+      "case_id": "turn-07",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 7.6713,
+      "semantic_reply_sha256": "e885c95792c7a5d71c7cd2e1bf2b28d437dff22d0f04623f5d542a32c35a8669",
+      "validation_error": null,
+      "visible_reply_sha256": "c7725562e2fb066501336ca1dfc87fd8f37ba9a1b5a36f292f72d7772437341e"
+    },
+    {
+      "case_id": "turn-08",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 5.5061,
+      "semantic_reply_sha256": "3133d9340618207650bb7b7fde72d2559a801f00d28536df88c8291398ae5c3e",
+      "validation_error": null,
+      "visible_reply_sha256": "7e07c6a5322789f624d8e35f46490e333727436fa130d18d613d8a2205aafa69"
+    },
+    {
+      "case_id": "turn-09",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 5.7188,
+      "semantic_reply_sha256": "6774de4c5dafc050bfacb5789fe9f8e7eaae379e09fbc6da7922f232745bde43",
+      "validation_error": null,
+      "visible_reply_sha256": "e7caffea8708e5e13e6fb5df5ce71e46a78c3b5618cb57f2681e557b1577b2d2"
+    },
+    {
+      "case_id": "turn-10",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 5.5034,
+      "semantic_reply_sha256": "1d227202a6e2485f9061f6b2649c27691b8a11c4bc97659866fec813da280156",
+      "validation_error": null,
+      "visible_reply_sha256": "23bcf884ac20cebe1cb942a0baaa7f17111457c51a5984af3103817e933ca22c"
+    },
+    {
+      "case_id": "turn-11",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 7.1167,
+      "semantic_reply_sha256": "15165107fff954b6852900c059b200e8a4ba3cd2d35e2bb31ba51eebe1c017b3",
+      "validation_error": null,
+      "visible_reply_sha256": "6be92290d890dd8737e16933c30dffd894d490668408081cd5c7a1b2713d5b1e"
+    },
+    {
+      "case_id": "turn-12",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 9.5553,
+      "semantic_reply_sha256": "b96dbb9cc990e8e843253ae987b7cac21fb1458e7f6b76994c09969868dc7582",
+      "validation_error": null,
+      "visible_reply_sha256": "7f3ce30afdab1c47a667af30e819875582d16c0f6b6e2cc6a4ea4bb72fdd69fd"
+    },
+    {
+      "case_id": "turn-13",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "action",
+        "operation": "system.status",
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "1e6a68ecfb05968e96f866410e87e0bcd93bb60b36e20e6a7756e967c4562673",
+      "elapsed_seconds": 0.002,
+      "semantic_reply_sha256": "4c9bb0b4ea04af7e00149334ecdc2cf8691ce78d9ff4dbb3ce389d5d3e7282ff",
+      "validation_error": null,
+      "visible_reply_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case_id": "turn-14",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "action",
+        "operation": "system.status",
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "1e6a68ecfb05968e96f866410e87e0bcd93bb60b36e20e6a7756e967c4562673",
+      "elapsed_seconds": 0.0015,
+      "semantic_reply_sha256": "4c9bb0b4ea04af7e00149334ecdc2cf8691ce78d9ff4dbb3ce389d5d3e7282ff",
+      "validation_error": null,
+      "visible_reply_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case_id": "turn-15",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 6.5596,
+      "semantic_reply_sha256": "b721ad0352fb670e73e3380a0815e3cc0176f33f91adfaf31d06fb7493abbd68",
+      "validation_error": null,
+      "visible_reply_sha256": "d44127688a8109381a7170a4ca982147aa7c0e19b683f44b1a0f5eb9785492ff"
+    },
+    {
+      "case_id": "turn-16",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 6.1928,
+      "semantic_reply_sha256": "25e6acb39e41c875c52cef7b33865ba7ddbc8eac873b1ab50bb45a02687800c7",
+      "validation_error": null,
+      "visible_reply_sha256": "98ab6a7112b888ad075bd32128baf04160521af08a74d46175c058bb7dcba346"
+    },
+    {
+      "case_id": "turn-17",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 8.0569,
+      "semantic_reply_sha256": "7ebac86717002040c08441de5c8c138b433653e7fc8d6eeaa2120294ff512bbd",
+      "validation_error": null,
+      "visible_reply_sha256": "e3a11f549cb1498960984335450f98e7c3aa3a6aa9bd83bfe1e1cfa5350b1b9d"
+    },
+    {
+      "case_id": "turn-18",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "plan",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "2935bd598835a53c561e270bbaf84dd07022f59ce77e4c512eb5923b7dfc6922",
+      "elapsed_seconds": 7.3173,
+      "semantic_reply_sha256": "e52f4a3c389050a2b8e8c0797cafdabedec6ed703d9d7fe52b6571120bb5795c",
+      "validation_error": null,
+      "visible_reply_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case_id": "turn-19",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 7.5344,
+      "semantic_reply_sha256": "d8090d3206cf5547aadc18941b26453318103adb6e036a79bb81e3c331109894",
+      "validation_error": null,
+      "visible_reply_sha256": "5e9b3a649e6bfc016bf3b5ee09d5ab339f46faf24c1f87d8869f181bae8a102c"
+    },
+    {
+      "case_id": "turn-20",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 6.7571,
+      "semantic_reply_sha256": "f3d89f1f3e5f5731180a735d32b4668e4db545cf9bc3d806f2f4183fcb512ba3",
+      "validation_error": null,
+      "visible_reply_sha256": "265a870eb0df54ce4b8ebd53d2e89388d80541fcc44a61b24c604df9628cad54"
+    },
+    {
+      "case_id": "turn-21",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 9.1964,
+      "semantic_reply_sha256": "f290febf6cde750402f68df579497c9a5c9fa6d9499849d727d5eccc50516c8f",
+      "validation_error": null,
+      "visible_reply_sha256": "52275240657a74dd4ffae109ddb8bf3543920bf398c2165811001686766a8ad0"
+    },
+    {
+      "case_id": "turn-22",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 9.4833,
+      "semantic_reply_sha256": "eb80d722d5becf38626b937fc29faf697efab511fec492b8be92605c48a01a2a",
+      "validation_error": null,
+      "visible_reply_sha256": "bb33d0619b1214285f9343b0546b974bcf5e51aa7d6edc55a84669ba00c3384f"
+    },
+    {
+      "case_id": "turn-23",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "clarify",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": null,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 2
+      },
+      "effect_projection_sha256": "31a07618d89f90d48a4877dccbb3c6319569fd2a9d0ecb3e87cb1d54daef3453",
+      "elapsed_seconds": 20.4401,
+      "semantic_reply_sha256": "b09782758b1ada5fdd94231514ed354e5a3f12d7235b75fd582c74d34a4f4a06",
+      "validation_error": null,
+      "visible_reply_sha256": "fe6ebd54d3a5c00c83fb80de1fbbb3cf2452f978dc22cb71e16cf505d308a1d4"
+    },
+    {
+      "case_id": "turn-24",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 7.4272,
+      "semantic_reply_sha256": "7d6cf17e595fa09eccf0a2ebb78cf3ae74fe2cde4599b69e03c054bf1bcfd217",
+      "validation_error": null,
+      "visible_reply_sha256": "6be0384ab73af80c5063dc161980719cb4dcb2c8fbc441957531a6d87b5f3c10"
+    },
+    {
+      "case_id": "turn-25",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 6.0763,
+      "semantic_reply_sha256": "9a41f64dfaf2fcf38ad213d5183275c5940dabbdcf2a184f695e7aaf2ab9d699",
+      "validation_error": null,
+      "visible_reply_sha256": "0aa9a254ce7d660b391f25bcca6dcc595f9cd14e72953ee487c429f37122db5b"
+    },
+    {
+      "case_id": "turn-26",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 7.3297,
+      "semantic_reply_sha256": "5f128c6f3dc0d9b2ffe3ec51b8ab60babddec97d679b32eabc1975e43931e9a9",
+      "validation_error": null,
+      "visible_reply_sha256": "e332de2246cf42ba94f860abc9247fb2ac65178e27f8e1dba6527200530a23f7"
+    },
+    {
+      "case_id": "turn-27",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 6.7739,
+      "semantic_reply_sha256": "8acda7efaf25fb77d72a9c6a069be104c09a6924dc03084dd6b3daa5938a58df",
+      "validation_error": null,
+      "visible_reply_sha256": "5bc1452c9a721decea2100c0a19d3e08ee457b1f4331de73951170ada0482f1c"
+    },
+    {
+      "case_id": "turn-28",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "action",
+        "operation": "audio.volume",
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "9f7a903177a582822b015015f06b65c9b10bdcf49b8a6c96b834b11c7626869d",
+      "elapsed_seconds": 7.9854,
+      "semantic_reply_sha256": "76364a845dc4b83144b965ade77df27b21a91e58ac8b5ebdd357f3ddaa1ba084",
+      "validation_error": null,
+      "visible_reply_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case_id": "turn-29",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 9.4454,
+      "semantic_reply_sha256": "05b9258bb388a6794a5e8ad45bb69b25e68935f93ecc6ace8f4f3e1be43db143",
+      "validation_error": null,
+      "visible_reply_sha256": "0afcf42a6b72091ed520562a85b601a825cc0f1587c3f3af348167e06fced6e3"
+    }
+  ],
+  "policy_reasoning_early_aborts": 0,
+  "primary_compact_prefill": false,
+  "primary_direct_compact": false,
+  "primary_exclusive_first": false,
+  "primary_max_tokens": null,
+  "primary_operation_names_only": false,
+  "primary_reasoning_cutoff": 130,
+  "primary_reasoning_early_abort": false,
+  "primary_stagger_ms": null,
+  "primary_stream": false,
+  "primary_whitespace_free_grammar": false,
+  "primary_without_redundant_fields": false,
+  "requests_completed": 30,
+  "retry_cases": [
+    "turn-04",
+    "turn-06",
+    "turn-23"
+  ],
+  "retry_reuse_verified_guard_language": false,
+  "retry_without_speculative_v": false,
+  "runtime": {
+    "gguf": {
+      "bytes": 2620370976,
+      "name": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "35e3a73d2f6ef88dad7bd3b17d29d3113f132deb1f70c2cdc0b6065dc0a126d6",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "schema": "baxy-gpu-turn-tail-diagnostic-v1",
+  "slowest": [
+    {
+      "case_id": "turn-23",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "clarify",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": null,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 2
+      },
+      "effect_projection_sha256": "31a07618d89f90d48a4877dccbb3c6319569fd2a9d0ecb3e87cb1d54daef3453",
+      "elapsed_seconds": 20.4401,
+      "semantic_reply_sha256": "b09782758b1ada5fdd94231514ed354e5a3f12d7235b75fd582c74d34a4f4a06",
+      "validation_error": null,
+      "visible_reply_sha256": "fe6ebd54d3a5c00c83fb80de1fbbb3cf2452f978dc22cb71e16cf505d308a1d4"
+    },
+    {
+      "case_id": "turn-04",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "clarify",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": null,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 2
+      },
+      "effect_projection_sha256": "31a07618d89f90d48a4877dccbb3c6319569fd2a9d0ecb3e87cb1d54daef3453",
+      "elapsed_seconds": 20.1954,
+      "semantic_reply_sha256": "b09782758b1ada5fdd94231514ed354e5a3f12d7235b75fd582c74d34a4f4a06",
+      "validation_error": null,
+      "visible_reply_sha256": "fe6ebd54d3a5c00c83fb80de1fbbb3cf2452f978dc22cb71e16cf505d308a1d4"
+    },
+    {
+      "case_id": "turn-06",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "clarify",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": null,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 2
+      },
+      "effect_projection_sha256": "31a07618d89f90d48a4877dccbb3c6319569fd2a9d0ecb3e87cb1d54daef3453",
+      "elapsed_seconds": 19.8217,
+      "semantic_reply_sha256": "b09782758b1ada5fdd94231514ed354e5a3f12d7235b75fd582c74d34a4f4a06",
+      "validation_error": null,
+      "visible_reply_sha256": "fe6ebd54d3a5c00c83fb80de1fbbb3cf2452f978dc22cb71e16cf505d308a1d4"
+    },
+    {
+      "case_id": "turn-02",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 12.8663,
+      "semantic_reply_sha256": "f27ac1544d55459f08b587b0fcd3effbadac7e8f49140e678c23aebb134e336e",
+      "validation_error": null,
+      "visible_reply_sha256": "f550d8e6d882ae72ef0d69982c32f11b4ce55742cef57007b0801adb8a9ca799"
+    },
+    {
+      "case_id": "turn-05",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 10.5661,
+      "semantic_reply_sha256": "7e33ae902ea517822a320ced3913d16617fbcae3433a55d05b289b5ba33642fd",
+      "validation_error": null,
+      "visible_reply_sha256": "bd77311532d3a6267e600f7b9fa5a6a9807ba78c3690b93d64f26ee40dd2c298"
+    },
+    {
+      "case_id": "turn-01",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 10.1649,
+      "semantic_reply_sha256": "ddcd9db003a5d4bd778bb53ae34a1dc4cfad937c2687a149db3af4af5e3029b1",
+      "validation_error": null,
+      "visible_reply_sha256": "18bf18ddf4860b097625a198c84893a03ffffb038af776a8512458a18f7c2811"
+    },
+    {
+      "case_id": "turn-12",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 9.5553,
+      "semantic_reply_sha256": "b96dbb9cc990e8e843253ae987b7cac21fb1458e7f6b76994c09969868dc7582",
+      "validation_error": null,
+      "visible_reply_sha256": "7f3ce30afdab1c47a667af30e819875582d16c0f6b6e2cc6a4ea4bb72fdd69fd"
+    },
+    {
+      "case_id": "turn-22",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 9.4833,
+      "semantic_reply_sha256": "eb80d722d5becf38626b937fc29faf697efab511fec492b8be92605c48a01a2a",
+      "validation_error": null,
+      "visible_reply_sha256": "bb33d0619b1214285f9343b0546b974bcf5e51aa7d6edc55a84669ba00c3384f"
+    },
+    {
+      "case_id": "turn-29",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 9.4454,
+      "semantic_reply_sha256": "05b9258bb388a6794a5e8ad45bb69b25e68935f93ecc6ace8f4f3e1be43db143",
+      "validation_error": null,
+      "visible_reply_sha256": "0afcf42a6b72091ed520562a85b601a825cc0f1587c3f3af348167e06fced6e3"
+    },
+    {
+      "case_id": "turn-21",
+      "decision": {
+        "conversation_kind": null,
+        "effect_verification": null,
+        "kind": "conversation",
+        "operation": null,
+        "plan_operations": [],
+        "policy_reasoning_early_aborts": 0,
+        "recovery": null,
+        "response_language": null,
+        "turn_attempts": 1
+      },
+      "effect_projection_sha256": "a546218c5f37e299a6bbb8e026e51d48767b458365317a9f0d173b339831717e",
+      "elapsed_seconds": 9.1964,
+      "semantic_reply_sha256": "f290febf6cde750402f68df579497c9a5c9fa6d9499849d727d5eccc50516c8f",
+      "validation_error": null,
+      "visible_reply_sha256": "52275240657a74dd4ffae109ddb8bf3543920bf398c2165811001686766a8ad0"
+    }
+  ],
+  "thinking_budgets": null,
+  "turn_elapsed_total_seconds": 256.3981,
+  "validation_errors": 0,
+  "workload_sha256": "0d25a152e8c8c2c9756da9f0855c52cd6efae6422682b35d2f28fb064be1d251"
+}

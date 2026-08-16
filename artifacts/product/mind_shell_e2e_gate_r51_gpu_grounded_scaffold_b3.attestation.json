@@ -1,0 +1,80 @@
+{
+  "schema": "baxy-mind-shell-core-attestation-v1",
+  "journal_integrity_validated": true,
+  "journal_authentication": "hmac-sha256",
+  "journal_sha256": "8056c3748efe3148e98a5b222db2057250480172ceca36c6b978eba35945452b",
+  "anchor_sha256": "669f20a1a64f8d163ffa27375d185eee599d27d9bfb990a01bc2a3097d8b6497",
+  "journal_records": 14,
+  "started_records": 7,
+  "completed_records": 7,
+  "journal_structure_valid": true,
+  "invocation_pairs_valid": true,
+  "started_operations_match_completed": true,
+  "expected_read_only_operations_observed": false,
+  "operation_counts": {
+    "memory_status": 1,
+    "system_time": 3,
+    "system_status": 2,
+    "system_process_list": 1,
+    "task_list": 0,
+    "note_list": 0
+  },
+  "completions": [
+    {
+      "sequence": 2,
+      "operation": "memory.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 4,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 6,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 8,
+      "operation": "system.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 10,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 12,
+      "operation": "system.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 14,
+      "operation": "system.process.list",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    }
+  ]
+}

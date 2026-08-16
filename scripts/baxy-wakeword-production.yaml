@@ -1,0 +1,61 @@
+# Entrenamiento aislado de un KWS BAXY en español.
+# Requiere livekit-wakeword con extras train, eval, export y voxcpm.
+# No ejecutar dentro del entorno runtime ni con la GPU de 6 GiB de este equipo.
+model_name: baxy
+target_phrases:
+  - "baxy"
+  - "baxi"
+tts_backend: voxcpm
+n_samples: 50000
+n_samples_val: 10000
+steps: 50000
+target_fp_per_hour: 0.1
+
+model:
+  model_type: conv_attention
+  model_size: medium
+
+# Diversidad deliberada de edad, acento, ritmo, tono y energía. Completar con
+# grabaciones consentidas de español chileno y negativos reales antes de aprobar.
+voxcpm_tts:
+  voice_design_prompts:
+    - "Mujer joven chilena, voz clara, tono medio, ritmo conversacional, amable"
+    - "Hombre joven chileno, voz grave suave, ritmo natural, relajado"
+    - "Mujer adulta chilena, dicción precisa, energía baja, tono profesional"
+    - "Hombre adulto chileno, voz cálida, ritmo lento, pronunciación cuidada"
+    - "Mujer mayor chilena, voz ligeramente ronca, ritmo pausado, tranquila"
+    - "Hombre mayor chileno, voz profunda, ritmo lento, sereno"
+    - "Mujer joven mexicana, tono alto moderado, ritmo ágil, natural"
+    - "Hombre joven mexicano, voz media, ritmo conversacional, amistoso"
+    - "Mujer adulta argentina, voz clara, entonación expresiva, velocidad media"
+    - "Hombre adulto argentino, voz media-grave, articulación suave"
+    - "Mujer joven colombiana, voz luminosa, dicción rápida pero clara"
+    - "Hombre joven colombiano, voz cálida, ritmo medio, informal"
+    - "Mujer adulta peruana, voz estable, ritmo pausado, profesional"
+    - "Hombre adulto peruano, voz grave, ritmo medio, calmado"
+    - "Mujer española, voz neutra, articulación nítida, ritmo medio"
+    - "Hombre español, voz clara, ritmo rápido, energía moderada"
+    - "Mujer bilingüe español-inglés, code-switch ligero, tono medio"
+    - "Hombre bilingüe español-inglés, pronunciación internacional, ritmo medio"
+    - "Mujer joven, susurro audible, voz baja, pronunciación clara"
+    - "Hombre joven, voz baja, habla cerca del micrófono, natural"
+    - "Mujer adulta, habla desde lejos, tono medio, ambiente de sala"
+    - "Hombre adulto, habla desde lejos, voz grave, ambiente doméstico"
+    - "Mujer adolescente, tono alto, ritmo rápido, energía alegre"
+    - "Hombre adolescente, tono medio, ritmo rápido, energía relajada"
+    - "Mujer adulta, voz nasal suave, ritmo medio, articulación precisa"
+    - "Hombre adulto, voz ronca leve, ritmo pausado, dicción clara"
+    - "Mujer joven, voz muy grave, ritmo lento, energía baja"
+    - "Hombre joven, voz aguda, ritmo rápido, energía moderada"
+    - "Mujer adulta, habla con risa leve, tono cálido, natural"
+    - "Hombre adulto, habla con cansancio leve, tono bajo, natural"
+    - "Mujer joven, español chileno rápido, vocales reducidas, clara"
+    - "Hombre joven, español chileno coloquial, ritmo rápido, relajado"
+    - "Mujer adulta, español formal, pausas largas, voz calmada"
+    - "Hombre adulto, español formal, pronunciación enfática, ritmo lento"
+    - "Mujer joven, tono animado, habla fuerte, ambiente ruidoso"
+    - "Hombre joven, tono contenido, habla suave, ambiente ruidoso"
+    - "Mujer mayor, voz temblorosa leve, ritmo lento, amable"
+    - "Hombre mayor, voz áspera leve, ritmo lento, claro"
+    - "Mujer adulta, acento caribeño, tono medio, energía alta"
+    - "Hombre adulto, acento caribeño, voz grave, energía media"

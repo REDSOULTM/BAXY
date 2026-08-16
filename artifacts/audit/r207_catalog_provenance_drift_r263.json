@@ -1,0 +1,61 @@
+{
+  "schema": "baxy.r207-catalog-provenance-drift.r263.v1",
+  "authority": "development_source_provenance_scope_audit_not_model_training",
+  "verdict": "development_evidence_scope_narrowed_stale_catalog_and_unreviewed_r207_provenance",
+  "source": {
+    "r196_training_rows": 4740,
+    "r207_pair_rows": 23700,
+    "r207_positive_pairs": 4740,
+    "r196_unique_labels": 170,
+    "prior_catalogue_operations": 169,
+    "current_catalogue_operations": 174,
+    "qwen_generated_r196_rows": 4179,
+    "other_r196_rows": 561,
+    "r196_human_semantic_audit_rows": 0,
+    "r207_human_semantic_audit_pairs": 0,
+    "query_texts_retained": false,
+    "query_identifiers_retained": false,
+    "source_files_merkle_sha256": "f91d5dbf17a07f466091ccb7e68b7eafa668639317df4fa848463fe469c45c30"
+  },
+  "catalogue_delta": {
+    "current_operations_missing_from_r196_and_r207_positives": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "legacy_operations_absent_from_current": [
+      "notification.cancel.at"
+    ],
+    "r196_uses_prior_catalogue_plus_explicit_abstention": true
+  },
+  "interpretation": {
+    "r257_numerical_result_changed": false,
+    "r257_full_current_catalogue_coverage_claim_supported": false,
+    "r207_provenance_is_human_semantically_reviewed": false,
+    "native_microsoft_word_com_requests_present_for_missing_operations": false,
+    "admitted_baxy_operations": [],
+    "reason": "R207 deterministically preserves R196 labels built against a 169-operation snapshot plus __no_action__. The current catalogue has six Microsoft Word lifecycle operations absent from both that snapshot and every R196/R207 positive; it also retires notification.cancel.at. In addition, every R196 and R207 row records human_semantic_audit false, and 4,179 of 4,740 R196 rows identify qwen-generator+gemma-reviewer as their source. R257's measured retrieval values remain factual for its query-disjoint R207 population, but cannot become a coverage or semantic-admission claim for the current 174-operation catalogue."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not backfill the six Word labels from current catalogue descriptions, R196-style generated text, or technical plans. A successor must establish independently published human requests tied to native Microsoft Word COM lifecycle verification for all six operations before any new all-catalogue retrieval measurement.",
+  "identities": {
+    "r196_sha256": "10f6e13c731ee8acd02b0f530b8da2696555f675f491599b2df23626cbfab080",
+    "legacy_catalogue_sha256": "2d5a257c9c2986b22a1f3159ffd30b4d658045d3cb7e15982abc42819651e376",
+    "current_catalogue_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "r207_sha256": "6be518643a188bc5402c4ced73e4da3049d43ed0dbd3a0d8114f6130784fa8b0",
+    "program_sha256": "9f6b8f6f6f07a9830b49bfe0b2dada725423192380a6e9fafdf6d75e6cf80634"
+  }
+}

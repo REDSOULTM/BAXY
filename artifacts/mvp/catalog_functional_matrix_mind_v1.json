@@ -1,0 +1,4386 @@
+{
+  "app_memory_gate": {
+    "cases": 11,
+    "operations": [
+      "memory.correct",
+      "memory.disable",
+      "memory.enable",
+      "memory.export",
+      "memory.forget",
+      "memory.list",
+      "memory.recall",
+      "memory.save",
+      "memory.sensitive.save",
+      "memory.session.clear",
+      "memory.status"
+    ],
+    "status": "pending_separate_app_gate"
+  },
+  "audit_stage_names": [
+    "validated_raw",
+    "explicit_contract",
+    "information_question",
+    "domain_grounding",
+    "compound_conservation",
+    "action_relevance",
+    "action_grounding",
+    "conversation_presentation"
+  ],
+  "authority": "turn.decide_only_no_plan_sent_to_core_or_provider",
+  "catalog": {
+    "app_memory_owned": 11,
+    "mind_owned": 158,
+    "operations": 169
+  },
+  "development_gate_passed": true,
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-11T20:00:33.451551+00:00",
+  "metrics": {
+    "by_language": {
+      "en": {
+        "cases": 39,
+        "exact": 39
+      },
+      "es": {
+        "cases": 80,
+        "exact": 80
+      },
+      "spanglish": {
+        "cases": 39,
+        "exact": 39
+      }
+    },
+    "cases": 158,
+    "exact": 158,
+    "exact_accuracy": 1.0,
+    "failure_causes": {
+      "none": 158
+    },
+    "latency_seconds": {
+      "maximum": 0.01246,
+      "p50": 0.00309,
+      "p95": 0.005519
+    },
+    "unsafe_effects": 0
+  },
+  "program_sha256": "d347bbbe90e3b4ff255e12094eb23223cacead717abf5f1bf1dc58059ca0e9a5",
+  "promotion_eligible": false,
+  "rows": [
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "app.close"
+      ],
+      "case_id": "catalog-seen-natural-app-close",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "app",
+      "final_effect_operations": [
+        "app.close"
+      ],
+      "final_intent_operations": [
+        "app.close"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.006085,
+      "target_operation": "app.close",
+      "text": "Cierra la ventana de Bloc de notas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "app.installed"
+      ],
+      "case_id": "catalog-seen-natural-app-installed",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "app",
+      "final_effect_operations": [
+        "app.installed"
+      ],
+      "final_intent_operations": [
+        "app.installed"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002679,
+      "target_operation": "app.installed",
+      "text": "Check whether Obsidian is installed without opening it.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "app.open"
+      ],
+      "case_id": "catalog-seen-natural-app-open",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "app",
+      "final_effect_operations": [
+        "app.open"
+      ],
+      "final_intent_operations": [
+        "app.open"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003803,
+      "target_operation": "app.open",
+      "text": "Abre la calculadora.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.microphone.mute"
+      ],
+      "case_id": "catalog-seen-natural-audio-microphone-mute",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.microphone.mute"
+      ],
+      "final_intent_operations": [
+        "audio.microphone.mute"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002234,
+      "target_operation": "audio.microphone.mute",
+      "text": "Mutea el microphone del computador.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.mute"
+      ],
+      "case_id": "catalog-seen-natural-audio-mute",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.mute"
+      ],
+      "final_intent_operations": [
+        "audio.mute"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00322,
+      "target_operation": "audio.mute",
+      "text": "Silencia el audio del computador.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.status"
+      ],
+      "case_id": "catalog-seen-natural-audio-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.status"
+      ],
+      "final_intent_operations": [
+        "audio.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002434,
+      "target_operation": "audio.status",
+      "text": "Tell me the current speaker volume and mute state.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.volume"
+      ],
+      "case_id": "catalog-seen-natural-audio-volume",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.volume"
+      ],
+      "final_intent_operations": [
+        "audio.volume"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003212,
+      "target_operation": "audio.volume",
+      "text": "Pon el volumen del computador al 37 por ciento.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.volume.adjust"
+      ],
+      "case_id": "catalog-seen-natural-audio-volume-adjust",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.volume.adjust"
+      ],
+      "final_intent_operations": [
+        "audio.volume.adjust"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002932,
+      "target_operation": "audio.volume.adjust",
+      "text": "Baja el volume del PC en 8 puntos.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.create"
+      ],
+      "case_id": "catalog-seen-natural-backup-create",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.create"
+      ],
+      "final_intent_operations": [
+        "backup.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002762,
+      "target_operation": "backup.create",
+      "text": "Crea una copia privada del archivo que acabo de seleccionar y verifica su hash.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.known.create"
+      ],
+      "case_id": "catalog-seen-natural-backup-known-create",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.known.create"
+      ],
+      "final_intent_operations": [
+        "backup.known.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003189,
+      "target_operation": "backup.known.create",
+      "text": "Create a verified private ZIP backup of my Documents folder.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.known.list"
+      ],
+      "case_id": "catalog-seen-natural-backup-known-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.known.list"
+      ],
+      "final_intent_operations": [
+        "backup.known.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002871,
+      "target_operation": "backup.known.list",
+      "text": "Lista mis copias ZIP de carpetas conocidas y verifica sus hashes.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.known.restore.latest"
+      ],
+      "case_id": "catalog-seen-natural-backup-known-restore-latest",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.known.restore.latest"
+      ],
+      "final_intent_operations": [
+        "backup.known.restore.latest"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003399,
+      "target_operation": "backup.known.restore.latest",
+      "text": "Restore el backup ZIP más reciente de Documents en una carpeta privada nueva.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.known.verify.latest"
+      ],
+      "case_id": "catalog-seen-natural-backup-known-verify-latest",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.known.verify.latest"
+      ],
+      "final_intent_operations": [
+        "backup.known.verify.latest"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003156,
+      "target_operation": "backup.known.verify.latest",
+      "text": "Verifica el backup ZIP más reciente de Documentos.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.list"
+      ],
+      "case_id": "catalog-seen-natural-backup-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.list"
+      ],
+      "final_intent_operations": [
+        "backup.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003429,
+      "target_operation": "backup.list",
+      "text": "List my verified private backups, newest first.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.restore"
+      ],
+      "case_id": "catalog-seen-natural-backup-restore",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.restore"
+      ],
+      "final_intent_operations": [
+        "backup.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003109,
+      "target_operation": "backup.restore",
+      "text": "Restaura el backup privado que acabo de elegir en un destino nuevo.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.verify"
+      ],
+      "case_id": "catalog-seen-natural-backup-verify",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.verify"
+      ],
+      "final_intent_operations": [
+        "backup.verify"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003648,
+      "target_operation": "backup.verify",
+      "text": "Verify el tamaño y SHA-256 del backup que seleccioné.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "bluetooth.device.list"
+      ],
+      "case_id": "catalog-seen-natural-bluetooth-device-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "bluetooth",
+      "final_effect_operations": [
+        "bluetooth.device.list"
+      ],
+      "final_intent_operations": [
+        "bluetooth.device.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002884,
+      "target_operation": "bluetooth.device.list",
+      "text": "Muéstrame los dispositivos Bluetooth visibles.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "bluetooth.device.list",
+        "bluetooth.device.pair"
+      ],
+      "case_id": "catalog-seen-natural-bluetooth-device-pair",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "bluetooth",
+      "final_effect_operations": [
+        "bluetooth.device.pair"
+      ],
+      "final_intent_operations": [
+        "bluetooth.device.pair"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002563,
+      "target_operation": "bluetooth.device.pair",
+      "text": "Pair the Bluetooth headset named Living Room Buds.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "bluetooth.radio.set"
+      ],
+      "case_id": "catalog-seen-natural-bluetooth-radio-set",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "bluetooth",
+      "final_effect_operations": [
+        "bluetooth.radio.set"
+      ],
+      "final_intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002841,
+      "target_operation": "bluetooth.radio.set",
+      "text": "Enciende el Bluetooth y comprueba que quede encendido.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.control"
+      ],
+      "case_id": "catalog-seen-natural-browser-control",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.control"
+      ],
+      "final_intent_operations": [
+        "browser.control"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002675,
+      "target_operation": "browser.control",
+      "text": "Go back una página en la pestaña actual.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.navigate"
+      ],
+      "case_id": "catalog-seen-natural-browser-navigate",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.navigate"
+      ],
+      "final_intent_operations": [
+        "browser.navigate"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.0036,
+      "target_operation": "browser.navigate",
+      "text": "Navega la sesión web actual a https://example.com/docs.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.navigate.named"
+      ],
+      "case_id": "catalog-seen-natural-browser-navigate-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.navigate.named"
+      ],
+      "final_intent_operations": [
+        "browser.navigate.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004283,
+      "target_operation": "browser.navigate.named",
+      "text": "Open https://example.com/account specifically in Opera.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.page.read"
+      ],
+      "case_id": "catalog-seen-natural-browser-page-read",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.page.read"
+      ],
+      "final_intent_operations": [
+        "browser.page.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003804,
+      "target_operation": "browser.page.read",
+      "text": "Lee el título, la URL y el texto visible de la página actual.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.tabs.list"
+      ],
+      "case_id": "catalog-seen-natural-browser-tabs-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.tabs.list"
+      ],
+      "final_intent_operations": [
+        "browser.tabs.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003258,
+      "target_operation": "browser.tabs.list",
+      "text": "List las pestañas abiertas de la sesión web local.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "calendar.event.create"
+      ],
+      "case_id": "catalog-seen-natural-calendar-event-create",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "calendar",
+      "final_effect_operations": [
+        "calendar.event.create"
+      ],
+      "final_intent_operations": [
+        "calendar.event.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004253,
+      "target_operation": "calendar.event.create",
+      "text": "Crea en mi calendario un evento llamado Revisión mañana de nueve a diez.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "calendar.event.list"
+      ],
+      "case_id": "catalog-seen-natural-calendar-event-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "calendar",
+      "final_effect_operations": [
+        "calendar.event.list"
+      ],
+      "final_intent_operations": [
+        "calendar.event.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003158,
+      "target_operation": "calendar.event.list",
+      "text": "List my calendar events for tomorrow without changing them.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "capture.active.window"
+      ],
+      "case_id": "catalog-seen-natural-capture-active-window",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "capture",
+      "final_effect_operations": [
+        "capture.active.window"
+      ],
+      "final_intent_operations": [
+        "capture.active.window"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004292,
+      "target_operation": "capture.active.window",
+      "text": "Captura solamente la ventana que está activa.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "capture.screenshot"
+      ],
+      "case_id": "catalog-seen-natural-capture-screenshot",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "capture",
+      "final_effect_operations": [
+        "capture.screenshot"
+      ],
+      "final_intent_operations": [
+        "capture.screenshot"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002937,
+      "target_operation": "capture.screenshot",
+      "text": "Take un screenshot de todo el escritorio.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "clipboard.copy"
+      ],
+      "case_id": "catalog-seen-natural-clipboard-copy",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "clipboard",
+      "final_effect_operations": [
+        "clipboard.copy"
+      ],
+      "final_intent_operations": [
+        "clipboard.copy"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002961,
+      "target_operation": "clipboard.copy",
+      "text": "Copia la selección actual al portapapeles.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "clipboard.paste"
+      ],
+      "case_id": "catalog-seen-natural-clipboard-paste",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "clipboard",
+      "final_effect_operations": [
+        "clipboard.paste"
+      ],
+      "final_intent_operations": [
+        "clipboard.paste"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003087,
+      "target_operation": "clipboard.paste",
+      "text": "Paste the current clipboard into the focused field.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "clipboard.read.text"
+      ],
+      "case_id": "catalog-seen-natural-clipboard-read-text",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "clipboard",
+      "final_effect_operations": [
+        "clipboard.read.text"
+      ],
+      "final_intent_operations": [
+        "clipboard.read.text"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003671,
+      "target_operation": "clipboard.read.text",
+      "text": "Lee el texto que tengo ahora en el portapapeles.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "clipboard.write.text"
+      ],
+      "case_id": "catalog-seen-natural-clipboard-write-text",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "clipboard",
+      "final_effect_operations": [
+        "clipboard.write.text"
+      ],
+      "final_intent_operations": [
+        "clipboard.write.text"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002795,
+      "target_operation": "clipboard.write.text",
+      "text": "Pon en el clipboard el texto literal reunión a las cinco.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "email.latest.read"
+      ],
+      "case_id": "catalog-seen-natural-email-latest-read",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "email",
+      "final_effect_operations": [
+        "email.latest.read"
+      ],
+      "final_intent_operations": [
+        "email.latest.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003061,
+      "target_operation": "email.latest.read",
+      "text": "Lee el correo más reciente de mi Outlook.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "email.latest.reply"
+      ],
+      "case_id": "catalog-seen-natural-email-latest-reply",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "email",
+      "final_effect_operations": [
+        "email.latest.reply"
+      ],
+      "final_intent_operations": [
+        "email.latest.reply"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002917,
+      "target_operation": "email.latest.reply",
+      "text": "Reply to my latest Outlook email with: I received it, thank you.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.copy"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-copy",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.copy"
+      ],
+      "final_intent_operations": [
+        "filesystem.copy"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002733,
+      "target_operation": "filesystem.copy",
+      "text": "Copia el archivo seleccionado a la carpeta archivo dentro del sandbox.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.create.directory"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-create-directory",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.create.directory"
+      ],
+      "final_intent_operations": [
+        "filesystem.create.directory"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002808,
+      "target_operation": "filesystem.create.directory",
+      "text": "Create una carpeta del sandbox llamada pruebas agosto.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-file-open-latest",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "final_intent_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": false,
+      "retrieval_correct": true,
+      "seconds": 0.00321,
+      "target_operation": "filesystem.file.open.latest",
+      "text": "Abre el archivo modificado más recientemente de Descargas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.folder.open"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-folder-open",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.folder.open"
+      ],
+      "final_intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": false,
+      "retrieval_correct": true,
+      "seconds": 0.002868,
+      "target_operation": "filesystem.folder.open",
+      "text": "Open my Downloads folder in File Explorer.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.hash"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-hash",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.hash"
+      ],
+      "final_intent_operations": [
+        "filesystem.hash"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": false,
+      "retrieval_correct": true,
+      "seconds": 0.002021,
+      "target_operation": "filesystem.hash",
+      "text": "Calcula el SHA-256 del archivo que acabo de seleccionar.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-known-duplicates",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "final_intent_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002508,
+      "target_operation": "filesystem.known.duplicates",
+      "text": "Find duplicate files en Descargas sin borrarlos.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.search"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-known-search",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.known.search"
+      ],
+      "final_intent_operations": [
+        "filesystem.known.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002632,
+      "target_operation": "filesystem.known.search",
+      "text": "Busca en Documentos un archivo llamado informe final.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-known-trash-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "final_intent_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002044,
+      "target_operation": "filesystem.known.trash.named",
+      "text": "Move the uniquely named file draft-old.txt from Downloads to the private trash.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.list"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.list"
+      ],
+      "final_intent_operations": [
+        "filesystem.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002423,
+      "target_operation": "filesystem.list",
+      "text": "Lista el contenido de la carpeta raíz del sandbox.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.move"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-move",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.move"
+      ],
+      "final_intent_operations": [
+        "filesystem.move"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002538,
+      "target_operation": "filesystem.move",
+      "text": "Move el archivo seleccionado a archivo/terminado.txt dentro del sandbox.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-path-ensure-absent",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "final_intent_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002314,
+      "target_operation": "filesystem.path.ensure.absent",
+      "text": "Asegúrate de que C:\\Users\\Public\\Temp\\baxy-prueba.txt no exista y usa la papelera recuperable si existe.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.read.text"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-read-text",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.read.text"
+      ],
+      "final_intent_operations": [
+        "filesystem.read.text"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003404,
+      "target_operation": "filesystem.read.text",
+      "text": "Read the selected UTF-8 text file and verify its hash.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-sandbox-append-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "final_intent_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003059,
+      "target_operation": "filesystem.sandbox.append.named",
+      "text": "Añade la línea revisión completa al archivo único registro.txt del sandbox.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.sandbox.diff.named"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-sandbox-diff-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.sandbox.diff.named"
+      ],
+      "final_intent_operations": [
+        "filesystem.sandbox.diff.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": false,
+      "retrieval_correct": true,
+      "seconds": 0.003446,
+      "target_operation": "filesystem.sandbox.diff.named",
+      "text": "Compare notas-a.txt con notas-b.txt in the sandbox y dime las líneas distintas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-sandbox-move-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "final_intent_operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002688,
+      "target_operation": "filesystem.sandbox.move.named",
+      "text": "Mueve el archivo único borrador.txt del sandbox a archivo/borrador.txt.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.search"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-search",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.search"
+      ],
+      "final_intent_operations": [
+        "filesystem.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002572,
+      "target_operation": "filesystem.search",
+      "text": "Search the sandbox for names containing invoice.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.trash.commit"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-trash-commit",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.trash.commit"
+      ],
+      "final_intent_operations": [
+        "filesystem.trash.commit"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00274,
+      "target_operation": "filesystem.trash.commit",
+      "text": "Confirma la selección de papelera que acabo de revisar.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.trash.prepare"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-trash-prepare",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.trash.prepare"
+      ],
+      "final_intent_operations": [
+        "filesystem.trash.prepare"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002968,
+      "target_operation": "filesystem.trash.prepare",
+      "text": "Prepare el archivo seleccionado para enviarlo a la papelera, pero no lo muevas aún.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.trash.restore"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-trash-restore",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.trash.restore"
+      ],
+      "final_intent_operations": [
+        "filesystem.trash.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003144,
+      "target_operation": "filesystem.trash.restore",
+      "text": "Restaura de la papelera privada el archivo que acabo de seleccionar.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.write.text"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-write-text",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.write.text"
+      ],
+      "final_intent_operations": [
+        "filesystem.write.text"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002718,
+      "target_operation": "filesystem.write.text",
+      "text": "Write the text quarterly review into reports/review.txt in the sandbox.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.catalog.list"
+      ],
+      "case_id": "catalog-seen-natural-game-catalog-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.catalog.list"
+      ],
+      "final_intent_operations": [
+        "game.catalog.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002102,
+      "target_operation": "game.catalog.list",
+      "text": "Lista mi catálogo local de Steam.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.cancel"
+      ],
+      "case_id": "catalog-seen-natural-game-install-cancel",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.cancel"
+      ],
+      "final_intent_operations": [
+        "game.install.cancel"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002597,
+      "target_operation": "game.install.cancel",
+      "text": "Cancel la descarga de Steam del AppID 730.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.cancel.active"
+      ],
+      "case_id": "catalog-seen-natural-game-install-cancel-active",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.cancel.active"
+      ],
+      "final_intent_operations": [
+        "game.install.cancel.active"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002553,
+      "target_operation": "game.install.cancel.active",
+      "text": "Cancela todas las descargas activas de Steam.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.prepare",
+        "game.install.commit"
+      ],
+      "case_id": "catalog-seen-natural-game-install-commit",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.commit"
+      ],
+      "final_intent_operations": [
+        "game.install.commit"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002604,
+      "target_operation": "game.install.commit",
+      "text": "Confirm the Steam installation I just prepared.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.named"
+      ],
+      "case_id": "catalog-seen-natural-game-install-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.named"
+      ],
+      "final_intent_operations": [
+        "game.install.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002695,
+      "target_operation": "game.install.named",
+      "text": "Instala Portal desde mi biblioteca de Steam si lo tengo comprado.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.prepare"
+      ],
+      "case_id": "catalog-seen-natural-game-install-prepare",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.prepare"
+      ],
+      "final_intent_operations": [
+        "game.install.prepare"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002807,
+      "target_operation": "game.install.prepare",
+      "text": "Prepare la instalación del AppID 620 sin descargar todavía.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.status"
+      ],
+      "case_id": "catalog-seen-natural-game-install-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.status"
+      ],
+      "final_intent_operations": [
+        "game.install.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002899,
+      "target_operation": "game.install.status",
+      "text": "Dime el progreso de instalación en Steam del AppID 730.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.installed.named"
+      ],
+      "case_id": "catalog-seen-natural-game-installed-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.installed.named"
+      ],
+      "final_intent_operations": [
+        "game.installed.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002998,
+      "target_operation": "game.installed.named",
+      "text": "Check whether Rocket League is installed without launching it.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.launch"
+      ],
+      "case_id": "catalog-seen-natural-game-launch",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.launch"
+      ],
+      "final_intent_operations": [
+        "game.launch"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.006442,
+      "target_operation": "game.launch",
+      "text": "Inicia el juego Cuphead desde Steam.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.purchase.prepare",
+        "game.purchase.commit"
+      ],
+      "case_id": "catalog-seen-natural-game-purchase-commit",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.purchase.commit"
+      ],
+      "final_intent_operations": [
+        "game.purchase.commit"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004882,
+      "target_operation": "game.purchase.commit",
+      "text": "Confirm the game purchase que acabo de revisar al precio exacto mostrado.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.purchase.prepare"
+      ],
+      "case_id": "catalog-seen-natural-game-purchase-prepare",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.purchase.prepare"
+      ],
+      "final_intent_operations": [
+        "game.purchase.prepare"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00416,
+      "target_operation": "game.purchase.prepare",
+      "text": "Prepara la compra de Hades y muéstrame el precio sin comprarlo.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.key.press"
+      ],
+      "case_id": "catalog-seen-natural-input-key-press",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.key.press"
+      ],
+      "final_intent_operations": [
+        "input.key.press"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004855,
+      "target_operation": "input.key.press",
+      "text": "Press Control Shift Escape in the focused window.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.layout"
+      ],
+      "case_id": "catalog-seen-natural-input-keyboard-layout",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.keyboard.layout"
+      ],
+      "final_intent_operations": [
+        "input.keyboard.layout"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004901,
+      "target_operation": "input.keyboard.layout",
+      "text": "Cambia el teclado de la ventana activa a español.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.open"
+      ],
+      "case_id": "catalog-seen-natural-input-keyboard-open",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.keyboard.open"
+      ],
+      "final_intent_operations": [
+        "input.keyboard.open"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003881,
+      "target_operation": "input.keyboard.open",
+      "text": "Open el teclado en pantalla de Windows.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.status"
+      ],
+      "case_id": "catalog-seen-natural-input-keyboard-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.keyboard.status"
+      ],
+      "final_intent_operations": [
+        "input.keyboard.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003663,
+      "target_operation": "input.keyboard.status",
+      "text": "Dime qué distribución de teclado usa la ventana enfocada.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.pointer.control"
+      ],
+      "case_id": "catalog-seen-natural-input-pointer-control",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.pointer.control"
+      ],
+      "final_intent_operations": [
+        "input.pointer.control"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003557,
+      "target_operation": "input.pointer.control",
+      "text": "Move the mouse pointer to the center of the screen.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.select.all"
+      ],
+      "case_id": "catalog-seen-natural-input-select-all",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.select.all"
+      ],
+      "final_intent_operations": [
+        "input.select.all"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004883,
+      "target_operation": "input.select.all",
+      "text": "Selecciona todo en el control que está enfocado.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.text.type"
+      ],
+      "case_id": "catalog-seen-natural-input-text-type",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.text.type"
+      ],
+      "final_intent_operations": [
+        "input.text.type"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004994,
+      "target_operation": "input.text.type",
+      "text": "Type el texto literal pedido recibido en el campo enfocado.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.visible.click"
+      ],
+      "case_id": "catalog-seen-natural-input-visible-click",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.visible.click"
+      ],
+      "final_intent_operations": [
+        "input.visible.click"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003728,
+      "target_operation": "input.visible.click",
+      "text": "Haz clic una sola vez en el botón visible que dice Continuar.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.control"
+      ],
+      "case_id": "catalog-seen-natural-media-control",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.control"
+      ],
+      "final_intent_operations": [
+        "media.control"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003102,
+      "target_operation": "media.control",
+      "text": "Pause the current Windows media session.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.play.exact"
+      ],
+      "case_id": "catalog-seen-natural-media-play-exact",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.play.exact"
+      ],
+      "final_intent_operations": [
+        "media.play.exact"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00447,
+      "target_operation": "media.play.exact",
+      "text": "Reproduce el resultado musical exacto que acabo de seleccionar en Spotify.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.play.query"
+      ],
+      "case_id": "catalog-seen-natural-media-play-query",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.play.query"
+      ],
+      "final_intent_operations": [
+        "media.play.query"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003077,
+      "target_operation": "media.play.query",
+      "text": "Play la canción Space Oddity en Spotify.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.play.youtube"
+      ],
+      "case_id": "catalog-seen-natural-media-play-youtube",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.play.youtube"
+      ],
+      "final_intent_operations": [
+        "media.play.youtube"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.0044,
+      "target_operation": "media.play.youtube",
+      "text": "Busca y reproduce en YouTube el video oficial de Space Oddity.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.seek.relative"
+      ],
+      "case_id": "catalog-seen-natural-media-seek-relative",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.seek.relative"
+      ],
+      "final_intent_operations": [
+        "media.seek.relative"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003362,
+      "target_operation": "media.seek.relative",
+      "text": "Skip forward thirty seconds in the current media session.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.status"
+      ],
+      "case_id": "catalog-seen-natural-media-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.status"
+      ],
+      "final_intent_operations": [
+        "media.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003954,
+      "target_operation": "media.status",
+      "text": "Dime qué está sonando ahora y si está pausado.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "message.recipient.resolve"
+      ],
+      "case_id": "catalog-seen-natural-message-recipient-resolve",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "message",
+      "final_effect_operations": [
+        "message.recipient.resolve"
+      ],
+      "final_intent_operations": [
+        "message.recipient.resolve"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003611,
+      "target_operation": "message.recipient.resolve",
+      "text": "Busca exactamente a Camila en WhatsApp y dime si hay un único contacto, sin enviar nada.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "case_id": "catalog-seen-natural-message-send",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "message",
+      "final_effect_operations": [
+        "message.send"
+      ],
+      "final_intent_operations": [
+        "message.send"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003096,
+      "target_operation": "message.send",
+      "text": "Send a Camila por WhatsApp: llegaré en veinte minutos.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.dns.status"
+      ],
+      "case_id": "catalog-seen-natural-network-dns-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.dns.status"
+      ],
+      "final_intent_operations": [
+        "network.dns.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004017,
+      "target_operation": "network.dns.status",
+      "text": "Dime qué servidores DNS usan ahora las interfaces activas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.ip.list"
+      ],
+      "case_id": "catalog-seen-natural-network-ip-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.ip.list"
+      ],
+      "final_intent_operations": [
+        "network.ip.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00344,
+      "target_operation": "network.ip.list",
+      "text": "List this computer's active unicast IP addresses.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.ping"
+      ],
+      "case_id": "catalog-seen-natural-network-ping",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.ping"
+      ],
+      "final_intent_operations": [
+        "network.ping"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002864,
+      "target_operation": "network.ping",
+      "text": "Haz un ping a example.com y dime la latencia.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.port.list"
+      ],
+      "case_id": "catalog-seen-natural-network-port-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.port.list"
+      ],
+      "final_intent_operations": [
+        "network.port.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003355,
+      "target_operation": "network.port.list",
+      "text": "List los puertos TCP y UDP que están escuchando localmente.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.status"
+      ],
+      "case_id": "catalog-seen-natural-network-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.status"
+      ],
+      "final_intent_operations": [
+        "network.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.0037,
+      "target_operation": "network.status",
+      "text": "Comprueba el estado general de la conexión de red.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.create"
+      ],
+      "case_id": "catalog-seen-natural-note-create",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.create"
+      ],
+      "final_intent_operations": [
+        "note.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003486,
+      "target_operation": "note.create",
+      "text": "Create a note titled Trip with the content bring the blue backpack.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.list"
+      ],
+      "case_id": "catalog-seen-natural-note-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.list"
+      ],
+      "final_intent_operations": [
+        "note.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003073,
+      "target_operation": "note.list",
+      "text": "Lista mis notas locales activas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.read"
+      ],
+      "case_id": "catalog-seen-natural-note-read",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.read"
+      ],
+      "final_intent_operations": [
+        "note.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003,
+      "target_operation": "note.read",
+      "text": "Read la nota que se llama Viaje.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.restore"
+      ],
+      "case_id": "catalog-seen-natural-note-restore",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.restore"
+      ],
+      "final_intent_operations": [
+        "note.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003135,
+      "target_operation": "note.restore",
+      "text": "Restaura desde la papelera la nota titulada Viaje.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.search"
+      ],
+      "case_id": "catalog-seen-natural-note-search",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.search"
+      ],
+      "final_intent_operations": [
+        "note.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003906,
+      "target_operation": "note.search",
+      "text": "Search my local notes for the phrase blue backpack.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.trash"
+      ],
+      "case_id": "catalog-seen-natural-note-trash",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.trash"
+      ],
+      "final_intent_operations": [
+        "note.trash"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003442,
+      "target_operation": "note.trash",
+      "text": "Mueve a la papelera la nota titulada Borrador viejo.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.update"
+      ],
+      "case_id": "catalog-seen-natural-note-update",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.update"
+      ],
+      "final_intent_operations": [
+        "note.update"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004251,
+      "target_operation": "note.update",
+      "text": "Update la nota Viaje: título Viaje final y contenido llevar mochila azul y pasaporte.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.cancel.at"
+      ],
+      "case_id": "catalog-seen-natural-notification-cancel-at",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.cancel.at"
+      ],
+      "final_intent_operations": [
+        "notification.cancel.at"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003834,
+      "target_operation": "notification.cancel.at",
+      "text": "Cancela la alarma de BAXY de las cinco y media de la tarde.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.cancel.latest"
+      ],
+      "case_id": "catalog-seen-natural-notification-cancel-latest",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.cancel.latest"
+      ],
+      "final_intent_operations": [
+        "notification.cancel.latest"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003099,
+      "target_operation": "notification.cancel.latest",
+      "text": "Cancel the most recently created BAXY alarm.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.diagnose"
+      ],
+      "case_id": "catalog-seen-natural-notification-diagnose",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.diagnose"
+      ],
+      "final_intent_operations": [
+        "notification.diagnose"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002999,
+      "target_operation": "notification.diagnose",
+      "text": "Diagnostica por qué no sonó mi última alarma de BAXY.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.list.due",
+        "notification.dismiss"
+      ],
+      "case_id": "catalog-seen-natural-notification-dismiss",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.dismiss"
+      ],
+      "final_intent_operations": [
+        "notification.dismiss"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.01246,
+      "target_operation": "notification.dismiss",
+      "text": "Dismiss el recordatorio vencido que acabo de seleccionar.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.list.due"
+      ],
+      "case_id": "catalog-seen-natural-notification-list-due",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.list.due"
+      ],
+      "final_intent_operations": [
+        "notification.list.due"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002801,
+      "target_operation": "notification.list.due",
+      "text": "Lista los recordatorios vencidos que aún no descarté.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.schedule"
+      ],
+      "case_id": "catalog-seen-natural-notification-schedule",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.schedule"
+      ],
+      "final_intent_operations": [
+        "notification.schedule"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002839,
+      "target_operation": "notification.schedule",
+      "text": "Schedule an audible alarm for seven thirty tomorrow morning.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "case_id": "catalog-seen-natural-ocr-read",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "ocr",
+      "final_effect_operations": [
+        "ocr.read"
+      ],
+      "final_intent_operations": [
+        "ocr.read"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00367,
+      "target_operation": "ocr.read",
+      "text": "Toma una captura y extrae todo el texto visible con OCR local en español.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "office.document.create"
+      ],
+      "case_id": "catalog-seen-natural-office-document-create",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "office",
+      "final_effect_operations": [
+        "office.document.create"
+      ],
+      "final_intent_operations": [
+        "office.document.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00325,
+      "target_operation": "office.document.create",
+      "text": "Create un documento de Word llamado Resumen con el texto Reunión completada.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "office.document.read"
+      ],
+      "case_id": "catalog-seen-natural-office-document-read",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "office",
+      "final_effect_operations": [
+        "office.document.read"
+      ],
+      "final_intent_operations": [
+        "office.document.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00313,
+      "target_operation": "office.document.read",
+      "text": "Lee el documento que acabo de crear y dame su contenido estructurado.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "package.install.prepare",
+        "package.install.commit"
+      ],
+      "case_id": "catalog-seen-natural-package-install-commit",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "package",
+      "final_effect_operations": [
+        "package.install.commit"
+      ],
+      "final_intent_operations": [
+        "package.install.commit"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003383,
+      "target_operation": "package.install.commit",
+      "text": "Confirm the winget package installation I just reviewed.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "package.install.prepare"
+      ],
+      "case_id": "catalog-seen-natural-package-install-prepare",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "package",
+      "final_effect_operations": [
+        "package.install.prepare"
+      ],
+      "final_intent_operations": [
+        "package.install.prepare"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003453,
+      "target_operation": "package.install.prepare",
+      "text": "Prepara la instalación exacta de Microsoft.PowerToys sin instalar aún.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "peripheral.list"
+      ],
+      "case_id": "catalog-seen-natural-peripheral-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "peripheral",
+      "final_effect_operations": [
+        "peripheral.list"
+      ],
+      "final_intent_operations": [
+        "peripheral.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002999,
+      "target_operation": "peripheral.list",
+      "text": "List los teclados y mouse conectados al computador.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "peripheral.list",
+        "peripheral.print"
+      ],
+      "case_id": "catalog-seen-natural-peripheral-print",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "peripheral",
+      "final_effect_operations": [
+        "peripheral.print"
+      ],
+      "final_intent_operations": [
+        "peripheral.print"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003248,
+      "target_operation": "peripheral.print",
+      "text": "Imprime el documento que seleccioné en la impresora Oficina.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "peripheral.list",
+        "peripheral.scan"
+      ],
+      "case_id": "catalog-seen-natural-peripheral-scan",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "peripheral",
+      "final_effect_operations": [
+        "peripheral.scan"
+      ],
+      "final_intent_operations": [
+        "peripheral.scan"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00262,
+      "target_operation": "peripheral.scan",
+      "text": "Scan one page using the connected scanner named Office Scanner.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.create"
+      ],
+      "case_id": "catalog-seen-natural-reminder-create",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.create"
+      ],
+      "final_intent_operations": [
+        "reminder.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002943,
+      "target_operation": "reminder.create",
+      "text": "Crea un recordatorio local durable para pagar el arriendo mañana a las nueve.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ],
+      "case_id": "catalog-seen-natural-reminder-delete",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.delete"
+      ],
+      "final_intent_operations": [
+        "reminder.delete"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002922,
+      "target_operation": "reminder.delete",
+      "text": "Delete de forma recuperable el recordatorio llamado Pagar arriendo.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.list"
+      ],
+      "case_id": "catalog-seen-natural-reminder-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.list"
+      ],
+      "final_intent_operations": [
+        "reminder.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002562,
+      "target_operation": "reminder.list",
+      "text": "Lista mis recordatorios locales programados.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.resolve.exact"
+      ],
+      "case_id": "catalog-seen-natural-reminder-resolve-exact",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.resolve.exact"
+      ],
+      "final_intent_operations": [
+        "reminder.resolve.exact"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003249,
+      "target_operation": "reminder.resolve.exact",
+      "text": "Find the exact reminder titled Pay rent and return its current identity without changing it.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.restore"
+      ],
+      "case_id": "catalog-seen-natural-reminder-restore",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.restore"
+      ],
+      "final_intent_operations": [
+        "reminder.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002987,
+      "target_operation": "reminder.restore",
+      "text": "Restaura el recordatorio eliminado llamado Pagar arriendo.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.delete"
+      ],
+      "case_id": "catalog-seen-natural-routine-delete",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.delete"
+      ],
+      "final_intent_operations": [
+        "routine.delete"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004187,
+      "target_operation": "routine.delete",
+      "text": "Delete de forma recuperable la rutina llamada Música de trabajo.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.list"
+      ],
+      "case_id": "catalog-seen-natural-routine-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.list"
+      ],
+      "final_intent_operations": [
+        "routine.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003631,
+      "target_operation": "routine.list",
+      "text": "Lista las rutinas locales que tengo creadas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.phrase.create"
+      ],
+      "case_id": "catalog-seen-natural-routine-phrase-create",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.phrase.create"
+      ],
+      "final_intent_operations": [
+        "routine.phrase.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004192,
+      "target_operation": "routine.phrase.create",
+      "text": "Create a routine named Focus music that plays Spotify when I say start focus.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.read"
+      ],
+      "case_id": "catalog-seen-natural-routine-read",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.read"
+      ],
+      "final_intent_operations": [
+        "routine.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003548,
+      "target_operation": "routine.read",
+      "text": "Lee los metadatos de la rutina exacta llamada Música de trabajo.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.resolve.exact"
+      ],
+      "case_id": "catalog-seen-natural-routine-resolve-exact",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.resolve.exact"
+      ],
+      "final_intent_operations": [
+        "routine.resolve.exact"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003941,
+      "target_operation": "routine.resolve.exact",
+      "text": "Resolve la rutina exacta Música de trabajo sin ejecutarla.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.restore"
+      ],
+      "case_id": "catalog-seen-natural-routine-restore",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.restore"
+      ],
+      "final_intent_operations": [
+        "routine.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003331,
+      "target_operation": "routine.restore",
+      "text": "Restaura deshabilitada la rutina eliminada Música de trabajo.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.set.enabled"
+      ],
+      "case_id": "catalog-seen-natural-routine-set-enabled",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.set.enabled"
+      ],
+      "final_intent_operations": [
+        "routine.set.enabled"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00322,
+      "target_operation": "routine.set.enabled",
+      "text": "Disable the routine named Focus music without running it.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "streaming.navigate"
+      ],
+      "case_id": "catalog-seen-natural-streaming-navigate",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "streaming",
+      "final_effect_operations": [
+        "streaming.navigate"
+      ],
+      "final_intent_operations": [
+        "streaming.navigate"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003129,
+      "target_operation": "streaming.navigate",
+      "text": "Navega mi sesión autenticada de streaming a https://www.netflix.com/browse.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "streaming.play.named"
+      ],
+      "case_id": "catalog-seen-natural-streaming-play-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "streaming",
+      "final_effect_operations": [
+        "streaming.play.named"
+      ],
+      "final_intent_operations": [
+        "streaming.play.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002982,
+      "target_operation": "streaming.play.named",
+      "text": "Play The Crown en mi sesión autenticada de Netflix.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "case_id": "catalog-seen-natural-system-application-crash-diagnose",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "final_intent_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003082,
+      "target_operation": "system.application.crash.diagnose",
+      "text": "Busca fallos recientes de aplicaciones en Windows y dime cuál se bloqueó.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.identity"
+      ],
+      "case_id": "catalog-seen-natural-system-identity",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.identity"
+      ],
+      "final_intent_operations": [
+        "system.identity"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002867,
+      "target_operation": "system.identity",
+      "text": "Tell me the effective Windows user and domain running BAXY.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.power"
+      ],
+      "case_id": "catalog-seen-natural-system-power",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.power"
+      ],
+      "final_intent_operations": [
+        "system.power"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002309,
+      "target_operation": "system.power",
+      "text": "Bloquea esta sesión de Windows ahora.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.process.list"
+      ],
+      "case_id": "catalog-seen-natural-system-process-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.process.list"
+      ],
+      "final_intent_operations": [
+        "system.process.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002287,
+      "target_operation": "system.process.list",
+      "text": "List los procesos que más memoria están usando.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.process.terminate.named"
+      ],
+      "case_id": "catalog-seen-natural-system-process-terminate-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.process.terminate.named"
+      ],
+      "final_intent_operations": [
+        "system.process.terminate.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002892,
+      "target_operation": "system.process.terminate.named",
+      "text": "Fuerza el cierre de notepad.exe y verifica que ese proceso desaparezca.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.recyclebin.empty"
+      ],
+      "case_id": "catalog-seen-natural-system-recyclebin-empty",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.recyclebin.empty"
+      ],
+      "final_intent_operations": [
+        "system.recyclebin.empty"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002573,
+      "target_operation": "system.recyclebin.empty",
+      "text": "Empty the Windows Recycle Bin and verify it is empty.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.settings.adjust"
+      ],
+      "case_id": "catalog-seen-natural-system-settings-adjust",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.settings.adjust"
+      ],
+      "final_intent_operations": [
+        "system.settings.adjust"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002518,
+      "target_operation": "system.settings.adjust",
+      "text": "Sube el brillo de la pantalla en diez puntos.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.settings.set"
+      ],
+      "case_id": "catalog-seen-natural-system-settings-set",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.settings.set"
+      ],
+      "final_intent_operations": [
+        "system.settings.set"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002364,
+      "target_operation": "system.settings.set",
+      "text": "Turn on la luz nocturna de Windows.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.settings.status"
+      ],
+      "case_id": "catalog-seen-natural-system-settings-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.settings.status"
+      ],
+      "final_intent_operations": [
+        "system.settings.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002711,
+      "target_operation": "system.settings.status",
+      "text": "Dime el brillo actual de cada monitor compatible.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.status"
+      ],
+      "case_id": "catalog-seen-natural-system-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.status"
+      ],
+      "final_intent_operations": [
+        "system.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003088,
+      "target_operation": "system.status",
+      "text": "Show me this computer's current CPU, memory, disk, battery, and GPU status.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.time"
+      ],
+      "case_id": "catalog-seen-natural-system-time",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.time"
+      ],
+      "final_intent_operations": [
+        "system.time"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00253,
+      "target_operation": "system.time",
+      "text": "Dime la fecha y la hora local actuales.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.complete"
+      ],
+      "case_id": "catalog-seen-natural-task-complete",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.complete"
+      ],
+      "final_intent_operations": [
+        "task.complete"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002567,
+      "target_operation": "task.complete",
+      "text": "Mark complete la tarea exacta llamada Enviar informe.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.create"
+      ],
+      "case_id": "catalog-seen-natural-task-create",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.create"
+      ],
+      "final_intent_operations": [
+        "task.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002757,
+      "target_operation": "task.create",
+      "text": "Crea una tarea llamada Enviar informe con fecha para el viernes.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.delete"
+      ],
+      "case_id": "catalog-seen-natural-task-delete",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.delete"
+      ],
+      "final_intent_operations": [
+        "task.delete"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002739,
+      "target_operation": "task.delete",
+      "text": "Move the exact task Send report to the recoverable trash.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.list"
+      ],
+      "case_id": "catalog-seen-natural-task-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.list"
+      ],
+      "final_intent_operations": [
+        "task.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003947,
+      "target_operation": "task.list",
+      "text": "Lista mis tareas locales que siguen abiertas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.reopen"
+      ],
+      "case_id": "catalog-seen-natural-task-reopen",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.reopen"
+      ],
+      "final_intent_operations": [
+        "task.reopen"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004219,
+      "target_operation": "task.reopen",
+      "text": "Reopen la tarea completada llamada Enviar informe.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.resolve.exact"
+      ],
+      "case_id": "catalog-seen-natural-task-resolve-exact",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.resolve.exact"
+      ],
+      "final_intent_operations": [
+        "task.resolve.exact"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004181,
+      "target_operation": "task.resolve.exact",
+      "text": "Resuelve la tarea exacta titulada Enviar informe sin modificarla.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.restore"
+      ],
+      "case_id": "catalog-seen-natural-task-restore",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.restore"
+      ],
+      "final_intent_operations": [
+        "task.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.005519,
+      "target_operation": "task.restore",
+      "text": "Restore the deleted task titled Send report.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.search"
+      ],
+      "case_id": "catalog-seen-natural-task-search",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.search"
+      ],
+      "final_intent_operations": [
+        "task.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.006016,
+      "target_operation": "task.search",
+      "text": "Busca en mis tareas locales la frase informe trimestral.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.update"
+      ],
+      "case_id": "catalog-seen-natural-task-update",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.update"
+      ],
+      "final_intent_operations": [
+        "task.update"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.008169,
+      "target_operation": "task.update",
+      "text": "Update la tarea Enviar informe: nuevo título Enviar informe final y fecha el lunes.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "case_id": "catalog-seen-natural-vision-describe",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "vision",
+      "final_effect_operations": [
+        "vision.describe"
+      ],
+      "final_intent_operations": [
+        "vision.describe"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.006785,
+      "target_operation": "vision.describe",
+      "text": "Toma una captura y describe localmente lo que aparece en la imagen.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "web.search"
+      ],
+      "case_id": "catalog-seen-natural-web-search",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "web",
+      "final_effect_operations": [
+        "web.search"
+      ],
+      "final_intent_operations": [
+        "web.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.006379,
+      "target_operation": "web.search",
+      "text": "Search the web for the official Python documentation.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.profile.list",
+        "wifi.connect"
+      ],
+      "case_id": "catalog-seen-natural-wifi-connect",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.connect"
+      ],
+      "final_intent_operations": [
+        "wifi.connect"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.004391,
+      "target_operation": "wifi.connect",
+      "text": "Conecta el perfil Wi-Fi que acabo de seleccionar.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.connect.named"
+      ],
+      "case_id": "catalog-seen-natural-wifi-connect-named",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.connect.named"
+      ],
+      "final_intent_operations": [
+        "wifi.connect.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.00309,
+      "target_operation": "wifi.connect.named",
+      "text": "Connect al perfil Wi-Fi guardado llamado Casa.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.disconnect"
+      ],
+      "case_id": "catalog-seen-natural-wifi-disconnect",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.disconnect"
+      ],
+      "final_intent_operations": [
+        "wifi.disconnect"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003377,
+      "target_operation": "wifi.disconnect",
+      "text": "Desconecta el Wi-Fi y comprueba que quede desconectado.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.ensure.connected"
+      ],
+      "case_id": "catalog-seen-natural-wifi-ensure-connected",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.ensure.connected"
+      ],
+      "final_intent_operations": [
+        "wifi.ensure.connected"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003234,
+      "target_operation": "wifi.ensure.connected",
+      "text": "Check that Wi-Fi is already connected without changing it.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.profile.list"
+      ],
+      "case_id": "catalog-seen-natural-wifi-profile-list",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.profile.list"
+      ],
+      "final_intent_operations": [
+        "wifi.profile.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003002,
+      "target_operation": "wifi.profile.list",
+      "text": "Lista los perfiles Wi-Fi guardados sin mostrar credenciales.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.status"
+      ],
+      "case_id": "catalog-seen-natural-wifi-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.status"
+      ],
+      "final_intent_operations": [
+        "wifi.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.003718,
+      "target_operation": "wifi.status",
+      "text": "Tell me el estado actual de la conexión Wi-Fi.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.active"
+      ],
+      "case_id": "catalog-seen-natural-window-active",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.active"
+      ],
+      "final_intent_operations": [
+        "window.active"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002837,
+      "target_operation": "window.active",
+      "text": "Dime qué ventana está activa ahora y cuál es su geometría.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.application.status"
+      ],
+      "case_id": "catalog-seen-natural-window-application-status",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.application.status"
+      ],
+      "final_intent_operations": [
+        "window.application.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002869,
+      "target_operation": "window.application.status",
+      "text": "Check whether Visual Studio Code currently has a visible window without opening it.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.focus"
+      ],
+      "case_id": "catalog-seen-natural-window-focus",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.focus"
+      ],
+      "final_intent_operations": [
+        "window.focus"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002493,
+      "target_operation": "window.focus",
+      "text": "Enfoca la ventana de Bloc de notas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.maximize"
+      ],
+      "case_id": "catalog-seen-natural-window-maximize",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.maximize"
+      ],
+      "final_intent_operations": [
+        "window.maximize"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002384,
+      "target_operation": "window.maximize",
+      "text": "Maximize la ventana de Bloc de notas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.minimize"
+      ],
+      "case_id": "catalog-seen-natural-window-minimize",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.minimize"
+      ],
+      "final_intent_operations": [
+        "window.minimize"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002311,
+      "target_operation": "window.minimize",
+      "text": "Minimiza la ventana de Bloc de notas.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.move"
+      ],
+      "case_id": "catalog-seen-natural-window-move",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.move"
+      ],
+      "final_intent_operations": [
+        "window.move"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002129,
+      "target_operation": "window.move",
+      "text": "Move the Notepad window to desktop coordinates 120, 80.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.resize"
+      ],
+      "case_id": "catalog-seen-natural-window-resize",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.resize"
+      ],
+      "final_intent_operations": [
+        "window.resize"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002549,
+      "target_operation": "window.resize",
+      "text": "Redimensiona la ventana de Bloc de notas a 900 por 600 píxeles.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve"
+      ],
+      "case_id": "catalog-seen-natural-window-resolve",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.resolve"
+      ],
+      "final_intent_operations": [
+        "window.resolve"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002539,
+      "target_operation": "window.resolve",
+      "text": "Resolve las ventanas visibles de notepad.exe y devuelve sus identificadores.",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.restore"
+      ],
+      "case_id": "catalog-seen-natural-window-restore",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.restore"
+      ],
+      "final_intent_operations": [
+        "window.restore"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "retrieval_correct": true,
+      "seconds": 0.002001,
+      "target_operation": "window.restore",
+      "text": "Restaura la ventana minimizada de Bloc de notas.",
+      "unsafe_effect": false
+    }
+  ],
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 91648,
+      "name": "python.exe"
+    },
+    "source": "explicit_components"
+  },
+  "schema": "baxy.mvp-catalog-functional-matrix-mind.v1",
+  "scope": "reviewed_seen_catalog_not_blind",
+  "source": {
+    "aliases_sha256": "bd1a50e071de746b2536e21234306b159a2329e805b91e8261e5c6cdf4e9cc73",
+    "catalog_sha256": "67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41",
+    "scenarios": "artifacts\\development\\catalog_seen_scenarios_r2_dependency_complete.jsonl",
+    "scenarios_sha256": "cbe9fc751ccfddf60ba1a66e5ca149ec1c0f29cec02783e2566444294ff51978"
+  }
+}

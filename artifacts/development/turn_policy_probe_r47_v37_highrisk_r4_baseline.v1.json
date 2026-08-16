@@ -1,0 +1,180 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v37_highrisk_r4_baseline.v1.raw.jsonl",
+    "sha256": "724c27eca6e4980efbfa4476204640dbdc387532dc8626086f4376382e6af1b8"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:14115",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3faeadd9f6f9d2558be27438",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.9371,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Rock sand is a type of sand composed of rock fragments, typically formed through the weathering and erosion of rocks, and is commonly found in coastal areas or riverbeds.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b427b5005176b7d7657e3158de093ed8abb281319f4b1116ba4c91237e5edc63",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-0a2ecc8b217bbfa54ae625a1",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.8137,
+        "operation": null,
+        "question": "Where can I find milk, eggs, and bread at Aldi?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:e7f9ed36f81ef233e7355ae08251358dc3e78918488843281000c791a55d84f6",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-88dd3a8deb4fdf8ac88a62b5",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.7825,
+        "operation": null,
+        "question": "What device or PC is being used to play League of Legends in the living room?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14465",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-643fcd5fc7be8241b335e9ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0052,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:3031",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-e18a0dca7d1efa274e5a2ce4",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.7177,
+        "operation": null,
+        "question": "What song are you listening to?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:3228",
+      "expected_families": [
+        "system"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-fb41d8bc56b88f267c49b0c9",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0531,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:549aa330776f8df5a6d479126a91b47486f096d2ab9a54fd21cb1ef59bda9be3",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-0b33f6d7edbc8b7b8bbc9f8e",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.6282,
+        "operation": null,
+        "question": "What is the note identity or context?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T11:56:55.010395+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 7,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

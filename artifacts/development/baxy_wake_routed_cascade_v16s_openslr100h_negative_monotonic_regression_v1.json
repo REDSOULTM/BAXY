@@ -1,0 +1,96 @@
+{
+  "schema": "baxy.wake-cascade-openslr-negative-regression.v1",
+  "measuredAtUtc": "2026-08-10T03:36:48.965816+00:00",
+  "scope": "previously_opened_100h_negative_monotonic_guard_derivation",
+  "sources": {
+    "cascadeManifestSha256": "bd8534c0e0a7cf46f35e6f75dfb00379305bd3da78d0a69fedd36154f5946f9c",
+    "fusionManifest0Sha256": "35b3ddf287208b2f82ae8d1658e0ef67751b3ea6ce0b425b1723248043fcc5f3",
+    "checkpoint0Sha256": "da85c05c970a6a5c8cf353bed2b410d88be8d4cdf6c39933212c27ccf039ac64",
+    "fusionManifest1Sha256": "e2f75b3ae0184f92df67314cca5292b93c686fb92b147fd83886c79b4356d2df",
+    "checkpoint1Sha256": "a7724e4d8ad454f0e577969b77950b74e4237953bafaeefdbec76b6f405c2d0d",
+    "fusionManifest2Sha256": "3bcf12cd7e2738ee12397c8361a97691be9311e7a99a5c669fc215035176488e",
+    "checkpoint2Sha256": "64fdddac426459ce55078f5972da43eb13a0c86afda710de503af6c7614610e7",
+    "evaluatorSourceSha256": "cb3db8d2fa225812dd9c8b993c4cef38632d18423ca1fd356c8518de5720a766",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "officialCheckpointSha256": "76b77d5c8a04b36fcc109f8670bdc51c81be6dbdc4f6fda8051e800e2a46d017",
+    "gpuScreenMargin": "0.5",
+    "maximumParityDrift": "0.02",
+    "gpuMatmulPrecision": "high",
+    "screenBatchSize": "256",
+    "screenRecordBatchSize": "128",
+    "exactBatchSize": "1",
+    "exactRecordBatchSize": "128",
+    "screenCheckpointSha256": "acdd79f766d73bfddc90fbf3a55074086161f69a5650e6ae49a1901cd761708c",
+    "screenCascadeManifestSha256": "4aed53f26ea6f72f5c97f2f5a200afc44365029cc4f740b5a8d63547af3c98af",
+    "screenEvaluatorSourceSha256": "cb3db8d2fa225812dd9c8b993c4cef38632d18423ca1fd356c8518de5720a766",
+    "exactEvaluatorSourceSha256": "05f4ddecdd611353b3c430695591ed720dc3887e80b551db93e0efb66fb6adba",
+    "parentCascadeManifestSha256": "da59e0ad7fbe1a557010f3f53cd790dd5bc2ddb7fbf4151db3daba59902a3e9f",
+    "parentExactReportSha256": "f4afb173c71c287030280ef60bd1f562cd2ce3db9440faf4d5b621c5af031bb3",
+    "parentVerifierBuildReportSha256": "f166fd35129e47eac2f5b40d28daa837b9e68fa4730873f70fbab3991e9ffffc",
+    "childVerifierBuildReportSha256": "d937a301d2ff6c0b11a73f6bb5ff5034f5988a0533498fd243d54c4d2493427c",
+    "derivationSourceSha256": "6fefb505ec9c346922a681c5d51fb35ad260716a117de252264502b0d5cf484d"
+  },
+  "contract": {
+    "gpuScreenMargin": 0.5,
+    "maximumObservedGpuToCpuLogitDrift": 0.019419193267822266,
+    "minimumScreenSafetyMultiplier": 25.74772252915899,
+    "requiredScreenSafetyMultiplier": 25.0,
+    "gpuMatmulPrecision": "high_tf32_allowed",
+    "everyBroadCandidateRescoredByExactCpuOnnx": true,
+    "parallelExactWorkers": 8,
+    "lexicalRescueEnabled": false,
+    "lexicalRescueUsesProductParakeet": false,
+    "freshHoldoutClaimSupported": false,
+    "promotionSupported": false,
+    "fullParentExactRegressionConsumed": true,
+    "childAcceptanceStrictSubsetByConstruction": true,
+    "parentFalseActivationsExactlyRescoredByChild": true,
+    "parentFalseActivationCount": 2,
+    "childAddedGuardCount": 1
+  },
+  "metrics": {
+    "utterances": 28539,
+    "descriptiveExposureHours": 100.59087965277777,
+    "windowsScored": 1348864,
+    "broadScreenWindows": 43651,
+    "broadScreenRecords": 17066,
+    "exactUpstreamProposals": 12847,
+    "strongFalseActivations": 0,
+    "lexicalInvocations": 0,
+    "lexicalFalseActivations": 0,
+    "negativeFalseActivations": 0,
+    "pointFalseActivationsPerHour": 0.0,
+    "far95UpperConfidencePerHourIfZero": 0.029781350793379457
+  },
+  "runtime": {
+    "screenSeconds": 4974.457254399997,
+    "exactRescoreSeconds": 2668.963355499989,
+    "exactWorkers": 8,
+    "targetedChildExactRescoreSeconds": 4.682712900015758
+  },
+  "parentFalseActivationAudioSha256": [
+    "7b491036d384f006fbbd1e6b3ada1236c8c0a0312ae35944c17fdea43ecb9435",
+    "8deef5defc5274cef701efa998ecf42b70b14d83bc6804bded43b042e4e2c291"
+  ],
+  "targetedChildExactRecords": [
+    {
+      "audioSha256": "7b491036d384f006fbbd1e6b3ada1236c8c0a0312ae35944c17fdea43ecb9435",
+      "exactUpstreamProposal": true,
+      "childFalseActivation": false
+    },
+    {
+      "audioSha256": "8deef5defc5274cef701efa998ecf42b70b14d83bc6804bded43b042e4e2c291",
+      "exactUpstreamProposal": true,
+      "childFalseActivation": false
+    }
+  ],
+  "falseActivationAudioSha256": [],
+  "regressionPassed": true,
+  "candidateDevelopmentUse": true,
+  "candidateFrozen": true,
+  "negativeCorpusPreviouslyAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "transcriptsOrFilenamesRetained": false,
+  "effectsExecuted": 0
+}

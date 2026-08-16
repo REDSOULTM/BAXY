@@ -1,0 +1,1216 @@
+{
+  "schema": "baxy.audit.ui-startup-stress.v1",
+  "app": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\Baxy.exe",
+  "cycles": 100,
+  "successful_cycles": 99,
+  "ready_seconds": {
+    "minimum": 1.0154172999973525,
+    "mean": 1.0794819489998553,
+    "maximum": 1.4274059999988822
+  },
+  "cycle_results": [
+    {
+      "cycle": 1,
+      "pid": 22060,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1281275000001187,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 2,
+      "pid": 27824,
+      "visible_window_count": 1,
+      "ready_seconds": 1.120801199998823,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 3,
+      "pid": 8432,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1188474000009592,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 4,
+      "pid": 28868,
+      "visible_window_count": 1,
+      "ready_seconds": 1.2245158000005176,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 5,
+      "pid": 28748,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1197895000004792,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 6,
+      "pid": 2440,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0179036000008637,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 7,
+      "pid": 29016,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1197137999988627,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 8,
+      "pid": 17692,
+      "visible_window_count": 1,
+      "ready_seconds": 1.015468300000066,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 9,
+      "pid": 3328,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0187131999991834,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 10,
+      "pid": 13024,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0213597000001755,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 11,
+      "pid": 28412,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0173436000004585,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 12,
+      "pid": 26788,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0173723000007158,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 13,
+      "pid": 21104,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0184995999989042,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 14,
+      "pid": 17528,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0174963999998,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 15,
+      "pid": 29312,
+      "visible_window_count": 1,
+      "ready_seconds": 1.017303800002992,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 16,
+      "pid": 26880,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1197225999967486,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 17,
+      "pid": 18684,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1473554000003787,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 18,
+      "pid": 13600,
+      "visible_window_count": 1,
+      "ready_seconds": 1.016562699998758,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 19,
+      "pid": 21148,
+      "visible_window_count": 1,
+      "ready_seconds": 1.122353299997485,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 20,
+      "pid": 28052,
+      "visible_window_count": 1,
+      "ready_seconds": 1.017285100002482,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 21,
+      "pid": 14128,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0172397999995155,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 22,
+      "pid": 7440,
+      "visible_window_count": 1,
+      "ready_seconds": 1.016850500000146,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 23,
+      "pid": 23760,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1216206999997667,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 24,
+      "pid": 4340,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1223245000001043,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 25,
+      "pid": 7136,
+      "visible_window_count": 1,
+      "ready_seconds": 1.224691499999608,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 26,
+      "pid": 24936,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1210601999991923,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 27,
+      "pid": 14348,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1243572999992466,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 28,
+      "pid": 28052,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1188526000005368,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 29,
+      "pid": 28932,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0162874999987253,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 30,
+      "pid": 22324,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0164671000020462,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 31,
+      "pid": 21976,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0182338999984495,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 32,
+      "pid": 4780,
+      "visible_window_count": 1,
+      "ready_seconds": 1.121020899998257,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 33,
+      "pid": 28896,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0182385999978578,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 34,
+      "pid": 14708,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1202806000001146,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 35,
+      "pid": 23232,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1194159000006039,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 36,
+      "pid": 15512,
+      "visible_window_count": 1,
+      "ready_seconds": 1.017777400000341,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 37,
+      "pid": 29108,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1203386000015598,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 38,
+      "pid": 9168,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1221573000002536,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 39,
+      "pid": 24288,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0173658000021533,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 40,
+      "pid": 24364,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0177053000006708,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 41,
+      "pid": 19768,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0159166999983427,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 42,
+      "pid": 7720,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0167302999980166,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 43,
+      "pid": 21532,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0176835999991454,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 44,
+      "pid": 22192,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0169244999997318,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 45,
+      "pid": 22668,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0172225999995135,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 46,
+      "pid": 28104,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0184714000024542,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 47,
+      "pid": 18616,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1187057999995886,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 48,
+      "pid": 18356,
+      "visible_window_count": 1,
+      "ready_seconds": 1.223256900000706,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 49,
+      "pid": 14208,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1223871000001964,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 50,
+      "pid": 28920,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0171095000005153,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 51,
+      "pid": 26904,
+      "visible_window_count": 1,
+      "ready_seconds": 1.017841299999418,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 52,
+      "pid": 9028,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0192261000011058,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 53,
+      "pid": 15436,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1198392000005697,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 54,
+      "pid": 7316,
+      "visible_window_count": 1,
+      "ready_seconds": 1.226840399998764,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 55,
+      "pid": 27248,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1208616999974765,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 56,
+      "pid": 3524,
+      "visible_window_count": 1,
+      "ready_seconds": 1.2245666000017081,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 57,
+      "pid": 18276,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1186057999984769,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 58,
+      "pid": 11512,
+      "visible_window_count": 1,
+      "ready_seconds": 1.017487599998276,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 59,
+      "pid": 12036,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0168816999976116,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 60,
+      "pid": 2008,
+      "visible_window_count": 1,
+      "ready_seconds": 1.01650520000112,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 61,
+      "pid": 16388,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0154172999973525,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 62,
+      "pid": 21284,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0194688000010501,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 63,
+      "pid": 18060,
+      "visible_window_count": 1,
+      "ready_seconds": 1.017410500000551,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 64,
+      "pid": 28952,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1191510999997263,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 65,
+      "pid": 26408,
+      "visible_window_count": 1,
+      "ready_seconds": 1.016605900000286,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 66,
+      "pid": 15332,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0172789999996894,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 67,
+      "pid": 20124,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0174760000008973,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 68,
+      "pid": 29520,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1190358999992895,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 69,
+      "pid": 11788,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0164130000011937,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 70,
+      "pid": 18664,
+      "visible_window_count": 1,
+      "ready_seconds": 1.017947100001038,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 71,
+      "pid": 1260,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0177051999999094,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 72,
+      "pid": 10120,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0177906999997504,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 73,
+      "pid": 9900,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0194673000005423,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 74,
+      "pid": 23460,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1214275999991514,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 75,
+      "pid": 23912,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1174815999984276,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 76,
+      "pid": 6724,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0169056999984605,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 77,
+      "pid": 23796,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0166835000018182,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 78,
+      "pid": 28524,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0159447000005457,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 79,
+      "pid": 23424,
+      "visible_window_count": 1,
+      "ready_seconds": 1.330267499997717,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 80,
+      "pid": 18404,
+      "visible_window_count": 1,
+      "ready_seconds": 1.4274059999988822,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 81,
+      "pid": 2980,
+      "visible_window_count": 1,
+      "ready_seconds": 1.2206025000014051,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 82,
+      "pid": 22300,
+      "visible_window_count": 1,
+      "ready_seconds": 1.2219869000000472,
+      "observed_product_children": [],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": [
+        "core_child_not_observed"
+      ]
+    },
+    {
+      "cycle": 83,
+      "pid": 26892,
+      "visible_window_count": 1,
+      "ready_seconds": 1.3260084000030474,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 84,
+      "pid": 17976,
+      "visible_window_count": 1,
+      "ready_seconds": 1.2232784000007086,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 85,
+      "pid": 29464,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1192632999991474,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 86,
+      "pid": 10544,
+      "visible_window_count": 1,
+      "ready_seconds": 1.2207027000004018,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 87,
+      "pid": 416,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1210882000013953,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 88,
+      "pid": 21960,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1192411000010907,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 89,
+      "pid": 7104,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0170391999999993,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 90,
+      "pid": 10340,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0172958000002836,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 91,
+      "pid": 28184,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0165392999988399,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 92,
+      "pid": 15512,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0167418999990332,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 93,
+      "pid": 14652,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0167492000000493,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 94,
+      "pid": 16188,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1181728999981715,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 95,
+      "pid": 24628,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0171679000013683,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 96,
+      "pid": 26288,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0164188999988255,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 97,
+      "pid": 29632,
+      "visible_window_count": 1,
+      "ready_seconds": 1.1195430000007036,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 98,
+      "pid": 18480,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0159511999991082,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 99,
+      "pid": 29664,
+      "visible_window_count": 1,
+      "ready_seconds": 1.019229899997299,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    },
+    {
+      "cycle": 100,
+      "pid": 4352,
+      "visible_window_count": 1,
+      "ready_seconds": 1.0160049999976764,
+      "observed_product_children": [
+        "baxy-core.exe"
+      ],
+      "exit_code": 0,
+      "data_root_removed": true,
+      "errors": []
+    }
+  ],
+  "errors": [
+    "cycle_82:core_child_not_observed"
+  ]
+}

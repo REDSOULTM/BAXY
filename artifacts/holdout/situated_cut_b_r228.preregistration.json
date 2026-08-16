@@ -1,0 +1,64 @@
+{
+  "schema": "baxy.situated-cut-b.r228-preregistration.v1",
+  "authority": "sealed_before_recogniser_or_model_measurement",
+  "population": {
+    "rows": 93,
+    "families": 31,
+    "languages": {
+      "es": 31,
+      "en": 31,
+      "spanglish": 31
+    },
+    "recogniser_majority_limit": 0.5
+  },
+  "acceptance": {
+    "recogniser_reach_must_be_less_than": 0.5,
+    "model_path_requires_separate_preregistration": true,
+    "hard_zeros": [
+      "unsolicited_effects",
+      "unverified_successes",
+      "fixed_visible_replies"
+    ]
+  },
+  "constraints": {
+    "generator_imports_recogniser": false,
+    "generator_imports_alias_catalogue": false,
+    "prior_cut_b_builder_imported": false,
+    "model_started": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "corpus_sha256": "145723961eab24cc46922f601cd7497986e6b97f3e273cb66c1068098566dad3",
+    "catalog_sha256": "1732a3d549d12eb6029c900d44e27ec84b85167952f10d9ea016bf6a3362795f",
+    "prior_sources": {
+      "artifacts\\development\\independent_cut_b_oracle_r146.jsonl": "2c42c0ef333758914cc8e987553d422a46f64b4be3b46c9eb09f836ca444b7d4",
+      "artifacts\\holdout\\generalization_product_current_tree_r28.jsonl": "3bceaca8b209f9423b870200014520c678e8b07064241e6f1ec9989f9fcbdd12",
+      "artifacts\\holdout\\independent_cut_b_r213.jsonl": "1afeb27bacbe929e43c8c7b5722078de0565182af92b96d6c036470696fe590b",
+      "artifacts\\holdout\\situated_cut_b_r215.jsonl": "de66e6d2c1c439b6575bf1ea89a60d8f657aad36bed922fbea8918693066afa3",
+      "artifacts\\holdout\\veto_reach_v1.json": "8f0c52f86b5cd124792a1d30449f89232632dff4352e42e4b59f3554db10c1f1",
+      "artifacts\\holdout\\veto_reach_v1.preregistration.json": "10e643a5f9b37904d288f2e5c70c5c4bb110aba18787b1bc5e102828610ed9e6",
+      "artifacts\\holdout\\veto_reach_v2.json": "f7116358e4f9903dcd3fd339eee7c3f0197e5a0fc78eebe64b212043ffdb2fb0",
+      "artifacts\\holdout\\veto_reach_v2.preregistration.json": "3578d92700b460303c659921ca4153767ab07ace98fe976d7a593dbf58c4e3ca",
+      "artifacts\\holdout\\veto_reach_v3.json": "8906f68de9e8b818e3bb6f7c5bc8a00de4bb329840b2e15dd05996b8f57c8b35",
+      "artifacts\\holdout\\veto_reach_v3.preregistration.json": "f6bd5a1d4921bef1b3257ad6d17317b4be9fed1bd234f04103425fb382d64ab5",
+      "artifacts\\holdout\\veto_reach_v4.preregistration.json": "f89f2fe055ace8025a45081d099975950023ab9e9da0d353cfb3def2e193478d",
+      "artifacts\\holdout\\veto_reach_v5.json": "1190f87d225b5f30575f1105a1b16e4ff200af3786997843fbf5b3f8e254633e",
+      "artifacts\\holdout\\veto_reach_v5.preregistration.json": "7ad887b6b8fa3a61d0e6e3a6a6a68ce2b49d4312932eae52978d519fa1648b8e",
+      "artifacts\\holdout\\veto_reach_v6.json": "46da5437849e490836bb65b66d99d3b38da3dbb3686e059fe9d50ac56da629ca",
+      "artifacts\\holdout\\veto_reach_v6.preregistration.json": "a996de446c1712e1ade4977b9564d226a3f0bd5004c99e3d2a92e3de4bb8ed46",
+      "artifacts\\holdout\\veto_reach_v7.json": "7dfcc1a186cea6e9b3457dbf0b17957a36166a584707a17f13febca332b28bde",
+      "artifacts\\holdout\\veto_reach_v7.preregistration.json": "449509603537ae83592af1b8ef50c4e53eeb4278671b13c7dad763dcb76ca73b",
+      "artifacts\\holdout\\veto_reach_v8.consumed.json": "e25155f0c6e7470751e77851c7610a1724dbf43d1696d08f9ab8997f11b7a9bb",
+      "artifacts\\holdout\\veto_reach_v8.corpus.jsonl": "afdfd428946972f57b75662f8cffcd9024ebe4d165a3e757f8dece77f2f10a38",
+      "artifacts\\holdout\\veto_reach_v8.json": "915b74d1fb56f34c18b94f856a0c8d3dd5ed7444b64282bbf626922d6c8201c7",
+      "artifacts\\holdout\\veto_reach_v8.preregistration.json": "e53cd8935efb3f8c70baf9b4ff8a1fcecf5dd0aa99e78358bc104246bf3a74ac",
+      "artifacts\\holdout\\veto_reach_v8.raw-replies.jsonl": "1911f07f0f80c3dcaaf5e40781ff0e5d188143cb5fe33df325408dcc33e34010",
+      "artifacts\\holdout\\veto_reach_v8.telemetry.jsonl": "28ba0e9fe99cf27dcf94643049f1b6a6dbb3a483b3cf9c8a6bad5c73dd1d07ba",
+      "artifacts\\holdout\\veto_reach_v8.turn-audit.jsonl": "d3b9659350aabe6bf15d191bf14627457ca3ecbf08d9dcbf6ee76fb8446e28c3"
+    },
+    "program_sha256": "91ceb4168854fc95ef1e2c64053126da3d91f64a5fc71670e774a1631dbc1f14"
+  }
+}

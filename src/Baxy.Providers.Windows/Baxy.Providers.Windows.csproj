@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(BaxyWindowsTargetFramework)</TargetFramework>
+    <AssemblyName>Baxy.Providers.Windows</AssemblyName>
+    <RootNamespace>Baxy.Providers.Windows</RootNamespace>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Baxy.Contracts\Baxy.Contracts.csproj" />
+    <ProjectReference Include="..\Baxy.Kernel\Baxy.Kernel.csproj" />
+    <ProjectReference Include="..\Baxy.Security.Windows\Baxy.Security.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="External\SpotifyDesktopAutomation.ps1"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="SpotifyDesktopAutomation.ps1" />
+    <None Include="External\SpotifyMediaControl.ps1"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="SpotifyMediaControl.ps1" />
+    <None Include="External\KnownFolderOpen.ps1"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="KnownFolderOpen.ps1" />
+    <None Include="External\KnownFileOpen.ps1"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="KnownFileOpen.ps1" />
+    <None Include="External\DesktopSelectAll.ps1"
+            CopyToOutputDirectory="PreserveNewest"
+            TargetPath="DesktopSelectAll.ps1" />
+    <None Include="External\DesktopKeyPress.ps1"
+            CopyToOutputDirectory="PreserveNewest"
+            TargetPath="DesktopKeyPress.ps1" />
+    <None Include="External\DesktopClickVisible.ps1"
+            CopyToOutputDirectory="PreserveNewest"
+            TargetPath="DesktopClickVisible.ps1" />
+    <None Include="External\WindowsScheduledNotification.ps1"
+            CopyToOutputDirectory="PreserveNewest"
+            TargetPath="WindowsScheduledNotification.ps1" />
+  </ItemGroup>
+</Project>

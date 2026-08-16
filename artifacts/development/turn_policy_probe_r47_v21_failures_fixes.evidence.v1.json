@@ -1,0 +1,88 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v21_failures_fixes.evidence.v1.raw.jsonl",
+    "sha256": "0659c3ed9a073ee4c2d24d11122695d458cef574c8e996c85f7783dd28d5fea8"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:5970",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4e4147ecd43ba7a6f4f136be",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0536,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:22d2b8ebd0fdbf688b13dd23ddc0a334d0ed452dba293e08d73bc32db486365b",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5f7e1c7f49654686bdd70849",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0087,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13078",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-51ebfb7613315e4e00e35ffc",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.412,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar crytals tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T01:05:28.876161+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 3,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

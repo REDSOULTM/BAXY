@@ -1,0 +1,70 @@
+{
+  "schema": "baxy.windowsworld-word-source.r268.v1",
+  "authority": "external_source_identity_and_semantic_admission_audit_not_model_training",
+  "verdict": "rejected_preexecution_non_com_multistep_and_language_coverage_mismatch",
+  "source": {
+    "repository": "https://github.com/HITsz-TMG/WindowsWorld.git",
+    "commit": "fbccd464f94fec9e284e139f97bf96d0b192f580",
+    "license": "Apache-2.0",
+    "license_sha256": "bc9f51e11f13521b036f5e1f795198fa0685e671afc4734c4cdd946acd3267ce",
+    "semantic_source_files": 6,
+    "source_files_merkle_sha256": "870f668832b9f00c8df27ea688481e07dad0d7e15b7955b075b802701f2ba775",
+    "published_task_rows": 181,
+    "published_word_task_rows": 40,
+    "published_instruction_languages": [
+      "en",
+      "zh"
+    ],
+    "published_spanish_instruction_rows": 0,
+    "published_spanglish_instruction_rows": 0,
+    "instruction_texts_retained": false,
+    "task_identifiers_retained": false
+  },
+  "observed_surface": {
+    "source_native_baxy_operation_labels": false,
+    "word_task_lifecycle_keyword_rows": {
+      "office.word.append": 1,
+      "office.word.close": 0,
+      "office.word.discard": 0,
+      "office.word.save": 20,
+      "office.word.start": 30,
+      "office.word.status": 0
+    },
+    "word_tasks_are_compound_workflows": true,
+    "native_microsoft_word_com_tokens_present": false,
+    "word_process_checkpoint_mentions": true,
+    "published_writer_configuration": "LibreOffice Writer with Word 2007-365 (.docx) default save format",
+    "evaluation_path": "LLM screenshot judgement with infeasible no-op environment metric",
+    "evaluation_has_native_word_saved_dirty_verifier": false,
+    "evaluation_binds_discard_to_confirmation": false
+  },
+  "admission": {
+    "required_baxy_operations": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "required_source": "Published human request text directly tied to Microsoft Word COM traces and state-sensitive lifecycle verifiers, including confirmation-bound unsaved discard, for all six current typed operations",
+    "admitted_baxy_operations": [],
+    "reason": "WindowsWorld publishes bilingual English/Chinese compound benchmark instructions and process checks, not BAXY operation labels or Spanish/spanglish requests. Its Word task set has no direct close, discard, or active-document Saved/Dirty request, and its public runtime configuration uses LibreOffice Writer saved as .docx. The benchmark routes evaluation through an LLM screenshot judgement while the environment metric is a no-op, so it provides neither Microsoft Word COM traces nor a native lifecycle verifier. Splitting its compound tasks into BAXY operations would invent labels and cannot repair the missing lifecycle coverage."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not reuse WindowsWorld tasks to fill R207 or construct a three-language recogniser-minority Cut B. Search only for published human request text tied to native Microsoft Word COM lifecycle traces and state-sensitive verifiers for all six operations, including confirmation-bound unsaved discard.",
+  "identities": {
+    "catalogue_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "f476a7c8b2edbe81940ea0c59ce72d83d1d4ed5cb05a626e0dd1338c4e1e4008"
+  }
+}

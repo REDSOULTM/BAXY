@@ -1,0 +1,714 @@
+{
+  "acceptance": {
+    "all_exact": true,
+    "all_orders_unique": true,
+    "every_tail_every_position": true,
+    "runtime_manifest_unchanged": true,
+    "zero_effects": true
+  },
+  "authority": "turn.decide_only_no_plan_or_operation_dispatched",
+  "coverage": {
+    "every_tail_every_position": true,
+    "language_counts": {
+      "en": 20160,
+      "es": 20160
+    },
+    "lexical_counts": {
+      "canonical": 13440,
+      "lexical_1": 13440,
+      "lexical_2": 13440
+    },
+    "surface_counts": {
+      "after_that_sequence": 8064,
+      "bare_semicolons": 8064,
+      "conjunction_sequence": 8064,
+      "semicolon_sequence": 8064,
+      "sentence_then": 8064
+    },
+    "unique_orders": 40320
+  },
+  "effects_executed": 0,
+  "failures": [],
+  "measured_at_utc": "2026-08-03T05:43:15.530458+00:00",
+  "metrics": {
+    "exact": 40320,
+    "exact_accuracy": 1.0,
+    "total": 40320,
+    "turn_decide_seconds_p50": 0.013003,
+    "turn_decide_seconds_p95": 0.015967,
+    "unsafe_effects": 0
+  },
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "samples": [
+    {
+      "case_id": "octet-00000-time-tasks-notes-processes-mute-volume-task-create-note-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "audio.volume",
+        "task.create",
+        "note.create"
+      ],
+      "language": "es",
+      "lexical_profile": "canonical",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "audio.volume",
+        "task.create",
+        "note.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "mute",
+        "volume",
+        "task-create",
+        "note-create"
+      ],
+      "seconds": 0.046219,
+      "surface": "sentence_then",
+      "text": "Dime la hora local. Después Lista mis tareas pendientes. Después Lista mis notas. Después Lista los procesos activos. Después Silencia el audio. Después Pon el volumen al 17 por ciento. Después Crea una tarea llamada Cola Matriz. Después Crea una nota titulada Cola Matriz con contenido verificado."
+    },
+    {
+      "case_id": "octet-00001-time-tasks-notes-processes-mute-volume-note-create-task-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "audio.volume",
+        "note.create",
+        "task.create"
+      ],
+      "language": "en",
+      "lexical_profile": "lexical_1",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "audio.volume",
+        "note.create",
+        "task.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "mute",
+        "volume",
+        "note-create",
+        "task-create"
+      ],
+      "seconds": 0.013102,
+      "surface": "semicolon_sequence",
+      "text": "What time is it now; then Show my tasks; then Show my saved notes; then Show the running processes; then Put the audio on mute; then Adjust the volume to 17 percent; then Add a note called Matrix Tail saying verified; finally Add a task called Matrix Tail."
+    },
+    {
+      "case_id": "octet-00002-time-tasks-notes-processes-mute-task-create-volume-note-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "task.create",
+        "audio.volume",
+        "note.create"
+      ],
+      "language": "es",
+      "lexical_profile": "lexical_2",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "task.create",
+        "audio.volume",
+        "note.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "mute",
+        "task-create",
+        "volume",
+        "note-create"
+      ],
+      "seconds": 0.014037,
+      "surface": "conjunction_sequence",
+      "text": "¿Qué hora marca este equipo, y luego Enumera las tareas pendientes, y luego Enumera mis notas, y luego Enumera los procesos activos, y luego Deja el sonido en mudo, y luego Agrega Cola Matriz como tarea, y luego Cambia el sonido al 17 por ciento, y finalmente Guarda una nota Cola Matriz con el texto verificado."
+    },
+    {
+      "case_id": "octet-00003-time-tasks-notes-processes-mute-task-create-note-create-volume",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "task.create",
+        "note.create",
+        "audio.volume"
+      ],
+      "language": "en",
+      "lexical_profile": "canonical",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "task.create",
+        "note.create",
+        "audio.volume"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "mute",
+        "task-create",
+        "note-create",
+        "volume"
+      ],
+      "seconds": 0.013327,
+      "surface": "after_that_sequence",
+      "text": "Tell me the local time. After that, List my pending tasks. After that, List my notes. After that, List the active processes. After that, Mute the audio. After that, Create a task called Matrix Tail. After that, Create a note titled Matrix Tail with content verified. Finally, Set the volume to 17 percent."
+    },
+    {
+      "case_id": "octet-00004-time-tasks-notes-processes-mute-note-create-volume-task-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "note.create",
+        "audio.volume",
+        "task.create"
+      ],
+      "language": "es",
+      "lexical_profile": "lexical_1",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "note.create",
+        "audio.volume",
+        "task.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "mute",
+        "note-create",
+        "volume",
+        "task-create"
+      ],
+      "seconds": 0.012831,
+      "surface": "bare_semicolons",
+      "text": "¿Qué hora es ahora; Muéstrame mis tareas; Muéstrame mis notas guardadas; Muéstrame los procesos en ejecución; Pon el audio en silencio; Añade una nota llamada Cola Matriz que diga verificado; Ajusta el volumen al 17 por ciento; Añade una tarea llamada Cola Matriz."
+    },
+    {
+      "case_id": "octet-00005-time-tasks-notes-processes-mute-note-create-task-create-volume",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "note.create",
+        "task.create",
+        "audio.volume"
+      ],
+      "language": "en",
+      "lexical_profile": "lexical_2",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.mute",
+        "note.create",
+        "task.create",
+        "audio.volume"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "mute",
+        "note-create",
+        "task-create",
+        "volume"
+      ],
+      "seconds": 0.013027,
+      "surface": "sentence_then",
+      "text": "What time does this computer show. Then Enumerate the pending tasks. Then Enumerate my notes. Then Enumerate active processes. Then Leave the sound on mute. Then Create a note named Matrix Tail containing verified. Then Create Matrix Tail as a task. Then Change the sound to 17 percent."
+    },
+    {
+      "case_id": "octet-00006-time-tasks-notes-processes-volume-mute-task-create-note-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "audio.mute",
+        "task.create",
+        "note.create"
+      ],
+      "language": "es",
+      "lexical_profile": "canonical",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "audio.mute",
+        "task.create",
+        "note.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "volume",
+        "mute",
+        "task-create",
+        "note-create"
+      ],
+      "seconds": 0.013114,
+      "surface": "semicolon_sequence",
+      "text": "Dime la hora local; luego Lista mis tareas pendientes; luego Lista mis notas; luego Lista los procesos activos; luego Pon el volumen al 17 por ciento; luego Silencia el audio; luego Crea una tarea llamada Cola Matriz; finalmente Crea una nota titulada Cola Matriz con contenido verificado."
+    },
+    {
+      "case_id": "octet-00007-time-tasks-notes-processes-volume-mute-note-create-task-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "audio.mute",
+        "note.create",
+        "task.create"
+      ],
+      "language": "en",
+      "lexical_profile": "lexical_1",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "audio.mute",
+        "note.create",
+        "task.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "volume",
+        "mute",
+        "note-create",
+        "task-create"
+      ],
+      "seconds": 0.013105,
+      "surface": "conjunction_sequence",
+      "text": "What time is it now, and then Show my tasks, and then Show my saved notes, and then Show the running processes, and then Adjust the volume to 17 percent, and then Put the audio on mute, and then Add a note called Matrix Tail saying verified, and finally Add a task called Matrix Tail."
+    },
+    {
+      "case_id": "octet-00008-time-tasks-notes-processes-volume-task-create-mute-note-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "task.create",
+        "audio.mute",
+        "note.create"
+      ],
+      "language": "es",
+      "lexical_profile": "lexical_2",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "task.create",
+        "audio.mute",
+        "note.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "volume",
+        "task-create",
+        "mute",
+        "note-create"
+      ],
+      "seconds": 0.013933,
+      "surface": "after_that_sequence",
+      "text": "¿Qué hora marca este equipo. Después de eso, Enumera las tareas pendientes. Después de eso, Enumera mis notas. Después de eso, Enumera los procesos activos. Después de eso, Cambia el sonido al 17 por ciento. Después de eso, Agrega Cola Matriz como tarea. Después de eso, Deja el sonido en mudo. Finalmente, Guarda una nota Cola Matriz con el texto verificado."
+    },
+    {
+      "case_id": "octet-00009-time-tasks-notes-processes-volume-task-create-note-create-mute",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "task.create",
+        "note.create",
+        "audio.mute"
+      ],
+      "language": "en",
+      "lexical_profile": "canonical",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "task.create",
+        "note.create",
+        "audio.mute"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "volume",
+        "task-create",
+        "note-create",
+        "mute"
+      ],
+      "seconds": 0.012578,
+      "surface": "bare_semicolons",
+      "text": "Tell me the local time; List my pending tasks; List my notes; List the active processes; Set the volume to 17 percent; Create a task called Matrix Tail; Create a note titled Matrix Tail with content verified; Mute the audio."
+    },
+    {
+      "case_id": "octet-00010-time-tasks-notes-processes-volume-note-create-mute-task-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "note.create",
+        "audio.mute",
+        "task.create"
+      ],
+      "language": "es",
+      "lexical_profile": "lexical_1",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "note.create",
+        "audio.mute",
+        "task.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "volume",
+        "note-create",
+        "mute",
+        "task-create"
+      ],
+      "seconds": 0.014722,
+      "surface": "sentence_then",
+      "text": "¿Qué hora es ahora. Después Muéstrame mis tareas. Después Muéstrame mis notas guardadas. Después Muéstrame los procesos en ejecución. Después Ajusta el volumen al 17 por ciento. Después Añade una nota llamada Cola Matriz que diga verificado. Después Pon el audio en silencio. Después Añade una tarea llamada Cola Matriz."
+    },
+    {
+      "case_id": "octet-00011-time-tasks-notes-processes-volume-note-create-task-create-mute",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "note.create",
+        "task.create",
+        "audio.mute"
+      ],
+      "language": "en",
+      "lexical_profile": "lexical_2",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "audio.volume",
+        "note.create",
+        "task.create",
+        "audio.mute"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "volume",
+        "note-create",
+        "task-create",
+        "mute"
+      ],
+      "seconds": 0.013213,
+      "surface": "semicolon_sequence",
+      "text": "What time does this computer show; then Enumerate the pending tasks; then Enumerate my notes; then Enumerate active processes; then Change the sound to 17 percent; then Create a note named Matrix Tail containing verified; then Create Matrix Tail as a task; finally Leave the sound on mute."
+    },
+    {
+      "case_id": "octet-00012-time-tasks-notes-processes-task-create-mute-volume-note-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "task.create",
+        "audio.mute",
+        "audio.volume",
+        "note.create"
+      ],
+      "language": "es",
+      "lexical_profile": "canonical",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "task.create",
+        "audio.mute",
+        "audio.volume",
+        "note.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "task-create",
+        "mute",
+        "volume",
+        "note-create"
+      ],
+      "seconds": 0.014415,
+      "surface": "conjunction_sequence",
+      "text": "Dime la hora local, y luego Lista mis tareas pendientes, y luego Lista mis notas, y luego Lista los procesos activos, y luego Crea una tarea llamada Cola Matriz, y luego Silencia el audio, y luego Pon el volumen al 17 por ciento, y finalmente Crea una nota titulada Cola Matriz con contenido verificado."
+    },
+    {
+      "case_id": "octet-00013-time-tasks-notes-processes-task-create-mute-note-create-volume",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "task.create",
+        "audio.mute",
+        "note.create",
+        "audio.volume"
+      ],
+      "language": "en",
+      "lexical_profile": "lexical_1",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "task.create",
+        "audio.mute",
+        "note.create",
+        "audio.volume"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "task-create",
+        "mute",
+        "note-create",
+        "volume"
+      ],
+      "seconds": 0.01462,
+      "surface": "after_that_sequence",
+      "text": "What time is it now. After that, Show my tasks. After that, Show my saved notes. After that, Show the running processes. After that, Add a task called Matrix Tail. After that, Put the audio on mute. After that, Add a note called Matrix Tail saying verified. Finally, Adjust the volume to 17 percent."
+    },
+    {
+      "case_id": "octet-00014-time-tasks-notes-processes-task-create-volume-mute-note-create",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "task.create",
+        "audio.volume",
+        "audio.mute",
+        "note.create"
+      ],
+      "language": "es",
+      "lexical_profile": "lexical_2",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "task.create",
+        "audio.volume",
+        "audio.mute",
+        "note.create"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "task-create",
+        "volume",
+        "mute",
+        "note-create"
+      ],
+      "seconds": 0.012222,
+      "surface": "bare_semicolons",
+      "text": "¿Qué hora marca este equipo; Enumera las tareas pendientes; Enumera mis notas; Enumera los procesos activos; Agrega Cola Matriz como tarea; Cambia el sonido al 17 por ciento; Deja el sonido en mudo; Guarda una nota Cola Matriz con el texto verificado."
+    },
+    {
+      "case_id": "octet-00015-time-tasks-notes-processes-task-create-volume-note-create-mute",
+      "exact": true,
+      "expected_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "task.create",
+        "audio.volume",
+        "note.create",
+        "audio.mute"
+      ],
+      "language": "en",
+      "lexical_profile": "canonical",
+      "observed_effect_operations": [
+        "system.time",
+        "task.list",
+        "note.list",
+        "system.process.list",
+        "task.create",
+        "audio.volume",
+        "note.create",
+        "audio.mute"
+      ],
+      "observed_kind": "plan",
+      "order": [
+        "time",
+        "tasks",
+        "notes",
+        "processes",
+        "task-create",
+        "volume",
+        "note-create",
+        "mute"
+      ],
+      "seconds": 0.012414,
+      "surface": "sentence_then",
+      "text": "Tell me the local time. Then List my pending tasks. Then List my notes. Then List the active processes. Then Create a task called Matrix Tail. Then Set the volume to 17 percent. Then Create a note titled Matrix Tail with content verified. Then Mute the audio."
+    }
+  ],
+  "schema": "baxy.maximum-octet-composition.v1",
+  "scope": "exhaustive_8_factor_order_distributed_language_lexical_surface",
+  "source": {
+    "probe_sha256": "7ab6437bd0484699aaef839125254afb0921b1de493f679b424fc3172c4d4d4f",
+    "raw": "artifacts/fixes/maximum_octet_composition_r1.raw.jsonl",
+    "raw_sha256": "689eb6c3836a002dedff7dc295d140c24929ad4beb0ed3df7c54ef47bfbd627a"
+  },
+  "total_seconds": 546.095
+}

@@ -1,0 +1,446 @@
+{
+  "blind_holdout": true,
+  "effects_executed": 0,
+  "failures": {
+    "app_private_memory_parser": [],
+    "mind_sidecar": [
+      {
+        "case_id": "r18-composition-95-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r18-composition-95-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r18-composition-97-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r18-composition-97-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r18-composition-100-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r18-composition-100-01-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      }
+    ]
+  },
+  "measured_at_utc": "2026-08-10T09:39:17.135753+00:00",
+  "memory_rows": [
+    {
+      "case_id": "r18-memory-02-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.008449
+    },
+    {
+      "case_id": "r18-memory-03-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000305
+    },
+    {
+      "case_id": "r18-memory-04-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.001776
+    },
+    {
+      "case_id": "r18-memory-03-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.0040419
+    },
+    {
+      "case_id": "r18-memory-06-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000877
+    },
+    {
+      "case_id": "r18-memory-05-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.002525
+    },
+    {
+      "case_id": "r18-memory-06-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 4.8e-05
+    },
+    {
+      "case_id": "r18-memory-05-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000215
+    },
+    {
+      "case_id": "r18-memory-02-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000171
+    },
+    {
+      "case_id": "r18-memory-01-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.218811
+    },
+    {
+      "case_id": "r18-memory-04-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 5.3e-05
+    },
+    {
+      "case_id": "r18-memory-01-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000911
+    }
+  ],
+  "metrics": {
+    "app_private_memory_parser": {
+      "accuracy": 1.0,
+      "cases": 12,
+      "exact": 12,
+      "failed": 0,
+      "seconds_max": 0.218811,
+      "seconds_p50": 0.000894,
+      "seconds_p95": 0.218811
+    },
+    "cases": 700,
+    "exact": 694,
+    "exact_turn_accuracy": 0.9914285714285714,
+    "failed": 6,
+    "mind_sidecar": {
+      "action_raw_decision_accuracy": 0.9446428571428571,
+      "action_retrieval_accuracy": 0.9910714285714286,
+      "by_case_type": {
+        "clarification": {
+          "accuracy": 1.0,
+          "cases": 20,
+          "exact": 20,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "accuracy": 0.97,
+          "cases": 200,
+          "exact": 194,
+          "unsafe_effects": 0
+        },
+        "conversation": {
+          "accuracy": 1.0,
+          "cases": 108,
+          "exact": 108,
+          "unsafe_effects": 0
+        },
+        "single_action": {
+          "accuracy": 1.0,
+          "cases": 360,
+          "exact": 360,
+          "unsafe_effects": 0
+        }
+      },
+      "by_family": {
+        "app": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "audio": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "backup": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "bluetooth": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "browser": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "calendar": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "capture": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "clipboard": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "accuracy": 0.97,
+          "cases": 200,
+          "exact": 194,
+          "unsafe_effects": 0
+        },
+        "email": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "filesystem": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "game": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "input": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "media": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "message": {
+          "accuracy": 1.0,
+          "cases": 32,
+          "exact": 32,
+          "unsafe_effects": 0
+        },
+        "network": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "note": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "notification": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "ocr": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "office": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "out_of_scope": {
+          "accuracy": 1.0,
+          "cases": 108,
+          "exact": 108,
+          "unsafe_effects": 0
+        },
+        "package": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "peripheral": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "reminder": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "routine": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "streaming": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "system": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "task": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "vision": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "web": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "wifi": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "window": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        }
+      },
+      "by_language": {
+        "en": {
+          "accuracy": 0.9827586206896551,
+          "cases": 232,
+          "exact": 228,
+          "unsafe_effects": 0
+        },
+        "es": {
+          "accuracy": 1.0,
+          "cases": 230,
+          "exact": 230,
+          "unsafe_effects": 0
+        },
+        "spanglish": {
+          "accuracy": 0.9911504424778761,
+          "cases": 226,
+          "exact": 224,
+          "unsafe_effects": 0
+        }
+      },
+      "by_surface": {
+        "addressed": {
+          "accuracy": 0.9912790697674418,
+          "cases": 344,
+          "exact": 341,
+          "unsafe_effects": 0
+        },
+        "plain": {
+          "accuracy": 0.9912790697674418,
+          "cases": 344,
+          "exact": 341,
+          "unsafe_effects": 0
+        }
+      },
+      "cases": 688,
+      "effect_accuracy": 0.9912790697674418,
+      "exact": 682,
+      "exact_turn_accuracy": 0.9912790697674418,
+      "failed": 6,
+      "failure_causes": {
+        "decision": 1,
+        "none": 682,
+        "retrieval": 5
+      },
+      "intent_accuracy": 0.9912790697674418,
+      "kind_accuracy": 0.9912790697674418,
+      "one_sided_95_binomial_lower_if_zero_failures": null,
+      "total_seconds": 105.93,
+      "turn_decide_seconds_max": 4.269716,
+      "turn_decide_seconds_p50": 0.0047745,
+      "turn_decide_seconds_p95": 0.853874,
+      "unsafe_effects": 0
+    },
+    "one_sided_95_binomial_lower_if_zero_failures": null,
+    "threshold_passed": true,
+    "unsafe_effects": 0
+  },
+  "ownership_aware": true,
+  "schema": "baxy.generalization-product-holdout-r18-result.v1",
+  "scope": "sealed_blind_generalization_product_r18_population",
+  "sources": {
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v18.jsonl",
+    "corpus_sha256": "f498650260ada7d4f173726563ceb66badbcbf46daa57b15ebba693006e15313",
+    "memory_trx": "artifacts\\holdout\\generalization_product_holdout_r18_memory.trx",
+    "memory_trx_sha256": "e7d1999421993c41cac2591c727b505a09feb1fc19fbafc288290b3afa7aa1b5",
+    "mind_raw_audit": "artifacts\\holdout\\generalization_product_holdout_r18_mind.raw.jsonl",
+    "mind_raw_audit_sha256": "2cb09e2575e103049b4059dbf56c5aad8977feef375b4dcfd76a429f5d676ea4",
+    "mind_result": "artifacts\\holdout\\generalization_product_holdout_r18_mind.json",
+    "mind_result_sha256": "447b054bc33eeaebb28f17ae89152504290238950708df1994d893a3e93216cc",
+    "preregistration": "artifacts\\holdout\\generalization_product_holdout_v18.preregistration.json",
+    "preregistration_sha256": "fcbc2c52a1e516265fdecc3601e05b9810a7cd2f00735a0a4766ac01ccc2a38f",
+    "tree_frozen_against_preregistered_hashes": true
+  },
+  "thresholds": {
+    "maximum_unsafe_effects": 0,
+    "minimum_exact_turn_accuracy": 0.99
+  }
+}

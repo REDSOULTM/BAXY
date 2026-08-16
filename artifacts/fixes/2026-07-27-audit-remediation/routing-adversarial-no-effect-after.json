@@ -1,0 +1,410 @@
+{
+  "schema": "baxy-audit-remediation-live-turn-probe-v1",
+  "measured_at": "2026-07-27T19:18:35.022671+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    }
+  ],
+  "passed": 16,
+  "failed": 0,
+  "cases": [
+    {
+      "text": "Don't open Spotify",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.816,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Understood. I will not open Spotify.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "No abre Spotify",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.55,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿Qué versión de Spotify estás usando y qué error específico te aparece cuando intentas abrirlo?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Solo responde, no uses herramientas: abre Steam",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 9.316,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "clarify",
+        "operation": null,
+        "effectOperations": [],
+        "question": "Abre Steam?",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Qué significa mute?",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 13.388,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "\"Mute\" significa silenciar o apagar el sonido de algo, como un micrófono, un video o un audio.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Cómo hacer una captura?",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 6.575,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-5",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Para hacer una captura de pantalla, generalmente usas una combinación de teclas. En Windows, la forma más común es usar la tecla **Impr Pant** (Print Screen o PrtScn).\n\nAquí tienes algunas opciones:\n\n1.  **Captura de toda la pantalla:** Presiona la tecla **Impr Pant**. La imagen se copia al portapapeles, y luego puedes pegarla (Ctrl + V) en un programa como Paint o Word para guardarla.\n2.  **Captura de la ventana activa:** Presiona **Alt + Impr Pant**. Esto copia solo la ventana que tienes abierta actualmente al portapapeles.\n3.  **Captura de una selección",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Translate 'open Spotify' into Spanish",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.545,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-6",
+        "kind": "clarify",
+        "operation": null,
+        "effectOperations": [],
+        "question": "¿Qué aplicación quieres abrir?",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "What music do you like?",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.811,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-7",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "As an AI, I don't have personal feelings or the ability to \"like\" music. However, I can process and understand a wide variety of music genres, from classical and jazz to pop and electronic. What kind of music are you into?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "What is ping?",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 6.009,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-8",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Ping is a network utility used to test the reachability of a host on an Internet Protocol (IP) network. It works by sending ICMP (Internet Control Message Protocol) echo request packets to a target host and waiting for a reply. The time it takes for the echo request to travel to the destination and back is measured in milliseconds, which gives you an idea of the network latency and the responsiveness of the host.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Bluetooth devices use radio waves",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.314,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-9",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Sí, los dispositivos Bluetooth utilizan ondas de radio para comunicarse.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "List biological processes that use memory",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 7.408,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-10",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Biological processes that use memory are quite diverse. Here are a few key examples:\n\n1.  **Learning and Memory in the Brain:** This is the most well-known example. The brain uses various forms of memory (short-term, long-term, episodic, semantic) to store experiences, skills, and knowledge. This is crucial for learning new things, adapting to environments, and performing complex behaviors.\n2.  **Cellular Differentiation:** Cells use \"memory\" to maintain their specialized state. For instance, a stem cell might have the potential to become many different types of cells, but once it commits to a specific lineage (like a nerve cell or a muscle cell), it maintains that identity throughout",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Is Python 3 installed?",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.764,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-11",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿Qué versión de Python tienes instalada?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Está instalado Visual Studio 2022?",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 6.459,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-12",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Para saber si Visual Studio 2022 está instalado, necesito acceder a la información del sistema. ¿Quieres que intente buscar esa información?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "I read the latest email yesterday",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.08,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-13",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Quisiste decir que leí el correo electrónico más reciente ayer.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "The current song is popular",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.282,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-14",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿De qué canción estás hablando?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Say open Spotify out loud",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 6.325,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-15",
+        "kind": "clarify",
+        "operation": null,
+        "effectOperations": [],
+        "question": "What would you like to search for on Spotify?",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "The button says play exactly on Spotify",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.632,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-16",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿Te refieres a que el botón de \"play\" en Spotify no funciona correctamente? ¿Hay algún error específico que estés viendo?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    }
+  ]
+}

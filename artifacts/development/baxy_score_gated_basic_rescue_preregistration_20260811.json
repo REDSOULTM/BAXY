@@ -1,0 +1,44 @@
+{
+  "schema": "baxy.score-gated-basic-rescue-development-preregistration.v1",
+  "createdAtUtc": "2026-08-11T17:15:49.0709975Z",
+  "purpose": "test_existing_manifest_score_gate_on_leading_basic_using_only_opened_independent_development_sources",
+  "inputsSha256": {
+    "program": "fb932c09ac60e3db9470bcc74af0e1ef80ed3198e930bb99f3f24ffb77b9b388",
+    "candidateManifest": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "confusableReport": "34916dd6d6c227486d55bccb725478b386ab66a7e0aa1c41eb0fa06849ef1d02",
+    "confusableCorpusManifest": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+    "openslrScreenReport": "5ee117dca1bc01885f6f687bd9b07daa12fbb01c46e21d060643b4e3a7895695",
+    "openslrCorpusManifest": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "ffmpeg": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "stt:encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+    "stt:decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+    "stt:joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+    "stt:tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+  },
+  "contract": {
+    "leadingToken": "basic",
+    "scoreGte": 4.0,
+    "scoreSource": "candidate_manifest_directLexicalProposal_phoneticConfusionScoreGte",
+    "retrySpeedFactors": [
+      1.0,
+      0.85,
+      1.14
+    ],
+    "confusablePositiveMinimumRescues": 1,
+    "confusableNegativeMaximumFalseActivations": 0,
+    "openslrNegativeMaximumFalseActivations": 0,
+    "readPhysicalV17": false,
+    "retainTranscriptText": false,
+    "retainFilenames": false,
+    "modifyRuntime": false,
+    "promotionEligible": false
+  },
+  "plannedOutput": "artifacts/development/baxy_score_gated_basic_rescue_development_20260811.json",
+  "interpretationRules": [
+    "The consumed physical v17 corpus, reports and transcript hashes are not evaluator inputs.",
+    "The score gate is inherited unchanged from the frozen candidate manifest and is not selected against v17.",
+    "A passing report is development evidence only and requires a fresh disjoint physical holdout before any promotion."
+  ],
+  "blindHumanPartitionAccessed": false,
+  "effectsExecuted": 0
+}

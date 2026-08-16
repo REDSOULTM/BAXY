@@ -1,0 +1,54 @@
+{
+  "schema": "baxy.prosody-spectral-loco-diagnostic-binding.v1",
+  "createdAtUtc": "2026-08-11T18:35:46.5508137Z",
+  "role": "opened_development_exploratory_diagnostic_only",
+  "programSha256": "86bd8b972f3d8a26f718b4736a8eaccd70de560578d5e6039a1a8185c03774a8",
+  "testSha256": "e3639404a4f1a1d00b2c76229a0b9839493630e2fb02bb52bbc790d760521a48",
+  "plannedOutput": "D:/BAXY/source/artifacts/research/prosody_spectral_loco_diagnostic_20260811.json",
+  "seed": 20260811,
+  "contract": {
+    "featureFamilies": [
+      "duration_and_energy_envelope",
+      "autocorrelation_pitch_and_voicing",
+      "spectral_centroid_flatness_rolloff_and_zero_crossing",
+      "coarse_cepstral_shape"
+    ],
+    "outerEvaluation": "leave_one_complete_corpus_out",
+    "thresholdSelection": "nextafter_maximum_training_negative_score",
+    "modelsComparedOnHeldCorpora": true,
+    "modelSelectionAllowed": false,
+    "physicalV17Read": false,
+    "runtimeModificationAllowed": false,
+    "promotionEligible": false,
+    "effectsExecuted": 0
+  },
+  "corpora": [
+    {
+      "name": "endpoint_confusable",
+      "root": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_endpoint_confusable_raw_v1_development",
+      "manifestSha256": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+      "counts": {
+        "positive": 24,
+        "negative": 96
+      }
+    },
+    {
+      "name": "physical_v20",
+      "root": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_reserved_raw_v20_development",
+      "manifestSha256": "a18e19dcf175994418f3f838c69032f17a1666fb61cfc2076075719ff3fdfbc6",
+      "counts": {
+        "positive": 48,
+        "negative": 96
+      }
+    },
+    {
+      "name": "human_v14",
+      "root": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_real_human_augmented_raw_v14_validation",
+      "manifestSha256": "d98078c60c0a13027c5c3c5d3e0bdd53bf787dc0db8245cc5abb53dde2735805",
+      "counts": {
+        "positive": 48,
+        "negative": 96
+      }
+    }
+  ]
+}

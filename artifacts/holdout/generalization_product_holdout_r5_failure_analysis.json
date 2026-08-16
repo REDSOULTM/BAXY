@@ -1,0 +1,86 @@
+{
+  "authority": "offline_analysis_only_no_sidecar_no_plan_no_core_no_provider",
+  "created_at_utc": "2026-08-03T13:58:58.253678+00:00",
+  "development_output": {
+    "path": "artifacts\\development\\generalization_product_r5_failures.v1.jsonl",
+    "rows": 249,
+    "sha256": "f63d096074c83557b503c3fc91981398b77adef69a05a4229a2ab945bb747ab3"
+  },
+  "effects_executed": 0,
+  "holdout_reuse_policy": "opened R5 failures are development data and R5 is never blind again",
+  "metrics": {
+    "by_case_type": {
+      "clarification": 10,
+      "composition": 40,
+      "conversation": 10,
+      "single_action": 189
+    },
+    "by_cause": {
+      "app_parser": 10,
+      "clarification_intent": 7,
+      "conversation_presentation": 8,
+      "decision": 67,
+      "recovery": 11,
+      "retrieval": 118,
+      "unsafe_clarification_effect": 3,
+      "unsafe_conversation_effect": 2,
+      "veto:action_grounding": 1,
+      "veto:compound_conservation": 22
+    },
+    "by_family": {
+      "app": 8,
+      "audio": 4,
+      "backup": 8,
+      "bluetooth": 4,
+      "calendar": 5,
+      "capture": 8,
+      "clipboard": 2,
+      "composition": 40,
+      "email": 8,
+      "filesystem": 3,
+      "game": 8,
+      "input": 6,
+      "media": 7,
+      "memory": 10,
+      "message": 13,
+      "network": 9,
+      "note": 2,
+      "notification": 4,
+      "ocr": 8,
+      "office": 3,
+      "out_of_scope": 10,
+      "package": 7,
+      "peripheral": 10,
+      "reminder": 7,
+      "routine": 8,
+      "streaming": 8,
+      "system": 7,
+      "task": 4,
+      "vision": 8,
+      "web": 7,
+      "wifi": 4,
+      "window": 9
+    },
+    "by_owner": {
+      "app_private_memory_parser": 10,
+      "mind_sidecar": 239
+    },
+    "failures": 249,
+    "unsafe_effects": 43
+  },
+  "schema": "baxy.generalization-product-r5-failure-analysis.v1",
+  "source": {
+    "analyzer": "experiments\\mind_router_spike\\analyze_generalization_product_r3_failures.py",
+    "analyzer_sha256": "789571d1348f44a2234bf06b12d072198f2fcf476b6102c7e98992574ecf4812",
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v5.jsonl",
+    "corpus_sha256": "3bf8a5e982c64aca8f6b827fae47b074e9d49587ad78db97fd9f3481f3bd3405",
+    "memory_trx": "artifacts\\holdout\\generalization_product_holdout_r5_memory.trx",
+    "memory_trx_sha256": "3013cd9d14f614fb49e05a8e3b1da66af904da7150b4df4692605199caf5a3d4",
+    "mind_raw_audit": "artifacts\\holdout\\generalization_product_holdout_r5_mind.raw.jsonl",
+    "mind_raw_audit_sha256": "dbe9b24e1b3f7e1f40283e03755ca9a325b4c9650cf9fbe5006536b86b595430",
+    "mind_result": "artifacts\\holdout\\generalization_product_holdout_r5_mind.json",
+    "mind_result_sha256": "8f795a87a89ccf87435d0e7cc64ca3884900cf87eabe8c54cc9b9f199d403286",
+    "product_result": "artifacts\\holdout\\generalization_product_holdout_r5_product.json",
+    "product_result_sha256": "f3ee2b7da18205e0359edbe283944f59e000a7e21b85809e1a7508f05361e918"
+  }
+}

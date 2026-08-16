@@ -1,0 +1,750 @@
+{
+  "schema": "baxy.language-stagger-ab.v1",
+  "arm_order": [
+    "eager",
+    "stagger"
+  ],
+  "delay_ms": 100.0,
+  "smoke": true,
+  "safety": {
+    "core_started": false,
+    "external_effects_executed": false
+  },
+  "control": {
+    "only_variable": "speculative L launch delay",
+    "identical_requests_prompts_schemas": true,
+    "authoritative_L_never_delayed": true,
+    "fresh_server_per_arm": true
+  },
+  "quality": {
+    "strict_final_without_free_reply_exact": true,
+    "free_reply_exact": true,
+    "all_post_wire_and_content_exact": true,
+    "mode_contracts": true,
+    "passed": true
+  },
+  "latency_delta_stagger_minus_eager": {
+    "all": {
+      "total_seconds_gated_minus_eager": 0.19978520000586286,
+      "p50_seconds_gated_minus_eager": 0.09989260000293143,
+      "p95_seconds_gated_minus_eager": 0.16409570000541862,
+      "max_seconds_gated_minus_eager": 0.16409570000541862
+    },
+    "action": {
+      "total_seconds_gated_minus_eager": 0.16409570000541862,
+      "p50_seconds_gated_minus_eager": 0.16409570000541862,
+      "p95_seconds_gated_minus_eager": 0.16409570000541862,
+      "max_seconds_gated_minus_eager": 0.16409570000541862
+    },
+    "conversation": {
+      "total_seconds_gated_minus_eager": 0.03568950000044424,
+      "p50_seconds_gated_minus_eager": 0.03568950000044424,
+      "p95_seconds_gated_minus_eager": 0.03568950000044424,
+      "max_seconds_gated_minus_eager": 0.03568950000044424
+    }
+  },
+  "language_timeline": {
+    "eager": [
+      {
+        "case": "task_create_a",
+        "language_after_policy_start_seconds": 0.001035799999954179,
+        "language_finished_before_guard": true,
+        "language_finished_before_policy": true
+      },
+      {
+        "case": "knowledge_a",
+        "language_after_policy_start_seconds": 0.0010237999958917499,
+        "language_finished_before_guard": true,
+        "language_finished_before_policy": true
+      }
+    ],
+    "stagger": [
+      {
+        "case": "task_create_a",
+        "language_after_policy_start_seconds": 0.10754199999792036,
+        "language_finished_before_guard": true,
+        "language_finished_before_policy": true
+      },
+      {
+        "case": "knowledge_a",
+        "language_after_policy_start_seconds": 0.10249769999063574,
+        "language_finished_before_guard": true,
+        "language_finished_before_policy": true
+      }
+    ]
+  },
+  "arms": [
+    {
+      "profile": "eager",
+      "delay_seconds": 0.0,
+      "server_pid": 22060,
+      "server_ready_seconds": 4.299250700001721,
+      "cases": [
+        {
+          "case": "task_create_a",
+          "expected_mode": "action",
+          "elapsed_seconds": 8.950200999999652,
+          "decision": {
+            "mode": "action",
+            "operation": "task.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "task.create"
+            ],
+            "effect_verification": "agreed",
+            "response_language": "es"
+          },
+          "extraction": {
+            "arguments": {
+              "title": "preparar el informe trimestral"
+            },
+            "evidence": [
+              [
+                "title",
+                "preparar el informe trimestral"
+              ]
+            ],
+            "fallback_question": "title?"
+          },
+          "response_language": null,
+          "reply": null
+        },
+        {
+          "case": "knowledge_a",
+          "expected_mode": "conversation",
+          "elapsed_seconds": 8.830696899996838,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "extraction": null,
+          "response_language": "es",
+          "reply": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+        }
+      ],
+      "posts": [
+        {
+          "case": "task_create_a",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "d2b082d746a9e71509e1831216aae1e4c48db4b5ef10f5808c637a2e1823fab5",
+          "elapsed_seconds": 2.195178099995246,
+          "cache_n": 0,
+          "prompt_n": 231,
+          "prompt_ms": 1593.331,
+          "predicted_n": 6,
+          "predicted_ms": 317.783,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "ecd4683b71b501404784b5092bcef6b46f3b46546ecb2c33416231e12614079a",
+          "elapsed_seconds": 2.7932754999928875,
+          "cache_n": 0,
+          "prompt_n": 171,
+          "prompt_ms": 1070.319,
+          "predicted_n": 19,
+          "predicted_ms": 1715.288,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "e7ea2814f588c7d87fe9ad5d4858886648e77ca5c01974f01ad9b61b970abe6d",
+          "elapsed_seconds": 1.6867359999887412,
+          "cache_n": 0,
+          "prompt_n": 83,
+          "prompt_ms": 416.286,
+          "predicted_n": 21,
+          "predicted_ms": 1223.577,
+          "content": "{\n  \"effect_count\": \"zero\"\n}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "038ed94c3cd4e389cf402346585025ad50e4867fa641182fa844c0d6630f2962",
+          "elapsed_seconds": 5.8493299999972805,
+          "cache_n": 0,
+          "prompt_n": 648,
+          "prompt_ms": 1622.467,
+          "predicted_n": 80,
+          "predicted_ms": 4197.232,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "C",
+          "id_slot": null,
+          "payload_sha256": "773daa4c3caf7dab90fb854878a3eb6650e3f322bcc7dd5b553330ed2fbc6054",
+          "elapsed_seconds": 1.202605800004676,
+          "cache_n": 0,
+          "prompt_n": 190,
+          "prompt_ms": 374.474,
+          "predicted_n": 18,
+          "predicted_ms": 813.098,
+          "content": "{\n  \"compatible\": true\n}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "E",
+          "id_slot": null,
+          "payload_sha256": "ef8d2f01ed12dafc0b6bf6042ac922bdd84968ad5fcffb4ed290870f96330b4a",
+          "elapsed_seconds": 1.8895863999932772,
+          "cache_n": 0,
+          "prompt_n": 174,
+          "prompt_ms": 305.141,
+          "predicted_n": 52,
+          "predicted_ms": 1575.354,
+          "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"preparar el informe trimestral\"\n  },\n  \"fallback_question\": \"title?\"\n}"
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+          "elapsed_seconds": 0.9995309999940218,
+          "cache_n": 206,
+          "prompt_n": 22,
+          "prompt_ms": 612.323,
+          "predicted_n": 6,
+          "predicted_ms": 298.705,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+          "elapsed_seconds": 1.8489916999969864,
+          "cache_n": 146,
+          "prompt_n": 22,
+          "prompt_ms": 515.046,
+          "predicted_n": 20,
+          "predicted_ms": 1307.574,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+          "elapsed_seconds": 6.732452399999602,
+          "cache_n": 554,
+          "prompt_n": 91,
+          "prompt_ms": 569.204,
+          "predicted_n": 72,
+          "predicted_ms": 6130.779,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "chat",
+          "id_slot": null,
+          "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+          "elapsed_seconds": 6.979472299994086,
+          "cache_n": 0,
+          "prompt_n": 202,
+          "prompt_ms": 510.8,
+          "predicted_n": 118,
+          "predicted_ms": 6416.725,
+          "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+        }
+      ],
+      "timeline": [
+        {
+          "case": "task_create_a",
+          "stage": "L",
+          "started": 77901.6933342,
+          "finished": 77903.8886701,
+          "elapsed_seconds": 2.195335900003556
+        },
+        {
+          "case": "task_create_a",
+          "stage": "G",
+          "started": 77901.6928249,
+          "finished": 77904.4861854,
+          "elapsed_seconds": 2.793360499999835
+        },
+        {
+          "case": "task_create_a",
+          "stage": "V",
+          "started": 77904.4864772,
+          "finished": 77906.173313,
+          "elapsed_seconds": 1.68683580000652
+        },
+        {
+          "case": "task_create_a",
+          "stage": "P",
+          "started": 77901.6922984,
+          "finished": 77907.5417685,
+          "elapsed_seconds": 5.849470100001781
+        },
+        {
+          "case": "task_create_a",
+          "stage": "C",
+          "started": 77907.5420309,
+          "finished": 77908.7447427,
+          "elapsed_seconds": 1.202711799996905
+        },
+        {
+          "case": "task_create_a",
+          "stage": "E",
+          "started": 77908.7520678,
+          "finished": 77910.6417608,
+          "elapsed_seconds": 1.8896930000046268
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "L",
+          "started": 77910.6435052,
+          "finished": 77911.6431892,
+          "elapsed_seconds": 0.9996839999948861
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "G",
+          "started": 77910.6430732,
+          "finished": 77912.4921772,
+          "elapsed_seconds": 1.849103999993531
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "P",
+          "started": 77910.6424814,
+          "finished": 77917.3750427,
+          "elapsed_seconds": 6.732561299999361
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "chat",
+          "started": 77912.4924513,
+          "finished": 77919.4720308,
+          "elapsed_seconds": 6.979579499995452
+        }
+      ],
+      "stage_summary": {
+        "P": {
+          "calls": 2,
+          "cache_n_median": 277.0,
+          "prompt_n_median": 369.5,
+          "prompt_ms_median": 1095.8355000000001,
+          "elapsed_median_seconds": 6.290891199998441
+        },
+        "G": {
+          "calls": 2,
+          "cache_n_median": 73.0,
+          "prompt_n_median": 96.5,
+          "prompt_ms_median": 792.6825,
+          "elapsed_median_seconds": 2.321133599994937
+        },
+        "L": {
+          "calls": 2,
+          "cache_n_median": 103.0,
+          "prompt_n_median": 126.5,
+          "prompt_ms_median": 1102.827,
+          "elapsed_median_seconds": 1.597354549994634
+        },
+        "V": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 83.0,
+          "prompt_ms_median": 416.286,
+          "elapsed_median_seconds": 1.6867359999887412
+        },
+        "C": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 190.0,
+          "prompt_ms_median": 374.474,
+          "elapsed_median_seconds": 1.202605800004676
+        },
+        "E": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 174.0,
+          "prompt_ms_median": 305.141,
+          "elapsed_median_seconds": 1.8895863999932772
+        },
+        "chat": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 202.0,
+          "prompt_ms_median": 510.8,
+          "elapsed_median_seconds": 6.979472299994086
+        }
+      },
+      "latency": {
+        "all": {
+          "count": 2,
+          "total_seconds": 17.78089789999649,
+          "p50_seconds": 8.890448949998245,
+          "p95_seconds": 8.950200999999652,
+          "max_seconds": 8.950200999999652
+        },
+        "action": {
+          "count": 1,
+          "total_seconds": 8.950200999999652,
+          "p50_seconds": 8.950200999999652,
+          "p95_seconds": 8.950200999999652,
+          "max_seconds": 8.950200999999652
+        },
+        "conversation": {
+          "count": 1,
+          "total_seconds": 8.830696899996838,
+          "p50_seconds": 8.830696899996838,
+          "p95_seconds": 8.830696899996838,
+          "max_seconds": 8.830696899996838
+        }
+      }
+    },
+    {
+      "profile": "stagger",
+      "delay_seconds": 0.1,
+      "server_pid": 12056,
+      "server_ready_seconds": 4.18300220000674,
+      "cases": [
+        {
+          "case": "task_create_a",
+          "expected_mode": "action",
+          "elapsed_seconds": 9.11429670000507,
+          "decision": {
+            "mode": "action",
+            "operation": "task.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "task.create"
+            ],
+            "effect_verification": "agreed",
+            "response_language": "es"
+          },
+          "extraction": {
+            "arguments": {
+              "title": "preparar el informe trimestral"
+            },
+            "evidence": [
+              [
+                "title",
+                "preparar el informe trimestral"
+              ]
+            ],
+            "fallback_question": "title?"
+          },
+          "response_language": null,
+          "reply": null
+        },
+        {
+          "case": "knowledge_a",
+          "expected_mode": "conversation",
+          "elapsed_seconds": 8.866386399997282,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "extraction": null,
+          "response_language": "es",
+          "reply": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+        }
+      ],
+      "posts": [
+        {
+          "case": "task_create_a",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "d2b082d746a9e71509e1831216aae1e4c48db4b5ef10f5808c637a2e1823fab5",
+          "elapsed_seconds": 2.157781200003228,
+          "cache_n": 0,
+          "prompt_n": 231,
+          "prompt_ms": 1616.871,
+          "predicted_n": 6,
+          "predicted_ms": 353.578,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "ecd4683b71b501404784b5092bcef6b46f3b46546ecb2c33416231e12614079a",
+          "elapsed_seconds": 2.898946100001922,
+          "cache_n": 0,
+          "prompt_n": 171,
+          "prompt_ms": 1089.335,
+          "predicted_n": 19,
+          "predicted_ms": 1800.956,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "e7ea2814f588c7d87fe9ad5d4858886648e77ca5c01974f01ad9b61b970abe6d",
+          "elapsed_seconds": 1.686741899990011,
+          "cache_n": 0,
+          "prompt_n": 83,
+          "prompt_ms": 433.967,
+          "predicted_n": 21,
+          "predicted_ms": 1202.73,
+          "content": "{\n  \"effect_count\": \"zero\"\n}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "038ed94c3cd4e389cf402346585025ad50e4867fa641182fa844c0d6630f2962",
+          "elapsed_seconds": 5.9459041000081925,
+          "cache_n": 0,
+          "prompt_n": 648,
+          "prompt_ms": 1644.162,
+          "predicted_n": 80,
+          "predicted_ms": 4261.146,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "C",
+          "id_slot": null,
+          "payload_sha256": "773daa4c3caf7dab90fb854878a3eb6650e3f322bcc7dd5b553330ed2fbc6054",
+          "elapsed_seconds": 1.2332406000059564,
+          "cache_n": 0,
+          "prompt_n": 190,
+          "prompt_ms": 380.564,
+          "predicted_n": 18,
+          "predicted_ms": 837.489,
+          "content": "{\n  \"compatible\": true\n}"
+        },
+        {
+          "case": "task_create_a",
+          "stage": "E",
+          "id_slot": null,
+          "payload_sha256": "ef8d2f01ed12dafc0b6bf6042ac922bdd84968ad5fcffb4ed290870f96330b4a",
+          "elapsed_seconds": 1.9325465000001714,
+          "cache_n": 0,
+          "prompt_n": 174,
+          "prompt_ms": 305.38,
+          "predicted_n": 52,
+          "predicted_ms": 1616.322,
+          "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"preparar el informe trimestral\"\n  },\n  \"fallback_question\": \"title?\"\n}"
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+          "elapsed_seconds": 1.0749094000057084,
+          "cache_n": 206,
+          "prompt_n": 22,
+          "prompt_ms": 523.167,
+          "predicted_n": 6,
+          "predicted_ms": 345.48,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+          "elapsed_seconds": 1.934761399999843,
+          "cache_n": 146,
+          "prompt_n": 22,
+          "prompt_ms": 457.883,
+          "predicted_n": 20,
+          "predicted_ms": 1452.148,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+          "elapsed_seconds": 6.76762269999017,
+          "cache_n": 554,
+          "prompt_n": 91,
+          "prompt_ms": 515.544,
+          "predicted_n": 72,
+          "predicted_ms": 6217.126,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "chat",
+          "id_slot": null,
+          "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+          "elapsed_seconds": 6.9290958999918075,
+          "cache_n": 0,
+          "prompt_n": 202,
+          "prompt_ms": 508.767,
+          "predicted_n": 118,
+          "predicted_ms": 6362.24,
+          "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+        }
+      ],
+      "timeline": [
+        {
+          "case": "task_create_a",
+          "stage": "L",
+          "started": 77923.9159415,
+          "finished": 77926.0738392,
+          "elapsed_seconds": 2.15789770000265
+        },
+        {
+          "case": "task_create_a",
+          "stage": "G",
+          "started": 77923.8097742,
+          "finished": 77926.7088073,
+          "elapsed_seconds": 2.8990331000095466
+        },
+        {
+          "case": "task_create_a",
+          "stage": "V",
+          "started": 77926.7090758,
+          "finished": 77928.3958883,
+          "elapsed_seconds": 1.6868125000037253
+        },
+        {
+          "case": "task_create_a",
+          "stage": "P",
+          "started": 77923.8083995,
+          "finished": 77929.7544237,
+          "elapsed_seconds": 5.9460241999913706
+        },
+        {
+          "case": "task_create_a",
+          "stage": "C",
+          "started": 77929.7546345,
+          "finished": 77930.9879629,
+          "elapsed_seconds": 1.2333284000051208
+        },
+        {
+          "case": "task_create_a",
+          "stage": "E",
+          "started": 77930.9883199,
+          "finished": 77932.9210135,
+          "elapsed_seconds": 1.9326935999997659
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "L",
+          "started": 77933.0245221,
+          "finished": 77934.099606,
+          "elapsed_seconds": 1.0750839000102133
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "G",
+          "started": 77932.9225673,
+          "finished": 77934.8574341,
+          "elapsed_seconds": 1.9348668000020552
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "P",
+          "started": 77932.9220244,
+          "finished": 77939.6898557,
+          "elapsed_seconds": 6.767831299992395
+        },
+        {
+          "case": "knowledge_a",
+          "stage": "chat",
+          "started": 77934.8578096,
+          "finished": 77941.7870002,
+          "elapsed_seconds": 6.929190599999856
+        }
+      ],
+      "stage_summary": {
+        "P": {
+          "calls": 2,
+          "cache_n_median": 277.0,
+          "prompt_n_median": 369.5,
+          "prompt_ms_median": 1079.853,
+          "elapsed_median_seconds": 6.356763399999181
+        },
+        "G": {
+          "calls": 2,
+          "cache_n_median": 73.0,
+          "prompt_n_median": 96.5,
+          "prompt_ms_median": 773.609,
+          "elapsed_median_seconds": 2.4168537500008824
+        },
+        "L": {
+          "calls": 2,
+          "cache_n_median": 103.0,
+          "prompt_n_median": 126.5,
+          "prompt_ms_median": 1070.019,
+          "elapsed_median_seconds": 1.6163453000044683
+        },
+        "V": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 83.0,
+          "prompt_ms_median": 433.967,
+          "elapsed_median_seconds": 1.686741899990011
+        },
+        "C": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 190.0,
+          "prompt_ms_median": 380.564,
+          "elapsed_median_seconds": 1.2332406000059564
+        },
+        "E": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 174.0,
+          "prompt_ms_median": 305.38,
+          "elapsed_median_seconds": 1.9325465000001714
+        },
+        "chat": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 202.0,
+          "prompt_ms_median": 508.767,
+          "elapsed_median_seconds": 6.9290958999918075
+        }
+      },
+      "latency": {
+        "all": {
+          "count": 2,
+          "total_seconds": 17.980683100002352,
+          "p50_seconds": 8.990341550001176,
+          "p95_seconds": 9.11429670000507,
+          "max_seconds": 9.11429670000507
+        },
+        "action": {
+          "count": 1,
+          "total_seconds": 9.11429670000507,
+          "p50_seconds": 9.11429670000507,
+          "p95_seconds": 9.11429670000507,
+          "max_seconds": 9.11429670000507
+        },
+        "conversation": {
+          "count": 1,
+          "total_seconds": 8.866386399997282,
+          "p50_seconds": 8.866386399997282,
+          "p95_seconds": 8.866386399997282,
+          "max_seconds": 8.866386399997282
+        }
+      }
+    }
+  ],
+  "candidate_status": "research_only",
+  "promotion_rule": "Require final exactness and both physical orders to improve all/action/conversation p50 and tails, with every staggered L finishing before G on conversation cases."
+}

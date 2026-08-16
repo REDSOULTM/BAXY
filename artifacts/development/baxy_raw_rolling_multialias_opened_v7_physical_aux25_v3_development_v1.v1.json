@@ -1,0 +1,175 @@
+{
+  "schema": "baxy.raw-rolling-multialias-wake-corpus-development.v2",
+  "measuredAtUtc": "2026-08-08T09:04:10.239789+00:00",
+  "scope": "opened_known_playback_wasapi_raw_rolling_same_window_multialias",
+  "role": "development",
+  "policy": {
+    "aliases": [
+      "baxy",
+      "baxi",
+      "basi",
+      "bakse"
+    ],
+    "rollingWindowSeconds": 3.0,
+    "sidePaddingSeconds": 1.0,
+    "hopSeconds": 0.25,
+    "sameWindowPrimaryLogitGte": 0.5,
+    "sameWindowSecondaryLogitGte": 0.3,
+    "lexicalAsrRequired": false
+  },
+  "models": {
+    "hyperspotter": {
+      "fusionManifestSha256": "0fbc2b4ef1b19ba150e00dc8717039186f7594eab52820c2a04a8404325e57f9",
+      "graphSha256": "af0fcb77fec606933928468644f5ae1f12232c3e372da2e77f4ed5eecfd47b0b",
+      "melFiltersSha256": "94b385f1d7568735fa40099550f5d71e8210bef150a3c9d4d86f0d5f2eb86db8"
+    }
+  },
+  "corpusManifestSha256": "604a874cf9bf2313c74d5fa333670a1634d64113d79f4d2e2c1cff4934464723",
+  "positive": {
+    "files": 4,
+    "acceptedFiles": 4,
+    "decisionSeconds": {
+      "minimum": 0.1993841000366956,
+      "p50": 0.22195440001087263,
+      "p95": 0.2597151700058021,
+      "maximum": 0.2638516000006348
+    },
+    "candidateAvailableAtClipSeconds": {
+      "minimum": 2.0,
+      "p50": 2.0,
+      "p95": 2.425,
+      "maximum": 2.5
+    },
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "392ebc2be395b6a2121960a735d947638ab867f29d44f7f2fa00b142b692d1d2",
+        "accepted": true,
+        "firstAcceptedWindowIndex": 0,
+        "candidateAvailableAtClipSeconds": 2.0,
+        "primaryLogit": 5.07442569732666,
+        "secondaryLogit": 3.8418948650360107
+      },
+      {
+        "record": 1,
+        "audioSha256": "775aa763057a95c8f3c8181018c4a93dc7390676abd9d03342f0ef612216610e",
+        "accepted": true,
+        "firstAcceptedWindowIndex": 0,
+        "candidateAvailableAtClipSeconds": 2.0,
+        "primaryLogit": 4.702342987060547,
+        "secondaryLogit": 4.230880260467529
+      },
+      {
+        "record": 2,
+        "audioSha256": "ff54ca5e88386a87826cdcb68574266f3cfe836b65ea69a756bfc57aad99dec5",
+        "accepted": true,
+        "firstAcceptedWindowIndex": 2,
+        "candidateAvailableAtClipSeconds": 2.5,
+        "primaryLogit": 1.6050646305084229,
+        "secondaryLogit": 1.572221040725708
+      },
+      {
+        "record": 3,
+        "audioSha256": "1d6a37dc0e4e00281d1f95e792a9c02952ee7368d31a7f45deec534b2e32937d",
+        "accepted": true,
+        "firstAcceptedWindowIndex": 0,
+        "candidateAvailableAtClipSeconds": 2.0,
+        "primaryLogit": 1.828331470489502,
+        "secondaryLogit": 1.4141099452972412
+      }
+    ]
+  },
+  "negative": {
+    "files": 8,
+    "acceptedFiles": 0,
+    "decisionSeconds": {
+      "minimum": 0.22634739999193698,
+      "p50": 0.2635537500027567,
+      "p95": 0.2843491750012618,
+      "maximum": 0.2862670000176877
+    },
+    "candidateAvailableAtClipSeconds": null,
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "e1fe1c086b53f1f1da92e5f307df151fda2d412e085d2682538896ba6df886a9",
+        "accepted": false,
+        "firstAcceptedWindowIndex": null,
+        "candidateAvailableAtClipSeconds": null,
+        "primaryLogit": -1.897702693939209,
+        "secondaryLogit": -1.9474201202392578
+      },
+      {
+        "record": 1,
+        "audioSha256": "5800f1e74c546d5104fbc5e3e0838935832c6b4b699271a033d38d3421396e38",
+        "accepted": false,
+        "firstAcceptedWindowIndex": null,
+        "candidateAvailableAtClipSeconds": null,
+        "primaryLogit": -1.6411592960357666,
+        "secondaryLogit": -2.1347644329071045
+      },
+      {
+        "record": 2,
+        "audioSha256": "4d405a3dded729d011931ed0f7cde3ffeaea7808ce4ae9d7885d268ab59da345",
+        "accepted": false,
+        "firstAcceptedWindowIndex": null,
+        "candidateAvailableAtClipSeconds": null,
+        "primaryLogit": -0.6314378380775452,
+        "secondaryLogit": -1.4381171464920044
+      },
+      {
+        "record": 3,
+        "audioSha256": "1d4ef6540510ed11129e48bf8b4a4e094979c0d104b1736c3277b4280115ee2c",
+        "accepted": false,
+        "firstAcceptedWindowIndex": null,
+        "candidateAvailableAtClipSeconds": null,
+        "primaryLogit": -2.13325834274292,
+        "secondaryLogit": -2.1948091983795166
+      },
+      {
+        "record": 4,
+        "audioSha256": "a481c77b821cdd20bad12d070f435015fce6be0e68dc9962a8b98ff935ade34e",
+        "accepted": false,
+        "firstAcceptedWindowIndex": null,
+        "candidateAvailableAtClipSeconds": null,
+        "primaryLogit": -0.9244080185890198,
+        "secondaryLogit": -1.0838565826416016
+      },
+      {
+        "record": 5,
+        "audioSha256": "93dcb9168910caa5fa5cb4e390fbe9c2fa604155948a40bf02577adaa43a91e0",
+        "accepted": false,
+        "firstAcceptedWindowIndex": null,
+        "candidateAvailableAtClipSeconds": null,
+        "primaryLogit": -2.070704221725464,
+        "secondaryLogit": -2.1846535205841064
+      },
+      {
+        "record": 6,
+        "audioSha256": "ca3b9d6cda49bc81b4369077f958adba6ff68dc520c2ed501a16a5e71e7015ad",
+        "accepted": false,
+        "firstAcceptedWindowIndex": null,
+        "candidateAvailableAtClipSeconds": null,
+        "primaryLogit": -0.8336156606674194,
+        "secondaryLogit": -1.2255231142044067
+      },
+      {
+        "record": 7,
+        "audioSha256": "c174588dcdc95695fc74fc0581e566b605f936a7a6c170b90f9481ad9356d5c0",
+        "accepted": false,
+        "firstAcceptedWindowIndex": null,
+        "candidateAvailableAtClipSeconds": null,
+        "primaryLogit": 2.9703028202056885,
+        "secondaryLogit": -0.14556503295898438
+      }
+    ]
+  },
+  "elapsedWallSeconds": 3.014918400091119,
+  "openedCorpusPassed": true,
+  "candidateFrozen": true,
+  "blindHumanPartitionAccessed": false,
+  "promotable": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0,
+  "filenamesOrTranscriptsRetained": false
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "baxy.head-only-reranker-domain.r245-preregistration.v1",
+  "authority": "sealed_after_r243_rejection_before_model_import_or_training",
+  "hypothesis": {
+    "base": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "architecture": "frozen multilingual encoder with trainable sequence-classification head over query-to-typed-family-document pairs",
+    "difference_from_r243": "frozen base, BF16 autocast, float32 classifier/optimizer and finite-value gate; it does not rerun R243 or reuse its evaluation partition",
+    "device": "isolated_cuda_development_environment"
+  },
+  "training": {
+    "sources": [
+      "R207 development pairs",
+      "fresh public PRESTO/MASSIVE OOS negatives"
+    ],
+    "no_r228": true,
+    "no_public_holdout": true
+  },
+  "development_evaluation": {
+    "inside": 256,
+    "outside": 256,
+    "selection": "SHA-256 ordered rows disjoint from every R236/R241/R243 train or evaluation source id",
+    "finite_scores_required": true,
+    "acceptance": {
+      "inside_rows_lost": 0,
+      "outside_zero_candidates": 256
+    }
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r238_sha256": "9e148c026438c242d8c96dfc8c21af801997f53da6ebad3d74d58121d900c5cb",
+    "r242_sha256": "e2306a7e33e0b3656549208b2ddc0ede41f26cb084f62e7a66b60ad1534bfca7",
+    "r244_sha256": "d7bffc3a13ff0f2546d89a15efcd99269dc96d5128132fcaf56309c4ed227c26",
+    "runner_sha256": "ff99a15e0a1e284712f97a19511eea7b77abee633141987a501845bddda7fb85",
+    "program_sha256": "70903a277ccbace7ef9156dbd134725075e315a38ece2ad61659786d9e69200c"
+  }
+}

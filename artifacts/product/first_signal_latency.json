@@ -1,0 +1,141 @@
+{
+  "authority": "read-only turn decisions; no operation dispatched",
+  "clock": "from handing the request to the mind until the first user-visible content exists for that turn",
+  "cold_start_seconds": 4.154,
+  "first_signal_seconds": {
+    "max": 2.957,
+    "mean": 0.794,
+    "p50": 0.071,
+    "p95": 2.668
+  },
+  "meets_p50_target": true,
+  "meets_p95_target": false,
+  "records": [
+    {
+      "case_id": "act-es-01",
+      "first_signal_seconds": 1.004,
+      "has_visible_signal": true,
+      "kind": "clarify",
+      "language": "es"
+    },
+    {
+      "case_id": "act-es-02",
+      "first_signal_seconds": 0.029,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "es"
+    },
+    {
+      "case_id": "act-es-03",
+      "first_signal_seconds": 0.071,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "es"
+    },
+    {
+      "case_id": "act-es-04",
+      "first_signal_seconds": 2.596,
+      "has_visible_signal": true,
+      "kind": "clarify",
+      "language": "es"
+    },
+    {
+      "case_id": "read-es-01",
+      "first_signal_seconds": 0.011,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "es"
+    },
+    {
+      "case_id": "read-es-02",
+      "first_signal_seconds": 0.019,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "es"
+    },
+    {
+      "case_id": "read-es-03",
+      "first_signal_seconds": 0.008,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "es"
+    },
+    {
+      "case_id": "act-en-01",
+      "first_signal_seconds": 0.007,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "en"
+    },
+    {
+      "case_id": "act-en-02",
+      "first_signal_seconds": 0.008,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "en"
+    },
+    {
+      "case_id": "read-en-01",
+      "first_signal_seconds": 0.003,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "en"
+    },
+    {
+      "case_id": "read-en-02",
+      "first_signal_seconds": 2.307,
+      "has_visible_signal": true,
+      "kind": "conversation",
+      "language": "en"
+    },
+    {
+      "case_id": "chat-es-01",
+      "first_signal_seconds": 1.232,
+      "has_visible_signal": true,
+      "kind": "conversation",
+      "language": "es"
+    },
+    {
+      "case_id": "chat-en-01",
+      "first_signal_seconds": 0.698,
+      "has_visible_signal": true,
+      "kind": "conversation",
+      "language": "en"
+    },
+    {
+      "case_id": "sp-01",
+      "first_signal_seconds": 1.567,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "spanglish"
+    },
+    {
+      "case_id": "sp-02",
+      "first_signal_seconds": 0.004,
+      "has_visible_signal": true,
+      "kind": "action",
+      "language": "spanglish"
+    },
+    {
+      "case_id": "out-es-01",
+      "first_signal_seconds": 2.957,
+      "has_visible_signal": true,
+      "kind": "conversation",
+      "language": "es"
+    },
+    {
+      "case_id": "out-en-01",
+      "first_signal_seconds": 0.98,
+      "has_visible_signal": true,
+      "kind": "conversation",
+      "language": "en"
+    }
+  ],
+  "requests": 17,
+  "schema": "baxy.first-signal-latency.v1",
+  "silent_turns": 0,
+  "targets": {
+    "p50_maximum": 1.0,
+    "p95_maximum": 2.0
+  }
+}

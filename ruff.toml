@@ -1,0 +1,21 @@
+target-version = "py312"
+include = [
+    "main.py",
+    "scripts/**/*.py",
+    "src/baxy_mind/**/*.py",
+    "tests/**/*.py",
+    "experiments/mind_llm_tournament/**/*.py",
+    "experiments/mind_router_spike/**/*.py",
+]
+force-exclude = true
+extend-exclude = [
+    "artifacts",
+    "experiments/**/.venv",
+    "experiments/technology_tournament",
+    "legacy",
+]
+
+[lint]
+# Pyflakes covers unused imports/locals plus undefined and duplicate bindings
+# without imposing unrelated formatting preferences on the historical corpus.
+select = ["F"]

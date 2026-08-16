@@ -1,0 +1,96 @@
+{
+  "schema": "baxy.qbyt-contextual-development.v9",
+  "measuredAtUtc": "2026-08-07T21:48:54.288085+00:00",
+  "scope": "opened_human_development_exact_fusion_view_qbyt",
+  "sources": {
+    "expandedCorpusManifestSha256": "8c505d4abbf092404f71aa9c313ff2b4054a8c15f68721bbb4ccdae076a9c2b2",
+    "stage1ModelSha256": "dadb657e6ea0ea0241bc38130123b50bc63f08e6b99431393adc00b4eeb28921",
+    "ctcVerifierManifestSha256": "a0d699db419dc00ec5d7bf81090953081db3fdca6abaec8b22bce073af87710a",
+    "fusionManifestSha256": "87dd1534fdf9d513b5fc4ae58f4fc4dc8a4489452c554f362285e615a700b77d",
+    "priorContextualDevelopmentSha256": "2cdde35d554f088e6becbf76ea264deb4e7d66ca2453df4e1dd1a6704d32382c",
+    "failedNegativeRegressionSha256": "eaf6d578e8ce6e1ec8a1c3a039da4e808ca99fc2bade099922cb5223fff5a741",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf"
+  },
+  "policy": {
+    "sentinelStage1Threshold": 0.01,
+    "fusionViewStartSamples": [
+      40000,
+      64000
+    ],
+    "contextualWakeTerms": [
+      "baxy",
+      "baxi",
+      "basi",
+      "bakse"
+    ],
+    "contextualHotwordScore": 5.0,
+    "failedRegressionUsedForAggregateSelection": true
+  },
+  "policySummaries": {
+    "currentFullHot": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "fullDualDecode": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "sameViewHot": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "fullAndSameViewHot": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "sameViewDualDecode": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "twoViewHotConsensus": {
+      "positiveHits": 2,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "sameViewQbyT": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    }
+  },
+  "developmentEligiblePolicies": [
+    "sameViewHot"
+  ],
+  "runtimeSeconds": 23.76198830001522,
+  "expandedHumanDevelopmentAudioAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "audioTranscriptsOrFilenamesRetained": false,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "effectsExecuted": 0,
+  "qbytContract": {
+    "candidateSha256": "4fb8519351decf74c958256c7fe5b48af2872ce4a89f8a1441d9e4ab05660781",
+    "sameExactFusionView": true,
+    "selectedAfterOpened100hContextualFailure": true,
+    "freshHoldoutClaimSupported": false
+  }
+}

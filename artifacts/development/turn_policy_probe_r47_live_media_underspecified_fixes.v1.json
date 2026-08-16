@@ -1,0 +1,109 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_live_media_underspecified_fixes.v1.raw.jsonl",
+    "sha256": "4c1dadefb6f45ac4c5499c6e313c71ac7a6144ba3bdf1b5248f4f592b29f0c8e"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:4449",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-7c541c8b62e9622436614b3d",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0409,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9630",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-aa38011c2e6db84872debe14",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0323,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:6557",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3e436834f84598c4086509ac",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0043,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14505",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-bac351a16849a6792c3f431d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.6765,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El actual primer ministro de Rusia es Mikhail Mishustin. Fue nombrado en 2022 y ha sido ministro de economía y desarrollo. Su cargo lo ocupa desde el 2022.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T19:54:11.267708+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 4,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

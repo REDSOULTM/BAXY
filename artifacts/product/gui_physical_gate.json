@@ -1,0 +1,63 @@
+{
+  "schema": "baxy-gui-physical-gate-v1",
+  "measured_at": "2026-07-20T13:40:28.5575340+00:00",
+  "status": "passed",
+  "application": {
+    "path": "D:/BAXY/source/src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.exe",
+    "window_title": "BAXY",
+    "window_visible": true,
+    "catalog_operations": 155,
+    "baxy_process_observed": true,
+    "core_process_observed": true,
+    "mind_process_observed": true
+  },
+  "cases": [
+    {
+      "message": "que hora es",
+      "latency_seconds": 1.657,
+      "response": "La fecha local es 20/07/2026 y la hora local es 09:27.",
+      "passed": true
+    },
+    {
+      "message": "cuanta RAM tengo",
+      "latency_seconds": 1.74,
+      "response": "RAM: 3.2 GiB disponibles de 15.4 GiB.",
+      "passed": true
+    },
+    {
+      "message": "que mouse tengo",
+      "latency_seconds": 3.387,
+      "response": "Mouse y dispositivos apuntadores detectados: SuperDisplay HID Driver, ELAN1203 (I2C HID Device).",
+      "operation_latency_seconds": 0.983,
+      "operation_authority": "windows_pnputil_connected_parent_registry",
+      "passed": true
+    },
+    {
+      "message": "multiplicá 6 por 7",
+      "latency_seconds": 1.484,
+      "response": "42",
+      "passed": true
+    },
+    {
+      "message": "presiona Escape",
+      "latency_seconds": 2.558,
+      "response": "Listo, Windows aceptó la tecla en la ventana activa.",
+      "input_authority": "win32_sendinput_return_count",
+      "passed": true
+    },
+    {
+      "message": "¿Cuál es la capital de Japón? Responde en una frase.",
+      "latency_seconds": 11.208,
+      "response": "La capital de Japón es Tokio.",
+      "local_llm_inference": true,
+      "passed": true
+    }
+  ],
+  "llm": {
+    "process_path": "D:/BAXYRuntime/assets/llama-b9980-cuda12.4/llama-server.exe",
+    "listening": "127.0.0.1:56655",
+    "loopback_only": true
+  },
+  "input_authority": "win32_sendinput_return_count",
+  "easy_queries_under_four_seconds": true
+}

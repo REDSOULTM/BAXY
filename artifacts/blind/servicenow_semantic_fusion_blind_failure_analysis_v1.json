@@ -1,0 +1,81 @@
+{
+  "schema": "baxy.servicenow-semantic-fusion-blind-failure-analysis.v1",
+  "analyzedAtUtc": "2026-08-11T06:01:37.560608+00:00",
+  "status": "candidate_rejected",
+  "evidence": {
+    "evaluation": {
+      "path": "artifacts/blind/servicenow_semantic_fusion_blind_v1.json",
+      "sha256": "6480df05fceefca870f65af4afb580365299bce855013e34c0cc6d5b36b27bbc"
+    },
+    "detail": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/servicenow_semantic_fusion_blind_v1.detail.json",
+      "sha256": "fa3c92990abc2e8a2fd8ff4f1504a3dff74f199cfbe131430924986c30399cfc",
+      "storedOutsideRepository": true
+    }
+  },
+  "gate": {
+    "failedChecks": [
+      "criticalAnchorRecall"
+    ],
+    "passedChecks": [
+      "clarificationUtility",
+      "corpusWer",
+      "decodeErrors",
+      "effectsExecuted",
+      "englishReferenceErrorRate",
+      "expectedCases",
+      "initialSignalLatencyP95",
+      "nonemptyRate",
+      "peakRss",
+      "semanticFinalizationLatencyP95",
+      "semanticRealTimeFactorP95",
+      "spanishReferenceErrorRate"
+    ],
+    "criticalAnchorRecall": 0.869048,
+    "minimumCriticalAnchorRecall": 0.99,
+    "corpusWer": 0.066102,
+    "initialSignalLatencyP95Seconds": 1.2764773000089917
+  },
+  "failureMechanism": {
+    "criticalAnchors": 336,
+    "primaryPreserved": 273,
+    "semanticPreserved": 292,
+    "primaryRecall": 0.8125,
+    "semanticRecall": 0.869048,
+    "fusionRecovered": 19,
+    "fusionLost": 0,
+    "remainingMisses": 44,
+    "casesWithRemainingMisses": 32,
+    "remainingMissesBySurfaceClass": {
+      "named": 27,
+      "numeric": 6,
+      "uppercase": 11
+    },
+    "distinctMissedSurfaces": 33,
+    "repeatedMissOccurrences": 16,
+    "singleOccurrenceMisses": 28,
+    "secondaryTriggeredCases": 0,
+    "diagnosis": "primary_decoder_entity_and_identifier_recall_is_the_limiting_stage;semantic_fusion_improved_recall_without_erasing_any_preserved_anchor;postal_only_secondary_routing_did_not_cover_the_remaining_entity_surface"
+  },
+  "decision": {
+    "candidatePromoted": false,
+    "sameBlindPartitionMayBeUsedForTuning": false,
+    "sameBlindPartitionMayBeReevaluatedForPromotion": false,
+    "requiredNextArchitecture": "catalog_derived_entity_recovery_or_constrained_decoding_calibrated_on_independent_development_data_then_measured_on_a_new_disjoint_blind_oracle"
+  },
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "generator": {
+    "path": "experiments/stt_quality/analyze_servicenow_semantic_fusion_blind_failure.py",
+    "sha256": "cfa025201edd2287efc36d64c6e86b1e0af2b5cd1186d5cdad3996209b4a866a"
+  },
+  "effectsExecuted": 0
+}

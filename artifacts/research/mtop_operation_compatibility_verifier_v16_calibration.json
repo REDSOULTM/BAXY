@@ -1,0 +1,50 @@
+{
+  "argmax": {
+    "compatible_accuracy": 0.992784125,
+    "incompatible_accuracy": 0.989176188,
+    "threshold": 0.5
+  },
+  "data": {
+    "compatible_pairs": 1663,
+    "incompatible_pairs": 1663,
+    "operations": 14,
+    "utterance_text_persisted": false
+  },
+  "measured_at": "2026-08-02T19:07:44.109034+00:00",
+  "schema": "baxy.mtop-operation-compatibility-calibration.v1",
+  "scope": "development_validation_only_mtop_test_remains_sealed",
+  "score_quantiles": {
+    "compatible": {
+      "0.0": 7.8896e-05,
+      "0.01": 0.971746601,
+      "0.05": 0.999947917,
+      "0.5": 0.999994636,
+      "0.95": 0.999995947,
+      "0.99": 0.999996185,
+      "1.0": 0.999996543
+    },
+    "incompatible": {
+      "0.0": 2.3383e-05,
+      "0.01": 2.6109e-05,
+      "0.05": 2.9382e-05,
+      "0.5": 4.6765e-05,
+      "0.95": 0.000167876,
+      "0.99": 0.602655113,
+      "1.0": 0.999981999
+    }
+  },
+  "selected": {
+    "compatible_accuracy": 0.992784125,
+    "incompatible_accuracy": 0.991581479,
+    "minimum_accuracy": 0.991581479,
+    "threshold": 0.906282544
+  },
+  "source": {
+    "checkpoint": "D:\\BAXYRuntime\\experiments\\mtop-operation-compatibility-verifier-v16",
+    "mtop_development_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "mtop_manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "mtop_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "mtop_test_content_read": false
+  },
+  "status": "candidate"
+}

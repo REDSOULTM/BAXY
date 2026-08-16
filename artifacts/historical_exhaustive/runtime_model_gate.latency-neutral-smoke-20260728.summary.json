@@ -1,0 +1,41 @@
+{
+  "schema": "baxy-latency-neutral-smoke-summary-v1",
+  "measured_at_utc": "2026-07-29T03:20:40Z",
+  "runtime_fingerprint": "b7e7ebe9ce4cc3a13a92e4826e84f4046aff4dc182608c3dbf8e6ae86fe04d98",
+  "selection": {
+    "source_unique_runtime_cases": 14845,
+    "shards": 16,
+    "maximum_pending_model_cases_per_shard": 10,
+    "written_records": 4045,
+    "out_of_scope_language_records": 3318,
+    "target_language_records": 727,
+    "live_model_turns": 147
+  },
+  "status_counts": {
+    "pass_app_direct_operation_family": 534,
+    "pass_no_effect": 48,
+    "review_clarification": 45,
+    "missed_operation": 35,
+    "pass_safe_clarification": 30,
+    "review_unresolved_oracle": 18,
+    "pass_operation_family": 9,
+    "invalid_conversation": 5,
+    "false_effect": 3
+  },
+  "live_turn_latency_seconds": {
+    "mean": 9.122,
+    "p50": 7.422,
+    "p95": 19.5,
+    "maximum": 19.531,
+    "note": "Shared two-worker exhaustive-gate latency includes complete turn and optional planning; it is not the owned-sidecar phase benchmark."
+  },
+  "execution": {
+    "completed_shards": 14,
+    "aborted_shards": [
+      8,
+      13
+    ],
+    "abort_reason": "plan_contract_failure",
+    "certification_status": "not_a_full_green_certification"
+  }
+}

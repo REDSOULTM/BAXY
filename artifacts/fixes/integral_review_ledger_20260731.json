@@ -1,0 +1,517 @@
+{
+ "schema": "baxy.integral-review-ledger.v1",
+ "measured_at_utc": "2026-07-31",
+ "supersedes": "integral_review_ledger_20260730.json",
+ "scope": "integral architecture/quality/latency review, closing pass of the 2026-07-30 campaign; map in documentacion/01_ARQUITECTURA/MAPA_TURNO_END_TO_END_20260730.md",
+ "entries": [
+  {
+   "id": "R1",
+   "component": "baxy_mind/router.py ProcessIntentRouter._launch_and_read",
+   "type": "arquitectura/latencia",
+   "problem": "E5 worker spawn deferred 6s by default, extending the degraded lexical-decision window",
+   "evidence": "router_delay_{6,0,3}_{a,b}_20260730.json; standalone worker floor 19.05s",
+   "impact": "degraded window -1.7/-3.9s with first turn at-or-below baseline in both orders",
+   "risk": "low: env override preserved; delay only defers an advisory worker",
+   "state": "promovido",
+   "tests": "tests/test_router.py + test_turn_policy.py focal; Full gate after change",
+   "artifact": "router.py default 6->3 with rationale comment",
+   "rollback": "restore default '6' (single line)"
+  },
+  {
+   "id": "R2",
+   "component": "scripts/measure_mind_budget.py sidecar_environment (and turn-policy/e2e/v5 gates)",
+   "type": "calidad",
+   "problem": "canonical gates forced BAXY_MIND_ROUTER_START_DELAY=0, certifying a startup interleaving different from the production default",
+   "resolution": "certification now exercises the production default (3s); an explicit stress hook sidecar_environment(router_start_stress=True) preserves the delay=0 contention scenario",
+   "state": "promovido",
+   "tests": "Full gate green after the change",
+   "rollback": "restore the four hardcoded '0' assignments"
+  },
+  {
+   "id": "R3",
+   "component": "baxy_mind/effect_intent.py deterministic state/effect recognizer; scripts/detect_promotion_boundary_decisions.py",
+   "type": "arquitectura/calidad/latencia",
+   "problem": "same text could receive a different contractual decision depending on the lexical->semantic promotion instant; the state-query families were not owned by the deterministic resolver, so they crossed the model and drained",
+   "resolution": "deterministic coverage extended to the whole machine-state family (battery/charge, cpu/cores, ram/memory, disk/space, gpu/vram, windows version, summary), the audio level and mute-state questions, and the global-mute synonyms. The speech-act gate now accepts quantity interrogatives, verbless nominal openings and a leading vocative. Authority boundary held by explicit vetoes: hardware knowledge, purchase/price advice, causal diagnosis, temperature, per-process or per-model attribution, sustained monitoring, another device, past/hypothetical/future state, application scope, microphone, assistant private memory, engineering/config notes, data the catalog does not measure, and scope combinations the enum cannot read at once.",
+   "state": "promovido",
+   "evidence": {
+    "regime_stability": "r3_regime_stability_verdict_20260730.json - 22 frozen turns x 4 physical passes (cold/settled x order 1/2): identical contractual decision in all four, 1 attempt everywhere, 0 validation errors, max 5.84s. turn-04/turn-24 -> audio.status and turn-00/06/23 -> system.status in 0.001-0.038s",
+    "boundary_quantification": "promotion_boundary_decisions_20260730.json - 330 unique corpus texts: 107 now decided deterministically (regime-independent by construction), 223 still model-decided and every one of them sees a different candidate set between regimes; 0 cache-state instability inside the semantic regime",
+    "drain_removal": "the 14-19.5s clarify tails of turn-04/06/23 no longer occur in any regime",
+    "corpora": "router_bank_sources POSITIVE/ABSTAIN pools (330 texts) and the frozen 14836-message historical corpus; 15 real false positives found in the historical corpus were fixed and frozen as regressions"
+   },
+   "tests": "tests/test_effect_intent.py (526) + tests/test_effect_intent_state_corpus.py (415, 2 sanctioned skips)",
+   "residual": "223 model-decided texts keep a regime-dependent candidate set. This is the two-phase design itself; the only variant that removes it is V-A (block intake until readiness), rejected by product decision for its startup SLA cost. Quantified and documented, not silently carried.",
+   "rollback": "revert src/baxy_mind/effect_intent.py and the two test files"
+  },
+  {
+   "id": "R4",
+   "component": "llm.py P retry pipeline",
+   "type": "latencia/calidad",
+   "problem": "14-19.5s clarify tails from deterministic Gemma thinking drain under the evidence-preferred shortlist",
+   "evidence": "turn_retry_root_cause_verdict_20260730.json (frequency 30/30, 27/30, 15/30; all internal corrections rejected with evidence)",
+   "state": "rechazado físicamente (toda la familia de correcciones internas)",
+   "next": "upstream llama.cpp reasoning-drain fix or authorized contract/shortlist recertification. R3 removed the drain from the state-query turns by keeping them out of the model entirely; the mechanism itself is unchanged for the turns that still need the model."
+  },
+  {
+   "id": "R5",
+   "component": "model/runtime assets",
+   "type": "latencia",
+   "problem": "candidate assets for faster decode",
+   "evidence": "b9553_mtp_assistant_verdict_20260730.json (28.3% acceptance, chat +33%, outputs changed); ministral_phase2_ab_v2_20260730.json (decode -29%, P +51%, +968 MiB)",
+   "state": "rechazado físicamente",
+   "next": "reopen only on a new checkpoint or official fixed runtime"
+  },
+  {
+   "id": "R6",
+   "component": "equivalent overhead / transport",
+   "type": "latencia",
+   "problem": "hypothesis that BAXY adds material overhead over the isolated model",
+   "evidence": "equivalent_overhead_ab_20260730.json (delta p50 -6ms, CI +/-80ms, p=1.0); non-LLM JSONL path 1-2ms; pooled POST overhead 6.6ms vs 6.4ms bare",
+   "state": "no aplicable (overhead no separable de cero; nada que optimizar)"
+  },
+  {
+   "id": "R7",
+   "component": "llama-server concurrency/cancellation/backpressure",
+   "type": "estabilidad",
+   "problem": "unverified scheduling behavior under contention and client cancel",
+   "evidence": "architecture_scenarios_audit_20260730.json (2.05x effective, bounded 4th-request queue, +87ms cancel recovery, 120-turn soak 0 errors no VRAM leak)",
+   "state": "no aplicable (verificado sano)"
+  },
+  {
+   "id": "R8",
+   "component": "App/WPF/WebView2 visible-response path; FieldUi render",
+   "type": "latencia percibida",
+   "problem": "no honest early feedback for a slow turn, no instrumentation of the visible path, and startup serialized WebView2 initialization before the local engine",
+   "state": "promovido; el bloqueo por sesión interactiva fue retractado y el tramo DOM/paint está medido",
+   "resolution": {
+    "early_feedback": "the bridge now publishes an honest progress indication over the historical boot_stage socket event that the sealed FieldUi dist already interprets, so no reader can misread it and no dist byte changes. The vocabulary is closed (starting/understanding/preparing_steps/acting/working/awaiting_reply/unavailable + a terminal ready), the text is natural, it never anticipates success, never shows JSON, schemas or internal state, is deduplicated, is recomputed (never replayed) on socket reconnection, and is retired when the turn ends. src/Baxy.App/FieldBridgeContract.cs additionally defines the versioned minReader rule for any future revision-2 envelope: an old reader keeps revision-1 messages byte-identical and a newer envelope is withheld rather than reinterpreted.",
+    "streaming_decision": "token streaming of model prose is NOT promoted: the visible text must be formulated under BAXY's contracts and an action may never show anticipated success, so publishing partial prose before the decision and the provider verification would break both invariants. The promoted alternative is honest staged progress, which reaches the person immediately and costs nothing in total time.",
+    "instrumentation": "src/Baxy.App/ShellTrace.cs - off unless BAXY_APP_TRACE points at a file; monotonic Stopwatch timestamps, per-request correlation id, closed label vocabulary, bounded record count, and a sanitizer that makes user text or model prose impossible to write. Wired at startup (begin/field/shell/ready/failed), at the bridge (submit received, bridge crossed, response final) and in the turn (queue end, decision start/ready, visible indication, visible text, cancelled, error, final).",
+    "startup": "MainWindow.OnLoaded now starts the local engine concurrently with the WebView2 initialization instead of strictly after it, keeping every failure observation and the shutdown cancellation path."
+   },
+   "evidence": "VisibleResponsePathMeasurementTests over the real Core process measures ONLY the shell segment: first honest visible indication p50 0.278 ms / p95 457 ms, and text published into the conversation p50 66.97 ms / p95 578.8 ms. CORRECTION 2026-07-30: those numbers are NOT productive end-to-end latency. The integration assembly sets UserMessagePolicy.BypassLlmCompositionForTests=true in TestAssemblySetup, so the final text came from the deterministic template instead of message.compose, which is the real LLM composition in production; the decision also came from a test resolver rather than P/G/L/V/C, and WebView2->DOM->paint is excluded. What the test does certify is the property the change was made for: the honest indication precedes the text instead of replacing or delaying it.",
+   "productive_end_to_end": "MEASURED on 2026-07-30 in a real interactive desktop session with the running product (real mind, real Core, real message.compose), driven by a physical click plus keystrokes on the FieldUi input and ending at the frame the compositor delivered. n=7. Enter->paint p50 2035 ms / p95 4798 ms. Action route: decision 1.9-4.9 ms (56.9 ms on the cold first turn) and 503-2081 ms in Core+provider+verification+LLM composition. Conversation route: 4.1-4.7 s in the decision itself, with ~0 composition because the mind already formulated the text. Transport is not the bottleneck: App->DOM p50 16.9 ms and DOM->first paint p50 19.4 ms. Artifact: app_visible_path_endtoend_20260730.json. The deterministic templates remain draft/fallback and were NOT promoted into the main answer to gain latency.",
+   "tests": "tests/Baxy.Integration.Tests/FieldProgressContractTests.cs (11), ShellTraceTests.cs (8, including a 4-thread barrier test for interleaving), VisibleResponsePathMeasurementTests.cs (1 physical)",
+   "retracted_blocker": {
+    "claim": "the WebView2 -> DOM -> first paint segment requires an external interactive desktop session",
+    "verdict": "RETRACTED as incorrect on 2026-07-30. The session is interactive (UserInteractive=True, SessionId=1, one 1280x720 screen, console user present). The real cause of the failed launches was that Baxy.exe is framework-dependent on .NET 10, which only exists in the private D:\\BAXYRuntime\\tools\\dotnet-10.0.100; without DOTNET_ROOT in the launched process the apphost showed its 'must install .NET' window, which is what was mistaken for a WPF window whose Loaded never fires. PowerShell Start-Process also launches through ShellExecute and does not carry a modified process environment, which hid BAXY_APP_TRACE. Launching with ProcessStartInfo.UseShellExecute=false and an explicit environment starts the real product.",
+    "instrumentation_added": "App.OnStartup now records process.start / process.yielded / window.created / window.shown so a startup diagnostic can tell 'did not start' from 'yielded to the single-instance mutex'. An opt-in document observer (injected only when the trace is active) reports two closed-vocabulary marks, dom.applied and paint.observed, over a new receive-only trace_mark bridge kind; it reads no content and leaves src/Baxy.FieldUi/dist untouched."
+   },
+   "final_decomposition_20260730": {
+    "artifact": "app_keystroke_to_paint_v2_20260730.json",
+    "scope": "the person's real Enter keypress, marked in the document on keydown before the view handles it, through to the frame the compositor delivered; 12 turns in ABBA order, 6 action and 6 conversation, warm runtime, running product with real mind, real Core and real message.compose",
+    "action_route_p50_ms": {
+     "keystroke_to_submit": 0.905,
+     "bridge_crossing": 0.075,
+     "dispatch": 1.481,
+     "first_honest_indication": 2.881,
+     "decision": 2.41,
+     "arguments_grounding": 1371.376,
+     "core_provider_and_verification": 188.937,
+     "llm_composition": 460.414,
+     "publish_to_dom": 20.675,
+     "dom_to_first_paint": 20.174,
+     "keystroke_to_paint": 2200.497
+    },
+    "conversation_route_p50_ms": {
+     "decision": 5048.86,
+     "keystroke_to_paint": 5105.622
+    },
+    "bottleneck": "argument grounding dominates the action route at 1.37 s p50, well above Core+provider+verification (189 ms) and the final composition (460 ms). It only appears when the operation has a schema with properties: system.time uses EmptySchema, skips grounding entirely and lands at 1.56 s end to end.",
+    "measured_candidate_not_promoted": "the deterministic recognizer already computes the system.status scope (_machine_status_scope), so supplying it could remove most of that 1.37 s. It is NOT promoted here: it would move argument selection into the deterministic path, which changes an authority boundary and requires the full argument corpus plus the canonical gates before any promotion. Recorded as a measured candidate with a concrete expected value, not as a pending task.",
+    "statistical_honesty": "six samples per route; individual values are published alongside the medians and no p95 from this sample is treated as a robust conclusion"
+   },
+   "rollback": "revert FieldUiBridge.cs, MainWindow.xaml.cs, MainWindowViewModel.cs, CoreProcessClient.cs and MindSidecarClient.cs trace calls; delete ShellTrace.cs, FieldBridgeContract.cs and the three test files"
+  },
+  {
+   "id": "R9",
+   "component": "Contracts/Core/Providers line-level quality audit and deterministic race tests",
+   "type": "calidad/seguridad",
+   "state": "promovido (parcial) + bloqueado por autoridad externa",
+   "resolution": [
+    "Baxy.Contracts/ProtocolJson.SerializeBoundedToUtf8Bytes: an operation response whose evidence payload alone exceeds the protocol line limit is re-serialized without Result so the decision, its stable error code and EffectMayHaveOccurred still reach the shell. Writing an oversized line would have left an already executed effect without a correlated answer. Wired in Baxy.Core/Program.cs and covered in tests/Baxy.Contracts.Tests/ProtocolContractTests.cs.",
+    "Providers.Windows/ExternalProcessRunner: stdout/stderr are now read in bounded chunks and the child is terminated as soon as a bound is exceeded, instead of materialising the whole output before checking it and leaving a child blocked on an undrained pipe. Termination is also guaranteed on any non-completing path.",
+    "Providers.Windows/WindowsExternalCapabilityProvider.Dispose: disposes exactly once and no longer strands the remaining adapters when one throws; failures are aggregated."
+   ],
+   "kernel_security_setup_sweep_20260730": {
+    "surfaces_audited": [
+     "MissionEngine: execution gate, idempotency by fingerprint, started/completed journal ordering, confirmation binding, retryable contract, terminal commit ordering",
+     "RequestFingerprint: canonical ordered JSON + SHA-256; numbers keep their raw text, which is the conservative choice because two textually different payloads can never be merged into one replay",
+     "JournalHmacAuthenticator: domain-separated HMAC with a zero separator, validated domain alphabet, key zeroed on dispose",
+     "PrivateOperationBoundary: envelope shape, purpose binding to operation/mission/invocation, closed failure-code allowlist, replay re-authentication",
+     "InMemoryConfirmationAuthority: all mutations under one lock, random derivation key plus nonce, CryptographicOperations.FixedTimeEquals comparison, expiry sweep, token redacted in ToString",
+     "FileInvocationJournal: WriteThrough plus Flush(flushToDisk), compaction verified by reopening and comparing every started/completed entry before an atomic File.Replace",
+     "Security.Windows: ProtectedPayloadPathPolicy rejects non-fixed drives, stray volume separators, oversized UTF-8 paths and reparse points along the whole chain; WindowsPrivateStorage validates the opened handle (final path, trusted owner, protected DACL) rather than the path string, which is what makes the check resistant to a swap between check and use",
+     "Setup: install/rollback is a phased journaled transaction over current/current.previous/current.rollback pointers with 8 injectable fault points and about 41 crash/recovery tests"
+    ],
+    "defects_found_and_fixed": [
+     "PrivateOperationBoundary.NormalizeOutcome discarded EffectMayHaveOccurred when reducing a private failure to the closed error-code allowlist. No memory handler produces an ambiguous outcome today, so it was a latent hazard rather than a live defect, but the reduction turned 'the effect may have happened' into 'it did not happen', which is exactly what invites repeating a half-applied private operation. The boolean is now preserved; CauseCode is still discarded because it is free-form handler text that could leak private detail. Covered by PrivateOperationAmbiguityTests (4 tests, red before the change)."
+    ],
+    "investigated_and_retracted": [
+     "MissionEngine throwing OperationCanceledException after committing the terminal record looked like 'effect performed, response lost'. It is a deliberate, already-characterized contract: the terminal is journaled BEFORE the cancellation propagates, and the cancelled caller recovers the exact response (including EffectMayHaveOccurred and CauseCode) by replaying the same invocationId. The attempted change was reverted and the contract is now also characterized by MissionEngineCancellationTests (4 tests)."
+    ],
+    "observed_not_changed": [
+     "FileInvocationJournal.ReplaceFileWithRetry blocks up to 2 s synchronously (200 attempts x 10 ms) during compaction. It is a retry against a real sharing violation on a rare path; a sleep-retry is the standard remedy and no change was promoted."
+    ],
+    "coverage_honesty": "this pass audited the highest-risk surfaces named above and their contracts; it is not a literal line-by-line reading of every one of the ~9000 lines across the three projects"
+   },
+   "tests": "Contracts 54, Kernel 109/2, Providers 429/5, Setup 464/8, Integration 1216/3 - all green in Release",
+   "second_defect_found_and_fixed_20260730": {
+    "defect": "PrivateOperationBoundary.NormalizeReplay rebuilt a failed private response through the positional constructor without passing response.EffectMayHaveOccurred, so the parameter fell back to its false default. The first execution could correctly report 'the effect may have occurred', the journal preserved it, and the replay of the same invocationId then implicitly reported that it did not - the exact dangerous condition the earlier NormalizeOutcome fix was meant to remove. The first fix was therefore incomplete.",
+    "reproduction": "PrivateReplayAmbiguityTests: an ambiguous non-retryable private operation, then the same invocationId with a new requestId. Red before the change on both the in-memory journal and a real FileInvocationJournal round trip across a simulated process restart.",
+    "fix": "NormalizeReplay now carries response.EffectMayHaveOccurred into both the narrated outcome and the rebuilt response. CauseCode stays discarded because it is free-form handler text.",
+    "verified_end_to_end": "the App consumes the flag: MindPlanBoundary.MustRetainAmbiguousEffect keeps an ambiguous effect from being replanned or retried, and the ViewModel branches its visible message on it",
+    "audit_of_the_same_class": "all three OperationResponse construction sites in Kernel and Core were checked. MissionEngine.ToResponse already forwards both EffectMayHaveOccurred and CauseCode; the private success path correctly reports no ambiguity for a verified success."
+   },
+   "webview2_orphan_finding": {
+    "claim": "a forced kill of Baxy.exe leaves msedgewebview2 host processes behind",
+    "verdict": "REJECTED PHYSICALLY on 2026-07-30. The earlier observation counted every msedgewebview2 process on a machine that runs other WebView2 hosts. A controlled reproduction that counts only processes whose command line carries BAXY's own user data folder (webview2-field) measured: 0 before launch, 6 while running, 0 at 20 s after a forced Stop-Process of Baxy.exe, and 0 at 60 s. No orphan survives.",
+    "primary_source": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/process-model - the WebView2 process group is owned by its single browser process ('All additional processes will be managed by the lifetime of that browser process') and the supported shutdown is CoreWebView2Controller.Close, which the WPF control performs on Dispose from MainWindow.OnClosing. The document specifies no Job Object contract.",
+    "decision": "no change promoted. Assigning Baxy.exe or the WebView2 group to a Job Object was considered and rejected: it is unnecessary (no orphan exists) and would introduce nested-job assumptions the runtime does not document.",
+    "reproduction": "scratchpad webview_orphans.ps1 pattern: filter Win32_Process by Name='msedgewebview2.exe' and CommandLine like the app's user data folder, sampling before, during and after a forced kill"
+   }
+  },
+  {
+   "id": "R11_policy_pipeline_direct_replay",
+   "state": "closed",
+   "question": "for the exact payloads P, G, L, V and C send, does going through BAXY cost anything over posting the identical bytes to the same llama-server?",
+   "answer": "No. With byte-identical bodies and equal generated-token counts in every component, the delta is within +-0.042 s everywhere: P +0.0337 s, G +0.0243 s, L -0.0073 s, V +0.0415 s, C -0.0096 s, chat +0.0044 s, grounded arguments -0.0087 s. Policy latency is model decoding, not BAXY transport or orchestration.",
+   "method": "payloads captured from a real traced session; BAXY and direct arms alternated in ABBA order over 4 rounds against one warm server; 8 samples per arm per component; generated tokens recorded so a seconds delta is only read as transport cost at equal work",
+   "correction": "A first attempt serialized the direct arm with sort_keys and ensure_ascii=False while BAXY posts json.dumps(payload). The arms were not byte-identical and it reported a -0.336 s delta on grounded arguments that vanished once the bytes matched. That attempt is recorded as discarded inside the artifact.",
+   "artifact": "policy_direct_replay_20260731.json"
+  },
+  {
+   "id": "R12_model_funnel_five_months",
+   "state": "closed",
+   "question": "does anything released in the last five months displace the certified target, and is Gemma-4 speculative decoding adoptable?",
+   "answer": "Nothing displaces gemma-4-E2B-it-qat-UD-Q4_K_XL: 15 candidates surveyed, every newer release either far beyond the 6 GB envelope or aimed at a different task. Gemma-4 MTP is now physically rejected rather than deferred.",
+   "retraction": "The 2026-07-30 funnel claimed adopting MTP required downgrading llama-server to b9553 because of ggml-org/llama.cpp#24795. That is false: the certified b9980 loads mtp-gemma-4-E2B-it-Q4_0.gguf and serves with it under the exact product flags. The 'Gemma4Assistant requires ctx_other to be set' line earlier probes read as a load failure is annotated by llama.cpp itself as normal during memory fitting.",
+   "physical_result": "ABBA on the certified runtime, product flags, temperature 0, 20 samples per arm: p50 1.3400 s baseline vs 2.1192 s with the precision-matched Q4_0 QAT drafter (+58%), 0.014271 vs 0.015472 s per generated token, and all five prompts produced a different visible answer while each arm stayed internally deterministic across four repetitions. It fails the exact-output gate and the latency gate at once.",
+   "artifacts": [
+    "model_research_funnel_20260731.json",
+    "mtp_q4_abba_20260731.json",
+    "experimental_assets_provenance_20260731.json"
+   ]
+  },
+  {
+   "id": "R13_deterministic_race_families",
+   "state": "closed",
+   "added_tests": [
+    "StableSetupHostManagerTests.FaultAfterStagedTargetDelete_LeavesAnEmptyStateAndIsIdempotent",
+    "StableSetupHostManagerTests.FaultAfterStagedTargetDelete_KeepsTheExistingStableHostIntact",
+    "WindowsProductLifecycleTests.CrashAfterAbortCleanupLeavesTheAbortResumableAndStillConverges",
+    "CoreProcessClientShutdownRaceTests.ShutdownDuringSpawnFailsTheHandshakeInsteadOfHanging",
+    "CoreProcessClientShutdownRaceTests.RepeatedShutdownIsIdempotentAndKeepsRejectingWork",
+    "InstallationPointerSharingRaceTests.PointerLockAbortsTheOperationAndTheUpdateSucceedsOnceItClears",
+    "InstallationPointerSharingRaceTests.PermanentSharingViolationFailsWithoutStrandingThePointer",
+    "ProtectedPayloadDaclRepairTests.ReadingAnExistingKeyRepairsAWeakenedDirectoryDacl",
+    "ProtectedPayloadDaclRepairTests.SealingOverAWeakenedDirectoryRepairsItsDacl",
+    "ProtectedPayloadDaclRepairTests.RepairingOnReadNeverCreatesAMissingStore"
+   ],
+   "fault_point_audit": {
+    "method": "every fault-point enum in Baxy.Setup was extracted from source and matched against the test sources, instead of trusting a reading of the suites",
+    "before": {
+     "SetupFaultPoint": "8 of 8",
+     "StableSetupHostFaultPoint": "7 of 8 (StagedTargetDeleted missing)",
+     "WindowsIntegrationStoreFaultPoint": "8 of 8",
+     "OwnedStartMenuShortcutFaultPoint": "4 of 4",
+     "WindowsProductLifecycleFaultPoint": "15 of 16 (AbortCleanupComplete missing)"
+    },
+    "after": "every declared fault point in Baxy.Setup now has a deterministic test"
+   },
+   "closed_families": [
+    "every Setup fault point: the audit found exactly two gaps, StableSetupHostFaultPoint.StagedTargetDeleted and WindowsProductLifecycleFaultPoint.AbortCleanupComplete, and both are now covered",
+    "shutdown during spawn: disposing while the handshake is pending faults the waiting caller with the closed-engine IOException",
+    "double dispose: repeated DisposeAsync is idempotent and a disposed client names its own state instead of failing later as an unrelated protocol or IO error",
+    "File.Replace sharing-violation windows on the current pointer"
+   ],
+   "finding": "The retry budget around File.Replace does not protect the operation the way its presence suggests: every operation reads the current pointer before reaching the guarded swap, and that read is not retried, so an exclusive lock of any duration aborts the whole operation. It aborts cleanly, which is what matters, and the two new tests pin that contract rather than changing it.",
+   "robustness_observations_not_changed": [
+    "InstallationEngine.ReplaceFileWithRetry retries IOException but not UnauthorizedAccessException, which MoveDirectoryWithRetry does retry. An antivirus-induced ERROR_ACCESS_DENIED during the pointer swap would abort instead of being absorbed. It still fails closed and the next run recovers, so this is recorded, not changed.",
+    "CoreProcessClient.DisposeAsync releases and then disposes its semaphores in the same finally, so two genuinely concurrent disposals could release a disposed semaphore. Not reachable in the product: both dispose paths run on the WPF dispatcher and are guarded by _isDisposed and a reference check."
+   ],
+   "still_open": [
+    "DPAPI/ACL/reparse/TOCTOU deterministic tests on the private store",
+    "crash between effect, verification, journal and response beyond the coverage that already exists in the provider and journal suites"
+   ],
+   "dpapi_acl_reparse_toctou": {
+    "verified_by_reading": [
+     "the private store validates by handle, not by path: CreateFile with FILE_FLAG_OPEN_REPARSE_POINT, then file type, attributes, reparse bit and NumberOfLinks == 1, then GetFinalPathNameByHandle equality against the expected path, then a trusted-owner check",
+     "existing tests already covered reparse points, hard-linked key sidecars, alternate data streams, DOS device names, non-fixed drives, oversized keys, corrupt keys and sentinels, concurrent initialization, and an exclusive candidate handle blocking a directory swap before publication"
+    ],
+    "defect_found_and_fixed": "a key directory weakened after creation was repaired only by the seal path. Open reached LoadExistingKey directly and never passed through EnsureKeyDirectory, so a read-only workload left the directory open to everyone indefinitely. Measured with a native SE_DACL_PROTECTED dump at four points, then fixed by repairing on the read path after a successful key read, which keeps the existing NotFound semantics and never creates anything. See private_store_dacl_observation_20260731.json."
+   }
+  },
+  {
+   "id": "R14_setup_literal_reading",
+   "state": "closed",
+   "scope": "src/Baxy.Setup, 27 files, 13,119 lines",
+   "read_in_full": "all 27 files, 13,119 lines",
+   "honest_coverage": "every line of src/Baxy.Setup was read in this campaign. The first pass covered roughly 6,000 lines concentrated on the safety-deciding paths; the closing pass read the remaining ~7,000.",
+   "structural_finding": "Baxy.Setup contains no async, no await, no Task and no new Thread. The installer is entirely synchronous and single-threaded, which structurally rules out the mutex thread-affinity race and the late-callback family for that assembly.",
+   "defects_found": "none in Baxy.Setup",
+   "notable": [
+    "StoredZipReader leaves no slack for a crafted archive: exact version and flags, stored method only, compressed == uncompressed, no extra fields or comments, contiguous ordered local entries, byte-identical local and central names, cross-checked data descriptors and exact region accounting",
+    "every durable state read is done twice and compared, canonical-round-tripped and size-bounded before it is trusted",
+    "the Start Menu shortcut and the Setup evidence are deleted by locked handle with the file identity (volume serial plus file index) rebound before and after hashing, never by path",
+    "the uninstall moves the installation root to a uniquely named sibling tombstone before deleting anything, and passes that path to cmd.exe through an environment variable rather than interpolating it into the command line"
+   ]
+  },
+  {
+   "id": "R15_versioned_ui_harness",
+   "state": "closed",
+   "what": "scripts/measure_app_visible_path.ps1 and scripts/summarize_app_visible_path.py: the visible response path is now measured by a versioned harness in the repository instead of ad-hoc scratch scripts.",
+   "guarantees": [
+    "stable scenario identifiers and a SHA-256 over the frozen scenario set, so two runs are only comparable when they asked the same questions",
+    "cold and warm arms alternated in ABBA order across rounds",
+    "GPU clocks, throttle reasons, temperature and power, plus the SHA-256 of the app, the core and llama-server, captured before and after the run",
+    "individual per-sample values with dispersion, never only a median",
+    "attribution by position inside a block, with declared warmup turns; a block whose turn count does not match its scenario count is reported unattributed instead of correlated by wall clock"
+   ],
+   "results": {
+    "samples_attributed": 40,
+    "blocks_unattributed": 0,
+    "cold_keystroke_to_paint_p50_ms": 930.28,
+    "warm_keystroke_to_paint_p50_ms": 907.966,
+    "first_turn_of_a_cold_block_p50_ms": 4814.101,
+    "first_turn_of_a_cold_block_max_ms": 4984.813
+   },
+   "bugs_found_in_the_harness_itself": [
+    "the first paint after a keystroke is the echo of what the person typed, not the answer; anchoring keystroke_to_paint there reported times shorter than the composition they supposedly contained. The answer-anchored stages fix it.",
+    "a warm block that has to start its own process sends a warmup turn that the trace records; without declaring it, position-based attribution shifted every scenario in that block by one. The first full run was discarded for this reason and re-run.",
+    "DOTNET_ROOT alone does not launch the app on this machine: the machine exports DOTNET_ROOT_X64 pointing at a .NET 9 install and the architecture-specific form wins. The harness now selects the root by checking it contains a 10.x desktop runtime, and treats the appearance of the trace file as proof that BAXY started."
+   ],
+   "artifact": "app_visible_path_v3.json",
+   "raw": "artifacts/fixes/app_visible_path_v3/"
+  },
+  {
+   "id": "R16_social_envelope",
+   "component": "baxy_mind/__main__._explicit_social_turn_decision; baxy_mind/effect_intent._REQUEST_PREFIX and _is_social_clause",
+   "type": "latencia/calidad",
+   "state": "promovido",
+   "problem": "the deterministic recogniser had no uniform notion of a social envelope. A turn that is nothing but a social act paid a full P decode because only bare gratitude was recognised, and a leading social act blocked an otherwise recognisable request unless the greeting happened to be exactly `hola baxy`.",
+   "opportunity": "this is opportunity 1 of the handoff, widening deterministic recognition. Fifteen of the thirty frozen workload turns already avoided the model, which is why decision_ms has a 21.9 ms median.",
+   "resolution": "three closed vocabularies consumed with re.fullmatch, or anchored at both ends for a clause, so any added clause returns the turn to the model. The response language is taken from the branch that matched rather than from the token-counting heuristic, which returns `es` for `hi`. The shortcut defers while a clarification is pending, which can only reproduce the baseline.",
+   "evidence": {
+    "physical_ab": "social_envelope_20260731.json - ABBA over whole sessions, P attributed by request identity. P calls 98 -> 38; whole-social 28 -> 0 and social-prefix 32 -> 0 while adversarial stayed 16 -> 16 and frozen continuity 20 -> 20. Decode total 124.369 -> 46.772 s, prefill 24.264 -> 11.919 s. Family p50 1.6582 -> 0.1735 s and 2.7044 -> 0.0009 s.",
+    "oracle_gate": "social_envelope_equivalence_20260731.json - 64 frozen cases x 13 envelopes = 832 comparisons per arm. Equivalent 222 -> 809, 0 regressions against the previous recogniser, 0 authority manufactured by an envelope in either arm, 0 social vocabulary overlapping an effect.",
+    "verdict": "social_envelope_verdict_20260731.json",
+    "coverage": "frozen 30-turn workload 15 -> 16 deterministic; of the 343 short social-shaped texts in the frozen 14836-row historical corpus, deterministic 7 -> 42"
+   },
+   "gate_choice": "exact decision equality against the model gated the whole-social half and it PASSED 7/7 with the four adversarial cases intact. It could not gate the social-prefix half: that gate can only be passed by a variant where P was already right, so it structurally rejects every case in which widening the recogniser fixes an answer. Both of its failures are P disagreeing with itself -- the baseline resolved the bare `cuanta bateria queda` to system.status but answered `buenos dias, cuanta bateria queda` with a clarification 4 of 4 times, and resolved the bare `pon el volumen al 30 por ciento` to audio.volume but turned the wrapped form into a plan over audio.volume.adjust. That half was therefore gated with the oracle corpus R3 and R10 used, after verifying directly that the bare form resolves identically under both pattern sets.",
+   "documentation_divergence_closed": "07_LATENCIA_END_TO_END.md already claimed saludos and despedidas skipped E5. That was true only for gratitude and non-understanding; a greeting ran E5, P, G and L. The change makes the sentence true.",
+   "not_attributable": "guard-01 showed new decisions but the deterministic path returns None under BOTH pattern sets and P was called 4 times in each arm. It was already recorded as the only nondeterministic case of its corpus in p_derived_fields_20260731.json.",
+   "findings_recorded_not_fixed": [
+    "a colon envelope is not split into clauses the way a comma is, so `Hola baxy: Abre la calculadora` still reaches the model; 11 of the 22 residual cases share this cause",
+    "`Hola baxy: Navega Opera a https://example.com/` resolves to browser.navigate instead of browser.navigate.named, so it would navigate in the default browser rather than the one the person named. BOTH arms produce exactly this one case, so it predates the change and is a finding of the audit rather than an effect of it",
+    "`¿Está instalada la calculadora?` loses its envelope under every form including `Baxy, `, which predates this change entirely"
+   ],
+   "tests": "tests/test_turn_policy.py social positives with language, adversarial negatives, vocabulary-versus-effect boundary and pending-clarification deferral; tests/test_effect_intent.py curated bare-versus-wrapped pairs, content-not-greeting cases and the exhaustive 12-envelope invariant over the frozen CASES",
+   "rollback": "revert the _SOCIAL_* block and _explicit_social_turn_decision in src/baxy_mind/__main__.py with its call site, and _PREFIX_GAP, _REQUEST_PREFIX and _is_social_clause in src/baxy_mind/effect_intent.py"
+  },
+  {
+   "id": "R17_farewell_reply",
+   "component": "baxy_mind/llm.LlmRuntime.chat, anti-echo guard",
+   "type": "calidad visible",
+   "state": "promovido",
+   "principle": "the model answers every message. A visible reply produced by a constant is a defect, not a fallback.",
+   "problem": "BAXY could not say goodbye. chat() replaced any reply whose normalised text equalled the person's own with a fixed string, but for a farewell the mirror IS the answer, so the model's correct `¡Nos vemos!`, `¡Chau!`, `Bye!` and `Good night!` were discarded. `adiós` survived only by the accident of its accent.",
+   "not_introduced_by_r16": "present 4 of 4 times in BOTH arms of social_envelope_20260731.json. R16 made it faster to fail, not the cause.",
+   "discovery": "found by reading the reply texts of the R16 artifact. That probe's gate compared the contractual decision only, so a broken visible answer was invisible to it. A gate on the decision does not see the text.",
+   "resolution": "a turn classified as a social act may answer with a mirror; every other conversation kind keeps the guard unchanged.",
+   "evidence": "farewell_reply_20260731.json - ABBA over whole sessions. Replies produced by a constant: baseline 20 of 48 turns, candidate 0 of 48. Controls unchanged: greeting 0.1678 -> 0.173 s, gratitude 0.2018 -> 0.2094 s, knowledge 1.9314 -> 1.9803 s. Verdict in farewell_reply_verdict_20260731.json.",
+   "latency_side_effect": "`nos vemos` went from about 2.4 s to about 0.09 s because the guard was forcing a corrective retry that the same check then rejected. Those figures come from different physical sessions and are NOT presented as an ABBA delta; the paired controls in the probe show the fix costs nothing.",
+   "remaining_constant": "resolved by R22: genuinely empty or repeated content after the corrective retry now fails the internal contract and crosses the total turn recovery boundary; it is no longer replaced by visible fixed prose.",
+   "tests": "tests/test_turn_policy.py - 6 mirror cases across both languages asserting the model's reply survives and that only one decode is issued, plus 3 non-social kinds asserting the guard still refuses to parrot.",
+   "rollback": "revert the mirror_is_a_valid_answer branch in src/baxy_mind/llm.py chat()"
+  },
+  {
+   "id": "R18_policy_tool_quality",
+   "component": "primary policy tool calling, and the E5 shortlist that feeds it",
+   "type": "medicion",
+   "state": "medido, sin cambio de producto",
+   "question": "deterministic recognisers cannot cover every phrasing, so the model carries the long tail. Given a request whose correct operation is known, how often does the policy name it, and how does it fail?",
+   "method": "the recogniser is suspended inside the probe's own sidecar so each frozen text is decided by P as an unrecognised paraphrase would be. Oracle: the frozen text -> operations pairing of tests/test_effect_intent.py CASES. 57 cases, 114 turns, one arm, product code.",
+   "headline": "final exact accuracy 0.465, which decomposes into three very different causes",
+   "decomposition": {
+    "retrieval_defect": "45 of 114 turns (39.5%): E5 never put the expected operation in the shortlist, and the schema enum only admits shortlisted operations, so the model could not have named it. No prompt or schema change fixes any of these.",
+    "model_defect": "23 of 114 turns (20.2%): the operation was offered and P named something else or declined to act.",
+    "model_right": "46 of 114 turns"
+   },
+   "model_accuracy_given_a_fair_shortlist": "0.667, markedly better than the headline",
+   "hypothesis_refuted": "the vetoes after P were suspected of suppressing tool calling. They are not: across 114 turns they overrode a correct proposal 0 times in this run and 1 in the previous one, and repaired a wrong proposal 7 times. Net positive.",
+   "retrieval_examples": [
+    "`Haz una captura de pantalla`: not one candidate of the capture family was offered, so P answered audio.microphone.mute -- the least bad option it was given, not an absurd model failure",
+    "`¿Cómo está el Wi-Fi?`: wifi.ensure.connected was offered, wifi.status was not",
+    "`Lista mis tareas pendientes`: the whole task family missing while the note family appears three times, which also explains `Crea una tarea` resolving to note.create"
+   ],
+   "systematic_model_defect": "`Pon el volumen al 8 por ciento` resolves to audio.volume.adjust, a relative adjustment, where the person named an absolute level and audio.volume was offered. The same defect appeared independently on `hola, pon el volumen al 30 por ciento` in social_envelope_20260731.json.",
+   "consequence_for_the_plan": "the largest lever for making the LLM do good tool calling is RETRIEVAL, not the model. Fixing the shortlist also raises the ceiling of every later prompt or schema improvement, because those only act on the turns where the candidate was present.",
+   "artifacts": [
+    "policy_tool_quality_20260731.json",
+    "policy_tool_quality_verdict_20260731.json"
+   ],
+   "probe": "experiments/mind_router_spike/probe_policy_tool_quality.py"
+  },
+  {
+   "id": "R19_shortlist_catalog_floor",
+   "component": "baxy_mind/planner.PlannerCatalog.shortlist, family ranking",
+   "type": "calidad de tool calling",
+   "state": "promovido",
+   "problem": "the turn-evidence family expansion is advisory by contract but ranked above the catalog's own semantic score. It returns up to 12 labels, each pulling in up to three related families, so its two preference tiers could fill all ten family slots by themselves and the catalog's best semantic match never reached the model. Since the policy schema's enum only admits shortlisted operations, the advisory path was in effect selecting which operations exist.",
+   "resolution": "MAX_CATALOG_GUARANTEED_FAMILIES = 8 reserves family slots for the catalog's own ranking before the preference tiers fill the rest. MAX_FAMILY_OPERATIONS and FAMILY_RELEVANCE_BAND are a behaviour-neutral refactor of the literals that made the second cut sweepable.",
+   "evidence": {
+    "offline": "shortlist_recall_20260731.json - over the 57 frozen oracle cases the catalog's own ranking offers the expected operation in 50 and the product in 34: 16 lost to the expansion, 0 rescued. 59.6% offline matches 60.5% live, so the reproduction is faithful.",
+    "sweep": "27 combinations of floor x window x band, with the mean shortlist length reported beside recall because every added operation is prefill. Chosen 8/3/0.035: recall 50/57 at mean 20.6, no larger than today.",
+    "physical_ab": "policy_tool_quality_20260731.json - ABBA, 456 turns. Expected operation offered 60.5% -> 87.7%, exact accuracy 44.7% -> 55.7%, mean shortlist 21.3 -> 21.0, prefill p50 292.1 -> 271.2 ms. 10 cases improved, 3 regressed.",
+    "verdict": "shortlist_floor_verdict_20260731.json"
+   },
+   "rejected_with_mechanism": "relevance band 0.15 reaches the best recall measured (54/57) and was rejected: it costs about seven more operations per prompt against a cap of 28, and those extras are near-synonym siblings -- exactly the population measured to make the model choose wrongly.",
+   "reserve_retracted": "an earlier reading worried a floor of 8 would leave the expansion inert. The sweep refutes it: the expansion rescues 0 cases at every floor and costs cases at every floor below 8.",
+   "regressions": "`Abre Opera` -> browser.navigate.named, `Abre Spotify` -> media.play.query and `Crea un recordatorio ...` -> notification.schedule. NOT retrieval failures: the expected operation was offered 4 of 4 in BOTH arms and the model preferred a near-synonym sibling. The ordering hypothesis was tested and refuted -- on the reminder case the expected operation moved to position 0 and the model still chose the one at position 9. All three are owned by the deterministic recogniser in production and never reach P; they are real for paraphrases it misses. `Abre Spotify` -> media.play.query is an effect change, not a score, and is named as such.",
+   "raises_the_ceiling": "later prompt or schema work acts only where the candidate is present, which went from 60.5% to 87.7% of the corpus.",
+   "tests": "tests/test_planner.py and tests/test_planner_corpus.py green with the refactor and the floor",
+   "rollback": "set MAX_CATALOG_GUARANTEED_FAMILIES back to 0"
+  },
+  {
+   "id": "R20_leading_family_band",
+   "component": "baxy_mind/planner.PlannerCatalog.shortlist, per-family relevance band",
+   "type": "calidad de tool calling",
+   "state": "promovido",
+   "continues": "R19. That change reached the catalog's own retrieval ceiling; this one raises the ceiling itself.",
+   "problem": "after the floor, 7 of 57 oracle cases still lost the expected operation, and six of the seven had their family ALREADY in the shortlist: they lost the exact operation to the per-family relevance band, not to the family ranking.",
+   "resolution": "LEADING_FAMILIES = 1 gives the top-ranked family a band of 0.15; every other family keeps 0.035. The wide band is paid only where the answer usually is.",
+   "rejected_variant_still_rejected": "the GLOBAL 0.15 band reaches the same recall and costs about seven more operations per prompt against a cap of 28. The sweep showed leading=1 reaches 54/57 at mean 22.11 versus 27.25 for the global band: same recall, five fewer operations.",
+   "evidence": {
+    "sweep": "shortlist_recall_20260731.json",
+    "physical_ab": "policy_tool_quality_20260731.json - ABBA, 456 turns, baseline carries the R19 floor with the band off so the A/B isolates this change. Offered 87.7% -> 94.7%, exact accuracy 56.1% -> 58.8%, mean shortlist 21.0 -> 22.4, prefill p50 276.5 -> 307.8 ms. 2 cases improved, 1 regressed.",
+    "verdict": "leading_band_verdict_20260731.json"
+   },
+   "repairs_two_r19_regressions": "`Abre Opera` -> app.open and `Crea un recordatorio ...` -> reminder.create are now exact 4 of 4. `Abre Spotify` -> media.play.query survives and remains the named next target.",
+   "new_regression": "`Busca Beat It en Spotify y reprodúcela` moves from media.play.query to media.play.exact, deterministic 4 of 4. The oracle is right and the model is wrong: the request says `busca`, and media.play.query is the operation that searches. Same near-synonym sibling defect, with the sibling arriving instead of departing.",
+   "cost": "+31 ms prefill p50 and +1.4 operations per prompt, about 1.8% of a turn, for +7.0 points of retrieval and +2.7 of accuracy. The +34 ms decode delta is inside this workload's spread across four runs and is not claimed as an effect.",
+   "rollback": "set LEADING_FAMILIES back to 0"
+  },
+  {
+   "id": "R21_paraphrase_tool_quality",
+   "component": "the gates of baxy_mind/__main__ that grant or deny physical authority",
+   "type": "medicion / diagnostico",
+   "state": "medido, sin cambio de producto",
+   "why": "every earlier tool-calling number came from the 57 canonical phrasings the recogniser owns, measured with the recogniser suspended. That answers what the model would do with those texts, not what happens to the person when the deterministic path does not cover them. This measures the second population: 1002 qualifying rows of the frozen historical corpus that the recogniser does NOT resolve, 147 sampled, 294 turns.",
+   "headline": "family-level accuracy 21.8% and retrieval 76.9% on real paraphrases",
+   "retrieval_reality_check": "R19 and R20 reached 94.7% retrieval on the corpus their knobs were tuned against; on the real population it is 76.9%. Both point the right way and their paired deltas stand, but their magnitude was inflated by that corpus. Recorded rather than left for production to reveal.",
+   "where_the_effect_is_lost": {
+    "model_never_proposed": 110,
+    "removed_by_the_gates": 93,
+    "preserved": 91,
+    "lost_inside_decide_turn": 0
+   },
+   "which_gate": {
+    "apply_operation_domain_grounding_veto": "37 fires, 22 with the right family",
+    "apply_turn_action_grounding_gate": "29 fires, 6 with the right family -- mostly doing its job",
+    "apply_compound_effect_conservation_veto": "24 fires, 16 with the right family"
+   },
+   "corrects": "R18 concluded the post-policy machinery was not where tool calling is lost, from 0-1 overrides in 114 canonical turns. That is true for that corpus and false for the real population: on 294 real turns the gates remove the effect in 93. The earlier statement was correct about what it measured and must not be read as a statement about production.",
+   "defect_1": "apply_compound_effect_conservation_veto vetoes UNCONDITIONALLY once a contract exists and never compares the proposal against it. Measured offline: `alarma para mañana 8am` and `ponme un recordatorio en 2 minutos` have ONE clause and are vetoed; `Abre Notepad y luego cierralo` is vetoed even though the model proposed exactly the correct two steps. The rule is really `if any positive clause has an operation identity the recogniser could not resolve, grant no physical authority`, whose net effect is that BAXY acts only where the recogniser already agrees. It matches its own internal comment, so it is a design decision with unintended reach; what is wrong is the name and docstring, which promise a conservation check the code does not perform.",
+   "defect_2": "operation_domain_is_grounded returns False for `copia texto de Notepad al portapapeles` / clipboard.copy, where the text names the domain explicitly.",
+   "upper_bound_honesty": "family granularity overstates wrong vetoes: `Borra la carpeta CarterTest` proposing filesystem.folder.open counts as right family, yet the veto correctly stopped it. Every `suppressed a correct proposal` count is an upper bound.",
+   "oracle_noise_named": "12 of 294 turns are Portuguese or French rows the corpus labels `es`; 2 are knowledge questions labelled as missions. Cleaning them moves the headline by one point, so the finding does not rest on it.",
+   "not_changed_here": "both gates grant or deny PHYSICAL authority. An error there does not cost a point of accuracy, it executes something nobody asked for. Loosening them needs its own corpus proving no wrong effect is granted, its own physical A/B and its own gate -- the discipline R3 and R10 used, not the lighter treatment a shortlist ranking got.",
+   "artifacts": [
+    "paraphrase_tool_quality_20260731.json",
+    "paraphrase_tool_quality_verdict_20260731.json"
+   ],
+   "probe": "experiments/mind_router_spike/probe_paraphrase_tool_quality.py"
+  },
+  {
+   "id": "R22_presentable_ceiling_and_empty_reply",
+   "component": "baxy_mind/llm.LlmRuntime.chat; native tool-calling contract experiments; frozen real-paraphrase oracle",
+   "type": "calidad visible / medicion / diagnostico",
+   "state": "cierre acotado; alternativas no promovidas",
+   "visible_reply_resolution": "chat no fabrica una disculpa fija cuando el decode normal y el correctivo quedan vacios o repiten el pedido. Ahora eleva un fallo de contrato interno; la frontera total del turno reintenta sin efectos y, si vuelve a fallar, pide al modelo una unica aclaracion semantica sin candidatos.",
+   "visible_reply_tests": "tests/test_turn_policy.py: 14 pruebas dirigidas y las 289 pruebas del archivo completas pasaron. Las despedidas sociales conservan el espejo legitimo; knowledge, followup y unsupported fallan cerrados tras un doble eco.",
+   "quality_ceiling": "Sobre los mismos 147 casos congelados, Gemma 4 E2B llega a 40.82% con el schema productivo antes de gates y 53.74% con tools nativas mas retrieval reparado por el oraculo. Qwen3 4B llega a 53.06% con el shortlist real y 62.59% aun con retrieval reparado; le faltan 11 aciertos para 103/147. Qwen3 8B baja a 59.18% y supera el p50 permitido. El router jerarquico de Qwen3 4B tambien queda en 59.18%.",
+   "latency": "Qwen3 4B con tools nativas cumple el presupuesto en el probe directo (p50 1.0482 s, p95 1.6289 s sobre shortlist real; 1.0267/1.5695 s con retrieval reparado). El contrato arregla latencia, no alcanza la calidad.",
+   "oracle_blocker": "La auditoria conservadora encuentra 18 casos donde el prefijo historico exige una familia distinta de la accion que expresa el texto bajo el catalogo actual, 6 recordatorios donde reminder.create compite legitimamente con notification.schedule y 6 filas portuguesas/francesas/italianas marcadas es. Optimizar el score crudo concediendo esas familias premiaria efectos incorrectos.",
+   "authority": "0 efectos ejecutados. No se aflojaron grounding ni compound vetoes. Los modelos Qwen quedaron fuera del repositorio y de la instalacion; no se modifico el manifest del runtime. Ningun candidato se promueve.",
+   "canonical_validation": "scripts/test_source_quality.ps1 -Mode Full: 11 etapas; Release 0 advertencias/0 errores; .NET 2282 pass, 18 skips ambientales, 0 fail; Python 2118 pass, 2 skips sancionados, 382 subtests, 0 fail.",
+   "artifact": "baxy_presentable_ceiling_verdict_20260801.json",
+   "probe": "experiments/mind_router_spike/probe_native_tool_contract_ceiling.py",
+   "next_gate": "un oraculo congelado y revisado contra el catalogo vigente, con conjuntos exactos de operaciones compatibles y etiquetas explicitas conversation/unsupported. Solo entonces se puede exigir 103/147 sin contradecir cero efectos no pedidos."
+  },
+  {
+   "id": "R23_presentable_family_native_policy",
+   "component": "baxy_mind family classifier, Qwen3 native leaf selection, turn.result intent/effect split, registered runtime",
+   "type": "arquitectura / calidad / latencia / experiencia visible",
+   "state": "promovido",
+   "supersedes": "R22's conclusion that the measured candidates could not reach the presentable threshold; the raw model ceiling was real, but a learned family stage changes the candidate distribution without encoding open-language phrases",
+   "resolution": "A safe attested lexical classifier chooses only an operation family, then Qwen3-4B performs required native tool calling over every leaf of that family. The model's selection is retained as non-authoritative intentOperations. effectOperations remains the sole App execution input. If downstream gates withhold an effect, BAXY returns an LLM-authored clarification instead of pretending the action was conversation. Native selection does not pay the redundant inner P/G/L/V cascade before the outer authority gates.",
+   "universal_rule": "The classifier is word+character TF-IDF with class-balanced LinearSVC, not an if/regex/dictionary over requests. Its 1353 training rows exclude the exact and normalized 147-case primary holdout and an independently frozen 20-family universal holdout. Accuracy is 118/140 (84.29%) on the cleaned primary holdout and 18/20 (90%) on the universal holdout, with zero normalized overlap in both.",
+   "complete_product_oracle": "presentable_product_oracle_qwen3_20260801.json: 140 cleaned real requests through the complete sidecar; intent family 113/140 (80.71%), conversation 0/140, turn.decide p50 1.211803 s, p95 2.439363 s. 88 selections were withheld from effect authority and presented as clarification. Zero effects executed.",
+   "physical_abba": "presentable_policy_abba_20260801.json: control-candidate-candidate-control, 26 represented families per session and structural arm proof in hello. Control 23/52 (44.23%), conversation 40.38%, p50 2.610504 s; candidate 38/52 (73.08%), conversation 0%, p50 1.353431 s.",
+   "visible_text": "The residual fixed chat apology was removed in R22. R23 adds no visible constant: suppressed effects call the candidate-free LLM clarification contract; empty/invalid questions fail the turn closed and use the existing total recovery boundary.",
+   "authority": "IntentOperations is parsed by App but never used by MindClarificationPolicy, MainWindowViewModel planning or execution. EffectOperations keeps every existing grounding, compound, relevance, risk, confirmation, provider and Core verification boundary. The product oracle sends only turn.decide and executes zero effects.",
+   "authority_audit": "The historical family label disagrees with nine retained effect candidates. Four app.open choices are compatible with the current catalog despite historical game labels; five remain explicit debt for a current-catalog exact-operation authority oracle. They were not executed or counted as successes. No authority gate was loosened to improve the family score.",
+   "runtime": "Qwen3-4B-Q4_K_M.gguf moved, not copied, to D:\\BAXYRuntime\\assets\\models; SHA-256 7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5. register_mind_runtime.ps1 atomically registered it and canonical D:\\BAXY\\source\\src. bootstrap -CheckOnly and a registered full-catalog sidecar smoke passed.",
+   "rollback": "%LOCALAPPDATA%\\BAXYRuntime\\mind-runtime-v1.pre-qwen-20260801.json retains the pre-Qwen registration. Re-register its components before moving the Qwen asset back; revert R23 source/assets descriptor and remove the classifier data assets only after no runtime references them.",
+   "validation": "scripts/test_source_quality.ps1 -Mode Full passed all 11 stages after one repaired fixture-compatibility failure: Release 0 warnings/0 errors; .NET 2282 pass, 18 environmental skips; Python 2123 pass, 2 sanctioned skips, 382 subtests; zero failures.",
+   "artifacts": [
+    "heldout_family_classifier_lexical_frozen_20260801.json",
+    "native_lexical_family_qwen3_20260801.json",
+    "predicted_family_gate_attribution_20260801.json",
+    "presentable_product_oracle_qwen3_20260801.json",
+    "presentable_policy_abba_20260801.json",
+    "baxy_presentable_verdict_20260801.json"
+    ]
+  },
+  {
+   "id": "R24_presentable_physical_closure",
+   "component": "native leaf selection, literal note grounding, OCR provider fallback, exact turn-plan-Core physical gate",
+   "type": "calidad / ejecucion fisica / verificacion / runtime local",
+   "state": "promovido con una precondicion ambiental declarada",
+   "resolution": "The signed ProductCatalog remains unchanged. Ephemeral native function descriptions distinguish create-or-replace from append and OCR transcription from visual description. Explicit screen-text language closes the predicted family to OCR. A conservative note extractor binds title and content only when both are literal in the same atomic evidence fragment, then crosses the existing authenticated schema and grounding boundary.",
+   "frozen_oracle": "probe_presentable_product_oracle.py now requires the preregistered 147-row frozen sample at exactly 19380 bytes and SHA-256 c8db6a7b32f2ec607edfefd731a59ffb38dc918be3705f2e2fcaeaca0bce3feb, then applies the seven audited exclusions and requires exactly 140 rows.",
+   "complete_product_oracle": "presentable_product_oracle_qwen3_20260801.json: 109/140 intent family (77.86%), 10/140 action-as-conversation (7.14%), turn.decide p50 1.458999 s and p95 3.0954 s; every target true and zero effects executed.",
+   "physical_plan_execution": "artifacts/planner_recovery/llm_plan_execution_gate.json: exact turn.decide -> plan -> Core -> provider -> postread boundary. 8 passed executable cases, 15 verified steps, 0 failures, 0 ambiguous effects. Calendar read is environment_blocked because Outlook has no configured profile and reports effectMayHaveOccurred=false; it is not counted as a pass.",
+   "ocr_runtime": "Windows.Media.Ocr remains primary. Tesseract 5.4.0 is a bounded local fallback with absolute discovery, ArgumentList, no shell, capped stdout/stderr and cancellation. tessdata_fast SHA-256: eng 7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2; spa 6f2e04d02774a18f01bed44b1111f2cd7f3ba7ac9dc4373cd3f898a40ea6b464. The physical OCR step completed with authority=tesseract_cli_ocr and a text hash.",
+   "shell_gate": "artifacts/product/mind_shell_e2e_gate.json: 9/9 exact selected tests passed, authenticated HMAC journal, exact read-only Core operations and no effectMayHaveOccurred.",
+   "catalog_integrity": "src/Baxy.Kernel/Catalog/ProductCatalog.cs has no diff; the preregistered aggregate chain test passes.",
+   "validation": "scripts/test_source_quality.ps1 -Mode Full passed all 11 stages: Release 0 warnings/0 errors; .NET 2284 pass, 18 environmental skips, 0 fail; Python 2152 pass, 2 sanctioned skips, 382 subtests, 0 fail.",
+   "rollback": "Remove the four ephemeral native-description suffixes, the closed note literal extractor, the explicit OCR family override and the Tesseract fallback/optional asset descriptors. Do not remove external OCR assets while an installed or development runtime may still reference them."
+  }
+ ],
+ "gates_after_promotion": "Release build 0 warnings / 0 errors; .NET and Python suites re-run at the end of this pass; counts recorded in the maintainability register entry of this pass",
+ "R10_deterministic_system_status_scope": {
+  "state": "PROMOVIDO 2026-07-30",
+  "change": "baxy_mind/__main__._explicit_system_status_scope, reached from _explicit_arguments_from_evidence through the sanctioned _ground_explicit_arguments seam. It supplies system.status.scope only when the text names exactly one scope of the closed catalog enum, or a pair the enum measures in one reading (cpu_memory, os_memory).",
+  "authority": "unchanged. The value crosses normalize_objective_arguments and every Core schema, risk, confirmation and verification gate. Core remains the only authority; no default is invented and nothing is guessed.",
+  "abstains_and_keeps_current_grounding_on": "two scopes the enum cannot measure at once, a GPU request that does not say whether it asks identity or usage, and the whole adversarial family (temperature, process or model attribution, past/future/hypothetical, another device, knowledge/advice/purchase/diagnosis, application scope)",
+  "corpus": "deterministic_scope_wired_20260730.json - 52 cases across battery/charge, cpu/cores, ram, disk/space, gpu identity vs usage, windows, summary, representable and unrepresentable combinations, every adversarial class and es/en/spanglish. Supplies a scope in 37, ZERO wrong scopes, ZERO unexpected abstentions.",
+  "physical_ab": "scope_abba_same_session_20260731.json - BOTH ARMS IN ONE PHYSICAL SESSION, alternating baseline and candidate in ABBA order with identical prompts, warmup, runtime and thermal state; the baseline arm disables the shortcut for that single request. Baseline 1.0126 s p50 vs candidate 0.0006 s p50, delta -1.012 s, 6 samples per arm, and arguments_all_equal=true so the saving does not come from deciding differently. The earlier deterministic_scope_ab_20260730.json compared against a trace captured hours earlier in another process and thermal state; it is NOT an A/B and it overstated the saving as 1.37 s. The honest figure is about 1.01 s.",
+  "regression": "tests/test_system_status_scope_grounding.py (41) and tests/test_machine_status_scope.py (31); the whole Python suite stayed green with no decision change",
+  "known_gap_it_exposes": "the canonical ARGUMENT_CASES corpus does not cover system.status at all, a gap opened by the R3 change that made it an explicit action",
+  "rollback": "delete _explicit_system_status_scope and its dispatch line in _explicit_arguments_from_evidence"
+ },
+ "open_work_not_yet_done": [
+  "R16 residual: app.open, app.installed, capture.screenshot, browser.navigate.named and the compound plans that contain them anchor on the start of the string instead of reusing _REQUEST_PREFIX, so a social envelope survives only when clause splitting happens to remove it. A comma splits; a colon does not. 22 of 832 oracle comparisons remain non-invariant because of this, all of them abstentions the previous recogniser also had.",
+  "R16 finding that is not an abstention: `Hola baxy: Navega Opera a https://example.com/` resolves to browser.navigate instead of browser.navigate.named, which would navigate in the default browser rather than the one the person named. BOTH arms produce exactly this one case, so it predates R16 and R16 did not introduce it, but it is a wrong target rather than a conservative abstention and deserves its own pass.",
+  "R18 model: `Pon el volumen al N por ciento` systematically resolves to audio.volume.adjust, a relative adjustment, where the person named an absolute level and audio.volume was offered.",
+  "R20 last survivor of the near-synonym sibling family: `Abre Spotify` -> media.play.query where app.open is expected, and `Busca Beat It en Spotify y reprodúcela` -> media.play.exact where media.play.query is expected. Both are deterministic 4 of 4 with the correct operation offered. Retrieval work is now exhausted as a lever for them: at 94.7% offered, what remains is how the model discriminates between siblings.",
+  "R21 first target: apply_compound_effect_conservation_veto vetoes unconditionally once a contract exists, including on single-clause requests and on compounds where the model proposed exactly the right steps. 16 of its 24 fires had the right family. Needs a corpus proving a loosened rule grants an effect only where the operation identity is determined, with zero effects granted on the adversarial families the recogniser vetoes today.",
+  "R21 second target: operation_domain_is_grounded rejects operations whose domain the text names explicitly, e.g. `copia texto de Notepad al portapapeles` -> clipboard.copy.",
+  "R21/R22 corpus debt: the frozen historical corpus has language metadata errors and operation-family prefixes that no longer match the authenticated catalogue. R22 names 18 definite family conflicts, 6 nonexclusive reminder/notification conflicts and 6 language conflicts. A reviewed current-catalogue oracle is required before this corpus can gate authority changes.",
+  "R24 authority debt: the latest 140-row product oracle retains 12 effect-family disagreements against historical labels. They were observed only by turn.decide and were not executed. Build a reviewed current-catalog exact-operation oracle and require independent semantic compatibility before broadening native long-tail physical authority.",
+  "R24 environmental prerequisite: calendar.event.list cannot be physically completed on this host until a real Outlook profile exists. The current gate proves a fail-closed environmental block with effectMayHaveOccurred=false, not a successful calendar read."
+ ],
+ "final_validation": {
+  "release_build": "0 warnings, 0 errors",
+  "source_quality_full": "passed, all 11 stages (powershell-source, python-ruff, python-compileall, field-ui-eslint, field-ui-tsc-app, field-ui-tsc-node, dotnet-format, dotnet-build-release, dotnet-tests, python-tests), re-run after R24 physical closure",
+  "source_quality_fast": "passed",
+  "dotnet_tests": "2284 passed, 18 environmental skips, 0 failed (Contracts 54, Kernel 109/2, Providers 433/5, Setup 469/8, Integration 1219/3).",
+  "python_tests": "2152 passed, 2 sanctioned skips, 382 subtests passed",
+  "corpus_suites": "1064 passed, 2 skipped, 58 subtests (effect_intent, effect_intent_state_corpus, system_status_scope_grounding, machine_status_scope, planner_corpus, public_turn_corpus, historical_corpus)",
+  "ruff": "All checks passed"
+ },
+ "closure": "R24 keeps every measurable presentable threshold green on the exact 140-row frozen oracle and closes the physical product boundary for every executable gate case: 8 cases and 15 verified steps with zero failures or ambiguous effects. Calendar remains an explicit Outlook-profile environmental block with no possible effect reported. Physical authority remains deliberately more conservative than comprehension, and the 12 historical family disagreements remain named exact-operation audit debt rather than being hidden inside the score."
+}

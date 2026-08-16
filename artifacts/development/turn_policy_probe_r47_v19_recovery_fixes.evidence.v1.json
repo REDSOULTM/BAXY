@@ -1,0 +1,67 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v19_recovery_fixes.evidence.v1.raw.jsonl",
+    "sha256": "32504088ac5acb4d0783ae77bbe9c4d8a40dea0b3d9a1a74af2f937bbb04a9dd"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7918",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-59b72e3d084af0da6ec7ee9c",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.8,
+        "operation": null,
+        "question": "What is the title and time of the calendar event to send an invite to Bill Malinda?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:8c6cb9f2eaf1058f0d9c1f3f36ac16e20c76d4d48061b49c034e8c0437ebaa7a",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f74ad92dfdc207c15d5cf1b9",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0046,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T23:50:04.474896+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 2,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

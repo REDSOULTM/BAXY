@@ -1,0 +1,222 @@
+{
+  "best_validation_top_1_accuracy": 0.998327,
+  "checkpoint": {
+    "files": [
+      {
+        "bytes": 26,
+        "name": "added_tokens.json",
+        "sha256": "b6615bdf7e898c95436818c6f47ebe5cb73486962c2f9c49ad2890434598f51d"
+      },
+      {
+        "bytes": 1051,
+        "name": "config.json",
+        "sha256": "6c7658b3fa7600a12c4125f9f1de8d1207955430e63830faafc6a161953f2c1d"
+      },
+      {
+        "bytes": 997906080,
+        "name": "model-00001-of-00002.safetensors",
+        "sha256": "844951bffcc795a7bc39fe34d180e2866087297f09b4335cd95395c4cc7347c6"
+      },
+      {
+        "bytes": 117364940,
+        "name": "model-00002-of-00002.safetensors",
+        "sha256": "9d9be1fbaa7589c599853000af1f1c0f4dbf129496df545e7ecd901560320436"
+      },
+      {
+        "bytes": 19284,
+        "name": "model.safetensors.index.json",
+        "sha256": "e874fac3c839d73dda55e8218aae7dfb07a5bfd516179811fbb093ed1e5ed5a6"
+      },
+      {
+        "bytes": 1021,
+        "name": "special_tokens_map.json",
+        "sha256": "b70b72bbc44ed96ae896e1b26d2d269d40a58709c9de1428c9bbfa872fe7f7ce"
+      },
+      {
+        "bytes": 4305025,
+        "name": "spm.model",
+        "sha256": "13c8d666d62a7bc4ac8f040aab68e942c861f93303156cc28f5c7e885d86d6e3"
+      },
+      {
+        "bytes": 16335614,
+        "name": "tokenizer.json",
+        "sha256": "7cbb3e710965f6d2b07d33792a8fbedaf2ae3c6c5e698e55f3b7846e6227e890"
+      },
+      {
+        "bytes": 20675,
+        "name": "tokenizer_config.json",
+        "sha256": "8bd6d8654b1b67c3e47d153ae9ec03b1013badf83e4b1a0f2e62ba80933915e8"
+      },
+      {
+        "bytes": 1006,
+        "name": "training_identity.json",
+        "sha256": "8dff3f91cb00a7ca69a0708d37119410bcc2e31e42f55d3cbe3c500055f9ff42"
+      }
+    ],
+    "path": "D:\\BAXYRuntime\\experiments\\mtop-operation-conditioned-verifier-v13"
+  },
+  "configuration": {
+    "auxiliary_intent_weight": 0.0,
+    "batch_size": 16,
+    "class_weight_power": 0.5,
+    "condition_on_operation": true,
+    "epochs": 2,
+    "eval_batch_size": 64,
+    "focal_gamma": 0.0,
+    "gradient_accumulation": 4,
+    "gradient_checkpointing": true,
+    "label_mode": "disposition",
+    "label_smoothing": 0.0,
+    "learning_rate": 2e-05,
+    "max_grad_norm": 1.0,
+    "max_length": 112,
+    "mixed_precision": "fp16",
+    "optimizer": "adafactor",
+    "query_prefix": "",
+    "seed": 20260801,
+    "supplement_repeat": 0,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01,
+    "wrong_operation_negatives": 1
+  },
+  "cuda": {
+    "device": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "peak_allocated_mib": 3640.004,
+    "peak_reserved_mib": 3890.0
+  },
+  "data": {
+    "auxiliary_intent_classes": 111,
+    "class_to_disposition": {
+      "action": "action",
+      "clarify": "clarify",
+      "conversation": "conversation"
+    },
+    "class_to_operation": {
+      "action": "__none__",
+      "clarify": "__none__",
+      "conversation": "__none__"
+    },
+    "class_weights": {
+      "action": 0.786361,
+      "clarify": 4.070197,
+      "conversation": 0.869576
+    },
+    "classes": 3,
+    "mtop_train_rows": 20675,
+    "operations": 1,
+    "supplement_overlap_excluded": 0,
+    "supplement_sha256": null,
+    "supplement_unique_rows": 0,
+    "supplement_unsupported_excluded": 0,
+    "train_class_counts": {
+      "action": 11145,
+      "clarify": 416,
+      "conversation": 9114
+    },
+    "train_rows": 20675,
+    "validation_class_counts": {
+      "action": 1608,
+      "clarify": 55,
+      "conversation": 1326
+    },
+    "validation_rows": 2989,
+    "wrong_operation_train_rows": 0,
+    "wrong_operation_validation_rows": 0
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "learning_rate": 1.1114922813036022e-05,
+      "train_loss": 0.000176,
+      "train_seconds": 250.172,
+      "validation": {
+        "cases": 2989,
+        "disposition_accuracy": 0.998327,
+        "false_supported_on_no_action": 0.0,
+        "label_top_1_accuracy": 0.998327,
+        "loss": 0.011147,
+        "no_action_accuracy": 1.0,
+        "per_disposition": {
+          "action": {
+            "accuracy": 0.998756,
+            "cases": 1608
+          },
+          "clarify": {
+            "accuracy": 0.963636,
+            "cases": 55
+          },
+          "conversation": {
+            "accuracy": 0.999246,
+            "cases": 1326
+          }
+        },
+        "per_operation": {
+          "__none__": {
+            "accuracy": 1.0,
+            "cases": 2989
+          }
+        },
+        "seconds": 2.625,
+        "supported_accuracy": NaN,
+        "top_1_accuracy": 1.0,
+        "top_2_accuracy": 1.0,
+        "top_3_accuracy": 1.0
+      },
+      "wrong_operation_validation": null
+    },
+    {
+      "epoch": 2,
+      "learning_rate": 0.0,
+      "train_loss": 6.1e-05,
+      "train_seconds": 248.883,
+      "validation": {
+        "cases": 2989,
+        "disposition_accuracy": 0.998327,
+        "false_supported_on_no_action": 0.0,
+        "label_top_1_accuracy": 0.998327,
+        "loss": 0.01055,
+        "no_action_accuracy": 1.0,
+        "per_disposition": {
+          "action": {
+            "accuracy": 0.998134,
+            "cases": 1608
+          },
+          "clarify": {
+            "accuracy": 0.963636,
+            "cases": 55
+          },
+          "conversation": {
+            "accuracy": 1.0,
+            "cases": 1326
+          }
+        },
+        "per_operation": {
+          "__none__": {
+            "accuracy": 1.0,
+            "cases": 2989
+          }
+        },
+        "seconds": 2.568,
+        "supported_accuracy": NaN,
+        "top_1_accuracy": 1.0,
+        "top_2_accuracy": 1.0,
+        "top_3_accuracy": 1.0
+      },
+      "wrong_operation_validation": null
+    }
+  ],
+  "measured_at": "2026-08-02T18:47:12.018728+00:00",
+  "schema": "baxy.mtop-operation-classifier-finetune.v1",
+  "scope": "development_only_mtop_test_remains_sealed",
+  "source": {
+    "model": "D:\\BAXYRuntime\\experiments\\mtop-operation-conditioned-disposition-v12",
+    "mtop_development_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "mtop_manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "mtop_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "mtop_test_content_read": false,
+    "revision": ""
+  },
+  "rejection_reason": "wrong-operation source labels collapsed in disposition mode; zero negative pairs were generated",
+  "status": "rejected_no_wrong_operation_pairs",
+  "training_seconds": 501.31
+}

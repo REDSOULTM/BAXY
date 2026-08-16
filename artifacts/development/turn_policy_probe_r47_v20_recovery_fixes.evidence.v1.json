@@ -1,0 +1,88 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v20_recovery_fixes.evidence.v1.raw.jsonl",
+    "sha256": "8aecd61250adde95a3edc8f8b550dc3405c7f9f4f32986f3584d1d0fa96ecfa1"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:967",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d71caa333fd2def8a90a2d58",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0041,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14457",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ddee5c2477756644d098f64d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.3153,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que encontrar ruta es una acción común en situaciones de navegación.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1dc5565b325ea88ef3ebde0f0a9b13f52fb11494bf81616cf51e7a3653d4774a",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d3a160049330bcc9b62c0edc",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0237,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T00:07:35.065756+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 3,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

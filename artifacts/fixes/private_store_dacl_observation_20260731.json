@@ -1,0 +1,34 @@
+{
+ "schema": "baxy.observation.v1",
+ "measured_at_utc": "2026-07-31",
+ "state": "RESOLVED: mechanism explained, defect fixed, tests committed",
+ "effects_executed": 0,
+ "component": "src/Baxy.Security.Windows/WindowsProtectedPayload.cs",
+ "what_was_being_checked": "whether the private key directory's protected DACL is repaired when an existing directory has been weakened afterwards, which is the ACL half of the DPAPI/ACL/reparse/TOCTOU race family",
+ "first_pass_was_inconclusive": {
+  "what_happened": "a test was written asserting that reopening the store repairs the DACL. It failed: the directory stayed unprotected with 6 ACEs including Everyone, yet the code's own EnsureProtectedDacl check had not thrown.",
+  "what_was_done": "the test was removed rather than committed, because asserting a contract whose mechanism is not understood encodes a guess. This file recorded the reproduction so it could be resolved with measurement instead of argument."
+ },
+ "how_it_was_resolved": {
+  "method": "a temporary diagnostic dumped both the managed AreAccessRulesProtected flag and the native SE_DACL_PROTECTED / SE_DACL_AUTO_INHERITED control bits at four points",
+  "measurements": [
+   "after create:        protected=True  aces=2 control=0x9004",
+   "after weaken:        protected=False aces=6 control=0x8404 autoInherited=True",
+   "after reopen + Open: protected=False aces=6 control=0x8404  <-- not repaired",
+   "after Seal:          protected=True  aces=2 control=0x9004  <-- repaired"
+  ],
+  "root_cause": "Seal goes through LoadOrCreateKey, whose LoadOrCreateKeyUnsafe calls EnsureKeyDirectory and therefore AcquireDirectory(protectLeaf: true), which reapplies and re-verifies the private DACL. Open calls LoadExistingKey directly, which never passes through EnsureKeyDirectory. The asymmetry was undocumented, so it was incidental rather than a declared design.",
+  "consequence": "a store weakened after creation stayed weakened for as long as the workload only read from it."
+ },
+ "fix": {
+  "change": "LoadExistingKeyUnsafe now calls EnsureKeyDirectory(createMissing: false) immediately after ReadKeyFile succeeds, so the read path repairs and re-verifies the DACL exactly like the write path.",
+  "why_after_the_read": "placing it after a successful read preserves every existing error path: a store that does not exist still reports NotFound, and the repair can never bring a missing directory into being.",
+  "verified": "the same diagnostic now reports protected=True with 2 ACEs after Open; the whole Baxy.Providers.Windows suite passes at 432 (+3), including MissingParentIsReportedAsNotFoundWithoutCreatingDirectories and ProtectedPayloadOpenDoesNotSilentlyRegenerateAMissingKey."
+ },
+ "tests_committed": [
+  "ProtectedPayloadDaclRepairTests.ReadingAnExistingKeyRepairsAWeakenedDirectoryDacl",
+  "ProtectedPayloadDaclRepairTests.SealingOverAWeakenedDirectoryRepairsItsDacl",
+  "ProtectedPayloadDaclRepairTests.RepairingOnReadNeverCreatesAMissingStore"
+ ],
+ "severity_assessment": "This was never a confirmed key exposure. The key file itself is validated by handle on every use (link count 1, no reparse point, GetFinalPathNameByHandle equality, trusted owner) and stays DPAPI-wrapped for the current user, so a weakened directory DACL alone does not reveal or usefully substitute the key. What it did widen was who could enumerate, delete or plant files in that directory, which is a denial-of-service and state-confusion surface. That surface is now closed on both paths."
+}

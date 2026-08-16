@@ -1,0 +1,89 @@
+{
+  "schema": "baxy.stt-holdout-source-acquisition.v1",
+  "acquiredAtUtc": "2026-08-11T01:20:44.2323085Z",
+  "role": "unmeasured_partial_candidate_source_for_physical_post_wake_stt_holdout",
+  "evaluationStatus": "unopened",
+  "modelAudioDecoded": false,
+  "corpusSelectionFrozen": false,
+  "canonicalSource": {
+    "name": "Bangor Miami Spanish-English Corpus",
+    "url": "https://talkbank.org/biling/access/Bangor/Miami.html",
+    "doi": "10.21415/T5J01D",
+    "participants": 84,
+    "recordings": 56,
+    "reportedHours": 35,
+    "languages": [
+      "en",
+      "es",
+      "es-en-code-switch"
+    ],
+    "license": "GPL-3.0-or-later",
+    "trainingUse": "forbidden_for_llm_training_unless_all_llm_training_data_is_public; BAXY use is evaluation-only",
+    "requiredAcknowledgement": "Bangor Miami corpus / Deuchar et al. (2014)"
+  },
+  "retrievalMirror": {
+    "url": "https://huggingface.co/datasets/drewoodward/miami-corpus",
+    "commit": "2ff0591ffe0fd8eaef40d5f3c681826a144fb5d7",
+    "canonical": false,
+    "reason": "The canonical TalkBank media endpoint required an authenticated session; this mirror exposes a GPL subset as one merged MP3 plus WebVTT, despite its README claiming the full corpus."
+  },
+  "localRoot": "D:/BAXYRuntime/experiments/stt_holdout_sources/miami_corpus_hf_2ff0591",
+  "files": {
+    "miamiCorpus_merged.mp3": {
+      "bytes": 531928129,
+      "sha256": "b1fececb6976721a8f9e6cad2eae67161fe7321cf53bd2ed179a9d0f6db2e086"
+    },
+    "miamiCorpus_merged.vtt": {
+      "bytes": 635315,
+      "sha256": "0fcfbdef4c6e8155be2a8d49da834558762af0dbfe76bfeabe00f22ee7ef0212"
+    },
+    "README.md": {
+      "bytes": 3689,
+      "sha256": "2cfe2b8d3917fc4f9a8d8026ee0914644b55f314289e5cfc87d9042652e1f530"
+    }
+  },
+  "observedLocalCoverage": {
+    "readmeClaimsCompleteCorpus": true,
+    "readmeClaimedRecordings": 56,
+    "readmeClaimedHours": 35,
+    "indexedRecordings": 12,
+    "webvttCues": 10427,
+    "timelineEnd": "06:09:22.620",
+    "recordingIds": [
+      "herring10",
+      "herring13",
+      "herring3",
+      "herring6",
+      "herring7",
+      "herring8",
+      "sastre1",
+      "sastre8",
+      "sastre9",
+      "zeledon14",
+      "zeledon5",
+      "zeledon9"
+    ],
+    "mirrorCompletenessClaimVerified": false,
+    "eligibleAsCanonicalCompleteCorpus": false,
+    "eligibleAsPartialEvaluationSource": true
+  },
+  "measurementDiscipline": {
+    "audioMayBeSegmentedOnlyAfterVersionedSelectorAndEvaluatorAreAdded": true,
+    "selectionMustBePreregisteredBeforeParakeetDecoding": true,
+    "wakeValidationPartitionMayNotBeUsed": true,
+    "developmentFailuresMayNotTuneOnTheReservedEvaluationPartition": true,
+    "plannedMetrics": [
+      "word_error_rate_by_en_es_code_switch",
+      "semantic_operation_preservation",
+      "entity_and_number_preservation",
+      "stt_latency_p50_p95",
+      "speaker_or_recording_group_breakdown"
+    ]
+  },
+  "wakeProgramTree": {
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0",
+    "unchangedByAcquisition": true
+  },
+  "effectsExecuted": 0
+}

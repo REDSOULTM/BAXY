@@ -1,0 +1,84 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v24_unsafe_fixes_baseline.v1.raw.jsonl",
+    "sha256": "04c5700d202101ea8ad7226a6aa4b9ae6dbdaab17bc73e5aeebb0de3c8c890b1"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6322",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-e2e4fbe1962c362d9b6fc1f5",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.3993,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I don't have the score of the game. Would you like me to look it up for you?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6405",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b3b1ee174190a241c7a794d5",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.218,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "A dog makes a sound called a \"woof.\"",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13140",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-90128a94cf0d6b41e01b5f2e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4001,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El huracán es un sistema de tormentas tropicales con vientos sostenidos de 74 millas por hora o más. Puede causar daños significativos por vientos, lluvia, inundaciones y olas altas. Se clasifica según su intensidad en la escala de Saffir-Simpson. Es un fenómeno climático natural que ocurre en las zonas tropicales.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T02:15:19.928937+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 3,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

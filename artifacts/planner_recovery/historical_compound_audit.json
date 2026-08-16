@@ -1,0 +1,2153 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-16T09:43:51.498572+00:00",
+  "source": "tests/data/historical_missions.jsonl",
+  "policy": {
+    "natural_evaluable": "may enter no-effect model planner evaluation",
+    "contaminated_trace": "coverage/provenance only; never replayed as a user objective",
+    "private_boundary": "tested through private envelope; memory text never enters the LLM"
+  },
+  "summary": {
+    "compound_historical_missions": 166,
+    "max_steps": 15,
+    "classification_counts": {
+      "contaminated_trace": 29,
+      "natural_evaluable": 123,
+      "private_boundary": 14
+    },
+    "missions_missing_public_family": 0,
+    "all_within_planner_limit": true
+  },
+  "missions": [
+    {
+      "mission_id": "mission_user_mission_app_close_media_play_08bac768b9",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "cierra Spotify",
+      "historical_operations": [
+        "app.close",
+        "media.play"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_close_office_document_16c5c06b11",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "cierra Word",
+      "historical_operations": [
+        "app.close",
+        "office.document"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_close_streaming_navigate_window_manag_9dc8262180",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "cierra la ventana de YouTube",
+      "historical_operations": [
+        "app.close",
+        "streaming.navigate",
+        "window.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_close_window_manage_ab45b98b84",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Cierra la pestaña o ventana que abriste para example.com",
+      "historical_operations": [
+        "app.close",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_backup_manage_media_d4dabe123b",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "backup.manage",
+        "media.control",
+        "media.play",
+        "message.send",
+        "note.manage",
+        "notification.manage",
+        "reminder.create",
+        "streaming.navigate",
+        "system.status",
+        "task.manage",
+        "vision.describe",
+        "web.search",
+        "window.manage"
+      ],
+      "operation_count": 15,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_browser_navigate_fi_a08c068b6a",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Spotify, pon una playlist, baja el volumen, abre el navegador, ve a Google Docs y crea un documento nuevo",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "browser.navigate",
+        "filesystem.read",
+        "filesystem.write",
+        "media.play",
+        "office.document"
+      ],
+      "operation_count": 7,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_browser_navigate_me_0a6ab5ccd7",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Spotify, pon una playlist de estudio, baja el volumen y abre el navegador en Google Docs",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "browser.navigate",
+        "media.play"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_browser_navigate_me_5ca1d9c837",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "open Spotify, play a playlist, lower the volume, open the browser, go to Google Docs and create a new document",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "browser.navigate",
+        "media.play",
+        "office.document"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_media_play_2a6f74dd8b",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Spotify, pon música y baja volumen a 20",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "media.play"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_media_play_message__e0f519e0dc",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "manda un whatsapp a Ana avisando que llego, pon una alarma en 30 minutos, abre Spotify, pon musica y baja el volumen, y baja el brillo",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "media.play",
+        "message.send",
+        "notification.manage",
+        "system.settings"
+      ],
+      "operation_count": 6,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_audio_volume_media_play_notifica_b9a34c31da",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "text Ana on WhatsApp that I'm here, set an alarm for 30 minutes, open Spotify, play music and turn the volume down, and lower the brightness",
+      "historical_operations": [
+        "app.open",
+        "audio.volume",
+        "media.play",
+        "notification.manage",
+        "system.settings"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_a526ca21a3",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Chrome y ve a google.com",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_media_play_web__d59de51fa8",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "connect to wifi, open Spotify, play a playlist, open the browser and search the song lyrics",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "media.play",
+        "web.search",
+        "wifi.manage"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_office_document_0b4ae0862a",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre el navegador, ve a YouTube, busca un tutorial de Excel, reproducelo, abre Excel y crea una tabla nueva",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "office.document",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_streaming_navig_214f0ffd14",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre web de YouTube aunque exista app parcial",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "streaming.navigate"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_web_search_f3d47b7021",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Chrome y busca Carter",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_browser_navigate_wifi_manage_985fbd6ba2",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "conecta el wifi y abre Chrome",
+      "historical_operations": [
+        "app.open",
+        "browser.navigate",
+        "wifi.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_calendar_manage_6844c1d031",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "open notepad and write meeting notes",
+      "historical_operations": [
+        "app.open",
+        "calendar.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_calendar_manage_notification_man_dd451d80ed",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "app.open",
+        "calendar.manage",
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_capture_screenshot_note_manage_w_4f16279545",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "app.open",
+        "capture.screenshot",
+        "note.manage",
+        "web.search"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_filesystem_read_filesystem_write_4015e9f8cf",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Word, escribe el titulo y guarda el documento",
+      "historical_operations": [
+        "app.open",
+        "filesystem.read",
+        "filesystem.write",
+        "office.document"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_filesystem_read_media_play_offic_7c3dee3ec7",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "app.open",
+        "filesystem.read",
+        "media.play",
+        "office.document",
+        "web.search"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_filesystem_read_office_document_d84d1a839e",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Abre Word y ayúdame a escribir un documento”.",
+      "historical_operations": [
+        "app.open",
+        "filesystem.read",
+        "office.document"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_filesystem_write_office_document_7644ef9458",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "open Word, type the heading and save the file",
+      "historical_operations": [
+        "app.open",
+        "filesystem.write",
+        "office.document"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_game_install_cfd81173a7",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre steam y instala fall guys",
+      "historical_operations": [
+        "app.open",
+        "game.install"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_game_install_game_manage_43cfcafc43",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Steam, busca el juego y empieza la descarga",
+      "historical_operations": [
+        "app.open",
+        "game.install",
+        "game.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_game_launch_8c0c012bed",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Abre Steam y ejecuta el juego instalado Portal",
+      "historical_operations": [
+        "app.open",
+        "game.launch"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_game_manage_5b5794d5e4",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Steam, ve a biblioteca, busca Batman y dime si está instalado",
+      "historical_operations": [
+        "app.open",
+        "game.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_media_play_9c6b7bbb66",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre la app predeterminada de música",
+      "historical_operations": [
+        "app.open",
+        "media.play"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_media_play_memory_save_4db2092697",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": null,
+      "historical_operations": [
+        "app.open",
+        "media.play",
+        "memory.save"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_media_play_web_search_c4c89b18b7",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "podrias abrir spotify y buscar a bad bunny",
+      "historical_operations": [
+        "app.open",
+        "media.play",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_office_document_7692beba1b",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre Word y escribe el titulo del informe",
+      "historical_operations": [
+        "app.open",
+        "office.document"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_peripheral_manage_streaming_navi_bf9230f092",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Si daleee, necesito que pruebes todooo en vivo, todas las funciones que presentare mñn pruebas end to end , en vivo, quiero ver como escribes por wsp y discord, como muteas el microfono en discord como le hablas a \"Shootercoc\" , quiero ver las tareas y notas, quiero verte abrir steam, quiero ver que pongas una serie en disney o netflix, quiero escucahr a baxy y cada respuesta , leer pantalla, buscar en internet, control de mediaa, alarmas recordatorios, estaado del pc , TODO!!!",
+      "historical_operations": [
+        "app.open",
+        "peripheral.manage",
+        "streaming.navigate",
+        "task.manage",
+        "vision.describe",
+        "web.search"
+      ],
+      "operation_count": 6,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_task_manage_eca6600a29",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "que haya son entrenamientos focalizados cien por ciento en el español. Obviamente, eso no quiere decir que comandos como abre Steam no funcionen porque tiene la palabra Steam. ¿Me entiendes? Entonces, focalízalo todo en el español para lograr el mayor la mayor cantidad de funcionalidad en español, y ya próximamente expandiremos y haremos un entrenamiento basado para cada idioma.",
+      "historical_operations": [
+        "app.open",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_vision_describe_ba7cdf625f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre la app de cámara",
+      "historical_operations": [
+        "app.open",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_app_open_web_search_0a53fa2c96",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_audio_volume_7922df2746",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "sube el volumen y silencia las notificaciones",
+      "historical_operations": [
+        "audio.mute",
+        "audio.volume"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_media_control_media_play_006ff8e7cd",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "silencia el sonido y pausa la cancion",
+      "historical_operations": [
+        "audio.mute",
+        "media.control",
+        "media.play"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_media_play_notification_manage_a97677f29f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "baja el brillo, silencia el sonido, pon no molestar, abre el lector de PDF, abrelo en pantalla completa y pon un temporizador de 25 minutos",
+      "historical_operations": [
+        "audio.mute",
+        "media.play",
+        "notification.manage",
+        "system.settings",
+        "vision.describe"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_media_play_system_settings_395c5af3c1",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "baja el brillo, silencia el sonido, pon no molestar y abre el lector de PDF",
+      "historical_operations": [
+        "audio.mute",
+        "media.play",
+        "system.settings"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_notification_manage_task_manag_fc7765ea28",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "audio.mute",
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_peripheral_manage_221202e63a",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "unmute my microphone in Discord",
+      "historical_operations": [
+        "audio.mute",
+        "peripheral.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_mute_vision_describe_72de07643d",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "mute the sound and dim the screen",
+      "historical_operations": [
+        "audio.mute",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_bluetooth_manage_6e37d93ede",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "conecta el bluetooth y sube el volumen",
+      "historical_operations": [
+        "audio.volume",
+        "bluetooth.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_browser_navigate_media_play__79d82d7beb",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "open the browser, go to YouTube, search lofi, play it and lower the volume",
+      "historical_operations": [
+        "audio.volume",
+        "browser.navigate",
+        "media.play",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_browser_navigate_streaming_n_27c8b87253",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre el navegador, ve a YouTube, busca lofi, ponla a sonar y baja el volumen",
+      "historical_operations": [
+        "audio.volume",
+        "browser.navigate",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_calendar_manage_media_play_o_ae371d049b",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "audio.volume",
+        "calendar.manage",
+        "media.play",
+        "ocr.read",
+        "office.document",
+        "streaming.navigate",
+        "system.status",
+        "task.manage",
+        "vision.describe"
+      ],
+      "operation_count": 9,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_media_play_9c98045d04",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "turn up the volume and play some jazz",
+      "historical_operations": [
+        "audio.volume",
+        "media.play"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_media_play_memory_recall_not_35d620f99f",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": null,
+      "historical_operations": [
+        "audio.volume",
+        "media.play",
+        "memory.recall",
+        "notification.manage",
+        "task.manage",
+        "window.manage"
+      ],
+      "operation_count": 6,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_media_play_peripheral_manage_548412dc33",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "AEC con señal de referencia — cuando el Echo reproduce música, RESTA del micrófono lo que él mismo está emitiendo. Por eso le hablás encima de la música a todo volumen. Esto NO es el modelo: es el truco de señal. Nosotros aún no lo tenemos (es el P1 del roadmap, investigado y documentado).\n\n\nEntonces aplica esto mientras",
+      "historical_operations": [
+        "audio.volume",
+        "media.play",
+        "peripheral.manage",
+        "task.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_peripheral_manage_2f461bf083",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "pon el volumen del micrófono a 10",
+      "historical_operations": [
+        "audio.volume",
+        "peripheral.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_streaming_navigate_31e94256b8",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "bajá el volumen y poné una peli en Netflix",
+      "historical_operations": [
+        "audio.volume",
+        "streaming.navigate"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_audio_volume_system_settings_156adfca8c",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "subí el volumen y bajá el brillo",
+      "historical_operations": [
+        "audio.volume",
+        "system.settings"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_filesystem_trash_48ef24633d",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "hacé un backup antes de borrar esta carpeta",
+      "historical_operations": [
+        "backup.manage",
+        "filesystem.trash"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_filesystem_write_be5c04579d",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "crea backup, edita archivo y corre test afectado",
+      "historical_operations": [
+        "backup.manage",
+        "filesystem.write"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_media_control_window_manage_d95d7d22f8",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Restaura el respaldo anterior",
+      "historical_operations": [
+        "backup.manage",
+        "media.control",
+        "window.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_notification_manage_task_ma_be296f6e3e",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "backup.manage",
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_task_manage_window_manage_a80ca5f8ca",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Debe aplicarse antes de iniciar BAXY y requiere reiniciar el proceso. El flag apagado no abre ni migra `BAXY_TOOLING_V2_DATA`; el estado v2 se conserva para una reactivación posterior. El rollback restaura compatibilidad legacy, no sus garantías de outbox, claim/ACK o privacidad, y no debe usarse para “resolver” una entrega v2 pendiente sin inspeccionarla primero.",
+      "historical_operations": [
+        "backup.manage",
+        "task.manage",
+        "window.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_backup_manage_window_manage_ad7ed099a9",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "restaura la última ventana minimizada por Carter",
+      "historical_operations": [
+        "backup.manage",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_bluetooth_manage_system_settings_vision_d_118ea77611",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "device_settings\t27\twifi/bluetooth/brillo — se solapa con system\nSi solapa unelas en una \nbrowser_real\t17\tPlaywright; tenés DOS browsers (browser+browser_real) → fusionar a uno\nSi haz eso \nOKey perfectoo daleee, crees que ahora cuando hagas eso, seremos capaces de finetunear el llm y el encoder con esta nueva vision y obtener mejores resultados?, que tan mejores?",
+      "historical_operations": [
+        "bluetooth.manage",
+        "system.settings",
+        "vision.describe",
+        "wifi.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_bluetooth_manage_web_search_c1eb71dd6f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Busca en MercadoLibre audífonos bluetooth",
+      "historical_operations": [
+        "bluetooth.manage",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_calendar_manage_web_sear_4a09364d02",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "connect to wifi, open my email, read the last message, open the browser, search the address and add it to the calendar",
+      "historical_operations": [
+        "browser.navigate",
+        "calendar.manage",
+        "web.search",
+        "wifi.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_media_control_fd058c5fe1",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre google.com y resume la página",
+      "historical_operations": [
+        "browser.navigate",
+        "media.control"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_media_play_streaming_nav_052d53121b",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Abre youtube y pon un video",
+      "historical_operations": [
+        "browser.navigate",
+        "media.play",
+        "streaming.navigate"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_media_play_streaming_nav_c330bd70c1",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre YouTube y busca música lofi",
+      "historical_operations": [
+        "browser.navigate",
+        "media.play",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_media_play_web_search_f9f6138de6",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre el navegador, busca Python y reproduce un tutorial",
+      "historical_operations": [
+        "browser.navigate",
+        "media.play",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_streaming_navigate_0c5564401f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre YouTube",
+      "historical_operations": [
+        "browser.navigate",
+        "streaming.navigate"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_streaming_navigate_web_s_42766ae002",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre YouTube y busca lofi",
+      "historical_operations": [
+        "browser.navigate",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_streaming_navigate_web_s_ae9124587f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre YouTube, busca música lofi y no reproduzcas nada",
+      "historical_operations": [
+        "browser.navigate",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_browser_navigate_web_search_9220c7f947",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre el navegador y busca Python",
+      "historical_operations": [
+        "browser.navigate",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_media_control_6a2a97fd9f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "El evento de la Bienal Encuentros 04 con la ceremonia de bendicion de la Bienal de Singapur 2006 tuvo lugar aqui el 1 de diciembre de 2005 .\nSimplifica el texto anterior.",
+      "historical_operations": [
+        "calendar.manage",
+        "media.control"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_memory_recall_notificatio_fef6a7e7fe",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": null,
+      "historical_operations": [
+        "calendar.manage",
+        "memory.recall",
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_notification_manage_offic_c185016a44",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "calendar.manage",
+        "notification.manage",
+        "office.document",
+        "task.manage",
+        "web.search"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_notification_manage_strea_199bd077d3",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "calendar.manage",
+        "notification.manage",
+        "streaming.navigate",
+        "task.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_notification_manage_syste_6c924eb4ef",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "calendar.manage",
+        "notification.manage",
+        "system.settings",
+        "task.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_notification_manage_task__343c4c57fb",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "calendar.manage",
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_reminder_create_ece9b5b808",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "abre el calendario, agenda una reunion el lunes y ponme un recordatorio",
+      "historical_operations": [
+        "calendar.manage",
+        "reminder.create"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_calendar_manage_vision_describe_95c2a7e17b",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "OK, but could you describe an event in Europe ?",
+      "historical_operations": [
+        "calendar.manage",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_clipboard_manage_ce7e1fdc11",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "take a screenshot and copy it to the clipboard",
+      "historical_operations": [
+        "capture.screenshot",
+        "clipboard.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_memory_forget_system_p_9f7924ae3a",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": "Pre-LLM canonical destructive-root detector (Snowball stems): borr/elimin/delet/remov/wip/purg/destroy/eras/uninst/format/diskpart/shutdown/reboot/kill/olvid/forget + regex for `rm\\\\s+-rf`, `pip install`, `npm install`, `screenshot.*completa\\",
+      "historical_operations": [
+        "capture.screenshot",
+        "memory.forget",
+        "system.power"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_ocr_read_vision_descri_d6d5a42686",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "capture.screenshot",
+        "ocr.read",
+        "vision.describe"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_routine_manage_10c0a200d8",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "capture.screenshot",
+        "routine.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_vision_describe_554e8d2305",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "toma screenshot de pantalla completa",
+      "historical_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_web_search_bec82f9b3d",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Many tools require a numeric ID you don't have. NEVER ask the user for an ID. Instead, ALWAYS rewrite to: search(query) → screenshot → vision_describe_dialog → click first result.",
+      "historical_operations": [
+        "capture.screenshot",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_capture_screenshot_window_manage_7a81131a17",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "toma screenshot de la ventana actual",
+      "historical_operations": [
+        "capture.screenshot",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_clipboard_manage_notification_manage_task_4f4ad2588e",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "clipboard.manage",
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_clipboard_manage_task_manage_vision_descr_7413406cda",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "clipboard.manage",
+        "task.manage",
+        "vision.describe"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_clipboard_manage_vision_describe_44b7e715b7",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "clipboard.manage",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_search_office_document_d26cf82b34",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "find the spreadsheet with the budget in my documents folder",
+      "historical_operations": [
+        "filesystem.search",
+        "office.document"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_search_task_manage_web_search_12c60070ce",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "busca archivo en todo el disco C",
+      "historical_operations": [
+        "filesystem.search",
+        "task.manage",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_search_web_search_304d3917b6",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "busca un archivo llamado ContextoCarter.md",
+      "historical_operations": [
+        "filesystem.search",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_transfer_window_manage_d057d84333",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "mueve archivo X a Y",
+      "historical_operations": [
+        "filesystem.transfer",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_write_note_manage_bea17f9b4a",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "crea archivo sandbox/carter_test/nota.txt con hola",
+      "historical_operations": [
+        "filesystem.write",
+        "note.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_write_office_document_95e94c4b7f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "crea un documento, escribe el resumen y exportalo a PDF",
+      "historical_operations": [
+        "filesystem.write",
+        "office.document"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_filesystem_write_window_manage_90e9e2f0bf",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "crea una carpeta Viaje, mueve las fotos ahi, comprimela y mandala por correo",
+      "historical_operations": [
+        "filesystem.write",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_game_install_media_play_95cbd6216a",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Instálame Batman Arkham Knight en Steam y pon una canción de Michael",
+      "historical_operations": [
+        "game.install",
+        "media.play"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_game_install_web_search_667ad93882",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Descarga Worms Rumble en Steam. IMPORTANTE: primero busca el AppID via https://store.steampowered.co",
+      "historical_operations": [
+        "game.install",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_media_play_dd65cb1f6d",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "pausa la musica",
+      "historical_operations": [
+        "media.control",
+        "media.play"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_memory_forget_c8560f203d",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": "olvida lo anterior de esta conversación",
+      "historical_operations": [
+        "media.control",
+        "memory.forget"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_notification_manage_system__8426165fd1",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "media.control",
+        "notification.manage",
+        "system.power",
+        "task.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_notification_manage_system__c2238e2d0d",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "media.control",
+        "notification.manage",
+        "system.power",
+        "system.status",
+        "task.manage"
+      ],
+      "operation_count": 5,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_notification_manage_task_ma_cf976d5588",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "media.control",
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_office_document_6a36dbe45a",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Porque esta wake word sera mejor que la anterior?",
+      "historical_operations": [
+        "media.control",
+        "office.document"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_streaming_navigate_7d7d93499c",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "¿A cuál categoría pertenece la siguiente pregunta?: ¿Cuál fue la primera película de Bond en la que actuó Daniel Craig?",
+      "historical_operations": [
+        "media.control",
+        "streaming.navigate"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_streaming_navigate_vision_d_ea46b2b497",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "[external unsupported block: image]\n\n[external unsupported block: image]\n\nNo esta funcionando bien despues de algunos turnos, ese \"close\" fue un \"hola\" y el mansaje anterior era \"Cuando salio la serie superman y lois\", creo que el llm se esta cegando por los turnos anteriores (QWEN)",
+      "historical_operations": [
+        "media.control",
+        "streaming.navigate",
+        "vision.describe"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_task_manage_bab0a2b7a2",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "resume log largo sin cargar todo si no hace falta",
+      "historical_operations": [
+        "media.control",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_task_manage_web_search_20193b6068",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "media.control",
+        "task.manage",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_vision_describe_f4c59321c3",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "“Phone’s screen is broken, I want my money back” what is the sentiment of the previous statement?",
+      "historical_operations": [
+        "media.control",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_control_window_manage_f393735304",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "switch to the previous window",
+      "historical_operations": [
+        "media.control",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_message_send_22d94e802e",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "manda un whatsapp a Música que diga ya voy",
+      "historical_operations": [
+        "media.play",
+        "message.send"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_message_send_notification_mana_e8ae272e24",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "manda un whatsapp a Juan, dile que ya voy y pon una alarma en 10 minutos",
+      "historical_operations": [
+        "media.play",
+        "message.send",
+        "notification.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_message_send_task_manage_3321bd1477",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Listo ya no estoy jugando, me voy a dormir mi pc es todo tuyo, si mandas mensajesa wsp manda al canal \"Música\" , si mandas a discord manda a \"**ShooterCOCK**\" tienes permisos totales en mi pc, te dejo confio en ti.",
+      "historical_operations": [
+        "media.play",
+        "message.send",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_notification_manage_e93ed75e5c",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Pon una alarma para las 7 de la mañana en el reloj",
+      "historical_operations": [
+        "media.play",
+        "notification.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_office_document_ddaa6814c9",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Ahora quiero que inicies el wake word y toido el sistema de transcripcion, voy a usar el pc , hablar , poner videoos, si se detecta un \"Baxy\", es falso, porque no lo dire y los videos que vere no diran es apalabra\nmonitorie constante",
+      "historical_operations": [
+        "media.play",
+        "office.document"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_streaming_navigate_9ba7f2433d",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "pon cualquier video de YouTube",
+      "historical_operations": [
+        "media.play",
+        "streaming.navigate"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_streaming_navigate_web_search_f46c6adade",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Busca en YouTube lofi hip hop y reproduce el primer video",
+      "historical_operations": [
+        "media.play",
+        "streaming.navigate",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_system_power_561953e137",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "restart Spotify",
+      "historical_operations": [
+        "media.play",
+        "system.power"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_system_settings_1167fea25c",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "pon musica y sube el brillo",
+      "historical_operations": [
+        "media.play",
+        "system.settings"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_task_manage_50a71c6e26",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "⏳ Pendiente (30 segundos, cuando estés libre): \"Baxy\" ENCIMA de música fuerte, crudo vs cancelado — el A/B final antes de encender el flag.\n\nDale como lo hago, corro la gui?",
+      "historical_operations": [
+        "media.play",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_vision_describe_47fe2dfbef",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Pon mi pantalla a 60hz pls",
+      "historical_operations": [
+        "media.play",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_web_search_307f6c74ab",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "spotify:track:<id>`, `spotify:album:<id>`, `spotify:playlist:<id>`, `spotify:artist:<id>`, `spotify:search:<query>` (URL-encoded)",
+      "historical_operations": [
+        "media.play",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_media_play_window_manage_23bd79ecd1",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Cambia a la ventana de Spotify",
+      "historical_operations": [
+        "media.play",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_forget_memory_recall_15617ea7d1",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": "olvida mi preferencia de respuestas cortas",
+      "historical_operations": [
+        "memory.forget",
+        "memory.recall"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_forget_system_settings_62c45841f4",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": "forget that setting",
+      "historical_operations": [
+        "memory.forget",
+        "system.settings"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_forget_task_manage_2d509920bf",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": "olvida todo lo que sabes de Carter",
+      "historical_operations": [
+        "memory.forget",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_forget_window_manage_db105dc15c",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": null,
+      "historical_operations": [
+        "memory.forget",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_recall_memory_save_e7e2940778",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": "remember/recall/volátil probados",
+      "historical_operations": [
+        "memory.recall",
+        "memory.save"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_recall_notification_manage_task_ma_2d7afb1703",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": null,
+      "historical_operations": [
+        "memory.recall",
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_recall_office_document_task_manage_1de5989974",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": null,
+      "historical_operations": [
+        "memory.recall",
+        "office.document",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_recall_web_search_20389c45b0",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": "3 tabs: PERSISTENT (CRUD MemoryStore), EXPERIENCE (semantic recall sobre sqlite-vec), KNOWLEDGE (search con rerank J1).",
+      "historical_operations": [
+        "memory.recall",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_memory_save_task_manage_c41c5e286a",
+      "classification": "private_boundary",
+      "reason": "memory branch must be isolated before public planning",
+      "representative_objective": "recordá: solo actuá si hay una confirmación pendiente, sino esperá",
+      "historical_operations": [
+        "memory.save",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_message_send_office_document_peripheral_m_6284ec7c55",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "[external unsupported block: image]\n\nBaxy se esta activando incluso con el microfono en off \n\nTambien muchas veces se envia un mensaje al llm sin pasar por el wake word, porque no suena el soinido de wake word y se manda un mensaje igual",
+      "historical_operations": [
+        "message.send",
+        "office.document",
+        "peripheral.manage",
+        "vision.describe"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_message_send_task_manage_bfb9c75e5f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Dame un prompt paraa que codex gpt 5.5 ponga en prueba todo esto resalmente end to end, tu no lo hiciste, en ningun momento vi a whatsapp abrirse para mandar un mensaje  por ej, asi que dejemos que chat gpt codex haga la validicacion denuevo y que arregle si es que encuentra algun error",
+      "historical_operations": [
+        "message.send",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_message_send_web_search_c1fca2423e",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Dame un prompt para codex para mandar a buscar solucion a lo de discord, dile que investigue papers/documentos, usaurios reales y lo arregle mientras nosotros seguimos en otros temas",
+      "historical_operations": [
+        "message.send",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_note_manage_reminder_create_b5106ca21b",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "creá una nota con la lista del súper y ponéme un recordatorio para mañana a las 9",
+      "historical_operations": [
+        "note.manage",
+        "reminder.create"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_note_manage_system_status_vision_describe_7522750ee2",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "note.manage",
+        "system.status",
+        "vision.describe",
+        "window.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_notification_manage_system_power_system_s_f28165e4ac",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "notification.manage",
+        "system.power",
+        "system.status",
+        "task.manage"
+      ],
+      "operation_count": 4,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_notification_manage_system_power_task_man_926d06beaa",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "notification.manage",
+        "system.power",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_notification_manage_system_status_task_ma_c62adad093",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "notification.manage",
+        "system.status",
+        "task.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_notification_manage_task_manage_9d8642bc69",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "notification.manage",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_notification_manage_task_manage_vision_de_c1f8605b71",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "notification.manage",
+        "task.manage",
+        "vision.describe"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_notification_manage_task_manage_web_searc_ca73d04a88",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "notification.manage",
+        "task.manage",
+        "web.search"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_notification_manage_task_manage_window_ma_848c32745e",
+      "classification": "contaminated_trace",
+      "reason": "only logs, code, notifications, evaluation prose, or oversized traces",
+      "representative_objective": null,
+      "historical_operations": [
+        "notification.manage",
+        "task.manage",
+        "window.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_ocr_read_system_status_vision_describe_ce21a79678",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "OCR PaddleOCR full-screen (CPU)",
+      "historical_operations": [
+        "ocr.read",
+        "system.status",
+        "vision.describe"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_ocr_read_vision_describe_84bc963b69",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "lee el texto en mi pantalla",
+      "historical_operations": [
+        "ocr.read",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_office_document_task_manage_89d766a24f",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Mientras revisa todo el sistema de wake word y transcripciones , quiero que lo audites, in vesitges papers, documentos, sigue claude.md , llevalo a su techo, sin reentrenar el wake word pls",
+      "historical_operations": [
+        "office.document",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_office_document_web_search_104ef62591",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Sinceramente el wake word ya esta entrenado, intenta encontrar otra razon para los fake, investiga en internet , documentos, papers, usuarios, etc",
+      "historical_operations": [
+        "office.document",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_reminder_create_task_manage_d4de6e9442",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "OKey quiero ahora que te pongas un recordatorio de 30min cada uno , solo para revisar la velocidad, para verificar que todo vaya bien con el training pls",
+      "historical_operations": [
+        "reminder.create",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_reminder_create_vision_describe_8c52ebb3ad",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "generá una imagen de un atardecer y avisame cuando esté lista",
+      "historical_operations": [
+        "reminder.create",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_routine_manage_task_manage_c919790a8d",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "programá una tarea que se repita todos los días a las 9",
+      "historical_operations": [
+        "routine.manage",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_streaming_navigate_task_manage_919ed25b40",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "motor importa y resuelve plataformas; reproducción real pendiente de prueba con sesión de streaming activa",
+      "historical_operations": [
+        "streaming.navigate",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_streaming_navigate_web_search_75de56f9cb",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "**Verificado en vivo (sesión elevada):** perfil BAXY borrado -> re-seed -> 298 archivos, cookies_ok=True (VSS copió Cookies; único skip: Cookies-journal, transitorio) -> Netflix /search?q=dark, Disney+ /browse/search y Prime Video HOME cargan los tres LOGUEADOS, sin login wall. El navegador del usuario nunca se tocó. Suite 60 passed + 1 skip (5 tests de seed nuevos: layout Opera plano y Chrome Default, source ausente, skip de gigantes, cadena de fallback a VSS).",
+      "historical_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_streaming_navigate_window_manage_1175105e0d",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "cerrá la ventana de YouTube",
+      "historical_operations": [
+        "streaming.navigate",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_power_task_manage_431e304aa6",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Okey reinicia mi pc , te  permiso , quiero que al rieniciarlo a la vuleta de la sesion cierres absolutamente todo, y dejes solo visual estudio, apollo y el ft, para hacer que el training sea lo mas rapido posible, te parece bien?",
+      "historical_operations": [
+        "system.power",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_settings_vision_describe_067dc6c902",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "NEcesito casos de uso que aporten a un apresentacion de pre tesis, por ej : \nBrillo de pantalla\t81\t\"subí el brillo\", \"bajá el brillo\", \"brillo al 50\"\nQué hora es\t52\t\"qué hora es\", \"dame la hora\"\nNo me sirven\nSIno las categorias en sii, cosas llamativas",
+      "historical_operations": [
+        "system.settings",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_status_task_manage_f0bd85f343",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "GPU\t4,4GB (QAT)\t4,4GB (igual — mismo modelo)\nQat no pesa 4,4gb\nEso es falso, puedes cargar una parte de ram?¡ para mantenerlo abajo de 3gb de vram el programa completo? incluyendolo todo pls",
+      "historical_operations": [
+        "system.status",
+        "task.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_status_task_manage_vision_describe_aede6cbeac",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Modelo FT Q4_K_M (no el QAT), visión residente en GPU, ctx 12288.\nPero yo quiero que el vram sea el que tiene cat y todo los cambios que hicismos",
+      "historical_operations": [
+        "system.status",
+        "task.manage",
+        "vision.describe"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_status_vision_describe_3c64075a19",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "[external unsupported block: image]\n\nQueria saber como iba, la gpu aun esta en uso, escribi lo ultimo por error la pregunta era, como va?",
+      "historical_operations": [
+        "system.status",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_system_status_web_search_b495fd8988",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "busca precios actuales de una GPU",
+      "historical_operations": [
+        "system.status",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_task_manage_vision_describe_44a2cc2edd",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "<ide_opened_file>The user opened the file %USERPROFILE%\\Desktop\\ETC\\Programacion\\BAXY\\main.py in the IDE. This may or may not be related to the current task.</ide_opened_file>\n\n[external unsupported block: image]\n\n[external unsupported block: image]\n\nRevisa los ultimos logs de baxy, esta funcionando horrible",
+      "historical_operations": [
+        "task.manage",
+        "vision.describe"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_task_manage_vision_describe_window_manage_005a4a16bc",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "<ide_opened_file>The user opened the file %USERPROFILE%\\Desktop\\ETC\\Programacion\\BAXY\\main.py in the IDE. This may or may not be related to the current task.</ide_opened_file>\n\n[external unsupported block: image]\n\nArregla esto, baxy se inicia con todo ese contorno sin usar cuando realmente deberia adaptarse al contorno de la ventana",
+      "historical_operations": [
+        "task.manage",
+        "vision.describe",
+        "window.manage"
+      ],
+      "operation_count": 3,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_task_manage_web_search_f7a0ea83b3",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "Neesito que el sistema tenga skills como cualquier bien llm como chatgpt o claude, investiga como hacerlo posible y llevarlo a su techo maximo, investigando en internet, documentos , papers ,etc \n4. NO, 1ero consolidamos todo lo que tenemos y despues nos expandimos a mas tools\n5. Si , llevalo a su techo maximo\n6. Llevalo a su techo maximo y arreglalo\nHaz todo c tambien , menos el 10, porque eso lo dejamos para despues",
+      "historical_operations": [
+        "task.manage",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_task_manage_window_manage_f8c89d935b",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "si la ventana activa dice Steam no respondas todo como Steam",
+      "historical_operations": [
+        "task.manage",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_vision_describe_web_search_442e2144d8",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "busca imagen de corte bob lino",
+      "historical_operations": [
+        "vision.describe",
+        "web.search"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_vision_describe_window_manage_ef3156ecb2",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "observa la pantalla y dime qué ventana está activa",
+      "historical_operations": [
+        "vision.describe",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    },
+    {
+      "mission_id": "mission_user_mission_web_search_window_manage_a71db076d9",
+      "classification": "natural_evaluable",
+      "reason": "contains at least one bounded natural user objective",
+      "representative_objective": "La ventana activa es Steam; busca Batman en Google",
+      "historical_operations": [
+        "web.search",
+        "window.manage"
+      ],
+      "operation_count": 2,
+      "missing_public_families": []
+    }
+  ]
+}

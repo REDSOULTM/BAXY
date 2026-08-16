@@ -1,0 +1,6 @@
+{"clause": "i need you to open spotify", "operation": "app.open", "compatible": false}
+{"clause": "get spotify running", "operation": "app.open", "compatible": false}
+{"clause": "spotify needs to be open", "operation": "app.open", "compatible": false}
+{"clause": "i need you to open spotify", "operation": "app.open", "compatible": false}
+{"clause": "Either open Spotify or send Lucas hello on WhatsApp.", "operation": "message.send", "compatible": false}
+{"clause": "I need you to open Spotify, then do the other thing.", "operation": "app.open", "compatible": false}

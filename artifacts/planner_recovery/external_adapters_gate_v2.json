@@ -1,0 +1,603 @@
+{
+  "schema_version": 2,
+  "measured_at": "2026-07-21T01:35:51.657515+00:00",
+  "scope": "physical_external_adapters_via_real_baxy_core",
+  "core_catalog_count": 158,
+  "cases": [
+    {
+      "case": "steam_catalog",
+      "operation": "game.catalog.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 16,
+        "states": {
+          "installed": 16
+        },
+        "authority": "steam_local_appmanifests"
+      }
+    },
+    {
+      "case": "steam_status",
+      "operation": "game.install.status",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "jobId": "steam_job_02af761b7d193e12fa45e3dc",
+        "appId": "924970",
+        "state": "installed",
+        "bytesDownloaded": 49920716272,
+        "bytesTotal": 49920716272,
+        "progressPercent": 100,
+        "authority": "steam_local_appmanifest"
+      }
+    },
+    {
+      "case": "fall_guys_installation_inventory",
+      "operation": "game.installed.named",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "query": "Fall Guys",
+        "provider": "any",
+        "installed": false,
+        "matchCount": 0,
+        "games": [],
+        "authority": "steam_epic_manifests_install_directory_postread"
+      }
+    },
+    {
+      "case": "fortnite_epic_installation_inventory",
+      "operation": "game.installed.named",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "query": "Fortnite",
+        "provider": "epic",
+        "installed": false,
+        "matchCount": 0,
+        "games": [],
+        "authority": "steam_epic_manifests_install_directory_postread"
+      }
+    },
+    {
+      "case": "bluetooth_inventory",
+      "operation": "bluetooth.device.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 14,
+        "paired": 0,
+        "pairable": 0,
+        "authority": "windows_device_enumeration"
+      }
+    },
+    {
+      "case": "peripheral_inventory",
+      "operation": "peripheral.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 19,
+        "printers": 7,
+        "scanners": 0,
+        "mice": 2,
+        "mouse_names": [
+          "SuperDisplay HID Driver",
+          "ELAN1203 (Dispositivo HID I2C)"
+        ],
+        "requested_kind": "all",
+        "authority": "windows_print_wia_usb_hid_inventory"
+      }
+    },
+    {
+      "case": "mouse_inventory",
+      "operation": "peripheral.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 2,
+        "printers": 0,
+        "scanners": 0,
+        "mice": 2,
+        "mouse_names": [
+          "SuperDisplay HID Driver",
+          "ELAN1203 (I2C HID Device)"
+        ],
+        "requested_kind": "mouse",
+        "authority": "windows_pnputil_connected_parent_registry"
+      }
+    },
+    {
+      "case": "scanner_inventory",
+      "operation": "peripheral.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 0,
+        "printers": 0,
+        "scanners": 0,
+        "mice": 0,
+        "mouse_names": [],
+        "requested_kind": "scanner",
+        "authority": "windows_print_wia_usb_hid_inventory"
+      }
+    },
+    {
+      "case": "wifi_profiles",
+      "operation": "wifi.profile.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 14,
+        "authority": "netsh_wlan_profile_snapshot"
+      }
+    },
+    {
+      "case": "notification_diagnostics",
+      "operation": "notification.diagnose",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "schedulerRunning": true,
+        "toastEnabled": true,
+        "healthy": true,
+        "taskCount": 0,
+        "firedReceiptCount": 0,
+        "issueCount": 0,
+        "tasks": [],
+        "authority": "windows_task_scheduler_notification_diagnostics_postread"
+      }
+    },
+    {
+      "case": "escape_key",
+      "operation": "input.key.press",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "ok": true,
+        "effectObserved": true,
+        "action": "key",
+        "key": "escape",
+        "pointerAction": "",
+        "pointerX": null,
+        "pointerY": null,
+        "textLength": 0,
+        "layout": "",
+        "layoutLanguageId": null,
+        "language": "other",
+        "openedProcessId": null,
+        "acceptedEvents": 2,
+        "expectedEvents": 2,
+        "inputSize": 40,
+        "lastWin32Error": 0,
+        "foregroundProcessIdBefore": 38060,
+        "foregroundProcessIdAfter": 38060,
+        "foregroundTitleBefore": "Spotify Premium",
+        "authority": "win32_sendinput_return_count",
+        "error": null
+      }
+    },
+    {
+      "case": "spanish_keyboard_layout",
+      "operation": "input.keyboard.layout",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "ok": true,
+        "effectObserved": true,
+        "action": "layout",
+        "key": "",
+        "pointerAction": "",
+        "pointerX": null,
+        "pointerY": null,
+        "textLength": 0,
+        "layout": "spanish",
+        "layoutLanguageId": "0x080a",
+        "language": "spanish",
+        "openedProcessId": null,
+        "acceptedEvents": 1,
+        "expectedEvents": 1,
+        "inputSize": 40,
+        "lastWin32Error": 0,
+        "foregroundProcessIdBefore": 38060,
+        "foregroundProcessIdAfter": 38060,
+        "foregroundTitleBefore": "Spotify Premium",
+        "authority": "win32_foreground_keyboard_layout_postread",
+        "error": null
+      }
+    },
+    {
+      "case": "keyboard_layout_status",
+      "operation": "input.keyboard.status",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "ok": true,
+        "effectObserved": false,
+        "action": "layoutstatus",
+        "key": "",
+        "pointerAction": "",
+        "pointerX": null,
+        "pointerY": null,
+        "textLength": 0,
+        "layout": "",
+        "layoutLanguageId": "0x080a",
+        "language": "spanish",
+        "openedProcessId": null,
+        "acceptedEvents": 1,
+        "expectedEvents": 1,
+        "inputSize": 40,
+        "lastWin32Error": 0,
+        "foregroundProcessIdBefore": 38060,
+        "foregroundProcessIdAfter": 38060,
+        "foregroundTitleBefore": "Spotify Premium",
+        "authority": "win32_foreground_keyboard_layout_read",
+        "error": null
+      }
+    },
+    {
+      "case": "microphone_mute_probe",
+      "operation": "audio.microphone.mute",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "baselineMuted": true,
+        "muted": true,
+        "endpointIdHash": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf",
+        "authority": "windows_core_audio_capture_endpoint_postread"
+      }
+    },
+    {
+      "case": "microphone_unmute_probe",
+      "operation": "audio.microphone.mute",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "baselineMuted": true,
+        "muted": false,
+        "endpointIdHash": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf",
+        "authority": "windows_core_audio_capture_endpoint_postread"
+      }
+    },
+    {
+      "case": "microphone_restore_muted",
+      "operation": "audio.microphone.mute",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "baselineMuted": false,
+        "muted": true,
+        "endpointIdHash": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf",
+        "authority": "windows_core_audio_capture_endpoint_postread"
+      }
+    },
+    {
+      "case": "web_search",
+      "operation": "web.search",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "query": "OpenAI",
+        "count": 3,
+        "results": [
+          {
+            "title": "OpenAI | Research & Deployment",
+            "url": "https://openai.com/",
+            "snippet": "An OpenAI model has disproved a central conjecture in discrete geometry Research May 20, 2026"
+          },
+          {
+            "title": "OpenAI | Research & Deployment",
+            "url": "https://openai.com/es-ES/",
+            "snippet": "Últimas investigaciones Ver todo Un modelo de OpenAI ha refutado una conjetura central de la geometría discreta Investigación 20 may 2026 Presentamos GPT-Rosalind para la investigación en ciencias de la vida Investigación 16 abr 2026"
+          },
+          {
+            "title": "ChatGPT",
+            "url": "https://chatgpt.com/",
+            "snippet": "ChatGPT helps you get answers, find inspiration, and be more productive."
+          }
+        ],
+        "authority": "bing_rss_https"
+      }
+    },
+    {
+      "case": "browser_navigation",
+      "operation": "browser.navigate",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "requestedUrl": "https://example.com/",
+        "finalUrl": "https://example.com/",
+        "targetId": "01DA25A3E74FFCA76E95731BC5B508DC",
+        "authority": "cdp"
+      }
+    },
+    {
+      "case": "browser_reload",
+      "operation": "browser.control",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "action": "reload",
+        "targetId": "01DA25A3E74FFCA76E95731BC5B508DC",
+        "observedState": "complete|https://example.com/",
+        "authority": "cdp_postread"
+      }
+    },
+    {
+      "case": "browser_video_navigation",
+      "operation": "browser.navigate",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "requestedUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "finalUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "targetId": "01DA25A3E74FFCA76E95731BC5B508DC",
+        "authority": "cdp"
+      }
+    },
+    {
+      "case": "browser_video_fullscreen",
+      "operation": "browser.control",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "action": "fullscreen_video",
+        "targetId": "01DA25A3E74FFCA76E95731BC5B508DC",
+        "observedState": "fullscreen:VIDEO",
+        "authority": "cdp_postread"
+      }
+    },
+    {
+      "case": "browser_fullscreen_exit",
+      "operation": "input.key.press",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "ok": true,
+        "effectObserved": true,
+        "action": "key",
+        "key": "escape",
+        "pointerAction": "",
+        "pointerX": null,
+        "pointerY": null,
+        "textLength": 0,
+        "layout": "",
+        "layoutLanguageId": null,
+        "language": "other",
+        "openedProcessId": null,
+        "acceptedEvents": 2,
+        "expectedEvents": 2,
+        "inputSize": 40,
+        "lastWin32Error": 0,
+        "foregroundProcessIdBefore": 38060,
+        "foregroundProcessIdAfter": 38060,
+        "foregroundTitleBefore": "Spotify Premium",
+        "authority": "win32_sendinput_return_count",
+        "error": null
+      }
+    },
+    {
+      "case": "streaming_navigation",
+      "operation": "streaming.navigate",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "service": "youtube",
+        "resourceUri": "https://www.youtube.com/results?search_query=BAXY+gate",
+        "targetId": "01DA25A3E74FFCA76E95731BC5B508DC",
+        "authority": "authenticated_cdp_session"
+      }
+    },
+    {
+      "case": "youtube_playback",
+      "operation": "media.play.youtube",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "provider": "youtube",
+        "query": "gatos",
+        "title": "gatos",
+        "playbackStatus": "playing",
+        "processId": 10912,
+        "authority": "yt_dlp_mpv_ipc_postread"
+      }
+    },
+    {
+      "case": "screen_capture",
+      "operation": "capture.screenshot",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "captureId": "capture_7a71a5d7407f44a88bc9184e1ca25ade",
+        "width": 1280,
+        "height": 720,
+        "sha256": "cb466a154a2e2ceaa81fedd50e91320df93a18f21ae8221eefae004702256c47",
+        "scope": "virtual_screen",
+        "createdAtUtc": "2026-07-21T01:35:26.2460854+00:00"
+      }
+    },
+    {
+      "case": "windows_ocr",
+      "operation": "ocr.read",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "captureId": "capture_7a71a5d7407f44a88bc9184e1ca25ade",
+        "language": "es-MX",
+        "textSha256": "c88aa6fe7625a91fd7caf1ac633bf1267275975630abe000dca70e0cf0f6eb6d",
+        "lineCount": 20,
+        "authority": "windows_media_ocr"
+      }
+    },
+    {
+      "case": "calendar_list",
+      "operation": "calendar.event.list",
+      "status": "failed",
+      "verified": false,
+      "error": "outlook_profile_not_configured",
+      "effect_may_have_occurred": false,
+      "result": null
+    },
+    {
+      "case": "outlook_latest_email_read",
+      "operation": "email.latest.read",
+      "status": "failed",
+      "verified": false,
+      "error": "outlook_profile_not_configured",
+      "effect_may_have_occurred": false,
+      "result": null
+    },
+    {
+      "case": "office_create",
+      "operation": "office.document.create",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "documentId": "document_417158f93a5e74f1a12c0e7d",
+        "format": "docx",
+        "title": "BAXY external adapter gate a23b1f1d",
+        "length": 966,
+        "authority": "iso29500_ooxml_postread"
+      }
+    },
+    {
+      "case": "office_read",
+      "operation": "office.document.read",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "documentId": "document_417158f93a5e74f1a12c0e7d",
+        "format": "docx",
+        "text": "BAXY external adapter gate a23b1f1d",
+        "textSha256": "489847914b3ad39ca7f93f873c01bd205b57771543d3200abf24dd0f37e5cfb6",
+        "authority": "iso29500_ooxml_snapshot"
+      }
+    },
+    {
+      "case": "spotify_query_selection",
+      "operation": "media.play.query",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "provider": "spotify",
+        "title": "Norah Jones - Come Away With Me",
+        "query": "jazz",
+        "playbackStatus": "playing",
+        "processId": 38060,
+        "authority": "spotify_windows_uia_postread"
+      }
+    },
+    {
+      "case": "spotify_exact_selection",
+      "operation": "media.play.exact",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "provider": "spotify",
+        "title": "Michael Jackson - Billie Jean",
+        "playbackStatus": "playing",
+        "processId": 38060,
+        "authority": "spotify_windows_uia_postread"
+      }
+    }
+  ],
+  "summary": {
+    "verified": 30,
+    "safe_failures": 2,
+    "ambiguous_effects": 0,
+    "functional_failures": 2,
+    "total": 32
+  },
+  "stderr": ""
+}

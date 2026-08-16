@@ -1,0 +1,2501 @@
+{
+  "schema": "baxy.stt-minds14-preregistration.v1",
+  "preregisteredAtUtc": "2026-08-11T02:16:39.7601843Z",
+  "generator": {
+    "path": "experiments/stt_quality/preregister_minds14_stt_holdout.py",
+    "sha256": "6c9dd673381d6ba7ccf841e0a0e8cda07ca3c7b5a5432af2d399974200512110"
+  },
+  "role": "unopened_real_command_like_english_spanish_stt_holdout_component",
+  "evaluationStatus": "unopened",
+  "modelAudioDecoded": false,
+  "audioPayloadRead": false,
+  "transcriptionPayloadRead": false,
+  "metadataColumnsRead": [
+    "path",
+    "intent_class",
+    "lang_id"
+  ],
+  "corpusSelectionFrozen": true,
+  "source": {
+    "name": "MInDS-14",
+    "paper": "https://aclanthology.org/2021.emnlp-main.591/",
+    "repository": "https://huggingface.co/datasets/PolyAI/minds14",
+    "license": "CC-BY-4.0",
+    "repositoryCommit": "40ce77cb32a384e4d50a568e1ec39ac804019d33",
+    "parquetReference": "refs/convert/parquet",
+    "parquetCommit": "0c617db2d3e8c3576abdd7548af4a9f5ff41d2cb",
+    "localRoot": "D:/BAXYRuntime/experiments/stt_holdout_sources/polyai_minds14_parquet_0c617db2",
+    "files": {
+      "en-US_train_0000.parquet": {
+        "bytes": 34196221,
+        "sha256": "37004471dc896ce20771b3fdda0ee8fb33ec7a030fb4e2fd047c561ec0a1ee30",
+        "rows": 563,
+        "language": "en-US"
+      },
+      "es-ES_train_0000.parquet": {
+        "bytes": 39069577,
+        "sha256": "989bf2f90676a5eb5852fe785a03b1d9b97763e0febbd0fd0a3f489afd83badf",
+        "rows": 486,
+        "language": "es-ES"
+      }
+    },
+    "languages": [
+      "en-US",
+      "es-ES"
+    ],
+    "intents": 14,
+    "rows": 1049
+  },
+  "researchRuntime": {
+    "python": "D:/BAXYRuntime/experiments/stt_quality_tools/pyarrow-25.0.1/Scripts/python.exe",
+    "pythonVersion": "3.12.10",
+    "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "numpyVersion": "2.2.5",
+    "pyarrowVersion": "25.0.1",
+    "pyarrowWheel": {
+      "version": "25.0.1",
+      "filename": "pyarrow-25.0.1-cp312-cp312-win_amd64.whl",
+      "sha256": "8858d7bfc22e3f51529aeaa4077225029724623e4595dc9eff8c793935c34140"
+    }
+  },
+  "selection": {
+    "seed": 20260811,
+    "stratifiedBy": [
+      "language",
+      "intent"
+    ],
+    "speakerMetadataAvailable": false,
+    "intentCounts": {
+      "en-US:abroad": {
+        "source": 34,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:address": {
+        "source": 34,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:app_error": {
+        "source": 42,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:atm_limit": {
+        "source": 41,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:balance": {
+        "source": 41,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:business_loan": {
+        "source": 39,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:card_issues": {
+        "source": 46,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:cash_deposit": {
+        "source": 48,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:direct_debit": {
+        "source": 36,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:freeze": {
+        "source": 45,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:high_value_payment": {
+        "source": 40,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:joint_account": {
+        "source": 42,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:latest_transactions": {
+        "source": 34,
+        "development": 3,
+        "blind": 7
+      },
+      "en-US:pay_bill": {
+        "source": 41,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:abroad": {
+        "source": 28,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:address": {
+        "source": 41,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:app_error": {
+        "source": 21,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:atm_limit": {
+        "source": 41,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:balance": {
+        "source": 43,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:business_loan": {
+        "source": 37,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:card_issues": {
+        "source": 36,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:cash_deposit": {
+        "source": 34,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:direct_debit": {
+        "source": 34,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:freeze": {
+        "source": 38,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:high_value_payment": {
+        "source": 34,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:joint_account": {
+        "source": 37,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:latest_transactions": {
+        "source": 29,
+        "development": 3,
+        "blind": 7
+      },
+      "es-ES:pay_bill": {
+        "source": 33,
+        "development": 3,
+        "blind": 7
+      }
+    },
+    "developmentPerIntent": 3,
+    "blindPerIntent": 7,
+    "developmentRecords": [
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 298,
+        "path": "en-US~ABROAD/602baae8963e11ccd901cd79.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 308,
+        "path": "en-US~ABROAD/602ba898bb1e6d0fbce92101.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 314,
+        "path": "en-US~ABROAD/602ba9b0bb1e6d0fbce92134.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 221,
+        "path": "en-US~ADDRESS/602bae4bbb1e6d0fbce9224e.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 243,
+        "path": "en-US~ADDRESS/602bab7fbb1e6d0fbce921a1.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 236,
+        "path": "en-US~ADDRESS/602ba9f005f96973d67944a0.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 173,
+        "path": "en-US~APP_ERROR/602ba528963e11ccd901cca8.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 196,
+        "path": "en-US~APP_ERROR/602babfdbb1e6d0fbce921b9.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 192,
+        "path": "en-US~APP_ERROR/602ba3bcbb1e6d0fbce92023.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 281,
+        "path": "en-US~ATM_LIMIT/602ba6ac05f96973d6794456.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 256,
+        "path": "en-US~ATM_LIMIT/602bad8a5f67b421554f6499.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 267,
+        "path": "en-US~ATM_LIMIT/602b9ae5963e11ccd901cbd6.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 52,
+        "path": "en-US~BALANCE/602ba6f3bb1e6d0fbce920b7.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 70,
+        "path": "en-US~BALANCE/602ba418bb1e6d0fbce92030.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 54,
+        "path": "en-US~BALANCE/602ba717bb1e6d0fbce920bc.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 539,
+        "path": "en-US~BUSINESS_LOAN/602bab57bb1e6d0fbce92194.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 530,
+        "path": "en-US~BUSINESS_LOAN/602bae0c5f67b421554f64a2.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 550,
+        "path": "en-US~BUSINESS_LOAN/602baa2d963e11ccd901cd5b.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 518,
+        "path": "en-US~CARD_ISSUES/602baa57963e11ccd901cd66.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 512,
+        "path": "en-US~CARD_ISSUES/602b9cd0bb1e6d0fbce91f97.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 495,
+        "path": "en-US~CARD_ISSUES/602bae45963e11ccd901cdf8.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 462,
+        "path": "en-US~CASH_DEPOSIT/602ba8aebb1e6d0fbce92105.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 465,
+        "path": "en-US~CASH_DEPOSIT/602baea3bb1e6d0fbce92279.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 471,
+        "path": "en-US~CASH_DEPOSIT/602b9d7cbb1e6d0fbce91fac.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 331,
+        "path": "en-US~DIRECT_DEBIT/602bac87bb1e6d0fbce921ca.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 327,
+        "path": "en-US~DIRECT_DEBIT/602ba309963e11ccd901cc6a.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 346,
+        "path": "en-US~DIRECT_DEBIT/602bae9a963e11ccd901ce04.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 140,
+        "path": "en-US~FREEZE/602ba47f05f96973d679442e.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 154,
+        "path": "en-US~FREEZE/602ba34c05f96973d679441b.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 134,
+        "path": "en-US~FREEZE/602ba3845f67b421554f63e5.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 416,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602ba8b0bb1e6d0fbce92106.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 408,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602bae69963e11ccd901cdff.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 399,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602babdc05f96973d67944c2.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 12,
+        "path": "en-US~JOINT_ACCOUNT/602ba81ebb1e6d0fbce920e6.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 4,
+        "path": "en-US~JOINT_ACCOUNT/602b9d4cbb1e6d0fbce91fa4.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 28,
+        "path": "en-US~JOINT_ACCOUNT/602ba857bb1e6d0fbce920ec.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 382,
+        "path": "en-US~LATEST_TRANSACTIONS/602b9f12963e11ccd901cc2d.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 375,
+        "path": "en-US~LATEST_TRANSACTIONS/602ba5b5bb1e6d0fbce92079.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 386,
+        "path": "en-US~LATEST_TRANSACTIONS/602ba8395f67b421554f643d.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 91,
+        "path": "en-US~PAY_BILL/602ba4d505f96973d6794433.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 120,
+        "path": "en-US~PAY_BILL/602ba97dbb1e6d0fbce92128.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 118,
+        "path": "en-US~PAY_BILL/602bad1fbb1e6d0fbce921e3.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 118,
+        "path": "es-ES~ABROAD/60266221c7abb7f8321381d5.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 103,
+        "path": "es-ES~ABROAD/60265daddc3604f481bcb310.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 92,
+        "path": "es-ES~ABROAD/602662e6dc3604f481bcb399.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 160,
+        "path": "es-ES~ADDRESS/602663d4c7abb7f8321382d7.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 146,
+        "path": "es-ES~ADDRESS/602669f6c421a821df7c179b.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 131,
+        "path": "es-ES~ADDRESS/6026630ddc3604f481bcb3a5.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 9,
+        "path": "es-ES~APP_ERROR/602663acc7abb7f8321382c7.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 12,
+        "path": "es-ES~APP_ERROR/6026604ac7abb7f832138152.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 18,
+        "path": "es-ES~APP_ERROR/60266139dc3604f481bcb352.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 191,
+        "path": "es-ES~ATM_LIMIT/6026654ccfa37e1cf217af9d.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 198,
+        "path": "es-ES~ATM_LIMIT/6026658fdc3604f481bcb51b.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 187,
+        "path": "es-ES~ATM_LIMIT/6026652dc7abb7f83213834a.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 261,
+        "path": "es-ES~BALANCE/602664f9c7abb7f832138335.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 245,
+        "path": "es-ES~BALANCE/602665c3c7abb7f8321383ce.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 273,
+        "path": "es-ES~BALANCE/60266567c7abb7f83213837a.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 345,
+        "path": "es-ES~BUSINESS_LOAN/602660a5c421a821df7c16e4.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 347,
+        "path": "es-ES~BUSINESS_LOAN/602661fadc3604f481bcb37e.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 319,
+        "path": "es-ES~BUSINESS_LOAN/60266576dc3604f481bcb50e.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 295,
+        "path": "es-ES~CARD_ISSUES/602667e6dc3604f481bcb5ca.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 296,
+        "path": "es-ES~CARD_ISSUES/6026678fc7abb7f8321385f5.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 303,
+        "path": "es-ES~CARD_ISSUES/60266486dc3604f481bcb444.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 483,
+        "path": "es-ES~CASH_DEPOSIT/60266649c7abb7f832138472.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 459,
+        "path": "es-ES~CASH_DEPOSIT/602660e1c7abb7f832138169.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 482,
+        "path": "es-ES~CASH_DEPOSIT/6026655ac7abb7f832138370.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 394,
+        "path": "es-ES~DIRECT_DEBIT/60266579c7abb7f832138384.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 421,
+        "path": "es-ES~DIRECT_DEBIT/6026621ac7abb7f8321381d2.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 411,
+        "path": "es-ES~DIRECT_DEBIT/60266693c7abb7f8321384de.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 48,
+        "path": "es-ES~FREEZE/602661cac421a821df7c16f5.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 29,
+        "path": "es-ES~FREEZE/602666f9c7abb7f832138565.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 43,
+        "path": "es-ES~FREEZE/60266646c7abb7f83213846e.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 370,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/602666f4dc3604f481bcb5aa.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 383,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/60266681c7abb7f8321384c7.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 380,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/6026672ec7abb7f8321385a9.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 216,
+        "path": "es-ES~JOINT_ACCOUNT/6026667dc7abb7f8321384bb.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 209,
+        "path": "es-ES~JOINT_ACCOUNT/60266696dc3604f481bcb587.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 217,
+        "path": "es-ES~JOINT_ACCOUNT/602666e6c7abb7f832138550.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 451,
+        "path": "es-ES~LATEST_TRANSACTIONS/602669afdc3604f481bcb5ce.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 434,
+        "path": "es-ES~LATEST_TRANSACTIONS/60266764c7abb7f8321385d5.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 436,
+        "path": "es-ES~LATEST_TRANSACTIONS/6026630cdc3604f481bcb3a4.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 86,
+        "path": "es-ES~PAY_BILL/602674eddc3604f481bcb60d.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 61,
+        "path": "es-ES~PAY_BILL/60266171c7abb7f832138193.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 67,
+        "path": "es-ES~PAY_BILL/60266385c7abb7f8321382a9.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      }
+    ],
+    "developmentManifestSha256": "3fd151d01f66078b9a27cf0919ead7c307639d806132d959be018544602c43dd",
+    "blindRecords": [
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 316,
+        "path": "en-US~ABROAD/602ba132bb1e6d0fbce91fe3.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 311,
+        "path": "en-US~ABROAD/602b9933963e11ccd901cbae.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 296,
+        "path": "en-US~ABROAD/602ba284963e11ccd901cc62.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 301,
+        "path": "en-US~ABROAD/602b9aea963e11ccd901cbd8.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 305,
+        "path": "en-US~ABROAD/602ba089bb1e6d0fbce91fd9.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 315,
+        "path": "en-US~ABROAD/602bab47963e11ccd901cd87.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 313,
+        "path": "en-US~ABROAD/602ba5e2963e11ccd901ccbf.wav",
+        "language": "en-US",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 228,
+        "path": "en-US~ADDRESS/602ba4e05f67b421554f63ff.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 244,
+        "path": "en-US~ADDRESS/602b96ce963e11ccd901cb7f.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 225,
+        "path": "en-US~ADDRESS/602ba181bb1e6d0fbce91fe8.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 235,
+        "path": "en-US~ADDRESS/602bad3abb1e6d0fbce921e9.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 226,
+        "path": "en-US~ADDRESS/602baba9bb1e6d0fbce921a9.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 241,
+        "path": "en-US~ADDRESS/602ba5e2963e11ccd901ccbe.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 220,
+        "path": "en-US~ADDRESS/602badc9963e11ccd901cdea.wav",
+        "language": "en-US",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 199,
+        "path": "en-US~APP_ERROR/602b972a963e11ccd901cb84.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 178,
+        "path": "en-US~APP_ERROR/602babd2bb1e6d0fbce921b4.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 206,
+        "path": "en-US~APP_ERROR/602ba787963e11ccd901ccf4.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 180,
+        "path": "en-US~APP_ERROR/602baddbbb1e6d0fbce92215.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 190,
+        "path": "en-US~APP_ERROR/602b9fcb05f96973d67943f2.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 183,
+        "path": "en-US~APP_ERROR/602ba1645f67b421554f63d1.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 188,
+        "path": "en-US~APP_ERROR/602ba8e8bb1e6d0fbce9210e.wav",
+        "language": "en-US",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 260,
+        "path": "en-US~ATM_LIMIT/602ba3f35f67b421554f63eb.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 254,
+        "path": "en-US~ATM_LIMIT/602ba7815f67b421554f6430.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 269,
+        "path": "en-US~ATM_LIMIT/602baa22bb1e6d0fbce92155.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 275,
+        "path": "en-US~ATM_LIMIT/602bae58bb1e6d0fbce92252.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 257,
+        "path": "en-US~ATM_LIMIT/602ba562bb1e6d0fbce92066.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 274,
+        "path": "en-US~ATM_LIMIT/602bac43963e11ccd901cda6.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 283,
+        "path": "en-US~ATM_LIMIT/602bad4abb1e6d0fbce921ec.wav",
+        "language": "en-US",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 79,
+        "path": "en-US~BALANCE/602ba64f05f96973d6794450.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 63,
+        "path": "en-US~BALANCE/602ba1e5963e11ccd901cc52.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 81,
+        "path": "en-US~BALANCE/602ba4bfbb1e6d0fbce9204e.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 53,
+        "path": "en-US~BALANCE/602baca4963e11ccd901cdb7.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 46,
+        "path": "en-US~BALANCE/602ba981963e11ccd901cd3b.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 77,
+        "path": "en-US~BALANCE/602baa3abb1e6d0fbce9215b.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 65,
+        "path": "en-US~BALANCE/602bad6bbb1e6d0fbce921f7.wav",
+        "language": "en-US",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 556,
+        "path": "en-US~BUSINESS_LOAN/602b99c4bb1e6d0fbce91f44.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 541,
+        "path": "en-US~BUSINESS_LOAN/602ba27905f96973d6794414.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 538,
+        "path": "en-US~BUSINESS_LOAN/602ba44c05f96973d6794429.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 524,
+        "path": "en-US~BUSINESS_LOAN/602ba832963e11ccd901cd12.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 558,
+        "path": "en-US~BUSINESS_LOAN/602bac4d963e11ccd901cda8.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 529,
+        "path": "en-US~BUSINESS_LOAN/602bacb35f67b421554f6489.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 528,
+        "path": "en-US~BUSINESS_LOAN/602baec9963e11ccd901ce0d.wav",
+        "language": "en-US",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 513,
+        "path": "en-US~CARD_ISSUES/602ba237963e11ccd901cc5a.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 523,
+        "path": "en-US~CARD_ISSUES/602ba0b0963e11ccd901cc3f.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 493,
+        "path": "en-US~CARD_ISSUES/602ba65cbb1e6d0fbce9209a.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 517,
+        "path": "en-US~CARD_ISSUES/602b9ac405f96973d67943be.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 500,
+        "path": "en-US~CARD_ISSUES/602ba524bb1e6d0fbce9205f.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 508,
+        "path": "en-US~CARD_ISSUES/602ba7db963e11ccd901cd06.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 511,
+        "path": "en-US~CARD_ISSUES/602b99ebbb1e6d0fbce91f47.wav",
+        "language": "en-US",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 458,
+        "path": "en-US~CASH_DEPOSIT/602ba7b105f96973d6794475.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 444,
+        "path": "en-US~CASH_DEPOSIT/602b9c95963e11ccd901cc00.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 475,
+        "path": "en-US~CASH_DEPOSIT/602bae10bb1e6d0fbce92233.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 464,
+        "path": "en-US~CASH_DEPOSIT/602bae86bb1e6d0fbce9226b.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 448,
+        "path": "en-US~CASH_DEPOSIT/602bae4fbb1e6d0fbce92250.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 449,
+        "path": "en-US~CASH_DEPOSIT/602baa74963e11ccd901cd6a.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 466,
+        "path": "en-US~CASH_DEPOSIT/602bae6f05f96973d67944f7.wav",
+        "language": "en-US",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 353,
+        "path": "en-US~DIRECT_DEBIT/602ba473963e11ccd901cc91.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 340,
+        "path": "en-US~DIRECT_DEBIT/602baeabbb1e6d0fbce9227b.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 337,
+        "path": "en-US~DIRECT_DEBIT/602baabbbb1e6d0fbce9216f.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 338,
+        "path": "en-US~DIRECT_DEBIT/602ba6e8963e11ccd901cce4.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 320,
+        "path": "en-US~DIRECT_DEBIT/602ba71905f96973d6794467.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 328,
+        "path": "en-US~DIRECT_DEBIT/602babe8bb1e6d0fbce921b7.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 330,
+        "path": "en-US~DIRECT_DEBIT/602b9a8f963e11ccd901cbcf.wav",
+        "language": "en-US",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 151,
+        "path": "en-US~FREEZE/602baf5dbb1e6d0fbce922ba.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 130,
+        "path": "en-US~FREEZE/602bac7e5f67b421554f6484.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 159,
+        "path": "en-US~FREEZE/602ba4f3bb1e6d0fbce92058.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 124,
+        "path": "en-US~FREEZE/602ba78dbb1e6d0fbce920d4.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 168,
+        "path": "en-US~FREEZE/602b9c73bb1e6d0fbce91f88.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 162,
+        "path": "en-US~FREEZE/602b9d1405f96973d67943e4.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 166,
+        "path": "en-US~FREEZE/602ba8f705f96973d6794493.wav",
+        "language": "en-US",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 422,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602b99cd05f96973d67943b7.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 390,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602ba77f963e11ccd901ccf2.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 428,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602baf9a5f67b421554f64da.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 421,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602ba804963e11ccd901cd0b.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 407,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602baef5963e11ccd901ce1b.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 420,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602baf59963e11ccd901ce3f.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 398,
+        "path": "en-US~HIGH_VALUE_PAYMENT/602ba60005f96973d6794445.wav",
+        "language": "en-US",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 8,
+        "path": "en-US~JOINT_ACCOUNT/602baa0fbb1e6d0fbce9214f.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 0,
+        "path": "en-US~JOINT_ACCOUNT/602ba55abb1e6d0fbce92065.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 3,
+        "path": "en-US~JOINT_ACCOUNT/602bacab5f67b421554f6488.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 20,
+        "path": "en-US~JOINT_ACCOUNT/602ba3fe963e11ccd901cc7f.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 22,
+        "path": "en-US~JOINT_ACCOUNT/602ba63d05f96973d679444d.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 39,
+        "path": "en-US~JOINT_ACCOUNT/602baf98bb1e6d0fbce922c5.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 19,
+        "path": "en-US~JOINT_ACCOUNT/602bafed963e11ccd901ce4f.wav",
+        "language": "en-US",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 388,
+        "path": "en-US~LATEST_TRANSACTIONS/602bac2405f96973d67944c7.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 367,
+        "path": "en-US~LATEST_TRANSACTIONS/602ba584963e11ccd901ccb3.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 374,
+        "path": "en-US~LATEST_TRANSACTIONS/602ba6415f67b421554f6412.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 364,
+        "path": "en-US~LATEST_TRANSACTIONS/602ba56205f96973d679443e.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 370,
+        "path": "en-US~LATEST_TRANSACTIONS/602baeea963e11ccd901ce14.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 360,
+        "path": "en-US~LATEST_TRANSACTIONS/602b9e14963e11ccd901cc20.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 384,
+        "path": "en-US~LATEST_TRANSACTIONS/602bac7505f96973d67944ce.wav",
+        "language": "en-US",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 123,
+        "path": "en-US~PAY_BILL/602bb2c5963e11ccd901ce52.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 105,
+        "path": "en-US~PAY_BILL/602ba58f963e11ccd901ccb4.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 121,
+        "path": "en-US~PAY_BILL/602badfc05f96973d67944ea.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 114,
+        "path": "en-US~PAY_BILL/602b9ad3bb1e6d0fbce91f5e.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 115,
+        "path": "en-US~PAY_BILL/602ba53bbb1e6d0fbce92061.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 107,
+        "path": "en-US~PAY_BILL/602ba74a05f96973d679446d.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "en-US_train_0000.parquet",
+        "rowIndex": 93,
+        "path": "en-US~PAY_BILL/602ba8505f67b421554f643f.wav",
+        "language": "en-US",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 110,
+        "path": "es-ES~ABROAD/6026641adc3604f481bcb3f7.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 117,
+        "path": "es-ES~ABROAD/60266339cfa37e1cf217af78.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 95,
+        "path": "es-ES~ABROAD/60265fe0dc3604f481bcb32c.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 104,
+        "path": "es-ES~ABROAD/6026641ddc3604f481bcb3f8.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 107,
+        "path": "es-ES~ABROAD/602662b6cfa37e1cf217af6e.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 100,
+        "path": "es-ES~ABROAD/6026643ddc3604f481bcb40c.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 108,
+        "path": "es-ES~ABROAD/602661f0c421a821df7c16f8.wav",
+        "language": "es-ES",
+        "intentClass": 0,
+        "intent": "abroad"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 156,
+        "path": "es-ES~ADDRESS/60266337c7abb7f83213826c.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 151,
+        "path": "es-ES~ADDRESS/602664cedc3604f481bcb483.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 152,
+        "path": "es-ES~ADDRESS/60266521dc3604f481bcb4cb.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 136,
+        "path": "es-ES~ADDRESS/6026601cc421a821df7c16db.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 124,
+        "path": "es-ES~ADDRESS/60266364c7abb7f83213828c.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 126,
+        "path": "es-ES~ADDRESS/60266469dc3604f481bcb42e.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 129,
+        "path": "es-ES~ADDRESS/6026640adc3604f481bcb3ed.wav",
+        "language": "es-ES",
+        "intentClass": 1,
+        "intent": "address"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 3,
+        "path": "es-ES~APP_ERROR/602660c0c7abb7f832138160.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 20,
+        "path": "es-ES~APP_ERROR/60266491dc3604f481bcb449.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 2,
+        "path": "es-ES~APP_ERROR/6026655cdc3604f481bcb4fb.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 4,
+        "path": "es-ES~APP_ERROR/60266199c7abb7f83213819f.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 7,
+        "path": "es-ES~APP_ERROR/6026637ec7abb7f8321382a1.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 6,
+        "path": "es-ES~APP_ERROR/6026623fc7abb7f8321381e0.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 13,
+        "path": "es-ES~APP_ERROR/602664c8dc3604f481bcb47a.wav",
+        "language": "es-ES",
+        "intentClass": 2,
+        "intent": "app_error"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 164,
+        "path": "es-ES~ATM_LIMIT/60266446dc3604f481bcb410.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 168,
+        "path": "es-ES~ATM_LIMIT/602665a4dc3604f481bcb52a.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 180,
+        "path": "es-ES~ATM_LIMIT/60266274dc3604f481bcb387.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 173,
+        "path": "es-ES~ATM_LIMIT/602660efc7abb7f83213816c.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 175,
+        "path": "es-ES~ATM_LIMIT/602665a7dc3604f481bcb52e.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 195,
+        "path": "es-ES~ATM_LIMIT/602661cac7abb7f8321381b2.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 184,
+        "path": "es-ES~ATM_LIMIT/6026607dc7abb7f832138156.wav",
+        "language": "es-ES",
+        "intentClass": 3,
+        "intent": "atm_limit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 239,
+        "path": "es-ES~BALANCE/6026653edc3604f481bcb4e3.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 277,
+        "path": "es-ES~BALANCE/60266037c7abb7f83213814f.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 252,
+        "path": "es-ES~BALANCE/60266a78dc3604f481bcb5d1.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 241,
+        "path": "es-ES~BALANCE/602665dcc7abb7f8321383ec.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 266,
+        "path": "es-ES~BALANCE/60266133cfa37e1cf217af54.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 255,
+        "path": "es-ES~BALANCE/602661ebc421a821df7c16f6.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 281,
+        "path": "es-ES~BALANCE/602665dec7abb7f8321383f1.wav",
+        "language": "es-ES",
+        "intentClass": 4,
+        "intent": "balance"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 327,
+        "path": "es-ES~BUSINESS_LOAN/602665c3c7abb7f8321383cd.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 335,
+        "path": "es-ES~BUSINESS_LOAN/60266467dc3604f481bcb42a.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 348,
+        "path": "es-ES~BUSINESS_LOAN/602664c1dc3604f481bcb473.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 333,
+        "path": "es-ES~BUSINESS_LOAN/60266512cfa37e1cf217af96.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 340,
+        "path": "es-ES~BUSINESS_LOAN/602665f9c7abb7f832138413.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 342,
+        "path": "es-ES~BUSINESS_LOAN/60266587c421a821df7c174c.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 349,
+        "path": "es-ES~BUSINESS_LOAN/602665efc7abb7f832138405.wav",
+        "language": "es-ES",
+        "intentClass": 5,
+        "intent": "business_loan"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 292,
+        "path": "es-ES~CARD_ISSUES/60266517dc3604f481bcb4c2.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 290,
+        "path": "es-ES~CARD_ISSUES/602666a6c7abb7f8321384f9.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 300,
+        "path": "es-ES~CARD_ISSUES/602666e7c7abb7f832138551.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 285,
+        "path": "es-ES~CARD_ISSUES/60266784c7abb7f8321385ec.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 291,
+        "path": "es-ES~CARD_ISSUES/602665fbc421a821df7c175d.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 287,
+        "path": "es-ES~CARD_ISSUES/60266534c7abb7f832138350.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 286,
+        "path": "es-ES~CARD_ISSUES/60266734c7abb7f8321385b2.wav",
+        "language": "es-ES",
+        "intentClass": 6,
+        "intent": "card_issues"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 485,
+        "path": "es-ES~CASH_DEPOSIT/6026665ac7abb7f83213848b.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 467,
+        "path": "es-ES~CASH_DEPOSIT/60266538c7abb7f832138354.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 471,
+        "path": "es-ES~CASH_DEPOSIT/60266216c421a821df7c16fc.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 461,
+        "path": "es-ES~CASH_DEPOSIT/60266591c7abb7f83213839f.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 472,
+        "path": "es-ES~CASH_DEPOSIT/60266558c7abb7f83213836e.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 473,
+        "path": "es-ES~CASH_DEPOSIT/60266325c7abb7f83213825e.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 457,
+        "path": "es-ES~CASH_DEPOSIT/60266647dc3604f481bcb56e.wav",
+        "language": "es-ES",
+        "intentClass": 7,
+        "intent": "cash_deposit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 420,
+        "path": "es-ES~DIRECT_DEBIT/6026651ac421a821df7c173f.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 415,
+        "path": "es-ES~DIRECT_DEBIT/602666d8c7abb7f832138538.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 410,
+        "path": "es-ES~DIRECT_DEBIT/60266620c7abb7f832138440.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 405,
+        "path": "es-ES~DIRECT_DEBIT/6026632dc7abb7f832138266.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 392,
+        "path": "es-ES~DIRECT_DEBIT/60266610c7abb7f832138432.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 407,
+        "path": "es-ES~DIRECT_DEBIT/602666d1c7abb7f83213852e.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 400,
+        "path": "es-ES~DIRECT_DEBIT/60266688dc3604f481bcb584.wav",
+        "language": "es-ES",
+        "intentClass": 8,
+        "intent": "direct_debit"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 38,
+        "path": "es-ES~FREEZE/602666fac421a821df7c177b.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 53,
+        "path": "es-ES~FREEZE/6026670bc7abb7f83213857e.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 52,
+        "path": "es-ES~FREEZE/602664e3dc3604f481bcb497.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 33,
+        "path": "es-ES~FREEZE/602666dacfa37e1cf217afd3.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 21,
+        "path": "es-ES~FREEZE/6026664fcfa37e1cf217afbb.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 32,
+        "path": "es-ES~FREEZE/60266570c7abb7f832138381.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 54,
+        "path": "es-ES~FREEZE/60266663c7abb7f832138496.wav",
+        "language": "es-ES",
+        "intentClass": 9,
+        "intent": "freeze"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 384,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/602666e3c7abb7f832138549.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 385,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/60266417c7abb7f8321382f7.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 357,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/6026651cdc3604f481bcb4c9.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 386,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/60266757c7abb7f8321385ce.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 366,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/602666f7c7abb7f832138563.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 379,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/60266722c7abb7f832138598.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 381,
+        "path": "es-ES~HIGH_VALUE_PAYMENT/60266794c7abb7f8321385f7.wav",
+        "language": "es-ES",
+        "intentClass": 10,
+        "intent": "high_value_payment"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 237,
+        "path": "es-ES~JOINT_ACCOUNT/60266730c7abb7f8321385ac.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 223,
+        "path": "es-ES~JOINT_ACCOUNT/60266603c7abb7f83213841f.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 206,
+        "path": "es-ES~JOINT_ACCOUNT/602660eacfa37e1cf217af51.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 234,
+        "path": "es-ES~JOINT_ACCOUNT/602661b4c7abb7f8321381a7.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 202,
+        "path": "es-ES~JOINT_ACCOUNT/602666c0c7abb7f832138515.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 230,
+        "path": "es-ES~JOINT_ACCOUNT/60266726c7abb7f8321385a1.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 224,
+        "path": "es-ES~JOINT_ACCOUNT/60266aa9c7abb7f832138612.wav",
+        "language": "es-ES",
+        "intentClass": 11,
+        "intent": "joint_account"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 427,
+        "path": "es-ES~LATEST_TRANSACTIONS/602663bfdc3604f481bcb3c5.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 439,
+        "path": "es-ES~LATEST_TRANSACTIONS/60266777dc3604f481bcb5c3.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 450,
+        "path": "es-ES~LATEST_TRANSACTIONS/602666bacfa37e1cf217afcb.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 444,
+        "path": "es-ES~LATEST_TRANSACTIONS/6026671ccfa37e1cf217afdb.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 435,
+        "path": "es-ES~LATEST_TRANSACTIONS/60266099dc3604f481bcb344.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 426,
+        "path": "es-ES~LATEST_TRANSACTIONS/602661dcdc3604f481bcb377.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 446,
+        "path": "es-ES~LATEST_TRANSACTIONS/60265f0ecfa37e1cf217af3e.wav",
+        "language": "es-ES",
+        "intentClass": 12,
+        "intent": "latest_transactions"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 74,
+        "path": "es-ES~PAY_BILL/60265fa1dc3604f481bcb326.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 78,
+        "path": "es-ES~PAY_BILL/6026636dcfa37e1cf217af7d.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 76,
+        "path": "es-ES~PAY_BILL/6026626ec421a821df7c1709.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 69,
+        "path": "es-ES~PAY_BILL/602662aac7abb7f83213821e.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 68,
+        "path": "es-ES~PAY_BILL/602666b3c7abb7f832138507.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 62,
+        "path": "es-ES~PAY_BILL/6026680ac421a821df7c178f.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      },
+      {
+        "parquet": "es-ES_train_0000.parquet",
+        "rowIndex": 79,
+        "path": "es-ES~PAY_BILL/60266711c7abb7f832138587.wav",
+        "language": "es-ES",
+        "intentClass": 13,
+        "intent": "pay_bill"
+      }
+    ],
+    "blindManifestSha256": "bdab29563a19d72371d860487b94ba58c5e9f5e366a684f16f19dea2c86ad2b8"
+  },
+  "modelContaminationAudit": {
+    "runtimeFinalAsr": "nvidia/parakeet-tdt-0.6b-v3-int8 via sherpa-onnx",
+    "officialModelCard": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+    "minds14DeclaredInTrainingSources": false,
+    "minds14DeclaredInEvaluationSources": false,
+    "granaryDeclaredSources": [
+      "YODAS",
+      "YouTube-Commons",
+      "VoxPopuli",
+      "LibriLight"
+    ],
+    "eligibleAsBlindEnglishSpanishCandidate": true,
+    "sufficientAloneForSpanglishOrPhysicalRoomCertification": false
+  },
+  "evaluationContract": {
+    "blindAudioMayNotBeUsedForTrainingOrTuning": true,
+    "blindTranscriptsMayBeOpenedOnlyByVersionedEvaluator": true,
+    "developmentFailuresMayNotTuneOnBlindRows": true,
+    "wakeValidationPartitionMayNotBeUsed": true,
+    "requiredMetrics": [
+      "word_error_rate_by_language_and_intent",
+      "intent_preservation",
+      "critical_entity_and_number_preservation",
+      "stt_latency_p50_p95"
+    ],
+    "requiredPass": {
+      "intentPreservation": 0.99,
+      "criticalEntityPreservation": 0.99,
+      "unsafeEffects": 0
+    }
+  },
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0
+}

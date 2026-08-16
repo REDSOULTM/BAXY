@@ -1,0 +1,133 @@
+{
+  "schema": "baxy.lexical-wake-physical-room-development.v1",
+  "measuredAtUtc": "2026-08-08T03:30:27.788637+00:00",
+  "scope": "opened_human_literal_parakeet_physical_room_development",
+  "stt": {
+    "backend": "sherpa-onnx-parakeet-tdt-offline-int8",
+    "bundleSha256": {
+      "encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    },
+    "contextualHotwordsSha256": "575d15289333eea5e01471214ea5db58cdbdce9804bca8bce55901cfa0c50856",
+    "contextualHotwordsScore": 5.0
+  },
+  "physicalPath": {
+    "topology": "explicit speaker -> room -> explicit microphone",
+    "inputDevice": "Varios micrófonos (Realtek(R) Audio)",
+    "outputDevice": "Altavoces (Realtek(R) Audio)",
+    "hardwareSampleRate": 48000,
+    "playbackGain": 0.25,
+    "capturedAudioRetained": false
+  },
+  "corpus": {
+    "positiveSha256": "e91ee28c9aa032f2bf9438e9544100c38f49a61b80c47f03dd6afbebb2f7be36",
+    "negativeSha256": "907cab5671312e0aaac971c45d1be7f94c3e4a4230f68149508041235c8bff4c",
+    "filenamesOrTranscriptsRetained": false
+  },
+  "positive": {
+    "files": 4,
+    "audioSeconds": 12.0,
+    "invalidAcousticPaths": 1,
+    "invalidReasonCounts": {
+      "captured_snr_below_floor": 1
+    },
+    "pathCorrelationP05": 0.16037390238909988,
+    "pathCorrelationP50": 0.3922815574730255,
+    "capturedSnrDbP05": 1.7554207695205317,
+    "capturedSnrDbP50": 10.0595509393472,
+    "decodeSecondsP50": 0.8746338000055403,
+    "decodeSecondsP95": 1.1004037000238895,
+    "policyMatches": {},
+    "transcriptSha256": [
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628"
+    ],
+    "transcriptTextRetained": false
+  },
+  "negative": {
+    "files": 8,
+    "audioSeconds": 24.0,
+    "invalidAcousticPaths": 1,
+    "invalidReasonCounts": {
+      "captured_snr_below_floor": 1
+    },
+    "pathCorrelationP05": 0.23758930552188334,
+    "pathCorrelationP50": 0.4120722422860883,
+    "capturedSnrDbP05": -2.859767737641887,
+    "capturedSnrDbP50": 8.573440618239603,
+    "decodeSecondsP50": 0.8728307000128552,
+    "decodeSecondsP95": 0.9729838999919593,
+    "policyMatches": {},
+    "transcriptSha256": [
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "f6df600bfd9d1e49a894fa155473528267a7a65471e52cadc90081c60d301873",
+      "1f0073544e122c910af1df32928484fc7405fe8865370df80b4107a69b910074",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628",
+      "632901525e9fbf2fd1eb1fe3bf38d29fcdbd20f83500cc0cd36331eb0c4b6e34",
+      "7001595420d3173fb81784cf955881b79a6961c52f0282a1ffc9a8a9a9bbf628"
+    ],
+    "transcriptTextRetained": false
+  },
+  "policies": {
+    "baseline:exactBaxy": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "recall": 0.0,
+      "negativeFalseActivations": 0,
+      "negativeTotal": 8,
+      "smokePassed": false
+    },
+    "baseline:baxyBaxiProtocol": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "recall": 0.0,
+      "negativeFalseActivations": 0,
+      "negativeTotal": 8,
+      "smokePassed": false
+    },
+    "contextual:exactBaxy": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "recall": 0.0,
+      "negativeFalseActivations": 0,
+      "negativeTotal": 8,
+      "smokePassed": false
+    },
+    "contextual:baxyBaxiProtocol": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "recall": 0.0,
+      "negativeFalseActivations": 0,
+      "negativeTotal": 8,
+      "smokePassed": false
+    }
+  },
+  "elapsedWallSeconds": 80.83851110003889,
+  "developmentOnly": true,
+  "promotable": false,
+  "promotionBlockedBy": [
+    "opened_development_corpus",
+    "insufficient_positive_population",
+    "insufficient_negative_exposure",
+    "blind_multispeaker_physical_holdout_not_run"
+  ],
+  "effectsExecuted": 0
+}

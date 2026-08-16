@@ -1,0 +1,2454 @@
+{
+  "authority": "turn.decide only; no plan was sent to Core or a provider",
+  "effects_executed": 0,
+  "installation_touched": false,
+  "measured_at_utc": "2026-08-01T16:55:14.368999+00:00",
+  "metrics": {
+    "action_answered_as_conversation_share": 0.07142857142857142,
+    "effect_family_accuracy": 0.42142857142857143,
+    "effect_outcomes": {
+      "no_operation": 69,
+      "right_family": 59,
+      "wrong_family": 12
+    },
+    "intent_family_accuracy": 0.7785714285714286,
+    "intent_outcomes": {
+      "no_operation": 15,
+      "right_family": 109,
+      "wrong_family": 16
+    },
+    "kinds": {
+      "action": 44,
+      "clarify": 59,
+      "conversation": 10,
+      "plan": 27
+    },
+    "turn_decide_seconds_p50": 1.458999,
+    "turn_decide_seconds_p95": 3.0954
+  },
+  "population": {
+    "clean_cases": 140,
+    "excluded_audited_out_of_scope": [
+      "audio-00",
+      "audio-01",
+      "audio-04",
+      "backup-02",
+      "capture-01",
+      "media-01",
+      "note-03"
+    ],
+    "frozen_sample_sha256": "c8db6a7b32f2ec607edfefd731a59ffb38dc918be3705f2e2fcaeaca0bce3feb",
+    "original_cases": 147
+  },
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "explicit_components"
+  },
+  "runtime_manifest_changed": false,
+  "runtime_manifest_sha256_after": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+  "runtime_manifest_sha256_before": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+  "samples": [
+    {
+      "case_id": "app-00",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "right_family",
+      "family": "app",
+      "index": 1,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "app.open",
+      "language": "es",
+      "seconds": 1.698892,
+      "text": "Abre Epic Games Launcher"
+    },
+    {
+      "case_id": "app-01",
+      "effect_operations": [
+        "app.open",
+        "app.close"
+      ],
+      "effect_outcome": "right_family",
+      "family": "app",
+      "index": 2,
+      "intent_operations": [
+        "app.open",
+        "app.close"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "app.open",
+      "language": "es",
+      "seconds": 0.855574,
+      "text": "Abre Notepad y luego cierralo"
+    },
+    {
+      "case_id": "app-02",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "right_family",
+      "family": "app",
+      "index": 3,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "app.open",
+      "language": "es",
+      "seconds": 1.552687,
+      "text": "Abre Steam con máximo 2 intentos"
+    },
+    {
+      "case_id": "app-03",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "right_family",
+      "family": "app",
+      "index": 4,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "app.open",
+      "language": "es",
+      "seconds": 1.381577,
+      "text": "Abre steam 0"
+    },
+    {
+      "case_id": "app-04",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "right_family",
+      "family": "app",
+      "index": 5,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "app.open",
+      "language": "es",
+      "seconds": 1.376153,
+      "text": "Abre steam 1"
+    },
+    {
+      "case_id": "app-05",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "right_family",
+      "family": "app",
+      "index": 6,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "app.open",
+      "language": "es",
+      "seconds": 1.339278,
+      "text": "Abre steam 2"
+    },
+    {
+      "case_id": "audio-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "audio",
+      "index": 7,
+      "intent_operations": [
+        "audio.volume.adjust"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "audio.volume",
+      "language": "es",
+      "seconds": 2.146159,
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo"
+    },
+    {
+      "case_id": "audio-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "audio",
+      "index": 8,
+      "intent_operations": [
+        "audio.volume.adjust"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "audio.volume",
+      "language": "es",
+      "seconds": 1.683255,
+      "text": "Baja el volumen 10%"
+    },
+    {
+      "case_id": "audio-05",
+      "effect_operations": [
+        "audio.volume"
+      ],
+      "effect_outcome": "right_family",
+      "family": "audio",
+      "index": 9,
+      "intent_operations": [
+        "audio.volume"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "audio.volume",
+      "language": "es",
+      "seconds": 0.976803,
+      "text": "Cambia el volumen a 10"
+    },
+    {
+      "case_id": "backup-00",
+      "effect_operations": [
+        "backup.create",
+        "filesystem.write.text"
+      ],
+      "effect_outcome": "right_family",
+      "family": "backup",
+      "index": 10,
+      "intent_operations": [
+        "backup.create",
+        "filesystem.write.text"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "backup.manage",
+      "language": "es",
+      "seconds": 2.414851,
+      "text": "Edita archivo y crea respaldo antes"
+    },
+    {
+      "case_id": "backup-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "backup",
+      "index": 11,
+      "intent_operations": [
+        "backup.verify"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "backup.manage",
+      "language": "es",
+      "seconds": 3.379436,
+      "text": "cambia .env para usar ollama, pero solo con backup y confirmación"
+    },
+    {
+      "case_id": "backup-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "backup",
+      "index": 12,
+      "intent_operations": [
+        "backup.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "backup.manage",
+      "language": "es",
+      "seconds": 1.863278,
+      "text": "hace un backup de mis documentos a un pendrive"
+    },
+    {
+      "case_id": "backup-04",
+      "effect_operations": [
+        "backup.list"
+      ],
+      "effect_outcome": "right_family",
+      "family": "backup",
+      "index": 13,
+      "intent_operations": [
+        "backup.list"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "backup.manage",
+      "language": "en",
+      "seconds": 1.548039,
+      "text": "show me the log of the backup job"
+    },
+    {
+      "case_id": "bluetooth-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "bluetooth",
+      "index": 14,
+      "intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "seconds": 1.802837,
+      "text": "abre configuración y entra a Bluetooth"
+    },
+    {
+      "case_id": "bluetooth-01",
+      "effect_operations": [
+        "bluetooth.radio.set"
+      ],
+      "effect_outcome": "right_family",
+      "family": "bluetooth",
+      "index": 15,
+      "intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "seconds": 0.777877,
+      "text": "activa el bluetooth"
+    },
+    {
+      "case_id": "bluetooth-02",
+      "effect_operations": [
+        "bluetooth.radio.set"
+      ],
+      "effect_outcome": "right_family",
+      "family": "bluetooth",
+      "index": 16,
+      "intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "seconds": 1.509311,
+      "text": "apagá el bluetooth"
+    },
+    {
+      "case_id": "bluetooth-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "bluetooth",
+      "index": 17,
+      "intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "seconds": 1.366924,
+      "text": "conecta el bluetooth"
+    },
+    {
+      "case_id": "bluetooth-04",
+      "effect_operations": [
+        "bluetooth.radio.set"
+      ],
+      "effect_outcome": "right_family",
+      "family": "bluetooth",
+      "index": 18,
+      "intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "seconds": 1.388648,
+      "text": "desactivá el bluetooth"
+    },
+    {
+      "case_id": "bluetooth-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "bluetooth",
+      "index": 19,
+      "intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "seconds": 1.333255,
+      "text": "prendé el bluetooth"
+    },
+    {
+      "case_id": "browser-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "browser",
+      "index": 20,
+      "intent_operations": [
+        "browser.control"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "browser.navigate",
+      "language": "es",
+      "seconds": 1.44746,
+      "text": "Abre el navegador por defecto"
+    },
+    {
+      "case_id": "browser-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "browser",
+      "index": 21,
+      "intent_operations": [
+        "browser.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "browser.navigate",
+      "language": "es",
+      "seconds": 1.404906,
+      "text": "Abre github.com"
+    },
+    {
+      "case_id": "browser-02",
+      "effect_operations": [
+        "browser.navigate"
+      ],
+      "effect_outcome": "right_family",
+      "family": "browser",
+      "index": 22,
+      "intent_operations": [
+        "browser.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "browser.navigate",
+      "language": "es",
+      "seconds": 0.788845,
+      "text": "Abre la página de Steam de Marvel Rivals"
+    },
+    {
+      "case_id": "browser-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "browser",
+      "index": 23,
+      "intent_operations": [
+        "browser.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "browser.navigate",
+      "language": "es",
+      "seconds": 1.25353,
+      "text": "Abre la página de descargas de Python"
+    },
+    {
+      "case_id": "browser-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "browser",
+      "index": 24,
+      "intent_operations": [
+        "browser.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "browser.navigate",
+      "language": "es",
+      "seconds": 1.451887,
+      "text": "Abre la página oficial de OpenAI"
+    },
+    {
+      "case_id": "browser-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "browser",
+      "index": 25,
+      "intent_operations": [
+        "browser.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "browser.navigate",
+      "language": "es",
+      "seconds": 1.825053,
+      "text": "Abre o Google no navegador"
+    },
+    {
+      "case_id": "calendar-00",
+      "effect_operations": [
+        "vision.describe"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "calendar",
+      "index": 26,
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "plan",
+      "label": "calendar.manage",
+      "language": "en",
+      "seconds": 1.419606,
+      "text": "Write me an email that I cant make it to the meeting"
+    },
+    {
+      "case_id": "calendar-01",
+      "effect_operations": [
+        "input.text.type"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "calendar",
+      "index": 27,
+      "intent_operations": [
+        "input.text.type"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "calendar.manage",
+      "language": "es",
+      "seconds": 1.565115,
+      "text": "abrí el bloc de notas y escribí reunion manana"
+    },
+    {
+      "case_id": "calendar-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "calendar",
+      "index": 28,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "clarify",
+      "label": "calendar.manage",
+      "language": "es",
+      "seconds": 3.75801,
+      "text": "agenda una reunion el viernes a las cinco"
+    },
+    {
+      "case_id": "calendar-03",
+      "effect_operations": [
+        "calendar.event.create"
+      ],
+      "effect_outcome": "right_family",
+      "family": "calendar",
+      "index": 29,
+      "intent_operations": [
+        "calendar.event.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "calendar.manage",
+      "language": "es",
+      "seconds": 0.918193,
+      "text": "agendá una reunión el viernes a las 3"
+    },
+    {
+      "case_id": "calendar-04",
+      "effect_operations": [
+        "calendar.event.create"
+      ],
+      "effect_outcome": "right_family",
+      "family": "calendar",
+      "index": 30,
+      "intent_operations": [
+        "calendar.event.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "calendar.manage",
+      "language": "es",
+      "seconds": 1.691151,
+      "text": "crea un evento el viernes a las 4"
+    },
+    {
+      "case_id": "calendar-05",
+      "effect_operations": [
+        "calendar.event.create",
+        "calendar.event.list"
+      ],
+      "effect_outcome": "right_family",
+      "family": "calendar",
+      "index": 31,
+      "intent_operations": [
+        "calendar.event.create",
+        "calendar.event.list"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "calendar.manage",
+      "language": "es",
+      "seconds": 1.241076,
+      "text": "escribile un email a juan con el asunto reunion diciendo nos vemos"
+    },
+    {
+      "case_id": "capture-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "capture",
+      "index": 32,
+      "intent_operations": [
+        "capture.screenshot"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "conversation",
+      "label": "capture.screenshot",
+      "language": "es",
+      "seconds": 0.874086,
+      "text": "Sacale una foto de captura a mi pc, que se ve?"
+    },
+    {
+      "case_id": "capture-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "capture",
+      "index": 33,
+      "intent_operations": [
+        "capture.screenshot"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "capture.screenshot",
+      "language": "es",
+      "seconds": 0.953302,
+      "text": "tira uma captura de tela"
+    },
+    {
+      "case_id": "capture-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "capture",
+      "index": 34,
+      "intent_operations": [
+        "capture.screenshot"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "capture.screenshot",
+      "language": "es",
+      "seconds": 1.188852,
+      "text": "toma screenshot, guárdalo y dime el path"
+    },
+    {
+      "case_id": "capture-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "capture",
+      "index": 35,
+      "intent_operations": [
+        "capture.screenshot"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "capture.screenshot",
+      "language": "es",
+      "seconds": 1.570204,
+      "text": "toma una captura y guardala en el escritorio"
+    },
+    {
+      "case_id": "capture-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "capture",
+      "index": 36,
+      "intent_operations": [
+        "capture.screenshot"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "capture.screenshot",
+      "language": "es",
+      "seconds": 2.076709,
+      "text": "toma una captura, guardala en el escritorio y abre el explorador ahi"
+    },
+    {
+      "case_id": "clipboard-00",
+      "effect_operations": [
+        "clipboard.paste"
+      ],
+      "effect_outcome": "right_family",
+      "family": "clipboard",
+      "index": 37,
+      "intent_operations": [
+        "clipboard.paste"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "clipboard.manage",
+      "language": "es",
+      "seconds": 0.001035,
+      "text": "Pega esto en el bloc de notas"
+    },
+    {
+      "case_id": "clipboard-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "clipboard",
+      "index": 38,
+      "intent_operations": [
+        "clipboard.copy"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "clipboard.manage",
+      "language": "es",
+      "seconds": 1.44157,
+      "text": "copia texto de Notepad al portapapeles"
+    },
+    {
+      "case_id": "clipboard-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "clipboard",
+      "index": 39,
+      "intent_operations": [
+        "clipboard.copy"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "clipboard.manage",
+      "language": "es",
+      "seconds": 1.179667,
+      "text": "copiame este texto al portapapeles que lo necesito pegar"
+    },
+    {
+      "case_id": "clipboard-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "clipboard",
+      "index": 40,
+      "intent_operations": [
+        "clipboard.copy"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "clipboard.manage",
+      "language": "en",
+      "seconds": 1.051589,
+      "text": "copy my email address to the clipboard so I can paste it"
+    },
+    {
+      "case_id": "clipboard-04",
+      "effect_operations": [
+        "clipboard.paste"
+      ],
+      "effect_outcome": "right_family",
+      "family": "clipboard",
+      "index": 41,
+      "intent_operations": [
+        "clipboard.paste"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "clipboard.manage",
+      "language": "es",
+      "seconds": 0.000789,
+      "text": "pega texto en un archivo nuevo de Notepad"
+    },
+    {
+      "case_id": "clipboard-05",
+      "effect_operations": [
+        "clipboard.read.text"
+      ],
+      "effect_outcome": "right_family",
+      "family": "clipboard",
+      "index": 42,
+      "intent_operations": [
+        "clipboard.read.text"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "clipboard.manage",
+      "language": "es",
+      "seconds": 0.000776,
+      "text": "que hay en el portapapeles"
+    },
+    {
+      "case_id": "filesystem-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "filesystem",
+      "index": 43,
+      "intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "filesystem.read",
+      "language": "es",
+      "seconds": 1.664224,
+      "text": "Abre el archivo hola.txt del escritorio"
+    },
+    {
+      "case_id": "filesystem-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "filesystem",
+      "index": 44,
+      "intent_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "filesystem.read",
+      "language": "es",
+      "seconds": 1.673369,
+      "text": "Abre el archivo más reciente de Descargas"
+    },
+    {
+      "case_id": "filesystem-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "filesystem",
+      "index": 45,
+      "intent_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "filesystem.read",
+      "language": "es",
+      "seconds": 1.736155,
+      "text": "Abre el último archivo que descargué"
+    },
+    {
+      "case_id": "filesystem-03",
+      "effect_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "effect_outcome": "right_family",
+      "family": "filesystem",
+      "index": 46,
+      "intent_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "filesystem.trash",
+      "language": "es",
+      "seconds": 1.685844,
+      "text": "Borra la carpeta CarterTest del escritorio"
+    },
+    {
+      "case_id": "filesystem-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "filesystem",
+      "index": 47,
+      "intent_operations": [
+        "filesystem.write.text"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "filesystem.write",
+      "language": "es",
+      "seconds": 2.030745,
+      "text": "Crea un archivo de texto en el escritorio que diga prueba Carter"
+    },
+    {
+      "case_id": "filesystem-05",
+      "effect_operations": [
+        "filesystem.create.directory"
+      ],
+      "effect_outcome": "right_family",
+      "family": "filesystem",
+      "index": 48,
+      "intent_operations": [
+        "filesystem.create.directory"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "filesystem.write",
+      "language": "es",
+      "seconds": 1.696329,
+      "text": "Crea una carpeta en el escritorio llamada CarterTest"
+    },
+    {
+      "case_id": "game-00",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "game",
+      "index": 49,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "game.manage",
+      "language": "es",
+      "seconds": 1.644062,
+      "text": "Abre Big Picture"
+    },
+    {
+      "case_id": "game-01",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "game",
+      "index": 50,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "game.launch",
+      "language": "es",
+      "seconds": 1.375225,
+      "text": "Abre Counter Strike"
+    },
+    {
+      "case_id": "game-02",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "game",
+      "index": 51,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "game.launch",
+      "language": "es",
+      "seconds": 1.361479,
+      "text": "Abre Portal desde Steam"
+    },
+    {
+      "case_id": "game-03",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "game",
+      "index": 52,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "game.manage",
+      "language": "es",
+      "seconds": 1.563891,
+      "text": "Abre a Loja do Steam"
+    },
+    {
+      "case_id": "game-04",
+      "effect_operations": [
+        "game.catalog.list"
+      ],
+      "effect_outcome": "right_family",
+      "family": "game",
+      "index": 53,
+      "intent_operations": [
+        "game.catalog.list"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "game.manage",
+      "language": "es",
+      "seconds": 0.827246,
+      "text": "Abre capturas de Steam"
+    },
+    {
+      "case_id": "game-05",
+      "effect_operations": [
+        "game.catalog.list"
+      ],
+      "effect_outcome": "right_family",
+      "family": "game",
+      "index": 54,
+      "intent_operations": [
+        "game.catalog.list"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "game.manage",
+      "language": "es",
+      "seconds": 0.604266,
+      "text": "Abre mi biblioteca de Steam"
+    },
+    {
+      "case_id": "media-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "media",
+      "index": 55,
+      "intent_operations": [
+        "media.play.exact"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "media.play",
+      "language": "es",
+      "seconds": 1.641697,
+      "text": "Active la fenêtre de Spotify"
+    },
+    {
+      "case_id": "media-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "media",
+      "index": 56,
+      "intent_operations": [
+        "media.status"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "media.play",
+      "language": "es",
+      "seconds": 1.162217,
+      "text": "Ahora estoy poniendo musica en  mi pc, lo quieres probar?"
+    },
+    {
+      "case_id": "media-03",
+      "effect_operations": [
+        "media.control"
+      ],
+      "effect_outcome": "right_family",
+      "family": "media",
+      "index": 57,
+      "intent_operations": [
+        "media.control"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "media.play",
+      "language": "es",
+      "seconds": 0.808008,
+      "text": "Apri Spotify e fai partire la musica"
+    },
+    {
+      "case_id": "media-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "media",
+      "index": 58,
+      "intent_operations": [
+        "media.play.query"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "media.play",
+      "language": "es",
+      "seconds": 2.130512,
+      "text": "Baxy, pon música”."
+    },
+    {
+      "case_id": "media-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "media",
+      "index": 59,
+      "intent_operations": [
+        "media.status"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "media.play",
+      "language": "en",
+      "seconds": 1.653477,
+      "text": "Can you play tic tac toe with me?"
+    },
+    {
+      "case_id": "message-00",
+      "effect_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "effect_outcome": "right_family",
+      "family": "message",
+      "index": 60,
+      "intent_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "message.send",
+      "language": "es",
+      "seconds": 0.910836,
+      "text": "Dile a amor en WhatsApp que la amo mucho."
+    },
+    {
+      "case_id": "message-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "message",
+      "index": 61,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "message.send",
+      "language": "es",
+      "seconds": 1.104258,
+      "text": "Dile a amor en wsp que la amo"
+    },
+    {
+      "case_id": "message-02",
+      "effect_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "effect_outcome": "right_family",
+      "family": "message",
+      "index": 62,
+      "intent_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "message.send",
+      "language": "es",
+      "seconds": 0.777212,
+      "text": "Dile a amor que la amo demasiado en wsp"
+    },
+    {
+      "case_id": "message-03",
+      "effect_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "effect_outcome": "right_family",
+      "family": "message",
+      "index": 63,
+      "intent_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "message.send",
+      "language": "es",
+      "seconds": 0.83363,
+      "text": "Dile a amor que la amo en wsp"
+    },
+    {
+      "case_id": "message-04",
+      "effect_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "effect_outcome": "right_family",
+      "family": "message",
+      "index": 64,
+      "intent_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "message.send",
+      "language": "es",
+      "seconds": 0.784166,
+      "text": "Dile a amor que la amo muchisimo en wsp"
+    },
+    {
+      "case_id": "message-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "message",
+      "index": 65,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "message.send",
+      "language": "es",
+      "seconds": 1.532993,
+      "text": "Dile a enmanuel que es una increible persona en wsp"
+    },
+    {
+      "case_id": "note-00",
+      "effect_operations": [
+        "note.create"
+      ],
+      "effect_outcome": "right_family",
+      "family": "note",
+      "index": 66,
+      "intent_operations": [
+        "note.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "note.manage",
+      "language": "es",
+      "seconds": 0.001184,
+      "text": "anota que tengo que comprar pan"
+    },
+    {
+      "case_id": "note-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "note",
+      "index": 67,
+      "intent_operations": [
+        "note.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "note.manage",
+      "language": "es",
+      "seconds": 1.810026,
+      "text": "anota que tengo que llamar al medico manana"
+    },
+    {
+      "case_id": "note-02",
+      "effect_operations": [
+        "note.list"
+      ],
+      "effect_outcome": "right_family",
+      "family": "note",
+      "index": 68,
+      "intent_operations": [
+        "note.list"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "note.manage",
+      "language": "es",
+      "seconds": 0.72527,
+      "text": "apri il blocco note e scrivi la lista della spesa"
+    },
+    {
+      "case_id": "note-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "note",
+      "index": 69,
+      "intent_operations": [
+        "note.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "note.manage",
+      "language": "es",
+      "seconds": 1.395514,
+      "text": "apri la finestra Salva con nome nel Blocco note"
+    },
+    {
+      "case_id": "note-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "note",
+      "index": 70,
+      "intent_operations": [
+        "filesystem.read.text"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "clarify",
+      "label": "note.manage",
+      "language": "es",
+      "seconds": 1.730379,
+      "text": "convierte nota.txt a mayúsculas en un archivo nuevo"
+    },
+    {
+      "case_id": "notification-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "notification",
+      "index": 71,
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "notification.manage",
+      "language": "es",
+      "seconds": 1.984148,
+      "text": "Pone una alarma para las 7 de la maniana"
+    },
+    {
+      "case_id": "notification-01",
+      "effect_operations": [
+        "notification.schedule"
+      ],
+      "effect_outcome": "right_family",
+      "family": "notification",
+      "index": 72,
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "notification.manage",
+      "language": "es",
+      "seconds": 1.916345,
+      "text": "alarma para mañana 8am"
+    },
+    {
+      "case_id": "notification-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "notification",
+      "index": 73,
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "notification.manage",
+      "language": "es",
+      "seconds": 1.409286,
+      "text": "arranca un temporizador de 10 minutos"
+    },
+    {
+      "case_id": "notification-03",
+      "effect_operations": [
+        "notification.cancel.latest"
+      ],
+      "effect_outcome": "right_family",
+      "family": "notification",
+      "index": 74,
+      "intent_operations": [
+        "notification.cancel.latest"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "notification.manage",
+      "language": "es",
+      "seconds": 1.49212,
+      "text": "cancelá la alarma"
+    },
+    {
+      "case_id": "notification-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "notification",
+      "index": 75,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "clarify",
+      "label": "notification.manage",
+      "language": "es",
+      "seconds": 2.57939,
+      "text": "pone un timer de 5 minutos"
+    },
+    {
+      "case_id": "notification-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "notification",
+      "index": 76,
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "notification.manage",
+      "language": "es",
+      "seconds": 1.767715,
+      "text": "ponme un temporizador de diez minutos"
+    },
+    {
+      "case_id": "ocr-00",
+      "effect_operations": [
+        "ocr.read"
+      ],
+      "effect_outcome": "right_family",
+      "family": "ocr",
+      "index": 77,
+      "intent_operations": [
+        "ocr.read"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "ocr.read",
+      "language": "es",
+      "seconds": 0.915834,
+      "text": "OCR limitado, mejor para detection"
+    },
+    {
+      "case_id": "office-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "office",
+      "index": 78,
+      "intent_operations": [
+        "office.document.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "en",
+      "seconds": 1.719716,
+      "text": "Can you make me a PowerPoint?"
+    },
+    {
+      "case_id": "office-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "office",
+      "index": 79,
+      "intent_operations": [
+        "office.document.read"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "es",
+      "seconds": 1.525731,
+      "text": "Cierre de Word podía perder trabajo"
+    },
+    {
+      "case_id": "office-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "office",
+      "index": 80,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "office.document",
+      "language": "es",
+      "seconds": 2.595971,
+      "text": "Donde dejaste el Powerpoint? Que me hiciste"
+    },
+    {
+      "case_id": "office-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "office",
+      "index": 81,
+      "intent_operations": [
+        "office.document.read"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "es",
+      "seconds": 1.419733,
+      "text": "Fecha tudo que tá aberto do Word"
+    },
+    {
+      "case_id": "office-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "office",
+      "index": 82,
+      "intent_operations": [
+        "office.document.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "es",
+      "seconds": 1.501599,
+      "text": "Haz un powerpoint hablando de amor de 6 diapositivas"
+    },
+    {
+      "case_id": "office-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "office",
+      "index": 83,
+      "intent_operations": [
+        "office.document.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "es",
+      "seconds": 1.558807,
+      "text": "Hazme un PowerPoint de siete diapositivas que hable de los dinosaurios"
+    },
+    {
+      "case_id": "peripheral-00",
+      "effect_operations": [
+        "note.create"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "peripheral",
+      "index": 84,
+      "intent_operations": [
+        "note.create"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "peripheral.manage",
+      "language": "es",
+      "seconds": 0.000966,
+      "text": "anotá que terminé de configurar el micrófono"
+    },
+    {
+      "case_id": "peripheral-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "peripheral",
+      "index": 85,
+      "intent_operations": [
+        "audio.microphone.mute"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "clarify",
+      "label": "peripheral.manage",
+      "language": "es",
+      "seconds": 1.6585,
+      "text": "cambia el microfono por defecto"
+    },
+    {
+      "case_id": "peripheral-02",
+      "effect_operations": [
+        "app.open"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "peripheral",
+      "index": 86,
+      "intent_operations": [
+        "app.open"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "plan",
+      "label": "peripheral.manage",
+      "language": "es",
+      "seconds": 1.813963,
+      "text": "mutea el micrófono en discord"
+    },
+    {
+      "case_id": "peripheral-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "peripheral",
+      "index": 87,
+      "intent_operations": [
+        "browser.control"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "clarify",
+      "label": "peripheral.manage",
+      "language": "en",
+      "seconds": 2.295261,
+      "text": "set the HP LaserJet as my default printer"
+    },
+    {
+      "case_id": "peripheral-04",
+      "effect_operations": [
+        "audio.microphone.mute"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "peripheral",
+      "index": 88,
+      "intent_operations": [
+        "audio.microphone.mute"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "peripheral.manage",
+      "language": "es",
+      "seconds": 0.821522,
+      "text": "silenciame el micrófono"
+    },
+    {
+      "case_id": "reminder-00",
+      "effect_operations": [
+        "reminder.create"
+      ],
+      "effect_outcome": "right_family",
+      "family": "reminder",
+      "index": 89,
+      "intent_operations": [
+        "reminder.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "reminder.create",
+      "language": "es",
+      "seconds": 1.047452,
+      "text": "avisame en 20 minutos que saque la comida"
+    },
+    {
+      "case_id": "reminder-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "reminder",
+      "index": 90,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "clarify",
+      "label": "reminder.create",
+      "language": "es",
+      "seconds": 3.817391,
+      "text": "avisame en una hora que salgo"
+    },
+    {
+      "case_id": "reminder-02",
+      "effect_operations": [
+        "reminder.create"
+      ],
+      "effect_outcome": "right_family",
+      "family": "reminder",
+      "index": 91,
+      "intent_operations": [
+        "reminder.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "reminder.create",
+      "language": "es",
+      "seconds": 0.96154,
+      "text": "ponme un recordatorio en 2 minutos para tomar agua"
+    },
+    {
+      "case_id": "reminder-03",
+      "effect_operations": [
+        "reminder.create"
+      ],
+      "effect_outcome": "right_family",
+      "family": "reminder",
+      "index": 92,
+      "intent_operations": [
+        "reminder.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "reminder.create",
+      "language": "es",
+      "seconds": 0.825854,
+      "text": "ponme un recordatorio para las 3 de la tarde"
+    },
+    {
+      "case_id": "reminder-04",
+      "effect_operations": [
+        "reminder.create"
+      ],
+      "effect_outcome": "right_family",
+      "family": "reminder",
+      "index": 93,
+      "intent_operations": [
+        "reminder.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "reminder.create",
+      "language": "es",
+      "seconds": 0.946239,
+      "text": "ponme un recordatorio para llamar al dentista"
+    },
+    {
+      "case_id": "reminder-05",
+      "effect_operations": [
+        "notification.schedule"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "reminder",
+      "index": 94,
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "reminder.create",
+      "language": "es",
+      "seconds": 1.268065,
+      "text": "recordatorio de tomar agua en 1 hora"
+    },
+    {
+      "case_id": "routine-00",
+      "effect_operations": [
+        "web.search"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "routine",
+      "index": 95,
+      "intent_operations": [
+        "web.search"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "plan",
+      "label": "routine.manage",
+      "language": "es",
+      "seconds": 0.894344,
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice"
+    },
+    {
+      "case_id": "routine-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "routine",
+      "index": 96,
+      "intent_operations": [
+        "routine.phrase.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "routine.manage",
+      "language": "es",
+      "seconds": 1.669433,
+      "text": "crea una rutina que cada manana me de la hora"
+    },
+    {
+      "case_id": "routine-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "routine",
+      "index": 97,
+      "intent_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "clarify",
+      "label": "routine.manage",
+      "language": "es",
+      "seconds": 1.621149,
+      "text": "creá el hábito de leer y registrá que lo hice hoy"
+    },
+    {
+      "case_id": "routine-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "routine",
+      "index": 98,
+      "intent_operations": [
+        "routine.phrase.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "routine.manage",
+      "language": "es",
+      "seconds": 2.157628,
+      "text": "cria o hábito de ler e regista que já o fiz hoje"
+    },
+    {
+      "case_id": "streaming-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "streaming",
+      "index": 99,
+      "intent_operations": [
+        "streaming.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "streaming.navigate",
+      "language": "es",
+      "seconds": 2.507269,
+      "text": "Abri YouTube en el navegador"
+    },
+    {
+      "case_id": "streaming-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "streaming",
+      "index": 100,
+      "intent_operations": [
+        "streaming.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "streaming.navigate",
+      "language": "es",
+      "seconds": 1.324304,
+      "text": "Acabas de reanudar el video youtube , pero yo queria de opera gx"
+    },
+    {
+      "case_id": "streaming-02",
+      "effect_operations": [
+        "streaming.navigate",
+        "streaming.navigate"
+      ],
+      "effect_outcome": "right_family",
+      "family": "streaming",
+      "index": 101,
+      "intent_operations": [
+        "streaming.navigate",
+        "streaming.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "streaming.navigate",
+      "language": "es",
+      "seconds": 1.429997,
+      "text": "Antes de seguir quiero ver como pones una serie en disney y en netflix"
+    },
+    {
+      "case_id": "streaming-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "streaming",
+      "index": 102,
+      "intent_operations": [
+        "streaming.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "streaming.navigate",
+      "language": "es",
+      "seconds": 1.685804,
+      "text": "Donde puedo ver la pelicula de superman que salio el ano pasado??"
+    },
+    {
+      "case_id": "streaming-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "streaming",
+      "index": 103,
+      "intent_operations": [
+        "streaming.navigate"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "streaming.navigate",
+      "language": "es",
+      "seconds": 1.778507,
+      "text": "Elige el primer resultado de YouTube"
+    },
+    {
+      "case_id": "streaming-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "streaming",
+      "index": 104,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "streaming.navigate",
+      "language": "es",
+      "seconds": 3.49173,
+      "text": "Hablame de emilia perez la pelicula es buena?"
+    },
+    {
+      "case_id": "system-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "system",
+      "index": 105,
+      "intent_operations": [
+        "system.status"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "system.status",
+      "language": "es",
+      "seconds": 1.222291,
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)"
+    },
+    {
+      "case_id": "system-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "system",
+      "index": 106,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "system.status",
+      "language": "es",
+      "seconds": 2.40817,
+      "text": "1. No ya usamos mucha ram para baxy\n2. si intentalo"
+    },
+    {
+      "case_id": "system-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "system",
+      "index": 107,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "system.status",
+      "language": "es",
+      "seconds": 3.037177,
+      "text": "En latencia quien gana}? en consumo de recursos quien? ram?"
+    },
+    {
+      "case_id": "system-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "system",
+      "index": 108,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "clarify",
+      "label": "system.status",
+      "language": "es",
+      "seconds": 5.296257,
+      "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU"
+    },
+    {
+      "case_id": "system-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "system",
+      "index": 109,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "system.status",
+      "language": "es",
+      "seconds": 2.791694,
+      "text": "Hay algo mas que use gpu??"
+    },
+    {
+      "case_id": "system-05",
+      "effect_operations": [
+        "system.status"
+      ],
+      "effect_outcome": "right_family",
+      "family": "system",
+      "index": 110,
+      "intent_operations": [
+        "system.status"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "system.status",
+      "language": "es",
+      "seconds": 0.530413,
+      "text": "Listoo la gpu dejo de usarseee"
+    },
+    {
+      "case_id": "task-00",
+      "effect_operations": [
+        "task.complete"
+      ],
+      "effect_outcome": "right_family",
+      "family": "task",
+      "index": 111,
+      "intent_operations": [
+        "task.complete"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "task.manage",
+      "language": "es",
+      "seconds": 1.127311,
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede."
+    },
+    {
+      "case_id": "task-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "task",
+      "index": 112,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "task.manage",
+      "language": "en",
+      "seconds": 2.473702,
+      "text": "And which of those would you personally use for the required task?"
+    },
+    {
+      "case_id": "task-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "task",
+      "index": 113,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "clarify",
+      "label": "task.manage",
+      "language": "es",
+      "seconds": 4.129132,
+      "text": "Bien hay una nueva sesion, verifica todo , lo que salio mal y bien"
+    },
+    {
+      "case_id": "task-03",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "task",
+      "index": 114,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "conversation",
+      "label": "task.manage",
+      "language": "es",
+      "seconds": 3.0954,
+      "text": "Cuanto tiempo hasta que tengas todo listo? , como ha ido el progreso?"
+    },
+    {
+      "case_id": "task-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "task",
+      "index": 115,
+      "intent_operations": [
+        "task.complete"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "task.manage",
+      "language": "es",
+      "seconds": 1.695038,
+      "text": "Deja todo lo que suma activado"
+    },
+    {
+      "case_id": "task-05",
+      "effect_operations": [
+        "task.create"
+      ],
+      "effect_outcome": "right_family",
+      "family": "task",
+      "index": 116,
+      "intent_operations": [
+        "task.create"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "task.manage",
+      "language": "es",
+      "seconds": 1.739007,
+      "text": "Empieza de cero esta tarea"
+    },
+    {
+      "case_id": "vision-00",
+      "effect_operations": [
+        "vision.describe"
+      ],
+      "effect_outcome": "right_family",
+      "family": "vision",
+      "index": 117,
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "vision.describe",
+      "language": "es",
+      "seconds": 1.864696,
+      "text": "Abre configuración de pantalla"
+    },
+    {
+      "case_id": "vision-01",
+      "effect_operations": [
+        "vision.describe"
+      ],
+      "effect_outcome": "right_family",
+      "family": "vision",
+      "index": 118,
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "vision.describe",
+      "language": "es",
+      "seconds": 0.852705,
+      "text": "Activa cámara y mira qué hay"
+    },
+    {
+      "case_id": "vision-02",
+      "effect_operations": [
+        "vision.describe"
+      ],
+      "effect_outcome": "right_family",
+      "family": "vision",
+      "index": 119,
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "vision.describe",
+      "language": "es",
+      "seconds": 0.799653,
+      "text": "Escribe Batman en la búsqueda que ves"
+    },
+    {
+      "case_id": "vision-03",
+      "effect_operations": [
+        "vision.describe"
+      ],
+      "effect_outcome": "right_family",
+      "family": "vision",
+      "index": 120,
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "vision.describe",
+      "language": "es",
+      "seconds": 1.507751,
+      "text": "Graba la pantalla"
+    },
+    {
+      "case_id": "vision-04",
+      "effect_operations": [
+        "vision.describe"
+      ],
+      "effect_outcome": "right_family",
+      "family": "vision",
+      "index": 121,
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "vision.describe",
+      "language": "es",
+      "seconds": 0.83682,
+      "text": "Lee el mensaje de error de la pantalla"
+    },
+    {
+      "case_id": "vision-05",
+      "effect_operations": [
+        "vision.describe"
+      ],
+      "effect_outcome": "right_family",
+      "family": "vision",
+      "index": 122,
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "vision.describe",
+      "language": "es",
+      "seconds": 0.835649,
+      "text": "Lee lo que hay en pantalla"
+    },
+    {
+      "case_id": "web-00",
+      "effect_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "effect_outcome": "right_family",
+      "family": "web",
+      "index": 123,
+      "intent_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "web.search",
+      "language": "es",
+      "seconds": 0.001867,
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+      "case_id": "web-01",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "web",
+      "index": 124,
+      "intent_operations": [
+        "web.search"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "web.search",
+      "language": "es",
+      "seconds": 1.943451,
+      "text": "Abre Wikipedia y busca Alan Turing"
+    },
+    {
+      "case_id": "web-02",
+      "effect_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "effect_outcome": "right_family",
+      "family": "web",
+      "index": 125,
+      "intent_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "web.search",
+      "language": "es",
+      "seconds": 0.880132,
+      "text": "Abre opera gx y busca flash"
+    },
+    {
+      "case_id": "web-03",
+      "effect_operations": [
+        "web.search"
+      ],
+      "effect_outcome": "right_family",
+      "family": "web",
+      "index": 126,
+      "intent_operations": [
+        "web.search"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "web.search",
+      "language": "es",
+      "seconds": 1.560717,
+      "text": "Busca archivos que contengan la palabra “Batman"
+    },
+    {
+      "case_id": "web-04",
+      "effect_operations": [
+        "game.install.named"
+      ],
+      "effect_outcome": "wrong_family",
+      "family": "web",
+      "index": 127,
+      "intent_operations": [
+        "game.install.named"
+      ],
+      "intent_outcome": "wrong_family",
+      "kind": "action",
+      "label": "web.search",
+      "language": "es",
+      "seconds": 1.663762,
+      "text": "Busca el App ID de Doom Eternal en Steam usando la API publica"
+    },
+    {
+      "case_id": "web-05",
+      "effect_operations": [
+        "web.search"
+      ],
+      "effect_outcome": "right_family",
+      "family": "web",
+      "index": 128,
+      "intent_operations": [
+        "web.search"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "web.search",
+      "language": "es",
+      "seconds": 1.435743,
+      "text": "Busca el botón Guardar y presiónalo"
+    },
+    {
+      "case_id": "wifi-00",
+      "effect_operations": [
+        "wifi.connect"
+      ],
+      "effect_outcome": "right_family",
+      "family": "wifi",
+      "index": 129,
+      "intent_operations": [
+        "wifi.connect"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "wifi.manage",
+      "language": "es",
+      "seconds": 0.916911,
+      "text": "Conecta no Wi-Fi de novo"
+    },
+    {
+      "case_id": "wifi-01",
+      "effect_operations": [
+        "wifi.ensure.connected"
+      ],
+      "effect_outcome": "right_family",
+      "family": "wifi",
+      "index": 130,
+      "intent_operations": [
+        "wifi.ensure.connected"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "wifi.manage",
+      "language": "es",
+      "seconds": 0.49847,
+      "text": "a qué wifi estoy conectado"
+    },
+    {
+      "case_id": "wifi-02",
+      "effect_operations": [
+        "wifi.disconnect"
+      ],
+      "effect_outcome": "right_family",
+      "family": "wifi",
+      "index": 131,
+      "intent_operations": [
+        "wifi.disconnect"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "wifi.manage",
+      "language": "es",
+      "seconds": 0.412629,
+      "text": "apagá el wifi"
+    },
+    {
+      "case_id": "wifi-03",
+      "effect_operations": [
+        "wifi.disconnect"
+      ],
+      "effect_outcome": "right_family",
+      "family": "wifi",
+      "index": 132,
+      "intent_operations": [
+        "wifi.disconnect"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "wifi.manage",
+      "language": "es",
+      "seconds": 0.452636,
+      "text": "cambia el wifi a EV 2"
+    },
+    {
+      "case_id": "wifi-04",
+      "effect_operations": [
+        "wifi.connect",
+        "email.latest.read"
+      ],
+      "effect_outcome": "right_family",
+      "family": "wifi",
+      "index": 133,
+      "intent_operations": [
+        "wifi.connect",
+        "email.latest.read"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "wifi.manage",
+      "language": "es",
+      "seconds": 2.255605,
+      "text": "conecta el wifi, abre el correo y leeme el ultimo mensaje"
+    },
+    {
+      "case_id": "wifi-05",
+      "effect_operations": [
+        "wifi.connect"
+      ],
+      "effect_outcome": "right_family",
+      "family": "wifi",
+      "index": 134,
+      "intent_operations": [
+        "wifi.connect"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "wifi.manage",
+      "language": "es",
+      "seconds": 1.049328,
+      "text": "conectame a la red wifi de la familia"
+    },
+    {
+      "case_id": "window-00",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "window",
+      "index": 135,
+      "intent_operations": [
+        "window.resolve"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "window.manage",
+      "language": "es",
+      "seconds": 2.666271,
+      "text": "Abre una ventana incógnito"
+    },
+    {
+      "case_id": "window-01",
+      "effect_operations": [
+        "window.minimize"
+      ],
+      "effect_outcome": "right_family",
+      "family": "window",
+      "index": 136,
+      "intent_operations": [
+        "window.minimize"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "plan",
+      "label": "window.manage",
+      "language": "es",
+      "seconds": 0.921171,
+      "text": "Cerra la ventana activa"
+    },
+    {
+      "case_id": "window-02",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "window",
+      "index": 137,
+      "intent_operations": [
+        "window.minimize"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "window.manage",
+      "language": "es",
+      "seconds": 1.360884,
+      "text": "Minimiza tudo e mostra a área de trabalho"
+    },
+    {
+      "case_id": "window-03",
+      "effect_operations": [
+        "window.resolve"
+      ],
+      "effect_outcome": "right_family",
+      "family": "window",
+      "index": 138,
+      "intent_operations": [
+        "window.resolve"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "action",
+      "label": "window.manage",
+      "language": "es",
+      "seconds": 1.559203,
+      "text": "abre la ventana"
+    },
+    {
+      "case_id": "window-04",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "window",
+      "index": 139,
+      "intent_operations": [],
+      "intent_outcome": "no_operation",
+      "kind": "clarify",
+      "label": "window.manage",
+      "language": "es",
+      "seconds": 3.543522,
+      "text": "arrastra este archivo a esa ventana"
+    },
+    {
+      "case_id": "window-05",
+      "effect_operations": [],
+      "effect_outcome": "no_operation",
+      "family": "window",
+      "index": 140,
+      "intent_operations": [
+        "window.move"
+      ],
+      "intent_outcome": "right_family",
+      "kind": "clarify",
+      "label": "window.manage",
+      "language": "es",
+      "seconds": 1.466111,
+      "text": "arrastra una ventana liviana a la derecha"
+    }
+  ],
+  "schema": "baxy.presentable-product-oracle.v1",
+  "targets": {
+    "action_answered_as_conversation_at_most_0_10": true,
+    "frozen_population_is_exactly_140": true,
+    "intent_family_accuracy_at_least_0_70": true,
+    "turn_decide_p50_at_most_1_5": true,
+    "turn_decide_p95_at_most_5": true,
+    "unasked_effects_executed_zero": true
+  }
+}

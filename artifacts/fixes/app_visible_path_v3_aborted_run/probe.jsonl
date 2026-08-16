@@ -1,0 +1,9 @@
+{"seq":1,"ms":0.454,"scope":"startup","id":"process","stage":"process.start","detail":null}
+{"seq":2,"ms":614.995,"scope":"startup","id":"process","stage":"window.created","detail":null}
+{"seq":3,"ms":752.432,"scope":"startup","id":"boot","stage":"startup.begin","detail":null}
+{"seq":4,"ms":763.359,"scope":"startup","id":"boot","stage":"startup.shell.begin","detail":null}
+{"seq":5,"ms":941.021,"scope":"startup","id":"boot","stage":"startup.field.begin","detail":null}
+{"seq":6,"ms":1370.247,"scope":"startup","id":"process","stage":"window.shown","detail":null}
+{"seq":7,"ms":1986.947,"scope":"startup","id":"boot","stage":"startup.field.ready","detail":null}
+{"seq":8,"ms":5660.419,"scope":"turn","id":"t0","stage":"core.call.start","detail":"memory.status"}
+{"seq":9,"ms":6327.540,"scope":"turn","id":"t0","stage":"core.call.end","detail":null}

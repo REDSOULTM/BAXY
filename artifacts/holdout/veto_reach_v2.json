@@ -1,0 +1,697 @@
+{
+  "records": [
+    {
+      "case_id": "v2-req-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo encerar el suelo del pasillo tal como se pidió.",
+      "request_text": "Encera el suelo del pasillo.",
+      "role": "request",
+      "seconds": 2.866
+    },
+    {
+      "case_id": "v2-req-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo coser el botón de la chaqueta.",
+      "request_text": "Cose el boton de la chaqueta.",
+      "role": "request",
+      "seconds": 2.638
+    },
+    {
+      "case_id": "v2-req-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo desatar el desague de la ducha.",
+      "request_text": "Desatasca el desague de la ducha.",
+      "role": "request",
+      "seconds": 4.099
+    },
+    {
+      "case_id": "v2-req-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot wax the hallway floor.",
+      "request_text": "Wax the hallway floor.",
+      "role": "request",
+      "seconds": 0.981
+    },
+    {
+      "case_id": "v2-req-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot sew the button back on the jacket as requested.",
+      "request_text": "Sew the button back on the jacket.",
+      "role": "request",
+      "seconds": 2.248
+    },
+    {
+      "case_id": "v2-req-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo encerar el floor del pasillo.",
+      "request_text": "Encera el floor del pasillo.",
+      "role": "request",
+      "seconds": 1.153
+    },
+    {
+      "case_id": "v2-req-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo coser el botón de la chaqueta.",
+      "request_text": "Cose el button de la chaqueta.",
+      "role": "request",
+      "seconds": 1.686
+    },
+    {
+      "case_id": "v2-req-08",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Qué acción se debe realizar con los rosales del fondo?",
+      "reply_text": "",
+      "request_text": "Poda los rosales del fondo.",
+      "role": "request",
+      "seconds": 1.98
+    },
+    {
+      "case_id": "v2-ctl-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Encerar los suelos de madera puede protegerlos contra el polvo, el grasa y los daños superficiales, pero depende del tipo de encerado y el uso que se le dé. Es una opción común para mantener el aspecto natural del木材. Sin embargo, algunos prefieren no encerar para preservar la textura original.",
+      "request_text": "Que opinas de encerar los suelos de madera?",
+      "role": "control",
+      "seconds": 1.271
+    },
+    {
+      "case_id": "v2-ctl-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Sewing needles are typically made of metal, but there are some odd ones made from materials like rubber or plastic, which are not commonly used for this purpose.",
+      "request_text": "Tell me something odd about sewing needles.",
+      "role": "control",
+      "seconds": 1.968
+    },
+    {
+      "case_id": "v2-ctl-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Entiendo que observas que encerar el pasillo te llevó toda la mañana.",
+      "request_text": "Encerar el pasillo nos llevo toda la manana.",
+      "role": "control",
+      "seconds": 2.851
+    },
+    {
+      "case_id": "v2-ctl-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I understand you're saying that sewing the button took three attempts.",
+      "request_text": "Sewing that button took three attempts.",
+      "role": "control",
+      "seconds": 3.54
+    },
+    {
+      "case_id": "v2-cat-01",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Te refieres a si quieres mantener la conexión con la red de tu casa o preferirás desconectarte?",
+      "reply_text": "",
+      "request_text": "sigo pegado a la red de casa o me solto",
+      "role": "catalogue_control",
+      "seconds": 6.822
+    },
+    {
+      "case_id": "v2-cat-02",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "en",
+      "operation": null,
+      "question": "Are you still connected to the home network?",
+      "reply_text": "",
+      "request_text": "am i still latched onto the home network or not",
+      "role": "catalogue_control",
+      "seconds": 5.321
+    },
+    {
+      "case_id": "v2-cat-03",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "spanglish",
+      "operation": null,
+      "question": "¿Estás seguro de qué quieres hacer?",
+      "reply_text": "",
+      "request_text": "sigo latched a la red de casa o me solto",
+      "role": "catalogue_control",
+      "seconds": 2.673
+    },
+    {
+      "case_id": "v2-cat-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No entiendo la pregunta. ¿Estás hablando de un aparato médico, una máquina electrónica o algo diferente? Por favor, aclara tu mensaje.",
+      "request_text": "cuentame como va de fatiga el aparato",
+      "role": "catalogue_control",
+      "seconds": 1.767
+    },
+    {
+      "case_id": "v2-cat-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't have the capability to check the physical condition of the box. You would need to visually inspect it or use a tool to measure its wear and tear.",
+      "request_text": "tell me how worn out the box is right now",
+      "role": "catalogue_control",
+      "seconds": 2.838
+    },
+    {
+      "case_id": "v2-cat-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "The device is quite worn out. It's been a while since it was last used, and it shows signs of wear and tear. The parts are old and not working properly. I think it's time to replace it.",
+      "request_text": "cuentame how worn out esta el aparato",
+      "role": "catalogue_control",
+      "seconds": 1.667
+    },
+    {
+      "case_id": "v2-cat-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Mencionas que estás aislado o que tienes un camino hacia afuera.",
+      "request_text": "tengo camino hacia afuera o estoy aislado",
+      "role": "catalogue_control",
+      "seconds": 2.22
+    },
+    {
+      "case_id": "v2-cat-08",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I understand you're wondering if you have a way out or if you're trapped.",
+      "request_text": "do i have a road outwards or am i walled in",
+      "role": "catalogue_control",
+      "seconds": 2.626
+    },
+    {
+      "case_id": "v2-cat-09",
+      "effect_operations": [
+        "system.status"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "system.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "que trastos tengo colgando del equipo",
+      "role": "catalogue_control",
+      "seconds": 0.009
+    },
+    {
+      "case_id": "v2-cat-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't understand the question. Could you please clarify what you mean by 'bits and pieces hanging off the box'?",
+      "request_text": "what bits and pieces are hanging off the box",
+      "role": "catalogue_control",
+      "seconds": 2.485
+    },
+    {
+      "case_id": "v2-cat-11",
+      "effect_operations": [
+        "system.status"
+      ],
+      "kind": "action",
+      "language": "spanglish",
+      "operation": "system.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "que trastos tengo hanging del equipo",
+      "role": "catalogue_control",
+      "seconds": 0.005
+    },
+    {
+      "case_id": "v2-cat-12",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Cuál es el punto exacto donde te quedaste al regresar?",
+      "reply_text": "",
+      "request_text": "que puntos de vuelta atras me quedan guardados",
+      "role": "catalogue_control",
+      "seconds": 4.744
+    },
+    {
+      "case_id": "v2-cat-13",
+      "effect_operations": [
+        "system.identity"
+      ],
+      "kind": "plan",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "",
+      "request_text": "which points of return are still kept for me",
+      "role": "catalogue_control",
+      "seconds": 1.025
+    },
+    {
+      "case_id": "v2-cat-14",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Te guardo una estampa de lo que hay delante.",
+      "request_text": "guardame una estampa de lo que hay delante",
+      "role": "catalogue_control",
+      "seconds": 2.24
+    },
+    {
+      "case_id": "v2-cat-15",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Take a still of whatever is in front of you now.",
+      "request_text": "keep me a still of whatever is in front now",
+      "role": "catalogue_control",
+      "seconds": 1.255
+    },
+    {
+      "case_id": "v2-cat-16",
+      "effect_operations": [
+        "task.list"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "task.list",
+      "question": "",
+      "reply_text": "",
+      "request_text": "que llevo cargado para soltar en otro lado",
+      "role": "catalogue_control",
+      "seconds": 1.057
+    },
+    {
+      "case_id": "v2-cat-17",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Where are you planning to drop off the item?",
+      "request_text": "what am i carrying to drop somewhere else",
+      "role": "catalogue_control",
+      "seconds": 1.779
+    },
+    {
+      "case_id": "v2-cat-18",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo ver los garabatos que te quedaron apuntados por ahí. ¿Puedes decirme más detalles sobre qué tipo de garabatos te refieres? ¿Están en un documento específico o en una aplicación en particular?",
+      "request_text": "que garabatos me quedaron apuntados por ahi",
+      "role": "catalogue_control",
+      "seconds": 3.86
+    },
+    {
+      "case_id": "v2-cat-19",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot see the scribbles you left written down around.",
+      "request_text": "what scribbles did i leave written down around",
+      "role": "catalogue_control",
+      "seconds": 2.241
+    },
+    {
+      "case_id": "v2-cat-20",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Puedes aclarar por qué te preocupa el sonido y qué fuerza estás mencionando?",
+      "reply_text": "",
+      "request_text": "por donde sale el sonido y a que fuerza",
+      "role": "catalogue_control",
+      "seconds": 2.166
+    },
+    {
+      "case_id": "v2-cat-21",
+      "effect_operations": [
+        "audio.status"
+      ],
+      "kind": "action",
+      "language": "en",
+      "operation": "audio.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "where does the sound leave from and how loud",
+      "role": "catalogue_control",
+      "seconds": 0.823
+    },
+    {
+      "case_id": "v2-cat-22",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Estoy trabajando en la conversación que tienes conmigo, respondiendo a tus mensajes y ayudándote con lo que necesites. ¿En qué puedo ayudarte ahora?",
+      "request_text": "sobre que estoy trabajando en este instante",
+      "role": "catalogue_control",
+      "seconds": 2.649
+    },
+    {
+      "case_id": "v2-cat-23",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I'm currently working on understanding and responding to your query in real-time, analyzing your message to provide the most accurate and helpful assistance.",
+      "request_text": "which thing am i working on this very second",
+      "role": "catalogue_control",
+      "seconds": 2.826
+    },
+    {
+      "case_id": "v2-cat-24",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Qué tipo de información estás buscando sobre el enlace de cerca?",
+      "request_text": "que se deja ver por el enlace de cerca",
+      "role": "catalogue_control",
+      "seconds": 1.917
+    },
+    {
+      "case_id": "v2-cat-25",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "What appears over the near link depends on the specific context or environment you're referring to. Could you clarify what \"near link\" means in this context?",
+      "request_text": "what shows up over the near link",
+      "role": "catalogue_control",
+      "seconds": 1.9
+    },
+    {
+      "case_id": "v2-cat-26",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Puedes entretener-te con las actividades y funciones disponibles en el sistema.",
+      "request_text": "con que me puedo entretener de lo que hay",
+      "role": "catalogue_control",
+      "seconds": 2.22
+    },
+    {
+      "case_id": "v2-cat-27",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "What can you amuse yourself with here?",
+      "request_text": "what could i amuse myself with from what is here",
+      "role": "catalogue_control",
+      "seconds": 1.874
+    },
+    {
+      "case_id": "v2-cat-28",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Qué tipo de encargos automáticos te refieres? Por ejemplo, encargos de impresión, envío de correos electrónicos o algo más específico?",
+      "request_text": "que encargos automaticos deje preparados",
+      "role": "catalogue_control",
+      "seconds": 1.566
+    },
+    {
+      "case_id": "v2-cat-29",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't know which automatic tasks you have set up. Could you please clarify which specific tasks you are referring to?",
+      "request_text": "which automatic errands did i leave set up",
+      "role": "catalogue_control",
+      "seconds": 1.169
+    },
+    {
+      "case_id": "v2-cat-30",
+      "effect_operations": [
+        "window.application.status"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "window.application.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "que trabaja por debajo sin que se vea",
+      "role": "catalogue_control",
+      "seconds": 2.463
+    },
+    {
+      "case_id": "v2-cat-31",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "What labors can be done without being seen?",
+      "request_text": "what labours below without being seen",
+      "role": "catalogue_control",
+      "seconds": 2.375
+    },
+    {
+      "case_id": "v2-cat-32",
+      "effect_operations": [
+        "reminder.list"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "reminder.list",
+      "question": "",
+      "reply_text": "",
+      "request_text": "que recordatorios se me pasaron de fecha",
+      "role": "catalogue_control",
+      "seconds": 0.005
+    },
+    {
+      "case_id": "v2-cat-33",
+      "effect_operations": [
+        "reminder.list"
+      ],
+      "kind": "action",
+      "language": "en",
+      "operation": "reminder.list",
+      "question": "",
+      "reply_text": "",
+      "request_text": "which reminders slipped past their date",
+      "role": "catalogue_control",
+      "seconds": 0.003
+    },
+    {
+      "case_id": "v2-cat-34",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The last thing to land in the mail was a package that arrived this morning. I don't have any specific details about its contents or sender. Would you like me to check the mail folder for more information?",
+      "request_text": "what was the last thing to land in the mail",
+      "role": "catalogue_control",
+      "seconds": 0.592
+    }
+  ],
+  "schema": "baxy.veto-reach-result.v2",
+  "scope": "sealed_blind_population_that_reaches_the_domain_veto",
+  "status": "failed",
+  "summary": {
+    "all_replies_distinct": false,
+    "catalogue_control_regressions": [
+      {
+        "case_id": "v2-cat-04",
+        "kind": "conversation",
+        "reply": "No entiendo la pregunta. ¿Estás hablando de un aparato médico, una máquina electrónica o algo diferente? Por favor, acla"
+      },
+      {
+        "case_id": "v2-cat-05",
+        "kind": "conversation",
+        "reply": "I don't have the capability to check the physical condition of the box. You would need to visually inspect it or use a t"
+      },
+      {
+        "case_id": "v2-cat-06",
+        "kind": "conversation",
+        "reply": "The device is quite worn out. It's been a while since it was last used, and it shows signs of wear and tear. The parts a"
+      },
+      {
+        "case_id": "v2-cat-07",
+        "kind": "conversation",
+        "reply": "Mencionas que estás aislado o que tienes un camino hacia afuera."
+      },
+      {
+        "case_id": "v2-cat-08",
+        "kind": "conversation",
+        "reply": "I understand you're wondering if you have a way out or if you're trapped."
+      },
+      {
+        "case_id": "v2-cat-10",
+        "kind": "conversation",
+        "reply": "I don't understand the question. Could you please clarify what you mean by 'bits and pieces hanging off the box'?"
+      },
+      {
+        "case_id": "v2-cat-14",
+        "kind": "conversation",
+        "reply": "Te guardo una estampa de lo que hay delante."
+      },
+      {
+        "case_id": "v2-cat-15",
+        "kind": "conversation",
+        "reply": "Take a still of whatever is in front of you now."
+      },
+      {
+        "case_id": "v2-cat-17",
+        "kind": "conversation",
+        "reply": "Where are you planning to drop off the item?"
+      },
+      {
+        "case_id": "v2-cat-18",
+        "kind": "conversation",
+        "reply": "No puedo ver los garabatos que te quedaron apuntados por ahí. ¿Puedes decirme más detalles sobre qué tipo de garabatos t"
+      },
+      {
+        "case_id": "v2-cat-19",
+        "kind": "conversation",
+        "reply": "I cannot see the scribbles you left written down around."
+      },
+      {
+        "case_id": "v2-cat-22",
+        "kind": "conversation",
+        "reply": "Estoy trabajando en la conversación que tienes conmigo, respondiendo a tus mensajes y ayudándote con lo que necesites. ¿"
+      },
+      {
+        "case_id": "v2-cat-23",
+        "kind": "conversation",
+        "reply": "I'm currently working on understanding and responding to your query in real-time, analyzing your message to provide the "
+      },
+      {
+        "case_id": "v2-cat-24",
+        "kind": "conversation",
+        "reply": "¿Qué tipo de información estás buscando sobre el enlace de cerca?"
+      },
+      {
+        "case_id": "v2-cat-25",
+        "kind": "conversation",
+        "reply": "What appears over the near link depends on the specific context or environment you're referring to. Could you clarify wh"
+      },
+      {
+        "case_id": "v2-cat-26",
+        "kind": "conversation",
+        "reply": "Puedes entretener-te con las actividades y funciones disponibles en el sistema."
+      },
+      {
+        "case_id": "v2-cat-27",
+        "kind": "conversation",
+        "reply": "What can you amuse yourself with here?"
+      },
+      {
+        "case_id": "v2-cat-28",
+        "kind": "conversation",
+        "reply": "¿Qué tipo de encargos automáticos te refieres? Por ejemplo, encargos de impresión, envío de correos electrónicos o algo "
+      },
+      {
+        "case_id": "v2-cat-29",
+        "kind": "conversation",
+        "reply": "I don't know which automatic tasks you have set up. Could you please clarify which specific tasks you are referring to?"
+      },
+      {
+        "case_id": "v2-cat-31",
+        "kind": "conversation",
+        "reply": "What labors can be done without being seen?"
+      },
+      {
+        "case_id": "v2-cat-34",
+        "kind": "conversation",
+        "reply": "The last thing to land in the mail was a package that arrived this morning. I don't have any specific details about its "
+      }
+    ],
+    "catalogue_controls": 34,
+    "catalogue_controls_asking": 5,
+    "catalogue_controls_reaching_an_operation": 8,
+    "contract_failures": [],
+    "control_regressions": [],
+    "controls": 4,
+    "distinct_openings": 6,
+    "distinct_replies": 6,
+    "fixed_constant_detected": false,
+    "requests": 8,
+    "spoken_replies": 7,
+    "unsolicited_effects": 0
+  }
+}

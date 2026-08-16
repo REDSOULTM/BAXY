@@ -1,0 +1,51 @@
+{
+  "schema": "baxy.mswc-ctc-temporal-feature-build.v13",
+  "measured_at_utc": "2026-08-06T09:42:18.409581+00:00",
+  "scope": "tuning_label_free_temporal_ctc_candidate_features",
+  "sources": {
+    "ctc_feature_manifest_sha256": "b93e849cf0f542d6b435df9019fc9d57a2d37d6b24b9e8a5d57b595d5c558913",
+    "hyper_ctc_cache_sha256": "20faabf607e4ec94acf104a61892bd2c0acb06bdc14067d83a49954febd621f7",
+    "tokenizer_vocabulary_sha256": "d732ab2456c0c017930001dc9af0b41b3b93d25b2eb9740bf9d925508d7d87d0",
+    "output_cache_sha256": "acff0e264f663c70554a224751791146090342d59bd9d9989804e531dfeda447"
+  },
+  "contract": {
+    "word_set": "tuning",
+    "queries": 2400,
+    "word_classes": 400,
+    "candidates_per_query": 41,
+    "feature_names": [
+      "forward_score_per_frame",
+      "phoneme_length",
+      "character_length",
+      "adjacent_repeat_fraction",
+      "greedy_edit_similarity",
+      "greedy_length_ratio",
+      "greedy_token_coverage",
+      "independent_token_peak_mean",
+      "independent_token_peak_minimum",
+      "independent_token_peak_maximum",
+      "independent_token_peak_deviation",
+      "independent_peak_margin_mean",
+      "independent_peak_margin_minimum",
+      "independent_peak_order_fraction",
+      "independent_peak_regression_fraction",
+      "independent_peak_span_fraction",
+      "independent_unique_peak_fraction",
+      "monotonic_token_score_per_token",
+      "monotonic_token_score_per_frame",
+      "monotonic_order_penalty_per_token",
+      "candidate_token_mass_mean",
+      "candidate_token_mass_maximum",
+      "candidate_token_mass_over_blank_mean",
+      "query_blank_log_probability_mean",
+      "query_frame_entropy_mean",
+      "query_frames_scaled"
+    ],
+    "label_metrics_computed": false
+  },
+  "research_tuning_examples_scored": true,
+  "research_reserved_examples_scored": false,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

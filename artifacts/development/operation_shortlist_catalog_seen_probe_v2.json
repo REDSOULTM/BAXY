@@ -1,0 +1,5350 @@
+{
+  "schema": "baxy.operation-shortlist-current-review-probe.v1",
+  "scope": "reviewed_development_only_not_blind",
+  "cases": 158,
+  "source_cases": 169,
+  "unmatched_source_cases": 11,
+  "identity_cases": 158,
+  "no_action_cases": 0,
+  "global": {
+    "complete_identity_top_1": 0.727848,
+    "complete_identity_top_2": 0.873418,
+    "complete_identity_top_3": 0.93038,
+    "complete_identity_top_5": 0.968354
+  },
+  "conditional_global_known_effect": {
+    "complete_identity_top_1": 0.765823,
+    "complete_identity_top_2": 0.892405,
+    "complete_identity_top_3": 0.93038,
+    "complete_identity_top_5": 0.968354
+  },
+  "after_product_retrieval": {
+    "complete_identity_top_1": 0.613924,
+    "complete_identity_top_2": 0.689873,
+    "complete_identity_top_3": 0.71519,
+    "complete_identity_top_5": 0.721519
+  },
+  "conditional_after_product_retrieval": {
+    "complete_identity_top_1": 0.639241,
+    "complete_identity_top_2": 0.702532,
+    "complete_identity_top_3": 0.71519,
+    "complete_identity_top_5": 0.727848
+  },
+  "oracle_family_after_product_retrieval": {
+    "complete_identity_top_1": 0.639241,
+    "complete_identity_top_2": 0.702532,
+    "complete_identity_top_3": 0.71519,
+    "complete_identity_top_5": 0.727848
+  },
+  "no_action_top_1": null,
+  "rows": [
+    {
+      "case_id": "catalog-seen-natural-app-close",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.close"
+        ]
+      ],
+      "global_top_5": [
+        "app.close",
+        "note.search",
+        "browser.control",
+        "note.list",
+        "window.resize"
+      ],
+      "global_top_5_scores": [
+        0.470954,
+        -0.619042,
+        -0.806062,
+        -0.847662,
+        -0.879277
+      ],
+      "global_margin": 1.089996,
+      "candidate_top_5": [
+        "app.close",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "app.close"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-app-installed",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.installed"
+        ]
+      ],
+      "global_top_5": [
+        "app.installed",
+        "web.search",
+        "game.installed.named",
+        "game.install.prepare",
+        "__none__"
+      ],
+      "global_top_5_scores": [
+        -0.38063,
+        -0.801865,
+        -0.874261,
+        -0.879401,
+        -0.916601
+      ],
+      "global_margin": 0.421235,
+      "candidate_top_5": [
+        "app.installed",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "app.installed"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-app-open",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "app.open",
+        "web.search",
+        "filesystem.folder.open",
+        "filesystem.hash",
+        "input.keyboard.open"
+      ],
+      "global_top_5_scores": [
+        0.431969,
+        -0.796543,
+        -0.842865,
+        -0.871461,
+        -0.904658
+      ],
+      "global_margin": 1.228512,
+      "candidate_top_5": [
+        "app.open",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-audio-microphone-mute",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.microphone.mute"
+        ]
+      ],
+      "global_top_5": [
+        "audio.microphone.mute",
+        "audio.mute",
+        "game.install.named",
+        "system.identity",
+        "system.status"
+      ],
+      "global_top_5_scores": [
+        1.131228,
+        -0.540873,
+        -0.953719,
+        -0.956323,
+        -0.973104
+      ],
+      "global_margin": 1.672101,
+      "candidate_top_5": [
+        "audio.microphone.mute",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.microphone.mute"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-audio-mute",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.mute"
+        ]
+      ],
+      "global_top_5": [
+        "audio.mute",
+        "audio.microphone.mute",
+        "audio.volume.adjust",
+        "game.install.named",
+        "__none__"
+      ],
+      "global_top_5_scores": [
+        0.655534,
+        -0.640334,
+        -0.917695,
+        -0.954248,
+        -0.954393
+      ],
+      "global_margin": 1.295869,
+      "candidate_top_5": [
+        "audio.mute",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.mute"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-audio-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.status"
+        ]
+      ],
+      "global_top_5": [
+        "audio.mute",
+        "audio.status",
+        "__none__",
+        "audio.volume",
+        "window.active"
+      ],
+      "global_top_5_scores": [
+        -0.647258,
+        -0.652541,
+        -0.731227,
+        -0.854871,
+        -0.916301
+      ],
+      "global_margin": 0.005283,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-audio-volume",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.volume"
+        ]
+      ],
+      "global_top_5": [
+        "audio.volume",
+        "system.settings.set",
+        "audio.microphone.mute",
+        "audio.volume.adjust",
+        "media.play.query"
+      ],
+      "global_top_5_scores": [
+        0.251316,
+        -0.654683,
+        -0.776453,
+        -0.786145,
+        -0.968115
+      ],
+      "global_margin": 0.905999,
+      "candidate_top_5": [
+        "audio.volume",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.volume"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-audio-volume-adjust",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.volume.adjust"
+        ]
+      ],
+      "global_top_5": [
+        "audio.volume.adjust",
+        "audio.volume",
+        "filesystem.search",
+        "backup.known.verify.latest",
+        "game.installed.named"
+      ],
+      "global_top_5_scores": [
+        0.461979,
+        0.137539,
+        -0.927877,
+        -0.970338,
+        -1.006873
+      ],
+      "global_margin": 0.32444,
+      "candidate_top_5": [
+        "audio.volume.adjust",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.volume.adjust"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-backup-create",
+      "outcome": "action",
+      "expected": [
+        [
+          "backup.create"
+        ]
+      ],
+      "global_top_5": [
+        "backup.create",
+        "clipboard.copy",
+        "filesystem.copy",
+        "filesystem.read.text",
+        "note.create"
+      ],
+      "global_top_5_scores": [
+        0.071144,
+        -0.651937,
+        -0.808084,
+        -0.862162,
+        -0.87154
+      ],
+      "global_margin": 0.723081,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-backup-known-create",
+      "outcome": "action",
+      "expected": [
+        [
+          "backup.known.create"
+        ]
+      ],
+      "global_top_5": [
+        "backup.known.verify.latest",
+        "backup.known.create",
+        "backup.known.restore.latest",
+        "backup.list",
+        "backup.restore"
+      ],
+      "global_top_5_scores": [
+        -0.255549,
+        -0.35184,
+        -0.544856,
+        -0.679096,
+        -0.71936
+      ],
+      "global_margin": 0.096291,
+      "candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.known.create",
+        "backup.known.restore.latest",
+        "backup.list",
+        "backup.restore"
+      ],
+      "conditional_candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.known.create",
+        "backup.known.restore.latest",
+        "backup.list",
+        "backup.restore"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-backup-known-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "backup.known.list"
+        ]
+      ],
+      "global_top_5": [
+        "backup.known.list",
+        "backup.known.create",
+        "filesystem.known.trash.named",
+        "backup.known.verify.latest",
+        "filesystem.sandbox.diff.named"
+      ],
+      "global_top_5_scores": [
+        0.346613,
+        -0.77363,
+        -0.873396,
+        -0.924929,
+        -0.927868
+      ],
+      "global_margin": 1.120242,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-backup-known-restore-latest",
+      "outcome": "action",
+      "expected": [
+        [
+          "backup.known.restore.latest"
+        ]
+      ],
+      "global_top_5": [
+        "backup.known.restore.latest",
+        "backup.known.verify.latest",
+        "backup.restore",
+        "web.search",
+        "memory.export"
+      ],
+      "global_top_5_scores": [
+        0.363753,
+        -0.2983,
+        -0.718105,
+        -0.743782,
+        -0.872176
+      ],
+      "global_margin": 0.662053,
+      "candidate_top_5": [
+        "backup.known.restore.latest",
+        "backup.known.verify.latest",
+        "backup.restore",
+        "backup.known.list",
+        "backup.list"
+      ],
+      "conditional_candidate_top_5": [
+        "backup.known.restore.latest",
+        "backup.known.verify.latest",
+        "backup.restore",
+        "backup.known.list",
+        "backup.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-backup-known-verify-latest",
+      "outcome": "action",
+      "expected": [
+        [
+          "backup.known.verify.latest"
+        ]
+      ],
+      "global_top_5": [
+        "backup.known.verify.latest",
+        "backup.known.restore.latest",
+        "filesystem.file.open.latest",
+        "audio.volume.adjust",
+        "notification.cancel.latest"
+      ],
+      "global_top_5_scores": [
+        0.480846,
+        -0.332385,
+        -0.804756,
+        -0.821304,
+        -0.822883
+      ],
+      "global_margin": 0.813231,
+      "candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.known.restore.latest",
+        "backup.known.list",
+        "backup.restore",
+        "backup.list"
+      ],
+      "conditional_candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.known.restore.latest",
+        "backup.known.list",
+        "backup.restore",
+        "backup.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-backup-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "backup.list"
+        ]
+      ],
+      "global_top_5": [
+        "backup.list",
+        "backup.known.list",
+        "backup.restore",
+        "backup.verify",
+        "capture.active.window"
+      ],
+      "global_top_5_scores": [
+        0.085749,
+        -0.678681,
+        -0.755351,
+        -0.776532,
+        -0.841901
+      ],
+      "global_margin": 0.764429,
+      "candidate_top_5": [
+        "backup.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "backup.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-backup-restore",
+      "outcome": "action",
+      "expected": [
+        [
+          "backup.restore"
+        ]
+      ],
+      "global_top_5": [
+        "backup.verify",
+        "backup.restore",
+        "backup.known.restore.latest",
+        "filesystem.trash.restore",
+        "message.send"
+      ],
+      "global_top_5_scores": [
+        -0.392422,
+        -0.428906,
+        -0.588307,
+        -0.777068,
+        -0.780274
+      ],
+      "global_margin": 0.036484,
+      "candidate_top_5": [
+        "backup.verify",
+        "backup.restore",
+        "backup.known.restore.latest",
+        "__none__",
+        "backup.list"
+      ],
+      "conditional_candidate_top_5": [
+        "backup.verify",
+        "backup.restore",
+        "backup.known.restore.latest",
+        "backup.list",
+        "backup.known.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-backup-verify",
+      "outcome": "action",
+      "expected": [
+        [
+          "backup.verify"
+        ]
+      ],
+      "global_top_5": [
+        "backup.known.verify.latest",
+        "backup.verify",
+        "filesystem.known.duplicates",
+        "backup.restore",
+        "input.select.all"
+      ],
+      "global_top_5_scores": [
+        -0.003595,
+        -0.034016,
+        -0.728375,
+        -0.741125,
+        -0.746574
+      ],
+      "global_margin": 0.03042,
+      "candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.verify",
+        "backup.restore",
+        "backup.create",
+        "backup.list"
+      ],
+      "conditional_candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.verify",
+        "backup.restore",
+        "backup.create",
+        "backup.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-bluetooth-device-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "bluetooth.device.list"
+        ]
+      ],
+      "global_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.device.pair",
+        "memory.recall",
+        "bluetooth.radio.set",
+        "capture.active.window"
+      ],
+      "global_top_5_scores": [
+        0.801419,
+        -0.745015,
+        -0.760168,
+        -0.854959,
+        -0.872486
+      ],
+      "global_margin": 1.546434,
+      "candidate_top_5": [
+        "bluetooth.device.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "bluetooth.device.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-bluetooth-device-pair",
+      "outcome": "action",
+      "expected": [
+        [
+          "bluetooth.device.pair"
+        ]
+      ],
+      "global_top_5": [
+        "bluetooth.device.pair",
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "web.search",
+        "filesystem.known.search"
+      ],
+      "global_top_5_scores": [
+        -0.205202,
+        -0.327224,
+        -0.587985,
+        -0.766863,
+        -0.919828
+      ],
+      "global_margin": 0.122023,
+      "candidate_top_5": [
+        "bluetooth.device.pair",
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "bluetooth.device.pair",
+        "bluetooth.device.list",
+        "bluetooth.radio.set"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-bluetooth-radio-set",
+      "outcome": "action",
+      "expected": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "global_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "notification.schedule",
+        "media.play.query"
+      ],
+      "global_top_5_scores": [
+        -0.414818,
+        -0.510575,
+        -0.649104,
+        -0.780268,
+        -0.829016
+      ],
+      "global_margin": 0.095757,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-browser-control",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.control"
+        ]
+      ],
+      "global_top_5": [
+        "browser.control",
+        "browser.navigate",
+        "browser.page.read",
+        "media.control",
+        "browser.tabs.list"
+      ],
+      "global_top_5_scores": [
+        0.575871,
+        -0.671398,
+        -0.752563,
+        -0.759852,
+        -0.883951
+      ],
+      "global_margin": 1.247268,
+      "candidate_top_5": [
+        "browser.navigate",
+        "__none__",
+        "web.search"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate",
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-browser-navigate",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate"
+        ]
+      ],
+      "global_top_5": [
+        "browser.navigate",
+        "browser.tabs.list",
+        "memory.session.clear",
+        "browser.control",
+        "media.status"
+      ],
+      "global_top_5_scores": [
+        0.541935,
+        -0.856378,
+        -0.894075,
+        -0.991566,
+        -0.991667
+      ],
+      "global_margin": 1.398312,
+      "candidate_top_5": [
+        "browser.navigate",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-browser-navigate-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate.named"
+        ]
+      ],
+      "global_top_5": [
+        "browser.navigate.named",
+        "browser.navigate",
+        "media.play.query",
+        "task.list",
+        "game.catalog.list"
+      ],
+      "global_top_5_scores": [
+        0.213397,
+        -0.633178,
+        -0.970976,
+        -0.993954,
+        -1.00221
+      ],
+      "global_margin": 0.846575,
+      "candidate_top_5": [
+        "browser.navigate.named",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate.named"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-browser-page-read",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.page.read"
+        ]
+      ],
+      "global_top_5": [
+        "browser.page.read",
+        "browser.navigate",
+        "memory.recall",
+        "task.search",
+        "browser.control"
+      ],
+      "global_top_5_scores": [
+        1.209207,
+        -0.833824,
+        -0.929489,
+        -0.936306,
+        -0.960123
+      ],
+      "global_margin": 2.043031,
+      "candidate_top_5": [
+        "browser.page.read",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.page.read"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-browser-tabs-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.tabs.list"
+        ]
+      ],
+      "global_top_5": [
+        "browser.tabs.list",
+        "task.list",
+        "browser.control",
+        "notification.schedule",
+        "memory.disable"
+      ],
+      "global_top_5_scores": [
+        0.758686,
+        -0.828575,
+        -0.909416,
+        -0.909577,
+        -0.968663
+      ],
+      "global_margin": 1.587261,
+      "candidate_top_5": [
+        "browser.tabs.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.tabs.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-calendar-event-create",
+      "outcome": "action",
+      "expected": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "global_top_5": [
+        "calendar.event.create",
+        "__none__",
+        "calendar.event.list",
+        "reminder.create",
+        "note.update"
+      ],
+      "global_top_5_scores": [
+        -0.010856,
+        -0.459944,
+        -0.588686,
+        -0.696205,
+        -0.787497
+      ],
+      "global_margin": 0.449087,
+      "candidate_top_5": [
+        "calendar.event.create",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "calendar.event.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-calendar-event-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "calendar.event.list"
+        ]
+      ],
+      "global_top_5": [
+        "calendar.event.list",
+        "calendar.event.create",
+        "filesystem.known.duplicates",
+        "memory.export",
+        "notification.diagnose"
+      ],
+      "global_top_5_scores": [
+        0.806784,
+        -0.709127,
+        -0.892529,
+        -1.001417,
+        -1.002333
+      ],
+      "global_margin": 1.515911,
+      "candidate_top_5": [
+        "calendar.event.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "calendar.event.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-capture-active-window",
+      "outcome": "action",
+      "expected": [
+        [
+          "capture.active.window"
+        ]
+      ],
+      "global_top_5": [
+        "capture.active.window",
+        "input.keyboard.status",
+        "window.active",
+        "window.resolve",
+        "window.restore"
+      ],
+      "global_top_5_scores": [
+        -0.529167,
+        -0.764086,
+        -0.787964,
+        -0.826007,
+        -0.834175
+      ],
+      "global_margin": 0.234918,
+      "candidate_top_5": [
+        "window.active",
+        "window.resolve",
+        "window.restore",
+        "window.resize",
+        "window.focus"
+      ],
+      "conditional_candidate_top_5": [
+        "window.active",
+        "window.resolve",
+        "window.restore",
+        "window.resize",
+        "window.focus"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-capture-screenshot",
+      "outcome": "action",
+      "expected": [
+        [
+          "capture.screenshot"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "capture.screenshot",
+        "filesystem.known.trash.named",
+        "__none__",
+        "filesystem.known.search"
+      ],
+      "global_top_5_scores": [
+        -0.510697,
+        -0.542476,
+        -0.727695,
+        -0.809716,
+        -0.835861
+      ],
+      "global_margin": 0.03178,
+      "candidate_top_5": [
+        "capture.screenshot",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "capture.screenshot"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-clipboard-copy",
+      "outcome": "action",
+      "expected": [
+        [
+          "clipboard.copy"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.copy",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "input.select.all",
+        "backup.create"
+      ],
+      "global_top_5_scores": [
+        0.632976,
+        -0.75938,
+        -0.874171,
+        -0.930472,
+        -0.933495
+      ],
+      "global_margin": 1.392356,
+      "candidate_top_5": [
+        "clipboard.copy",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "clipboard.copy"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-clipboard-paste",
+      "outcome": "action",
+      "expected": [
+        [
+          "clipboard.paste"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.paste",
+        "web.search",
+        "input.keyboard.status",
+        "clipboard.write.text",
+        "media.seek.relative"
+      ],
+      "global_top_5_scores": [
+        0.958649,
+        -0.740506,
+        -0.773546,
+        -0.933686,
+        -0.959415
+      ],
+      "global_margin": 1.699155,
+      "candidate_top_5": [
+        "clipboard.paste",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "clipboard.paste"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-clipboard-read-text",
+      "outcome": "action",
+      "expected": [
+        [
+          "clipboard.read.text"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.write.text",
+        "clipboard.paste",
+        "clipboard.read.text",
+        "browser.page.read",
+        "clipboard.copy"
+      ],
+      "global_top_5_scores": [
+        0.081219,
+        -0.512406,
+        -0.550252,
+        -0.639143,
+        -0.730601
+      ],
+      "global_margin": 0.593625,
+      "candidate_top_5": [
+        "clipboard.read.text",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "clipboard.read.text"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-clipboard-write-text",
+      "outcome": "action",
+      "expected": [
+        [
+          "clipboard.write.text"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.write.text",
+        "clipboard.paste",
+        "media.play.query",
+        "clipboard.read.text",
+        "notification.schedule"
+      ],
+      "global_top_5_scores": [
+        0.334083,
+        -0.594408,
+        -0.758903,
+        -0.773859,
+        -0.800786
+      ],
+      "global_margin": 0.928491,
+      "candidate_top_5": [
+        "calendar.event.create",
+        "__none__",
+        "calendar.event.list"
+      ],
+      "conditional_candidate_top_5": [
+        "calendar.event.create",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-email-latest-read",
+      "outcome": "action",
+      "expected": [
+        [
+          "email.latest.read"
+        ]
+      ],
+      "global_top_5": [
+        "email.latest.read",
+        "email.latest.reply",
+        "web.search",
+        "backup.known.verify.latest",
+        "__none__"
+      ],
+      "global_top_5_scores": [
+        0.027939,
+        -0.336547,
+        -0.43292,
+        -0.735959,
+        -0.779722
+      ],
+      "global_margin": 0.364486,
+      "candidate_top_5": [
+        "email.latest.read",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "email.latest.read"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-email-latest-reply",
+      "outcome": "action",
+      "expected": [
+        [
+          "email.latest.reply"
+        ]
+      ],
+      "global_top_5": [
+        "email.latest.reply",
+        "web.search",
+        "__none__",
+        "email.latest.read",
+        "window.minimize"
+      ],
+      "global_top_5_scores": [
+        0.347571,
+        -0.504149,
+        -0.691403,
+        -0.796386,
+        -0.975776
+      ],
+      "global_margin": 0.85172,
+      "candidate_top_5": [
+        "email.latest.reply",
+        "__none__",
+        "email.latest.read"
+      ],
+      "conditional_candidate_top_5": [
+        "email.latest.reply",
+        "email.latest.read"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-copy",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.copy"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.copy",
+        "filesystem.sandbox.move.named",
+        "filesystem.copy",
+        "filesystem.file.open.latest",
+        "filesystem.list"
+      ],
+      "global_top_5_scores": [
+        -0.401258,
+        -0.490498,
+        -0.530188,
+        -0.580937,
+        -0.678727
+      ],
+      "global_margin": 0.08924,
+      "candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.copy",
+        "filesystem.file.open.latest",
+        "filesystem.list",
+        "filesystem.sandbox.append.named"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.copy",
+        "filesystem.file.open.latest",
+        "filesystem.list",
+        "filesystem.sandbox.append.named"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-create-directory",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.create.directory"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "filesystem.list",
+        "backup.restore",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named"
+      ],
+      "global_top_5_scores": [
+        -0.153113,
+        -0.432672,
+        -0.568516,
+        -0.634289,
+        -0.827097
+      ],
+      "global_margin": 0.279559,
+      "candidate_top_5": [
+        "__none__",
+        "filesystem.list",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.search"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.list",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.search",
+        "filesystem.create.directory"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-file-open-latest",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.file.open.latest"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.file.open.latest",
+        "__none__",
+        "web.search",
+        "filesystem.known.search",
+        "filesystem.known.duplicates"
+      ],
+      "global_top_5_scores": [
+        0.443742,
+        -0.648412,
+        -0.736581,
+        -0.850042,
+        -0.856355
+      ],
+      "global_margin": 1.092154,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-folder-open",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.folder.open"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.folder.open",
+        "filesystem.known.search",
+        "filesystem.file.open.latest",
+        "filesystem.known.duplicates",
+        "media.play.query"
+      ],
+      "global_top_5_scores": [
+        0.096943,
+        -0.277043,
+        -0.679826,
+        -0.797109,
+        -0.869436
+      ],
+      "global_margin": 0.373986,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-hash",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.hash"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.hash",
+        "backup.known.verify.latest",
+        "web.search",
+        "input.select.all",
+        "backup.create"
+      ],
+      "global_top_5_scores": [
+        -0.034,
+        -0.807484,
+        -0.835154,
+        -0.835695,
+        -0.837233
+      ],
+      "global_margin": 0.773485,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-known-duplicates",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.known.duplicates"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.known.duplicates",
+        "filesystem.known.search",
+        "wifi.profile.list",
+        "backup.known.restore.latest",
+        "game.install.cancel.active"
+      ],
+      "global_top_5_scores": [
+        0.269746,
+        -0.682107,
+        -0.874805,
+        -0.877565,
+        -0.892307
+      ],
+      "global_margin": 0.951852,
+      "candidate_top_5": [
+        "filesystem.known.search",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.known.search"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-known-search",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.known.search"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.known.search",
+        "filesystem.write.text",
+        "peripheral.scan",
+        "office.document.create",
+        "filesystem.copy"
+      ],
+      "global_top_5_scores": [
+        0.436662,
+        -0.657609,
+        -0.855847,
+        -0.866365,
+        -0.879776
+      ],
+      "global_margin": 1.094271,
+      "candidate_top_5": [
+        "filesystem.known.search",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.known.search"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-known-trash-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.known.trash.named"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.known.trash.named",
+        "__none__",
+        "note.trash",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.restore"
+      ],
+      "global_top_5_scores": [
+        -0.397222,
+        -0.570907,
+        -0.732547,
+        -0.751441,
+        -0.78933
+      ],
+      "global_margin": 0.173685,
+      "candidate_top_5": [
+        "filesystem.known.trash.named",
+        "__none__",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.restore",
+        "filesystem.trash.commit"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.known.trash.named",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.restore",
+        "filesystem.trash.commit",
+        "filesystem.path.ensure.absent"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.list"
+        ]
+      ],
+      "global_top_5": [
+        "backup.restore",
+        "filesystem.list",
+        "filesystem.sandbox.move.named",
+        "note.update",
+        "browser.page.read"
+      ],
+      "global_top_5_scores": [
+        -0.454553,
+        -0.561073,
+        -0.694949,
+        -0.728764,
+        -0.745656
+      ],
+      "global_margin": 0.10652,
+      "candidate_top_5": [
+        "filesystem.list",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.folder.open",
+        "filesystem.search"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.list",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.folder.open",
+        "filesystem.search"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-move",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.move"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "clipboard.copy",
+        "backup.restore",
+        "filesystem.file.open.latest"
+      ],
+      "global_top_5_scores": [
+        -0.211792,
+        -0.66222,
+        -0.719004,
+        -0.728819,
+        -0.741671
+      ],
+      "global_margin": 0.450428,
+      "candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.file.open.latest",
+        "filesystem.list",
+        "filesystem.move"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.file.open.latest",
+        "filesystem.list",
+        "filesystem.move"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-path-ensure-absent",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.path.ensure.absent"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.known.trash.named",
+        "filesystem.path.ensure.absent",
+        "system.recyclebin.empty",
+        "notification.diagnose",
+        "notification.cancel.latest"
+      ],
+      "global_top_5_scores": [
+        -0.474289,
+        -0.544993,
+        -0.891953,
+        -0.90473,
+        -0.915221
+      ],
+      "global_margin": 0.070704,
+      "candidate_top_5": [
+        "filesystem.known.trash.named",
+        "filesystem.path.ensure.absent",
+        "system.recyclebin.empty",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.commit"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.known.trash.named",
+        "filesystem.path.ensure.absent",
+        "system.recyclebin.empty",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.commit"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-read-text",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.read.text"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.read.text",
+        "filesystem.write.text",
+        "clipboard.copy",
+        "routine.delete",
+        "filesystem.sandbox.append.named"
+      ],
+      "global_top_5_scores": [
+        0.082061,
+        -0.297489,
+        -0.739856,
+        -0.771575,
+        -0.88474
+      ],
+      "global_margin": 0.37955,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-sandbox-append-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.sandbox.append.named"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "backup.restore",
+        "note.update"
+      ],
+      "global_top_5_scores": [
+        -0.026839,
+        -0.548027,
+        -0.573291,
+        -0.713926,
+        -0.839669
+      ],
+      "global_margin": 0.521189,
+      "candidate_top_5": [
+        "__none__",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.list",
+        "filesystem.search"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.list",
+        "filesystem.search",
+        "filesystem.trash.prepare"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-sandbox-diff-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.sandbox.diff.named"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.sandbox.diff.named",
+        "filesystem.sandbox.move.named",
+        "note.search",
+        "backup.restore",
+        "filesystem.list"
+      ],
+      "global_top_5_scores": [
+        -0.245591,
+        -0.340651,
+        -0.660187,
+        -0.79834,
+        -0.831085
+      ],
+      "global_margin": 0.095061,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-sandbox-move-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.sandbox.move.named"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "__none__",
+        "filesystem.known.trash.named"
+      ],
+      "global_top_5_scores": [
+        -0.171412,
+        -0.599604,
+        -0.719193,
+        -0.739634,
+        -0.74979
+      ],
+      "global_margin": 0.428192,
+      "candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "__none__",
+        "filesystem.known.trash.named"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "filesystem.known.trash.named",
+        "filesystem.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-search",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.search"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.search",
+        "web.search",
+        "filesystem.list",
+        "backup.restore",
+        "filesystem.sandbox.append.named"
+      ],
+      "global_top_5_scores": [
+        -0.398648,
+        -0.602455,
+        -0.691516,
+        -0.709106,
+        -0.735971
+      ],
+      "global_margin": 0.203807,
+      "candidate_top_5": [
+        "filesystem.search",
+        "web.search",
+        "filesystem.list",
+        "filesystem.sandbox.append.named",
+        "filesystem.sandbox.move.named"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.search",
+        "web.search",
+        "filesystem.list",
+        "filesystem.sandbox.append.named",
+        "filesystem.sandbox.move.named"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-trash-commit",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.trash.commit"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.trash.commit",
+        "input.select.all",
+        "clipboard.copy",
+        "package.install.commit",
+        "filesystem.trash.prepare"
+      ],
+      "global_top_5_scores": [
+        -0.585924,
+        -0.627785,
+        -0.686984,
+        -0.732609,
+        -0.833725
+      ],
+      "global_margin": 0.041861,
+      "candidate_top_5": [
+        "filesystem.trash.commit",
+        "filesystem.trash.prepare",
+        "filesystem.known.trash.named",
+        "filesystem.folder.open",
+        "filesystem.create.directory"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.trash.commit",
+        "filesystem.trash.prepare",
+        "filesystem.known.trash.named",
+        "filesystem.folder.open",
+        "filesystem.create.directory"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-trash-prepare",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.trash.prepare"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.copy",
+        "filesystem.trash.prepare",
+        "message.send",
+        "filesystem.trash.commit",
+        "notification.list.due"
+      ],
+      "global_top_5_scores": [
+        -0.659912,
+        -0.666785,
+        -0.715288,
+        -0.748766,
+        -0.79571
+      ],
+      "global_margin": 0.006872,
+      "candidate_top_5": [
+        "filesystem.trash.prepare",
+        "filesystem.trash.commit",
+        "notification.list.due",
+        "filesystem.trash.restore",
+        "filesystem.file.open.latest"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.trash.prepare",
+        "filesystem.trash.commit",
+        "notification.list.due",
+        "filesystem.trash.restore",
+        "filesystem.file.open.latest"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-trash-restore",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.trash.restore"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.trash.restore",
+        "filesystem.trash.commit",
+        "note.restore",
+        "clipboard.copy",
+        "window.restore"
+      ],
+      "global_top_5_scores": [
+        -0.318524,
+        -0.531667,
+        -0.700967,
+        -0.895865,
+        -0.920371
+      ],
+      "global_margin": 0.213142,
+      "candidate_top_5": [
+        "filesystem.trash.restore",
+        "filesystem.trash.commit",
+        "filesystem.path.ensure.absent",
+        "filesystem.trash.prepare",
+        "filesystem.file.open.latest"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.trash.restore",
+        "filesystem.trash.commit",
+        "filesystem.path.ensure.absent",
+        "filesystem.trash.prepare",
+        "filesystem.file.open.latest"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-filesystem-write-text",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.write.text"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.write.text",
+        "filesystem.sandbox.move.named",
+        "filesystem.write.text",
+        "backup.restore",
+        "web.search"
+      ],
+      "global_top_5_scores": [
+        -0.430642,
+        -0.528696,
+        -0.624491,
+        -0.67861,
+        -0.751111
+      ],
+      "global_margin": 0.098054,
+      "candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.write.text",
+        "filesystem.list",
+        "filesystem.search",
+        "filesystem.sandbox.append.named"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.sandbox.move.named",
+        "filesystem.write.text",
+        "filesystem.list",
+        "filesystem.search",
+        "filesystem.sandbox.append.named"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-catalog-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.catalog.list"
+        ]
+      ],
+      "global_top_5": [
+        "game.catalog.list",
+        "memory.list",
+        "app.installed",
+        "game.install.named",
+        "game.installed.named"
+      ],
+      "global_top_5_scores": [
+        -0.056784,
+        -0.792508,
+        -0.800065,
+        -0.810235,
+        -0.823465
+      ],
+      "global_margin": 0.735724,
+      "candidate_top_5": [
+        "game.catalog.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "game.catalog.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-install-cancel",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.install.cancel"
+        ]
+      ],
+      "global_top_5": [
+        "game.install.cancel",
+        "game.launch",
+        "game.install.cancel.active",
+        "game.install.prepare",
+        "notification.cancel.latest"
+      ],
+      "global_top_5_scores": [
+        -0.095591,
+        -0.362751,
+        -0.628556,
+        -0.651551,
+        -0.822001
+      ],
+      "global_margin": 0.26716,
+      "candidate_top_5": [
+        "game.install.cancel",
+        "game.launch",
+        "game.install.cancel.active",
+        "game.install.prepare",
+        "game.catalog.list"
+      ],
+      "conditional_candidate_top_5": [
+        "game.install.cancel",
+        "game.launch",
+        "game.install.cancel.active",
+        "game.install.prepare",
+        "game.catalog.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-install-cancel-active",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.install.cancel.active"
+        ]
+      ],
+      "global_top_5": [
+        "game.install.cancel.active",
+        "game.catalog.list",
+        "notification.cancel.latest",
+        "filesystem.known.duplicates",
+        "game.install.cancel"
+      ],
+      "global_top_5_scores": [
+        0.047697,
+        -0.670078,
+        -0.745354,
+        -0.841046,
+        -0.862128
+      ],
+      "global_margin": 0.717775,
+      "candidate_top_5": [
+        "game.install.cancel.active",
+        "game.catalog.list",
+        "game.install.cancel",
+        "game.install.named",
+        "game.installed.named"
+      ],
+      "conditional_candidate_top_5": [
+        "game.install.cancel.active",
+        "game.catalog.list",
+        "game.install.cancel",
+        "game.install.named",
+        "game.installed.named"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-install-commit",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.install.commit"
+        ]
+      ],
+      "global_top_5": [
+        "package.install.commit",
+        "game.install.commit",
+        "game.install.cancel.active",
+        "game.catalog.list",
+        "game.installed.named"
+      ],
+      "global_top_5_scores": [
+        -0.051423,
+        -0.539579,
+        -0.596109,
+        -0.66287,
+        -0.769334
+      ],
+      "global_margin": 0.488156,
+      "candidate_top_5": [
+        "app.installed",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "app.installed"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-install-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.install.named"
+        ]
+      ],
+      "global_top_5": [
+        "game.catalog.list",
+        "game.install.named",
+        "__none__",
+        "game.install.cancel.active",
+        "message.send"
+      ],
+      "global_top_5_scores": [
+        -0.214962,
+        -0.650823,
+        -0.746615,
+        -0.807935,
+        -0.811852
+      ],
+      "global_margin": 0.435862,
+      "candidate_top_5": [
+        "game.catalog.list",
+        "game.install.named",
+        "__none__",
+        "game.install.cancel.active",
+        "game.installed.named"
+      ],
+      "conditional_candidate_top_5": [
+        "game.catalog.list",
+        "game.install.named",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "app.installed"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-install-prepare",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.install.prepare"
+        ]
+      ],
+      "global_top_5": [
+        "game.install.prepare",
+        "package.install.commit",
+        "package.install.prepare",
+        "web.search",
+        "game.install.commit"
+      ],
+      "global_top_5_scores": [
+        -0.140758,
+        -0.684734,
+        -0.781432,
+        -0.821954,
+        -0.826334
+      ],
+      "global_margin": 0.543976,
+      "candidate_top_5": [
+        "game.install.prepare",
+        "game.install.commit",
+        "game.purchase.prepare",
+        "game.install.status",
+        "game.install.cancel"
+      ],
+      "conditional_candidate_top_5": [
+        "game.install.prepare",
+        "game.install.commit",
+        "game.purchase.prepare",
+        "game.install.status",
+        "game.install.cancel"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-install-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.install.status"
+        ]
+      ],
+      "global_top_5": [
+        "game.install.status",
+        "game.install.cancel.active",
+        "game.launch",
+        "web.search",
+        "game.install.cancel"
+      ],
+      "global_top_5_scores": [
+        -0.052323,
+        -0.433191,
+        -0.465057,
+        -0.685127,
+        -0.714768
+      ],
+      "global_margin": 0.380868,
+      "candidate_top_5": [
+        "game.install.status",
+        "game.install.cancel.active",
+        "game.launch",
+        "game.install.cancel",
+        "game.install.named"
+      ],
+      "conditional_candidate_top_5": [
+        "game.install.status",
+        "game.install.cancel.active",
+        "game.launch",
+        "game.install.cancel",
+        "game.install.named"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-installed-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.installed.named"
+        ]
+      ],
+      "global_top_5": [
+        "app.installed",
+        "web.search",
+        "game.installed.named",
+        "package.install.prepare",
+        "package.install.commit"
+      ],
+      "global_top_5_scores": [
+        -0.286759,
+        -0.401344,
+        -0.875324,
+        -0.941825,
+        -0.946458
+      ],
+      "global_margin": 0.114585,
+      "candidate_top_5": [
+        "app.installed",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "app.installed"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-launch",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.launch"
+        ]
+      ],
+      "global_top_5": [
+        "game.launch",
+        "game.install.named",
+        "game.catalog.list",
+        "game.installed.named",
+        "__none__"
+      ],
+      "global_top_5_scores": [
+        -0.240671,
+        -0.537515,
+        -0.604502,
+        -0.786928,
+        -0.812038
+      ],
+      "global_margin": 0.296844,
+      "candidate_top_5": [
+        "game.launch",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "game.launch"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-purchase-commit",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.purchase.commit"
+        ]
+      ],
+      "global_top_5": [
+        "game.purchase.commit",
+        "game.purchase.prepare",
+        "media.play.exact",
+        "web.search",
+        "email.latest.reply"
+      ],
+      "global_top_5_scores": [
+        0.126134,
+        -0.722916,
+        -0.937515,
+        -0.945413,
+        -0.950718
+      ],
+      "global_margin": 0.84905,
+      "candidate_top_5": [
+        "__none__",
+        "game.catalog.list"
+      ],
+      "conditional_candidate_top_5": [
+        "game.catalog.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-game-purchase-prepare",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.purchase.prepare"
+        ]
+      ],
+      "global_top_5": [
+        "game.purchase.commit",
+        "web.search",
+        "game.purchase.prepare",
+        "package.install.prepare",
+        "game.install.prepare"
+      ],
+      "global_top_5_scores": [
+        -0.115726,
+        -0.313043,
+        -0.436257,
+        -0.927301,
+        -0.933144
+      ],
+      "global_margin": 0.197317,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-input-key-press",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.key.press"
+        ]
+      ],
+      "global_top_5": [
+        "input.key.press",
+        "web.search",
+        "input.select.all",
+        "input.keyboard.status",
+        "clipboard.paste"
+      ],
+      "global_top_5_scores": [
+        0.108934,
+        -0.632137,
+        -0.673387,
+        -0.713177,
+        -0.776432
+      ],
+      "global_margin": 0.741071,
+      "candidate_top_5": [
+        "input.key.press",
+        "input.select.all",
+        "input.keyboard.status",
+        "input.keyboard.open",
+        "input.visible.click"
+      ],
+      "conditional_candidate_top_5": [
+        "input.key.press",
+        "input.select.all",
+        "input.keyboard.status",
+        "input.keyboard.open",
+        "input.visible.click"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-input-keyboard-layout",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.keyboard.layout"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "input.keyboard.layout",
+        "input.keyboard.open",
+        "window.active",
+        "window.resize"
+      ],
+      "global_top_5_scores": [
+        -0.062968,
+        -0.372878,
+        -0.543874,
+        -0.624238,
+        -0.762783
+      ],
+      "global_margin": 0.30991,
+      "candidate_top_5": [
+        "__none__",
+        "input.keyboard.layout",
+        "input.keyboard.open",
+        "window.active",
+        "window.resize"
+      ],
+      "conditional_candidate_top_5": [
+        "input.keyboard.layout",
+        "input.keyboard.open",
+        "window.active",
+        "window.resize",
+        "window.maximize"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-input-keyboard-open",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.keyboard.open"
+        ]
+      ],
+      "global_top_5": [
+        "input.keyboard.open",
+        "web.search",
+        "input.keyboard.layout",
+        "peripheral.list",
+        "app.installed"
+      ],
+      "global_top_5_scores": [
+        0.147245,
+        -0.539251,
+        -0.545313,
+        -0.616707,
+        -0.704028
+      ],
+      "global_margin": 0.686497,
+      "candidate_top_5": [
+        "input.keyboard.open",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "input.keyboard.open"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-input-keyboard-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.keyboard.status"
+        ]
+      ],
+      "global_top_5": [
+        "input.keyboard.status",
+        "window.focus",
+        "input.keyboard.open",
+        "window.resize",
+        "input.key.press"
+      ],
+      "global_top_5_scores": [
+        -0.300017,
+        -0.559695,
+        -0.709891,
+        -0.816518,
+        -0.838114
+      ],
+      "global_margin": 0.259677,
+      "candidate_top_5": [
+        "__none__",
+        "window.active"
+      ],
+      "conditional_candidate_top_5": [
+        "window.active"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-input-pointer-control",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.pointer.control"
+        ]
+      ],
+      "global_top_5": [
+        "input.pointer.control",
+        "__none__",
+        "system.settings.adjust",
+        "window.move",
+        "peripheral.list"
+      ],
+      "global_top_5_scores": [
+        0.134692,
+        -0.394609,
+        -0.738193,
+        -0.762244,
+        -0.771647
+      ],
+      "global_margin": 0.529301,
+      "candidate_top_5": [
+        "__none__",
+        "window.move",
+        "window.focus",
+        "window.minimize",
+        "window.maximize"
+      ],
+      "conditional_candidate_top_5": [
+        "window.move",
+        "window.focus",
+        "window.minimize",
+        "window.maximize",
+        "window.resize"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-input-select-all",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.select.all"
+        ]
+      ],
+      "global_top_5": [
+        "input.select.all",
+        "clipboard.paste",
+        "web.search",
+        "input.text.type",
+        "input.keyboard.status"
+      ],
+      "global_top_5_scores": [
+        0.504719,
+        -0.732758,
+        -0.733795,
+        -0.822595,
+        -0.85462
+      ],
+      "global_margin": 1.237477,
+      "candidate_top_5": [
+        "input.select.all",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "input.select.all"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-input-text-type",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.text.type"
+        ]
+      ],
+      "global_top_5": [
+        "input.text.type",
+        "web.search",
+        "clipboard.paste",
+        "__none__",
+        "clipboard.write.text"
+      ],
+      "global_top_5_scores": [
+        -0.527736,
+        -0.594541,
+        -0.625116,
+        -0.667511,
+        -0.856735
+      ],
+      "global_margin": 0.066805,
+      "candidate_top_5": [
+        "input.text.type",
+        "clipboard.paste",
+        "__none__",
+        "clipboard.write.text",
+        "input.pointer.control"
+      ],
+      "conditional_candidate_top_5": [
+        "input.text.type",
+        "clipboard.paste",
+        "clipboard.write.text",
+        "input.pointer.control",
+        "input.keyboard.status"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-input-visible-click",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.visible.click"
+        ]
+      ],
+      "global_top_5": [
+        "input.visible.click",
+        "browser.page.read",
+        "__none__",
+        "input.pointer.control",
+        "memory.sensitive.save"
+      ],
+      "global_top_5_scores": [
+        -0.057918,
+        -0.498163,
+        -0.604448,
+        -0.759129,
+        -0.832278
+      ],
+      "global_margin": 0.440245,
+      "candidate_top_5": [
+        "input.visible.click",
+        "__none__",
+        "input.pointer.control",
+        "input.keyboard.open",
+        "window.application.status"
+      ],
+      "conditional_candidate_top_5": [
+        "input.visible.click",
+        "input.pointer.control",
+        "input.keyboard.open",
+        "window.application.status",
+        "input.key.press"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-media-control",
+      "outcome": "action",
+      "expected": [
+        [
+          "media.control"
+        ]
+      ],
+      "global_top_5": [
+        "media.control",
+        "media.status",
+        "bluetooth.radio.set",
+        "memory.recall",
+        "audio.microphone.mute"
+      ],
+      "global_top_5_scores": [
+        -0.057956,
+        -0.552499,
+        -0.851431,
+        -0.855722,
+        -0.878099
+      ],
+      "global_margin": 0.494543,
+      "candidate_top_5": [
+        "media.control",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "media.control"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-media-play-exact",
+      "outcome": "action",
+      "expected": [
+        [
+          "media.play.exact"
+        ]
+      ],
+      "global_top_5": [
+        "media.play.exact",
+        "media.play.query",
+        "input.select.all",
+        "web.search",
+        "__none__"
+      ],
+      "global_top_5_scores": [
+        -0.096492,
+        -0.235087,
+        -0.891887,
+        -0.937432,
+        -0.967725
+      ],
+      "global_margin": 0.138595,
+      "candidate_top_5": [
+        "media.play.query",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "media.play.query"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-media-play-query",
+      "outcome": "action",
+      "expected": [
+        [
+          "media.play.query"
+        ]
+      ],
+      "global_top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "web.search",
+        "system.status",
+        "media.seek.relative"
+      ],
+      "global_top_5_scores": [
+        0.19963,
+        -0.416909,
+        -0.898693,
+        -0.910374,
+        -0.920706
+      ],
+      "global_margin": 0.61654,
+      "candidate_top_5": [
+        "media.play.query",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "media.play.query"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-media-play-youtube",
+      "outcome": "action",
+      "expected": [
+        [
+          "media.play.youtube"
+        ]
+      ],
+      "global_top_5": [
+        "media.play.youtube",
+        "media.play.query",
+        "__none__",
+        "streaming.play.named",
+        "bluetooth.radio.set"
+      ],
+      "global_top_5_scores": [
+        0.262361,
+        -0.31856,
+        -0.718903,
+        -0.769621,
+        -0.894014
+      ],
+      "global_margin": 0.580922,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-media-seek-relative",
+      "outcome": "action",
+      "expected": [
+        [
+          "media.seek.relative"
+        ]
+      ],
+      "global_top_5": [
+        "media.control",
+        "media.seek.relative",
+        "media.status",
+        "browser.tabs.list",
+        "memory.recall"
+      ],
+      "global_top_5_scores": [
+        -0.061353,
+        -0.09846,
+        -0.750439,
+        -0.98278,
+        -0.992775
+      ],
+      "global_margin": 0.037107,
+      "candidate_top_5": [
+        "media.control",
+        "media.seek.relative",
+        "media.status",
+        "media.play.youtube",
+        "clipboard.write.text"
+      ],
+      "conditional_candidate_top_5": [
+        "media.control",
+        "media.seek.relative",
+        "media.status",
+        "media.play.youtube",
+        "clipboard.write.text"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-media-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "media.status"
+        ]
+      ],
+      "global_top_5": [
+        "media.status",
+        "media.control",
+        "web.search",
+        "audio.status",
+        "game.installed.named"
+      ],
+      "global_top_5_scores": [
+        -0.218085,
+        -0.46626,
+        -0.803603,
+        -0.949082,
+        -0.975575
+      ],
+      "global_margin": 0.248175,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-message-recipient-resolve",
+      "outcome": "action",
+      "expected": [
+        [
+          "message.recipient.resolve"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "message.send",
+        "network.ping",
+        "input.text.type",
+        "window.resize"
+      ],
+      "global_top_5_scores": [
+        -0.276737,
+        -0.609362,
+        -0.821185,
+        -0.939654,
+        -0.94957
+      ],
+      "global_margin": 0.332625,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-message-send",
+      "outcome": "action",
+      "expected": [
+        [
+          "message.send"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "message.send",
+        "email.latest.reply",
+        "web.search",
+        "input.visible.click"
+      ],
+      "global_top_5_scores": [
+        0.205954,
+        -0.462715,
+        -0.964403,
+        -0.966595,
+        -1.033859
+      ],
+      "global_margin": 0.668669,
+      "candidate_top_5": [
+        "__none__",
+        "message.send",
+        "message.recipient.resolve",
+        "app.open",
+        "app.installed"
+      ],
+      "conditional_candidate_top_5": [
+        "message.send",
+        "message.recipient.resolve",
+        "app.open",
+        "app.installed",
+        "app.close"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-network-dns-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "network.dns.status"
+        ]
+      ],
+      "global_top_5": [
+        "network.dns.status",
+        "network.status",
+        "__none__",
+        "network.ip.list",
+        "game.install.cancel.active"
+      ],
+      "global_top_5_scores": [
+        0.728737,
+        -0.48549,
+        -0.805582,
+        -0.86969,
+        -0.952013
+      ],
+      "global_margin": 1.214226,
+      "candidate_top_5": [
+        "network.dns.status",
+        "network.status",
+        "__none__",
+        "network.ip.list",
+        "network.ping"
+      ],
+      "conditional_candidate_top_5": [
+        "network.dns.status",
+        "network.status",
+        "network.ip.list",
+        "network.ping",
+        "network.port.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-network-ip-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "network.ip.list"
+        ]
+      ],
+      "global_top_5": [
+        "network.ip.list",
+        "__none__",
+        "system.identity",
+        "browser.tabs.list",
+        "game.catalog.list"
+      ],
+      "global_top_5_scores": [
+        0.649293,
+        -0.622934,
+        -0.928988,
+        -0.938162,
+        -0.95078
+      ],
+      "global_margin": 1.272227,
+      "candidate_top_5": [
+        "network.ip.list",
+        "__none__",
+        "network.dns.status",
+        "network.ping",
+        "network.status"
+      ],
+      "conditional_candidate_top_5": [
+        "network.ip.list",
+        "network.dns.status",
+        "network.ping",
+        "network.status",
+        "network.port.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-network-ping",
+      "outcome": "action",
+      "expected": [
+        [
+          "network.ping"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "network.ping",
+        "browser.navigate",
+        "window.resize",
+        "window.maximize"
+      ],
+      "global_top_5_scores": [
+        -0.200172,
+        -0.426222,
+        -0.673136,
+        -0.992369,
+        -1.037297
+      ],
+      "global_margin": 0.226051,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-network-port-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "network.port.list"
+        ]
+      ],
+      "global_top_5": [
+        "network.port.list",
+        "reminder.list",
+        "peripheral.list",
+        "browser.tabs.list",
+        "routine.phrase.create"
+      ],
+      "global_top_5_scores": [
+        0.850937,
+        -0.745478,
+        -1.000005,
+        -1.013274,
+        -1.015561
+      ],
+      "global_margin": 1.596416,
+      "candidate_top_5": [
+        "network.port.list",
+        "__none__",
+        "network.dns.status",
+        "network.ping",
+        "network.status"
+      ],
+      "conditional_candidate_top_5": [
+        "network.port.list",
+        "network.dns.status",
+        "network.ping",
+        "network.status",
+        "network.ip.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-network-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "network.status"
+        ]
+      ],
+      "global_top_5": [
+        "wifi.status",
+        "window.application.status",
+        "wifi.connect.named",
+        "wifi.disconnect",
+        "audio.mute"
+      ],
+      "global_top_5_scores": [
+        -0.582824,
+        -0.658284,
+        -0.754527,
+        -0.7901,
+        -0.791385
+      ],
+      "global_margin": 0.07546,
+      "candidate_top_5": [
+        "network.status",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "network.status"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-note-create",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.create"
+        ]
+      ],
+      "global_top_5": [
+        "note.create",
+        "note.restore",
+        "web.search",
+        "clipboard.write.text",
+        "bluetooth.device.pair"
+      ],
+      "global_top_5_scores": [
+        -0.321716,
+        -0.644939,
+        -0.782498,
+        -0.905245,
+        -0.933557
+      ],
+      "global_margin": 0.323222,
+      "candidate_top_5": [
+        "note.create",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "note.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-note-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.list"
+        ]
+      ],
+      "global_top_5": [
+        "note.list",
+        "note.search",
+        "__none__",
+        "task.list",
+        "filesystem.sandbox.move.named"
+      ],
+      "global_top_5_scores": [
+        -0.307808,
+        -0.329973,
+        -0.358497,
+        -0.790689,
+        -0.900574
+      ],
+      "global_margin": 0.022165,
+      "candidate_top_5": [
+        "note.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "note.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-note-read",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.read"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "note.read",
+        "note.restore",
+        "note.update",
+        "media.status"
+      ],
+      "global_top_5_scores": [
+        0.453936,
+        -0.232624,
+        -0.418376,
+        -0.753618,
+        -0.914309
+      ],
+      "global_margin": 0.686561,
+      "candidate_top_5": [
+        "__none__",
+        "note.read"
+      ],
+      "conditional_candidate_top_5": [
+        "note.read"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-note-restore",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.restore"
+        ]
+      ],
+      "global_top_5": [
+        "note.restore",
+        "note.trash",
+        "web.search",
+        "system.recyclebin.empty",
+        "filesystem.known.trash.named"
+      ],
+      "global_top_5_scores": [
+        0.301195,
+        -0.730541,
+        -0.78262,
+        -0.866521,
+        -0.879443
+      ],
+      "global_margin": 1.031736,
+      "candidate_top_5": [
+        "note.restore",
+        "note.trash",
+        "note.list",
+        "note.read",
+        "note.update"
+      ],
+      "conditional_candidate_top_5": [
+        "note.restore",
+        "note.trash",
+        "note.list",
+        "note.read",
+        "note.update"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-note-search",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.search"
+        ]
+      ],
+      "global_top_5": [
+        "note.search",
+        "routine.phrase.create",
+        "filesystem.known.search",
+        "note.list",
+        "memory.correct"
+      ],
+      "global_top_5_scores": [
+        -0.402793,
+        -0.487542,
+        -0.718438,
+        -0.725788,
+        -0.733395
+      ],
+      "global_margin": 0.084749,
+      "candidate_top_5": [
+        "note.search",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "note.search"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-note-trash",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.trash"
+        ]
+      ],
+      "global_top_5": [
+        "note.trash",
+        "note.restore",
+        "filesystem.known.trash.named",
+        "window.move",
+        "web.search"
+      ],
+      "global_top_5_scores": [
+        -0.230664,
+        -0.382441,
+        -0.513225,
+        -0.824933,
+        -0.861988
+      ],
+      "global_margin": 0.151777,
+      "candidate_top_5": [
+        "note.trash",
+        "note.restore",
+        "note.read",
+        "note.list",
+        "note.update"
+      ],
+      "conditional_candidate_top_5": [
+        "note.trash",
+        "note.restore",
+        "note.read",
+        "note.list",
+        "note.update"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-note-update",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.update"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "note.update",
+        "__none__",
+        "note.read",
+        "note.restore"
+      ],
+      "global_top_5_scores": [
+        -0.597376,
+        -0.64112,
+        -0.720591,
+        -0.722956,
+        -0.782179
+      ],
+      "global_margin": 0.043744,
+      "candidate_top_5": [
+        "note.update",
+        "__none__",
+        "note.read",
+        "note.restore",
+        "note.create"
+      ],
+      "conditional_candidate_top_5": [
+        "note.update",
+        "note.read",
+        "note.restore",
+        "note.create",
+        "note.trash"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-notification-cancel-at",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "global_top_5": [
+        "notification.cancel.latest",
+        "notification.diagnose",
+        "notification.schedule",
+        "__none__",
+        "notification.cancel.at"
+      ],
+      "global_top_5_scores": [
+        -0.158068,
+        -0.265,
+        -0.551936,
+        -0.802799,
+        -0.860839
+      ],
+      "global_margin": 0.106932,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-notification-cancel-latest",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.cancel.latest"
+        ]
+      ],
+      "global_top_5": [
+        "notification.cancel.latest",
+        "notification.diagnose",
+        "filesystem.file.open.latest",
+        "routine.list",
+        "notification.schedule"
+      ],
+      "global_top_5_scores": [
+        0.287399,
+        -0.361767,
+        -0.881481,
+        -0.957457,
+        -0.975436
+      ],
+      "global_margin": 0.649166,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-notification-diagnose",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.diagnose"
+        ]
+      ],
+      "global_top_5": [
+        "notification.diagnose",
+        "__none__",
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "system.recyclebin.empty"
+      ],
+      "global_top_5_scores": [
+        -0.135402,
+        -0.498306,
+        -0.81431,
+        -0.835004,
+        -0.943304
+      ],
+      "global_margin": 0.362905,
+      "candidate_top_5": [
+        "notification.diagnose",
+        "__none__",
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "notification.schedule"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.diagnose",
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "notification.schedule",
+        "notification.list.due"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-notification-dismiss",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.dismiss"
+        ]
+      ],
+      "global_top_5": [
+        "notification.dismiss",
+        "__none__",
+        "reminder.resolve.exact",
+        "reminder.delete",
+        "notification.list.due"
+      ],
+      "global_top_5_scores": [
+        -0.423753,
+        -0.690722,
+        -0.728303,
+        -0.75173,
+        -0.811878
+      ],
+      "global_margin": 0.266969,
+      "candidate_top_5": [
+        "__none__",
+        "reminder.resolve.exact",
+        "reminder.delete",
+        "reminder.restore",
+        "reminder.create"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.resolve.exact",
+        "reminder.delete",
+        "reminder.restore",
+        "reminder.create",
+        "reminder.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-notification-list-due",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.list.due"
+        ]
+      ],
+      "global_top_5": [
+        "notification.list.due",
+        "__none__",
+        "reminder.list",
+        "reminder.delete",
+        "reminder.resolve.exact"
+      ],
+      "global_top_5_scores": [
+        0.571916,
+        -0.302332,
+        -0.820461,
+        -0.828235,
+        -0.948281
+      ],
+      "global_margin": 0.874248,
+      "candidate_top_5": [
+        "__none__",
+        "reminder.list"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-notification-schedule",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "filesystem.sandbox.move.named",
+        "backup.create",
+        "system.settings.status",
+        "audio.volume.adjust"
+      ],
+      "global_top_5_scores": [
+        0.808513,
+        -1.051796,
+        -1.059737,
+        -1.060086,
+        -1.064677
+      ],
+      "global_margin": 1.86031,
+      "candidate_top_5": [
+        "notification.schedule",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.schedule"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-ocr-read",
+      "outcome": "action",
+      "expected": [
+        [
+          "ocr.read"
+        ]
+      ],
+      "global_top_5": [
+        "ocr.read",
+        "browser.page.read",
+        "capture.active.window",
+        "input.visible.click",
+        "memory.recall"
+      ],
+      "global_top_5_scores": [
+        -0.048109,
+        -0.326203,
+        -0.845058,
+        -0.887029,
+        -0.896855
+      ],
+      "global_margin": 0.278093,
+      "candidate_top_5": [
+        "ocr.read",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "ocr.read"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-office-document-create",
+      "outcome": "action",
+      "expected": [
+        [
+          "office.document.create"
+        ]
+      ],
+      "global_top_5": [
+        "office.document.create",
+        "peripheral.scan",
+        "filesystem.read.text",
+        "__none__",
+        "filesystem.write.text"
+      ],
+      "global_top_5_scores": [
+        -0.658817,
+        -0.692483,
+        -0.770475,
+        -0.797912,
+        -0.811791
+      ],
+      "global_margin": 0.033666,
+      "candidate_top_5": [
+        "office.document.create",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "office.document.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-office-document-read",
+      "outcome": "action",
+      "expected": [
+        [
+          "office.document.read"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "office.document.read",
+        "filesystem.read.text",
+        "note.create",
+        "peripheral.print"
+      ],
+      "global_top_5_scores": [
+        -0.447171,
+        -0.477633,
+        -0.665275,
+        -0.803003,
+        -0.808045
+      ],
+      "global_margin": 0.030463,
+      "candidate_top_5": [
+        "office.document.read",
+        "office.document.create",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "office.document.read",
+        "office.document.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-package-install-commit",
+      "outcome": "action",
+      "expected": [
+        [
+          "package.install.commit"
+        ]
+      ],
+      "global_top_5": [
+        "package.install.commit",
+        "package.install.prepare",
+        "browser.control",
+        "game.install.commit",
+        "audio.volume.adjust"
+      ],
+      "global_top_5_scores": [
+        0.755834,
+        -0.641799,
+        -0.936999,
+        -0.949402,
+        -1.0016
+      ],
+      "global_margin": 1.397633,
+      "candidate_top_5": [
+        "package.install.commit",
+        "package.install.prepare",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "package.install.commit",
+        "package.install.prepare"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-package-install-prepare",
+      "outcome": "action",
+      "expected": [
+        [
+          "package.install.prepare"
+        ]
+      ],
+      "global_top_5": [
+        "game.install.prepare",
+        "package.install.prepare",
+        "game.install.status",
+        "package.install.commit",
+        "app.installed"
+      ],
+      "global_top_5_scores": [
+        -0.500919,
+        -0.609508,
+        -0.664284,
+        -0.678419,
+        -0.689269
+      ],
+      "global_margin": 0.108589,
+      "candidate_top_5": [
+        "package.install.prepare",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "package.install.prepare"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-peripheral-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "peripheral.list"
+        ]
+      ],
+      "global_top_5": [
+        "peripheral.list",
+        "__none__",
+        "bluetooth.device.list",
+        "audio.mute",
+        "audio.microphone.mute"
+      ],
+      "global_top_5_scores": [
+        -0.148727,
+        -0.650138,
+        -0.910793,
+        -0.937516,
+        -0.940032
+      ],
+      "global_margin": 0.501411,
+      "candidate_top_5": [
+        "peripheral.list",
+        "__none__",
+        "peripheral.scan",
+        "peripheral.print"
+      ],
+      "conditional_candidate_top_5": [
+        "peripheral.list",
+        "peripheral.scan",
+        "peripheral.print"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-peripheral-print",
+      "outcome": "action",
+      "expected": [
+        [
+          "peripheral.print"
+        ]
+      ],
+      "global_top_5": [
+        "peripheral.print",
+        "office.document.create",
+        "input.select.all",
+        "web.search",
+        "routine.delete"
+      ],
+      "global_top_5_scores": [
+        0.473112,
+        -0.77908,
+        -0.813717,
+        -0.826732,
+        -0.882081
+      ],
+      "global_margin": 1.252192,
+      "candidate_top_5": [
+        "peripheral.print",
+        "office.document.create",
+        "office.document.read",
+        "peripheral.list",
+        "peripheral.scan"
+      ],
+      "conditional_candidate_top_5": [
+        "peripheral.print",
+        "office.document.create",
+        "office.document.read",
+        "peripheral.list",
+        "peripheral.scan"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-peripheral-scan",
+      "outcome": "action",
+      "expected": [
+        [
+          "peripheral.scan"
+        ]
+      ],
+      "global_top_5": [
+        "peripheral.scan",
+        "browser.control",
+        "web.search",
+        "__none__",
+        "peripheral.list"
+      ],
+      "global_top_5_scores": [
+        0.19655,
+        -0.686044,
+        -0.782445,
+        -0.816193,
+        -0.8214
+      ],
+      "global_margin": 0.882595,
+      "candidate_top_5": [
+        "peripheral.scan",
+        "__none__",
+        "peripheral.list",
+        "office.document.create",
+        "peripheral.print"
+      ],
+      "conditional_candidate_top_5": [
+        "peripheral.scan",
+        "peripheral.list",
+        "office.document.create",
+        "peripheral.print",
+        "office.document.read"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-reminder-create",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.create"
+        ]
+      ],
+      "global_top_5": [
+        "reminder.create",
+        "note.create",
+        "memory.disable",
+        "routine.list",
+        "memory.recall"
+      ],
+      "global_top_5_scores": [
+        1.234922,
+        -0.961225,
+        -0.999897,
+        -1.032326,
+        -1.032555
+      ],
+      "global_margin": 2.196147,
+      "candidate_top_5": [
+        "reminder.create",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-reminder-delete",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.delete"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "reminder.delete",
+        "routine.delete",
+        "reminder.resolve.exact",
+        "filesystem.known.trash.named"
+      ],
+      "global_top_5_scores": [
+        -0.019831,
+        -0.030289,
+        -0.56924,
+        -0.653653,
+        -0.726202
+      ],
+      "global_margin": 0.010458,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-reminder-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.list"
+        ]
+      ],
+      "global_top_5": [
+        "reminder.list",
+        "__none__",
+        "reminder.create",
+        "task.list",
+        "filesystem.known.search"
+      ],
+      "global_top_5_scores": [
+        0.067873,
+        -0.200724,
+        -0.880425,
+        -0.940211,
+        -0.948049
+      ],
+      "global_margin": 0.268598,
+      "candidate_top_5": [
+        "reminder.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-reminder-resolve-exact",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.resolve.exact"
+        ]
+      ],
+      "global_top_5": [
+        "reminder.resolve.exact",
+        "reminder.restore",
+        "media.status",
+        "reminder.create",
+        "window.active"
+      ],
+      "global_top_5_scores": [
+        -0.548028,
+        -0.75252,
+        -0.838891,
+        -0.88415,
+        -0.900989
+      ],
+      "global_margin": 0.204491,
+      "candidate_top_5": [
+        "reminder.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-reminder-restore",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.restore"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "reminder.delete",
+        "reminder.restore",
+        "reminder.resolve.exact",
+        "window.restore"
+      ],
+      "global_top_5_scores": [
+        -0.153107,
+        -0.235823,
+        -0.470423,
+        -0.695183,
+        -0.841461
+      ],
+      "global_margin": 0.082716,
+      "candidate_top_5": [
+        "__none__",
+        "reminder.delete",
+        "reminder.restore",
+        "reminder.resolve.exact",
+        "reminder.list"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.delete",
+        "reminder.restore",
+        "reminder.resolve.exact",
+        "reminder.list",
+        "reminder.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-routine-delete",
+      "outcome": "action",
+      "expected": [
+        [
+          "routine.delete"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "routine.delete",
+        "filesystem.known.trash.named",
+        "reminder.delete",
+        "routine.resolve.exact"
+      ],
+      "global_top_5_scores": [
+        -0.020245,
+        -0.147004,
+        -0.726471,
+        -0.765399,
+        -0.780928
+      ],
+      "global_margin": 0.126759,
+      "candidate_top_5": [
+        "__none__",
+        "routine.delete",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.set.enabled"
+      ],
+      "conditional_candidate_top_5": [
+        "routine.delete",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.set.enabled",
+        "routine.restore"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-routine-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "routine.list"
+        ]
+      ],
+      "global_top_5": [
+        "routine.list",
+        "task.list",
+        "game.catalog.list",
+        "memory.forget",
+        "note.list"
+      ],
+      "global_top_5_scores": [
+        -0.55493,
+        -0.705743,
+        -0.881811,
+        -0.882196,
+        -0.891924
+      ],
+      "global_margin": 0.150813,
+      "candidate_top_5": [
+        "routine.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "routine.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-routine-phrase-create",
+      "outcome": "action",
+      "expected": [
+        [
+          "routine.phrase.create"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "window.focus",
+        "routine.phrase.create",
+        "media.play.exact",
+        "routine.resolve.exact"
+      ],
+      "global_top_5_scores": [
+        -0.340859,
+        -0.34385,
+        -0.473799,
+        -0.775533,
+        -0.850246
+      ],
+      "global_margin": 0.00299,
+      "candidate_top_5": [
+        "__none__",
+        "media.play.exact",
+        "app.installed",
+        "media.play.youtube",
+        "media.control"
+      ],
+      "conditional_candidate_top_5": [
+        "media.play.exact",
+        "app.installed",
+        "media.play.youtube",
+        "media.control",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-routine-read",
+      "outcome": "action",
+      "expected": [
+        [
+          "routine.read"
+        ]
+      ],
+      "global_top_5": [
+        "routine.read",
+        "__none__",
+        "routine.set.enabled",
+        "routine.resolve.exact",
+        "media.play.exact"
+      ],
+      "global_top_5_scores": [
+        0.273773,
+        -0.238937,
+        -0.686603,
+        -0.879148,
+        -0.919427
+      ],
+      "global_margin": 0.512711,
+      "candidate_top_5": [
+        "routine.read",
+        "__none__",
+        "routine.set.enabled",
+        "routine.resolve.exact",
+        "routine.phrase.create"
+      ],
+      "conditional_candidate_top_5": [
+        "routine.read",
+        "routine.set.enabled",
+        "routine.resolve.exact",
+        "routine.phrase.create",
+        "routine.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-routine-resolve-exact",
+      "outcome": "action",
+      "expected": [
+        [
+          "routine.resolve.exact"
+        ]
+      ],
+      "global_top_5": [
+        "routine.read",
+        "routine.delete",
+        "media.play.exact",
+        "package.install.prepare",
+        "routine.resolve.exact"
+      ],
+      "global_top_5_scores": [
+        0.099632,
+        -0.763871,
+        -0.80123,
+        -0.8103,
+        -0.812339
+      ],
+      "global_margin": 0.863503,
+      "candidate_top_5": [
+        "routine.read",
+        "routine.delete",
+        "routine.resolve.exact",
+        "routine.set.enabled",
+        "routine.phrase.create"
+      ],
+      "conditional_candidate_top_5": [
+        "routine.read",
+        "routine.delete",
+        "routine.resolve.exact",
+        "routine.set.enabled",
+        "routine.phrase.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-routine-restore",
+      "outcome": "action",
+      "expected": [
+        [
+          "routine.restore"
+        ]
+      ],
+      "global_top_5": [
+        "routine.restore",
+        "task.restore",
+        "reminder.delete",
+        "media.play.query",
+        "routine.resolve.exact"
+      ],
+      "global_top_5_scores": [
+        -0.0525,
+        -0.740625,
+        -0.750626,
+        -0.760648,
+        -0.768154
+      ],
+      "global_margin": 0.688125,
+      "candidate_top_5": [
+        "routine.restore",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.set.enabled",
+        "routine.delete"
+      ],
+      "conditional_candidate_top_5": [
+        "routine.restore",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.set.enabled",
+        "routine.delete"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-routine-set-enabled",
+      "outcome": "action",
+      "expected": [
+        [
+          "routine.set.enabled"
+        ]
+      ],
+      "global_top_5": [
+        "routine.set.enabled",
+        "window.focus",
+        "routine.resolve.exact",
+        "routine.delete",
+        "routine.read"
+      ],
+      "global_top_5_scores": [
+        -0.348737,
+        -0.662044,
+        -0.68415,
+        -0.723214,
+        -0.768745
+      ],
+      "global_margin": 0.313308,
+      "candidate_top_5": [
+        "routine.set.enabled",
+        "window.focus",
+        "routine.delete",
+        "routine.restore",
+        "audio.microphone.mute"
+      ],
+      "conditional_candidate_top_5": [
+        "routine.set.enabled",
+        "window.focus",
+        "routine.delete",
+        "routine.restore",
+        "audio.microphone.mute"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-streaming-navigate",
+      "outcome": "action",
+      "expected": [
+        [
+          "streaming.navigate"
+        ]
+      ],
+      "global_top_5": [
+        "browser.navigate",
+        "streaming.navigate",
+        "streaming.play.named",
+        "__none__",
+        "browser.navigate.named"
+      ],
+      "global_top_5_scores": [
+        -0.043812,
+        -0.565054,
+        -0.657518,
+        -0.659893,
+        -0.899542
+      ],
+      "global_margin": 0.521243,
+      "candidate_top_5": [
+        "streaming.navigate",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "streaming.navigate"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-streaming-play-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "streaming.play.named"
+        ]
+      ],
+      "global_top_5": [
+        "streaming.play.named",
+        "media.play.query",
+        "streaming.navigate",
+        "memory.session.clear",
+        "message.recipient.resolve"
+      ],
+      "global_top_5_scores": [
+        0.073374,
+        -0.465018,
+        -0.706377,
+        -0.884574,
+        -0.976007
+      ],
+      "global_margin": 0.538392,
+      "candidate_top_5": [
+        "media.play.query",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "media.play.query"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-application-crash-diagnose",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.application.crash.diagnose"
+        ]
+      ],
+      "global_top_5": [
+        "system.application.crash.diagnose",
+        "web.search",
+        "media.play.query",
+        "bluetooth.radio.set",
+        "input.key.press"
+      ],
+      "global_top_5_scores": [
+        0.236063,
+        -0.208776,
+        -0.902829,
+        -0.94386,
+        -0.970711
+      ],
+      "global_margin": 0.444839,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-system-identity",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.identity"
+        ]
+      ],
+      "global_top_5": [
+        "system.identity",
+        "notification.diagnose",
+        "bluetooth.radio.set",
+        "input.text.type",
+        "peripheral.list"
+      ],
+      "global_top_5_scores": [
+        0.412105,
+        -0.567413,
+        -0.853597,
+        -0.905703,
+        -0.909311
+      ],
+      "global_margin": 0.979518,
+      "candidate_top_5": [
+        "__none__",
+        "system.status"
+      ],
+      "conditional_candidate_top_5": [
+        "system.status"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-power",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.power"
+        ]
+      ],
+      "global_top_5": [
+        "system.application.crash.diagnose",
+        "media.status",
+        "memory.session.clear",
+        "bluetooth.radio.set",
+        "audio.microphone.mute"
+      ],
+      "global_top_5_scores": [
+        -0.539739,
+        -0.642327,
+        -0.673276,
+        -0.727774,
+        -0.75061
+      ],
+      "global_margin": 0.102588,
+      "candidate_top_5": [
+        "system.application.crash.diagnose",
+        "app.installed",
+        "__none__",
+        "system.settings.status",
+        "system.identity"
+      ],
+      "conditional_candidate_top_5": [
+        "system.application.crash.diagnose",
+        "app.installed",
+        "system.settings.status",
+        "system.identity",
+        "system.recyclebin.empty"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-process-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.process.list"
+        ]
+      ],
+      "global_top_5": [
+        "system.process.list",
+        "memory.list",
+        "memory.session.clear",
+        "memory.forget",
+        "memory.correct"
+      ],
+      "global_top_5_scores": [
+        0.369399,
+        -0.79563,
+        -0.838146,
+        -0.868915,
+        -0.896033
+      ],
+      "global_margin": 1.165029,
+      "candidate_top_5": [
+        "system.process.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "system.process.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-process-terminate-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.process.terminate.named"
+        ]
+      ],
+      "global_top_5": [
+        "system.process.terminate.named",
+        "input.visible.click",
+        "browser.control",
+        "app.close",
+        "web.search"
+      ],
+      "global_top_5_scores": [
+        0.253231,
+        -0.616957,
+        -0.907632,
+        -0.912915,
+        -0.947876
+      ],
+      "global_margin": 0.870188,
+      "candidate_top_5": [
+        "system.process.terminate.named",
+        "input.visible.click",
+        "app.close",
+        "filesystem.file.open.latest",
+        "system.power"
+      ],
+      "conditional_candidate_top_5": [
+        "system.process.terminate.named",
+        "input.visible.click",
+        "app.close",
+        "filesystem.file.open.latest",
+        "system.power"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-recyclebin-empty",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.recyclebin.empty"
+        ]
+      ],
+      "global_top_5": [
+        "system.recyclebin.empty",
+        "bluetooth.radio.set",
+        "app.installed",
+        "system.application.crash.diagnose",
+        "web.search"
+      ],
+      "global_top_5_scores": [
+        0.552469,
+        -0.849491,
+        -0.883187,
+        -0.896444,
+        -0.897217
+      ],
+      "global_margin": 1.40196,
+      "candidate_top_5": [
+        "system.recyclebin.empty",
+        "app.installed",
+        "system.application.crash.diagnose",
+        "web.search",
+        "audio.microphone.mute"
+      ],
+      "conditional_candidate_top_5": [
+        "system.recyclebin.empty",
+        "app.installed",
+        "system.application.crash.diagnose",
+        "web.search",
+        "audio.microphone.mute"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-settings-adjust",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.settings.adjust"
+        ]
+      ],
+      "global_top_5": [
+        "system.settings.adjust",
+        "audio.volume.adjust",
+        "web.search",
+        "system.settings.set",
+        "message.send"
+      ],
+      "global_top_5_scores": [
+        -0.111248,
+        -0.51676,
+        -0.666086,
+        -0.718499,
+        -0.875745
+      ],
+      "global_margin": 0.405512,
+      "candidate_top_5": [
+        "system.settings.adjust",
+        "system.settings.set",
+        "system.settings.status",
+        "system.recyclebin.empty",
+        "vision.describe"
+      ],
+      "conditional_candidate_top_5": [
+        "system.settings.adjust",
+        "system.settings.set",
+        "system.settings.status",
+        "system.recyclebin.empty",
+        "vision.describe"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-settings-set",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.settings.set"
+        ]
+      ],
+      "global_top_5": [
+        "system.settings.set",
+        "media.play.query",
+        "bluetooth.radio.set",
+        "audio.microphone.mute",
+        "app.installed"
+      ],
+      "global_top_5_scores": [
+        -0.21327,
+        -0.477724,
+        -0.795807,
+        -0.825975,
+        -0.873798
+      ],
+      "global_margin": 0.264454,
+      "candidate_top_5": [
+        "system.settings.set",
+        "system.application.crash.diagnose",
+        "system.settings.adjust",
+        "system.recyclebin.empty",
+        "system.settings.status"
+      ],
+      "conditional_candidate_top_5": [
+        "system.settings.set",
+        "system.application.crash.diagnose",
+        "system.settings.adjust",
+        "system.recyclebin.empty",
+        "system.settings.status"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-settings-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.settings.status"
+        ]
+      ],
+      "global_top_5": [
+        "system.settings.status",
+        "system.settings.set",
+        "system.settings.adjust",
+        "__none__",
+        "note.trash"
+      ],
+      "global_top_5_scores": [
+        1.099464,
+        -0.910839,
+        -0.926582,
+        -0.973213,
+        -1.003273
+      ],
+      "global_margin": 2.010303,
+      "candidate_top_5": [
+        "system.settings.status",
+        "system.settings.set",
+        "system.settings.adjust",
+        "__none__",
+        "system.time"
+      ],
+      "conditional_candidate_top_5": [
+        "system.settings.status",
+        "system.settings.set",
+        "system.settings.adjust",
+        "system.time",
+        "system.process.terminate.named"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.status"
+        ]
+      ],
+      "global_top_5": [
+        "system.status",
+        "__none__",
+        "system.process.list",
+        "system.identity",
+        "game.catalog.list"
+      ],
+      "global_top_5_scores": [
+        0.700181,
+        -0.60085,
+        -0.80579,
+        -0.981921,
+        -0.985296
+      ],
+      "global_margin": 1.301031,
+      "candidate_top_5": [
+        "system.status",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "system.status"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-system-time",
+      "outcome": "action",
+      "expected": [
+        [
+          "system.time"
+        ]
+      ],
+      "global_top_5": [
+        "system.time",
+        "__none__",
+        "web.search",
+        "task.create",
+        "memory.correct"
+      ],
+      "global_top_5_scores": [
+        -0.060954,
+        -0.597508,
+        -0.770427,
+        -0.855532,
+        -0.877756
+      ],
+      "global_margin": 0.536554,
+      "candidate_top_5": [
+        "system.time",
+        "__none__",
+        "system.process.list",
+        "system.settings.status",
+        "system.recyclebin.empty"
+      ],
+      "conditional_candidate_top_5": [
+        "system.time",
+        "system.process.list",
+        "system.settings.status",
+        "system.recyclebin.empty",
+        "system.identity"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-complete",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.complete"
+        ]
+      ],
+      "global_top_5": [
+        "task.complete",
+        "message.send",
+        "__none__",
+        "task.delete",
+        "media.play.exact"
+      ],
+      "global_top_5_scores": [
+        -0.289091,
+        -0.582184,
+        -0.616233,
+        -0.652196,
+        -0.828794
+      ],
+      "global_margin": 0.293093,
+      "candidate_top_5": [
+        "task.complete",
+        "__none__",
+        "task.delete",
+        "task.resolve.exact",
+        "task.reopen"
+      ],
+      "conditional_candidate_top_5": [
+        "task.complete",
+        "task.delete",
+        "task.resolve.exact",
+        "task.reopen",
+        "task.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-create",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.create"
+        ]
+      ],
+      "global_top_5": [
+        "task.create",
+        "notification.schedule",
+        "__none__",
+        "reminder.create",
+        "message.send"
+      ],
+      "global_top_5_scores": [
+        -0.328436,
+        -0.372723,
+        -0.375063,
+        -0.619354,
+        -0.65164
+      ],
+      "global_margin": 0.044287,
+      "candidate_top_5": [
+        "task.create",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "task.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-delete",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.delete"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.known.trash.named",
+        "message.send",
+        "filesystem.path.ensure.absent",
+        "task.delete",
+        "media.play.exact"
+      ],
+      "global_top_5_scores": [
+        -0.385988,
+        -0.663423,
+        -0.667715,
+        -0.777236,
+        -0.801651
+      ],
+      "global_margin": 0.277435,
+      "candidate_top_5": [
+        "task.delete",
+        "task.restore",
+        "task.reopen",
+        "task.create",
+        "task.resolve.exact"
+      ],
+      "conditional_candidate_top_5": [
+        "task.delete",
+        "task.restore",
+        "task.reopen",
+        "task.create",
+        "task.resolve.exact"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.list"
+        ]
+      ],
+      "global_top_5": [
+        "task.list",
+        "__none__",
+        "task.search",
+        "message.send",
+        "browser.tabs.list"
+      ],
+      "global_top_5_scores": [
+        0.179674,
+        -0.734438,
+        -0.748276,
+        -0.865719,
+        -0.891622
+      ],
+      "global_margin": 0.914111,
+      "candidate_top_5": [
+        "task.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "task.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-reopen",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.reopen"
+        ]
+      ],
+      "global_top_5": [
+        "task.reopen",
+        "__none__",
+        "message.send",
+        "task.delete",
+        "task.list"
+      ],
+      "global_top_5_scores": [
+        -0.185949,
+        -0.635719,
+        -0.71751,
+        -0.816195,
+        -0.836497
+      ],
+      "global_margin": 0.44977,
+      "candidate_top_5": [
+        "task.reopen",
+        "__none__",
+        "task.delete",
+        "task.list",
+        "task.complete"
+      ],
+      "conditional_candidate_top_5": [
+        "task.reopen",
+        "task.delete",
+        "task.list",
+        "task.complete",
+        "task.create"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-resolve-exact",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.resolve.exact"
+        ]
+      ],
+      "global_top_5": [
+        "task.resolve.exact",
+        "task.delete",
+        "message.send",
+        "media.play.exact",
+        "task.restore"
+      ],
+      "global_top_5_scores": [
+        -0.171736,
+        -0.681216,
+        -0.710945,
+        -0.846972,
+        -0.887076
+      ],
+      "global_margin": 0.50948,
+      "candidate_top_5": [
+        "task.resolve.exact",
+        "task.delete",
+        "task.restore",
+        "task.update",
+        "task.reopen"
+      ],
+      "conditional_candidate_top_5": [
+        "task.resolve.exact",
+        "task.delete",
+        "task.restore",
+        "task.update",
+        "task.reopen"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-restore",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.restore"
+        ]
+      ],
+      "global_top_5": [
+        "task.restore",
+        "note.restore",
+        "message.send",
+        "window.restore",
+        "routine.restore"
+      ],
+      "global_top_5_scores": [
+        -0.323343,
+        -0.456049,
+        -0.656137,
+        -0.773587,
+        -0.80417
+      ],
+      "global_margin": 0.132706,
+      "candidate_top_5": [
+        "task.restore",
+        "task.list",
+        "task.create",
+        "task.resolve.exact",
+        "task.delete"
+      ],
+      "conditional_candidate_top_5": [
+        "task.restore",
+        "task.list",
+        "task.create",
+        "task.resolve.exact",
+        "task.delete"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-search",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.search"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "routine.phrase.create",
+        "filesystem.known.search",
+        "task.list",
+        "task.search"
+      ],
+      "global_top_5_scores": [
+        -0.391871,
+        -0.462367,
+        -0.516838,
+        -0.542498,
+        -0.686707
+      ],
+      "global_margin": 0.070497,
+      "candidate_top_5": [
+        "task.search",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "task.search"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-task-update",
+      "outcome": "action",
+      "expected": [
+        [
+          "task.update"
+        ]
+      ],
+      "global_top_5": [
+        "message.send",
+        "web.search",
+        "task.create",
+        "task.resolve.exact",
+        "task.update"
+      ],
+      "global_top_5_scores": [
+        -0.069346,
+        -0.602172,
+        -0.62068,
+        -0.630411,
+        -0.740494
+      ],
+      "global_margin": 0.532825,
+      "candidate_top_5": [
+        "task.create",
+        "task.resolve.exact",
+        "task.update",
+        "media.seek.relative",
+        "task.delete"
+      ],
+      "conditional_candidate_top_5": [
+        "task.create",
+        "task.resolve.exact",
+        "task.update",
+        "media.seek.relative",
+        "task.delete"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-vision-describe",
+      "outcome": "action",
+      "expected": [
+        [
+          "vision.describe"
+        ]
+      ],
+      "global_top_5": [
+        "vision.describe",
+        "ocr.read",
+        "capture.screenshot",
+        "web.search",
+        "routine.phrase.create"
+      ],
+      "global_top_5_scores": [
+        -0.525355,
+        -0.71432,
+        -0.765043,
+        -0.796751,
+        -0.830297
+      ],
+      "global_margin": 0.188964,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-web-search",
+      "outcome": "action",
+      "expected": [
+        [
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "office.document.read",
+        "filesystem.known.search",
+        "browser.tabs.list",
+        "office.document.create"
+      ],
+      "global_top_5_scores": [
+        -0.613343,
+        -0.762021,
+        -0.825159,
+        -0.849869,
+        -0.875991
+      ],
+      "global_margin": 0.148677,
+      "candidate_top_5": [
+        "web.search",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-wifi-connect",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.connect"
+        ]
+      ],
+      "global_top_5": [
+        "wifi.connect",
+        "wifi.ensure.connected",
+        "wifi.disconnect",
+        "wifi.profile.list",
+        "input.select.all"
+      ],
+      "global_top_5_scores": [
+        0.007974,
+        -0.536352,
+        -0.771406,
+        -0.787314,
+        -0.81601
+      ],
+      "global_margin": 0.544326,
+      "candidate_top_5": [
+        "wifi.ensure.connected",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.ensure.connected"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-wifi-connect-named",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.connect.named"
+        ]
+      ],
+      "global_top_5": [
+        "wifi.connect",
+        "wifi.ensure.connected",
+        "wifi.profile.list",
+        "wifi.disconnect",
+        "wifi.connect.named"
+      ],
+      "global_top_5_scores": [
+        -0.266054,
+        -0.457941,
+        -0.530871,
+        -0.592327,
+        -0.642822
+      ],
+      "global_margin": 0.191887,
+      "candidate_top_5": [
+        "wifi.ensure.connected",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.ensure.connected"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-wifi-disconnect",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.disconnect"
+        ]
+      ],
+      "global_top_5": [
+        "wifi.disconnect",
+        "wifi.ensure.connected",
+        "wifi.connect",
+        "input.visible.click",
+        "wifi.profile.list"
+      ],
+      "global_top_5_scores": [
+        -0.308875,
+        -0.556225,
+        -0.833354,
+        -0.89223,
+        -0.906914
+      ],
+      "global_margin": 0.247349,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-wifi-ensure-connected",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.ensure.connected"
+        ]
+      ],
+      "global_top_5": [
+        "wifi.ensure.connected",
+        "wifi.disconnect",
+        "wifi.connect",
+        "wifi.profile.list",
+        "notification.dismiss"
+      ],
+      "global_top_5_scores": [
+        -0.326179,
+        -0.606768,
+        -0.813358,
+        -0.846737,
+        -0.898743
+      ],
+      "global_margin": 0.280589,
+      "candidate_top_5": [
+        "wifi.status",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.status"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-wifi-profile-list",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.profile.list"
+        ]
+      ],
+      "global_top_5": [
+        "wifi.profile.list",
+        "wifi.ensure.connected",
+        "wifi.connect.named",
+        "filesystem.known.search",
+        "notification.list.due"
+      ],
+      "global_top_5_scores": [
+        0.904327,
+        -0.794075,
+        -0.82296,
+        -0.971675,
+        -0.983623
+      ],
+      "global_margin": 1.698403,
+      "candidate_top_5": [
+        "wifi.profile.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.profile.list"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-wifi-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.status"
+        ]
+      ],
+      "global_top_5": [
+        "wifi.status",
+        "wifi.disconnect",
+        "wifi.ensure.connected",
+        "__none__",
+        "audio.status"
+      ],
+      "global_top_5_scores": [
+        0.334711,
+        -0.439664,
+        -0.896637,
+        -0.901494,
+        -0.945753
+      ],
+      "global_margin": 0.774375,
+      "candidate_top_5": [
+        "wifi.status",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.status"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-window-active",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.active"
+        ]
+      ],
+      "global_top_5": [
+        "media.status",
+        "web.search",
+        "window.active",
+        "window.resolve",
+        "input.keyboard.status"
+      ],
+      "global_top_5_scores": [
+        -0.576907,
+        -0.659475,
+        -0.718346,
+        -0.802294,
+        -0.848373
+      ],
+      "global_margin": 0.082568,
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "catalog-seen-natural-window-application-status",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.application.status"
+        ]
+      ],
+      "global_top_5": [
+        "window.application.status",
+        "browser.page.read",
+        "window.active",
+        "__none__",
+        "input.keyboard.open"
+      ],
+      "global_top_5_scores": [
+        0.178295,
+        -0.791063,
+        -0.830033,
+        -0.873326,
+        -0.888518
+      ],
+      "global_margin": 0.969358,
+      "candidate_top_5": [
+        "window.active",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "window.active"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-window-focus",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.focus"
+        ]
+      ],
+      "global_top_5": [
+        "window.focus",
+        "note.search",
+        "input.keyboard.status",
+        "app.close",
+        "window.resize"
+      ],
+      "global_top_5_scores": [
+        0.120426,
+        -0.655479,
+        -0.705426,
+        -0.713105,
+        -0.730397
+      ],
+      "global_margin": 0.775905,
+      "candidate_top_5": [
+        "window.focus",
+        "app.close",
+        "window.resize",
+        "window.maximize",
+        "window.minimize"
+      ],
+      "conditional_candidate_top_5": [
+        "window.focus",
+        "app.close",
+        "window.resize",
+        "window.maximize",
+        "window.minimize"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-window-maximize",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.maximize"
+        ]
+      ],
+      "global_top_5": [
+        "window.maximize",
+        "app.close",
+        "note.search",
+        "window.resize",
+        "note.list"
+      ],
+      "global_top_5_scores": [
+        0.780913,
+        -0.621723,
+        -0.626073,
+        -0.782516,
+        -0.856514
+      ],
+      "global_margin": 1.402636,
+      "candidate_top_5": [
+        "window.maximize",
+        "app.close",
+        "window.resize",
+        "window.minimize",
+        "window.active"
+      ],
+      "conditional_candidate_top_5": [
+        "window.maximize",
+        "app.close",
+        "window.resize",
+        "window.minimize",
+        "window.active"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-window-minimize",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.minimize"
+        ]
+      ],
+      "global_top_5": [
+        "window.minimize",
+        "note.search",
+        "app.close",
+        "note.list",
+        "window.resize"
+      ],
+      "global_top_5_scores": [
+        0.965409,
+        -0.635066,
+        -0.801432,
+        -0.871308,
+        -0.896882
+      ],
+      "global_margin": 1.600475,
+      "candidate_top_5": [
+        "window.minimize",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "window.minimize"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-window-move",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.move"
+        ]
+      ],
+      "global_top_5": [
+        "window.move",
+        "web.search",
+        "window.resize",
+        "app.open",
+        "filesystem.known.search"
+      ],
+      "global_top_5_scores": [
+        -0.043257,
+        -0.777281,
+        -0.777388,
+        -0.859794,
+        -0.868918
+      ],
+      "global_margin": 0.734024,
+      "candidate_top_5": [
+        "window.move",
+        "window.resize",
+        "__none__",
+        "window.active",
+        "window.minimize"
+      ],
+      "conditional_candidate_top_5": [
+        "window.move",
+        "window.resize",
+        "window.active",
+        "window.minimize",
+        "window.maximize"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-window-resize",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.resize"
+        ]
+      ],
+      "global_top_5": [
+        "window.resize",
+        "note.search",
+        "web.search",
+        "window.move",
+        "window.maximize"
+      ],
+      "global_top_5_scores": [
+        0.34309,
+        -0.702098,
+        -0.857111,
+        -0.887078,
+        -0.889643
+      ],
+      "global_margin": 1.045188,
+      "candidate_top_5": [
+        "window.resize",
+        "window.move",
+        "window.maximize",
+        "app.close",
+        "window.minimize"
+      ],
+      "conditional_candidate_top_5": [
+        "window.resize",
+        "window.move",
+        "window.maximize",
+        "app.close",
+        "window.minimize"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-window-resolve",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.resolve"
+        ]
+      ],
+      "global_top_5": [
+        "window.resolve",
+        "system.process.terminate.named",
+        "message.recipient.resolve",
+        "capture.active.window",
+        "backup.known.list"
+      ],
+      "global_top_5_scores": [
+        0.014459,
+        -0.476434,
+        -0.739687,
+        -0.851008,
+        -0.863708
+      ],
+      "global_margin": 0.490893,
+      "candidate_top_5": [
+        "package.install.prepare",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "package.install.prepare"
+      ]
+    },
+    {
+      "case_id": "catalog-seen-natural-window-restore",
+      "outcome": "action",
+      "expected": [
+        [
+          "window.restore"
+        ]
+      ],
+      "global_top_5": [
+        "window.minimize",
+        "window.restore",
+        "note.search",
+        "note.restore",
+        "task.restore"
+      ],
+      "global_top_5_scores": [
+        -0.094755,
+        -0.201486,
+        -0.616914,
+        -0.648015,
+        -0.767514
+      ],
+      "global_margin": 0.106732,
+      "candidate_top_5": [
+        "window.restore",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "window.restore"
+      ]
+    }
+  ]
+}

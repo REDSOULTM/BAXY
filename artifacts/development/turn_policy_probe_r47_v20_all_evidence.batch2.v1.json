@@ -1,0 +1,4876 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v20_all_evidence.batch2.v1.raw.jsonl",
+    "sha256": "d649d9518f0688432b72331c4f38d61c174c3106ef55e926cf4177224a877d04"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:59",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-34204696b893765777b428b2",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0437,
+        "operation": "notification.cancel.at",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:5902",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b93dada303d2375835d3aa60",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2804,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete six as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:5996",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4fd0a769688d8e9ceeff2c07",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1427,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete afternoon as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6045",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-91ce735223518888751fbfab",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1584,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete song as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6064",
+      "expected_families": [
+        "audio"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-219a110e96dfefcd3e850eb3",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1342,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete hour as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "model_decision"
+        }
+      ],
+      "case_id": "holdout:massive-v1.1:en-US:6072",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2ee7ae6464e8f44db4633eef",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 5.0841,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The pickup time depends on the restaurant's current workload and preparation time. You may need to wait anywhere from 10 to 30 minutes. It's best to check with the restaurant directly for an accurate estimate.",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6077",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-14a99e1e4383cc3a223bb998",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0041,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:608",
+      "expected_families": [
+        "audio"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-10455da2d807c402b872bd88",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1254,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete after as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:612",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6876ea230a5551681441274c",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.02,
+        "operation": "notification.schedule",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6166",
+      "expected_families": [
+        "audio"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0eadf1ca83c6654f02f4085b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5404,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete minutes as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6172",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-79ecac994b377a3f460449bb",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6031,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "It's sunny today, so sunglasses could be a good choice.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6181",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6e3fc2ed48c60c34d8e5aee6",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0504,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I know you've been away.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6248",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-13146f0b79d1687f79752b88",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.1038,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I am a language model developed by Alibaba Cloud, and I don't have a specific age. I was trained using a large amount of data and can continuously learn and improve. My main function is to assist users with various tasks and provide information.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:625",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5795893656c2e812e3867cc7",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0045,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6304",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2106431c7667d405471fee25",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1846,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I am feeling well, thank you for asking. I am here to help with any questions or tasks you may have. How can I assist you today?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6305",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5af0c94d4b3885d291ec4a84",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0033,
+        "operation": "task.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6322",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e2e4fbe1962c362d9b6fc1f5",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0023,
+        "operation": "game.catalog.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6325",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b997f212077b394f3a2927df",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2233,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I'm sorry to hear that. Would you like to talk about it?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6352",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b5a567b36ed6cde4e43ebf05",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.3455,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete store as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6371",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e41c19c947246ff576f8274c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4663,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I understand that you are interested in veganism.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6376",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c21c39c362ee075de9cdeb37",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9604,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "A good Iranian film from 2016 is \"The Salesman\" directed by Asghar Farhadi. It received critical acclaim and won several awards, including the Academy Award for Best Foreign Language Film. The film explores themes of truth, morality, and human relationships. It is widely regarded as one of the best films of that year.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6405",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b3b1ee174190a241c7a794d5",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0024,
+        "operation": "audio.status",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6411",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-314160c05c2ecb6d96d2a4b6",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0022,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6417",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5a4060984f26dc49b52dc71b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.282,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6426",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-31f2df2df9190f93a97868d0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6021,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I understand that you're observing a technical issue.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6438",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dc73d02d65aaeaa2a12aeee7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.8986,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete find my phone as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6473",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-99c4cb3cadec2d3a73fc13df",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.5516,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete today as requested of the request.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6515",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e49b27bd66d48c9ac0e44a1f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4655,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "It's been a typical day, focusing on assisting and providing information. I've been actively engaged in conversations and ready to help with any questions or needs you may have. How about you? What have you been up to?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6517",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b5c88ab3913cc9dd96b182d9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1533,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que la GPU dejó de usarse.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6578",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-62b66f64f22684fafc06f163",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6012,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I understand that you feel a deep sense of affection and care for someone.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:660",
+      "expected_families": [
+        "system"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c14d9e4a5cb44a92d116dd8f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3536,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete Japan as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6615",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9e38c039b62ebf09e296f89d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.244,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I understand that you're observing that the child is struggling with certain tasks.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6617",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7778ab53aea679683133826e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.6334,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I think it's important to focus on what is most relevant and useful in the current context. If you have a specific topic or question, feel free to share it, and I'll do my best to provide helpful information.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6643",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-422a9443b1d1d4b67ded55fe",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7071,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete best paid jobs in digital marketing in my area as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6650",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2b429e69d6e44c744fc203f2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5229,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que te preguntas sobre mi conocimiento de ti.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6789",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8bf25b5b5e12ff45390171a1",
+        "error": "",
+        "failure_code": "",
+        "kind": "plan",
+        "latency_seconds": 0.9113,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6850",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3c653856f2e660bb6a672e95",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9821,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete today as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6897",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-fbf76fa2008152de32592366",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0041,
+        "operation": "reminder.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6909",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7d59b585fa5eb8a9ae066d37",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2688,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "What happens between 1:00 PM and 3:00 PM?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6946",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1e0b815959528caa05a992e9",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0045,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7013",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8a0b8d8d806e1b9ccc104674",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.204,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The event is scheduled to start on Friday at 7 PM.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7026",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8125e8ebc5c7d2708d22304f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7044",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2cfb33ef876cdec874457317",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.6804,
+        "operation": "reminder.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7046",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e5856394a028bd6cf72600ca",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.5662,
+        "operation": null,
+        "question": "¿Cuál es la hora de finalización o la duración del evento?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:712",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5e55090e62b582300fda0a66",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0024,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7151",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-90b4ac9186c7a7c0d1487c68",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 3.2566,
+        "operation": "notification.schedule",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7185",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-89ebd1b302b263a839ea700f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3649,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I don't have access to your medical records or appointment schedule. Could you please check with your healthcare provider or use a calendar app to confirm your next appointment with Dr. Smith?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7196",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-99d4f8c1837ff9c0ea233b63",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7007,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I remember that you mentioned the meeting with Allen on March 15th.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7199",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9e80212d179e63bea21b73f0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1444,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete final as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7224",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d9ba660ec411920807637bd5",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2278,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The venue for Tom's marriage is not specified in the provided information.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7355",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6254585849ea3268e0c4bf08",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1755,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que te recuerden verificar la salsa a las seis en punto.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:738",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a34ef75c60e016f172cc6db4",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.002,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7397",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-22831dca3cbc18a5fcebf06d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9936,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I mention that there are events planned for the next three months.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7467",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d229d5dd30de31137d1a0724",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0922,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete events as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7557",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-26f9486c68c4bdd7aa42628f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0041,
+        "operation": "reminder.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7598",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3d8d9ff590d807ca9b6dcdf4",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8285,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar day tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7613",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-eadcf8b64c5a9dcaf29e8878",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.4295,
+        "operation": null,
+        "question": "What is the date range of the upcoming event?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7693",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-10a04424de7396b8513481aa",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5318,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "You mentioned that you have something planned for the twenty-first.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7774",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-24ca1d7e5586b9f95f24c881",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.0693,
+        "operation": null,
+        "question": "When should I add shopping to my calendar for tomorrow?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7843",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-17cd3054ced9b347551d5a48",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.6489,
+        "operation": null,
+        "question": "What channel should I use to let them know I have to leave in two hours for my violin lesson at four p.m. at Musicworkz?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7844",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3728571b98f1e74257474b6f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0033,
+        "operation": "reminder.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7847",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0b862961727a33a00df81b5b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4468,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete registration as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7908",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-74f29f3dc57c5a907ef6754a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2716,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "You mentioned that closing Word could lose unsaved changes.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7918",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-59b72e3d084af0da6ec7ee9c",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.5362,
+        "operation": null,
+        "question": "What is the title of the event and when should it be scheduled?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8056",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-af636f09d6d77b96e9adcd65",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1404,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete Friday as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8084",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-844f78f282a5c4dbbede9785",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0023,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The event agenda is a document that outlines the schedule, topics, and objectives of an upcoming event. It typically includes details such as dates, times, locations, and the agenda items that will be discussed during the event. The agenda helps participants understand what will happen and when. It is usually prepared in advance to ensure that all attendees are informed and prepared for the event.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8085",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-20f341013e1f29af8e3ac6d2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.999,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete week as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8116",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6b755c672a6e6d4dcb0b6d68",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0043,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8140",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-382cb5fd2c96a4a0087bdbbd",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.4331,
+        "operation": null,
+        "question": "What time is the thirteenth?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8204",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9066306ad39457a5911b6868",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.5799,
+        "operation": "reminder.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8206",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-438926f2dbcba7c0bf65ccbc",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1456,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete sister as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8251",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c2fc3c444c7b8cedc5d11dcd",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.003,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8260",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-51279a7e4e5e1fa88bd12222",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5986,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo alertar jeff's birthday tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8280",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-041a3dbe4fe6f39e34bc50eb",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "reminder.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8290",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ed86b146c50ad7c7a56228a4",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0035,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8320",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4753182e7232a61c2ebaef46",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.059,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete weekend as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8347",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c1f92a998aff7e4aa40f6739",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1924,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "On December 4th, there are several notable events and occurrences. It is the day of the annual \"International Day of the Hand,\" which is a day to honor the importance of hand in human life. Additionally, it is the birthday of several historical figures, including the American author and poet Henry Wadsworth Longfellow. There are also various cultural and sporting events that take place on this day in different parts of the world.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8426",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-13160b68fe88cf482302e6dc",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1416,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete morning as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8520",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0e1de3bd1965fac05dced988",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.2657,
+        "operation": null,
+        "question": "What is the title, start time, and end time of the event you want to add?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8525",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3901b815a7861b4659e9fbd9",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.6134,
+        "operation": "reminder.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8579",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ef3bdafa5e2d3e25c72606a4",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8774",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6efd36e9af7bdfb13904793a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.29,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I notice you're asking if your schedule for July 7th is completely open.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9110",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-727af84285b79fa35aa7a5ac",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.9638,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar date tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9114",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f718c6f3b486885401cd9ab6",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0037,
+        "operation": "reminder.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9116",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-88bb0c1f913b16f30d018ea8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.406,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete rescheduling my meeting as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9149",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a7ac87e186f39e10dd0ce1a4",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5023,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The Black Tie Gala Dinner is scheduled to begin at 7:00 PM.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9216",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f9a580172c92f188d06e0056",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0031,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9269",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4c39a0197c9922cd25649895",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0038,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9303",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-75344c3400111168b03593ef",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.003,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9321",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e5b9fee134db9e4b37eec8c3",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.8939,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete now as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9330",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-796a5f27d8975519d50eb611",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.8946,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete play as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:939",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8f703638c68339522c478d50",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.9068,
+        "operation": "notification.schedule",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9402",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3b7caa10ad8953c4e5c4d4a5",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0038,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9460",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f53ab7074044dadfa6f77e10",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0034,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9601",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ebed6008e886fd2de018a5bb",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0032,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9617",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-58142c92a21f821dc3f34198",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0038,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9640",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0f0675984d90ee288a5a8cd8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1479,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete workout as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9669",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-770ae1979c5f2b7f09338a6b",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 4.1105,
+        "operation": null,
+        "question": "How much should I adjust the volume to be more chill by ned vizzini?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:967",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d71caa333fd2def8a90a2d58",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0022,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:969",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dea80e1e555fc0f713bf0260",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0017,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9691",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-75dd5cd2e1d9cdf97784fbd8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1852,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete history of rome as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9793",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-79f111e1628b6c712d689460",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0031,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9827",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8cac718c8ad503f462878189",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.5457,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot resume a song from an audiobook by The Beatles because I don't have access to the specific audiobook or the song you're referring to. Could you please provide more details?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9871",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bded2d4b029000fcf3b8ae2b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0036,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9923",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-74228304d5e4a77c2e5da7a2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.0559,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The boiling time for an egg depends on the size and desired doneness. A large egg typically takes about 6-7 minutes for a soft yolk, 8-9 minutes for a medium yolk, and 10-12 minutes for a fully cooked egg. Adjust the time based on your preference for the yolk consistency.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9924",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-687fc9476291d9e6826cec0c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0265,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete recipe as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9942",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d4b44ea1dcd09be5c1c16375",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.7342,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "A red velvet cake is a type of dessert that includes ingredients like flour, sugar, eggs, butter, cocoa, and buttermilk. It has a rich, chocolatey flavor and a moist texture. The name comes from the red color of the cake, which is achieved using food coloring. It is often topped with a layer of frosting.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "model_decision"
+        }
+      ],
+      "case_id": "holdout:massive-v1.1:es-ES:10031",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d404c9e3bff3db3a2d27a9c4",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.4905,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar compra tal como fue pedido.",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "model_decision"
+        }
+      ],
+      "case_id": "holdout:massive-v1.1:es-ES:10045",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f846772024580845f85003a9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 4.9644,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que la sopa de fideos con pollo se prepara con ingredientes sencillos y se cocina en una olla.",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10048",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-412ba93d6ce9074339ef4530",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.8887,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El pavo se cocina a la plancha o en una parrilla. Se corta en trozos y se asa con aceite y hierbas. Se hornea a 200°C durante 1 hora y 15 minutos. La piel se dora y el pollo queda jugoso.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10055",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1c0c481d3c0cba71adc30f58",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9101,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "La receta del pollo frito incluye marinado de la pechuga con especias, cubierto con harina y pescado, y frito en aceite caliente. El pollo se sirve usualmente con papas y una salsa de mostaza.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10097",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1a9c4e592697704fc473de3c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.4227,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que te gustaría una hamburguesa con queso.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10177",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bf14208174d02392ceb1d213",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 4.1564,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Para cocinar espaguetis de calabaza, primero hierva la calabaza hasta que esté suave, luego amase la pasta con la calabaza rallada hasta integrarla. Cocina la pasta en agua caliente hasta que esté al dente. Sirve caliente.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10197",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e3eac56431df5d6c5e5272ee",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3579,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar macarrones tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:102",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-396ea413b9733cd670e9d29e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2138,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Esta semana ha habido diferentes condiciones climáticas, con días soleados y otros nublados. No se especificó si hay lluvia o viento. ¿Quieres que te dé más detalles sobre algún día en particular?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10213",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5e6735923534be324cfc4ee8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.036,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar duros tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10217",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2b41330b39e913bdc2f4931b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 2.632,
+        "operation": "task.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10220",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-de0c199d626d1dabf44ef7e6",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1367,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Para hornear una tarta grande, necesitas masa, azúcar, huevos, aceite, levadura y una receta específica. La cantidad de ingredientes dependerá del tamaño de la tarta.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10263",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-efd25c815253a6fe1262270b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2132,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar juego tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10365",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-21e448c06a299e59881f4a83",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1823,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar juego contra tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10366",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5553fb69a335c0b184cb2c2b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6103,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que deberíamos jugar a GTA a velocidad máxima.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10403",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-013e7eb84a06d7d89f403d1b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6292,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar abiertos tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10832",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4c015ec4eb5051aa86e031b6",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6736,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Cuál es tu próximo paso?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11270",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7f229d4adcf8d73de4274e87",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 2.0494,
+        "operation": "media.control",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11279",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b3cc942fe50b4600d15bce2a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4001,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar el episodio de Friends tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11341",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2f1f58e309986541e19f1d8b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1747,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar disney tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11353",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-115cd130fcd86e6cdc073023",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2924,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar podcasts tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11539",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0de6f9022c5e091e18de2fef",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4222,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar podcast tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1156",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a540b3d15200510484b92b13",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9918,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoiones completar lo último del día internacional de la mujer tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11570",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8b19fcc51b96af2922110f1e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5161,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Puedes decirme más sobre qué está sucediendo en tu pueblo? ¿Hay algún evento, problema o cambio reciente que te preocupe?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11643",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-474fb5c9dba51f91ed530793",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4738,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No tengo información específica sobre eventos que sucederán en el futuro cercano. Te sugiero que te mantengas informado mediante fuentes actualizadas y confiables. ¿Tienes un interés particular en algún tipo de evento?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11644",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-44557f1bc3a4f691e77e34e4",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.5087,
+        "operation": null,
+        "question": "¿Cuál es el rango de fechas para los eventos en Sacramento?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11665",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4b54019d5afa81e2774d304b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 2.7645,
+        "operation": "filesystem.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11767",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-cfca78ad8ed33b107a7abd91",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.464,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar los eventos sucediendo en Pondicherry este fin de semana tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11782",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e325d449cf622ae3f44ba6bc",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1139,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que hay un evento especial cerca de ti este fin de semana.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11798",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-087280e09df35fc74412cab1",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.5782,
+        "operation": null,
+        "question": "¿cuál es el rango de fechas del próximo evento en la biblioteca?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11802",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-15d01b9803a90e7117bbedd7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1491,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Entiendo que mencionas que hay buenas pizzerías por aquí.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11825",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-77dd73eea63b5b21592825c8",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.9245,
+        "operation": null,
+        "question": "¿Estás buscando un centro comercial en Madrid para comprar ropa de mujer o necesitas ayuda para encontrar uno?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11827",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9074a9e9ca9e8013f71e999b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.649,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar noche tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11841",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-197d735b58f9dacb73beb3b6",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 3.3631,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11911",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-cbe3950b7ccc2a2ef5efb8d5",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1382,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar zona tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11954",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-fbb4eeffc5d04bd563b5af3d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4802,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Cuál es el nombre de tu ciudad o pueblo? así te puedo decir si hay teatros en tu área.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11987",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1b3ba7c1105abe2aa73dfb67",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6001,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar cerca de mí tal tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:12008",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0bd4202fa303fdf143a01b88",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0031,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:12245",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1e26a215f5728465f5974653",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.5843,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El próximo tren de Córdoba a Madrid sale en 15 minutos. ¿Deseas que te indique la hora exacta o el número del tren?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:12294",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dba95e94d23da2a804bb5bfd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6297,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar metropolitana tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:12409",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1ccb131db04034cbbe3b8f2a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7906,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No tengo información actualizada sobre la ubicación de la gasolinera más cercana. ¿Estás en un lugar específico?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1256",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-533f127617279e78639afc46",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4599,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No tengo muchos chistes memorizados, pero uno que me gusta es el siguiente: ¿Cuántos programadores entran en una iglesia? None, porque ya estaban allí.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:12582",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8c1681e0cec59a6141907b86",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2187,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar manana tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:12957",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-23cd993f8d0961c57acbdb5d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6346,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Elaborar significa definir significa es establecer una descripción clara y precisa de un concepto o término.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1300",
+      "expected_families": [
+        "audio"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d09ea16ae5566fb56e57f686",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.5242,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Noación: No puedo completar rapido tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13023",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2c97e0611f68af86e3fce774",
+        "error": "",
+        "failure_code": "",
+        "kind": "plan",
+        "latency_seconds": 1.1556,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13044",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-61d61093ea7d096ecce3bb78",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2757,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar el concierto agotado el sábado por la noche.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13078",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-51ebfb7613315e4e00e35ffc",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.4312,
+        "operation": null,
+        "question": "¿Estás buscando la dirección de Billy Cryss o te refieres a alguien else?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13135",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-98716ce5612d91a16d721c89",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.3346,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Taylor Lautner fue nacido el 21 de agosto de 1994.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13140",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-90128a94cf0d6b41e01b5f2e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.1374,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El huracán es un sistema de baja presión tropical que forma en los océanos tropicales, caracterizado por vientos sostenidos de al menos 74 km/h. Puede causar daños significativos por inundaciones, tormentas, olas de choque y deslizamientos. Su intensidad se mide con la escala Saffir-Simpson. La predicción y el monitoreo son esenciales para minimizar los efectos.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13177",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8509cf5d2f31ee15940ea4bd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7479,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Recuerdo que te muevas para que no engordes.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13186",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4367b1d3588dfb58ec17ebba",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1948,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoio completar mama tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13222",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-34ad1b1760311446fa0d41bd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0499,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Kate Middleton compra la ropa de sus hijos en tiendas de moda británicas como Harrods o Self-rida, y a veces en diseñadores exclusivos.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13223",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d9868722e8d18ef9795381b7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9725,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Sofia Vergara parece joven debido a su apariencia fresca y su estilo de vida, aunque su edad real es de 42 años. Su energía y el uso de productos de cuidado facial pueden contribuir a su aspecto juvenil. También es conocida por su actitud en la pantalla y su personalidad en vida real.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13359",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3edeee02847385c834e900ca",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3305,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Dieciséis.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13383",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8d0c5b06fd63a23062a95c93",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3586,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar muerte tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13464",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-158a6d439c85f0fda1b1b6f9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.4923,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Estamos aquí porque el usuario nos pidió explicar por qué estamos aquí. La conversación comienza con una pregunta directa sobre el propósito de la interacción.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13486",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9b6d2936b0c5a8b2c568b34e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1903,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar recientes tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13592",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7be2b34ed51a0fe8590da44a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.1832,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Nueva Zelanda se encuentra en el sur del Pacífico, entre Australia y Antártida. En un mapa, aparece como una isla en forma de \"S\" en la parte sur del océano Pacífico.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13607",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ca5e12d8ef5cec05d242022f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.8335,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar casado tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13630",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3339af532a1f724c16e1c535",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 3.6726,
+        "operation": "filesystem.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13685",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-edd0b8adfbcf3072626e2351",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2181,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar dolar tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "model_decision"
+        }
+      ],
+      "case_id": "holdout:massive-v1.1:es-ES:13694",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6466bca0e246b7ac20380a19",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.4132,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar biografia de la persona tal como fue pedido.",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13847",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-37b76a9a3227ff4b5ff0bc81",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4848,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El tipo de cambio del peso mexicano varía constantemente según las tasas de cambio en el mercado internacional. Para obtener la tasa actual, te recomiendo consultar una aplicación de cambio o un sitio web financiero en tiempo real. ¿Quieres que te ayude a encontrar la tasa actual?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13853",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b930d0da7d10c9a8e3d24b8e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0504,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "La mayor cantidad de volcanes en la tierra se encuentra en el Anillo de Fuego, una zona de actividad volcánica intensa alrededor de las costas de Asia, América del Sur y el Pacífico.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13854",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0b26562d72a3e4f14bc60ca9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.3044,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Elvis Presley falleció el 22 de agosto de 1977.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13888",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-97ca5fef2765d0c2ccaa528d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5781,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Cuál es la temperatura actual en Barcelona, Cataluña?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14000",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e78d0930a85719b2c1f3c36f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7221,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Estás describiendo a alguien que muestra una actitud de indolencia o falta de entusiasmo.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14011",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d3428ca4894be87c3a71a9f1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5437,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Dolly Parton fue nacida el 28 de enero de 1946.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14038",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a059ac86396974dd80b45337",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9845,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Moldavia es un país ubicado en el este de Europa, entre Rusia y Polonia. Su capital es Chișinău. Está dividido en 10 regiones administrativas.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14083",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6d28f7c0dc3f0ec057e6e442",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.9518,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Javier Bardem actualmente vive en España. No se han reportado movimientos recientes en su residencia.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14096",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5b9269b5b3f9987c2e095d75",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9188,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Las Montañas Rojas se encuentran en Canadá, en la provincia de Alberta. Son una cadena de montañas que forma parte de los Picos Rojos, un área natural protegida.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14101",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f3d46873a504c07263cb1a5c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.7262,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No entiendo qué significa \"jlo\". ¿Podrías aclarar lo que quieres decir?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14126",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9812e6282b84211957d29153",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7801,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar la biografía de rodriquez tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14239",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f578c4ffe2f65c4bee17f40c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.5202,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar libra tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14395",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0cb2bcae2235683f1797739c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.2699,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El punto más profundo de la tierra es el fondo del océano Pacífico, conocido como la Zona de las Trenches de Mariana, específicamente la Zona de la Dorsal de Mariana. La profundidad más extrema registrada es de aproximadamente 11.034 metros.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14414",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3c0f8d2830c471b84dd71914",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9193,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El disco duro es un componente del ordenador que almacena datos permanentemente. Puede ser de tipo HDD (Hard Disk Drive) o SSD (Solid State Drive). Funciona como almacenamiento secundario para el sistema operativo y los programas instalados. Su capacidad varía según el modelo y la necesidad del usuario.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14429",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2bc79dbc4a5e0fd64962fe2a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.029,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El caftán es una prenda de ropa que se usa comúnmente en Oriente Medio y en algunas partes de Asia. Es una túnica larga que se lleva sobre la ropa interior y puede ser de diversos materiales, como lana, lino o seda. Se usa tanto en ocasiones formales como en la vida diaria.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14457",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ddee5c2477756644d098f64d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2139,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Entiendo que mencionas que necesitas encontrar una ruta.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14465",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-643fcd5fc7be8241b335e9ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.3646,
+        "operation": "network.ip.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14505",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bac351a16849a6792c3f431d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2402,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar russia tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14530",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a51c39077386d105c41d4e61",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2662,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar la notificación cuando tasa como se esperaba del gbp al dólar estadounidense.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14544",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-aa94e86cb60598b73c0a02dd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6468,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar la solicitud de averiguar el precio de las acciones de Microsoft en NASDAQ tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14555",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-08597464e7da20339015bc10",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.5872,
+        "operation": null,
+        "question": "¿Estás buscando información sobre los movimientos del precio de las acciones de una empresa específica?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14605",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-da93ba8d8a3345c3abd8321d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4864,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que Angelina Jolie dejó a Brad Pitt.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14622",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3f993744078b929534d8cd67",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.3966,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "A sphere is a three-dimensional shape where all points on its surface are equidistant from the center. It is defined by a set of points in space that are all the same distance from a central point. Examples include the surface of a ball or a globe. The volume of a sphere is calculated using the formula $ V = \\frac{4}{3}\\pi r^3 $, where $ r $ is the radius.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14742",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-fedb82669c60bf2fd0dba85f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6171,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo calcular ahora tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14820",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e400e0ce3954cdef79737ad7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8677,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar el cálculo de más precio de las acciones tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14891",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6da4cc949d4afe14ab4be19f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4194,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedonio completar persona tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14904",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a182078a6a650f6d621cfe97",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0019,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14995",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6b988e87a8db8879086c48f7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.9233,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "La situación se refiere a un estado o condición específica en un contexto dado. Sin más información, es difícil dar una explicación precisa. ¿Puedes aclarar en qué contexto te refieres?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:15056",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bed7d2c54006db8fb45dd238",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2072,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar watson tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:15092",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f4aad263ed5be3fe2314da90",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0196,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El televisor Samsung ofrece una experiencia de visualización premium con tecnologías avanzadas de imagen y sonido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1533",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b98bde93f8bfe3936aa65c5f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5485,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No tengo acceso a noticias en tiempo real, pero puedo ayudarte a buscar actualizaciones en línea si necesitas. ¿Te gustaría que te ayude a encontrar algunas noticias recientes?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1547",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-613c2c1967f28da6eb6012e9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2358,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo acceder a tu ubicación actual o verificar el tiempo en tu área específica. ¿Puedes decirme en qué ciudad o pueblo estás?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:15563",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-58fc4f2c7aa52ba7a482ef3e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7133,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que hay dificultades para manejar el idioma en la aplicación.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1666",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-876bf02b8ebf2259d3306400",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6761,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Entiendo que has noticiado que hay buenas noticias en las últimas seis horas.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1683",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c103552d0c6077e0427d7ee6",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2507,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Sí.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1803",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bc3f92286fdd70cbe8572f6e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.319,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Hoy en la Liga Española, los equipos que están jugando incluyen al Barcelona vs Real Madrid, el Atlético de Madrid vs Sevilla, y el Valencia vs Espanyol. ¿Te interesa saber más sobre algún partido en particular?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1982",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8685dd97589e26b1eb498678",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0048,
+        "operation": "notification.schedule",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2007",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7651277eaac8407bb2d70506",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0031,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2035",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e76502e780d59fd9545ee292",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2594,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que te preocupa la ubicación de tu comida.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2062",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9c015d578282ffb32bd7184e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9831,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar jazz tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2085",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8f58145777fc1d0290d01c7b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6957,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Alexa, te gustaría escuchar cualquier música clásica excepto Bach o Schubert.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2206",
+      "expected_families": [
+        "audio"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-701979dd8883e53ee1b52d26",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2386,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoresar mudo tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2207",
+      "expected_families": [
+        "audio"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-300133aa562db20f20d67d39",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2584,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar silencio tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2472",
+      "expected_families": [
+        "system"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f198dd99c0436cb255f0d292",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.8504,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar ubicacion tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2496",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5b28cb16626d9508eb1f287c",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0017,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2548",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b7f002f97f9d7653724b0569",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.5856,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar interesante tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T00:28:33.847859+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 4,
+    "cases": 215,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

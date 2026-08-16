@@ -1,0 +1,250 @@
+{
+  "schema": "baxy.presentable-ceiling-verdict.v1",
+  "measured_at_utc": "2026-08-01",
+  "state": "NUMERICALLY_BLOCKED_BY_MODEL_CEILING_AND_STALE_ORACLE",
+  "question": "Can this notebook safely reach the mission's >=70% historical operation-family score while keeping p50 <=1.5 s, p95 <=5 s, zero unasked effects and the current authenticated catalogue semantics?",
+  "answer": "No tested promotable configuration reaches the family target. The best 4B native-tool arm reaches the latency target and nearly reaches the no-operation proxy, but scores 53.06% with the real product shortlist and 62.59% even after the expected family is injected into retrieval. The remaining score cannot be recovered by loosening authority gates: the frozen historical oracle contains current-catalogue contradictions that reward wrong effects.",
+  "mission_targets": {
+    "operation_family_accuracy_min": 0.70,
+    "right_cases_required_out_of_147": 103,
+    "action_as_conversation_max": 0.10,
+    "turn_decide_p50_seconds_max": 1.5,
+    "turn_decide_p95_seconds_max": 5.0,
+    "fixed_visible_replies": 0,
+    "unasked_effects": 0
+  },
+  "baseline": {
+    "artifact": "paraphrase_tool_quality_20260731.json",
+    "verdict": "paraphrase_tool_quality_verdict_20260731.json",
+    "cases": 147,
+    "turns": 294,
+    "right_family_share_after_named_oracle_noise": 0.218,
+    "product_retrieval_share": 0.769,
+    "model_never_proposed_effect_turns": 110,
+    "gates_removed_effect_turns": 93,
+    "effect_preserved_turns": 91,
+    "effects_lost_inside_decide_turn": 0
+  },
+  "controlled_ceiling_measurements": [
+    {
+      "artifact": "native_tool_contract_ceiling_20260801.json",
+      "artifact_sha256": "72D09C685FFB75DF4069776F77B150E69049047A497940C5E2C8F820A2EC59A8",
+      "model": "Gemma 4 E2B Q4_K_XL",
+      "arm": "production policy schema before gates",
+      "right_cases": 60,
+      "right_family_share": 0.4082,
+      "no_operation_share": 0.2993,
+      "p50_seconds": 1.6080,
+      "p95_seconds": 1.8007
+    },
+    {
+      "artifact": "native_tool_contract_ceiling_20260801.json",
+      "artifact_sha256": "72D09C685FFB75DF4069776F77B150E69049047A497940C5E2C8F820A2EC59A8",
+      "model": "Gemma 4 E2B Q4_K_XL",
+      "arm": "native tools with oracle-repaired retrieval, diagnostic only",
+      "right_cases": 79,
+      "right_family_share": 0.5374,
+      "no_operation_share": 0.1769,
+      "p50_seconds": 0.2526,
+      "p95_seconds": 0.8431
+    },
+    {
+      "artifact": "native_tool_contract_ceiling_qwen3_20260801.json",
+      "artifact_sha256": "2439C48DBD6943A77ECEF3A64E137ADD435D65008C9DA0016CBAB2262C222CA2",
+      "model": "Qwen3 4B Q4_K_M",
+      "arm": "native tools with frozen product shortlist",
+      "right_cases": 78,
+      "right_family_share": 0.5306,
+      "no_operation_share": 0.1088,
+      "p50_seconds": 1.0482,
+      "p95_seconds": 1.6289
+    },
+    {
+      "artifact": "native_tool_contract_ceiling_qwen3_20260801.json",
+      "artifact_sha256": "2439C48DBD6943A77ECEF3A64E137ADD435D65008C9DA0016CBAB2262C222CA2",
+      "model": "Qwen3 4B Q4_K_M",
+      "arm": "native tools with oracle-repaired retrieval, diagnostic only",
+      "right_cases": 92,
+      "right_family_share": 0.6259,
+      "no_operation_share": 0.0680,
+      "p50_seconds": 1.0267,
+      "p95_seconds": 1.5695,
+      "gap_to_raw_target_cases": 11
+    },
+    {
+      "artifact": "native_tool_contract_ceiling_qwen3_8b_20260801.json",
+      "artifact_sha256": "3F7EEB420AD6177EFAA297FE3434EF47EF3EF150311E8EE383D4DA3CE808F363",
+      "model": "Qwen3 8B Q4_K_M",
+      "arm": "native tools with oracle-repaired retrieval, diagnostic only",
+      "right_cases": 87,
+      "right_family_share": 0.5918,
+      "no_operation_share": 0.2109,
+      "p50_seconds": 1.6036,
+      "p95_seconds": 2.8982,
+      "rejection": "worse accuracy than 4B and p50 exceeds the mission target"
+    },
+    {
+      "artifact": "native_hierarchical_balanced_qwen3_20260801.json",
+      "artifact_sha256": "1B2167C835974314864395A6F430787597E659E8D7D2A7C38C8934CDB4AF0739",
+      "model": "Qwen3 4B Q4_K_M",
+      "arm": "balanced family-then-leaf native tools",
+      "right_cases": 87,
+      "right_family_share": 0.5918,
+      "no_operation_share": 0.1429,
+      "p50_seconds": 1.1507,
+      "p95_seconds": 1.9693,
+      "rejection": "adds a second model error surface and regresses the full frozen sample"
+    }
+  ],
+  "oracle_audit": {
+    "definite_current_catalogue_family_conflicts": {
+      "count": 18,
+      "case_ids": [
+        "calendar-00",
+        "calendar-01",
+        "calendar-05",
+        "peripheral-00",
+        "peripheral-01",
+        "peripheral-02",
+        "peripheral-04",
+        "task-00",
+        "task-01",
+        "task-02",
+        "task-03",
+        "vision-00",
+        "vision-02",
+        "vision-03",
+        "vision-04",
+        "vision-05",
+        "web-03",
+        "web-05"
+      ],
+      "examples": [
+        {
+          "case_id": "calendar-00",
+          "historical_label": "calendar.manage",
+          "request": "Write me an email that I cant make it to the meeting",
+          "current_semantic_family": "message/email"
+        },
+        {
+          "case_id": "peripheral-02",
+          "historical_label": "peripheral.manage",
+          "request": "mutea el micrófono en discord",
+          "current_semantic_family": "audio"
+        },
+        {
+          "case_id": "vision-03",
+          "historical_label": "vision.describe",
+          "request": "Graba la pantalla",
+          "current_semantic_family": "capture"
+        },
+        {
+          "case_id": "web-03",
+          "historical_label": "web.search",
+          "request": "Busca archivos que contengan la palabra Batman",
+          "current_semantic_family": "filesystem"
+        },
+        {
+          "case_id": "web-05",
+          "historical_label": "web.search",
+          "request": "Busca el botón Guardar y presiónalo",
+          "current_semantic_family": "input"
+        }
+      ]
+    },
+    "nonexclusive_current_catalogue_conflicts": {
+      "count": 6,
+      "case_ids": [
+        "reminder-00",
+        "reminder-01",
+        "reminder-02",
+        "reminder-03",
+        "reminder-04",
+        "reminder-05"
+      ],
+      "historical_label": "reminder.create",
+      "competing_current_operation": "notification.schedule",
+      "why_it_matters": "The audible/time-based wording is legitimately selected as notification.schedule by the model, but prefix scoring marks it wrong."
+    },
+    "language_metadata_conflicts": {
+      "count": 6,
+      "case_ids": [
+        "audio-00",
+        "audio-01",
+        "audio-04",
+        "backup-02",
+        "media-01",
+        "note-03"
+      ],
+      "metadata": "es",
+      "observed_languages": [
+        "Portuguese",
+        "French",
+        "Italian"
+      ]
+    },
+    "conclusion": "The raw 70% prefix target is not a safe product acceptance oracle. Optimizing these conflicts would reward incorrect or unsupported effects. A new current-catalogue oracle must allow conversation/unsupported outcomes and exact compatible operation sets before an authority gate can be loosened."
+  },
+  "promotion_decisions": {
+    "native_tool_contract": "not promoted because accuracy remains below the target and the product transport migration needs its own contract tests",
+    "qwen3_4b": "not installed and not registered; diagnostic asset only",
+    "qwen3_8b": "rejected",
+    "hierarchical_router": "rejected",
+    "authority_gates": "unchanged",
+    "installed_runtime_or_manifest": "unchanged",
+    "effects_executed": 0
+  },
+  "fixed_visible_reply_closure": {
+    "source": "src/baxy_mind/llm.py",
+    "removed_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+    "replacement": "internal contract failure; the total turn boundary retries and then requests one candidate-free model clarification",
+    "targeted_tests": "14 passed",
+    "full_turn_policy_tests": "289 passed",
+    "fixed_visible_reply_count_after_change": 0
+  },
+  "canonical_validation": {
+    "command": "scripts/test_source_quality.ps1 -Mode Full",
+    "result": "source_quality_gate_passed: mode=Full",
+    "stages_passed": 11,
+    "release_build": "0 warnings, 0 errors",
+    "dotnet": {
+      "passed": 2282,
+      "environmental_skips": 18,
+      "failed": 0
+    },
+    "python": {
+      "passed": 2118,
+      "sanctioned_skips": 2,
+      "subtests_passed": 382,
+      "failed": 0
+    },
+    "toolchain": {
+      "dotnet": "10.0.100",
+      "python": "3.12",
+      "ruff": "0.15.22",
+      "eslint": "10.3.0",
+      "typescript": "6.0.3"
+    }
+  },
+  "reproduction": {
+    "probe": "experiments/mind_router_spike/probe_native_tool_contract_ceiling.py",
+    "probe_sha256": "59FBF48FFF0F9016C9E6D4647E0CF535477266E7C78A48CA5420A376C5904196",
+    "sample_source": "artifacts/fixes/paraphrase_tool_quality_20260731.json",
+    "qwen3_4b": {
+      "location": "outside repository and installation",
+      "bytes": 2497280256,
+      "sha256": "7485FE6F11AF29433BC51CAB58009521F205840F5B4AE3A32FA7F92E8534FDF5"
+    },
+    "qwen3_8b": {
+      "location": "outside repository and installation",
+      "bytes": 5027783488,
+      "sha256": "D98CDCBD03E17CE47681435B5150E34C1417F50B5C0019DD560E4882C5745785"
+    },
+    "safety": "All probes call llama-server directly with parameterless diagnostic tools. They never execute an operation, mutate the installed runtime, or write the runtime manifest."
+  },
+  "next_safe_gate": {
+    "required_input": "A frozen, independently reviewed current-catalogue oracle with exact accepted operation sets plus explicit conversation and unsupported labels.",
+    "acceptance": "At least 103/147 compatible decisions, action-as-conversation <=10%, p50 <=1.5 s, p95 <=5 s, and zero effects granted outside the accepted operation set.",
+    "reason_work_stops_here": "Crossing the remaining raw-score gap by relabelling at runtime or weakening grounding/compound vetoes would violate the zero-unasked-effects constraint."
+  }
+}

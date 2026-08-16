@@ -1,0 +1,324 @@
+{
+  "schema": "baxy.wake-verifier-product-capture-development.v1",
+  "measured_at_utc": "2026-08-05T00:17:49.426674+00:00",
+  "sources": {
+    "corpus_manifest": "D:/BAXYRuntime/experiments/wakeword/ccby_wake_holdout_v1/corpus.manifest.v1.json",
+    "corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+    "stage1_model_sha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "verifier_manifest_sha256": "1fff560ff358c9510c1d0453c50713a8e49e23ddc6f47a228d7e64ef5764e9d3",
+    "stt_files_sha256": {
+      "encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    },
+    "ffmpeg_sha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf"
+  },
+  "contract": {
+    "first_causal_broad_hit": true,
+    "stage1_hop_samples": 2560,
+    "audio_frame_samples": 512,
+    "pre_roll_seconds": 5.0,
+    "verification_samples": 160000,
+    "maximum_turn_samples": 480000
+  },
+  "metrics": {
+    "positive_accepted": 10,
+    "positive_total": 14,
+    "hard_negative_false_accepts": 1,
+    "hard_negative_total": 4,
+    "gate_passed": false
+  },
+  "records": [
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.88,
+        "score": 0.02083653211593628
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 125120,
+      "verification_start_sample": 61952,
+      "transcript": "the fuel used in Baxi ecogen will generate",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 4.222259372619273,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.05670797824859619
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 130240,
+      "verification_start_sample": 0,
+      "transcript": "",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 1.84,
+        "score": 0.10282206535339355
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 109760,
+      "verification_start_sample": 49152,
+      "transcript": "The technology behind Baxi's EcoGen boilers.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 4.933195928728672,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 1.04,
+        "score": 0.03647693991661072
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 122560,
+      "verification_start_sample": 59392,
+      "transcript": "",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 1.8989778376997473,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 1.68,
+        "score": 0.034724265336990356
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 112320,
+      "verification_start_sample": 57856,
+      "transcript": "Here's how the Baxi Ecogen system works.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 5.291934325439172,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.88,
+        "score": 0.022713422775268555
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 125120,
+      "verification_start_sample": 0,
+      "transcript": "Baxi has an unparalleled combination.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 1.9841917845316814,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.0207633376121521
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 130240,
+      "verification_start_sample": 0,
+      "transcript": "With Baxi ecogen, we can",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 3.8850828181470654,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.03096526861190796
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 130240,
+      "verification_start_sample": 67072,
+      "transcript": "Vamos a hablar de la caldera Baxi Roca Victoria.",
+      "stage1_eligible": true,
+      "method": "ctc_lexical_anchor",
+      "margin": 0.056124192370191395,
+      "detected": false
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "label": "positive",
+      "stage1_hit": null,
+      "capture_source_start_sample": null,
+      "capture_samples": 0,
+      "verification_start_sample": null,
+      "transcript": "",
+      "stage1_eligible": false,
+      "method": "no_hit",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.72,
+        "score": 0.02185612916946411
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 127680,
+      "verification_start_sample": 65536,
+      "transcript": "С настенными котлами Бакси серии Луна 3.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 4.823965009203391,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.88,
+        "score": 0.02239176630973816
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 125120,
+      "verification_start_sample": 61952,
+      "transcript": "На заводе Бакси Спа в городе Батана Дали.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 3.4214571126133784,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.72,
+        "score": 0.033801913261413574
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 127680,
+      "verification_start_sample": 64512,
+      "transcript": "Он позиционирование Бакси и имеет широкий модельный рядом.",
+      "stage1_eligible": true,
+      "method": "ctc_lexical_anchor",
+      "margin": 4.255704784214139,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.03504106402397156
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 130240,
+      "verification_start_sample": 68096,
+      "transcript": "В линейке Бакси. Давайте ознакомим с ус...",
+      "stage1_eligible": true,
+      "method": "ctc_lexical_anchor",
+      "margin": 3.5289214951235977,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.72,
+        "score": 0.022600173950195312
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 127680,
+      "verification_start_sample": 65024,
+      "transcript": "Esperamos en nuestra casa Maxiferror.",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 1.2,
+        "score": 0.023681581020355225
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 120000,
+      "verification_start_sample": 67072,
+      "transcript": "",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 1.52,
+        "score": 0.44256195425987244
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 114880,
+      "verification_start_sample": 56832,
+      "transcript": "",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 3.28,
+        "score": 0.04130581021308899
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 86720,
+      "verification_start_sample": 23552,
+      "transcript": "We're really excited to be talking with Mehesh Faxi today, who is the co-",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 2.32,
+        "score": 0.4752587080001831
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 102080,
+      "verification_start_sample": 38912,
+      "transcript": "",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 3.138318111619363,
+      "detected": true
+    }
+  ],
+  "runtime_seconds": 48.1498098000302,
+  "candidate_frozen": false,
+  "product_operating_point": true,
+  "blind_human_partition_accessed": false,
+  "effects_executed": 0
+}

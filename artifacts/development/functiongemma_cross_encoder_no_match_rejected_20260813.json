@@ -1,0 +1,248 @@
+{
+  "authority": "development_diagnostic_not_for_promotion",
+  "consumed_diagnostic": {
+    "no_match_by_cause": {
+      "known_leak_v1": {
+        "accepted_pairs": 86,
+        "pairs": 169,
+        "separated": false
+      },
+      "known_leak_v5": {
+        "accepted_pairs": 133,
+        "pairs": 169,
+        "separated": false
+      },
+      "taxi_en": {
+        "accepted_pairs": 143,
+        "pairs": 169,
+        "separated": false
+      },
+      "taxi_es": {
+        "accepted_pairs": 148,
+        "pairs": 169,
+        "separated": false
+      }
+    },
+    "populations": "R2/R28/V1-V7/consumed physical text missions",
+    "selection_authority": false,
+    "served_identity": {
+      "by_population": {
+        "catalog_surface_current_tree_r2": {
+          "lost": 1,
+          "total": 177
+        },
+        "generalization_product_current_tree_r28": {
+          "lost": 97,
+          "total": 1386
+        },
+        "physical_dependent_missions_text_v1": {
+          "lost": 0,
+          "total": 8
+        },
+        "veto_reach_v1": {
+          "lost": 0,
+          "total": 9
+        },
+        "veto_reach_v2": {
+          "lost": 0,
+          "total": 8
+        },
+        "veto_reach_v3": {
+          "lost": 0,
+          "total": 10
+        },
+        "veto_reach_v4": {
+          "lost": 0,
+          "total": 5
+        },
+        "veto_reach_v5": {
+          "lost": 0,
+          "total": 5
+        },
+        "veto_reach_v6": {
+          "lost": 0,
+          "total": 6
+        },
+        "veto_reach_v7": {
+          "lost": 0,
+          "total": 8
+        }
+      },
+      "lost": 98,
+      "lost_pair_ids": [
+        "catalog_surface_current_tree_r2:current-tree-r2-catalog-surface-peripheral-print:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-01-01-addressed:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-01-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-01-01-plain:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-01-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-04-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-04-01-plain:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-04-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-05-01-addressed:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-08-01-addressed:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-08-01-addressed:email.latest.read",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-08-01-plain:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-08-01-plain:email.latest.read",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-11-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-11-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-18-01-plain:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-20-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-20-01-plain:clipboard.read.text",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-20-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-22-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-22-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-23-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-26-01-addressed:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-26-01-plain:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-31-01-addressed:app.installed",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-31-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-31-01-plain:app.installed",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-31-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-32-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-32-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-35-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-35-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-40-01-addressed:task.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-40-01-plain:task.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-41-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-41-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-42-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-43-01-addressed:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-43-01-plain:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-43-01-plain:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-46-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-46-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-47-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-48-01-addressed:task.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-48-01-plain:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-48-01-plain:task.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-52-01-addressed:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-52-01-addressed:input.keyboard.status",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-52-01-plain:input.keyboard.status",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-53-01-addressed:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-53-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-53-01-plain:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-53-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-61-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-62-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-62-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-67-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-67-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-68-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-68-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-69-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-70-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-71-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-71-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-76-01-addressed:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-76-01-addressed:input.keyboard.status",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-76-01-addressed:reminder.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-76-01-plain:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-76-01-plain:input.keyboard.status",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-76-01-plain:reminder.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-78-01-addressed:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-78-01-plain:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-80-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-80-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-82-01-addressed:input.keyboard.status",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-83-01-addressed:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-83-01-plain:backup.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-85-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-85-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-88-01-addressed:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-88-01-addressed:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-88-01-plain:bluetooth.device.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-88-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-90-01-plain:browser.tabs.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-92-01-addressed:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-92-01-plain:peripheral.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-95-01-addressed:task.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-95-01-plain:task.list",
+        "generalization_product_current_tree_r28:current-tree-r28-composition-99-01-plain:calendar.event.list",
+        "generalization_product_current_tree_r28:current-tree-r28-filesystem-02-addressed:filesystem.known.search",
+        "generalization_product_current_tree_r28:current-tree-r28-filesystem-02-plain:filesystem.known.search",
+        "generalization_product_current_tree_r28:current-tree-r28-routine-02-addressed:routine.list",
+        "generalization_product_current_tree_r28:current-tree-r28-routine-04-addressed:routine.list",
+        "generalization_product_current_tree_r28:current-tree-r28-vision-02-addressed:vision.describe",
+        "generalization_product_current_tree_r28:current-tree-r28-vision-06-addressed:vision.describe",
+        "generalization_product_current_tree_r28:current-tree-r28-window-02-addressed:window.active",
+        "generalization_product_current_tree_r28:current-tree-r28-window-02-plain:window.active",
+        "generalization_product_current_tree_r28:current-tree-r28-window-06-addressed:window.active"
+      ],
+      "total": 1622
+    }
+  },
+  "development_selection": {
+    "corpus_sha256": "ca531cff688f57181be3cae1610223aaa12da6c836e5845c57abf1fa50a2b0a0",
+    "development_accept_rows": 386,
+    "development_accept_rows_lost": 0,
+    "development_reject_rows": 768,
+    "development_reject_rows_separated": 45,
+    "reject_separation_by_cause": {
+      "hard-cross": {
+        "separated": 44,
+        "total": 386
+      },
+      "hard-intra": {
+        "separated": 1,
+        "total": 382
+      }
+    },
+    "source": "artifacts/research/functiongemma_verifier_scored_validation_r1.json",
+    "source_sha256": "86b05fcfd65d8596b2f225788b04ad2742c3baf4bed797c587d7e5c48b5e5331",
+    "threshold": -0.53698646,
+    "threshold_used_consumed_rows": false,
+    "train_validation_normalised_overlap": 0
+  },
+  "e2e_run": false,
+  "effects_executed": 0,
+  "full_run": false,
+  "incremental_latency": {
+    "batch_size": 4,
+    "diagnostic_pairs": 2298,
+    "forced_completion_rows": 4596,
+    "forward_batch_seconds": {
+      "maximum": 3.80257,
+      "mean": 0.268254
+    },
+    "forward_rows_per_second": 14.911,
+    "measured_forward_seconds": 308.228824,
+    "measured_milliseconds_per_pair": 134.129166,
+    "peak_allocated_mib": 3262.0,
+    "peak_reserved_mib": 12230.0
+  },
+  "inputs": {
+    "cases": "artifacts/development/functiongemma_cross_encoder_no_match_cases_20260813.jsonl",
+    "cases_sha256": "78a37becfe00e1d4ef42864e4a01587b95fc949f5b8e30a3a15f49445c7d2e6f",
+    "catalog_sha256": "2d5a257c9c2986b22a1f3159ffd30b4d658045d3cb7e15982abc42819651e376",
+    "pricing_sha256": "285e9160f36b6b37954a071c8dfd0546c2668a7f8308257f434dfe464820bb13",
+    "raw_scores": "artifacts/development/functiongemma_cross_encoder_no_match_raw_20260813.json",
+    "raw_scores_sha256": "2ee70d2981fcb91c8f0ff1c9cf0e7380deae7efdbf170d3b8f75e63858d5960c"
+  },
+  "limits": [
+    "No runtime promotion was performed.",
+    "The consumed populations were diagnostic only.",
+    "No V8, Full, E2E, commit, installation, or external effect was run."
+  ],
+  "measured_at_utc": "2026-08-13T05:15:22.242148+00:00",
+  "model": {
+    "adapter": "D:\\BAXYRuntime\\experiments\\functiongemma-verifier-v1",
+    "adapter_config_sha256": "f68375321aa40052afb1ea13a13a6965477e6d1b45b28728932383a5f63efd1f",
+    "adapter_weights_sha256": "331d79ad966d392d779d2c8800461cfb05e554821a7cd50b4c02d62f18f2c307",
+    "architecture": "causal-LM pair verifier; request and one operation are jointly attended",
+    "base_weights_sha256": "af4f8a7c4c5eb82291759fd828720c7bcfcb92a5274556d13dde3caccf5f427b",
+    "downloaded": false,
+    "identity": "unsloth/functiongemma-270m-it",
+    "local_before_probe": true,
+    "parameters": 271895168,
+    "revision": "79eaaa84125b897f5a0ad6638362b864fec813ad"
+  },
+  "opened_v8": false,
+  "runtime_productive_files_modified": false,
+  "schema": "baxy.functiongemma-cross-encoder-no-match.v1",
+  "tdd": {
+    "green_expected": "experiments/tests/test_cross_encoder_no_match.py",
+    "red": "module absent; focused test collection failed as expected"
+  },
+  "verdict": "rejected"
+}

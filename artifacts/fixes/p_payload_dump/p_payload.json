@@ -1,0 +1,150 @@
+{
+ "messages": [
+  {
+   "role": "system",
+   "content": "Eres la política contextual de turnos de BAXY. Con el mensaje actual, el historial acotado y las operaciones candidatas, clasifica exactamente un turno como conversation, clarify, action o plan. Esta etapa sólo clasifica: no redactes la respuesta final para la persona. El mensaje actual siempre domina al historial: el historial sólo sirve para resolver referencias o datos omitidos en el mensaje actual. Nunca borres, reduzcas ni sustituyas un efecto explícito del mensaje actual porque otro turno ya pidiera algo parecido. conversation no pide un efecto verificable. Consultar estado actual, datos personales o del equipo, buscar en una fuente externa, abrir, reproducir, crear o controlar algo sí es un efecto cuando un candidato lo realiza directamente; la forma gramatical de pregunta o cortesía no lo convierte en conversación. Una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente sigue siendo conversation. Si la persona corrige un objetivo dentro del mismo turno, conserva sólo la corrección más reciente y no la trates como ambigüedad. clarify se usa sólo si existe una operación candidata compatible y al pedido le falta un dato que la persona puede aportar y que cambia el efecto; contiene una sola pregunta breve. Un pedido bien definido cuya capacidad no aparece entre las operaciones candidatas es conversation de tipo unsupported; no pidas un dato que no habilitaría esa capacidad. action requiere una única operación pública, inequívoca y presente en los candidatos. plan requiere una misión compuesta o dependiente. La ausencia de evidencia suficiente obliga a conversation o clarify: nunca elijas action ni plan por semejanza débil. No inventes operaciones, datos, permisos ni resultados. effect_operations enumera una operación candidata por cada efecto atómico y soportado que la persona pidió. Conserva el orden y repite el mismo nombre si se pidió dos veces la misma operación; no omitas un efecto sólo porque pueda faltarle un argumento: otra etapa posterior verificará sus datos contra el pedido y los contratos. Un turno conversacional o no soportado usa una lista vacía. effect_count resume la longitud: zero, one o multiple. one implica action y multiple implica plan. operation debe estar vacío salvo en action, donde debe coincidir con el único elemento de effect_operations; question debe estar vacía salvo en clarify. conversation_kind debe ser social, knowledge, followup o unsupported sólo para conversation, y vacío para los demás modos. response_language debe ser es, en o mixed según el idioma del mensaje actual. Resuelve los seguimientos elípticos contra el historial más reciente: no reinicies la conversación con otro saludo ni afirmes que falta información que ya está en ese historial."
+  },
+  {
+   "role": "user",
+   "content": "Mensaje actual:\nesta cargando la bateria?\n\nOperaciones candidatas:\nwifi.ensure.connected | Comprueba que Wi-Fi ya está conectado y devuelve la identidad opaca del perfil observado.\nwifi.status | Lee dos veces el estado WLAN actual y devuelve conexión e identidad opaca del perfil sin exponer SSID ni credenciales.\nwifi.profile.list | Enumera perfiles WLAN guardados mediante identidades opacas sin exponer credenciales.\nwifi.disconnect | Desconecta WLAN mediante API oficial y verifica ausencia de conexión.\nwifi.connect.named | Resuelve de forma única un perfil WLAN guardado por el nombre indicado, lo conecta y verifica el estado sin exponer credenciales.\nwifi.connect | Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales.\naudio.mute | Silencia o reactiva la salida predeterminada y corrobora la postlectura.\naudio.volume | Fija el volumen absoluto de la salida predeterminada y corrobora la postlectura.\naudio.status | Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla.\naudio.microphone.mute | Silencia o reactiva el micrófono predeterminado de Windows y corrobora la postlectura del endpoint de captura.\naudio.volume.adjust | Sube o baja el volumen de salida una cantidad acotada desde su valor observado y verifica la postlectura.\nroutine.restore | Restaura deshabilitada una rutina eliminada; no la ejecuta.\nroutine.list | Lista definiciones de rutina creadas por el controlador confiable.\nroutine.resolve.exact | Resuelve por nombre literal una rutina y emite autoridad CAS sin exponer inputs.\nroutine.read | Lee metadatos de una rutina exacta sin ejecutarla.\nroutine.phrase.create | Crea una rutina local acotada de reproducción o captura al oir una frase exacta.\nroutine.set.enabled | Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla.\nroutine.delete | Elimina de forma recuperable una rutina ya seleccionada; nunca ejecuta sus pasos.\nnote.restore | Restaura una nota privada local, seleccionada por identificador o título exacto, desde la papelera.\nnote.list | Enumera notas privadas locales activas o enviadas a la papelera.\nnote.trash | Mueve una nota privada local, seleccionada por identificador o título exacto, a una papelera reversible.\nnote.read | Lee una nota privada local por su identificador o título exacto.\nnote.search | Busca texto en notas locales y verifica por relectura cada resultado acotado.\nnote.create | Crea una nota privada local y verifica su relectura.\nnote.update | Reemplaza titulo y contenido de una nota seleccionada por identidad y revision, y verifica su relectura.\ngame.installed.named | Comprueba por nombre si un juego esta instalado mediante manifiestos de Steam y Epic y verifica que exista su directorio local.\ngame.launch | Inicia un AppID poseído y verifica la identidad del proceso lanzado.\ngame.install.prepare | Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos."
+  }
+ ],
+ "response_format": {
+  "type": "json_schema",
+  "json_schema": {
+   "name": "baxy_turn_decision",
+   "strict": true,
+   "schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "enum": [
+       "conversation",
+       "clarify",
+       "action",
+       "plan"
+      ]
+     },
+     "operation": {
+      "type": "string",
+      "enum": [
+       "",
+       "wifi.ensure.connected",
+       "wifi.status",
+       "wifi.profile.list",
+       "wifi.disconnect",
+       "wifi.connect.named",
+       "wifi.connect",
+       "audio.mute",
+       "audio.volume",
+       "audio.status",
+       "audio.microphone.mute",
+       "audio.volume.adjust",
+       "routine.restore",
+       "routine.list",
+       "routine.resolve.exact",
+       "routine.read",
+       "routine.phrase.create",
+       "routine.set.enabled",
+       "routine.delete",
+       "note.restore",
+       "note.list",
+       "note.trash",
+       "note.read",
+       "note.search",
+       "note.create",
+       "note.update",
+       "game.installed.named",
+       "game.launch",
+       "game.install.prepare"
+      ]
+     },
+     "question": {
+      "type": "string",
+      "maxLength": 512
+     },
+     "conversation_kind": {
+      "type": "string",
+      "enum": [
+       "",
+       "social",
+       "knowledge",
+       "followup",
+       "unsupported"
+      ]
+     },
+     "effect_count": {
+      "type": "string",
+      "enum": [
+       "zero",
+       "one",
+       "multiple"
+      ]
+     },
+     "effect_operations": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "enum": [
+        "wifi.ensure.connected",
+        "wifi.status",
+        "wifi.profile.list",
+        "wifi.disconnect",
+        "wifi.connect.named",
+        "wifi.connect",
+        "audio.mute",
+        "audio.volume",
+        "audio.status",
+        "audio.microphone.mute",
+        "audio.volume.adjust",
+        "routine.restore",
+        "routine.list",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.phrase.create",
+        "routine.set.enabled",
+        "routine.delete",
+        "note.restore",
+        "note.list",
+        "note.trash",
+        "note.read",
+        "note.search",
+        "note.create",
+        "note.update",
+        "game.installed.named",
+        "game.launch",
+        "game.install.prepare"
+       ]
+      },
+      "maxItems": 8
+     },
+     "response_language": {
+      "type": "string",
+      "enum": [
+       "es",
+       "en",
+       "mixed"
+      ]
+     }
+    },
+    "required": [
+     "mode",
+     "operation",
+     "question",
+     "conversation_kind",
+     "effect_count",
+     "effect_operations",
+     "response_language"
+    ],
+    "additionalProperties": false
+   }
+  }
+ },
+ "temperature": 0.0,
+ "max_tokens": 160,
+ "seed": 0,
+ "chat_template_kwargs": {
+  "enable_thinking": false
+ }
+}

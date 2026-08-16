@@ -1,0 +1,101 @@
+{
+  "schema": "baxy.msner-spanish-parakeet-failure-analysis.v1",
+  "analyzedAtUtc": "2026-08-11T06:40:48.138200+00:00",
+  "status": "baseline_rejected",
+  "source": {
+    "artifact": {
+      "path": "D:/BAXY/source/artifacts/development/msner_spanish_parakeet_greedy_development_v1.json",
+      "sha256": "e988aab17c350aa0c026673a3b4f00b0173b7e5b57de945dbb29d5974f258a12"
+    },
+    "detail": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_parakeet_greedy_development_v1.detail.json",
+      "sha256": "1d0b32a62b2ebe25854fe62e5bc9118eeea85b9389cb5ebe52a80ceefab8d9be",
+      "storedOutsideRepository": true
+    }
+  },
+  "passed": {
+    "corpusWer": 0.083017,
+    "latencyP95Seconds": 1.8409251999983098,
+    "realTimeFactorP95": 0.08519353724982268,
+    "peakRssBytesObserved": 1422082048,
+    "decodeErrors": 0
+  },
+  "failed": {
+    "nonemptyRate": 0.992063,
+    "entityExactRecall": 0.819559,
+    "entityTokenRecall": 0.873288
+  },
+  "mechanism": {
+    "emptyCases": [
+      {
+        "caseId": "msner-es-development-0027",
+        "audioSeconds": 1.12,
+        "referenceTokens": 7,
+        "entities": 0
+      },
+      {
+        "caseId": "msner-es-development-0221",
+        "audioSeconds": 1.04,
+        "referenceTokens": 4,
+        "entities": 0
+      },
+      {
+        "caseId": "msner-es-development-0323",
+        "audioSeconds": 1.0399375,
+        "referenceTokens": 4,
+        "entities": 0
+      },
+      {
+        "caseId": "msner-es-development-0333",
+        "audioSeconds": 2.819625,
+        "referenceTokens": 6,
+        "entities": 0
+      }
+    ],
+    "entities": 726,
+    "missedEntities": 131,
+    "missedEntityTokens": 148,
+    "missedNumericEntities": 57,
+    "missedNamedEntities": 74,
+    "missesWithSurfaceSeenInAnotherDevelopmentCase": 28,
+    "missesWithUniqueDevelopmentSurface": 103,
+    "missesByType": {
+      "cardinal_number": 14,
+      "date": 24,
+      "event": 1,
+      "geopolitical_area": 9,
+      "group": 2,
+      "law": 8,
+      "location": 6,
+      "money": 5,
+      "ordinal_number": 3,
+      "organization": 25,
+      "percent": 10,
+      "person": 22,
+      "time": 1,
+      "work_of_art": 1
+    }
+  },
+  "decision": {
+    "candidatePromoted": false,
+    "validationBlindMayOpen": false,
+    "finalBlindMayOpen": false,
+    "plainGreedyPrimaryRetainedAsLatencyBaseline": true,
+    "nextArchitecture": [
+      "short-utterance recovery measured with an independent streaming recognizer",
+      "numeric semantic canonicalization measured separately from literal surface recall",
+      "selective contextual entity recovery from a reference-independent authenticated inventory",
+      "clarification when independent hypotheses disagree on a critical entity"
+    ],
+    "sameDevelopmentRowsMayTune": true,
+    "blindRowsMayTune": false
+  },
+  "contract": {
+    "rawTextStoredInRepository": false,
+    "developmentRowsOpened": true,
+    "validationBlindRowsOpened": false,
+    "finalBlindRowsOpened": false,
+    "effectsExecuted": 0
+  },
+  "effectsExecuted": 0
+}

@@ -1,0 +1,859 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-08-10T15:42:24.355767+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "Qwen3-4B-Q4_K_M.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "bytes": 2497280256
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 169,
+  "total_seconds": 44.446,
+  "cases": [
+    {
+      "case": "r2_note_dual_interleaved_en",
+      "planner_path": "real_llm_blind_interleaved_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "conversation",
+      "turn_question": "",
+      "turn_reply": "I cannot complete note as requested.",
+      "intent_operations": [],
+      "effect_operations": [],
+      "decision_seconds": 0.433,
+      "response_type": null,
+      "kind": null,
+      "operations": [],
+      "steps": [],
+      "seconds": 0.433,
+      "status": "failed",
+      "error": "turn decision did not exactly cover the bounded objective"
+    },
+    {
+      "case": "r2_note_three_permuted_es",
+      "planner_path": "real_llm_blind_six_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "decision_seconds": 0.009,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "853c5198-b60f-4848-af5e-678fb56f2fba",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "a893d3e4-a907-4c73-8d4e-4547cb0c5b23",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "3fafc073-0d39-4fce-81f9-257af25f75c9",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_3"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "3fafc073-0d39-4fce-81f9-257af25f75c9",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_5",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "853c5198-b60f-4848-af5e-678fb56f2fba",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_6",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_2"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "a893d3e4-a907-4c73-8d4e-4547cb0c5b23",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 2.219,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [],
+        [
+          2
+        ],
+        [
+          0
+        ],
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "case": "r2_note_four_named_spanglish",
+      "planner_path": "real_llm_blind_eight_step_named_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "decision_seconds": 0.007,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": [],
+      "steps": [],
+      "seconds": 8.663,
+      "status": "failed",
+      "error": "¿Cuál es el título de la nota que contiene el contenido delta b7ac26afb5?"
+    },
+    {
+      "case": "r2_readonly_status_triad_en",
+      "planner_path": "real_llm_blind_cross_family_readonly_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "system.status",
+        "network.status",
+        "audio.status"
+      ],
+      "effect_operations": [
+        "system.status",
+        "network.status",
+        "audio.status"
+      ],
+      "decision_seconds": 0.005,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "system.status",
+        "network.status",
+        "audio.status"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "system.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {}
+        },
+        {
+          "id": "step_2",
+          "operation": "network.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "audio.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "targetId": "default_output",
+            "state": {}
+          }
+        }
+      ],
+      "seconds": 0.4,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "case": "r2_readonly_hardware_triad_en",
+      "planner_path": "real_llm_blind_cross_family_readonly_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "input.keyboard.status",
+        "peripheral.list",
+        "bluetooth.device.list"
+      ],
+      "effect_operations": [
+        "input.keyboard.status",
+        "peripheral.list",
+        "bluetooth.device.list"
+      ],
+      "decision_seconds": 0.004,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "input.keyboard.status",
+        "peripheral.list",
+        "bluetooth.device.list"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "input.keyboard.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "layoutLanguageId": "0x080a"
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "peripheral.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "devices": [
+              {
+                "deviceId": "printer_e6cc5373367e30f93645923f",
+                "kind": "printer",
+                "name": "Brother DCP-T710W",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_4d83ed19c77e7d6ceb7d3009",
+                "kind": "printer",
+                "name": "EPSON TM-T20II Receipt (1)",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_7f49cc80690271c505990259",
+                "kind": "printer",
+                "name": "EPSON TM-T20II Receipt",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_a8a24f14747b33f8054f2a3f",
+                "kind": "printer",
+                "name": "Hewlett-Packard HP LaserJet Pro MFP M127fn",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_1557a72a31d8fd56050c2dff",
+                "kind": "printer",
+                "name": "HP LaserJet Pro MFP M127fn",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_f5a027fccacc67f8e2c108eb",
+                "kind": "printer",
+                "name": "Microsoft Print to PDF",
+                "status": ""
+              },
+              {
+                "deviceId": "printer_decb4a643bee7f1241e9b761",
+                "kind": "printer",
+                "name": "OneNote (Desktop)",
+                "status": ""
+              },
+              {
+                "deviceId": "usb_ae7934248d74b60293bb28ba",
+                "kind": "usb",
+                "name": "USB2.0 HD UVC WebCam",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_685c32dbea81043189a30e9a",
+                "kind": "usb",
+                "name": "Concentrador ra�z USB (USB 3.0)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_4185275595d4085f70ecdb5e",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_1746ef4963ac383f283157c0",
+                "kind": "usb",
+                "name": "Concentrador ra�z USB (USB 3.0)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_28ccf727499fd1d4e37fdcf6",
+                "kind": "usb",
+                "name": "Concentrador ra�z USB (USB 3.0)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_a98fb5cceeaf278bf6429011",
+                "kind": "usb",
+                "name": "MediaTek Bluetooth Adapter",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_00036e9cc6a75c6666c23a01",
+                "kind": "usb",
+                "name": "Dispositivo compuesto USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "usb_32050cc2716e9a7e3bbada5a",
+                "kind": "usb",
+                "name": "Dispositivo de entrada USB",
+                "status": "OK"
+              },
+              {
+                "deviceId": "mouse_2a0ad4fd70eb09895a2c04f6",
+                "kind": "mouse",
+                "name": "SuperDisplay HID Driver",
+                "status": "OK"
+              },
+              {
+                "deviceId": "mouse_142cc0934548d0d4067e5ee7",
+                "kind": "mouse",
+                "name": "Wireless Receiver",
+                "status": "OK"
+              },
+              {
+                "deviceId": "mouse_e15c18482309a3d506d1265f",
+                "kind": "mouse",
+                "name": "ELAN1203 (Dispositivo HID I2C)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "keyboard_b35d3c81e4a1f94aae9893f9",
+                "kind": "keyboard",
+                "name": "Logitech_LGVirHid01",
+                "status": "OK"
+              },
+              {
+                "deviceId": "keyboard_7ab164f5fa957b4d884e35b3",
+                "kind": "keyboard",
+                "name": "SuperDisplay HID Driver",
+                "status": "OK"
+              },
+              {
+                "deviceId": "keyboard_58808f5c21c1b1df5f1a9a62",
+                "kind": "keyboard",
+                "name": "Puente de PCI a ISA",
+                "status": "OK"
+              }
+            ]
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "bluetooth.device.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "count": 30,
+            "devices": [
+              {
+                "deviceId": "bluetooth_1a4f6a78a6372f919ca5c59f",
+                "name": "BT5.2 Mouse",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_da7e8b235dd444a5fdfd335d",
+                "name": "Servicio de red de �rea personal",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_f03590e7f50a38841d6f6102",
+                "name": "S20 FE de Emmanuel",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_1eee84bc331cf7e1dfe60628",
+                "name": "Servicio de informaci�n del dispositivo",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_21faca87c26d2ad70415a66a",
+                "name": "Enumerador de Bluetooth LE de Microsoft",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_60983088e7f20eddde0ee39b",
+                "name": "Perfil de atributo gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_d55df2a29c36dc7676e82ee7",
+                "name": "Servicio de atributo gen�rico de LE de Bluetooth",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_fdc200eea4aa13a7f4c3d5e9",
+                "name": "Servicio de identificaci�n de dispositivos",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_d40ed21bf1fc6ffecc1fe3c2",
+                "name": "Servicio de puerta de enlace de audio de auriculares con micr�fono",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_99594dad2d6d363956fb5da4",
+                "name": "Bluetooth Device (RFCOMM Protocol TDI)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_f82da2cd131b51dd715dd5ba",
+                "name": "Perfil de acceso gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_d57425b25e7a0794efdc81d2",
+                "name": "Wireless Controller",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_e2ffe6b6d5d300f545683ed1",
+                "name": "Mijiademo",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_c07cf04748679446882c0f2d",
+                "name": "SLEVE EVO",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_9241dbf1ce46cf397707b20f",
+                "name": "Perfil de atributo gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_0554b0d06295df614a6dc47a",
+                "name": "Perfil de acceso gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_b5e2cf25ad20498119115cff",
+                "name": "Servicio NAP de red de �rea personal",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_b5c53f4f257705576a197c52",
+                "name": "S20 FE de Emmanuel",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_d199a80250453a8af5bbd2a8",
+                "name": "Perfil de atributo gen�rico",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_910fe188e94892e8abec4326",
+                "name": "S20 FE de Emmanuel Transporte AVRCP",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_e54f29a7961d3f28139097aa",
+                "name": "Servicio de inserci�n de objeto",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_c0a9c8586c2a91c7f7867951",
+                "name": "Enumerador Bluetooth de Microsoft",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_2149d35a22c3bb3a2610e22e",
+                "name": "SLEVE EVO Transporte AVRCP",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_57a6b61467da7558435a0497",
+                "name": "Servicio de atributo gen�rico de LE de Bluetooth",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_fb6d5742b31e33ffd8d6197b",
+                "name": "Servicio de acceso a SIM",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_a98fb5cceeaf278bf6429011",
+                "name": "MediaTek Bluetooth Adapter",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_7e4f00bcef1832fe9abbc6b1",
+                "name": "S20 FE de Emmanuel Transporte AVRCP",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_45d7d2b4a01f5baa2c50cb1c",
+                "name": "SLEVE EVO Transporte AVRCP",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_4f358127c977cc45bfcd6446",
+                "name": "Servicio de acceso a la gu�a telef�nica (PSE)",
+                "status": "OK"
+              },
+              {
+                "deviceId": "bluetooth_45a6238d2a804d492baabceb",
+                "name": "Perfil de acceso gen�rico",
+                "status": "OK"
+              }
+            ]
+          }
+        }
+      ],
+      "seconds": 25.146,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "case": "r2_note_read_then_network_spanglish",
+      "planner_path": "real_llm_blind_mixed_dependency_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read",
+        "network.status"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read",
+        "network.status"
+      ],
+      "decision_seconds": 0.075,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read",
+        "network.status"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "14f1d51a-428b-4f3b-9bc7-1a96d1b2ffd5",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "14f1d51a-428b-4f3b-9bc7-1a96d1b2ffd5",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "network.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1
+          }
+        }
+      ],
+      "seconds": 0.224,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ],
+        []
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "environment_blocked": 0,
+    "failed": 2,
+    "total": 6,
+    "verified_steps": 15,
+    "real_llm_plan_cases": 6,
+    "real_llm_plan_cases_passed": 4,
+    "model_grounded_steps": 4,
+    "ambiguous_effects": 0,
+    "status": "failed"
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

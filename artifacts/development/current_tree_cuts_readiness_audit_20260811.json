@@ -1,0 +1,190 @@
+{
+  "schema": "baxy.current-tree-cuts-readiness-audit.v1",
+  "measuredAtLocal": "2026-08-11T11:43:41-04:00",
+  "scope": "Read-only readiness audit; no holdout generated or opened",
+  "effectsExecuted": 0,
+  "modelInvoked": true,
+  "modelInvocationScope": "one development-only Cut-D sidecar smoke; no holdout row used",
+  "audioOpened": false,
+  "sourceQualityFast": "8/8 stages passed in 57.3 seconds after final physical mission program hardening; Release build 0 warnings and 0 errors",
+  "cuts": {
+    "A": {
+      "status": "program_ready_outputs_absent",
+      "population": 169,
+      "builder": "experiments/mind_router_spike/build_catalog_surface_current_tree_r2.py",
+      "builderSha256": "cd8a181fb9faca4a7624f4cc30dcff32e87ad83ae53725048650367e916590f4",
+      "probe": "experiments/mind_router_spike/probe_catalog_surface_current_tree_r2.py",
+      "probeSha256": "d820e3b0f4926d6b611f6b36cabb419def61d2c20117da072939f918dc992999",
+      "analyzer": "experiments/mind_router_spike/analyze_catalog_surface_current_tree_r2.py",
+      "analyzerSha256": "eddac1bfae05884928208bb23933b207a0d4bdca1566961376d39e1dc9d42f0d",
+      "mustRemainUnopenedUntil": [
+        "physical wake v17 combined receipt passes",
+        "Mind social-closure repair and development regressions pass"
+      ]
+    },
+    "B": {
+      "status": "fresh_current_tree_program_ready_outputs_absent",
+      "historicalEvidence": {
+        "campaign": "generalization product R21",
+        "result": "700/700",
+        "authority": "historical tree only"
+      },
+      "program": {
+        "population": 700,
+        "builder": "experiments/mind_router_spike/build_generalization_product_current_tree_r22.py",
+        "builderSha256": "8de6a4301acc3876a54557fb18e2fc8271aa393a2f3c9e65b35e5239d4d7c5b6",
+        "probe": "experiments/mind_router_spike/probe_generalization_product_current_tree_r22.py",
+        "probeSha256": "4f5d38c9cd4dd0167455d8938f34ad045778a6898a9ecdae2d98c145883622a7",
+        "analyzer": "experiments/mind_router_spike/analyze_generalization_product_current_tree_r22.py",
+        "analyzerSha256": "4442388c41c1c2ff1c6522b02a77d2a6bac97cb2b0531433ac385bea04beddca",
+        "regressionTest": "tests/test_generalization_product_current_tree_r22.py",
+        "regressionTestSha256": "067ebb76faea0f0b442e6285958a1a914470babf1205838bbd92b87e49efb626",
+        "validation": "3/3 structural tests passed; Ruff and format passed; Integration.Tests compiled with 0 warnings and 0 errors",
+        "properties": [
+          "700 unique surfaces",
+          "no normalized text overlap with R2-R21",
+          "100 composition orders with no R2-R21 sequence overlap",
+          "new entity set",
+          "all rows execution-inert"
+        ]
+      },
+      "plannedOutputsAbsent": "6/6",
+      "mustRemainUnopenedUntil": [
+        "physical wake v17 combined receipt passes",
+        "post-wake repairs and development regressions pass",
+        "program and final policy tree are frozen"
+      ],
+      "missing": [
+        "single unopened execution after final-tree freeze"
+      ]
+    },
+    "C": {
+      "status": "fresh_current_tree_and_physical_programs_ready_outputs_absent",
+      "historicalEvidence": {
+        "campaign": "compound execution R3",
+        "missions": "6/6",
+        "verifiedSteps": "27/27"
+      },
+      "missing": [
+        "single unopened current-tree compound execution",
+        "physical text mission receipt",
+        "physical voice mission receipt",
+        "independent verification of every dependent step"
+      ],
+      "currentTreeProgram": {
+        "cases": 6,
+        "steps": 31,
+        "languages": [
+          "es",
+          "en",
+          "spanglish"
+        ],
+        "builder": "experiments/mind_router_spike/build_compound_execution_current_tree_r4.py",
+        "builderSha256": "116bba71605de99b1c8fa4098dbbd1ec50cdb8d702e5e7699f9563e2b472c428",
+        "runner": "experiments/mind_router_spike/run_compound_execution_current_tree_r4.py",
+        "runnerSha256": "970f8da34c101bd86f04dd4fd83342a4d0241ef4686d648335cca148ab81dce5",
+        "regressionTest": "tests/test_compound_execution_current_tree_r4.py",
+        "regressionTestSha256": "193464195572373b2715d7fe7408483d9d515ba1d5e254894174cb54835ab45c",
+        "validation": "2/2 structural tests passed; Ruff and format passed",
+        "plannedOutputsAbsent": "2/2",
+        "minimumExactCaseAccuracy": 1.0,
+        "maximumAmbiguousEffects": 0
+      },
+      "physicalProgram": {
+        "path": "artifacts/development/physical_dependent_missions_preregistration_20260811.json",
+        "programSupplement": "artifacts/development/physical_dependent_missions_program_supplement_20260811.json",
+        "programSupplementSha256": "b283f91967ac54c2acd42a56bfbc0f226090100213638832b9e604d4b545b3d0",
+        "runner": "experiments/mission_validation/run_physical_dependent_missions_v1.py",
+        "runnerSha256": "1da2057c14cb7963d1b4c2cd8bb05b35c1b21d24bdf1836acdb5b1b1512e4ff9",
+        "postWakeCertifier": "experiments/mission_validation/certify_post_wake_repairs_v1.py",
+        "postWakeCertifierSha256": "d885c3d8c5540878f2de5d6a08a95fb8b450c4d90d5c9a951801cf450da1d2e6",
+        "languages": [
+          "es",
+          "en",
+          "spanglish"
+        ],
+        "missionsPerModality": 3,
+        "stepsPerModality": 10,
+        "structuralTests": "10/10 program and preregistration tests passed; Ruff and format passed",
+        "plannedOutputs": "post-wake receipt plus text, voice and combined reports all absent"
+      },
+      "existingSimpleVoiceGateIsInsufficient": true,
+      "reason": "scripts/run_physical_voice_to_core_gate.py contains two single read-only operations, not dependent missions"
+    },
+    "D": {
+      "status": "aggregate_only_program_ready_outputs_and_claim_absent",
+      "hardRequirements": [
+        "zero unsolicited effects",
+        "zero unverified successes",
+        "zero fixed visible responses",
+        "model-written useful abstention or clarification outside the catalogue"
+      ],
+      "knownDevelopmentEvidence": {
+        "path": "artifacts/fixes/mtop_product_validation_development_r32_consensus_projection_v5_family_precedence_full.json",
+        "status": "failed",
+        "cases": 198,
+        "effectExact": "160/198",
+        "scope": "development only; MTOP test remains sealed"
+      },
+      "sealedSourceReady": {
+        "archive": "D:/BAXYRuntime/datasets/mtop-v1/source/mtop.zip",
+        "archiveSha256": "0c086500aed2ed48d3df383c91664b152e4a46e2adef6a635fa16d508ebaec0b",
+        "opaqueSeal": "tests/data/mtop_test_seal.v1.json",
+        "opaqueSealSha256": "4a2c239f9097e67958d4a2a06cee051c1b666e65b8550ade7790af3e084bef90",
+        "rows": 7384,
+        "archiveOpened": false,
+        "testRowsRead": false,
+        "claimCreated": false,
+        "restorationReceipt": "artifacts/development/mtop_official_test_source_restoration_20260811.json"
+      },
+      "program": {
+        "evaluator": "experiments/mind_router_spike/run_mtop_current_tree_cut_d.py",
+        "evaluatorSha256": "7dff939cd6b350897b5c4693cfe3d692e970e59b7af27e3681a02691278818b0",
+        "inMemoryAuditEntrypoint": "experiments/mind_router_spike/in_memory_turn_audit_mind_entrypoint.py",
+        "inMemoryAuditEntrypointSha256": "000db004506cfb92bb4b85e19ec07d0ce47d6ad1a08accbbd28d5e0e8e106a1d",
+        "regressionTest": "tests/test_mtop_current_tree_cut_d.py",
+        "regressionTestSha256": "7c399405a5c42de255eafd13ecdae9757128a4619f88d5cab87b6c4e55f4f87b",
+        "validation": "15/15 aggregate and one-shot infrastructure tests passed; Ruff and format passed",
+        "realSidecarSmoke": {
+          "path": "artifacts/development/mtop_cut_d_real_sidecar_smoke_20260811.json",
+          "sha256": "a1268f2c28a6395df52b114393e877dda453d4eead0200f4b71721ce7a3d934f",
+          "result": "1/1 exact with complete in-memory audit, zero recoveries and zero operation dispatch",
+          "authority": "development only"
+        },
+        "population": 7384,
+        "plannedOutputsAbsent": "2/2",
+        "runtimeIdentityCheckedBeforeClaim": true,
+        "frozenDependenciesInclude": [
+          "evaluator and in-memory entrypoint",
+          "projection probe and one-shot reader",
+          "runtime configuration and budget harness",
+          "catalog, source map and opaque seal",
+          "all R21 product policy sources"
+        ],
+        "reportPersistence": "aggregate metrics and cause counters only; test text and identities forbidden",
+        "minimumExactTurnAccuracy": 0.99,
+        "minimumSafeNoEffectRate": 1.0,
+        "minimumModelWrittenNoEffectRate": 1.0,
+        "minimumAuditCompletenessRate": 1.0,
+        "maximumRecoveries": 0
+      },
+      "missing": [
+        "preregistration after wake v17, post-wake repairs and final policy-tree freeze",
+        "single irreversible tree-frozen execution"
+      ],
+      "oneShotInfrastructureAlreadyAvailable": {
+        "entrypoint": "scripts/build_mtop_turn_evidence.py:evaluate_test_once",
+        "guarantees": [
+          "machine-local CREATE_NEW claim before decoding",
+          "official rows remain in memory",
+          "aggregate report rejects text and row identities",
+          "a crash burns the claim",
+          "a second attempt is rejected"
+        ],
+        "notYetUsed": true,
+        "focusedTests": "15/15 passed"
+      }
+    }
+  },
+  "conclusion": "Cuts A-D have complete unopened programs. Their outputs, MTOP preregistration and one-shot claim remain absent until wake v17 and the two preregistered repairs freeze the final tree; preparation is not approval."
+}

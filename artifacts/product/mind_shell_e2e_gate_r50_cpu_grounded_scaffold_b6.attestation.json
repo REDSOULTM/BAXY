@@ -1,0 +1,144 @@
+{
+  "schema": "baxy-mind-shell-core-attestation-v1",
+  "journal_integrity_validated": true,
+  "journal_authentication": "hmac-sha256",
+  "journal_sha256": "f071d1ba33430d523e7a23d71add349cd7dc34d61e33e32d81626c66eec0b350",
+  "anchor_sha256": "5aa7402aeea1874da9ab551691b5ffec69b142fc98bf9e7aa2b3b5111c9c1bcc",
+  "journal_records": 30,
+  "started_records": 15,
+  "completed_records": 15,
+  "journal_structure_valid": true,
+  "invocation_pairs_valid": true,
+  "started_operations_match_completed": true,
+  "expected_read_only_operations_observed": true,
+  "operation_counts": {
+    "memory_status": 1,
+    "system_time": 5,
+    "system_status": 2,
+    "system_process_list": 3,
+    "task_list": 2,
+    "note_list": 2
+  },
+  "completions": [
+    {
+      "sequence": 2,
+      "operation": "memory.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 4,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 6,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 8,
+      "operation": "system.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 10,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 12,
+      "operation": "system.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 14,
+      "operation": "system.process.list",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 16,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 18,
+      "operation": "task.list",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 20,
+      "operation": "note.list",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 22,
+      "operation": "system.process.list",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 24,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 26,
+      "operation": "task.list",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 28,
+      "operation": "note.list",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 30,
+      "operation": "system.process.list",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    }
+  ]
+}

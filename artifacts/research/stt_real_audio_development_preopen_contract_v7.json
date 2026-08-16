@@ -1,0 +1,160 @@
+{
+  "schema": "baxy.stt-evaluator-preopen-contract.v2",
+  "createdAtUtc": "2026-08-11T02:54:27.1437661Z",
+  "role": "development",
+  "modelAudioDecoded": false,
+  "evaluator": {
+    "path": "experiments/stt_quality/evaluate_reserved_stt.py",
+    "sha256": "c0d5be0d64d931d2280b70b2c05f4bb5cafacd2d4053d074ef27a449c34c035a"
+  },
+  "preregistrations": {
+    "audio_arena": {
+      "path": "artifacts/research/audio_arena_assistant_bench_stt_preregistration_v1.json",
+      "sha256": "9d444afcb95c041b270b5c095aba4c0186975c77e8fbf5af42507eb51c56f12f"
+    },
+    "miami": {
+      "path": "artifacts/research/bangor_miami_stt_preregistration_v1.json",
+      "sha256": "00692fd26ac1e1e8966f5f7b93e5eb4838189c3ce376cae895b156d4b7906677"
+    },
+    "minds14": {
+      "path": "artifacts/research/minds14_stt_preregistration_v1.json",
+      "sha256": "5ff3e233bd88093821cee9c75889264b3c5144130cb1e09bcaa0c5e2222bdfe9"
+    }
+  },
+  "runtime": {
+    "path": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json",
+    "sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe",
+    "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "sttDirectory": "D:/BAXYRuntime/assets/stt/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+    "sttSha256": "5a70e0862ca0ed713a2bb1bfd50bf4886ae027815c8634a3800da7bdec6ab28f"
+  },
+  "ffmpeg": {
+    "path": "D:/BAXYRuntime/experiments/wakeword/tools/ffmpeg-9.0-gyan/ffmpeg-9.0-essentials_build/bin/ffmpeg.exe",
+    "sha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "version": "ffmpeg version 9.0-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "minds14Source": {
+    "root": "D:/BAXYRuntime/experiments/stt_holdout_sources/polyai_minds14_original_8a7e413",
+    "files": {
+      "MInDS-14.zip": {
+        "path": "D:/BAXYRuntime/experiments/stt_holdout_sources/polyai_minds14_original_8a7e413/MInDS-14.zip",
+        "bytes": 471355396,
+        "sha256": "595c040b4c5fba0cfa55138f4954ef68ee4d38bad2bb46d620feb75b40f476fc"
+      },
+      "extracted/MInDS-14/audio.zip": {
+        "path": "D:/BAXYRuntime/experiments/stt_holdout_sources/polyai_minds14_original_8a7e413/extracted/MInDS-14/audio.zip",
+        "bytes": 471788974,
+        "sha256": "e8f7d9bcd2fffc902291a4fa41aeb30115949221449f1b058c65ef059b67f2b1"
+      },
+      "extracted/MInDS-14/text.zip": {
+        "path": "D:/BAXYRuntime/experiments/stt_holdout_sources/polyai_minds14_original_8a7e413/extracted/MInDS-14/text.zip",
+        "bytes": 469800,
+        "sha256": "4aa76a05fa8a8aeb1301e7dd8148031e7948516a82b9e990409c46bd0fff9316"
+      }
+    },
+    "audioEntries": 8368,
+    "textEntries": 17,
+    "sourceCommit": "8a7e41314267b68ddb15d3c9da012b9c98bf2a78"
+  },
+  "nemotron": {
+    "path": "D:/BAXYRuntime/assets/stt/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11",
+    "model": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+    "conversion": "k2-fsa/sherpa-onnx 560ms int8 release 2026-06-11",
+    "files": {
+      "encoder.int8.onnx": {
+        "bytes": 657601403,
+        "sha256": "012e9321373af99021415e0b0eb3ec827b4be3153be6f30d9b448fe65e896e68"
+      },
+      "decoder.int8.onnx": {
+        "bytes": 14978075,
+        "sha256": "19f9c98fc6d0a2c33a65a43b36fdb2e914c26c0aa9764be3aebc502a1e982fb0"
+      },
+      "joiner.int8.onnx": {
+        "bytes": 9504438,
+        "sha256": "4101c7c679a0bc30483794b27a059e34e79232aa2068d78d51231a22c8b0d7ce"
+      },
+      "tokens.txt": {
+        "bytes": 131440,
+        "sha256": "729cc103155bafa785f9cd45746cd41cabe97eab7182fc04d594129587958f8a"
+      }
+    }
+  },
+  "thresholds": {
+    "audio_arena": {
+      "development": {
+        "expectedCases": 12,
+        "minimumUsableRatio": 1.0,
+        "maximumCorpusWer": 0.2,
+        "maximumCaseWerP95": 0.5,
+        "minimumCriticalAnchorRecall": 0.99,
+        "minimumNonemptyRate": 1.0,
+        "maximumLatencyP50Seconds": 1.5,
+        "maximumLatencyP95Seconds": 2.0
+      },
+      "blind": {
+        "expectedCases": 50,
+        "minimumUsableRatio": 1.0,
+        "maximumCorpusWer": 0.2,
+        "maximumCaseWerP95": 0.5,
+        "minimumCriticalAnchorRecall": 0.99,
+        "minimumNonemptyRate": 1.0,
+        "maximumLatencyP50Seconds": 1.5,
+        "maximumLatencyP95Seconds": 2.0
+      }
+    },
+    "miami": {
+      "development": {
+        "expectedCases": 48,
+        "minimumUsableRatio": 0.8,
+        "maximumCorpusWer": 0.35,
+        "maximumCaseWerP95": 0.75,
+        "minimumNonemptyRate": 1.0,
+        "maximumLatencyP50Seconds": 1.5,
+        "maximumLatencyP95Seconds": 2.0
+      },
+      "blind": {
+        "expectedCases": 96,
+        "minimumUsableRatio": 0.8,
+        "maximumCorpusWer": 0.35,
+        "maximumCaseWerP95": 0.75,
+        "minimumNonemptyRate": 1.0,
+        "maximumLatencyP50Seconds": 1.5,
+        "maximumLatencyP95Seconds": 2.0
+      }
+    },
+    "minds14": {
+      "development": {
+        "expectedCases": 84,
+        "minimumUsableRatio": 1.0,
+        "minimumTranscriptIntentAccuracy": 0.95,
+        "minimumIntentSemanticPreservation": 0.99,
+        "minimumNonemptyRate": 1.0,
+        "maximumFinalizationLatencyP95Seconds": 1.5,
+        "maximumRealTimeFactorP95": 0.5
+      },
+      "blind": {
+        "expectedCases": 196,
+        "minimumUsableRatio": 1.0,
+        "minimumTranscriptIntentAccuracy": 0.95,
+        "minimumIntentSemanticPreservation": 0.99,
+        "minimumNonemptyRate": 1.0,
+        "maximumFinalizationLatencyP95Seconds": 1.5,
+        "maximumRealTimeFactorP95": 0.5
+      }
+    }
+  },
+  "scoringNormalization": "unicode-fold; punctuation-insensitive; HH:MM equivalent to HHMM; English/Spanish ordinal words equivalent to ordinal digits",
+  "developmentReports": [],
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-07-22T08:17:18.102058Z",
+  "gate": "wifi_status_physical",
+  "passed": true,
+  "reads": 2,
+  "effect_observed": false,
+  "profile_identity_opaque": true,
+  "ssid_redacted": true,
+  "authority": "netsh_wlan_status_secondread",
+  "test": "WifiStatusReadsActualWindowsStateTwice"
+}

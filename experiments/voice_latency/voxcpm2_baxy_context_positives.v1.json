@@ -1,0 +1,23 @@
+{
+  "schema": "baxy.voxcpm2-phrase-set.v1",
+  "class_label": "positive",
+  "purpose": "Development-only short contextual and multilingual BAXY positives for two-second wake-word windows.",
+  "phrases": [
+    {"id": "isolated_baxy", "text": "Baxy."},
+    {"id": "isolated_baxi", "text": "Baxi."},
+    {"id": "en_hey", "text": "Hey, Baxy."},
+    {"id": "en_okay", "text": "Okay, Baxy."},
+    {"id": "en_hello", "text": "Hello, Baxy."},
+    {"id": "en_listen", "text": "Baxy, listen."},
+    {"id": "en_please", "text": "Please, Baxy."},
+    {"id": "en_help", "text": "Baxy, help."},
+    {"id": "es_hola", "text": "Hola, Baxi."},
+    {"id": "es_oye", "text": "Oye, Baxi."},
+    {"id": "es_escucha", "text": "Baxi, escucha."},
+    {"id": "es_ayudame", "text": "Baxi, ayúdame."},
+    {"id": "ru_hey", "text": "Эй, Бакси."},
+    {"id": "ru_hello", "text": "Привет, Бакси."},
+    {"id": "ru_listen", "text": "Бакси, слушай."},
+    {"id": "ru_help", "text": "Бакси, помоги."}
+  ]
+}

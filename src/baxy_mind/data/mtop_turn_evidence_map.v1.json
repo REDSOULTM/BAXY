@@ -1,0 +1,837 @@
+{
+  "schema": "baxy.mtop-source-map.v1",
+  "source": {
+    "name": "MTOP official release (README data format v2)",
+    "adapter_version": "baxy-mtop-v1",
+    "download_url": "https://dl.fbaipublicfiles.com/mtop/mtop.zip",
+    "paper_url": "https://aclanthology.org/2021.eacl-main.257/",
+    "license": "CC-BY-SA-4.0",
+    "archive_file_name": "mtop.zip",
+    "archive_sha256": "0c086500aed2ed48d3df383c91664b152e4a46e2adef6a635fa16d508ebaec0b",
+    "citation": "Li et al. (2021), MTOP: A Comprehensive Multilingual Task-Oriented Semantic Parsing Benchmark",
+    "development_members": {
+      "en/train.txt": {
+        "bytes": 7115388,
+        "rows": 15667,
+        "sha256": "1c1e137ca0f4d72279b3b4755f8202793b1d24a840e55b3c81e4db289656d692"
+      },
+      "en/eval.txt": {
+        "bytes": 1019262,
+        "rows": 2235,
+        "sha256": "950d49197df0ae660c27cf7a33a462b8c41c267ac579db788bd7812daf258a31"
+      },
+      "es/train.txt": {
+        "bytes": 5544383,
+        "rows": 10934,
+        "sha256": "de4743f1a1b1998a700d8a325c6bec281117b1477ab6faf34efd21b64a43d738"
+      },
+      "es/eval.txt": {
+        "bytes": 783911,
+        "rows": 1527,
+        "sha256": "db95e0dacd1d9f5177fe7c4e87d445ec0f9c1eb2143ad73bec2d36f73ab703ee"
+      }
+    }
+  },
+  "selection": {
+    "locales": {
+      "en": "en_XX",
+      "es": "es_XX"
+    },
+    "development_splits": {
+      "train": "train",
+      "eval": "validation"
+    },
+    "maximum_text_characters": 512
+  },
+  "policy": {
+    "unlisted_intent": "ood_no_effect",
+    "candidate_is_advisory_only": true,
+    "execution_authority": false,
+    "require_independent_llm_selection": true,
+    "require_contract_grounding_and_verification": true,
+    "development_must_explicitly_classify_every_observed_intent": true
+  },
+  "intents": {
+    "IN:CREATE_ALARM": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "dated_alarm",
+          "operations": [
+            "notification.schedule"
+          ],
+          "allowed_slots": [
+            "SL:ALARM_NAME",
+            "SL:DATE_TIME"
+          ],
+          "required_slots": [
+            "SL:DATE_TIME"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:DELETE_ALARM": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "latest_unqualified_alarm",
+          "operations": [
+            "notification.cancel.latest"
+          ],
+          "allowed_slots": [],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:SILENCE_ALARM": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "unqualified_due_alarm",
+          "operations": [
+            "notification.list.due",
+            "notification.dismiss"
+          ],
+          "allowed_slots": [],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:CREATE_REMINDER": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "local_dated_reminder",
+          "operations": [
+            "reminder.create"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:TODO"
+          ],
+          "required_slots": [
+            "SL:DATE_TIME",
+            "SL:TODO"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:DELETE_REMINDER": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "exact_local_reminder",
+          "operations": [
+            "reminder.resolve.exact",
+            "reminder.delete"
+          ],
+          "allowed_slots": [
+            "SL:TODO"
+          ],
+          "required_slots": [
+            "SL:TODO"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_REMINDER": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "list_local_reminders",
+          "operations": [
+            "reminder.list"
+          ],
+          "allowed_slots": [],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        },
+        {
+          "id": "resolve_exact_local_reminder",
+          "operations": [
+            "reminder.resolve.exact"
+          ],
+          "allowed_slots": [
+            "SL:TODO"
+          ],
+          "required_slots": [
+            "SL:TODO"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_REMINDER_AMOUNT": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "count_local_reminders",
+          "operations": [
+            "reminder.list"
+          ],
+          "allowed_slots": [],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_REMINDER_DATE_TIME": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "resolve_exact_local_reminder_time",
+          "operations": [
+            "reminder.resolve.exact"
+          ],
+          "allowed_slots": [
+            "SL:TODO"
+          ],
+          "required_slots": [
+            "SL:TODO"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:PLAY_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "spotify_query_without_provider_constraint",
+          "operations": [
+            "media.play.query"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_ALBUM_MODIFIER",
+            "SL:MUSIC_ALBUM_TITLE",
+            "SL:MUSIC_ARTIST_NAME",
+            "SL:MUSIC_GENRE",
+            "SL:MUSIC_PLAYLIST_MODIFIER",
+            "SL:MUSIC_PLAYLIST_TITLE",
+            "SL:MUSIC_RADIO_ID",
+            "SL:MUSIC_TRACK_TITLE",
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:PLAY_MEDIA": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "spotify_media_query",
+          "operations": [
+            "media.play.query"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_ARTIST_NAME",
+            "SL:MUSIC_TRACK_TITLE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [
+            "SL:MUSIC_ARTIST_NAME",
+            "SL:MUSIC_TRACK_TITLE"
+          ],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:PAUSE_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "pause_current_session",
+          "operations": [
+            "media.control"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:RESUME_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "resume_current_session",
+          "operations": [
+            "media.control"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:STOP_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "stop_current_session",
+          "operations": [
+            "media.control"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:PREVIOUS_TRACK_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "previous_current_session",
+          "operations": [
+            "media.control"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:SKIP_TRACK_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "next_current_session",
+          "operations": [
+            "media.control"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:FAST_FORWARD_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "seek_forward_with_duration",
+          "operations": [
+            "media.seek.relative"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_REWIND_TIME",
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [
+            "SL:MUSIC_REWIND_TIME"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:REWIND_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "seek_backward_with_duration",
+          "operations": [
+            "media.seek.relative"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_REWIND_TIME",
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [
+            "SL:MUSIC_REWIND_TIME"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_TRACK_INFO_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "current_session_status",
+          "operations": [
+            "media.status"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        },
+        {
+          "id": "public_track_information",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_ARTIST_NAME",
+            "SL:MUSIC_PROVIDER_NAME",
+            "SL:MUSIC_TRACK_TITLE",
+            "SL:MUSIC_TYPE",
+            "SL:ORDINAL"
+          ],
+          "required_slots": [],
+          "required_any_slots": [
+            "SL:MUSIC_ARTIST_NAME",
+            "SL:MUSIC_TRACK_TITLE"
+          ],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_LYRICS_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "lyrics_for_current_session",
+          "operations": [
+            "media.status",
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        },
+        {
+          "id": "lyrics_for_named_track",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_TRACK_TITLE",
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [
+            "SL:MUSIC_TRACK_TITLE"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:QUESTION_MUSIC": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_music_information",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:MUSIC_ARTIST_NAME",
+            "SL:MUSIC_GENRE",
+            "SL:MUSIC_PROVIDER_NAME",
+            "SL:MUSIC_TRACK_TITLE",
+            "SL:MUSIC_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_DETAILS_NEWS": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_news_search",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:NEWS_CATEGORY",
+            "SL:NEWS_REFERENCE",
+            "SL:NEWS_SOURCE",
+            "SL:NEWS_TOPIC",
+            "SL:NEWS_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_STORIES_NEWS": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_news_search",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:NEWS_CATEGORY",
+            "SL:NEWS_REFERENCE",
+            "SL:NEWS_SOURCE",
+            "SL:NEWS_TOPIC",
+            "SL:NEWS_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:QUESTION_NEWS": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_news_question",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:NEWS_CATEGORY",
+            "SL:NEWS_REFERENCE",
+            "SL:NEWS_SOURCE",
+            "SL:NEWS_TOPIC",
+            "SL:NEWS_TYPE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_INFO_RECIPES": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_recipe_information",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:METHOD_RECIPES",
+            "SL:RECIPES_ATTRIBUTE",
+            "SL:RECIPES_COOKING_METHOD",
+            "SL:RECIPES_CUISINE",
+            "SL:RECIPES_DIET",
+            "SL:RECIPES_DISH",
+            "SL:RECIPES_EXCLUDED_INGREDIENT",
+            "SL:RECIPES_INCLUDED_INGREDIENT",
+            "SL:RECIPES_MEAL",
+            "SL:RECIPES_QUALIFIER_NUTRITION",
+            "SL:RECIPES_RATING",
+            "SL:RECIPES_SOURCE",
+            "SL:RECIPES_TYPE_NUTRITION",
+            "SL:RECIPES_UNIT_MEASUREMENT",
+            "SL:RECIPES_UNIT_NUTRITION"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_RECIPES": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_recipe_search",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:RECIPES_ATTRIBUTE",
+            "SL:RECIPES_COOKING_METHOD",
+            "SL:RECIPES_CUISINE",
+            "SL:RECIPES_DIET",
+            "SL:RECIPES_DISH",
+            "SL:RECIPES_EXCLUDED_INGREDIENT",
+            "SL:RECIPES_INCLUDED_INGREDIENT",
+            "SL:RECIPES_MEAL",
+            "SL:RECIPES_QUALIFIER_NUTRITION",
+            "SL:RECIPES_RATING",
+            "SL:RECIPES_SOURCE",
+            "SL:RECIPES_TYPE",
+            "SL:RECIPES_TYPE_NUTRITION",
+            "SL:RECIPES_UNIT_NUTRITION"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:IS_TRUE_RECIPES": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_recipe_verification",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:METHOD_RECIPES",
+            "SL:RECIPES_ATTRIBUTE",
+            "SL:RECIPES_COOKING_METHOD",
+            "SL:RECIPES_CUISINE",
+            "SL:RECIPES_DIET",
+            "SL:RECIPES_DISH",
+            "SL:RECIPES_EXCLUDED_INGREDIENT",
+            "SL:RECIPES_INCLUDED_INGREDIENT",
+            "SL:RECIPES_QUALIFIER_NUTRITION",
+            "SL:RECIPES_TYPE_NUTRITION",
+            "SL:RECIPES_UNIT_NUTRITION"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_AIRQUALITY": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_air_quality_search",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:WEATHER_ATTRIBUTE"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_SUNRISE": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_sunrise_search",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:LOCATION"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_SUNSET": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_sunset_search",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:LOCATION"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_WEATHER": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "public_weather_search",
+          "operations": [
+            "web.search"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME",
+            "SL:LOCATION",
+            "SL:WEATHER_ATTRIBUTE",
+            "SL:WEATHER_TEMPERATURE_UNIT"
+          ],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:GET_EVENT": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "bounded_calendar_window",
+          "operations": [
+            "calendar.event.list"
+          ],
+          "allowed_slots": [
+            "SL:DATE_TIME"
+          ],
+          "required_slots": [
+            "SL:DATE_TIME"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:SEND_MESSAGE": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "explicit_recipient_and_content",
+          "operations": [
+            "message.recipient.resolve",
+            "message.send"
+          ],
+          "allowed_slots": [
+            "SL:CONTENT_EXACT",
+            "SL:RECIPIENT"
+          ],
+          "required_slots": [
+            "SL:CONTENT_EXACT",
+            "SL:RECIPIENT"
+          ],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    },
+    "IN:HELP_REMINDER": {
+      "disposition": "conversation",
+      "variants": [
+        {
+          "id": "explain_existing_reminder_support",
+          "operations": [],
+          "allowed_slots": [],
+          "required_slots": [],
+          "required_any_slots": [],
+          "allow_nested_intents": false
+        }
+      ]
+    }
+  },
+  "ood_intents": [
+    "IN:ADD_TIME_TIMER",
+    "IN:ADD_TO_PLAYLIST_MUSIC",
+    "IN:ANSWER_CALL",
+    "IN:CANCEL_CALL",
+    "IN:CANCEL_MESSAGE",
+    "IN:CREATE_CALL",
+    "IN:CREATE_PLAYLIST_MUSIC",
+    "IN:CREATE_TIMER",
+    "IN:DELETE_PLAYLIST_MUSIC",
+    "IN:DELETE_TIMER",
+    "IN:DISLIKE_MUSIC",
+    "IN:DISPREFER",
+    "IN:END_CALL",
+    "IN:FOLLOW_MUSIC",
+    "IN:GET_AGE",
+    "IN:GET_ALARM",
+    "IN:GET_ATTENDEE_EVENT",
+    "IN:GET_AVAILABILITY",
+    "IN:GET_CALL",
+    "IN:GET_CALL_CONTACT",
+    "IN:GET_CALL_TIME",
+    "IN:GET_CATEGORY_EVENT",
+    "IN:GET_CONTACT",
+    "IN:GET_CONTACT_METHOD",
+    "IN:GET_DATE_TIME_EVENT",
+    "IN:GET_EDUCATION_DEGREE",
+    "IN:GET_EDUCATION_TIME",
+    "IN:GET_EMPLOYER",
+    "IN:GET_EMPLOYMENT_TIME",
+    "IN:GET_GENDER",
+    "IN:GET_GROUP",
+    "IN:GET_INFO_CONTACT",
+    "IN:GET_JOB",
+    "IN:GET_LANGUAGE",
+    "IN:GET_LIFE_EVENT",
+    "IN:GET_LIFE_EVENT_TIME",
+    "IN:GET_LOCATION",
+    "IN:GET_MAJOR",
+    "IN:GET_MESSAGE",
+    "IN:GET_MESSAGE_CONTACT",
+    "IN:GET_MUTUAL_FRIENDS",
+    "IN:GET_REMINDER_LOCATION",
+    "IN:GET_TIMER",
+    "IN:GET_UNDERGRAD",
+    "IN:HOLD_CALL",
+    "IN:IGNORE_CALL",
+    "IN:LIKE_MUSIC",
+    "IN:LOOP_MUSIC",
+    "IN:MERGE_CALL",
+    "IN:PAUSE_TIMER",
+    "IN:PREFER",
+    "IN:REMOVE_FROM_PLAYLIST_MUSIC",
+    "IN:REPEAT_ALL_MUSIC",
+    "IN:REPEAT_ALL_OFF_MUSIC",
+    "IN:REPLAY_MUSIC",
+    "IN:RESTART_TIMER",
+    "IN:RESUME_CALL",
+    "IN:RESUME_TIMER",
+    "IN:SET_AVAILABLE",
+    "IN:SET_DEFAULT_PROVIDER_CALLING",
+    "IN:SET_DEFAULT_PROVIDER_MUSIC",
+    "IN:SET_RSVP_INTERESTED",
+    "IN:SET_RSVP_NO",
+    "IN:SET_RSVP_YES",
+    "IN:SET_UNAVAILABLE",
+    "IN:SHARE_EVENT",
+    "IN:SNOOZE_ALARM",
+    "IN:START_SHUFFLE_MUSIC",
+    "IN:STOP_SHUFFLE_MUSIC",
+    "IN:SUBTRACT_TIME_TIMER",
+    "IN:SWITCH_CALL",
+    "IN:UNLOOP_MUSIC",
+    "IN:UPDATE_ALARM",
+    "IN:UPDATE_CALL",
+    "IN:UPDATE_METHOD_CALL",
+    "IN:UPDATE_REMINDER",
+    "IN:UPDATE_REMINDER_DATE_TIME",
+    "IN:UPDATE_REMINDER_LOCATION",
+    "IN:UPDATE_REMINDER_TODO",
+    "IN:UPDATE_TIMER"
+  ]
+}

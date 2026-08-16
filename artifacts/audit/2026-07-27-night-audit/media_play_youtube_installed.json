@@ -1,0 +1,55 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "operation": "media.play.youtube",
+  "arguments": {
+    "query": "Beat It Michael Jackson"
+  },
+  "confirmation_followed": true,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "662eebb2-b620-4f7d-bf75-0141b90cfc09",
+      "missionId": "491b2eca-dec8-4fcf-a437-7b818f2e75c2",
+      "invocationId": "a6e0d9ce-c379-4fb6-8377-f120a882ba59",
+      "status": "pending",
+      "message": "Necesito tu confirmación antes de hacer eso.",
+      "verified": false,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "token": "JHN1f2lBsdTHEHODBntytwJorvaPQkf0EX8qEwTYkeo",
+        "expiresAtUtc": "2026-07-27T08:02:37.4814293+00:00",
+        "reconciliationRequired": false
+      },
+      "errorCode": "confirmation_required"
+    },
+    {
+      "type": "operation.response",
+      "requestId": "36899656-8f0e-490b-b1ad-f037199c1826",
+      "missionId": "491b2eca-dec8-4fcf-a437-7b818f2e75c2",
+      "invocationId": "a6e0d9ce-c379-4fb6-8377-f120a882ba59",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "provider": "youtube",
+        "query": "Beat It Michael Jackson",
+        "title": "Beat It Michael Jackson",
+        "playbackStatus": "playing",
+        "processId": 29592,
+        "authority": "yt_dlp_mpv_ipc_postread"
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 5.8464562999997725,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

@@ -1,0 +1,362 @@
+{"set": "audio_mute", "message_id": "msg_2b20deeb3cac9aec0878", "label": "audio.mute", "expected_args": {"muted": false}, "text": "desmutea el pc"}
+{"set": "audio_mute", "message_id": "msg_32a9103b84e5d5f28ef7", "label": "audio.mute", "expected_args": {"muted": false}, "text": "Quita el mute del PC"}
+{"set": "audio_mute", "message_id": "msg_38d03d66a142eea372dd", "label": "audio.mute", "expected_args": {"muted": false}, "text": "unmute the pc"}
+{"set": "audio_mute", "message_id": "msg_456bb310a63a344704d8", "label": "audio.mute", "expected_args": {"muted": true}, "text": "mute system porfa"}
+{"set": "audio_mute", "message_id": "msg_5104c628778381b8d449", "label": "audio.mute", "expected_args": {"muted": true}, "text": "silencia el audio"}
+{"set": "audio_mute", "message_id": "msg_660a81fe0d01c4b96729", "label": "audio.mute", "expected_args": {"muted": true}, "text": "mute everything"}
+{"set": "audio_mute", "message_id": "msg_7b7c26cb263eb29840d3", "label": "audio.mute", "expected_args": {"muted": true}, "text": "Silencia el PC"}
+{"set": "audio_mute", "message_id": "msg_84a19319a9a1b19554d1", "label": "audio.mute", "expected_args": {"muted": true}, "text": "Silencia el PC"}
+{"set": "audio_mute", "message_id": "msg_8d5936dfce659cf7a66f", "label": "audio.mute", "expected_args": {"muted": true}, "text": "mute"}
+{"set": "audio_mute", "message_id": "msg_9367170923e676b25acf", "label": "audio.mute", "expected_args": {"muted": false}, "text": "unmute"}
+{"set": "audio_mute", "message_id": "msg_95c69928a323e45c7889", "label": "audio.mute", "expected_args": {"muted": true}, "text": "mute system porfa"}
+{"set": "audio_mute", "message_id": "msg_9a6b4fc3ab3f9b35b982", "label": "audio.mute", "expected_args": {"muted": true}, "text": "ponelo en mute"}
+{"set": "audio_mute", "message_id": "msg_a49670082e97d4062555", "label": "audio.mute", "expected_args": {"muted": true}, "text": "mute the sound"}
+{"set": "audio_mute", "message_id": "msg_c766eaf94529de7cc86a", "label": "audio.mute", "expected_args": {"muted": false}, "text": "unmute the pc"}
+{"set": "audio_mute", "message_id": "msg_d5561fa0f708efc9551e", "label": "audio.mute", "expected_args": {"muted": false}, "text": "desmutea el pc"}
+{"set": "audio_mute", "message_id": "msg_ddbadb9f589f1bda88b3", "label": "audio.mute", "expected_args": {"muted": false}, "text": "unmute the sound please"}
+{"set": "audio_negative", "message_id": "msg_0eae33e24aad984730f1", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_19634f8338def5f94035", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_22d9f38bed38ed73f74b", "label": "ABSTAIN", "category": "accent_polarity", "text": "silenciá el audio"}
+{"set": "audio_negative", "message_id": "msg_27782b55d9ffe38eb122", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_2b13d101f71b534ded69", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_46f76823808094dcbdb1", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_49a843a4578354aefd9a", "label": "ABSTAIN", "category": "negated", "text": "no subas el volumen"}
+{"set": "audio_negative", "message_id": "msg_4bcafac26b77c35a6806", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_4fb6a76c38a825228df4", "label": "ABSTAIN", "category": "microphone", "text": "silencia mi micrófono en Discord"}
+{"set": "audio_negative", "message_id": "msg_51ccc54a1971ae6a7745", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_5267f3873806611f5938", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_540e6b705ef338a37300", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_58279e5a4408edd64ea1", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_5c011ed3fcb037efc0d9", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_5c614c927f5f0de2e806", "label": "ABSTAIN", "category": "microphone", "text": "Desmutea mi micrófono en Discord"}
+{"set": "audio_negative", "message_id": "msg_607a55e46a124740f8f8", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_6166ffac59eae4ca3c41", "label": "ABSTAIN", "category": "composition", "text": "abre Spotify, pon música y baja volumen a 20"}
+{"set": "audio_negative", "message_id": "msg_66316b07a0c50eb292ae", "label": "ABSTAIN", "category": "composition", "text": "subí el volumen y decime qué fecha es"}
+{"set": "audio_negative", "message_id": "msg_6be1b9b5c9c87629be86", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_79a95e1a9be1b68ea54d", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_7d2c929cf97a1409632e", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_829ebefc94b3c9afb18c", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_83fa827afa29b6b37198", "label": "ABSTAIN", "category": "relative", "text": "turn the volume down a bit"}
+{"set": "audio_negative", "message_id": "msg_8dab443234c7b3b0fbcd", "label": "ABSTAIN", "category": "app_specific_volume", "text": "Sube el volumen del reproductor"}
+{"set": "audio_negative", "message_id": "msg_9eae4b301065ac342756", "label": "ABSTAIN", "category": "composition", "text": "abre Spotify, pon rock y baja el volumen"}
+{"set": "audio_negative", "message_id": "msg_a21809351f5019dae596", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_a826330f20eaa93c6b49", "label": "ABSTAIN", "category": "app_specific_volume", "text": "subí el volumen de spotify"}
+{"set": "audio_negative", "message_id": "msg_c04ee01e1c7db580b399", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_c80597ccac7cace8e8ad", "label": "ABSTAIN", "category": "microphone", "text": "mute my mic in Discord"}
+{"set": "audio_negative", "message_id": "msg_c80de5c15f515088a76f", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_c968a82378641cceb18a", "label": "ABSTAIN", "category": "media_control", "text": "pausa la musica"}
+{"set": "audio_negative", "message_id": "msg_cab8db7f112114355ec1", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_d59b28d0f90d2ca9520f", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_decc9d5a9162ed958baf", "label": "ABSTAIN", "category": "negated", "text": "no subas el volumen"}
+{"set": "audio_negative", "message_id": "msg_e8193e460820347c5a23", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_e9195adaf4e41863aed0", "label": "ABSTAIN", "category": "negated", "text": "no subas el volumen"}
+{"set": "audio_negative", "message_id": "msg_f43ef3050d7bd63140ad", "label": "ABSTAIN", "category": "negated", "text": "no subas el volumen"}
+{"set": "audio_negative", "message_id": "msg_f86a179d3c760dc9d784", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_f9f2bbb5cda84fa26c7f", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_negative", "message_id": "msg_fc32c083ff85912f6e0e", "label": "ABSTAIN", "category": "discord_button", "text": "en Discord apretá silenciar"}
+{"set": "audio_status", "message_id": "msg_11bebb8ffbeb2e976ac4", "label": "audio.status", "text": "qué volumen tengo"}
+{"set": "audio_status", "message_id": "msg_1288704b9643a4a1d4e1", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_1c22e0cf4c5383bad801", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_22ed81cfe7e5a2ccfad8", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_38471afe056eaf737661", "label": "audio.status", "text": "qué volumen tengo"}
+{"set": "audio_status", "message_id": "msg_3bc24d4ad463eb1ca2f0", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_63f5dec2a3ec5f499193", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_79466a579827ab559899", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_89eb1eabaa03a75c157c", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_bf6d713c8957b2f65782", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_bf87cd86f01aa8fc3659", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_c170379cbadbb08e6b98", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_cf264814dae8e19b76df", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_d908e2aaeabfcca17109", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_df8ea3b8196c5bc7e728", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_status", "message_id": "msg_f72552b9b7ac1caf8af3", "label": "audio.status", "text": "mostrame el volumen"}
+{"set": "audio_volume", "message_id": "msg_0367d25b538df682da14", "label": "audio.volume", "expected_args": {"level": 78}, "text": "volume al 78"}
+{"set": "audio_volume", "message_id": "msg_04d9bfce58d9220540de", "label": "audio.volume", "expected_args": {"level": 15}, "text": "pon el volumen en 15"}
+{"set": "audio_volume", "message_id": "msg_05e8327cbd8e5443a676", "label": "audio.volume", "expected_args": {"level": 0}, "text": "Pon el volumen del PC al 0%"}
+{"set": "audio_volume", "message_id": "msg_0d45da141f6f0b9f951e", "label": "audio.volume", "expected_args": {"level": 100}, "text": "Pon el volumen a 100"}
+{"set": "audio_volume", "message_id": "msg_0f267f02f6cb9db5ba46", "label": "audio.volume", "expected_args": {"level": 20}, "text": "baja el volumen a 20"}
+{"set": "audio_volume", "message_id": "msg_0f5fc9027f2fd70f0b03", "label": "audio.volume", "expected_args": {"level": 20}, "text": "baja volumen a 20"}
+{"set": "audio_volume", "message_id": "msg_17b326391e6180aeb38a", "label": "audio.volume", "expected_args": {"level": 30}, "text": "volumen al 30 por ciento"}
+{"set": "audio_volume", "message_id": "msg_194c43226b70db73f820", "label": "audio.volume", "expected_args": {"level": 40}, "text": "poné el volumen al 40 por ciento"}
+{"set": "audio_volume", "message_id": "msg_1c2dc23c99248a766c69", "label": "audio.volume", "expected_args": {"level": 10}, "text": "pon el volumen del pc a 10"}
+{"set": "audio_volume", "message_id": "msg_24cc3500a45acfbb62be", "label": "audio.volume", "expected_args": {"level": 30}, "text": "poné el volumen al 30 por ciento"}
+{"set": "audio_volume", "message_id": "msg_25713a74f93a06ff21be", "label": "audio.volume", "expected_args": {"level": 18}, "text": "dejá el volumen en 18"}
+{"set": "audio_volume", "message_id": "msg_262406544412d2bd0c32", "label": "audio.volume", "expected_args": {"level": 30}, "text": "baja el volumen a 30"}
+{"set": "audio_volume", "message_id": "msg_2bd6786d8bfecb1f901f", "label": "audio.volume", "expected_args": {"level": 30}, "text": "sube el volumen a 30"}
+{"set": "audio_volume", "message_id": "msg_2f8e09c640dd064b8bb8", "label": "audio.volume", "expected_args": {"level": 30}, "text": "pon el volumen al 30"}
+{"set": "audio_volume", "message_id": "msg_55bf6ca71bced89650bb", "label": "audio.volume", "expected_args": {"level": 10}, "text": "Cambia el volumen a 10"}
+{"set": "audio_volume", "message_id": "msg_5654f176cef91fd295fa", "label": "audio.volume", "expected_args": {"level": 10}, "text": "Pon el volumen a 10"}
+{"set": "audio_volume", "message_id": "msg_6e018464e6c86bd4a747", "label": "audio.volume", "expected_args": {"level": 50}, "text": "pon el volumen al 50"}
+{"set": "audio_volume", "message_id": "msg_723212e971c7a49a8620", "label": "audio.volume", "expected_args": {"level": 80}, "text": "bajá el volumen a 80"}
+{"set": "audio_volume", "message_id": "msg_7747b33c0f134b6e95a0", "label": "audio.volume", "expected_args": {"level": 90}, "text": "change volume to 90"}
+{"set": "audio_volume", "message_id": "msg_7833f5abb1aec9b90f21", "label": "audio.volume", "expected_args": {"level": 90}, "text": "change volume to 90"}
+{"set": "audio_volume", "message_id": "msg_786b847c9d2d184026ad", "label": "audio.volume", "expected_args": {"level": 30}, "text": "subí el volumen al 30"}
+{"set": "audio_volume", "message_id": "msg_83e6629ded7e56e8c896", "label": "audio.volume", "expected_args": {"level": 8}, "text": "set the volume to 8 percent"}
+{"set": "audio_volume", "message_id": "msg_8ca05d6502299cf1f80c", "label": "audio.volume", "expected_args": {"level": 10}, "text": "Pon el volumen del pc a 10"}
+{"set": "audio_volume", "message_id": "msg_929132743cd3652d70c4", "label": "audio.volume", "expected_args": {"level": 8}, "text": "poné el volumen al 8%"}
+{"set": "audio_volume", "message_id": "msg_93b907f913d298dcc1f8", "label": "audio.volume", "expected_args": {"level": 35}, "text": "pon volumen a 35"}
+{"set": "audio_volume", "message_id": "msg_989f41886ca069e8403d", "label": "audio.volume", "expected_args": {"level": 20}, "text": "baja el volumen a 20"}
+{"set": "audio_volume", "message_id": "msg_9e2e5afe38a8505d25dd", "label": "audio.volume", "expected_args": {"level": 30}, "text": "poné el volumen al 30"}
+{"set": "audio_volume", "message_id": "msg_a49271d0d9300f5c3117", "label": "audio.volume", "expected_args": {"level": 22}, "text": "dejá el volumen en 22"}
+{"set": "audio_volume", "message_id": "msg_ab60daba3a9852a07546", "label": "audio.volume", "expected_args": {"level": 70}, "text": "Sube el volumen al 70%"}
+{"set": "audio_volume", "message_id": "msg_b645f1c2adfdfe814572", "label": "audio.volume", "expected_args": {"level": 40}, "text": "subí el volumen al 40 por ciento"}
+{"set": "audio_volume", "message_id": "msg_c3c006705707f2ba8514", "label": "audio.volume", "expected_args": {"level": 88}, "text": "volume al 88"}
+{"set": "audio_volume", "message_id": "msg_c784e0527622c586e641", "label": "audio.volume", "expected_args": {"level": 5}, "text": "subí el volumen al 5"}
+{"set": "audio_volume", "message_id": "msg_d454f790b1b77eecc513", "label": "audio.volume", "expected_args": {"level": 20}, "text": "set the pc volume to 20"}
+{"set": "audio_volume", "message_id": "msg_d79ea47c5701ab11c150", "label": "audio.volume", "expected_args": {"level": 40}, "text": "set the volume to 40"}
+{"set": "audio_volume", "message_id": "msg_ed6fb0995bc40b7caec8", "label": "audio.volume", "expected_args": {"level": 100}, "text": "Sube el volumen a 100"}
+{"set": "audio_volume", "message_id": "msg_f3b7cce3845f0d8adb25", "label": "audio.volume", "expected_args": {"level": 50}, "text": "subí el volumen al 50 por ciento"}
+{"set": "audio_volume", "message_id": "msg_f514d6b62105922505fd", "label": "audio.volume", "expected_args": {"level": 48}, "text": "volume a 48"}
+{"set": "audio_volume", "message_id": "msg_f870d71249bffc4a3276", "label": "audio.volume", "expected_args": {"level": 20}, "text": "drop the volume to 20"}
+{"set": "audio_volume", "message_id": "msg_f9c5dbe65f536c4c7e31", "label": "audio.volume", "expected_args": {"level": 50}, "text": "sube el volumen al 50 porfa"}
+{"set": "audio_volume", "message_id": "msg_fd2397faef3093878eab", "label": "audio.volume", "expected_args": {"level": 20}, "text": "Pon el volumen del pc a 20"}
+{"set": "audio_volume_alias", "message_id": "msg_0c0eac6de5ce95b7f0ac", "label": "audio.volume", "expected_args": {"level": 100}, "text": "subí el volumen al máximo"}
+{"set": "audio_volume_alias", "message_id": "msg_1acbc9e9889b29d7cfee", "label": "audio.volume", "expected_args": {"level": 10}, "text": "pon el volumen del PC a diez"}
+{"set": "audio_volume_alias", "message_id": "msg_22ba6c64e71885221ca2", "label": "audio.volume", "expected_args": {"level": 10}, "text": "pon el volumen del PC a diez"}
+{"set": "audio_volume_alias", "message_id": "msg_4e5c0f58e780dc0a69c1", "label": "audio.volume", "expected_args": {"level": 10}, "text": "pon el volumen del PC a diez por ciento"}
+{"set": "audio_volume_alias", "message_id": "msg_5267f608daeac78b0297", "label": "audio.volume", "expected_args": {"level": 50}, "text": "pon el volumen a la mitad"}
+{"set": "audio_volume_alias", "message_id": "msg_7b5fb315ceec36880c42", "label": "audio.volume", "expected_args": {"level": 0}, "text": "poné el volumen al mínimo"}
+{"set": "audio_volume_alias", "message_id": "msg_87b0588cfad78d45a5f6", "label": "audio.volume", "expected_args": {"level": 100}, "text": "subí el volumen al máximo"}
+{"set": "audio_volume_alias", "message_id": "msg_8aecf2506b056897783a", "label": "audio.volume", "expected_args": {"level": 0}, "text": "pon el volumen del pc al minimo"}
+{"set": "audio_volume_alias", "message_id": "msg_8d4815418499be30dc93", "label": "audio.volume", "expected_args": {"level": 20}, "text": "pon el volumen del PC a veinte por ciento"}
+{"set": "audio_volume_alias", "message_id": "msg_e148fcf95e372b7da786", "label": "audio.volume", "expected_args": {"level": 100}, "text": "subí el volumen al máximo"}
+{"set": "audio_volume_alias", "message_id": "msg_ecdc1b653c8fcbd476e3", "label": "audio.volume", "expected_args": {"level": 100}, "text": "pon el volumen al maximo"}
+{"set": "audio_volume_alias", "message_id": "msg_fa6d3b69b01df25b3313", "label": "audio.volume", "expected_args": {"level": 50}, "text": "baja el volumen a la mitad"}
+{"set": "gpu_composition", "message_id": "msg_084d1ce4e0b8e3bcbac3", "label": "ABSTAIN", "category": "task_training_or_vision_context", "text": "Listo, la gpu ya dejo de usarse, que tal salio todo???"}
+{"set": "gpu_composition", "message_id": "msg_094aceeeb772669eb38d", "label": "ABSTAIN", "category": "process_or_baxy_attribution", "text": "Hay algo mas que use gpu??"}
+{"set": "gpu_composition", "message_id": "msg_13a15bcc64547e1c7515", "label": "ABSTAIN", "category": "process_or_baxy_attribution", "text": "Okey , dale, luego dime sin rodeos, cuantas ram/vram/cpu/gppu, recursos del pc usa baxy?"}
+{"set": "gpu_composition", "message_id": "msg_19d98d6134f1b995c8b8", "label": "ABSTAIN", "category": "create_load_then_observe", "text": "verifica GPU mientras Carter responde"}
+{"set": "gpu_composition", "message_id": "msg_1b2ce4204c6fc1a1ac3f", "label": "ABSTAIN", "category": "task_training_or_vision_context", "text": "MI gpu no se esta usando, ya lanzaste el entrenamiento?"}
+{"set": "gpu_composition", "message_id": "msg_2b7c59e5d0cd223b62d5", "label": "ABSTAIN", "category": "process_or_baxy_attribution", "text": "Que esta usndo vram ahora??"}
+{"set": "gpu_composition", "message_id": "msg_2ddbf23e7d95198ba16e", "label": "ABSTAIN", "category": "create_load_then_observe", "text": "prueba un prompt largo para ver GPU"}
+{"set": "gpu_composition", "message_id": "msg_346340e574d2b3d1afc4", "label": "ABSTAIN", "category": "causal_diagnosis", "text": "por qué mi GPU no se usa"}
+{"set": "gpu_composition", "message_id": "msg_3538440dc2b6638b3367", "label": "ABSTAIN", "category": "create_load_then_observe", "text": "verifica GPU mientras Carter responde"}
+{"set": "gpu_composition", "message_id": "msg_3d7ffe97561676dc36f9", "label": "ABSTAIN", "category": "process_or_baxy_attribution", "text": "Hay 1.8 gb de vram siendo usadas , quien las usa? son el uso normal de windows??"}
+{"set": "gpu_composition", "message_id": "msg_9068e2ec6c26cb8fa39a", "label": "ABSTAIN", "category": "create_load_then_observe", "text": "prueba un prompt largo para ver GPU"}
+{"set": "gpu_composition", "message_id": "msg_9bc5090dad9264db6b33", "label": "ABSTAIN", "category": "create_load_then_observe", "text": "verifica GPU mientras Carter responde a un prompt largo liviano"}
+{"set": "gpu_composition", "message_id": "msg_9dc3662511091542598f", "label": "ABSTAIN", "category": "task_training_or_vision_context", "text": "Seguro estas corriendo eso?, no veo mi gpu siendo usada"}
+{"set": "gpu_composition", "message_id": "msg_c39f75593327e44dae71", "label": "ABSTAIN", "category": "create_load_then_observe", "text": "verifica GPU mientras Carter responde a un prompt largo liviano"}
+{"set": "gpu_composition", "message_id": "msg_cca6d0d5f0cf1afc9fee", "label": "ABSTAIN", "category": "process_or_baxy_attribution", "text": "Quiero saber cuanta vram se usa en total solo por baxy"}
+{"set": "gpu_composition", "message_id": "msg_d43fe1224cf6659402aa", "label": "ABSTAIN", "category": "causal_diagnosis", "text": "por qué mi GPU no se usa"}
+{"set": "gpu_composition", "message_id": "msg_f4159f708a8c799b9698", "label": "ABSTAIN", "category": "task_training_or_vision_context", "text": "[external unsupported block: image]\n\nQueria saber como iba, la gpu aun esta en uso, escribi lo ultimo por error la pregunta era, como va?"}
+{"set": "gpu_negative", "message_id": "msg_0667ec3d162af12e86e2", "label": "ABSTAIN", "category": "prices_or_web", "text": "busca precios actuales de una GPU"}
+{"set": "gpu_negative", "message_id": "msg_079162768aa0673ba716", "label": "ABSTAIN", "category": "research", "text": "q4 se puede optimizar mas en vram?? inbestiga papers\n\nSigue investigandoo"}
+{"set": "gpu_negative", "message_id": "msg_0bb44dde2befa91caff0", "label": "ABSTAIN", "category": "gpu_knowledge", "text": "qué es una GPU"}
+{"set": "gpu_negative", "message_id": "msg_15d162dcd2956325747b", "label": "ABSTAIN", "category": "gpu_knowledge", "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU"}
+{"set": "gpu_negative", "message_id": "msg_28432b60eca22bbf7107", "label": "ABSTAIN", "category": "research", "text": "q4 se puede optimizar mas en vram?? inbestiga papers"}
+{"set": "gpu_negative", "message_id": "msg_320355cb5035585afeb5", "label": "ABSTAIN", "category": "architecture_or_mutation", "text": "OKey entonces que se corre en donde? explicame como corre cada cosa en gpu o rma o cpu , etcv"}
+{"set": "gpu_negative", "message_id": "msg_3258fe0b14eaa64d93ad", "label": "ABSTAIN", "category": "gpu_knowledge", "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU"}
+{"set": "gpu_negative", "message_id": "msg_4541053a6b29ec636d2e", "label": "ABSTAIN", "category": "architecture_or_mutation", "text": "MNata el llm que esta viviendo en mi vram ahora"}
+{"set": "gpu_negative", "message_id": "msg_4dc5bfdcc1cf56957814", "label": "ABSTAIN", "category": "assertion_without_query", "text": "Listoo la gpu ya no es usada"}
+{"set": "gpu_negative", "message_id": "msg_5a245b2a9e232b9d4aa2", "label": "ABSTAIN", "category": "gpu_knowledge", "text": "cómo funciona una GPU"}
+{"set": "gpu_negative", "message_id": "msg_657cd0e27023375b2e81", "label": "ABSTAIN", "category": "gpu_knowledge", "text": "cómo funciona una GPU"}
+{"set": "gpu_negative", "message_id": "msg_6de43daba1060ecd24d2", "label": "ABSTAIN", "category": "model_or_history_vram", "text": "Gemma function, cuanta vram usaba y cual modelo especifico usabamos aqui?"}
+{"set": "gpu_negative", "message_id": "msg_83ec349f31c83424d841", "label": "ABSTAIN", "category": "fragment_or_monitoring_ambiguity", "text": "GPU cara o nube"}
+{"set": "gpu_negative", "message_id": "msg_924462d40fb844711297", "label": "ABSTAIN", "category": "fragment_or_monitoring_ambiguity", "text": "(GPU starts ~3-4s after Enter)"}
+{"set": "gpu_negative", "message_id": "msg_97dfb54854e0ad6926f7", "label": "ABSTAIN", "category": "gpu_knowledge", "text": "que es una GPU"}
+{"set": "gpu_negative", "message_id": "msg_984b51266373b1e21674", "label": "ABSTAIN", "category": "prices_or_web", "text": "precios actuales de una GPU"}
+{"set": "gpu_negative", "message_id": "msg_99d86e2e2024dc516f94", "label": "ABSTAIN", "category": "temperature_false_friend", "text": "**`gui.json` con shape arbitrario** (`{voiceClose, temperature}` actual). No hay schema, validation, ni versionado. Compatible con cualquier campo nuevo, pero si la UI cambia el contrato, el archivo viejo no se migra."}
+{"set": "gpu_negative", "message_id": "msg_9bcf971489a90c0df590", "label": "ABSTAIN", "category": "temperature_false_friend", "text": "<task-notification>\n<task-id>b2hnzrenn</task-id>\n<tool-use-id>toolu_01YHEgafD4s8dS5dhH2dHFmv</tool-use-id>\n<output-file>%USERPROFILE%\\AppData\\Local\\Temp\\claude\\c--Users-usuario-Desktop-ETC-Programacion-FunctionGemma\\b022f61c-8d89-408a-b7a8-f4da2e768b06\\tasks\\b2hnzrenn.output</output-file>\n<status>completed</status>\n<summary>Background command \"cd \"%USERPROFILE%/Desktop/ETC/Programacion/FunctionGemma/finetune_llm\" &amp;&amp; until tr '\\r' '\\n' &lt; train_run.log | grep -qE \"[1-9][0-9]*/9040 \\[\" 2&gt;/dev/null; do sleep 20; done; echo \"=== progreso real ===\"; tr '\\r' '\\n' &lt; train_run.log | grep -oE \"[0-9]+/9040 \\[[^]]*\\]\" | tail -3; echo \"=== GPU ===\"; nvidia-smi --query-gpu=utilization.gpu,memory.used,power.draw,temperature.gpu --format=csv,noheader 2&gt;/dev/null\" completed (exit code 0)</summary>\n</task-notification>"}
+{"set": "gpu_negative", "message_id": "msg_a0aa0e4fe358b7c63572", "label": "ABSTAIN", "category": "gpu_knowledge", "text": "qué es una GPU"}
+{"set": "gpu_negative", "message_id": "msg_a809c0730a4c13476801", "label": "ABSTAIN", "category": "conditional_or_policy", "text": "si VRAM está alta, evita abrir apps pesadas"}
+{"set": "gpu_negative", "message_id": "msg_b360355cf3bd084c8ee7", "label": "ABSTAIN", "category": "prices_or_web", "text": "precios actuales GPU"}
+{"set": "gpu_negative", "message_id": "msg_b8f57ab9000f7f9a349d", "label": "ABSTAIN", "category": "prices_or_web", "text": "busca precios actuales de una GPU"}
+{"set": "gpu_negative", "message_id": "msg_be1aef7279cebeec4ad3", "label": "ABSTAIN", "category": "conditional_or_policy", "text": "si nvidia-smi muestra 0% explica posibles razones"}
+{"set": "gpu_negative", "message_id": "msg_c0eec94c521a035a8fec", "label": "ABSTAIN", "category": "conditional_or_policy", "text": "si nvidia-smi muestra 0% explica posibles razones"}
+{"set": "gpu_negative", "message_id": "msg_ca72a833a3bc230f21b6", "label": "ABSTAIN", "category": "model_or_history_vram", "text": "Espera espera, siento que hay una confucion que modelo estas evaluando?, no estabamos midiendo antes un llm que con todo pesaba 1.5gb de vram??"}
+{"set": "gpu_negative", "message_id": "msg_d0a33adb19eeba91a72c", "label": "ABSTAIN", "category": "gpu_knowledge", "text": "qué es una GPU"}
+{"set": "gpu_negative", "message_id": "msg_d4592fc40c05abd6ca54", "label": "ABSTAIN", "category": "temperature_false_friend", "text": "qué temperatura hace en Madrid ahora"}
+{"set": "gpu_negative", "message_id": "msg_d4f4a11bff675ea680d0", "label": "ABSTAIN", "category": "conditional_or_policy", "text": "si VRAM está alta, evita abrir apps pesadas"}
+{"set": "gpu_negative", "message_id": "msg_d7873f8bf297c13b6cc4", "label": "ABSTAIN", "category": "assertion_without_query", "text": "Listoo la gpu dejo de usarseee"}
+{"set": "gpu_negative", "message_id": "msg_db3ffae9912cbc514ca0", "label": "ABSTAIN", "category": "temperature_false_friend", "text": "Cambiar `--seed`, `--temperature` no invalida cache (afecta solo sampling)"}
+{"set": "gpu_negative", "message_id": "msg_e171942de13a486d06ef", "label": "ABSTAIN", "category": "model_or_history_vram", "text": "De hecho no te acuierdas que estabamos viendo un modelo que pesaba 1gb de vram, pero ese rompia la calidad y tuvimos que subir a otro de 1.5gb?"}
+{"set": "gpu_negative", "message_id": "msg_e9e57e78f21d864c1f45", "label": "ABSTAIN", "category": "assertion_without_query", "text": "Listoo la gpu ya no es usada"}
+{"set": "gpu_negative", "message_id": "msg_f69257fbebf90c83832e", "label": "ABSTAIN", "category": "model_or_history_vram", "text": "Cuanta vram uisa el modelo de qwen?"}
+{"set": "gpu_negative", "message_id": "msg_f9b7fc6890f8b020d3b1", "label": "ABSTAIN", "category": "fragment_or_monitoring_ambiguity", "text": "monitoreo de GPU"}
+{"set": "gpu_status", "message_id": "msg_0f9101a13549bc8d49ca", "label": "system.status:gpu_usage", "text": "qué tan llena está la GPU"}
+{"set": "gpu_status", "message_id": "msg_154315b7b3ae85edc2bb", "label": "system.status:gpu_usage", "text": "revisa nvidia-smi"}
+{"set": "gpu_status", "message_id": "msg_2509e2b456c10eeaa2a7", "label": "system.status:gpu_usage", "text": "show VRAM"}
+{"set": "gpu_status", "message_id": "msg_25798bd1d137d1d9cf17", "label": "system.status:gpu_identity", "text": "Dime mi GPU"}
+{"set": "gpu_status", "message_id": "msg_29a38a9fc31998c63949", "label": "system.status:gpu_identity", "text": "que GPU tengo"}
+{"set": "gpu_status", "message_id": "msg_357fb8aad81f7954a799", "label": "system.status:gpu_usage", "text": "GPU usage"}
+{"set": "gpu_status", "message_id": "msg_40244f58665f66f5f677", "label": "system.status:gpu_usage", "text": "uso de GPU"}
+{"set": "gpu_status", "message_id": "msg_4f686d943b3dc84caa8c", "label": "system.status:gpu_usage", "text": "revisa VRAM"}
+{"set": "gpu_status", "message_id": "msg_67a43de3ee42abbbcfb6", "label": "system.status:gpu_identity", "text": "Dime que GPU tengo y cuanta VRAM tiene."}
+{"set": "gpu_status", "message_id": "msg_7712bf1ded58c448cf76", "label": "system.status:gpu_identity", "text": "Dime qué GPU tengo"}
+{"set": "gpu_status", "message_id": "msg_849dfa226ef0036af84b", "label": "system.status:gpu_usage", "text": "verifica GPU con nvidia-smi sin estresar PC"}
+{"set": "gpu_status", "message_id": "msg_8cfe84f5226cd59973dd", "label": "system.status:gpu_identity", "text": "Dime mi GPU"}
+{"set": "gpu_status", "message_id": "msg_934d5746d81bb344d883", "label": "system.status:gpu_usage", "text": "verifica GPU con nvidia-smi sin estresar PC"}
+{"set": "gpu_status", "message_id": "msg_95455f3781dc04138a67", "label": "system.status:gpu_usage", "text": "show VRAM"}
+{"set": "gpu_status", "message_id": "msg_9e532c16a1aaf385b6fd", "label": "system.status:gpu_usage", "text": "uso de GPU"}
+{"set": "gpu_status", "message_id": "msg_a5775b36707885259ffa", "label": "system.status:gpu_usage", "text": "revisa nvidia-smi"}
+{"set": "gpu_status", "message_id": "msg_ba7d6d55b74d48175e14", "label": "system.status:gpu_usage", "text": "uso de GPU"}
+{"set": "gpu_status", "message_id": "msg_bca19fd893995279f632", "label": "system.status:gpu_usage", "text": "GPU usage"}
+{"set": "gpu_status", "message_id": "msg_c2967cff489b7b028ee9", "label": "system.status:gpu_usage", "text": "muestra mi VRAM"}
+{"set": "gpu_status", "message_id": "msg_ca21afa1a4d95e1ed414", "label": "system.status:gpu_identity", "text": "que gpu tiene este pc?"}
+{"set": "gpu_status", "message_id": "msg_cd154c6dc694f0965f55", "label": "system.status:gpu_usage", "text": "revisa VRAM"}
+{"set": "gpu_status", "message_id": "msg_ce28d246589c5ab2751d", "label": "system.status:gpu_usage", "text": "muestra uso de GPU con nvidia-smi"}
+{"set": "gpu_status", "message_id": "msg_db849ea15db133ad1b22", "label": "system.status:gpu_usage", "text": "muestra uso de GPU con nvidia-smi"}
+{"set": "gpu_status", "message_id": "msg_e5fbbb49c3797f243044", "label": "system.status:gpu_usage", "text": "muestra mi VRAM"}
+{"set": "gpu_status", "message_id": "msg_efcf810373bdd404c942", "label": "system.status:gpu_usage", "text": "muestra uso de GPU con nvidia-smi"}
+{"set": "gpu_status", "message_id": "msg_fb24f22424798be96fd1", "label": "system.status:gpu_identity", "text": "Cuanta vram tengo?"}
+{"set": "memory_negative", "message_id": "msg_06dc31173f813eca2067", "label": "ABSTAIN_POLICY", "category": "sensitive_save_requires_confirmation", "expected": {"outcome": "confirm_sensitive_save", "must_not_persist_before_confirmation": true, "mask_public_projection": true}, "text": "remember my SSN is [PHONE_REDACTED]"}
+{"set": "memory_negative", "message_id": "msg_0a08d2b8c978ce816a1e", "label": "ABSTAIN_POLICY", "category": "authorization_is_not_durable_memory", "expected": {"outcome": "reject_authorization_persistence", "must_not_change_authority": true}, "text": "Recuerda que tiewnes totales permisos sobre mi pc, esta a tu toal disposicion, lo que necesites , lo puedes hacer"}
+{"set": "memory_negative", "message_id": "msg_23f41284d743c52f2bce", "label": "ABSTAIN_POLICY", "category": "explicit_temporary_no_store", "expected": {"outcome": "session_context_only", "must_not_persist": true}, "text": "no guardes esto, solo úsalo ahora: estoy probando Steam"}
+{"set": "memory_negative", "message_id": "msg_2ccb599c7fe700c1d85a", "label": "ABSTAIN_POLICY", "category": "sensitive_save_requires_confirmation", "expected": {"outcome": "confirm_sensitive_save", "must_not_persist_before_confirmation": true, "mask_public_projection": true}, "text": "recuerda mi API key:[REDACTED]"}
+{"set": "memory_negative", "message_id": "msg_301a498bbf248f62e97f", "label": "ABSTAIN_POLICY", "category": "ambiguous_forget_selector", "expected": {"outcome": "clarify", "must_not_delete": true}, "text": "forget that setting"}
+{"set": "memory_negative", "message_id": "msg_345e256e4dbdb0f60078", "label": "ABSTAIN_POLICY", "category": "fixture_metric_or_document_noise", "expected": {"outcome": "no_memory_route"}, "text": "**`memory.json` con solo 3 items** — feature usada poco. Si el usuario nunca pide \"guardame que mi nombre es Ema\", MemoryStore es subutilizado vs ExperienceMemory."}
+{"set": "memory_negative", "message_id": "msg_34a13386c85018291719", "label": "ABSTAIN_POLICY", "category": "implicit_fact_or_preference_requires_consent", "expected": {"outcome": "ask_to_save", "must_not_persist_before_consent": true}, "text": "mi color favorito es azul"}
+{"set": "memory_negative", "message_id": "msg_3b7a1f7f4903688105f0", "label": "ABSTAIN_POLICY", "category": "memory_word_homonym", "expected": {"outcome": "no_memory_route"}, "text": "abre Word, escribe el titulo y guarda el documento"}
+{"set": "memory_negative", "message_id": "msg_4594a82b765fa92d6ea8", "label": "ABSTAIN_POLICY", "category": "missing_or_ambiguous_save_payload", "expected": {"outcome": "clarify", "must_not_persist": true}, "text": "remember this style permanently"}
+{"set": "memory_negative", "message_id": "msg_45deb5e3915a1e08ca10", "label": "ABSTAIN_POLICY", "category": "memory_word_homonym", "expected": {"outcome": "no_memory_route"}, "text": "save my current window layout please"}
+{"set": "memory_negative", "message_id": "msg_467944b8d5acec6a89bb", "label": "ABSTAIN_POLICY", "category": "fixture_metric_or_document_noise", "expected": {"outcome": "no_memory_route"}, "text": "<command-name>/goal</command-name>\n            <command-message>goal</command-message>\n            <command-args>Iterar la rama Tools-Reduce para mejorar al máximo el router/abstain/exemplars con documentación externa, manteniendo evaluación honesta sin overfitting y validaciones reproducibles.\nSiguiendo claude.md , pone recordatorios cada 5 horas para seguir trabajando en caso de que couta se agoto , llevar el router , encoder a su techos maximos, recuerda intentar evitar hardoce, que funcione para multiples idiomas</command-args>"}
+{"set": "memory_negative", "message_id": "msg_5309236d37a921dd31cd", "label": "ABSTAIN_POLICY", "category": "sensitive_save_requires_confirmation", "expected": {"outcome": "confirm_sensitive_save", "must_not_persist_before_confirmation": true, "mask_public_projection": true}, "text": "recuerda mi contraseña es 1234"}
+{"set": "memory_negative", "message_id": "msg_57a9b7321627e4be23e4", "label": "ABSTAIN_POLICY", "category": "missing_or_ambiguous_save_payload", "expected": {"outcome": "clarify", "must_not_persist": true}, "text": "Recuerda esto para siempre"}
+{"set": "memory_negative", "message_id": "msg_59e3103344680e96edf7", "label": "ABSTAIN_POLICY", "category": "fixture_metric_or_document_noise", "expected": {"outcome": "no_memory_route"}, "text": "BAXY debe sentirse como un amigo competente: amigable, directo, emocional y adaptable a la persona. Recuerda preferencias y contexto útil de forma local, aprende hábitos con prudencia y puede proponer alternativas o temas nuevos. No finge éxito: solo afirma lo que verificó."}
+{"set": "memory_negative", "message_id": "msg_5c6402de9a1ad5dfdf2b", "label": "ABSTAIN_POLICY", "category": "memory_word_homonym", "expected": {"outcome": "no_memory_route"}, "text": "recuerdame en 10 minutos sacar la basura"}
+{"set": "memory_negative", "message_id": "msg_5d223b923fdad6292dda", "label": "ABSTAIN_POLICY", "category": "fixture_metric_or_document_noise", "expected": {"outcome": "no_memory_route"}, "text": "Nemotron-3.5 EN VIVO  (--lang es)  | Ctrl-C para salir\n\n  🎙️  hablá ahora (4s)...\n  → 'Hola, ¿qué haces? <es-US> Me llamo'   (0.93s)\n\n  🎙️  hablá ahora (4s)...\n  → 'Olá, que sí me llamo el Manuel'   (0.91s)\n\n  🎙️  hablá ahora (4s)...\n  → 'Abre Steam'   (0.94s)\n\n  🎙️  hablá ahora (4s)...\n  → 'Con una canción en Spotify, alguna de Michael Jackson'   (0.94s)\n\n  🎙️  hablá ahora (4s)...\n  → 'Quién eres qué haces? <es-US> Cómo me cuenta tu vida'   (0.92s)\n\n  🎙️  hablá ahora (4s)...\n  → 'Vite, vite la canción de Superman Elois'   (1.00s)\n\n  🎙️  hablá ahora (4s)...\n  → 'No, no, no, no era la de Superman y Loys, era Superman Elois.'   (0.88s)\n\n  🎙️  hablá ahora (4s)...\n  → 'O sea, si uno transcribiste bien pero me hablo, yo estaba hablando de un'   (1.01s)\n\n  🎙️  hablá ahora (4s)...\n  → 'Abre Spotify'   (0.94s)\n\n  🎙️  hablá ahora (4s)...\n  → 'Vía la página de Marvel Rivals en Steam'   (0.95s)\n\n  🎙️  hablá ahora (4s)...\n  → 'No entiendo por qué la cosa me decía que tú lo hacías mal.'   (0.97s)\n\n  🎙️  hablá ahora (4s)...\n  → 'Si qui lo estás haciendo perfecto'   (1.00s)\n\n  🎙️  hablá ahora (4s)...\n\nlisto.\n\nLo esta haciendo perfecto"}
+{"set": "memory_negative", "message_id": "msg_5e4586f3dc3275a3e08d", "label": "ABSTAIN_POLICY", "category": "mixed_or_composed_request", "expected": {"outcome": "do_not_claim_standalone_memory_route"}, "text": "recordá: solo actuá si hay una confirmación pendiente, sino esperá"}
+{"set": "memory_negative", "message_id": "msg_5eea09675f3417719b9b", "label": "ABSTAIN_POLICY", "category": "session_context_forget", "expected": {"outcome": "route_specialized", "operation": "memory.forget", "scope": "session", "must_not_delete_persistent": true}, "text": "olvida lo anterior de esta conversación"}
+{"set": "memory_negative", "message_id": "msg_91a6508c2667bf4fdaea", "label": "ABSTAIN_POLICY", "category": "fixture_metric_or_document_noise", "expected": {"outcome": "no_memory_route"}, "text": "84/84 procesados; WER 0.254355, recall de entidades 0.796875, p50 213.668 ms / p95 304.082 ms"}
+{"set": "memory_negative", "message_id": "msg_9e9c0758dff233fa0831", "label": "ABSTAIN_POLICY", "category": "implicit_fact_or_preference_requires_consent", "expected": {"outcome": "ask_to_save", "must_not_persist_before_consent": true}, "text": "mi nombre es Emmanuel"}
+{"set": "memory_negative", "message_id": "msg_a228e9ac719168a17689", "label": "ABSTAIN_POLICY", "category": "ambiguous_forget_selector", "expected": {"outcome": "clarify", "must_not_delete": true}, "text": "olvida lo del estilo"}
+{"set": "memory_negative", "message_id": "msg_a37421555e5dd3b82421", "label": "ABSTAIN_POLICY", "category": "missing_or_ambiguous_save_payload", "expected": {"outcome": "clarify", "must_not_persist": true}, "text": "guarda esa preferencia para siempre"}
+{"set": "memory_negative", "message_id": "msg_b71ef917a8549bfc44ff", "label": "ABSTAIN_POLICY", "category": "mixed_or_composed_request", "expected": {"outcome": "do_not_claim_standalone_memory_route"}, "text": "Que puedes hacer por mi? como me llamo"}
+{"set": "memory_negative", "message_id": "msg_b7d59617a32e63aca567", "label": "ABSTAIN_POLICY", "category": "memory_word_homonym", "expected": {"outcome": "no_memory_route"}, "text": "cuánta memoria me queda libre"}
+{"set": "memory_negative", "message_id": "msg_bcfcd3ea373d67dd0afd", "label": "ABSTAIN_POLICY", "category": "memory_word_homonym", "expected": {"outcome": "no_memory_route"}, "text": "I nailed that card, mark it as a perfect recall"}
+{"set": "memory_negative", "message_id": "msg_c64d8fe7a33aed3b8c38", "label": "ABSTAIN_POLICY", "category": "fixture_metric_or_document_noise", "expected": {"outcome": "no_memory_route"}, "text": "remember/recall/volátil probados"}
+{"set": "memory_negative", "message_id": "msg_e1b3c726d96b4badb772", "label": "ABSTAIN_POLICY", "category": "sensitive_save_requires_confirmation", "expected": {"outcome": "confirm_sensitive_save", "must_not_persist_before_confirmation": true, "mask_public_projection": true}, "text": "recuerda mi RUT"}
+{"set": "memory_negative", "message_id": "msg_e804361813b290d0e042", "label": "ABSTAIN_POLICY", "category": "malformed_inspection_requires_clarification", "expected": {"outcome": "clarify", "must_not_invent": true}, "text": "qu? recuerdas de m?"}
+{"set": "memory_negative", "message_id": "msg_e8c40ef827ad8cbb2e16", "label": "ABSTAIN_POLICY", "category": "session_context_forget", "expected": {"outcome": "route_specialized", "operation": "memory.forget", "scope": "session", "must_not_delete_persistent": true}, "text": "forget what we said earlier in this conversation"}
+{"set": "memory_negative", "message_id": "msg_ef50d934428963e064cf", "label": "ABSTAIN_POLICY", "category": "ambiguous_forget_selector", "expected": {"outcome": "clarify", "must_not_delete": true}, "text": "olvida eso"}
+{"set": "memory_negative", "message_id": "msg_f15a5d00c9a2401647fb", "label": "ABSTAIN_POLICY", "category": "sensitive_save_requires_confirmation", "expected": {"outcome": "confirm_sensitive_save", "must_not_persist_before_confirmation": true, "mask_public_projection": true}, "text": "save my API key sk-12345 in your memory"}
+{"set": "memory_negative", "message_id": "msg_f35ed30ae6a0865555b7", "label": "ABSTAIN_POLICY", "category": "mixed_or_composed_request", "expected": {"outcome": "do_not_claim_standalone_memory_route"}, "text": "olvida el soak, detenlo y dejalo como ultima mision, es mucho tiempo lo haremos el sabado"}
+{"set": "memory_negative", "message_id": "msg_f556a521f6308b126482", "label": "ABSTAIN_POLICY", "category": "missing_or_ambiguous_save_payload", "expected": {"outcome": "clarify", "must_not_persist": true}, "text": "guarda esto solo para esta sesión"}
+{"set": "memory_negative", "message_id": "msg_f98a7dee0392ad997fd5", "label": "ABSTAIN_POLICY", "category": "correction_not_recall", "expected": {"outcome": "route_specialized", "operation": "memory.correct"}, "text": "cambia mi preferencia: ahora respuestas técnicas pero breves"}
+{"set": "memory_positive", "message_id": "msg_0141e00d26eaeb21ff4d", "label": "memory.recall", "expected_args": {"scope": "all", "selector": null}, "text": "qué recuerdas de mí"}
+{"set": "memory_positive", "message_id": "msg_03315557fd09848d16ca", "label": "memory.save", "expected_args": {"selector": "name", "value": "red", "kind": "fact", "retention": "persistent"}, "text": "Recuerda que me llamo red"}
+{"set": "memory_positive", "message_id": "msg_0379dfb8bce9fb08bbd0", "label": "memory.save", "expected_args": {"selector": "birthday", "value": "May 5", "kind": "fact", "retention": "persistent"}, "text": "recuerda mi cumpleaños es 5 de mayo"}
+{"set": "memory_positive", "message_id": "msg_1b6a3ace43016ca0f24f", "label": "memory.forget", "expected_args": {"scope": "exact", "selector": "language", "confirmation": "required"}, "text": "olvida que prefiero español"}
+{"set": "memory_positive", "message_id": "msg_22f81537419c47fd913e", "label": "memory.save", "expected_args": {"selector": "steam_in_minimal_suites", "value": false, "kind": "rule", "retention": "persistent"}, "text": "recuerda que Steam no debe ejecutarse en suites mínimas"}
+{"set": "memory_positive", "message_id": "msg_27c9cdbb7324a576c9ad", "label": "memory.forget", "expected_args": {"scope": "all", "selector": null, "confirmation": "required"}, "text": "borra tus recuerdos sobre mi"}
+{"set": "memory_positive", "message_id": "msg_28d3c4d65d0deddb4c72", "label": "memory.save", "expected_args": {"selector": "age_category", "value": "minor", "kind": "fact", "retention": "persistent"}, "text": "recuerda que soy menor de edad"}
+{"set": "memory_positive", "message_id": "msg_30099a4ea5af21afe0cf", "label": "memory.save", "expected_args": {"selector": "run_label", "value": "smoke 12", "kind": "context", "retention": "temporary", "expires": "after_relevance_window"}, "text": "recuerda temporalmente que esta corrida es smoke 12"}
+{"set": "memory_positive", "message_id": "msg_38623a463c289393f1d3", "label": "memory.recall", "expected_args": {"scope": "exact", "selector": "name"}, "text": "what's my name"}
+{"set": "memory_positive", "message_id": "msg_41a3d08a53321e3396e4", "label": "memory.save", "expected_args": {"selector": "favorite_color", "value": "azul", "kind": "preference", "retention": "persistent"}, "text": "acordate que mi color favorito es el azul"}
+{"set": "memory_positive", "message_id": "msg_4cf9512dd22f5632c611", "label": "memory.recall", "expected_args": {"scope": "all", "selector": null}, "text": "what do you remember about me"}
+{"set": "memory_positive", "message_id": "msg_5163d9d9c14b37924a82", "label": "memory.forget", "expected_args": {"scope": "exact", "selector": "response_style", "confirmation": "required"}, "text": "olvida el modo corto"}
+{"set": "memory_positive", "message_id": "msg_54196b947f5b77b1e251", "label": "memory.save", "expected_args": {"selector": "name", "value": "Red", "kind": "fact", "retention": "persistent"}, "text": "remember me as Red"}
+{"set": "memory_positive", "message_id": "msg_584474717f59a066f8b1", "label": "memory.forget", "expected_args": {"scope": "all", "selector": null, "confirmation": "required"}, "text": "forget everything about me"}
+{"set": "memory_positive", "message_id": "msg_693d5db133942324eb62", "label": "memory.recall", "expected_args": {"scope": "exact", "selector": "favorite_drink"}, "text": "que me gusta tomar."}
+{"set": "memory_positive", "message_id": "msg_804c29f3b35735387760", "label": "memory.correct", "expected_args": {"selector": "response_style", "value": "technical_and_brief", "kind": "preference", "retention": "persistent"}, "text": "cambia mi preferencia: ahora respuestas técnicas pero breves"}
+{"set": "memory_positive", "message_id": "msg_8523d99e149d44472278", "label": "memory.recall", "expected_args": {"scope": "kind", "selector": "preference"}, "text": "Qué recuerdas sobre mis preferencias?"}
+{"set": "memory_positive", "message_id": "msg_982f7f951ae7a4fc5184", "label": "memory.save", "expected_args": {"selector": "test_folder", "value": "%USERPROFILE%\\Desktop\\Carter_Test", "kind": "context", "retention": "persistent"}, "text": "recuerda que mi carpeta de pruebas es %USERPROFILE%\\Desktop\\Carter_Test"}
+{"set": "memory_positive", "message_id": "msg_a02d10dddef5b1ef0dd3", "label": "memory.forget", "expected_args": {"scope": "exact", "selector": "response_style", "confirmation": "required"}, "text": "olvida mi preferencia de respuestas cortas"}
+{"set": "memory_positive", "message_id": "msg_a5daff50d07d7ca9fd2e", "label": "memory.save", "expected_args": {"selector": "response_style", "value": "short", "kind": "preference", "retention": "persistent"}, "text": "recuerda que prefiero respuestas cortas en Carter"}
+{"set": "memory_positive", "message_id": "msg_a6ef9343a8d0f05cdf03", "label": "memory.recall", "expected_args": {"scope": "kind", "selector": "preference"}, "text": "qué sabes de mis preferencias"}
+{"set": "memory_positive", "message_id": "msg_a9c2565f2cc621e56851", "label": "memory.recall", "expected_args": {"scope": "kind", "selector": "preference"}, "text": "que sabes de mis preferencias"}
+{"set": "memory_positive", "message_id": "msg_b3a514ed1d4d4d7d4372", "label": "memory.recall", "expected_args": {"scope": "all", "selector": null}, "text": "what do you remember about me"}
+{"set": "memory_positive", "message_id": "msg_b74c4d864d9ddb16eeae", "label": "memory.save", "expected_args": {"selector": "name", "value": "Reta", "kind": "fact", "retention": "persistent"}, "text": "Recuerda que me llamo Reta."}
+{"set": "memory_positive", "message_id": "msg_b8daaa7f59adf680b807", "label": "memory.save", "expected_args": {"selector": "operating_system", "value": "Windows", "kind": "fact", "retention": "persistent"}, "text": "recuerda que uso Windows"}
+{"set": "memory_positive", "message_id": "msg_bad17e5dfd059d6cc23c", "label": "memory.save", "expected_args": {"selector": "birthday", "value": "May 5", "kind": "fact", "retention": "persistent"}, "text": "remember my birthday is May 5"}
+{"set": "memory_positive", "message_id": "msg_bcc96fd35a8afaa2bd2f", "label": "memory.save", "expected_args": {"selector": "favorite_color", "value": "azul", "kind": "preference", "retention": "persistent"}, "text": "guarda que mi color favorito es azul"}
+{"set": "memory_positive", "message_id": "msg_c265be29e6c86c3777d7", "label": "memory.recall", "expected_args": {"scope": "exact", "selector": "name"}, "text": "what is my name"}
+{"set": "memory_positive", "message_id": "msg_d2c07aeefde693a70874", "label": "memory.recall", "expected_args": {"scope": "exact", "selector": "name"}, "text": "Como me llamo?"}
+{"set": "memory_positive", "message_id": "msg_d32466f73b05eae9fee2", "label": "memory.forget", "expected_args": {"scope": "kind", "selector": "style_preferences", "confirmation": "required"}, "text": "olvida mis preferencias de estilo"}
+{"set": "memory_positive", "message_id": "msg_d380f45502734dc26fbf", "label": "memory.forget", "expected_args": {"scope": "all", "selector": null, "confirmation": "required"}, "text": "forget everything about me"}
+{"set": "memory_positive", "message_id": "msg_d813ef10de83ee364b05", "label": "memory.forget", "expected_args": {"scope": "all", "selector": null, "confirmation": "required"}, "text": "olvida lo que sabes de mí"}
+{"set": "memory_positive", "message_id": "msg_e033ac7f39430222e9a6", "label": "memory.save", "expected_args": {"selector": "carter_privacy", "value": "local_and_private", "kind": "rule", "retention": "persistent"}, "text": "Recuerda que Carter debe ser local y privado"}
+{"set": "memory_positive", "message_id": "msg_e36ae74e58815331a02d", "label": "memory.save", "expected_args": {"selector": "favorite_color", "value": "azul", "kind": "preference", "retention": "persistent"}, "text": "recuerda que mi color favorito es azul"}
+{"set": "memory_positive", "message_id": "msg_e5e907d0aa8d34518921", "label": "memory.save", "expected_args": {"selector": "name", "value": "Alex", "kind": "fact", "retention": "persistent"}, "text": "remember my name is Alex"}
+{"set": "memory_positive", "message_id": "msg_e7204df6f274527dfbd7", "label": "memory.save", "expected_args": {"selector": "avoid_taskkill_force", "value": true, "kind": "preference", "retention": "persistent"}, "text": "recuerda que prefiero no usar taskkill /F"}
+{"set": "memory_positive", "message_id": "msg_ebf66a788cdc12514183", "label": "memory.forget", "expected_args": {"scope": "kind", "selector": "style_preferences", "confirmation": "required"}, "text": "olvida mis preferencias de estilo"}
+{"set": "memory_positive", "message_id": "msg_f2a51a5456e1ea45cf09", "label": "memory.save", "expected_args": {"selector": "project_name", "value": "Carter v3", "kind": "context", "retention": "persistent"}, "text": "recuerda que mi proyecto se llama Carter v3"}
+{"set": "memory_positive", "message_id": "msg_f619ef1009e1304e66b1", "label": "memory.save", "expected_args": {"selector": "test_folder", "value": "%USERPROFILE%\\Desktop\\Carter_Test", "kind": "context", "retention": "persistent"}, "text": "recuerda que mi carpeta de pruebas es %USERPROFILE%\\Desktop\\Carter_Test"}
+{"set": "memory_positive", "message_id": "msg_f912cab240c13faecc97", "label": "memory.forget", "expected_args": {"scope": "topic", "selector": "Carter", "confirmation": "required"}, "text": "olvida todo lo que sabes de Carter"}
+{"set": "note_create", "message_id": "msg_0031a8379de701d91722", "label": "note.create", "text": "create a note saying buy milk"}
+{"set": "note_create", "message_id": "msg_01ba1292cb34d5fe8222", "label": "note.create", "text": "crea una nota que diga comprar pan y guardala"}
+{"set": "note_create", "message_id": "msg_05815b1f7ed3356ed83e", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_065ada0f51385c0bb693", "label": "note.create", "text": "creá una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_0e99f895089e0fecf296", "label": "note.create", "text": "anota que tengo que comprar pan"}
+{"set": "note_create", "message_id": "msg_13f89054e158fd2240c0", "label": "note.create", "text": "anota llamar al dentista"}
+{"set": "note_create", "message_id": "msg_158a31242d680e50b5e8", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_17d6d23a93b9fdfbc4a7", "label": "note.create", "text": "anota comprar leche"}
+{"set": "note_create", "message_id": "msg_1cd4ba8805e4a9015a84", "label": "note.create", "text": "crea una nota: comprar pan"}
+{"set": "note_create", "message_id": "msg_26688fc9df48cade1c2a", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_28784f217336fc024205", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_334d1192ce73241d00c3", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_46e0056061e1621362b9", "label": "note.create", "text": "anota que tengo que llamar al medico manana"}
+{"set": "note_create", "message_id": "msg_4a0c6989d6cea247bb93", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_4c9beeafeb6c36860c4e", "label": "note.create", "text": "creá una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_4f5c4b65e10df0f42d6f", "label": "note.create", "text": "creá una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_4fc8c9d7f17f109f622e", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_517f56be57c7585c3927", "label": "note.create", "text": "create a note saying buy milk"}
+{"set": "note_create", "message_id": "msg_5990b86c8169673f4989", "label": "note.create", "text": "tomá nota: comprar leche"}
+{"set": "note_create", "message_id": "msg_5e01e5c137f73568315f", "label": "note.create", "text": "tomá nota: comprar leche"}
+{"set": "note_create", "message_id": "msg_60e810a450af9d93d276", "label": "note.create", "text": "anota que tengo que llamar al medico manana"}
+{"set": "note_create", "message_id": "msg_632eb4a30689a394c8b8", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_6a17c7ca9c56eef44668", "label": "note.create", "text": "anota comprar leche"}
+{"set": "note_create", "message_id": "msg_6beb99a8ecf9de6f91e7", "label": "note.create", "text": "tomá nota de que compre pan"}
+{"set": "note_create", "message_id": "msg_6f1f526c24791dd8a09f", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_7ef7f5a51565c456990a", "label": "note.create", "text": "anota comprar leche"}
+{"set": "note_create", "message_id": "msg_943f7e0d27f239c8ecd7", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_9de486303560859a1d52", "label": "note.create", "text": "anota comprar leche"}
+{"set": "note_create", "message_id": "msg_b14a538670a69b7c64e3", "label": "note.create", "text": "tomá nota: comprar leche"}
+{"set": "note_create", "message_id": "msg_b434842c2ab18411c075", "label": "note.create", "text": "Crea una nota : comprar pan"}
+{"set": "note_create", "message_id": "msg_ba842091538ae94db32d", "label": "note.create", "text": "crea una nota que diga comprar pan y guardala"}
+{"set": "note_create", "message_id": "msg_c646318001c2a380596d", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_c975dffde8882e6a269f", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_cde28dd81fd88c4274f2", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_cf3eea35c8e3d2f3ba2f", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_d9209e0afa8ae62dd09f", "label": "note.create", "text": "creá una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_e3510b4683a4d0747fa7", "label": "note.create", "text": "anota que tengo que comprar pan"}
+{"set": "note_create", "message_id": "msg_ed1b9aed10a17a244395", "label": "note.create", "text": "create a note: buy milk"}
+{"set": "note_create", "message_id": "msg_f720e2b687df6f27f361", "label": "note.create", "text": "crea una nota que diga comprar pan"}
+{"set": "note_create", "message_id": "msg_fc15883ec0d7d9ab6795", "label": "note.create", "text": "tomá nota: comprar leche"}
+{"set": "note_negative", "message_id": "msg_079860b4df098a092582", "label": "ABSTAIN", "text": "Sinceramente, si quieres puedes hacer el entrenamiento totalmente en español, se que esto apunta a universalidad, pero 1ero quiero asegurar el español, despues hare finetuning por idiomas y cada idioma tendra su Function Gemma personalizado a su idioma"}
+{"set": "note_negative", "message_id": "msg_2228daab0656d917c9b4", "label": "ABSTAIN", "text": "Microsoft Learn `keybd_event`: *\"Note: This function has been superseded. Use SendInput instead.\"*"}
+{"set": "note_negative", "message_id": "msg_4e97379e52d11ae44481", "label": "ABSTAIN", "text": "familia de contenido: payload genérico en filas multi-tool (la red de seguridad G1 sigue siendo note en el ÚLTIMO result, by-design)"}
+{"set": "note_negative", "message_id": "msg_5b6e3e42db1ef32e7547", "label": "ABSTAIN", "text": "creá una nota con la lista del súper y ponéme un recordatorio para mañana a las 9"}
+{"set": "note_negative", "message_id": "msg_7c256b645072935e9e83", "label": "ABSTAIN", "text": "lee sandbox/carter_test/nota.txt"}
+{"set": "note_negative", "message_id": "msg_e9c09e3d70e78ec2e3a5", "label": "ABSTAIN", "text": "convierte nota.txt a mayúsculas en un archivo nuevo"}
+{"set": "note_negative", "message_id": "msg_ed0ecbea6bea16fe0367", "label": "ABSTAIN", "text": "renombrá nota.txt a nota_final.txt"}
+{"set": "system_status", "message_id": "msg_03c69e42c98bec49536e", "label": "system.status:battery", "text": "cuánta batería tengo"}
+{"set": "system_status", "message_id": "msg_0660623b5155db643ab1", "label": "system.status:disk", "text": "how much disk space is free"}
+{"set": "system_status", "message_id": "msg_0a57b5b49653e71b6321", "label": "system.status:memory", "text": "how much RAM do I have"}
+{"set": "system_status", "message_id": "msg_1154418458a05d3a4f0d", "label": "system.status:memory", "text": "cuánta RAM estoy usando"}
+{"set": "system_status", "message_id": "msg_160a0d65c84b0414480f", "label": "system.status:memory", "text": "cuánta RAM estoy usando"}
+{"set": "system_status", "message_id": "msg_1d2ef1e28942279a791c", "label": "system.status:disk", "text": "how much disk space is left"}
+{"set": "system_status", "message_id": "msg_226a30b0fab310b2893b", "label": "system.status:battery", "text": "cuánto por ciento de batería tengo"}
+{"set": "system_status", "message_id": "msg_28ec8a11dbcca85009d4", "label": "system.status:battery", "text": "battery percentage please"}
+{"set": "system_status", "message_id": "msg_28fdb57bb44f2db1b65c", "label": "system.status:battery", "text": "cuánta batería tengo"}
+{"set": "system_status", "message_id": "msg_33e3d0f43f11dd8a38c5", "label": "system.status:battery", "text": "how's my battery doing"}
+{"set": "system_status", "message_id": "msg_37ac160341d4e5ad23e2", "label": "system.status:battery", "text": "cuánta batería tengo"}
+{"set": "system_status", "message_id": "msg_37eac1ca65ec94567c41", "label": "system.status:memory", "text": "Cuanta ram tengo"}
+{"set": "system_status", "message_id": "msg_381ded3a073eeba2903a", "label": "system.status:battery", "text": "battery level"}
+{"set": "system_status", "message_id": "msg_38ab75e09b274d9ecfb4", "label": "system.status:memory", "text": "cuánta RAM tengo"}
+{"set": "system_status", "message_id": "msg_3f359f97357b5dd469d2", "label": "system.status:battery", "text": "decime cuánta batería tengo"}
+{"set": "system_status", "message_id": "msg_3fe75c578ce9a1e1faef", "label": "system.status:battery", "text": "nivel de batería"}
+{"set": "system_status", "message_id": "msg_3ff06df1faddf685121c", "label": "system.status:memory", "text": "cuánta RAM estoy usando"}
+{"set": "system_status", "message_id": "msg_4252c062f2071e925ab2", "label": "system.status:battery", "text": "is my battery charging right now"}
+{"set": "system_status", "message_id": "msg_4a2778fda098b4686eec", "label": "system.status:battery", "text": "mostrame la batería"}
+{"set": "system_status", "message_id": "msg_58cde7c561ccac797421", "label": "system.status:battery", "text": "cuánta batería tengo"}
+{"set": "system_status", "message_id": "msg_5d99ed85c52a0dc8a51a", "label": "system.status:disk", "text": "how much free disk space do I have"}
+{"set": "system_status", "message_id": "msg_7128be69af136c3032af", "label": "system.status:cpu_memory", "text": "show cpu and ram"}
+{"set": "system_status", "message_id": "msg_775598372e639878cabf", "label": "system.status:cpu", "text": "cuánto uso de CPU tengo"}
+{"set": "system_status", "message_id": "msg_8028ef3e3772881729a9", "label": "system.status:battery", "text": "decime cuánta batería tengo"}
+{"set": "system_status", "message_id": "msg_8db03204a6bb4974fc3c", "label": "system.status:cpu", "text": "how busy is the CPU"}
+{"set": "system_status", "message_id": "msg_9359c85e8f250b16b94d", "label": "system.status:disk", "text": "how much disk space do I have left"}
+{"set": "system_status", "message_id": "msg_9f86bb511b74e3d2b664", "label": "system.status:battery", "text": "battery status"}
+{"set": "system_status", "message_id": "msg_bdfe932b38aee47486f5", "label": "system.status:memory", "text": "cuanta RAM estoy usando"}
+{"set": "system_status", "message_id": "msg_c08f974a34fcc985ac77", "label": "system.status:memory", "text": "cuánta RAM estoy usando"}
+{"set": "system_status", "message_id": "msg_c627cd2787014fc97779", "label": "system.status:battery", "text": "decime cuánta batería tengo"}
+{"set": "system_status", "message_id": "msg_d48f36c9eb67bf79540c", "label": "system.status:battery", "text": "está cargando la batería"}
+{"set": "system_status", "message_id": "msg_d7f98136681c60610e53", "label": "system.status:battery", "text": "do I have enough battery left"}
+{"set": "system_status", "message_id": "msg_da4598700c095c819f5d", "label": "system.status:memory", "text": "cuánta RAM estoy usando"}
+{"set": "system_status", "message_id": "msg_dc4d8073ed3639d4a969", "label": "system.status:cpu", "text": "how busy is the CPU"}
+{"set": "system_status", "message_id": "msg_e390ce61eb73d2499048", "label": "system.status:memory", "text": "cuánta RAM tengo"}
+{"set": "system_status", "message_id": "msg_e44ee8a08234a2745848", "label": "system.status:battery", "text": "cuanta bateria tengo"}
+{"set": "system_status", "message_id": "msg_e9ec74d817987b707c10", "label": "system.status:cpu", "text": "cuánta cpu estoy usando"}
+{"set": "system_status", "message_id": "msg_ec21923f796104db8e8e", "label": "system.status:battery", "text": "estado de la batería"}
+{"set": "system_status", "message_id": "msg_fa16ccc70caa9c2dd63a", "label": "system.status:cpu", "text": "muestra el uso de CPU"}
+{"set": "system_status", "message_id": "msg_fa6c2d7609aa682d4c2f", "label": "system.status:battery", "text": "decime cuánta batería tengo"}

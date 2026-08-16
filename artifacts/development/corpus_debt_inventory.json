@@ -1,0 +1,119 @@
+{
+  "schema": "baxy.corpus-debt-inventory.v1",
+  "authority": "inventory only; no corpus edited, no holdout opened, no model invoked",
+  "catalog_operations": 169,
+  "corpora_discovered": 8,
+  "per_corpus": {
+    "artifacts\\development\\catalog_seen_scenarios_r2_dependency_complete.jsonl": {
+      "rows": 169,
+      "unknown_operation": [],
+      "family_conflict": [],
+      "reminder_notification_conflict": [],
+      "language_conflict": [],
+      "counts": {
+        "unknown_operation": 0,
+        "family_conflict": 0,
+        "reminder_notification_conflict": 0,
+        "language_conflict": 0
+      }
+    },
+    "artifacts\\holdout\\catalog_surface_current_tree_r1.jsonl": {
+      "rows": 169,
+      "unknown_operation": [],
+      "family_conflict": [],
+      "reminder_notification_conflict": [],
+      "language_conflict": [],
+      "counts": {
+        "unknown_operation": 0,
+        "family_conflict": 0,
+        "reminder_notification_conflict": 0,
+        "language_conflict": 0
+      }
+    },
+    "artifacts\\holdout\\catalog_surface_current_tree_r2.jsonl": {
+      "rows": 169,
+      "unknown_operation": [],
+      "family_conflict": [],
+      "reminder_notification_conflict": [],
+      "language_conflict": [],
+      "counts": {
+        "unknown_operation": 0,
+        "family_conflict": 0,
+        "reminder_notification_conflict": 0,
+        "language_conflict": 0
+      }
+    },
+    "artifacts\\holdout\\catalog_surface_holdout_r22.jsonl": {
+      "rows": 169,
+      "unknown_operation": [],
+      "family_conflict": [],
+      "reminder_notification_conflict": [],
+      "language_conflict": [],
+      "counts": {
+        "unknown_operation": 0,
+        "family_conflict": 0,
+        "reminder_notification_conflict": 0,
+        "language_conflict": 0
+      }
+    },
+    "artifacts\\holdout\\catalog_surface_holdout_r23.jsonl": {
+      "rows": 169,
+      "unknown_operation": [],
+      "family_conflict": [],
+      "reminder_notification_conflict": [],
+      "language_conflict": [],
+      "counts": {
+        "unknown_operation": 0,
+        "family_conflict": 0,
+        "reminder_notification_conflict": 0,
+        "language_conflict": 0
+      }
+    },
+    "artifacts\\holdout\\catalog_surface_holdout_r24.jsonl": {
+      "rows": 169,
+      "unknown_operation": [],
+      "family_conflict": [],
+      "reminder_notification_conflict": [],
+      "language_conflict": [],
+      "counts": {
+        "unknown_operation": 0,
+        "family_conflict": 0,
+        "reminder_notification_conflict": 0,
+        "language_conflict": 0
+      }
+    },
+    "artifacts\\holdout\\catalog_surface_holdout_r25.jsonl": {
+      "rows": 169,
+      "unknown_operation": [],
+      "family_conflict": [],
+      "reminder_notification_conflict": [],
+      "language_conflict": [],
+      "counts": {
+        "unknown_operation": 0,
+        "family_conflict": 0,
+        "reminder_notification_conflict": 0,
+        "language_conflict": 0
+      }
+    },
+    "artifacts\\holdout\\catalog_surface_holdout_r26.jsonl": {
+      "rows": 169,
+      "unknown_operation": [],
+      "family_conflict": [],
+      "reminder_notification_conflict": [],
+      "language_conflict": [],
+      "counts": {
+        "unknown_operation": 0,
+        "family_conflict": 0,
+        "reminder_notification_conflict": 0,
+        "language_conflict": 0
+      }
+    }
+  },
+  "totals": {
+    "unknown_operation": 0,
+    "family_conflict": 0,
+    "reminder_notification_conflict": 0,
+    "language_conflict": 0,
+    "rows": 1352
+  }
+}

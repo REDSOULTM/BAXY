@@ -1,0 +1,293 @@
+{
+  "schema": "baxy.wav2vec2-hidden-wake-expanded-development-audit.v1",
+  "measured_at_utc": "2026-08-06T01:46:35.750835+00:00",
+  "scope": "expanded_development_only_speaker_held_out",
+  "sources": {
+    "legacy_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+    "expanded_manifest_sha256": "8c505d4abbf092404f71aa9c313ff2b4054a8c15f68721bbb4ccdae076a9c2b2",
+    "frozen_audit_sha256": "82a572dd01c6ee8c782621b44863941f7b9b92770f61cc4537c3bf684e1d2cc2",
+    "model_weights_sha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e"
+  },
+  "frozen_embedding": {
+    "layer": 2,
+    "window_duration_seconds": 0.35,
+    "pooling": "max",
+    "positive_and_hard_negative": "ground_truth_aligned_window",
+    "matched_negative": "all_20ms_sliding_windows_max_score",
+    "cross_validation": "leave_one_canonical_speaker_group_out_nearest_centroid"
+  },
+  "metrics": {
+    "speaker_held_out_auc": 0.7083333333333333,
+    "threshold_zero_positive_accepted": 17,
+    "threshold_zero_positive_total": 18,
+    "threshold_zero_hard_negative_false": 11,
+    "threshold_zero_hard_negative_total": 12,
+    "diagnostic_zero_false_threshold": 0.03568947315216065,
+    "diagnostic_zero_false_positive_accepted": 3,
+    "diagnostic_zero_false_positive_rate": 0.16666666666666666,
+    "by_label_at_diagnostic_zero_false_threshold": {
+      "positive": {
+        "accepted": 3,
+        "total": 18,
+        "rate": 0.16666666666666666
+      },
+      "hard_negative": {
+        "accepted": 0,
+        "total": 4,
+        "rate": 0.0
+      },
+      "matched_negative": {
+        "accepted": 0,
+        "total": 8,
+        "rate": 0.0
+      }
+    }
+  },
+  "records": [
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_score": 0.030260443687438965
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_score": 0.02154386043548584
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_score": 0.019587039947509766
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_score": -0.027581512928009033
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_score": 0.030990123748779297
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_score": 0.009536206722259521
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_score": 0.011789381504058838
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "source_id": "LNZyJcCArhc",
+      "speaker_group": "jesus_marcos",
+      "label": "positive",
+      "speaker_held_out_score": 0.026354670524597168
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_score": 0.03921478986740112
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_score": 0.03563052415847778
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_score": 0.0392833948135376
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_score": 0.026057839393615723
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_score": 0.025767922401428223
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "source_id": "BJLgprj4ztE",
+      "speaker_group": "baxi_ferrol_welcome_narrator",
+      "label": "positive",
+      "speaker_held_out_score": 0.04117560386657715
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "source_id": "jYChxFZPNNQ",
+      "speaker_group": "tarang_bakshi",
+      "label": "hard_negative",
+      "speaker_held_out_score": 0.011465847492218018
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "source_id": "olFKsOxLG8k",
+      "speaker_group": "upendra_bakshi",
+      "label": "hard_negative",
+      "speaker_held_out_score": 0.015268266201019287
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "source_id": "S_7-Gxa6ANU",
+      "speaker_group": "mahesh_faxi",
+      "label": "hard_negative",
+      "speaker_held_out_score": 0.004723906517028809
+    },
+    {
+      "corpus": "legacy",
+      "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "source_id": "PuSaeFStpwc",
+      "speaker_group": "viplav_vaxi",
+      "label": "hard_negative",
+      "speaker_held_out_score": -0.01192086935043335
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "positive/EeLqy-j3Ji8_00_positive.wav",
+      "source_id": "EeLqy-j3Ji8",
+      "speaker_group": "uploader_el_ganxo",
+      "label": "positive",
+      "speaker_held_out_score": 0.03297579288482666
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "matched_negative/EeLqy-j3Ji8_00_matched_negative.wav",
+      "source_id": "EeLqy-j3Ji8",
+      "speaker_group": "uploader_el_ganxo",
+      "label": "matched_negative",
+      "speaker_held_out_score": 0.029980063438415527
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "matched_negative/EeLqy-j3Ji8_01_matched_negative.wav",
+      "source_id": "EeLqy-j3Ji8",
+      "speaker_group": "uploader_el_ganxo",
+      "label": "matched_negative",
+      "speaker_held_out_score": 0.035689473152160645
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "positive/Axgc6aHutvw_00_positive.wav",
+      "source_id": "Axgc6aHutvw",
+      "speaker_group": "jesus_marcos",
+      "label": "positive",
+      "speaker_held_out_score": 0.03505951166152954
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "matched_negative/Axgc6aHutvw_00_matched_negative.wav",
+      "source_id": "Axgc6aHutvw",
+      "speaker_group": "jesus_marcos",
+      "label": "matched_negative",
+      "speaker_held_out_score": 0.026231229305267334
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "matched_negative/Axgc6aHutvw_01_matched_negative.wav",
+      "source_id": "Axgc6aHutvw",
+      "speaker_group": "jesus_marcos",
+      "label": "matched_negative",
+      "speaker_held_out_score": 0.014372050762176514
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "positive/Olv3YYWA7g0_00_positive.wav",
+      "source_id": "Olv3YYWA7g0",
+      "speaker_group": "jesus_marcos",
+      "label": "positive",
+      "speaker_held_out_score": 0.028704345226287842
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "matched_negative/Olv3YYWA7g0_00_matched_negative.wav",
+      "source_id": "Olv3YYWA7g0",
+      "speaker_group": "jesus_marcos",
+      "label": "matched_negative",
+      "speaker_held_out_score": 0.020984351634979248
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "matched_negative/Olv3YYWA7g0_01_matched_negative.wav",
+      "source_id": "Olv3YYWA7g0",
+      "speaker_group": "jesus_marcos",
+      "label": "matched_negative",
+      "speaker_held_out_score": 0.016050219535827637
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "positive/yRzt-fhlZ_0_00_positive.wav",
+      "source_id": "yRzt-fhlZ_0",
+      "speaker_group": "uploader_hot-well_ukraine",
+      "label": "positive",
+      "speaker_held_out_score": 0.004338264465332031
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "matched_negative/yRzt-fhlZ_0_00_matched_negative.wav",
+      "source_id": "yRzt-fhlZ_0",
+      "speaker_group": "uploader_hot-well_ukraine",
+      "label": "matched_negative",
+      "speaker_held_out_score": 0.005696117877960205
+    },
+    {
+      "corpus": "expanded",
+      "relative_path": "matched_negative/yRzt-fhlZ_0_01_matched_negative.wav",
+      "source_id": "yRzt-fhlZ_0",
+      "speaker_group": "uploader_hot-well_ukraine",
+      "label": "matched_negative",
+      "speaker_held_out_score": 0.020216703414916992
+    }
+  ],
+  "runtime_seconds": 3.372344100032933,
+  "candidate_frozen": false,
+  "product_operating_point": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

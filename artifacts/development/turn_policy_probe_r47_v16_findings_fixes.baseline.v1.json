@@ -1,0 +1,65 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v16_findings_fixes.baseline.v1.raw.jsonl",
+    "sha256": "ff84882078ba7c26711bc69a21f868783ce6f2c089c4d0d10c5ef1f75158e83e"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:14545",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3dbebb358a0d5ddd447626ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.854,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "India is a country in South Asia with a diverse culture, rich history, and a large population. It is known for its ancient civilizations, religious diversity, and rapid economic growth. The country is divided into multiple states and union territories, each with its own cultural and linguistic identity.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14904",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-a182078a6a650f6d621cfe97",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0043,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T22:47:46.926194+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 2,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

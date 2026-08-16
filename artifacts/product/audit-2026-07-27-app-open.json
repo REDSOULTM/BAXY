@@ -1,0 +1,1 @@
+{"status":"failed","error":"Excepción al llamar a \"GetResult\" con los argumentos \"0\": \"A protocol line exceeded the configured byte limit.\"","cleanup_errors":[],"core_exited":true,"job_closed":true,"notepad_survived_job_close":false,"gate_notepad_exited":false,"close_notepad_requested":true,"owned_product_processes":0,"data_root_removed":true,"stderr_bytes":0}

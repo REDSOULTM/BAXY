@@ -1,0 +1,159 @@
+{
+  "schema": "baxy-setup-package-gate-v1",
+  "status": "passed",
+  "scope": "same-host clean Release product, package, embedded NativeAOT Setup reproduction, and physical embedded verification",
+  "source": {
+    "commit": "5dad02a669df778b6c441ca942720525e16278ee",
+    "dirty": false,
+    "provenance": "git_head_snapshot",
+    "source_date_epoch": 1784140888,
+    "version": "1.0.0",
+    "runtime": "win-x64",
+    "target_framework": "net10.0-windows10.0.19041.0",
+    "dotnet_sdk": "10.0.100",
+    "powershell": "5.1.26100.8737",
+    "host_os": "Microsoft Windows NT 10.0.26200.0",
+    "build_script_sha256": "618884865f3655fd7bfbeed320b06f59cdacb5f6e41dbd65b0f3c789bf9262ca",
+    "build_script_tests_sha256": "70e3ad221933df625bd0f499f7d137c889e463a9eb9df7037be4191f2e3a0447"
+  },
+  "product_reproducibility": {
+    "isolated_replicas": 2,
+    "trees_byte_identical": true,
+    "payload_files": 7,
+    "payload_bytes": 82842646,
+    "manifest_bytes": 1478,
+    "manifest_sha256": "13aa08fccb6f241d6b6f058f505bab52792a442811ae9968878efbb47f27abcf",
+    "app_bytes": 67079654,
+    "app_sha256": "a4a8fa743d4a52d4742069c8ad9c94efcd07e66342e8009989e30c8fe7375c0e",
+    "core_bytes": 7376384,
+    "core_sha256": "67af52ac8cedaeb8d6da7616c8b0e70b64387adc12f5ac66bda1bee59880370e"
+  },
+  "package_reproducibility": {
+    "isolated_replicas": 2,
+    "byte_identical": true,
+    "filename": "BAXY-1.0.0-5dad02a669df-win-x64.zip",
+    "bytes": 82845968,
+    "sha256": "9a7acc74ef4530c6411c553e7884209d6cf1559827edc966e09663b2e8322532",
+    "sidecar_bytes": 102,
+    "sidecar_sha256": "6eec754f8ef030f7a87ed77e1a71b99a7deb1893d16bd09183122eb3e7d502ba",
+    "entries": 9,
+    "all_entries_stored": true,
+    "canonical_zip_layout": true,
+    "crc32s_verified_against_entry_bytes": true,
+    "internal_sha256sums_verified": true,
+    "external_sidecars_exact": true,
+    "authenticity": "not_provided"
+  },
+  "setup_reproducibility": {
+    "isolated_replicas": 2,
+    "trees_byte_identical": true,
+    "exact_output_files": [
+      "Baxy.Setup.exe",
+      "SHA256SUMS",
+      "setup-manifest.json"
+    ],
+    "setup_bytes": 85858304,
+    "setup_sha256": "50b8b8d415a822efabfa8986f3ec10d8d20d940dd2feca84b97f547b65452c7a",
+    "manifest_schema": "baxy-setup-build-v1",
+    "manifest_bytes": 1068,
+    "manifest_sha256": "dc6ab570bee05f99a15ab193d62e0e23e6dbe6b1f48d97e60c770ee399a96ee7",
+    "checksums_bytes": 167,
+    "checksums_sha256": "92f70a0b59ce699a97a5e70a3e5c2ee0e6bcfacc737d44dda8b051988850513d",
+    "embedded_package_sha256": "9a7acc74ef4530c6411c553e7884209d6cf1559827edc966e09663b2e8322532",
+    "embedded_package_content_id": "254e868f12a23e3a0b04fdf5ea0dbfbeb8dfbda97f1651f33b843cddc31ebdbc",
+    "embedded_attestation_sha256": "05c5d2f3b78565dd73d01c908a2fbeb584dbaf8cd6857ded5103b82b5292712a",
+    "authenticity": "not_provided",
+    "authenticode": "NotSigned",
+    "delivery_checks": {
+      "machine": "AMD64",
+      "pe_format": "PE32+",
+      "subsystem": "Windows GUI",
+      "native_aot_no_clr_descriptor": true,
+      "embedded_resource_directory_present": true,
+      "authenticode_certificate_table_absent": true,
+      "coff_symbol_table_absent": true,
+      "codeview_pdb_metadata_absent": true,
+      "deterministic_repro_record_present": true,
+      "debug_symbol_files": 0,
+      "hardlinks_rejected": true,
+      "alternate_data_streams_rejected": true,
+      "reparse_points_rejected": true,
+      "output_root_must_be_new": true
+    }
+  },
+  "physical_embedded_verification": {
+    "build_time_executions": 2,
+    "promoted_output_executions": 2,
+    "all_exit_zero": true,
+    "evidence_schema": "baxy-setup-embedded-verification-v1",
+    "evidence_status": "passed",
+    "promoted_evidence_byte_identical": true,
+    "package_sha256": "9a7acc74ef4530c6411c553e7884209d6cf1559827edc966e09663b2e8322532",
+    "content_id": "254e868f12a23e3a0b04fdf5ea0dbfbeb8dfbda97f1651f33b843cddc31ebdbc"
+  },
+  "transactional_install_core": {
+    "canonical_per_user_root": "%LOCALAPPDATA%\\Programs\\BAXY",
+    "embedded_install_or_update_entrypoint_present": true,
+    "immutable_versions_and_current_previous_pointers": true,
+    "journaled_recovery_and_fault_matrix_tested": true,
+    "package_and_published_tree_integrity_checked": true,
+    "install_engine_tests_passed": 61,
+    "install_engine_tests_failed": 0,
+    "rollback_exposed_by_delivery_program": false,
+    "install_or_update_executed_in_this_gate": false
+  },
+  "regression": {
+    "python_tests_passed": 110,
+    "python_tests_failed": 0,
+    "python_tests_skipped": 0,
+    "build_setup_tests_passed": 15,
+    "dotnet_tests_passed": 1270,
+    "dotnet_tests_failed": 0,
+    "dotnet_tests_explicit_not_selected": 2,
+    "setup_red_team_p0": 0,
+    "setup_red_team_p1": 0,
+    "physical_failures_discovered_and_fixed": [
+      {
+        "id": "msbuild_pathmap_property_separator",
+        "observed": "MSB4177 before publish",
+        "fixed_in_commit": "864170f2d8da7b00b3da381e5852f7c8c986cbde",
+        "regression": "PathMap comma is passed as the controlled MSBuild escape %2C"
+      },
+      {
+        "id": "attestation_polluted_exact_package_root",
+        "observed": "post-publish package revalidation rejected a third input-root file",
+        "fixed_in_commit": "5dad02a669df778b6c441ca942720525e16278ee",
+        "regression": "package input root is kept to ZIP and sidecar while attestation is a work-root sibling"
+      }
+    ]
+  },
+  "cleanup": {
+    "temporary_product_roots": 0,
+    "temporary_setup_roots": 0,
+    "registered_git_worktrees": 1,
+    "owned_product_or_setup_processes": 0,
+    "runtime_evidence_removed_after_sanitization": true,
+    "superseded_failed_build_outputs_removed": true,
+    "preexisting_notepad_5472_preserved": true
+  },
+  "acceptance": {
+    "must_gates_approved": 5,
+    "must_gates_total": 15,
+    "blockers_open": [
+      "B-004",
+      "B-005",
+      "B-006"
+    ],
+    "clean_machine_claimed": false,
+    "full_windows_lifecycle_claimed": false,
+    "publisher_authenticity_claimed": false
+  },
+  "limitations": [
+    "This is same-host evidence with shared installed SDK and caches, not cross-host or clean-room reproducibility.",
+    "The installed native linker and Windows SDK are host-provided rather than hermetically pinned.",
+    "The first-party Setup and payload are unsigned; hashes prove consistency with the recorded metadata, not publisher identity or resistance to whole-delivery replacement.",
+    "This gate verifies the embedded package and the transactional engine, but deliberately does not mutate the canonical per-user installation root.",
+    "A clean Windows installation, first launch from the installed pointer, Start menu and uninstall integration, update, data-compatible rollback, uninstall keep/purge, and crash or power-loss recovery remain unverified.",
+    "Active hostile races by another process running as the same Windows account and durable directory flush across sudden power loss remain outside the current claim."
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "baxy.mtop-cut-d-real-sidecar-smoke.v1",
+  "measuredAtLocal": "2026-08-11T11:25:33-04:00",
+  "commit": "1336e199bfe56928a4a9116a77adebd45c274c0e",
+  "dirtySharedCampaign": true,
+  "scope": "one development-only authenticated catalog turn through the real local Mind sidecar and Qwen3 model",
+  "officialMtopArchiveOpened": false,
+  "officialTestRowsRead": false,
+  "officialOneShotClaimCreated": false,
+  "inputTextPersisted": false,
+  "modelInvoked": true,
+  "operationDispatchAttempted": false,
+  "effectsExecuted": 0,
+  "runtime": {
+    "model": "Qwen3-4B-Q4_K_M.gguf",
+    "profile": "gpu",
+    "manifestSha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4"
+  },
+  "program": {
+    "evaluatorSha256": "7dff939cd6b350897b5c4693cfe3d692e970e59b7af27e3681a02691278818b0",
+    "inMemoryAuditEntrypointSha256": "000db004506cfb92bb4b85e19ec07d0ce47d6ad1a08accbbd28d5e0e8e106a1d"
+  },
+  "measurement": {
+    "wallSecondsIncludingSidecarStartupAndShutdown": 16.7,
+    "evaluatedRows": 1,
+    "status": "passed",
+    "causeCounts": {
+      "exact": 1
+    },
+    "metrics": {
+      "exactTurnAccuracy": 1.0,
+      "auditCompletenessRate": 1.0,
+      "rawShortlistCoverage": 1.0,
+      "rawProposalExactAccuracy": 1.0,
+      "unsolicitedEffects": 0,
+      "unverifiedSuccesses": 0,
+      "fixedVisibleResponses": 0,
+      "missingAudits": 0,
+      "recoveries": 0,
+      "decisionLatencySeconds": 0.138309
+    }
+  },
+  "conclusion": "The real measurement entrypoint attached complete pre-veto diagnostics in memory and produced an aggregate-only exact result without operation authority. This is a development smoke, not official Cut-D approval."
+}

@@ -1,0 +1,24 @@
+{
+  "base_rows": 1892,
+  "built_at_utc": "2026-08-01T23:02:40.496134+00:00",
+  "catalog_hash": "c79282c99188d662deb25301dabebf6b64aa97c70599a96385f1c42c11419be8",
+  "effects_executed": 0,
+  "fit_base_rows": 1506,
+  "normalised_exact_dev_overlap": 0,
+  "normalised_train_validation_overlap": 0,
+  "runtime_manifest_changed": false,
+  "schema": "baxy.functiongemma-verifier-corpus.v1",
+  "source": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_training_corpus.v1.jsonl",
+  "source_sha256": "b27e871a49aacd0f1e527235422547a21ceb0fabcb01505a4f687ad3ed51ba18",
+  "train": {
+    "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_verifier_train.v1.jsonl",
+    "sha256": "c75c7c89063fcf3db865b4ed5e651dfd0cfc60930b01ec2ac9bbcbe4f5d92430"
+  },
+  "train_rows": 4501,
+  "validation": {
+    "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_verifier_validation.v1.jsonl",
+    "sha256": "ca531cff688f57181be3cae1610223aaa12da6c836e5845c57abf1fa50a2b0a0"
+  },
+  "validation_base_rows": 386,
+  "validation_rows": 1154
+}

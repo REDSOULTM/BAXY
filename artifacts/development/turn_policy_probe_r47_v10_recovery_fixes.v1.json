@@ -1,0 +1,67 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v10_recovery_fixes.v1.raw.jsonl",
+    "sha256": "b82294862c0518588247a4955f681bc0eb8b4d271239cc1a6ef9e84f27489c24"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9269",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-4c39a0197c9922cd25649895",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0461,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c8d0ed59e47df202e8952788a4d885695ef489b96e80a13415231d2420b20657",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-21475150ac6d88b6a191e9ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.3872,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que quieres quitar, eh, poner el Fortnite.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T21:17:57.787266+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 2,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

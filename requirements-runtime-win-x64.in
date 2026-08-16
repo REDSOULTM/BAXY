@@ -1,0 +1,17 @@
+# Dependencias directas del runtime y de sus compuertas en Windows x64.
+# Las versiones transitivas medidas se fijan en constraints-runtime-win-x64.txt;
+# el artefacto instalable y con hashes es pylock.runtime-win-x64.toml.
+
+numpy==1.26.4
+scipy==1.17.1
+sentence-transformers==5.6.0
+huggingface-hub==1.24.0
+torch==2.13.0
+torchaudio==2.11.0
+onnxruntime==1.27.0
+jellyfish==1.2.1
+RapidFuzz==3.14.5
+psutil==7.2.2
+comtypes==1.4.16
+
+-r src/baxy_mind/requirements-voice.txt

@@ -1,0 +1,240 @@
+{
+  "$schema": "https://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:1713e734-18f4-5dc5-87e8-5c86afe72d99",
+  "version": 1,
+  "metadata": {
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": ".NET SDK",
+          "version": "10.0.100"
+        },
+        {
+          "type": "application",
+          "name": "Microsoft.DotNet.ILCompiler",
+          "version": "10.0.0",
+          "purl": "pkg:nuget/Microsoft.DotNet.ILCompiler@10.0.0",
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "0df2eb213ee3196e122b35db63c68a164f5e36739306a0edc9e8c8526cf8ff36"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "supplier": {
+            "name": "Microsoft"
+          }
+        },
+        {
+          "type": "application",
+          "name": "runtime.win-x64.Microsoft.DotNet.ILCompiler",
+          "version": "10.0.0",
+          "purl": "pkg:nuget/runtime.win-x64.Microsoft.DotNet.ILCompiler@10.0.0",
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "396341615f0b95e830c6a3287adf577f3fb32cc66bc1debee6f169ff9398d4af"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "supplier": {
+            "name": "Microsoft"
+          }
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "bom-ref": "baxy:round-b:dotnet-wpf:1.0.0",
+      "name": "BAXY Round-B integrated package",
+      "version": "1.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "4426e560276a890cd176a4215266cd8177ad70b842032323b81ad5b184537f59"
+        }
+      ],
+      "properties": [
+        {
+          "name": "baxy:system-id",
+          "value": "dotnet-wpf"
+        },
+        {
+          "name": "baxy:package-bytes",
+          "value": "70890462"
+        },
+        {
+          "name": "baxy:manifest-authenticity",
+          "value": "not-provided"
+        },
+        {
+          "name": "baxy:hash-scope",
+          "value": "manifest.json"
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "baxy:generated-from",
+        "value": "Round-B package manifest, Cargo.lock and pinned local package hashes"
+      },
+      {
+        "name": "baxy:first-party-license-declared",
+        "value": "false"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "application",
+      "bom-ref": "baxy:dotnet-core",
+      "name": "BAXY .NET NativeAOT core",
+      "version": "1.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "27d566f7cdeb4f8bdd0cd7f1cadf4b89f8244aabc6f6e87b8174ee5e33bd403e"
+        }
+      ],
+      "properties": [
+        {
+          "name": "baxy:first-party-license",
+          "value": "not-declared"
+        },
+        {
+          "name": "baxy:authenticode",
+          "value": "NotSigned"
+        },
+        {
+          "name": "baxy:static-msvc-crt",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "application",
+      "bom-ref": "baxy:wpf-shell",
+      "name": "BAXY WPF shell",
+      "version": "1.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47"
+        }
+      ],
+      "properties": [
+        {
+          "name": "baxy:first-party-license",
+          "value": "not-declared"
+        },
+        {
+          "name": "baxy:authenticode",
+          "value": "NotSigned"
+        }
+      ]
+    },
+    {
+      "type": "framework",
+      "bom-ref": "pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64@10.0.0",
+      "name": "Microsoft.NETCore.App.Runtime.win-x64",
+      "version": "10.0.0",
+      "purl": "pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64@10.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d94ce14ef10caa1adfbdeb0426493486685de9c4cc8debeff36d38d9b08318a1"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "supplier": {
+        "name": "Microsoft"
+      },
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/dotnet/dotnet"
+        },
+        {
+          "type": "license",
+          "url": "https://github.com/dotnet/runtime/blob/main/LICENSE.TXT"
+        }
+      ]
+    },
+    {
+      "type": "framework",
+      "bom-ref": "pkg:nuget/Microsoft.WindowsDesktop.App.Runtime.win-x64@10.0.0",
+      "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+      "version": "10.0.0",
+      "purl": "pkg:nuget/Microsoft.WindowsDesktop.App.Runtime.win-x64@10.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "58da08d83e919c7205a282621783ee28df45b47e3fec8a83ad18c9fcc3077224"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "supplier": {
+        "name": "Microsoft"
+      },
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/dotnet/dotnet"
+        },
+        {
+          "type": "license",
+          "url": "https://github.com/dotnet/runtime/blob/main/LICENSE.TXT"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "baxy:round-b:dotnet-wpf:1.0.0",
+      "dependsOn": [
+        "baxy:wpf-shell",
+        "baxy:dotnet-core"
+      ]
+    },
+    {
+      "ref": "baxy:wpf-shell",
+      "dependsOn": [
+        "pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64@10.0.0",
+        "pkg:nuget/Microsoft.WindowsDesktop.App.Runtime.win-x64@10.0.0"
+      ]
+    },
+    {
+      "ref": "baxy:dotnet-core",
+      "dependsOn": [
+        "pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64@10.0.0"
+      ]
+    }
+  ]
+}

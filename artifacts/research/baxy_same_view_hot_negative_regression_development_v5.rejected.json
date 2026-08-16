@@ -1,0 +1,35 @@
+{
+  "schema": "baxy.rejected-contextual-negative-regression-attempt.v1",
+  "recordedAtUtc": "2026-08-07T14:31:48.5505139Z",
+  "authority": "development_only",
+  "acceptedAsEvidence": false,
+  "failurePhase": "input_contract_validation",
+  "failureCode": "baxy_contextual_negative_sentinel_count_invalid",
+  "modelEvaluationStarted": false,
+  "effectsExecuted": 0,
+  "cause": {
+    "description": "The evaluator retained the fixed sentinel population from the prior v4 campaign while evaluating the frozen v5 Stage-1 model.",
+    "obsoleteExpectedSentinelCandidates": 28139,
+    "actualV5SentinelCandidatesAtInclusiveThreshold": 20962,
+    "sentinelStage1Threshold": 0.01
+  },
+  "inputs": {
+    "evaluator": "D:\\BAXY\\source\\experiments\\voice_latency\\evaluate_baxy_contextual_fusion_negative_regression_v2.py",
+    "evaluatorSha256": "f48605b7935ee71dafd50e0aea8b14e78d85b4f077fa486968e0eb96fa69bb6b",
+    "stage1Scan": "D:\\BAXY\\source\\artifacts\\research\\livekit_wakeword_openslr12_train_clean_100_hardnegative_development_v5.json",
+    "stage1ScanSha256": "d3a1dd8458324b1e646167de43d426db0012439b8a97585e78c6421b08c040a1",
+    "priorHoldoutReport": "D:\\BAXY\\source\\artifacts\\research\\wake_verifier_negative_holdout_hardnegative_development_v5.v1.json",
+    "priorHoldoutReportSha256": "3177273095ac8c7c4400a63ab5f4ddf9a6770520295ee25779fbe0f586ecb132"
+  },
+  "logs": {
+    "stdout": "D:\\BAXY\\source\\artifacts\\research\\baxy_same_view_hot_negative_regression_development_v5.rejected_obsolete_sentinel_contract.stdout.log",
+    "stdoutSha256": "960c22b052fafdd3f1748d01218592b3dfd3f747ff3f39589bb12f38ab668131",
+    "stderr": "D:\\BAXY\\source\\artifacts\\research\\baxy_same_view_hot_negative_regression_development_v5.rejected_obsolete_sentinel_contract.stderr.log",
+    "stderrSha256": "3bf56abb62703abda8647b6eb83895adae446a72f19d3590f909f91b57d491bd"
+  },
+  "remediation": {
+    "strategy": "Bind the complete Stage-1 and corpus populations plus the exact v5 sentinel count in the evaluator schedule and a new preregistration.",
+    "replacementEvaluatorSha256": "4c025956cadc6ebad26bf8f69dab560cc7c51d64fb960209e6be00c263ed0647",
+    "replacementExpectedSentinelCandidates": 20962
+  }
+}

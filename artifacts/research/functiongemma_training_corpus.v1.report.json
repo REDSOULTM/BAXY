@@ -1,0 +1,53 @@
+{
+  "inputs": [
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_selection_corpus.v1.jsonl",
+      "sha256": "b27ea15c5c62b37f44f8de374129d2dae9f97b0da512e0ee85a1cac98b44adbf"
+    },
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_targeted_seed.v1.jsonl",
+      "sha256": "688f7dfb7b5a5ef61b5bb137f7f55150cd3a64561fee939ab119fe0ac37ea4ce"
+    },
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_audio_seed.v1.jsonl",
+      "sha256": "e9d87e951587fddd1692d6e7fcb790f1ef2158ffd8ed0b8dea2bc0ad609c2f3c"
+    },
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_failure_seed.v2.jsonl",
+      "sha256": "41d092ae1dee2899d3de8ca8c6bc99f4ca884b7e90936d139b4e10f092c3998a"
+    },
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_contrastive_seed.v3.jsonl",
+      "sha256": "e078bb12e84772ee6285f08b80dfa6adb119ffdc7076d422cc66d79347ab0507"
+    }
+  ],
+  "languages": {
+    "en": 775,
+    "es": 945,
+    "spanglish": 213
+  },
+  "maximum_examples_per_operation": 137,
+  "minimum_examples_per_operation": 4,
+  "operations": 169,
+  "output": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_training_corpus.v1.jsonl",
+  "output_sha256": "b27e871a49aacd0f1e527235422547a21ceb0fabcb01505a4f687ad3ed51ba18",
+  "rows": 1933,
+  "schema": "baxy.functiongemma-combined-corpus.v1",
+  "sources": {
+    "authored:audio-seed-v1": 12,
+    "core-contract-authored-contrastive-v3": 112,
+    "core-contract-authored-targeted-v1": 80,
+    "core-contract-authored-targeted-v2": 72,
+    "historical:ABSTAIN__app_specific_audio": 8,
+    "historical:ABSTAIN__hardware_knowledge": 10,
+    "historical:ABSTAIN__media_control": 8,
+    "historical:ABSTAIN__microphone": 5,
+    "historical:ABSTAIN__negated_command": 6,
+    "historical:ABSTAIN__relative_volume": 10,
+    "historical:ABSTAIN__statement_no_request": 9,
+    "historical:audio.mute": 22,
+    "historical:audio.status": 14,
+    "historical:audio.volume": 123,
+    "qwen-generator+gemma-reviewer": 1442
+  }
+}

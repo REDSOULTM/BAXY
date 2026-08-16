@@ -1,0 +1,46 @@
+{
+  "schema": "baxy.direct-abstain-classifier.r247-preregistration.v1",
+  "authority": "sealed_after_r246_rejection_before_model_import_or_training",
+  "hypothesis": {
+    "base": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "architecture": "frozen multilingual encoder with a float32 query-only 32-way classifier: one authenticated class per typed family plus an explicit abstain class",
+    "difference_from_r246": "a direct mutually exclusive abstain class replaces R246's maximum independent family relevance score; it is not a threshold adjustment or rerun",
+    "device": "isolated_cuda_bf16_development_environment"
+  },
+  "training": {
+    "sources": [
+      "R207 positive development queries labelled by current typed family",
+      "fresh public PRESTO/MASSIVE OOS queries labelled explicit abstain"
+    ],
+    "base_frozen": true,
+    "class_balanced_loss": true,
+    "no_r228": true,
+    "no_public_holdout": true
+  },
+  "development_evaluation": {
+    "inside": 256,
+    "outside": 256,
+    "selection": "SHA-256 ordered public rows disjoint from every R236/R241/R243/R246 train or evaluation source id",
+    "finite_scores_required": true,
+    "acceptance": {
+      "inside_rows_lost": 0,
+      "inside_family_mismatches": 0,
+      "outside_zero_candidates": 256
+    }
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r245_sha256": "3c61de2529ff0074468d25b07ddc5ba93886a11380697c2aaf43ea9b95f587d2",
+    "r246_sha256": "f1683b20b166418c8d05b47e505570aeef6343d3be20719ccebb607a21aa2e89",
+    "runner_sha256": "bc2ada9e1c17d9c80cf76f8490a722cad7fa95870ebd2c1dcacf4ead8c46d3a0",
+    "program_sha256": "049c9bcbd9a6d8da6812e22c90d49c41b3b3129d76afc6ed2beeb37ebc155acc"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "measured_at_utc": "2026-07-17T05:32:15.693787+00:00",
+  "scope": "physical_bluetooth_radio_roundtrip_via_real_baxy_core",
+  "baseline_state": true,
+  "restored": true,
+  "verified_steps": 2,
+  "total_steps": 2,
+  "error_codes": []
+}

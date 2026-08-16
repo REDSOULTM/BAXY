@@ -1,0 +1,432 @@
+{
+  "schema": "baxy-night-audit-live-turn-probe-v1",
+  "measured_at": "2026-07-27T07:01:46.493040+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [],
+  "cases": [
+    {
+      "text": "¿Qué hora es?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "system.time"
+      },
+      "elapsed_seconds": 5.169,
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "plan",
+        "operation": null,
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-1",
+        "version": 1,
+        "kind": "conversation",
+        "question": "",
+        "steps": []
+      }
+    },
+    {
+      "text": "¿Cómo está el equipo?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "system.status"
+      },
+      "elapsed_seconds": 4.936,
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "plan",
+        "operation": null,
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-2",
+        "version": 1,
+        "kind": "conversation",
+        "question": "",
+        "steps": []
+      }
+    },
+    {
+      "text": "Lista los procesos que más memoria usan",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "system.process.list"
+      },
+      "elapsed_seconds": 9.951,
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "¿Te refieres a qué procesos consumen más memoria en tu PC? Para darte una lista precisa, necesitaría saber qué sistema operativo estás usando (Windows, por ejemplo).",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Cómo está la red?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "network.status"
+      },
+      "elapsed_seconds": 8.931,
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "La red está funcionando correctamente. ¿Hay algo específico que te preocupe o algo que te gustaría saber sobre ella?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿En qué volumen está el computador?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "audio.status"
+      },
+      "elapsed_seconds": 5.764,
+      "result": {
+        "type": "turn.result",
+        "id": "case-5",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "No tengo acceso a información en tiempo real sobre el volumen de tu computador. ¿Te refieres a un volumen específico o a la configuración de sonido?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Pon el volumen al 8 por ciento",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "audio.volume"
+      },
+      "elapsed_seconds": 5.853,
+      "result": {
+        "type": "turn.result",
+        "id": "case-6",
+        "kind": "clarify",
+        "operation": null,
+        "question": "¿Quieres subir o bajar el volumen?",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre el Bloc de notas",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 4.88,
+      "result": {
+        "type": "turn.result",
+        "id": "case-7",
+        "kind": "clarify",
+        "operation": null,
+        "question": "Abre una carpeta conocida de Windows y verifica la ventana de Explorer observada?",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Qué ventana está activa?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "window.active"
+      },
+      "elapsed_seconds": 4.13,
+      "result": {
+        "type": "turn.result",
+        "id": "case-8",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "No tengo acceso a información en tiempo real sobre qué ventana está activa en tu PC. ¿Podrías decirme a qué te refieres exactamente?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Escribe literalmente prueba BAXY",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "input.text.type"
+      },
+      "elapsed_seconds": 3.971,
+      "result": {
+        "type": "turn.result",
+        "id": "case-9",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "Prueba BAXY",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lee el portapapeles",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "clipboard.read.text"
+      },
+      "elapsed_seconds": 4.974,
+      "result": {
+        "type": "turn.result",
+        "id": "case-10",
+        "kind": "action",
+        "operation": "note.read",
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Copia la selección",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "clipboard.copy"
+      },
+      "elapsed_seconds": 4.272,
+      "result": {
+        "type": "turn.result",
+        "id": "case-11",
+        "kind": "action",
+        "operation": "filesystem.copy",
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Haz una captura de pantalla",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "capture.screenshot"
+      },
+      "elapsed_seconds": 4.426,
+      "result": {
+        "type": "turn.result",
+        "id": "case-12",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "No puedo hacer capturas de pantalla.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis notas",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "note.list"
+      },
+      "elapsed_seconds": 4.397,
+      "result": {
+        "type": "turn.result",
+        "id": "case-13",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "No tengo acceso a tus notas personales. ¿Te refieres a alguna nota específica que tengas guardada en algún lugar?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea una tarea llamada Auditoría",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "task.create"
+      },
+      "elapsed_seconds": 3.826,
+      "result": {
+        "type": "turn.result",
+        "id": "case-14",
+        "kind": "action",
+        "operation": "note.create",
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis tareas pendientes",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "task.list"
+      },
+      "elapsed_seconds": 4.116,
+      "result": {
+        "type": "turn.result",
+        "id": "case-15",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "No tengo acceso a tu lista de tareas pendientes. ¿Quieres que te ayude a crear una o a organizar tus tareas?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis recordatorios",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "reminder.list"
+      },
+      "elapsed_seconds": 8.255,
+      "result": {
+        "type": "turn.result",
+        "id": "case-16",
+        "kind": "plan",
+        "operation": null,
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-16",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step1",
+            "operation": "reminder.list",
+            "purpose": "Listar los recordatorios programados locales.",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {}
+          }
+        ]
+      }
+    },
+    {
+      "text": "Recarga la página",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "browser.control"
+      },
+      "elapsed_seconds": 4.142,
+      "result": {
+        "type": "turn.result",
+        "id": "case-17",
+        "kind": "action",
+        "operation": "browser.control",
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Qué música está sonando?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "media.status"
+      },
+      "elapsed_seconds": 5.409,
+      "result": {
+        "type": "turn.result",
+        "id": "case-18",
+        "kind": "plan",
+        "operation": null,
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-18",
+        "version": 1,
+        "kind": "conversation",
+        "question": "",
+        "steps": []
+      }
+    },
+    {
+      "text": "Lista los dispositivos Bluetooth",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "bluetooth.device.list"
+      },
+      "elapsed_seconds": 6.404,
+      "result": {
+        "type": "turn.result",
+        "id": "case-19",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "No tengo acceso a una lista de tus dispositivos Bluetooth. ¿Quieres que te explique cómo encontrar tus dispositivos Bluetooth en Windows?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Cómo está el Wi-Fi?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "wifi.status"
+      },
+      "elapsed_seconds": 4.036,
+      "result": {
+        "type": "turn.result",
+        "id": "case-20",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "El Wi-Fi está funcionando correctamente. ¿Necesitas ayuda con algo específico relacionado con la conexión?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    }
+  ]
+}

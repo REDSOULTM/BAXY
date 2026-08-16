@@ -1,0 +1,65 @@
+{
+  "schema": "baxy.ufo-dataflow-word-source.r260.v1",
+  "authority": "external_source_identity_and_semantic_admission_audit_not_model_training",
+  "verdict": "rejected_preexecution_unversioned_input_and_forced_save_quit_semantics",
+  "source": {
+    "repository": "https://github.com/microsoft/UFO.git",
+    "commit": "96983c73ed09e884a5f1d7ff8936c953b234b684",
+    "license": "MIT",
+    "license_sha256": "903df5512f7d02609fed0c780a9b704f5a3eeb6e4d84ebe42a29845c81899a3c",
+    "dataflow_directory": "dataflow",
+    "semantic_source_files": 10,
+    "source_files_merkle_sha256": "dc8e2352424321479573796bbf66df40c5992dc07f75d493f46ab19de66b2a81",
+    "versioned_task_rows": 0,
+    "versioned_result_rows": 0,
+    "word_template_files": 9,
+    "task_instruction_texts_retained": false,
+    "task_instruction_identifiers_retained": false
+  },
+  "observed_surface": {
+    "word_execution_backend": "Windows WinCOMReceiverBasic",
+    "task_input_contract": {
+      "versioned_task_files": false,
+      "ignored_task_directory": "dataflow/tasks/",
+      "ignored_result_directory": "dataflow/results/",
+      "caller_supplied_fields": [
+        "original_steps",
+        "original_task"
+      ],
+      "source_native_baxy_operation_labels": false
+    },
+    "cloud_generation_template_present": true,
+    "completion_path_forces_save_then_quit": true,
+    "completion_path_observes_saved_dirty_state": false,
+    "completion_path_binds_discard_to_confirmation": false
+  },
+  "admission": {
+    "required_baxy_operations": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "required_application_and_verification": "Microsoft Word operations verified through COM, including an active document, Saved/Dirty state and confirmation-bound discard",
+    "admitted_baxy_operations": [],
+    "reason": "UFO Dataflow supplies a Windows/WinCOM harness but no versioned task corpus: task and result directories are ignored and callers must provide generic task strings. Generating those rows would invent a corpus. Its completion path then forces save and Quit without Saved/Dirty or confirmation evidence, so it cannot represent BAXY's discard or status semantics either."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not use UFO Dataflow to generate or relabel R207 examples. A successor must publish native Microsoft Word COM requests and state-sensitive verifiers for all six missing typed operations.",
+  "identities": {
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "cdd9f5269571c018facee4521981b0277829eed0b45e3d2d8346a231cca4588c"
+  }
+}

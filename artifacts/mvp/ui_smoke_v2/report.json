@@ -1,0 +1,45 @@
+﻿{
+    "schema":  "baxy.mvp-ui-smoke.v1",
+    "measuredAtUtc":  "2026-08-11T20:28:49.4781660Z",
+    "scope":  "run_mvp_no_wake_real_ui_read_only_time_query_and_graceful_shutdown",
+    "programSha256":  "2350f8edb7a0a1a25dfa1b2dc571e0400ec6e1071c929ca8b7bed03522de2435",
+    "launcherSha256":  "4cee9dc3f8b1734d9a93eacae52351f36d8e4c682bb51e391459998e0ba88ac2",
+    "appSha256":  "767979cb4afa149e1be0e2bc782cdea36d7ab4d13249f0ef98d70fff91463848",
+    "effectsExecuted":  0,
+    "audioCapturedOrPlayed":  0,
+    "query":  "¿Qué hora es?",
+    "evidence":  {
+                     "startupReady":  true,
+                     "mainWindowResponding":  true,
+                     "windowInsideVirtualDesktop":  true,
+                     "inputAccessible":  true,
+                     "submittedThroughRealUi":  true,
+                     "coreOperation":  "system.time",
+                     "naturalVisibleTextAccepted":  true,
+                     "finalResponsePainted":  true,
+                     "startupMilliseconds":  17389.7,
+                     "turnMilliseconds":  2262.534,
+                     "bounds":  {
+                                    "left":  18,
+                                    "top":  18,
+                                    "width":  1884,
+                                    "height":  972
+                                }
+                 },
+    "shutdown":  {
+                     "closeMainWindowSucceeded":  true,
+                     "launcherExited":  true,
+                     "forcedCleanup":  false,
+                     "residualProcesses":  [
+
+                                           ]
+                 },
+    "trace":  {
+                  "path":  "D:\\BAXY\\source\\artifacts\\mvp\\ui_smoke_v2\\shell-trace.jsonl",
+                  "sha256":  "ab260e2f78145628203623d7e6aa56c9f0944b12ab17c6a8742336d5b5a47470",
+                  "records":  36,
+                  "truncated":  0
+              },
+    "error":  null,
+    "gatePassed":  true
+}

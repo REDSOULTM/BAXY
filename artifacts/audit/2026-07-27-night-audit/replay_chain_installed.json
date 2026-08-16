@@ -1,0 +1,95 @@
+{
+  "schema": "baxy.audit.replay-chain.v1",
+  "coreVersion": "1.0.8",
+  "catalogCount": 168,
+  "elapsedSeconds": 0.07851990000017395,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "fb1094e0-e8d5-4ffe-81ad-1d3980b7851f",
+      "missionId": "341a0616-9b35-4b84-99ca-13068a78ee83",
+      "invocationId": "22d28849-eb04-4162-b253-24d56b2075cb",
+      "status": "completed",
+      "message": "Guardé la nota «BAXY replay audit».",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "noteId": "7dccf9ac-1bc3-41b0-a3f6-5cc01637921f",
+        "title": "BAXY replay audit",
+        "content": "synthetic idempotency marker",
+        "createdAtUtc": "2026-07-27T07:01:53.6292574+00:00",
+        "updatedAtUtc": "2026-07-27T07:01:53.6292574+00:00",
+        "trashedAtUtc": null,
+        "revision": 1,
+        "isTrashed": false
+      },
+      "errorCode": null
+    },
+    {
+      "type": "operation.response",
+      "requestId": "56dc6e4a-741c-4502-9902-4a21d6e31b04",
+      "missionId": "341a0616-9b35-4b84-99ca-13068a78ee83",
+      "invocationId": "22d28849-eb04-4162-b253-24d56b2075cb",
+      "status": "completed",
+      "message": "Guardé la nota «BAXY replay audit».",
+      "verified": true,
+      "replayed": true,
+      "result": {
+        "noteId": "7dccf9ac-1bc3-41b0-a3f6-5cc01637921f",
+        "title": "BAXY replay audit",
+        "content": "synthetic idempotency marker",
+        "createdAtUtc": "2026-07-27T07:01:53.6292574+00:00",
+        "updatedAtUtc": "2026-07-27T07:01:53.6292574+00:00",
+        "trashedAtUtc": null,
+        "revision": 1,
+        "isTrashed": false
+      },
+      "errorCode": null
+    },
+    {
+      "type": "operation.response",
+      "requestId": "c4763dd3-cdb8-4112-833d-ca1f01666ba4",
+      "missionId": "9ce1ea66-2a4a-49fe-904b-f6ebcea0cfe3",
+      "invocationId": "323d5dae-c9fe-4f5e-84f2-88623572d333",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "notes": [
+          {
+            "noteId": "7dccf9ac-1bc3-41b0-a3f6-5cc01637921f",
+            "title": "BAXY replay audit",
+            "createdAtUtc": "2026-07-27T07:01:53.6292574+00:00",
+            "updatedAtUtc": "2026-07-27T07:01:53.6292574+00:00",
+            "trashedAtUtc": null,
+            "revision": 1,
+            "isTrashed": false
+          }
+        ],
+        "count": 1,
+        "totalCount": 1,
+        "scope": "search",
+        "limit": 10,
+        "offset": 0,
+        "nextOffset": null
+      },
+      "errorCode": null
+    },
+    {
+      "type": "operation.response",
+      "requestId": "f9f985ee-7729-4bb5-b1a4-a7dcbd1115e0",
+      "missionId": "341a0616-9b35-4b84-99ca-13068a78ee83",
+      "invocationId": "22d28849-eb04-4162-b253-24d56b2075cb",
+      "status": "rejected",
+      "message": "Ese identificador ya pertenece a otra acción.",
+      "verified": false,
+      "replayed": false,
+      "result": null,
+      "errorCode": "idempotency_conflict"
+    }
+  ],
+  "error": "RuntimeError: changed duplicate identity did not fail closed",
+  "coreExitCode": 0,
+  "stderr": ""
+}

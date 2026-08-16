@@ -1,0 +1,66 @@
+{
+  "schema": "baxy.explicit-confusable-negative-regression-preregistration.v1",
+  "registeredAtUtc": "2026-08-07T18:12:49.9415482Z",
+  "authority": "development_only",
+  "blindHoldout": false,
+  "freshHoldoutClaimSupported": false,
+  "farCertificationSupported": false,
+  "openedCorpus": true,
+  "candidateFrozen": true,
+  "candidate": {
+    "fusionManifest": "D:\\BAXYRuntime\\experiments\\wakeword\\baxy_hyperspotter_fusion_hardnegative_development_v5\\baxy-hyperspotter-fusion-v1.json",
+    "fusionManifestSha256": "87dd1534fdf9d513b5fc4ae58f4fc4dc8a4489452c554f362285e615a700b77d",
+    "ctcVerifierManifest": "D:\\BAXYRuntime\\experiments\\wakeword\\phoneme_teacher_onnx_hardnegative_development_v5\\baxy-wake-verifier-v1.json",
+    "ctcVerifierManifestSha256": "a0d699db419dc00ec5d7bf81090953081db3fdca6abaec8b22bce073af87710a",
+    "stage1Model": "D:\\BAXYRuntime\\experiments\\wakeword\\phoneme_teacher_onnx_hardnegative_development_v5\\baxy_voxcpm2_mixed_hardnegative_development_v5.onnx",
+    "stage1ModelSha256": "dadb657e6ea0ea0241bc38130123b50bc63f08e6b99431393adc00b4eeb28921"
+  },
+  "fixedEvidence": {
+    "innerEvaluator": "D:\\BAXY\\source\\experiments\\voice_latency\\evaluate_baxy_contextual_fusion_negative_regression_v2.py",
+    "innerEvaluatorSha256": "a9abb296aa4c62a4ea5933c279c395929517158af631bf4b04769f42b15ebf6d",
+    "evaluator": "D:\\BAXY\\source\\experiments\\voice_latency\\evaluate_baxy_explicit_confusable_negative_regression_v7.py",
+    "evaluatorSha256": "e3d94cf5fff5c27104ea872527b0bc5365fc0303fe7c719098c1df6c0de5854d",
+    "humanEnsembleReport": "D:\\BAXY\\source\\artifacts\\research\\wake_ssl_ctc_ensemble_development_v1.v1.json",
+    "humanEnsembleReportSha256": "5c48f2ce807589bd153a8ca7073134420107764862303862fd9432fe513a4dca",
+    "failedSameViewV6Report": "D:\\BAXY\\source\\artifacts\\research\\baxy_same_view_hot_negative_regression_development_v6.v1.json",
+    "failedSameViewV6ReportSha256": "c20ba2b4ae5670697144d9e46e82de26ee22b95e10c3082c5d04b963c94a6d46",
+    "cudaParityReport": "D:\\BAXY\\source\\artifacts\\research\\phoneme_teacher_cuda_hardnegative_development_v5.v1.json",
+    "cudaParityReportSha256": "4a3602b15b0e695b3c2fa7d78849dcb0e3c5aecb479e526de915e026c72c3a79",
+    "corpusManifest": "D:\\BAXYRuntime\\experiments\\wakeword\\openslr12_train_clean_100_holdout_v1\\corpus.manifest.v1.json",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329"
+  },
+  "policy": {
+    "name": "sameViewExactCtcConfusableVeto",
+    "contextualViewPolicy": "same_exact_fusion_view",
+    "sentinelStage1Threshold": 0.01,
+    "expectedCorpusUtterances": 28539,
+    "expectedSentinelCandidates": 20962,
+    "exactTargetSequenceHasAuthority": true,
+    "exactConfusableSequenceVeto": true,
+    "guardRestrictedToSameExactCpuFusionView": true,
+    "humanPositiveExplicitConfusables": 0,
+    "humanPositiveTotal": 18,
+    "knownNegativeExplicitConfusables": 3,
+    "knownNegativeTotal": 12,
+    "maximumGuardedNegativeFalseActivations": 0
+  },
+  "cache": {
+    "path": "D:\\BAXY\\source\\artifacts\\research\\baxy_explicit_confusable_screening_cache_development_v7.v1.json",
+    "retained": true,
+    "containsTranscriptsOrFilenames": false,
+    "identityRestrictedToAcousticScreeningInputs": true
+  },
+  "schedule": {
+    "cudaBatchSize": 32,
+    "recordBatchSize": 64,
+    "sttBatchSize": 8,
+    "stage1Workers": 16
+  },
+  "plannedInputs": {
+    "stage1Scan": "D:\\BAXY\\source\\artifacts\\research\\livekit_wakeword_openslr12_train_clean_100_hardnegative_development_v5.json",
+    "stage1ScanSha256": "d3a1dd8458324b1e646167de43d426db0012439b8a97585e78c6421b08c040a1",
+    "priorHoldoutReport": "D:\\BAXY\\source\\artifacts\\research\\wake_verifier_negative_holdout_hardnegative_development_v5.v1.json",
+    "priorHoldoutReportSha256": "3177273095ac8c7c4400a63ab5f4ddf9a6770520295ee25779fbe0f586ecb132"
+  },
+  "plannedOutput": "D:\\BAXY\\source\\artifacts\\research\\baxy_explicit_confusable_same_view_negative_regression_development_v7.v1.json"
+}

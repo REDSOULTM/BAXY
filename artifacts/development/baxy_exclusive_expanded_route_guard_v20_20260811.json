@@ -1,0 +1,458 @@
+{
+  "schema": "baxy.exclusive-expanded-route-guard-development.v1",
+  "measuredAtUtc": "2026-08-11T17:44:49.909374+00:00",
+  "label": "opened_physical_v20",
+  "preregistrationSha256": "6f9c2783914a5d78a80f9db0fc66e49d87e3cb3e149357d65eca5c93927db70d",
+  "inputsSha256": {
+    "program": "d228c0f2c965b066d3b1d7a3b627411e54c398a52e2c62364255948b77b9ecd6",
+    "candidateManifest": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "cascadeReport": "2687bb40bade67e93e7010e8ec724e1b9f8a34af895a22b6f447f350a3d3731a",
+    "corpusManifest": "a18e19dcf175994418f3f838c69032f17a1666fb61cfc2076075719ff3fdfbc6"
+  },
+  "contract": {
+    "blockSamples": 512,
+    "targetUpstreamTuple": [
+      false,
+      false,
+      true
+    ],
+    "strictAliases": [
+      "baxi",
+      "baxy",
+      "boxy"
+    ],
+    "retrySpeedFactors": [
+      0.85,
+      1.14
+    ],
+    "hotwords": false,
+    "physicalV17Read": false,
+    "transcriptTextRetained": false
+  },
+  "positive": {
+    "files": 48,
+    "currentAcceptedFiles": 48,
+    "currentLexicalAcceptedFiles": 18,
+    "routeTupleCounts": {
+      "001": 14,
+      "101": 1,
+      "111": 15
+    },
+    "currentLogmelAccepted": 30,
+    "exclusiveExpandedAccepted": 14,
+    "exclusiveExpandedStrictAliasAccepted": 2,
+    "guardedLogmelAccepted": 18,
+    "removedByGuard": 12,
+    "prospectiveAcceptedFiles": 36,
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "856540a5f0557f3c9e21c5ea6bf322f536b5585463085f165fec813f99eff99d",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 1,
+        "audioSha256": "d5c49af3cae11bad06023d30114548542c875917cbfa47f2699b2f614d7cadcb",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 3,
+        "audioSha256": "9aea13a5bd7cb97b61afe93e7abb7f02bc7bf0a5b2fc98df5a20299cb564c1c7",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 4,
+        "audioSha256": "ad87f33554045d0cd45b6065fab7491962587bcf2c7d33e166f5725a578423d8",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "ff8f18c32d20ad55de63ba52ff10c31b61cefaae1acb46a4b4d5f18e807564dd",
+          "8e856b05787a8b42baa53d5ecdc96d5b3dd133db277ed84dda0b11d584fcbe9a",
+          "8e856b05787a8b42baa53d5ecdc96d5b3dd133db277ed84dda0b11d584fcbe9a"
+        ]
+      },
+      {
+        "record": 9,
+        "audioSha256": "252a9feb9cc5580d12b048aabf4cc892a30f1f77cc96fad5af7f654bf98fc5eb",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 10,
+        "audioSha256": "7b1483a5db68de4dedf5f47b7528da76e39dfd953224dd9e3e1fbcbb663856b7",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 11,
+        "audioSha256": "3df15bc63acc2df27842436addcbc93a0668de7ae225c5740cc4357d20a09b81",
+        "upstreamCandidates": [
+          true,
+          false,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 12,
+        "audioSha256": "85d8d804266082140b21cdf821893eefe5fa130a2aa1b99d0d2e3d1805086c02",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 13,
+        "audioSha256": "3787d16239acd643ed3a7e847b7d949a8ac262dc6efb4394ccff2acb3011cc7f",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "1720901eb7b7f7fa432e1454b4f9c61be0fe9acf61209a480dc921d149f0afec",
+          "c8ddb7dc1813bc9f0a7e286f6c8165b001ba104b13eccb83bd0653bc47022a2c",
+          "d6d88b404e6ce1ddd1f3e931bbf4de04a4a0d21cb0828a611eb4a78a7ccc22e5"
+        ]
+      },
+      {
+        "record": 14,
+        "audioSha256": "9191aee23a62547386fde9de38ecb4677adba288936c78aff90e4f71e2941c40",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 15,
+        "audioSha256": "36d475467c394dadd005c3ca64c774f9a30acd62094b2191524530a3f82f4d5d",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 16,
+        "audioSha256": "179ee793c76f1b7b230ee3734eee4c218dcfe6c01de046f75c0403e56415dc8e",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 17,
+        "audioSha256": "ae892977f26355cdf02f94523dd55c764f00790c4c81579a51eb98528ced38ff",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "f9b8dec023d82f8f5eb59ba916c0daa68292fbf01509d180f08e2f96e775c816",
+          "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        ]
+      },
+      {
+        "record": 18,
+        "audioSha256": "94681fe56cc8fafcdd09300da8fc9da3dc9be61686aa3638306f1695d5b3a493",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "1994a0031b87e7cea71289b2c10542074a97851d4948bb1f55873c68c02cc610",
+          "1994a0031b87e7cea71289b2c10542074a97851d4948bb1f55873c68c02cc610",
+          "a9eb6829e0bc5ca5d77354533a6506dc26eaaf21fb31ad8dd3ed61d9c9b4871f"
+        ]
+      },
+      {
+        "record": 21,
+        "audioSha256": "498491993e90645d798d4772af0af2f901a76d0b9795bdc940453ad537042b3d",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 22,
+        "audioSha256": "43a404e83bf558bc4235a19be91ba655d271eddde1fed993b2895530a0bad79c",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 24,
+        "audioSha256": "0ef2caa81a212278e0d0437db0456fd475be0430dc35741f4b54495ffbeb0395",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 25,
+        "audioSha256": "c1dbbbdeb51d5f636ff80257724bfc497756a23348f7637e5b49df50a221f97b",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 27,
+        "audioSha256": "df46937dff88ca9b470abd803bc8a579a33188a35c6ed2f482c84a66d0a52b8a",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "a4c05d87aac2aa90caff61711057edc7091337f3f7e204f6164820ccb18b4c1c",
+          "0f676717078d6d2b0ce656d03764b4822b94fb2d1f2e4d31ea7dd5856a180e21",
+          "a4c05d87aac2aa90caff61711057edc7091337f3f7e204f6164820ccb18b4c1c"
+        ]
+      },
+      {
+        "record": 28,
+        "audioSha256": "73c3d2c2070e54286a95c2665cb21114228f9b029bea61695370b92b8a1f64ed",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 29,
+        "audioSha256": "0aefcdcd042916853942accb1ecbd078603f76916e9b9fd7a459e789d68eb4ce",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "554622e88bf6ea2407dd17e74f9cc5cae47ba00639334cecfd8d32abf1f2f214",
+          "581a875c97989bf88d13ed465bd3ceeedb14646cbd202516c44a54dc79fa5d52",
+          "a4c05d87aac2aa90caff61711057edc7091337f3f7e204f6164820ccb18b4c1c"
+        ]
+      },
+      {
+        "record": 30,
+        "audioSha256": "11453cca6c36f349aa0fd29e5ebf5360364160bfc726020bd9b472ba5de16386",
+        "upstreamCandidates": [
+          true,
+          true,
+          true
+        ],
+        "strictAliasMatched": null,
+        "attemptTranscriptSha256": []
+      },
+      {
+        "record": 34,
+        "audioSha256": "75358961c5e0d61cb32f79526d2652e22a1da225cf48743800446c6314f8e409",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": true,
+        "attemptTranscriptSha256": [
+          "5ca837da1563147dd678b5114f8839c25c161f9848fd27d13982f24f4887ecf1",
+          "0291eaebc72e6c00699dbfdc43b54d4f03e633e9b53192fc3bf6d5de74af7d25",
+          "4bb1aefda06eed43d8d23ea80a1c0c20762ac683909e8a2da13e6a7e51c16f49"
+        ]
+      },
+      {
+        "record": 36,
+        "audioSha256": "c93c1eeac684fe50ac1c2377302d744ebd2110f10110c72c18586e65bdf49665",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "8754bb8814ff346591ec3cbdd6696de5e3170c32ec8c84f9e5087057d670e4d2",
+          "8754bb8814ff346591ec3cbdd6696de5e3170c32ec8c84f9e5087057d670e4d2",
+          "8754bb8814ff346591ec3cbdd6696de5e3170c32ec8c84f9e5087057d670e4d2"
+        ]
+      },
+      {
+        "record": 37,
+        "audioSha256": "d3a0ba35344daa99d1f15865d30f473071e0a4e220ed0498b90ebc940b150c1e",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": true,
+        "attemptTranscriptSha256": [
+          "4bb1aefda06eed43d8d23ea80a1c0c20762ac683909e8a2da13e6a7e51c16f49",
+          "0291eaebc72e6c00699dbfdc43b54d4f03e633e9b53192fc3bf6d5de74af7d25",
+          "4bb1aefda06eed43d8d23ea80a1c0c20762ac683909e8a2da13e6a7e51c16f49"
+        ]
+      },
+      {
+        "record": 38,
+        "audioSha256": "46da556f904a26af2044b89516ec19a83e4833212cf54e31a71e1a2de9137a82",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "9fa6aeeb6acbdea6a7a15e3e268828ee8b01084f58d67023b7c5bf45a30c0be8",
+          "8754bb8814ff346591ec3cbdd6696de5e3170c32ec8c84f9e5087057d670e4d2",
+          "9fa6aeeb6acbdea6a7a15e3e268828ee8b01084f58d67023b7c5bf45a30c0be8"
+        ]
+      },
+      {
+        "record": 41,
+        "audioSha256": "8811b1ffedd8b38e85e5c33e3785e3718d58c67f749cfaf817b6d1f9968ac812",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "a4c05d87aac2aa90caff61711057edc7091337f3f7e204f6164820ccb18b4c1c",
+          "d13a3cf429b9c1c333eb2325fd6155bce6575d1a9c8acb7c0fd15938de2876de",
+          "554622e88bf6ea2407dd17e74f9cc5cae47ba00639334cecfd8d32abf1f2f214"
+        ]
+      },
+      {
+        "record": 42,
+        "audioSha256": "60cd4bf5992b5ed2f098c818e0c8d23a254f4724e5be8c57a3c399b8af89e8a3",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "1720901eb7b7f7fa432e1454b4f9c61be0fe9acf61209a480dc921d149f0afec",
+          "c8ddb7dc1813bc9f0a7e286f6c8165b001ba104b13eccb83bd0653bc47022a2c",
+          "d6d88b404e6ce1ddd1f3e931bbf4de04a4a0d21cb0828a611eb4a78a7ccc22e5"
+        ]
+      },
+      {
+        "record": 45,
+        "audioSha256": "691dfcf5712679cf83eb5f5f36ae7e985413219224920edfc5950f4c8d18020f",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "79a0569c6dc32c3327df44845d7322d9d070f4eda3962b8187be545f6f298c18",
+          "6c298dbd888f37cbb8479715df2f5bde05e9bb46a5ded1b3a5fa967660649b93",
+          "876bd8cd0c9fbd150067858ea58414ec593207abc5ef1755e830b025c5898ae3"
+        ]
+      },
+      {
+        "record": 46,
+        "audioSha256": "1c48704bc763f7f2e59256a06d1afa718658ebb2460b51bd4895cb32601e79eb",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "249a141e4fbd1e45b2bc53b672ed355b745d2396f26875582418c297758efec4",
+          "249a141e4fbd1e45b2bc53b672ed355b745d2396f26875582418c297758efec4",
+          "249a141e4fbd1e45b2bc53b672ed355b745d2396f26875582418c297758efec4"
+        ]
+      }
+    ],
+    "transcriptTextRetained": false
+  },
+  "negative": {
+    "files": 96,
+    "currentAcceptedFiles": 0,
+    "currentLexicalAcceptedFiles": 0,
+    "routeTupleCounts": {},
+    "currentLogmelAccepted": 0,
+    "exclusiveExpandedAccepted": 0,
+    "exclusiveExpandedStrictAliasAccepted": 0,
+    "guardedLogmelAccepted": 0,
+    "removedByGuard": 0,
+    "prospectiveAcceptedFiles": 0,
+    "records": [],
+    "transcriptTextRetained": false
+  },
+  "noPositiveRegression": false,
+  "zeroNegativeFalseActivations": true,
+  "developmentPassed": false,
+  "candidateRuntimeModified": false,
+  "promotionEligible": false,
+  "blindHumanPartitionAccessed": false,
+  "effectsExecuted": 0
+}

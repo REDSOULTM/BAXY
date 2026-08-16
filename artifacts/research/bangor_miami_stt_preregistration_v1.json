@@ -1,0 +1,1658 @@
+{
+  "schema": "baxy.stt-natural-codeswitch-preregistration.v1",
+  "preregisteredAtUtc": "2026-08-11T01:48:31.0000841Z",
+  "generator": {
+    "path": "experiments/stt_quality/preregister_bangor_miami_stt_holdout.py",
+    "sha256": "db3a9c574cf03b2ce23bbcaa98985508bbd31a5d89e7ad5707632de40289df5b"
+  },
+  "role": "recording_disjoint_unopened_natural_es_en_codeswitch_stt_holdout_component",
+  "evaluationStatus": "unopened",
+  "modelAudioDecoded": false,
+  "referenceTextUsedForSelection": false,
+  "corpusSelectionFrozen": true,
+  "canonicalSource": {
+    "name": "Bangor Miami Spanish-English Corpus",
+    "url": "https://talkbank.org/biling/access/Bangor/Miami.html",
+    "doi": "10.21415/T5J01D",
+    "reportedParticipants": 84,
+    "reportedRecordings": 56,
+    "reportedHours": 35,
+    "license": "GPL-3.0-or-later"
+  },
+  "retrievalMirror": {
+    "repository": "https://huggingface.co/datasets/drewoodward/miami-corpus",
+    "commit": "2ff0591ffe0fd8eaef40d5f3c681826a144fb5d7",
+    "canonical": false,
+    "complete": false,
+    "localRoot": "D:/BAXYRuntime/experiments/stt_holdout_sources/miami_corpus_hf_2ff0591",
+    "files": {
+      "miamiCorpus_merged.mp3": {
+        "bytes": 531928129,
+        "sha256": "b1fececb6976721a8f9e6cad2eae67161fe7321cf53bd2ed179a9d0f6db2e086"
+      },
+      "miamiCorpus_merged.vtt": {
+        "bytes": 635315,
+        "sha256": "0fcfbdef4c6e8155be2a8d49da834558762af0dbfe76bfeabe00f22ee7ef0212"
+      },
+      "README.md": {
+        "bytes": 3689,
+        "sha256": "2cfe2b8d3917fc4f9a8d8026ee0914644b55f314289e5cfc87d9042652e1f530"
+      }
+    },
+    "observedRecordings": 12,
+    "observedCues": 10427,
+    "recordingIndex": [
+      {
+        "recordingId": "herring10",
+        "offsetMs": 0,
+        "reportedDurationMs": 1811514,
+        "cues": 839,
+        "isolatedCandidates": 348
+      },
+      {
+        "recordingId": "herring13",
+        "offsetMs": 1811514,
+        "reportedDurationMs": 1793698,
+        "cues": 985,
+        "isolatedCandidates": 123
+      },
+      {
+        "recordingId": "herring3",
+        "offsetMs": 3605212,
+        "reportedDurationMs": 1897064,
+        "cues": 688,
+        "isolatedCandidates": 599
+      },
+      {
+        "recordingId": "herring6",
+        "offsetMs": 5502276,
+        "reportedDurationMs": 1694877,
+        "cues": 485,
+        "isolatedCandidates": 372
+      },
+      {
+        "recordingId": "herring7",
+        "offsetMs": 7197153,
+        "reportedDurationMs": 1493029,
+        "cues": 713,
+        "isolatedCandidates": 348
+      },
+      {
+        "recordingId": "herring8",
+        "offsetMs": 8690181,
+        "reportedDurationMs": 1783876,
+        "cues": 877,
+        "isolatedCandidates": 241
+      },
+      {
+        "recordingId": "sastre1",
+        "offsetMs": 10474057,
+        "reportedDurationMs": 2032588,
+        "cues": 966,
+        "isolatedCandidates": 355
+      },
+      {
+        "recordingId": "sastre8",
+        "offsetMs": 12506645,
+        "reportedDurationMs": 2000039,
+        "cues": 900,
+        "isolatedCandidates": 559
+      },
+      {
+        "recordingId": "sastre9",
+        "offsetMs": 14506684,
+        "reportedDurationMs": 2402142,
+        "cues": 1488,
+        "isolatedCandidates": 315
+      },
+      {
+        "recordingId": "zeledon14",
+        "offsetMs": 16908826,
+        "reportedDurationMs": 1981832,
+        "cues": 1148,
+        "isolatedCandidates": 327
+      },
+      {
+        "recordingId": "zeledon5",
+        "offsetMs": 18890658,
+        "reportedDurationMs": 1421296,
+        "cues": 610,
+        "isolatedCandidates": 173
+      },
+      {
+        "recordingId": "zeledon9",
+        "offsetMs": 20311954,
+        "reportedDurationMs": 1851664,
+        "cues": 728,
+        "isolatedCandidates": 399
+      }
+    ]
+  },
+  "selection": {
+    "seed": 20260811,
+    "recordingDisjoint": true,
+    "blindRecordingCountsByGroup": {
+      "herring": 4,
+      "sastre": 2,
+      "zeledon": 2
+    },
+    "blindRecordings": [
+      "herring10",
+      "herring3",
+      "herring7",
+      "herring8",
+      "sastre1",
+      "sastre9",
+      "zeledon14",
+      "zeledon5"
+    ],
+    "developmentRecordings": [
+      "herring13",
+      "herring6",
+      "sastre8",
+      "zeledon9"
+    ],
+    "cueFilter": {
+      "minimumDurationMs": 1500,
+      "maximumDurationMs": 12000,
+      "maximumOtherSpeechOverlapMs": 100,
+      "referenceTextExamined": false
+    },
+    "segmentsPerRecording": 12,
+    "blindSegments": [
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 25,
+        "globalStartMs": 55484,
+        "globalEndMs": 59942,
+        "relativeStartMs": 55484,
+        "relativeEndMs": 59942,
+        "durationMs": 4458,
+        "maximumOtherSpeechOverlapMs": 14
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 32,
+        "globalStartMs": 69861,
+        "globalEndMs": 73731,
+        "relativeStartMs": 69861,
+        "relativeEndMs": 73731,
+        "durationMs": 3870,
+        "maximumOtherSpeechOverlapMs": 23
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 79,
+        "globalStartMs": 159375,
+        "globalEndMs": 163508,
+        "relativeStartMs": 159375,
+        "relativeEndMs": 163508,
+        "durationMs": 4133,
+        "maximumOtherSpeechOverlapMs": 38
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 148,
+        "globalStartMs": 328055,
+        "globalEndMs": 335467,
+        "relativeStartMs": 328055,
+        "relativeEndMs": 335467,
+        "durationMs": 7412,
+        "maximumOtherSpeechOverlapMs": 17
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 173,
+        "globalStartMs": 376799,
+        "globalEndMs": 380480,
+        "relativeStartMs": 376799,
+        "relativeEndMs": 380480,
+        "durationMs": 3681,
+        "maximumOtherSpeechOverlapMs": 18
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 215,
+        "globalStartMs": 455946,
+        "globalEndMs": 458564,
+        "relativeStartMs": 455946,
+        "relativeEndMs": 458564,
+        "durationMs": 2618,
+        "maximumOtherSpeechOverlapMs": 19
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 361,
+        "globalStartMs": 741529,
+        "globalEndMs": 747322,
+        "relativeStartMs": 741529,
+        "relativeEndMs": 747322,
+        "durationMs": 5793,
+        "maximumOtherSpeechOverlapMs": 29
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 362,
+        "globalStartMs": 747293,
+        "globalEndMs": 752358,
+        "relativeStartMs": 747293,
+        "relativeEndMs": 752358,
+        "durationMs": 5065,
+        "maximumOtherSpeechOverlapMs": 29
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 481,
+        "globalStartMs": 994004,
+        "globalEndMs": 995543,
+        "relativeStartMs": 994004,
+        "relativeEndMs": 995543,
+        "durationMs": 1539,
+        "maximumOtherSpeechOverlapMs": 31
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 715,
+        "globalStartMs": 1547545,
+        "globalEndMs": 1559229,
+        "relativeStartMs": 1547545,
+        "relativeEndMs": 1559229,
+        "durationMs": 11684,
+        "maximumOtherSpeechOverlapMs": 37
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 802,
+        "globalStartMs": 1721779,
+        "globalEndMs": 1723468,
+        "relativeStartMs": 1721779,
+        "relativeEndMs": 1723468,
+        "durationMs": 1689,
+        "maximumOtherSpeechOverlapMs": 29
+      },
+      {
+        "recordingId": "herring10",
+        "cueOrdinal": 803,
+        "globalStartMs": 1723439,
+        "globalEndMs": 1725453,
+        "relativeStartMs": 1723439,
+        "relativeEndMs": 1725453,
+        "durationMs": 2014,
+        "maximumOtherSpeechOverlapMs": 30
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 4,
+        "globalStartMs": 3632332,
+        "globalEndMs": 3639932,
+        "relativeStartMs": 27120,
+        "relativeEndMs": 34720,
+        "durationMs": 7600,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 115,
+        "globalStartMs": 4122332,
+        "globalEndMs": 4124332,
+        "relativeStartMs": 517120,
+        "relativeEndMs": 519120,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 123,
+        "globalStartMs": 4138332,
+        "globalEndMs": 4140332,
+        "relativeStartMs": 533120,
+        "relativeEndMs": 535120,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 148,
+        "globalStartMs": 4188332,
+        "globalEndMs": 4190332,
+        "relativeStartMs": 583120,
+        "relativeEndMs": 585120,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 331,
+        "globalStartMs": 4596332,
+        "globalEndMs": 4598332,
+        "relativeStartMs": 991120,
+        "relativeEndMs": 993120,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 376,
+        "globalStartMs": 4706332,
+        "globalEndMs": 4708332,
+        "relativeStartMs": 1101120,
+        "relativeEndMs": 1103120,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 395,
+        "globalStartMs": 4743952,
+        "globalEndMs": 4745452,
+        "relativeStartMs": 1138740,
+        "relativeEndMs": 1140240,
+        "durationMs": 1500,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 503,
+        "globalStartMs": 4997332,
+        "globalEndMs": 4999332,
+        "relativeStartMs": 1392120,
+        "relativeEndMs": 1394120,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 514,
+        "globalStartMs": 5044332,
+        "globalEndMs": 5046332,
+        "relativeStartMs": 1439120,
+        "relativeEndMs": 1441120,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 556,
+        "globalStartMs": 5145332,
+        "globalEndMs": 5147332,
+        "relativeStartMs": 1540120,
+        "relativeEndMs": 1542120,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 578,
+        "globalStartMs": 5219332,
+        "globalEndMs": 5223332,
+        "relativeStartMs": 1614120,
+        "relativeEndMs": 1618120,
+        "durationMs": 4000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring3",
+        "cueOrdinal": 631,
+        "globalStartMs": 5358332,
+        "globalEndMs": 5361332,
+        "relativeStartMs": 1753120,
+        "relativeEndMs": 1756120,
+        "durationMs": 3000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 5,
+        "globalStartMs": 7223153,
+        "globalEndMs": 7226153,
+        "relativeStartMs": 26000,
+        "relativeEndMs": 29000,
+        "durationMs": 3000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 19,
+        "globalStartMs": 7250153,
+        "globalEndMs": 7253153,
+        "relativeStartMs": 53000,
+        "relativeEndMs": 56000,
+        "durationMs": 3000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 147,
+        "globalStartMs": 7495153,
+        "globalEndMs": 7497153,
+        "relativeStartMs": 298000,
+        "relativeEndMs": 300000,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 156,
+        "globalStartMs": 7519153,
+        "globalEndMs": 7522153,
+        "relativeStartMs": 322000,
+        "relativeEndMs": 325000,
+        "durationMs": 3000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 176,
+        "globalStartMs": 7554153,
+        "globalEndMs": 7556153,
+        "relativeStartMs": 357000,
+        "relativeEndMs": 359000,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 212,
+        "globalStartMs": 7629153,
+        "globalEndMs": 7632153,
+        "relativeStartMs": 432000,
+        "relativeEndMs": 435000,
+        "durationMs": 3000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 324,
+        "globalStartMs": 7884993,
+        "globalEndMs": 7888193,
+        "relativeStartMs": 687840,
+        "relativeEndMs": 691040,
+        "durationMs": 3200,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 329,
+        "globalStartMs": 7897353,
+        "globalEndMs": 7899033,
+        "relativeStartMs": 700200,
+        "relativeEndMs": 701880,
+        "durationMs": 1680,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 437,
+        "globalStartMs": 8128033,
+        "globalEndMs": 8132033,
+        "relativeStartMs": 930880,
+        "relativeEndMs": 934880,
+        "durationMs": 4000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 517,
+        "globalStartMs": 8283033,
+        "globalEndMs": 8285033,
+        "relativeStartMs": 1085880,
+        "relativeEndMs": 1087880,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 527,
+        "globalStartMs": 8306033,
+        "globalEndMs": 8309033,
+        "relativeStartMs": 1108880,
+        "relativeEndMs": 1111880,
+        "durationMs": 3000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring7",
+        "cueOrdinal": 666,
+        "globalStartMs": 8552033,
+        "globalEndMs": 8556033,
+        "relativeStartMs": 1354880,
+        "relativeEndMs": 1358880,
+        "durationMs": 4000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 58,
+        "globalStartMs": 8814033,
+        "globalEndMs": 8820452,
+        "relativeStartMs": 123852,
+        "relativeEndMs": 130271,
+        "durationMs": 6419,
+        "maximumOtherSpeechOverlapMs": 47
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 155,
+        "globalStartMs": 9054734,
+        "globalEndMs": 9059263,
+        "relativeStartMs": 364553,
+        "relativeEndMs": 369082,
+        "durationMs": 4529,
+        "maximumOtherSpeechOverlapMs": 81
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 165,
+        "globalStartMs": 9076597,
+        "globalEndMs": 9078605,
+        "relativeStartMs": 386416,
+        "relativeEndMs": 388424,
+        "durationMs": 2008,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 184,
+        "globalStartMs": 9121176,
+        "globalEndMs": 9123991,
+        "relativeStartMs": 430995,
+        "relativeEndMs": 433810,
+        "durationMs": 2815,
+        "maximumOtherSpeechOverlapMs": 11
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 232,
+        "globalStartMs": 9218908,
+        "globalEndMs": 9221515,
+        "relativeStartMs": 528727,
+        "relativeEndMs": 531334,
+        "durationMs": 2607,
+        "maximumOtherSpeechOverlapMs": 52
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 261,
+        "globalStartMs": 9284566,
+        "globalEndMs": 9288992,
+        "relativeStartMs": 594385,
+        "relativeEndMs": 598811,
+        "durationMs": 4426,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 293,
+        "globalStartMs": 9341484,
+        "globalEndMs": 9344752,
+        "relativeStartMs": 651303,
+        "relativeEndMs": 654571,
+        "durationMs": 3268,
+        "maximumOtherSpeechOverlapMs": 17
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 402,
+        "globalStartMs": 9613677,
+        "globalEndMs": 9615181,
+        "relativeStartMs": 923496,
+        "relativeEndMs": 925000,
+        "durationMs": 1504,
+        "maximumOtherSpeechOverlapMs": 6
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 464,
+        "globalStartMs": 9751700,
+        "globalEndMs": 9753436,
+        "relativeStartMs": 1061519,
+        "relativeEndMs": 1063255,
+        "durationMs": 1736,
+        "maximumOtherSpeechOverlapMs": 17
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 554,
+        "globalStartMs": 9879638,
+        "globalEndMs": 9881182,
+        "relativeStartMs": 1189457,
+        "relativeEndMs": 1191001,
+        "durationMs": 1544,
+        "maximumOtherSpeechOverlapMs": 18
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 569,
+        "globalStartMs": 9915910,
+        "globalEndMs": 9917622,
+        "relativeStartMs": 1225729,
+        "relativeEndMs": 1227441,
+        "durationMs": 1712,
+        "maximumOtherSpeechOverlapMs": 56
+      },
+      {
+        "recordingId": "herring8",
+        "cueOrdinal": 668,
+        "globalStartMs": 10147331,
+        "globalEndMs": 10149055,
+        "relativeStartMs": 1457150,
+        "relativeEndMs": 1458874,
+        "durationMs": 1724,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 160,
+        "globalStartMs": 10820628,
+        "globalEndMs": 10822329,
+        "relativeStartMs": 346571,
+        "relativeEndMs": 348272,
+        "durationMs": 1701,
+        "maximumOtherSpeechOverlapMs": 2
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 319,
+        "globalStartMs": 11093237,
+        "globalEndMs": 11095977,
+        "relativeStartMs": 619180,
+        "relativeEndMs": 621920,
+        "durationMs": 2740,
+        "maximumOtherSpeechOverlapMs": 27
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 465,
+        "globalStartMs": 11389778,
+        "globalEndMs": 11391642,
+        "relativeStartMs": 915721,
+        "relativeEndMs": 917585,
+        "durationMs": 1864,
+        "maximumOtherSpeechOverlapMs": 31
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 596,
+        "globalStartMs": 11679144,
+        "globalEndMs": 11681803,
+        "relativeStartMs": 1205087,
+        "relativeEndMs": 1207746,
+        "durationMs": 2659,
+        "maximumOtherSpeechOverlapMs": 26
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 639,
+        "globalStartMs": 11762233,
+        "globalEndMs": 11765066,
+        "relativeStartMs": 1288176,
+        "relativeEndMs": 1291009,
+        "durationMs": 2833,
+        "maximumOtherSpeechOverlapMs": 12
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 678,
+        "globalStartMs": 11879768,
+        "globalEndMs": 11882548,
+        "relativeStartMs": 1405711,
+        "relativeEndMs": 1408491,
+        "durationMs": 2780,
+        "maximumOtherSpeechOverlapMs": 26
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 788,
+        "globalStartMs": 12098156,
+        "globalEndMs": 12102603,
+        "relativeStartMs": 1624099,
+        "relativeEndMs": 1628546,
+        "durationMs": 4447,
+        "maximumOtherSpeechOverlapMs": 12
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 799,
+        "globalStartMs": 12126963,
+        "globalEndMs": 12129314,
+        "relativeStartMs": 1652906,
+        "relativeEndMs": 1655257,
+        "durationMs": 2351,
+        "maximumOtherSpeechOverlapMs": 32
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 854,
+        "globalStartMs": 12277943,
+        "globalEndMs": 12279870,
+        "relativeStartMs": 1803886,
+        "relativeEndMs": 1805813,
+        "durationMs": 1927,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 921,
+        "globalStartMs": 12423947,
+        "globalEndMs": 12426084,
+        "relativeStartMs": 1949890,
+        "relativeEndMs": 1952027,
+        "durationMs": 2137,
+        "maximumOtherSpeechOverlapMs": 29
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 956,
+        "globalStartMs": 12484297,
+        "globalEndMs": 12486689,
+        "relativeStartMs": 2010240,
+        "relativeEndMs": 2012632,
+        "durationMs": 2392,
+        "maximumOtherSpeechOverlapMs": 64
+      },
+      {
+        "recordingId": "sastre1",
+        "cueOrdinal": 957,
+        "globalStartMs": 12486651,
+        "globalEndMs": 12489768,
+        "relativeStartMs": 2012594,
+        "relativeEndMs": 2015711,
+        "durationMs": 3117,
+        "maximumOtherSpeechOverlapMs": 39
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 0,
+        "globalStartMs": 14507154,
+        "globalEndMs": 14508791,
+        "relativeStartMs": 470,
+        "relativeEndMs": 2107,
+        "durationMs": 1637,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 109,
+        "globalStartMs": 14719606,
+        "globalEndMs": 14721313,
+        "relativeStartMs": 212922,
+        "relativeEndMs": 214629,
+        "durationMs": 1707,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 170,
+        "globalStartMs": 14857429,
+        "globalEndMs": 14862388,
+        "relativeStartMs": 350745,
+        "relativeEndMs": 355704,
+        "durationMs": 4959,
+        "maximumOtherSpeechOverlapMs": 11
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 215,
+        "globalStartMs": 14958262,
+        "globalEndMs": 14959904,
+        "relativeStartMs": 451578,
+        "relativeEndMs": 453220,
+        "durationMs": 1642,
+        "maximumOtherSpeechOverlapMs": 5
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 493,
+        "globalStartMs": 15420208,
+        "globalEndMs": 15421728,
+        "relativeStartMs": 913524,
+        "relativeEndMs": 915044,
+        "durationMs": 1520,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 537,
+        "globalStartMs": 15488128,
+        "globalEndMs": 15489858,
+        "relativeStartMs": 981444,
+        "relativeEndMs": 983174,
+        "durationMs": 1730,
+        "maximumOtherSpeechOverlapMs": 78
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 562,
+        "globalStartMs": 15521637,
+        "globalEndMs": 15523628,
+        "relativeStartMs": 1014953,
+        "relativeEndMs": 1016944,
+        "durationMs": 1991,
+        "maximumOtherSpeechOverlapMs": 29
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 605,
+        "globalStartMs": 15584478,
+        "globalEndMs": 15586388,
+        "relativeStartMs": 1077794,
+        "relativeEndMs": 1079704,
+        "durationMs": 1910,
+        "maximumOtherSpeechOverlapMs": 39
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 897,
+        "globalStartMs": 16022526,
+        "globalEndMs": 16028956,
+        "relativeStartMs": 1515842,
+        "relativeEndMs": 1522272,
+        "durationMs": 6430,
+        "maximumOtherSpeechOverlapMs": 56
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 1031,
+        "globalStartMs": 16225030,
+        "globalEndMs": 16227050,
+        "relativeStartMs": 1718346,
+        "relativeEndMs": 1720366,
+        "durationMs": 2020,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 1042,
+        "globalStartMs": 16247971,
+        "globalEndMs": 16251376,
+        "relativeStartMs": 1741287,
+        "relativeEndMs": 1744692,
+        "durationMs": 3405,
+        "maximumOtherSpeechOverlapMs": 19
+      },
+      {
+        "recordingId": "sastre9",
+        "cueOrdinal": 1159,
+        "globalStartMs": 16458769,
+        "globalEndMs": 16461271,
+        "relativeStartMs": 1952085,
+        "relativeEndMs": 1954587,
+        "durationMs": 2502,
+        "maximumOtherSpeechOverlapMs": 23
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 18,
+        "globalStartMs": 16947342,
+        "globalEndMs": 16949624,
+        "relativeStartMs": 38516,
+        "relativeEndMs": 40798,
+        "durationMs": 2282,
+        "maximumOtherSpeechOverlapMs": 18
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 90,
+        "globalStartMs": 17058006,
+        "globalEndMs": 17063178,
+        "relativeStartMs": 149180,
+        "relativeEndMs": 154352,
+        "durationMs": 5172,
+        "maximumOtherSpeechOverlapMs": 26
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 153,
+        "globalStartMs": 17167027,
+        "globalEndMs": 17170882,
+        "relativeStartMs": 258201,
+        "relativeEndMs": 262056,
+        "durationMs": 3855,
+        "maximumOtherSpeechOverlapMs": 17
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 257,
+        "globalStartMs": 17332510,
+        "globalEndMs": 17335006,
+        "relativeStartMs": 423684,
+        "relativeEndMs": 426180,
+        "durationMs": 2496,
+        "maximumOtherSpeechOverlapMs": 26
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 272,
+        "globalStartMs": 17352677,
+        "globalEndMs": 17354982,
+        "relativeStartMs": 443851,
+        "relativeEndMs": 446156,
+        "durationMs": 2305,
+        "maximumOtherSpeechOverlapMs": 35
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 509,
+        "globalStartMs": 17734977,
+        "globalEndMs": 17740834,
+        "relativeStartMs": 826151,
+        "relativeEndMs": 832008,
+        "durationMs": 5857,
+        "maximumOtherSpeechOverlapMs": 77
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 595,
+        "globalStartMs": 17879868,
+        "globalEndMs": 17882532,
+        "relativeStartMs": 971042,
+        "relativeEndMs": 973706,
+        "durationMs": 2664,
+        "maximumOtherSpeechOverlapMs": 23
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 644,
+        "globalStartMs": 17962880,
+        "globalEndMs": 17964581,
+        "relativeStartMs": 1054054,
+        "relativeEndMs": 1055755,
+        "durationMs": 1701,
+        "maximumOtherSpeechOverlapMs": 12
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 654,
+        "globalStartMs": 17973028,
+        "globalEndMs": 17974868,
+        "relativeStartMs": 1064202,
+        "relativeEndMs": 1066042,
+        "durationMs": 1840,
+        "maximumOtherSpeechOverlapMs": 9
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 710,
+        "globalStartMs": 18071176,
+        "globalEndMs": 18073579,
+        "relativeStartMs": 1162350,
+        "relativeEndMs": 1164753,
+        "durationMs": 2403,
+        "maximumOtherSpeechOverlapMs": 23
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 768,
+        "globalStartMs": 18191688,
+        "globalEndMs": 18194690,
+        "relativeStartMs": 1282862,
+        "relativeEndMs": 1285864,
+        "durationMs": 3002,
+        "maximumOtherSpeechOverlapMs": 69
+      },
+      {
+        "recordingId": "zeledon14",
+        "cueOrdinal": 1074,
+        "globalStartMs": 18765617,
+        "globalEndMs": 18767822,
+        "relativeStartMs": 1856791,
+        "relativeEndMs": 1858996,
+        "durationMs": 2205,
+        "maximumOtherSpeechOverlapMs": 17
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 34,
+        "globalStartMs": 18972214,
+        "globalEndMs": 18973717,
+        "relativeStartMs": 81556,
+        "relativeEndMs": 83059,
+        "durationMs": 1503,
+        "maximumOtherSpeechOverlapMs": 1
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 51,
+        "globalStartMs": 19028641,
+        "globalEndMs": 19030806,
+        "relativeStartMs": 137983,
+        "relativeEndMs": 140148,
+        "durationMs": 2165,
+        "maximumOtherSpeechOverlapMs": 53
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 81,
+        "globalStartMs": 19086073,
+        "globalEndMs": 19088964,
+        "relativeStartMs": 195415,
+        "relativeEndMs": 198306,
+        "durationMs": 2891,
+        "maximumOtherSpeechOverlapMs": 66
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 189,
+        "globalStartMs": 19334879,
+        "globalEndMs": 19337131,
+        "relativeStartMs": 444221,
+        "relativeEndMs": 446473,
+        "durationMs": 2252,
+        "maximumOtherSpeechOverlapMs": 22
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 299,
+        "globalStartMs": 19582441,
+        "globalEndMs": 19585361,
+        "relativeStartMs": 691783,
+        "relativeEndMs": 694703,
+        "durationMs": 2920,
+        "maximumOtherSpeechOverlapMs": 50
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 307,
+        "globalStartMs": 19610112,
+        "globalEndMs": 19613387,
+        "relativeStartMs": 719454,
+        "relativeEndMs": 722729,
+        "durationMs": 3275,
+        "maximumOtherSpeechOverlapMs": 19
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 327,
+        "globalStartMs": 19655813,
+        "globalEndMs": 19663799,
+        "relativeStartMs": 765155,
+        "relativeEndMs": 773141,
+        "durationMs": 7986,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 353,
+        "globalStartMs": 19750895,
+        "globalEndMs": 19753071,
+        "relativeStartMs": 860237,
+        "relativeEndMs": 862413,
+        "durationMs": 2176,
+        "maximumOtherSpeechOverlapMs": 50
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 392,
+        "globalStartMs": 19876931,
+        "globalEndMs": 19879181,
+        "relativeStartMs": 986273,
+        "relativeEndMs": 988523,
+        "durationMs": 2250,
+        "maximumOtherSpeechOverlapMs": 30
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 496,
+        "globalStartMs": 20078384,
+        "globalEndMs": 20081482,
+        "relativeStartMs": 1187726,
+        "relativeEndMs": 1190824,
+        "durationMs": 3098,
+        "maximumOtherSpeechOverlapMs": 35
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 570,
+        "globalStartMs": 20242578,
+        "globalEndMs": 20247193,
+        "relativeStartMs": 1351920,
+        "relativeEndMs": 1356535,
+        "durationMs": 4615,
+        "maximumOtherSpeechOverlapMs": 13
+      },
+      {
+        "recordingId": "zeledon5",
+        "cueOrdinal": 579,
+        "globalStartMs": 20261764,
+        "globalEndMs": 20264782,
+        "relativeStartMs": 1371106,
+        "relativeEndMs": 1374124,
+        "durationMs": 3018,
+        "maximumOtherSpeechOverlapMs": 90
+      }
+    ],
+    "blindSegmentManifestSha256": "3046df11eb2bc251ac6c94a0fa3f50177d54ed9dcc649b648de5bd8a8df3c2fc",
+    "blindDurationSeconds": 290.56,
+    "developmentSegments": [
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 153,
+        "globalStartMs": 2022138,
+        "globalEndMs": 2024100,
+        "relativeStartMs": 210624,
+        "relativeEndMs": 212586,
+        "durationMs": 1962,
+        "maximumOtherSpeechOverlapMs": 36
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 602,
+        "globalStartMs": 2671090,
+        "globalEndMs": 2673504,
+        "relativeStartMs": 859576,
+        "relativeEndMs": 861990,
+        "durationMs": 2414,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 710,
+        "globalStartMs": 2848860,
+        "globalEndMs": 2851872,
+        "relativeStartMs": 1037346,
+        "relativeEndMs": 1040358,
+        "durationMs": 3012,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 814,
+        "globalStartMs": 3203036,
+        "globalEndMs": 3204859,
+        "relativeStartMs": 1391522,
+        "relativeEndMs": 1393345,
+        "durationMs": 1823,
+        "maximumOtherSpeechOverlapMs": 52
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 838,
+        "globalStartMs": 3260110,
+        "globalEndMs": 3261626,
+        "relativeStartMs": 1448596,
+        "relativeEndMs": 1450112,
+        "durationMs": 1516,
+        "maximumOtherSpeechOverlapMs": 94
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 871,
+        "globalStartMs": 3331490,
+        "globalEndMs": 3336016,
+        "relativeStartMs": 1519976,
+        "relativeEndMs": 1524502,
+        "durationMs": 4526,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 918,
+        "globalStartMs": 3404100,
+        "globalEndMs": 3406644,
+        "relativeStartMs": 1592586,
+        "relativeEndMs": 1595130,
+        "durationMs": 2544,
+        "maximumOtherSpeechOverlapMs": 1
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 919,
+        "globalStartMs": 3408656,
+        "globalEndMs": 3410774,
+        "relativeStartMs": 1597142,
+        "relativeEndMs": 1599260,
+        "durationMs": 2118,
+        "maximumOtherSpeechOverlapMs": 30
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 920,
+        "globalStartMs": 3410744,
+        "globalEndMs": 3412410,
+        "relativeStartMs": 1599230,
+        "relativeEndMs": 1600896,
+        "durationMs": 1666,
+        "maximumOtherSpeechOverlapMs": 51
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 938,
+        "globalStartMs": 3458604,
+        "globalEndMs": 3463740,
+        "relativeStartMs": 1647090,
+        "relativeEndMs": 1652226,
+        "durationMs": 5136,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 940,
+        "globalStartMs": 3471859,
+        "globalEndMs": 3475470,
+        "relativeStartMs": 1660345,
+        "relativeEndMs": 1663956,
+        "durationMs": 3611,
+        "maximumOtherSpeechOverlapMs": 30
+      },
+      {
+        "recordingId": "herring13",
+        "cueOrdinal": 965,
+        "globalStartMs": 3561360,
+        "globalEndMs": 3563810,
+        "relativeStartMs": 1749846,
+        "relativeEndMs": 1752296,
+        "durationMs": 2450,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 0,
+        "globalStartMs": 5502276,
+        "globalEndMs": 5504276,
+        "relativeStartMs": 0,
+        "relativeEndMs": 2000,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 25,
+        "globalStartMs": 5577276,
+        "globalEndMs": 5579276,
+        "relativeStartMs": 75000,
+        "relativeEndMs": 77000,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 31,
+        "globalStartMs": 5586276,
+        "globalEndMs": 5588276,
+        "relativeStartMs": 84000,
+        "relativeEndMs": 86000,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 32,
+        "globalStartMs": 5588276,
+        "globalEndMs": 5590276,
+        "relativeStartMs": 86000,
+        "relativeEndMs": 88000,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 177,
+        "globalStartMs": 5957276,
+        "globalEndMs": 5959276,
+        "relativeStartMs": 455000,
+        "relativeEndMs": 457000,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 210,
+        "globalStartMs": 6055276,
+        "globalEndMs": 6060276,
+        "relativeStartMs": 553000,
+        "relativeEndMs": 558000,
+        "durationMs": 5000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 212,
+        "globalStartMs": 6063276,
+        "globalEndMs": 6065276,
+        "relativeStartMs": 561000,
+        "relativeEndMs": 563000,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 250,
+        "globalStartMs": 6167276,
+        "globalEndMs": 6172276,
+        "relativeStartMs": 665000,
+        "relativeEndMs": 670000,
+        "durationMs": 5000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 289,
+        "globalStartMs": 6366276,
+        "globalEndMs": 6369276,
+        "relativeStartMs": 864000,
+        "relativeEndMs": 867000,
+        "durationMs": 3000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 394,
+        "globalStartMs": 6755276,
+        "globalEndMs": 6760276,
+        "relativeStartMs": 1253000,
+        "relativeEndMs": 1258000,
+        "durationMs": 5000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 438,
+        "globalStartMs": 7009276,
+        "globalEndMs": 7014276,
+        "relativeStartMs": 1507000,
+        "relativeEndMs": 1512000,
+        "durationMs": 5000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "herring6",
+        "cueOrdinal": 466,
+        "globalStartMs": 7126276,
+        "globalEndMs": 7131276,
+        "relativeStartMs": 1624000,
+        "relativeEndMs": 1629000,
+        "durationMs": 5000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 45,
+        "globalStartMs": 12609885,
+        "globalEndMs": 12613085,
+        "relativeStartMs": 103240,
+        "relativeEndMs": 106440,
+        "durationMs": 3200,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 47,
+        "globalStartMs": 12615365,
+        "globalEndMs": 12619325,
+        "relativeStartMs": 108720,
+        "relativeEndMs": 112680,
+        "durationMs": 3960,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 60,
+        "globalStartMs": 12640725,
+        "globalEndMs": 12643445,
+        "relativeStartMs": 134080,
+        "relativeEndMs": 136800,
+        "durationMs": 2720,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 128,
+        "globalStartMs": 12785045,
+        "globalEndMs": 12788245,
+        "relativeStartMs": 278400,
+        "relativeEndMs": 281600,
+        "durationMs": 3200,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 187,
+        "globalStartMs": 12894325,
+        "globalEndMs": 12896005,
+        "relativeStartMs": 387680,
+        "relativeEndMs": 389360,
+        "durationMs": 1680,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 283,
+        "globalStartMs": 13094125,
+        "globalEndMs": 13097485,
+        "relativeStartMs": 587480,
+        "relativeEndMs": 590840,
+        "durationMs": 3360,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 416,
+        "globalStartMs": 13396325,
+        "globalEndMs": 13398285,
+        "relativeStartMs": 889680,
+        "relativeEndMs": 891640,
+        "durationMs": 1960,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 438,
+        "globalStartMs": 13446725,
+        "globalEndMs": 13449965,
+        "relativeStartMs": 940080,
+        "relativeEndMs": 943320,
+        "durationMs": 3240,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 452,
+        "globalStartMs": 13467525,
+        "globalEndMs": 13469165,
+        "relativeStartMs": 960880,
+        "relativeEndMs": 962520,
+        "durationMs": 1640,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 481,
+        "globalStartMs": 13525325,
+        "globalEndMs": 13529085,
+        "relativeStartMs": 1018680,
+        "relativeEndMs": 1022440,
+        "durationMs": 3760,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 649,
+        "globalStartMs": 13894525,
+        "globalEndMs": 13896805,
+        "relativeStartMs": 1387880,
+        "relativeEndMs": 1390160,
+        "durationMs": 2280,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "sastre8",
+        "cueOrdinal": 695,
+        "globalStartMs": 13988485,
+        "globalEndMs": 13990485,
+        "relativeStartMs": 1481840,
+        "relativeEndMs": 1483840,
+        "durationMs": 2000,
+        "maximumOtherSpeechOverlapMs": 0
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 122,
+        "globalStartMs": 20583517,
+        "globalEndMs": 20590103,
+        "relativeStartMs": 271563,
+        "relativeEndMs": 278149,
+        "durationMs": 6586,
+        "maximumOtherSpeechOverlapMs": 22
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 172,
+        "globalStartMs": 20684669,
+        "globalEndMs": 20687955,
+        "relativeStartMs": 372715,
+        "relativeEndMs": 376001,
+        "durationMs": 3286,
+        "maximumOtherSpeechOverlapMs": 27
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 175,
+        "globalStartMs": 20692703,
+        "globalEndMs": 20697528,
+        "relativeStartMs": 380749,
+        "relativeEndMs": 385574,
+        "durationMs": 4825,
+        "maximumOtherSpeechOverlapMs": 19
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 249,
+        "globalStartMs": 20863775,
+        "globalEndMs": 20865598,
+        "relativeStartMs": 551821,
+        "relativeEndMs": 553644,
+        "durationMs": 1823,
+        "maximumOtherSpeechOverlapMs": 27
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 447,
+        "globalStartMs": 21379923,
+        "globalEndMs": 21381496,
+        "relativeStartMs": 1067969,
+        "relativeEndMs": 1069542,
+        "durationMs": 1573,
+        "maximumOtherSpeechOverlapMs": 11
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 528,
+        "globalStartMs": 21617054,
+        "globalEndMs": 21619144,
+        "relativeStartMs": 1305100,
+        "relativeEndMs": 1307190,
+        "durationMs": 2090,
+        "maximumOtherSpeechOverlapMs": 22
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 575,
+        "globalStartMs": 21718986,
+        "globalEndMs": 21722336,
+        "relativeStartMs": 1407032,
+        "relativeEndMs": 1410382,
+        "durationMs": 3350,
+        "maximumOtherSpeechOverlapMs": 8
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 587,
+        "globalStartMs": 21742666,
+        "globalEndMs": 21747050,
+        "relativeStartMs": 1430712,
+        "relativeEndMs": 1435096,
+        "durationMs": 4384,
+        "maximumOtherSpeechOverlapMs": 90
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 635,
+        "globalStartMs": 21880557,
+        "globalEndMs": 21883320,
+        "relativeStartMs": 1568603,
+        "relativeEndMs": 1571366,
+        "durationMs": 2763,
+        "maximumOtherSpeechOverlapMs": 15
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 643,
+        "globalStartMs": 21900645,
+        "globalEndMs": 21904584,
+        "relativeStartMs": 1588691,
+        "relativeEndMs": 1592630,
+        "durationMs": 3939,
+        "maximumOtherSpeechOverlapMs": 10
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 648,
+        "globalStartMs": 21908531,
+        "globalEndMs": 21918719,
+        "relativeStartMs": 1596577,
+        "relativeEndMs": 1606765,
+        "durationMs": 10188,
+        "maximumOtherSpeechOverlapMs": 17
+      },
+      {
+        "recordingId": "zeledon9",
+        "cueOrdinal": 657,
+        "globalStartMs": 21928272,
+        "globalEndMs": 21935640,
+        "relativeStartMs": 1616318,
+        "relativeEndMs": 1623686,
+        "durationMs": 7368,
+        "maximumOtherSpeechOverlapMs": 11
+      }
+    ],
+    "developmentSegmentManifestSha256": "ff7fb22715e1375b57e1c894eb8d333add967708db73991cd2452cb9229e6d53",
+    "developmentDurationSeconds": 157.953
+  },
+  "modelContaminationAudit": {
+    "runtimeFinalAsr": "nvidia/parakeet-tdt-0.6b-v3-int8 via sherpa-onnx",
+    "officialModelCard": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+    "declaredTrainingSources": [
+      "nvidia/Granary: YODAS, YouTube-Commons, VoxPopuli, LibriLight",
+      "NeMo ASR Set 3.0: LibriSpeech, Fisher, NSC Part 1, VCTK, Europarl-ASR, MLS, Common Voice 7, AMI"
+    ],
+    "declaredEvaluationSources": [
+      "FLEURS",
+      "MLS",
+      "CoVoST",
+      "Open ASR Leaderboard"
+    ],
+    "bangorMiamiDeclaredInTrainingOrEvaluationSources": false,
+    "eligibleAsBlindSpanishSpanglishCandidate": true,
+    "eligibilityRequiresSelectedReferenceCoverageAuditAtEvaluation": true,
+    "sufficientAloneForFinalPhysicalSttCertification": false
+  },
+  "evaluationContract": {
+    "blindAudioMayNotBeUsedForTrainingOrTuning": true,
+    "blindReferenceTextMayBeOpenedOnlyByVersionedEvaluator": true,
+    "developmentFailuresMayNotTuneOnBlindRecordings": true,
+    "wakeValidationPartitionMayNotBeUsed": true,
+    "requiredMetrics": [
+      "word_error_rate_by_en_es_codeswitch",
+      "semantic_operation_preservation",
+      "entity_and_number_preservation",
+      "stt_latency_p50_p95",
+      "recording_group_breakdown"
+    ],
+    "requiredPass": {
+      "semanticOperationPreservation": 1.0,
+      "criticalEntityPreservation": 1.0,
+      "unsafeEffects": 0
+    }
+  },
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0
+}

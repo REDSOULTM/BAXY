@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Baxy.Kernel</AssemblyName>
+    <RootNamespace>Baxy.Kernel</RootNamespace>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Baxy.Contracts\Baxy.Contracts.csproj" />
+  </ItemGroup>
+</Project>

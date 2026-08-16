@@ -1,0 +1,94 @@
+{
+  "schema": "baxy.primary-contract-component-table.v1",
+  "measured_at_utc": "2026-07-30",
+  "payload_source": "p_payload_dump/p_payload.json (turn-23, cold-index shortlist, 28 candidates); tokenized with the registered server's /tokenize",
+  "prefill_economics": {
+    "prefill_rate_tok_per_s": "708-859 (measured)",
+    "decode_rate_under_contention_tok_per_s": "25-40 (measured)",
+    "median_predicted_tokens": 84
+  },
+  "components": [
+    {
+      "component": "TURN_POLICY_PROMPT (system message)",
+      "tokens": 549,
+      "prefill_cost": "0 per warm turn: constant prefix cached (cache_n=554 with template overhead observed on every P call)",
+      "semantic_function": "decision rules for conversation/clarify/action/plan, authority limits, effect enumeration and language field",
+      "depends_on_it": "tests/test_turn_policy.py (2120-line suite), corpus final39",
+      "alteration_evidence": "minifying/abbreviating rejected: primary_minified_prompt_verdict_20260729 (7/11 and 5/11 semantic changes, lost modes); compacting P+guard together rejected (20/108 state changes)"
+    },
+    {
+      "component": "bounded history (prior_messages[-6:])",
+      "tokens": 0,
+      "prefill_cost": "0 in the frozen workload (empty history)",
+      "semantic_function": "elliptic follow-up resolution; the current message always dominates",
+      "depends_on_it": "followup corpus cases; never cached (authority rule)",
+      "alteration_evidence": "not removable: contract requires context resolution; caching history-dependent results is prohibited by the cache policy"
+    },
+    {
+      "component": "current text header (Mensaje actual: + user text)",
+      "tokens": 12,
+      "prefill_cost": "~15 ms",
+      "semantic_function": "the request itself",
+      "depends_on_it": "everything",
+      "alteration_evidence": "irreducible"
+    },
+    {
+      "component": "candidate names (28 lines, name part)",
+      "tokens": 131,
+      "prefill_cost": "~170 ms per turn",
+      "semantic_function": "closed decision space; also duplicated into the output grammar's operation enum",
+      "depends_on_it": "operation selection; effect_operations enumeration",
+      "alteration_evidence": "cannot be dropped; compact internal IDs (abbreviated wire) rejected: 47 state changes vs final39, 21 operation families lost, one false effect (documented 2026-07-28)"
+    },
+    {
+      "component": "candidate descriptions (28 lines, description part)",
+      "tokens": 545,
+      "prefill_cost": "~700 ms per turn - the single largest avoidable-looking prefill block",
+      "semantic_function": "semantic grounding to distinguish sibling operations",
+      "depends_on_it": "action/plan correctness on adjacent operations",
+      "alteration_evidence": "names-only variant physically rejected 2026-07-30 (gpu_turn_primary_names_only_smoke: worse median or changed actions); the 0.7s is the measured price of decision quality"
+    },
+    {
+      "component": "output JSON Schema (response_format, 1751 chars, operation enum with 29 values)",
+      "tokens": 0,
+      "prefill_cost": "grammar compilation only (server-side, amortized, no prompt tokens)",
+      "semantic_function": "closed output contract: mode, operation, question, conversation_kind, effect_count, effect_operations, response_language",
+      "depends_on_it": "validate_turn_decision, all downstream validators, planner",
+      "alteration_evidence": "GBNF-compact P rejected (4/4 invalid objects; whitespace relaxations recover only 1/4); oneOf per-mode rejected (first-branch bias); removing effect_count/response_language rejected (worse median or changed actions); field-order changes belong to the same contract family and require the exhaustive corpus - listed under 'limits requiring another decision', not an internal knob"
+    },
+    {
+      "component": "max_tokens=160",
+      "tokens": 0,
+      "prefill_cost": "bounds decode: 84-token median valid output; 160-token drain when the thinking pathology triggers",
+      "semantic_function": "decode budget",
+      "depends_on_it": "turn deadline arithmetic (19s HTTP / 22s turn)",
+      "alteration_evidence": "112 rejected (turn-03 flip, added retries, p95 12.5->19.5); 320 order-unstable; 320-on-final-retry-only physically rejected today (deadline truncation, turn_retry_expanded_final_attempt_20260730)"
+    },
+    {
+      "component": "prompt ordering (constants first)",
+      "tokens": null,
+      "prefill_cost": "already optimal: the only cross-turn constant (system prompt) leads and is the cached 554-token prefix; candidates and text are per-turn and cannot form a shared prefix",
+      "semantic_function": "prefix-cache economics",
+      "depends_on_it": "-",
+      "alteration_evidence": "measured cache_n=554 constant across all observed P calls; candidate reordering would break the certified semantic ranking order (exact-order preservation is a promoted property)"
+    },
+    {
+      "component": "shortlist composition (evidence-preferred families)",
+      "tokens": "varies (5347 vs 5805 chars observed for the same text)",
+      "prefill_cost": "~30-60 ms difference",
+      "semantic_function": "advisory candidate focus from the E5 evidence index",
+      "depends_on_it": "certified corpus behavior; turn_evidence tests",
+      "alteration_evidence": "NOT latency-neutral: the evidence-preferred variant deterministically triggers the Gemma thinking drain on turn-23/06/04 (turn_retry_root_cause_verdict_20260730). Changing composition alters decisions and requires corpus recertification - blocked on authorization, registered as a product-behavior finding"
+    }
+  ],
+  "representation_alternatives_ledger": {
+    "schema_field_order": "contract change; requires exhaustive corpus (documented limit)",
+    "compact_internal_ids": "rejected (abbreviated wire, 47 state changes)",
+    "constrained_decoding_gbnf_for_P": "rejected (invalid objects; whitespace sensitivity is learned behavior)",
+    "precomputation_prefix_priming": "rejected (moves more latency to warmup than it removes)",
+    "slot_save_restore": "rejected (restore repones KV but POST reprocesses full prompt, cache_n=0)",
+    "runtime_native_cache_reuse_checkpoints": "rejected (no additional token reuse on real prompts; physical regressions)",
+    "separate_constant_data": "already realized (system prompt = cached constant prefix)"
+  },
+  "conclusion": "Every component of the P contract is either physically irreducible (text, names), already free (cached system prompt, grammar-only schema), or its removal/re-representation was measured and rejected for decision changes. The remaining P cost for new text is prefill of per-turn candidates (~0.9s) plus 84-token constrained decode under contention (~2.4-3.4s): both are prices of the certified decision quality on this checkpoint. The only paths below that are a draft/MTP asset, a recertified compact contract, or a faster clock - all requiring authorization."
+}

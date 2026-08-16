@@ -1,0 +1,425 @@
+{
+  "$schema": "https://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:0beff4dc-72e6-5607-b1ae-caad46135d95",
+  "version": 1,
+  "metadata": {
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": ".NET SDK",
+          "version": "10.0.100"
+        },
+        {
+          "type": "application",
+          "name": "Microsoft.DotNet.ILCompiler",
+          "version": "10.0.0",
+          "purl": "pkg:nuget/Microsoft.DotNet.ILCompiler@10.0.0",
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "0df2eb213ee3196e122b35db63c68a164f5e36739306a0edc9e8c8526cf8ff36"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "supplier": {
+            "name": "Microsoft"
+          }
+        },
+        {
+          "type": "application",
+          "name": "runtime.win-x64.Microsoft.DotNet.ILCompiler",
+          "version": "10.0.0",
+          "purl": "pkg:nuget/runtime.win-x64.Microsoft.DotNet.ILCompiler@10.0.0",
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "396341615f0b95e830c6a3287adf577f3fb32cc66bc1debee6f169ff9398d4af"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "supplier": {
+            "name": "Microsoft"
+          }
+        },
+        {
+          "type": "application",
+          "name": "rustc",
+          "version": "1.97.0",
+          "licenses": [
+            {
+              "expression": "MIT OR Apache-2.0"
+            }
+          ]
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "bom-ref": "baxy:round-b:dotnet-wpf-rust:1.0.0",
+      "name": "BAXY Round-B integrated package",
+      "version": "1.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0592219c17ef8184c3f36885ef54cd6fde6b239298a15d6197383841fda5bb77"
+        }
+      ],
+      "properties": [
+        {
+          "name": "baxy:system-id",
+          "value": "dotnet-wpf-rust"
+        },
+        {
+          "name": "baxy:package-bytes",
+          "value": "69453280"
+        },
+        {
+          "name": "baxy:manifest-authenticity",
+          "value": "not-provided"
+        },
+        {
+          "name": "baxy:hash-scope",
+          "value": "manifest.json"
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "baxy:generated-from",
+        "value": "Round-B package manifest, Cargo.lock and pinned local package hashes"
+      },
+      {
+        "name": "baxy:first-party-license-declared",
+        "value": "false"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "framework",
+      "bom-ref": "baxy:msvc-crt:14.44",
+      "name": "Microsoft Visual C++ / Universal CRT",
+      "version": "14.44",
+      "licenses": [
+        {
+          "expression": "LicenseRef-Microsoft-Visual-Cpp-Runtime AND LicenseRef-Microsoft-Windows-SDK"
+        }
+      ],
+      "properties": [
+        {
+          "name": "baxy:linkage",
+          "value": "static"
+        },
+        {
+          "name": "baxy:exact-linked-libraries",
+          "value": "not-recorded"
+        }
+      ]
+    },
+    {
+      "type": "application",
+      "bom-ref": "baxy:rust-core",
+      "name": "BAXY Rust core",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063"
+        }
+      ],
+      "properties": [
+        {
+          "name": "baxy:first-party-license",
+          "value": "not-declared"
+        },
+        {
+          "name": "baxy:authenticode",
+          "value": "NotSigned"
+        },
+        {
+          "name": "baxy:static-msvc-crt",
+          "value": "true"
+        },
+        {
+          "name": "baxy:crate-license-source",
+          "value": "Cargo.toml"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "framework",
+      "bom-ref": "baxy:rust-std:1.97.0",
+      "name": "Rust standard library",
+      "version": "1.97.0",
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "properties": [
+        {
+          "name": "baxy:linkage",
+          "value": "static"
+        }
+      ]
+    },
+    {
+      "type": "application",
+      "bom-ref": "baxy:wpf-shell",
+      "name": "BAXY WPF shell",
+      "version": "1.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47"
+        }
+      ],
+      "properties": [
+        {
+          "name": "baxy:first-party-license",
+          "value": "not-declared"
+        },
+        {
+          "name": "baxy:authenticode",
+          "value": "NotSigned"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/itoa@1.0.18",
+      "name": "itoa",
+      "version": "1.0.18",
+      "purl": "pkg:cargo/itoa@1.0.18",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://crates.io/crates/itoa/1.0.18"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/memchr@2.8.3",
+      "name": "memchr",
+      "version": "2.8.3",
+      "purl": "pkg:cargo/memchr@2.8.3",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "Unlicense OR MIT"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://crates.io/crates/memchr/2.8.3"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/serde_core@1.0.228",
+      "name": "serde_core",
+      "version": "1.0.228",
+      "purl": "pkg:cargo/serde_core@1.0.228",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "41d385c7d4ca58e59fc732af25c3983b67ac852c1a25000afe1175de458b67ad"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://crates.io/crates/serde_core/1.0.228"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/serde_json@1.0.150",
+      "name": "serde_json",
+      "version": "1.0.150",
+      "purl": "pkg:cargo/serde_json@1.0.150",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "e8014e44b4736ed0538adeecded0fce2a272f22dc9578a7eb6b2d9993c74cfb9"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://crates.io/crates/serde_json/1.0.150"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/zmij@1.0.23",
+      "name": "zmij",
+      "version": "1.0.23",
+      "purl": "pkg:cargo/zmij@1.0.23",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://crates.io/crates/zmij/1.0.23"
+        }
+      ]
+    },
+    {
+      "type": "framework",
+      "bom-ref": "pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64@10.0.0",
+      "name": "Microsoft.NETCore.App.Runtime.win-x64",
+      "version": "10.0.0",
+      "purl": "pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64@10.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d94ce14ef10caa1adfbdeb0426493486685de9c4cc8debeff36d38d9b08318a1"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "supplier": {
+        "name": "Microsoft"
+      },
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/dotnet/dotnet"
+        },
+        {
+          "type": "license",
+          "url": "https://github.com/dotnet/runtime/blob/main/LICENSE.TXT"
+        }
+      ]
+    },
+    {
+      "type": "framework",
+      "bom-ref": "pkg:nuget/Microsoft.WindowsDesktop.App.Runtime.win-x64@10.0.0",
+      "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+      "version": "10.0.0",
+      "purl": "pkg:nuget/Microsoft.WindowsDesktop.App.Runtime.win-x64@10.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "58da08d83e919c7205a282621783ee28df45b47e3fec8a83ad18c9fcc3077224"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "supplier": {
+        "name": "Microsoft"
+      },
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/dotnet/dotnet"
+        },
+        {
+          "type": "license",
+          "url": "https://github.com/dotnet/runtime/blob/main/LICENSE.TXT"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "baxy:round-b:dotnet-wpf-rust:1.0.0",
+      "dependsOn": [
+        "baxy:wpf-shell",
+        "baxy:rust-core"
+      ]
+    },
+    {
+      "ref": "baxy:wpf-shell",
+      "dependsOn": [
+        "pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64@10.0.0",
+        "pkg:nuget/Microsoft.WindowsDesktop.App.Runtime.win-x64@10.0.0"
+      ]
+    },
+    {
+      "ref": "baxy:rust-core",
+      "dependsOn": [
+        "pkg:cargo/serde_json@1.0.150",
+        "pkg:cargo/itoa@1.0.18",
+        "pkg:cargo/memchr@2.8.3",
+        "pkg:cargo/serde_core@1.0.228",
+        "pkg:cargo/zmij@1.0.23",
+        "baxy:rust-std:1.97.0",
+        "baxy:msvc-crt:14.44"
+      ]
+    }
+  ]
+}

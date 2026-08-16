@@ -1,0 +1,36 @@
+{
+  "schema": "baxy.speculative-direct-arguments-verdict.v1",
+  "status": "rejected",
+  "measured_on": "2026-07-29",
+  "runtime": {
+    "llama_server_build": 9980,
+    "llama_server_commit": "8014d2cf9",
+    "maximum_active_posts": 3
+  },
+  "early_after_policy_and_guard": {
+    "baseline_p50_seconds": 5.253,
+    "prototype_p50_seconds": 5.712,
+    "baseline_p95_seconds": 6.161,
+    "prototype_p95_seconds": 6.483,
+    "late_veto_regressions_seconds": [
+      0.77,
+      1.137,
+      0.818
+    ]
+  },
+  "exact_after_count_verification": {
+    "paired_median_delta_seconds": 0.364,
+    "paired_p95_delta_seconds": 1.031,
+    "faster_pairs": 3,
+    "measured_pairs": 7,
+    "compatibility_latency_increase_percent": 40.5,
+    "extraction_latency_increase_percent": 53.9,
+    "baseline_mean_gpu_utilization_percent": 46.6,
+    "prototype_mean_gpu_utilization_percent": 50.8
+  },
+  "quality": {
+    "decisions_and_arguments_exact": true,
+    "maximum_active_posts_preserved": true
+  },
+  "decision": "No production code was promoted because argument extraction contended with the mandatory verification chain and worsened paired latency."
+}

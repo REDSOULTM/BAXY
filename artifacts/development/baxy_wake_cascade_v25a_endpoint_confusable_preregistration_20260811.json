@@ -1,0 +1,16 @@
+{
+  "schema": "baxy.wake-cascade-endpoint-confusable-development-preregistration.v1",
+  "createdAtUtc": "2026-08-11T17:22:00Z",
+  "candidateManifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+  "corpusManifestSha256": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+  "programTreeSha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0",
+  "contract": {
+    "policy": "cascade",
+    "blockSamples": 512,
+    "readPhysicalV17": false,
+    "retainTranscriptText": false,
+    "promotionEligible": false
+  },
+  "plannedOutput": "artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json",
+  "effectsExecuted": 0
+}

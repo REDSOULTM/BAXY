@@ -1,0 +1,358 @@
+{
+  "schema": "baxy-night-audit-bluetooth-list-timeout-repro-v1",
+  "measured_at": "2026-07-27T18:41:54.955125+00:00",
+  "core": "D:\\BAXY\\source\\src\\Baxy.Core\\bin\\Release\\net10.0-windows10.0.19041.0\\win-x64\\publish\\baxy-core.exe",
+  "reproduced": false,
+  "runs": [
+    {
+      "attempt": 1,
+      "timeout_seconds": 10.0,
+      "elapsed_seconds": 5.904,
+      "timed_out": false,
+      "response": {
+        "type": "operation.response",
+        "requestId": "b5bab99a-fee1-4de3-af73-bd3018c1a2ac",
+        "missionId": "bd432241-5cef-440e-b7b8-b2b7ad369390",
+        "invocationId": "bb9a3f36-1955-4a1c-a747-022c75e7af56",
+        "status": "completed",
+        "message": "La operación terminó correctamente.",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "version": 1,
+          "count": 30,
+          "devices": [
+            {
+              "deviceId": "bluetooth_1a4f6a78a6372f919ca5c59f",
+              "name": "BT5.2 Mouse",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_da7e8b235dd444a5fdfd335d",
+              "name": "Servicio de red de �rea personal",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_f03590e7f50a38841d6f6102",
+              "name": "S20 FE de Emmanuel",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_1eee84bc331cf7e1dfe60628",
+              "name": "Servicio de informaci�n del dispositivo",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_21faca87c26d2ad70415a66a",
+              "name": "Enumerador de Bluetooth LE de Microsoft",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_60983088e7f20eddde0ee39b",
+              "name": "Perfil de atributo gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_d55df2a29c36dc7676e82ee7",
+              "name": "Servicio de atributo gen�rico de LE de Bluetooth",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_fdc200eea4aa13a7f4c3d5e9",
+              "name": "Servicio de identificaci�n de dispositivos",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_d40ed21bf1fc6ffecc1fe3c2",
+              "name": "Servicio de puerta de enlace de audio de auriculares con micr�fono",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_99594dad2d6d363956fb5da4",
+              "name": "Bluetooth Device (RFCOMM Protocol TDI)",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_f82da2cd131b51dd715dd5ba",
+              "name": "Perfil de acceso gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_d57425b25e7a0794efdc81d2",
+              "name": "Wireless Controller",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_e2ffe6b6d5d300f545683ed1",
+              "name": "Mijiademo",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_c07cf04748679446882c0f2d",
+              "name": "SLEVE EVO",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_9241dbf1ce46cf397707b20f",
+              "name": "Perfil de atributo gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_0554b0d06295df614a6dc47a",
+              "name": "Perfil de acceso gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_b5e2cf25ad20498119115cff",
+              "name": "Servicio NAP de red de �rea personal",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_b5c53f4f257705576a197c52",
+              "name": "S20 FE de Emmanuel",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_d199a80250453a8af5bbd2a8",
+              "name": "Perfil de atributo gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_910fe188e94892e8abec4326",
+              "name": "S20 FE de Emmanuel Transporte AVRCP",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_e54f29a7961d3f28139097aa",
+              "name": "Servicio de inserci�n de objeto",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_c0a9c8586c2a91c7f7867951",
+              "name": "Enumerador Bluetooth de Microsoft",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_2149d35a22c3bb3a2610e22e",
+              "name": "SLEVE EVO Transporte AVRCP",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_57a6b61467da7558435a0497",
+              "name": "Servicio de atributo gen�rico de LE de Bluetooth",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_fb6d5742b31e33ffd8d6197b",
+              "name": "Servicio de acceso a SIM",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_a98fb5cceeaf278bf6429011",
+              "name": "MediaTek Bluetooth Adapter",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_7e4f00bcef1832fe9abbc6b1",
+              "name": "S20 FE de Emmanuel Transporte AVRCP",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_45d7d2b4a01f5baa2c50cb1c",
+              "name": "SLEVE EVO Transporte AVRCP",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_4f358127c977cc45bfcd6446",
+              "name": "Servicio de acceso a la gu�a telef�nica (PSE)",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_45a6238d2a804d492baabceb",
+              "name": "Perfil de acceso gen�rico",
+              "status": "OK"
+            }
+          ]
+        },
+        "errorCode": null
+      },
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "timeout_seconds": 10.0,
+      "elapsed_seconds": 5.778,
+      "timed_out": false,
+      "response": {
+        "type": "operation.response",
+        "requestId": "6a829208-91d1-4188-a2b2-8c14a13ba1d4",
+        "missionId": "a247178f-9c49-462a-8743-40157fbfca83",
+        "invocationId": "a97ae6bb-6214-4622-a9a3-9328fd52e858",
+        "status": "completed",
+        "message": "La operación terminó correctamente.",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "version": 1,
+          "count": 30,
+          "devices": [
+            {
+              "deviceId": "bluetooth_1a4f6a78a6372f919ca5c59f",
+              "name": "BT5.2 Mouse",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_da7e8b235dd444a5fdfd335d",
+              "name": "Servicio de red de �rea personal",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_f03590e7f50a38841d6f6102",
+              "name": "S20 FE de Emmanuel",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_1eee84bc331cf7e1dfe60628",
+              "name": "Servicio de informaci�n del dispositivo",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_21faca87c26d2ad70415a66a",
+              "name": "Enumerador de Bluetooth LE de Microsoft",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_60983088e7f20eddde0ee39b",
+              "name": "Perfil de atributo gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_d55df2a29c36dc7676e82ee7",
+              "name": "Servicio de atributo gen�rico de LE de Bluetooth",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_fdc200eea4aa13a7f4c3d5e9",
+              "name": "Servicio de identificaci�n de dispositivos",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_d40ed21bf1fc6ffecc1fe3c2",
+              "name": "Servicio de puerta de enlace de audio de auriculares con micr�fono",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_99594dad2d6d363956fb5da4",
+              "name": "Bluetooth Device (RFCOMM Protocol TDI)",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_f82da2cd131b51dd715dd5ba",
+              "name": "Perfil de acceso gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_d57425b25e7a0794efdc81d2",
+              "name": "Wireless Controller",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_e2ffe6b6d5d300f545683ed1",
+              "name": "Mijiademo",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_c07cf04748679446882c0f2d",
+              "name": "SLEVE EVO",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_9241dbf1ce46cf397707b20f",
+              "name": "Perfil de atributo gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_0554b0d06295df614a6dc47a",
+              "name": "Perfil de acceso gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_b5e2cf25ad20498119115cff",
+              "name": "Servicio NAP de red de �rea personal",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_b5c53f4f257705576a197c52",
+              "name": "S20 FE de Emmanuel",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_d199a80250453a8af5bbd2a8",
+              "name": "Perfil de atributo gen�rico",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_910fe188e94892e8abec4326",
+              "name": "S20 FE de Emmanuel Transporte AVRCP",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_e54f29a7961d3f28139097aa",
+              "name": "Servicio de inserci�n de objeto",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_c0a9c8586c2a91c7f7867951",
+              "name": "Enumerador Bluetooth de Microsoft",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_2149d35a22c3bb3a2610e22e",
+              "name": "SLEVE EVO Transporte AVRCP",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_57a6b61467da7558435a0497",
+              "name": "Servicio de atributo gen�rico de LE de Bluetooth",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_fb6d5742b31e33ffd8d6197b",
+              "name": "Servicio de acceso a SIM",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_a98fb5cceeaf278bf6429011",
+              "name": "MediaTek Bluetooth Adapter",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_7e4f00bcef1832fe9abbc6b1",
+              "name": "S20 FE de Emmanuel Transporte AVRCP",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_45d7d2b4a01f5baa2c50cb1c",
+              "name": "SLEVE EVO Transporte AVRCP",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_4f358127c977cc45bfcd6446",
+              "name": "Servicio de acceso a la gu�a telef�nica (PSE)",
+              "status": "OK"
+            },
+            {
+              "deviceId": "bluetooth_45a6238d2a804d492baabceb",
+              "name": "Perfil de acceso gen�rico",
+              "status": "OK"
+            }
+          ]
+        },
+        "errorCode": null
+      },
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ]
+}

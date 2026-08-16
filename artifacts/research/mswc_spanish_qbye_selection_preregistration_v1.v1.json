@@ -1,0 +1,269 @@
+{
+  "schema": "baxy.mswc-spanish-qbye-selection-preregistration.v1",
+  "measured_at_utc": "2026-08-06T04:38:19.346692+00:00",
+  "scope": "freeze_tuning_choice_before_open_keyword_selection_evaluation",
+  "sources": {
+    "feature_manifest_sha256": "3fc5d1ed75c850409aa88f7f343e83e9523ff40adc815db5b9167d07e6dcb3b7",
+    "baseline_tuning_report_path": "D:/BAXY/source/artifacts/research/mswc_spanish_qbye_ssl_baseline_tuning_v1.v1.json",
+    "baseline_tuning_report_sha256": "d95d4c23c30beb846916ce840f9ee2ee8d4383851b193ea158f8cddff1ed8d9e"
+  },
+  "contract": {
+    "open_split_seed": 9107,
+    "candidate_rank": "top1_then_pair_auc_then_negative_eer",
+    "selection_gate": {
+      "minimum_top1_accuracy": 0.9,
+      "minimum_pair_auc": 0.99,
+      "maximum_equal_error_rate": 0.05,
+      "minimum_true_pair_recall_at_zero_false_pairs": 0.2,
+      "minimum_top1_delta_over_frozen_ssl_baseline": 0.0
+    },
+    "no_post_selection_candidate_switching": true
+  },
+  "candidates": [
+    {
+      "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_angleproto_layer16_v1/training.report.v1.json",
+      "training_report_sha256": "d33a6fda66af617aa6f2f3247204dc4e99748b3ba5a810a5f7cc88ebd406e274",
+      "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_angleproto_layer16_v1/mswc-spanish-qbye-angleproto-v1.pt",
+      "checkpoint_sha256": "5443e45481d1f3b759b0e906d9980620a57b18494f8acef7dfdae574772c0fc6",
+      "layer": 16,
+      "objective": "angular_prototypical",
+      "seed": 3501,
+      "best_epoch": 20,
+      "open_keyword_tuning": {
+        "classes": 100,
+        "enrollments": 400,
+        "queries": 1200,
+        "top1_accuracy": 0.9341666666666667,
+        "macro_class_accuracy": 0.9341666666666666,
+        "mean_true_minus_maximum_impostor_margin": 0.2587284524582113,
+        "median_true_minus_maximum_impostor_margin": 0.28407373077422626,
+        "positive_margin_queries": 1121,
+        "pair_auc": 0.9963974887766553,
+        "equal_error_rate": 0.022622053872053856,
+        "equal_error_threshold": 0.43826627035943444,
+        "zero_false_pair_threshold": 0.9238958144040271,
+        "true_pairs_accepted_at_zero_false_pairs": 189,
+        "true_pairs": 1200,
+        "impostor_pairs": 118800
+      },
+      "rank": [
+        0.9341666666666667,
+        0.9963974887766553,
+        -0.022622053872053856
+      ]
+    },
+    {
+      "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_v1/training.report.v1.json",
+      "training_report_sha256": "2a4eadc436804ace01b6896a98329f987b65501e401d61c5f20d3295cf8ce958",
+      "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_v1/mswc-spanish-qbye-angleproto-v1.pt",
+      "checkpoint_sha256": "203d072445d3e67250d914091b412085cbadd40f210824dea3b394fd1ffedfb2",
+      "layer": 16,
+      "objective": "hybrid_angular_prototypical_arcface",
+      "seed": 3501,
+      "best_epoch": 18,
+      "open_keyword_tuning": {
+        "classes": 100,
+        "enrollments": 400,
+        "queries": 1200,
+        "top1_accuracy": 0.9383333333333334,
+        "macro_class_accuracy": 0.9383333333333332,
+        "mean_true_minus_maximum_impostor_margin": 0.2685047588156828,
+        "median_true_minus_maximum_impostor_margin": 0.2895865434909157,
+        "positive_margin_queries": 1126,
+        "pair_auc": 0.9974584034792369,
+        "equal_error_rate": 0.019225589225589226,
+        "equal_error_threshold": 0.4477343148069083,
+        "zero_false_pair_threshold": 0.8712208240719654,
+        "true_pairs_accepted_at_zero_false_pairs": 436,
+        "true_pairs": 1200,
+        "impostor_pairs": 118800
+      },
+      "rank": [
+        0.9383333333333334,
+        0.9974584034792369,
+        -0.019225589225589226
+      ]
+    },
+    {
+      "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_angleproto_layer2_v1/training.report.v1.json",
+      "training_report_sha256": "2acdbf155fce7c15a8c5aca9acd7d4325ce6f3f946a3ab345a18d35193b5b98b",
+      "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_angleproto_layer2_v1/mswc-spanish-qbye-angleproto-v1.pt",
+      "checkpoint_sha256": "4149c8c3815be8e2096a242e8da0a34a013715135bd9262e5cada081ba4ef0c0",
+      "layer": 2,
+      "objective": "angular_prototypical",
+      "seed": 3501,
+      "best_epoch": 14,
+      "open_keyword_tuning": {
+        "classes": 100,
+        "enrollments": 400,
+        "queries": 1200,
+        "top1_accuracy": 0.9,
+        "macro_class_accuracy": 0.8999999999999999,
+        "mean_true_minus_maximum_impostor_margin": 0.20709568113883306,
+        "median_true_minus_maximum_impostor_margin": 0.22845615704417657,
+        "positive_margin_queries": 1080,
+        "pair_auc": 0.9957592522446689,
+        "equal_error_rate": 0.026548821548821523,
+        "equal_error_threshold": 0.43907932271688427,
+        "zero_false_pair_threshold": 0.8631329059538543,
+        "true_pairs_accepted_at_zero_false_pairs": 288,
+        "true_pairs": 1200,
+        "impostor_pairs": 118800
+      },
+      "rank": [
+        0.9,
+        0.9957592522446689,
+        -0.026548821548821523
+      ]
+    },
+    {
+      "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer2_v1/training.report.v1.json",
+      "training_report_sha256": "6ef62a9e563c081c8a2deefd0f717e04fcde64dc42c18cbcf76c5b19cf8170ed",
+      "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer2_v1/mswc-spanish-qbye-angleproto-v1.pt",
+      "checkpoint_sha256": "55929c3ea5137faa521fa567e7129db9c374010e3da2bf3a42716cc084d2ae8c",
+      "layer": 2,
+      "objective": "hybrid_angular_prototypical_arcface",
+      "seed": 3501,
+      "best_epoch": 20,
+      "open_keyword_tuning": {
+        "classes": 100,
+        "enrollments": 400,
+        "queries": 1200,
+        "top1_accuracy": 0.9241666666666667,
+        "macro_class_accuracy": 0.9241666666666666,
+        "mean_true_minus_maximum_impostor_margin": 0.22785867998842416,
+        "median_true_minus_maximum_impostor_margin": 0.251216598118158,
+        "positive_margin_queries": 1109,
+        "pair_auc": 0.9962865179573513,
+        "equal_error_rate": 0.021165824915824888,
+        "equal_error_threshold": 0.43417735207973557,
+        "zero_false_pair_threshold": 0.841550810149287,
+        "true_pairs_accepted_at_zero_false_pairs": 323,
+        "true_pairs": 1200,
+        "impostor_pairs": 118800
+      },
+      "rank": [
+        0.9241666666666667,
+        0.9962865179573513,
+        -0.021165824915824888
+      ]
+    },
+    {
+      "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_seed3502_v1/training.report.v1.json",
+      "training_report_sha256": "b0d29bf01ba9eaf8d443a49d0c1b27735304c15b765dbcd81fdf8b4fbcf207b0",
+      "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_seed3502_v1/mswc-spanish-qbye-angleproto-v1.pt",
+      "checkpoint_sha256": "99bf6ad06ab3f97ddab5185bfd990e6955e58bd6b856bee230797028a4b0b51e",
+      "layer": 16,
+      "objective": "hybrid_angular_prototypical_arcface",
+      "seed": 3502,
+      "best_epoch": 20,
+      "open_keyword_tuning": {
+        "classes": 100,
+        "enrollments": 400,
+        "queries": 1200,
+        "top1_accuracy": 0.9466666666666667,
+        "macro_class_accuracy": 0.9466666666666668,
+        "mean_true_minus_maximum_impostor_margin": 0.27411897350986,
+        "median_true_minus_maximum_impostor_margin": 0.2977305754898194,
+        "positive_margin_queries": 1136,
+        "pair_auc": 0.9974624158249158,
+        "equal_error_rate": 0.022062289562289533,
+        "equal_error_threshold": 0.4116244282475907,
+        "zero_false_pair_threshold": 0.9150001996486669,
+        "true_pairs_accepted_at_zero_false_pairs": 147,
+        "true_pairs": 1200,
+        "impostor_pairs": 118800
+      },
+      "rank": [
+        0.9466666666666667,
+        0.9974624158249158,
+        -0.022062289562289533
+      ]
+    },
+    {
+      "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_emb128_v1/training.report.v1.json",
+      "training_report_sha256": "8c2a82555a785e744fb635c47b66f0e7b703faa2fc161a4054e4d10f852b2ce5",
+      "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_emb128_v1/mswc-spanish-qbye-angleproto-v1.pt",
+      "checkpoint_sha256": "6aca3a7c9cef64d2ed37846f14f48568fb06f360861dc609583e36d01aa17bfb",
+      "layer": 16,
+      "objective": "hybrid_angular_prototypical_arcface",
+      "seed": 3501,
+      "best_epoch": 18,
+      "open_keyword_tuning": {
+        "classes": 100,
+        "enrollments": 400,
+        "queries": 1200,
+        "top1_accuracy": 0.9466666666666667,
+        "macro_class_accuracy": 0.9466666666666665,
+        "mean_true_minus_maximum_impostor_margin": 0.2762599988032692,
+        "median_true_minus_maximum_impostor_margin": 0.29549092722149034,
+        "positive_margin_queries": 1136,
+        "pair_auc": 0.9974943672839507,
+        "equal_error_rate": 0.01749999999999998,
+        "equal_error_threshold": 0.431771155174625,
+        "zero_false_pair_threshold": 0.8854268205392567,
+        "true_pairs_accepted_at_zero_false_pairs": 272,
+        "true_pairs": 1200,
+        "impostor_pairs": 118800
+      },
+      "rank": [
+        0.9466666666666667,
+        0.9974943672839507,
+        -0.01749999999999998
+      ]
+    }
+  ],
+  "selected_candidate": {
+    "training_report_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_emb128_v1/training.report.v1.json",
+    "training_report_sha256": "8c2a82555a785e744fb635c47b66f0e7b703faa2fc161a4054e4d10f852b2ce5",
+    "checkpoint_path": "D:/BAXYRuntime/experiments/wakeword/mswc_spanish_qbye_hybrid_layer16_emb128_v1/mswc-spanish-qbye-angleproto-v1.pt",
+    "checkpoint_sha256": "6aca3a7c9cef64d2ed37846f14f48568fb06f360861dc609583e36d01aa17bfb",
+    "layer": 16,
+    "objective": "hybrid_angular_prototypical_arcface",
+    "seed": 3501,
+    "best_epoch": 18,
+    "open_keyword_tuning": {
+      "classes": 100,
+      "enrollments": 400,
+      "queries": 1200,
+      "top1_accuracy": 0.9466666666666667,
+      "macro_class_accuracy": 0.9466666666666665,
+      "mean_true_minus_maximum_impostor_margin": 0.2762599988032692,
+      "median_true_minus_maximum_impostor_margin": 0.29549092722149034,
+      "positive_margin_queries": 1136,
+      "pair_auc": 0.9974943672839507,
+      "equal_error_rate": 0.01749999999999998,
+      "equal_error_threshold": 0.431771155174625,
+      "zero_false_pair_threshold": 0.8854268205392567,
+      "true_pairs_accepted_at_zero_false_pairs": 272,
+      "true_pairs": 1200,
+      "impostor_pairs": 118800
+    }
+  },
+  "frozen_baseline": {
+    "layer": 16,
+    "pooling": "mean_std",
+    "training_global_center_subtracted": false,
+    "open_keyword_tuning": {
+      "classes": 100,
+      "enrollments": 400,
+      "queries": 1200,
+      "top1_accuracy": 0.5825,
+      "macro_class_accuracy": 0.5824999999999999,
+      "mean_true_minus_maximum_impostor_margin": 0.00011904328504959205,
+      "median_true_minus_maximum_impostor_margin": 0.0017879162729267928,
+      "positive_margin_queries": 699,
+      "pair_auc": 0.9196957631874298,
+      "equal_error_rate": 0.15846801346801348,
+      "equal_error_threshold": 0.9603921845061707,
+      "zero_false_pair_threshold": 0.9855366532250411,
+      "true_pairs_accepted_at_zero_false_pairs": 33,
+      "true_pairs": 1200,
+      "impostor_pairs": 118800
+    }
+  },
+  "open_selection_examples_scored": false,
+  "baxy_human_examples_scored": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

@@ -1,0 +1,702 @@
+{
+  "action_route": {
+    "arguments_grounding_ms": {
+      "max_ms": 1407.769,
+      "min_ms": 1172.793,
+      "p50_ms": 1371.376,
+      "p95_ms": 1407.769,
+      "samples": 5,
+      "values_ms": [
+        1172.793,
+        1214.146,
+        1371.376,
+        1380.29,
+        1407.769
+      ]
+    },
+    "bridge_crossing_ms": {
+      "max_ms": 0.671,
+      "min_ms": 0.064,
+      "p50_ms": 0.075,
+      "p95_ms": 0.671,
+      "samples": 6,
+      "values_ms": [
+        0.064,
+        0.07,
+        0.073,
+        0.077,
+        0.086,
+        0.671
+      ]
+    },
+    "core_and_provider_and_verify_ms": {
+      "max_ms": 300.096,
+      "min_ms": 60.018,
+      "p50_ms": 188.937,
+      "p95_ms": 300.096,
+      "samples": 6,
+      "values_ms": [
+        60.018,
+        187.137,
+        188.532,
+        189.342,
+        191.669,
+        300.096
+      ]
+    },
+    "decision_ms": {
+      "max_ms": 73.965,
+      "min_ms": 1.734,
+      "p50_ms": 2.41,
+      "p95_ms": 73.965,
+      "samples": 6,
+      "values_ms": [
+        1.734,
+        1.909,
+        2.148,
+        2.673,
+        5.439,
+        73.965
+      ]
+    },
+    "dispatch_ms": {
+      "max_ms": 551.306,
+      "min_ms": 0.397,
+      "p50_ms": 1.481,
+      "p95_ms": 551.306,
+      "samples": 6,
+      "values_ms": [
+        0.397,
+        0.647,
+        0.795,
+        2.167,
+        2.909,
+        551.306
+      ]
+    },
+    "dom_to_paint_ms": {
+      "max_ms": 40.698,
+      "min_ms": 19.176,
+      "p50_ms": 20.174,
+      "p95_ms": 40.698,
+      "samples": 6,
+      "values_ms": [
+        19.176,
+        19.511,
+        20.008,
+        20.34,
+        22.214,
+        40.698
+      ]
+    },
+    "first_indication_ms": {
+      "max_ms": 557.212,
+      "min_ms": 1.897,
+      "p50_ms": 2.881,
+      "p95_ms": 557.212,
+      "samples": 6,
+      "values_ms": [
+        1.897,
+        2.085,
+        2.29,
+        3.473,
+        4.459,
+        557.212
+      ]
+    },
+    "keystroke_to_paint_ms": {
+      "max_ms": 2262.97,
+      "min_ms": 1564.43,
+      "p50_ms": 2200.497,
+      "p95_ms": 2262.97,
+      "samples": 6,
+      "values_ms": [
+        1564.43,
+        2115.225,
+        2164.498,
+        2236.497,
+        2247.942,
+        2262.97
+      ]
+    },
+    "keystroke_to_submit_ms": {
+      "max_ms": 4.323,
+      "min_ms": 0.589,
+      "p50_ms": 0.905,
+      "p95_ms": 4.323,
+      "samples": 6,
+      "values_ms": [
+        0.589,
+        0.686,
+        0.741,
+        1.069,
+        1.469,
+        4.323
+      ]
+    },
+    "llm_composition_ms": {
+      "max_ms": 726.515,
+      "min_ms": 372.369,
+      "p50_ms": 460.414,
+      "p95_ms": 726.515,
+      "samples": 6,
+      "values_ms": [
+        372.369,
+        392.811,
+        419.543,
+        501.286,
+        532.653,
+        726.515
+      ]
+    },
+    "publish_to_dom_ms": {
+      "max_ms": 26.33,
+      "min_ms": 15.174,
+      "p50_ms": 20.675,
+      "p95_ms": 26.33,
+      "samples": 6,
+      "values_ms": [
+        15.174,
+        18.446,
+        19.997,
+        21.354,
+        25.771,
+        26.33
+      ]
+    }
+  },
+  "all_routes": {
+    "arguments_grounding_ms": {
+      "max_ms": 1407.769,
+      "min_ms": 1172.793,
+      "p50_ms": 1371.376,
+      "p95_ms": 1407.769,
+      "samples": 5,
+      "values_ms": [
+        1172.793,
+        1214.146,
+        1371.376,
+        1380.29,
+        1407.769
+      ]
+    },
+    "bridge_crossing_ms": {
+      "max_ms": 0.671,
+      "min_ms": 0.06,
+      "p50_ms": 0.078,
+      "p95_ms": 0.671,
+      "samples": 12,
+      "values_ms": [
+        0.06,
+        0.064,
+        0.07,
+        0.073,
+        0.074,
+        0.077,
+        0.079,
+        0.084,
+        0.086,
+        0.094,
+        0.204,
+        0.671
+      ]
+    },
+    "core_and_provider_and_verify_ms": {
+      "max_ms": 300.096,
+      "min_ms": 60.018,
+      "p50_ms": 188.937,
+      "p95_ms": 300.096,
+      "samples": 6,
+      "values_ms": [
+        60.018,
+        187.137,
+        188.532,
+        189.342,
+        191.669,
+        300.096
+      ]
+    },
+    "decision_ms": {
+      "max_ms": 5869.914,
+      "min_ms": 1.734,
+      "p50_ms": 1984.331,
+      "p95_ms": 5869.914,
+      "samples": 12,
+      "values_ms": [
+        1.734,
+        1.909,
+        2.148,
+        2.673,
+        5.439,
+        73.965,
+        3894.697,
+        4325.07,
+        5028.451,
+        5069.268,
+        5407.075,
+        5869.914
+      ]
+    },
+    "dispatch_ms": {
+      "max_ms": 551.306,
+      "min_ms": 0.335,
+      "p50_ms": 0.714,
+      "p95_ms": 551.306,
+      "samples": 12,
+      "values_ms": [
+        0.335,
+        0.338,
+        0.397,
+        0.418,
+        0.647,
+        0.664,
+        0.764,
+        0.795,
+        1.87,
+        2.167,
+        2.909,
+        551.306
+      ]
+    },
+    "dom_to_paint_ms": {
+      "max_ms": 40.698,
+      "min_ms": 18.981,
+      "p50_ms": 20.178,
+      "p95_ms": 40.698,
+      "samples": 12,
+      "values_ms": [
+        18.981,
+        19.176,
+        19.511,
+        19.911,
+        20.008,
+        20.017,
+        20.34,
+        20.421,
+        22.214,
+        26.878,
+        36.389,
+        40.698
+      ]
+    },
+    "first_indication_ms": {
+      "max_ms": 557.212,
+      "min_ms": 1.42,
+      "p50_ms": 2.61,
+      "p95_ms": 557.212,
+      "samples": 12,
+      "values_ms": [
+        1.42,
+        1.736,
+        1.897,
+        2.085,
+        2.29,
+        2.368,
+        2.852,
+        3.273,
+        3.376,
+        3.473,
+        4.459,
+        557.212
+      ]
+    },
+    "keystroke_to_paint_ms": {
+      "max_ms": 5908.859,
+      "min_ms": 1564.43,
+      "p50_ms": 3094.071,
+      "p95_ms": 5908.859,
+      "samples": 12,
+      "values_ms": [
+        1564.43,
+        2115.225,
+        2164.498,
+        2236.497,
+        2247.942,
+        2262.97,
+        3925.172,
+        4365.471,
+        5097.658,
+        5113.585,
+        5457.097,
+        5908.859
+      ]
+    },
+    "keystroke_to_submit_ms": {
+      "max_ms": 4.323,
+      "min_ms": 0.589,
+      "p50_ms": 0.988,
+      "p95_ms": 4.323,
+      "samples": 12,
+      "values_ms": [
+        0.589,
+        0.656,
+        0.686,
+        0.741,
+        0.798,
+        0.907,
+        1.069,
+        1.222,
+        1.469,
+        1.926,
+        2.065,
+        4.323
+      ]
+    },
+    "llm_composition_ms": {
+      "max_ms": 726.515,
+      "min_ms": 372.369,
+      "p50_ms": 460.414,
+      "p95_ms": 726.515,
+      "samples": 6,
+      "values_ms": [
+        372.369,
+        392.811,
+        419.543,
+        501.286,
+        532.653,
+        726.515
+      ]
+    },
+    "publish_to_dom_ms": {
+      "max_ms": 26.33,
+      "min_ms": 8.633,
+      "p50_ms": 19.221,
+      "p95_ms": 26.33,
+      "samples": 12,
+      "values_ms": [
+        8.633,
+        15.174,
+        16.783,
+        17.15,
+        17.324,
+        18.446,
+        19.997,
+        20.61,
+        21.091,
+        21.354,
+        25.771,
+        26.33
+      ]
+    }
+  },
+  "conversation_route": {
+    "arguments_grounding_ms": null,
+    "bridge_crossing_ms": {
+      "max_ms": 0.204,
+      "min_ms": 0.06,
+      "p50_ms": 0.082,
+      "p95_ms": 0.204,
+      "samples": 6,
+      "values_ms": [
+        0.06,
+        0.074,
+        0.079,
+        0.084,
+        0.094,
+        0.204
+      ]
+    },
+    "core_and_provider_and_verify_ms": null,
+    "decision_ms": {
+      "max_ms": 5869.914,
+      "min_ms": 3894.697,
+      "p50_ms": 5048.86,
+      "p95_ms": 5869.914,
+      "samples": 6,
+      "values_ms": [
+        3894.697,
+        4325.07,
+        5028.451,
+        5069.268,
+        5407.075,
+        5869.914
+      ]
+    },
+    "dispatch_ms": {
+      "max_ms": 1.87,
+      "min_ms": 0.335,
+      "p50_ms": 0.541,
+      "p95_ms": 1.87,
+      "samples": 6,
+      "values_ms": [
+        0.335,
+        0.338,
+        0.418,
+        0.664,
+        0.764,
+        1.87
+      ]
+    },
+    "dom_to_paint_ms": {
+      "max_ms": 36.389,
+      "min_ms": 18.981,
+      "p50_ms": 20.219,
+      "p95_ms": 36.389,
+      "samples": 6,
+      "values_ms": [
+        18.981,
+        19.911,
+        20.017,
+        20.421,
+        26.878,
+        36.389
+      ]
+    },
+    "first_indication_ms": {
+      "max_ms": 3.376,
+      "min_ms": 1.42,
+      "p50_ms": 2.61,
+      "p95_ms": 3.376,
+      "samples": 6,
+      "values_ms": [
+        1.42,
+        1.736,
+        2.368,
+        2.852,
+        3.273,
+        3.376
+      ]
+    },
+    "keystroke_to_paint_ms": {
+      "max_ms": 5908.859,
+      "min_ms": 3925.172,
+      "p50_ms": 5105.622,
+      "p95_ms": 5908.859,
+      "samples": 6,
+      "values_ms": [
+        3925.172,
+        4365.471,
+        5097.658,
+        5113.585,
+        5457.097,
+        5908.859
+      ]
+    },
+    "keystroke_to_submit_ms": {
+      "max_ms": 2.065,
+      "min_ms": 0.656,
+      "p50_ms": 1.065,
+      "p95_ms": 2.065,
+      "samples": 6,
+      "values_ms": [
+        0.656,
+        0.798,
+        0.907,
+        1.222,
+        1.926,
+        2.065
+      ]
+    },
+    "llm_composition_ms": null,
+    "publish_to_dom_ms": {
+      "max_ms": 21.091,
+      "min_ms": 8.633,
+      "p50_ms": 17.237,
+      "p95_ms": 21.091,
+      "samples": 6,
+      "values_ms": [
+        8.633,
+        16.783,
+        17.15,
+        17.324,
+        20.61,
+        21.091
+      ]
+    }
+  },
+  "effects_executed": 0,
+  "measured_at_utc": "2026-07-31T02:05:22.112658+00:00",
+  "method": {
+    "clock": "Stopwatch monotonic milliseconds",
+    "drive": "real mouse click on the input plus keystrokes and Enter",
+    "keystroke_mark": "captured in the document on keydown Enter, before the view handles the key; only the stage travels, never the key or the typed text",
+    "order": "ABBA over route families (action, conversation) to keep thermal drift from being read as a route difference",
+    "paint_mark": "second requestAnimationFrame after the DOM mutation",
+    "warmup": "the engine reported startup.ready before the first turn"
+  },
+  "raw_trace": "artifacts/fixes/app_visible_path_trace_abba2_20260730.jsonl",
+  "schema": "baxy.app-keystroke-to-paint.v2",
+  "turns": [
+    {
+      "arguments_grounding_ms": null,
+      "bridge_crossing_ms": 0.671,
+      "core_and_provider_and_verify_ms": 60.018,
+      "decision_kind": "action",
+      "decision_ms": 73.965,
+      "dispatch_ms": 551.306,
+      "dom_to_paint_ms": 40.698,
+      "first_indication_ms": 557.212,
+      "keystroke_to_paint_ms": 1564.43,
+      "keystroke_to_submit_ms": 4.323,
+      "llm_composition_ms": 419.543,
+      "publish_to_dom_ms": 26.33,
+      "turn": "t1"
+    },
+    {
+      "arguments_grounding_ms": 1380.29,
+      "bridge_crossing_ms": 0.077,
+      "core_and_provider_and_verify_ms": 300.096,
+      "decision_kind": "action",
+      "decision_ms": 5.439,
+      "dispatch_ms": 2.167,
+      "dom_to_paint_ms": 19.176,
+      "first_indication_ms": 3.473,
+      "keystroke_to_paint_ms": 2262.97,
+      "keystroke_to_submit_ms": 0.686,
+      "llm_composition_ms": 372.369,
+      "publish_to_dom_ms": 25.771,
+      "turn": "t2"
+    },
+    {
+      "arguments_grounding_ms": 1214.146,
+      "bridge_crossing_ms": 0.086,
+      "core_and_provider_and_verify_ms": 191.669,
+      "decision_kind": "action",
+      "decision_ms": 1.734,
+      "dispatch_ms": 2.909,
+      "dom_to_paint_ms": 20.008,
+      "first_indication_ms": 4.459,
+      "keystroke_to_paint_ms": 2115.225,
+      "keystroke_to_submit_ms": 1.069,
+      "llm_composition_ms": 532.653,
+      "publish_to_dom_ms": 18.446,
+      "turn": "t3"
+    },
+    {
+      "arguments_grounding_ms": null,
+      "bridge_crossing_ms": 0.094,
+      "core_and_provider_and_verify_ms": null,
+      "decision_kind": "conversation",
+      "decision_ms": 5028.451,
+      "dispatch_ms": 0.764,
+      "dom_to_paint_ms": 36.389,
+      "first_indication_ms": 3.376,
+      "keystroke_to_paint_ms": 5097.658,
+      "keystroke_to_submit_ms": 2.065,
+      "llm_composition_ms": null,
+      "publish_to_dom_ms": 17.324,
+      "turn": "t4"
+    },
+    {
+      "arguments_grounding_ms": null,
+      "bridge_crossing_ms": 0.084,
+      "core_and_provider_and_verify_ms": null,
+      "decision_kind": "conversation",
+      "decision_ms": 3894.697,
+      "dispatch_ms": 0.664,
+      "dom_to_paint_ms": 18.981,
+      "first_indication_ms": 2.368,
+      "keystroke_to_paint_ms": 3925.172,
+      "keystroke_to_submit_ms": 1.222,
+      "llm_composition_ms": null,
+      "publish_to_dom_ms": 8.633,
+      "turn": "t5"
+    },
+    {
+      "arguments_grounding_ms": null,
+      "bridge_crossing_ms": 0.079,
+      "core_and_provider_and_verify_ms": null,
+      "decision_kind": "conversation",
+      "decision_ms": 5069.268,
+      "dispatch_ms": 1.87,
+      "dom_to_paint_ms": 19.911,
+      "first_indication_ms": 3.273,
+      "keystroke_to_paint_ms": 5113.585,
+      "keystroke_to_submit_ms": 0.798,
+      "llm_composition_ms": null,
+      "publish_to_dom_ms": 20.61,
+      "turn": "t6"
+    },
+    {
+      "arguments_grounding_ms": null,
+      "bridge_crossing_ms": 0.074,
+      "core_and_provider_and_verify_ms": null,
+      "decision_kind": "conversation",
+      "decision_ms": 5407.075,
+      "dispatch_ms": 0.418,
+      "dom_to_paint_ms": 26.878,
+      "first_indication_ms": 1.736,
+      "keystroke_to_paint_ms": 5457.097,
+      "keystroke_to_submit_ms": 0.907,
+      "llm_composition_ms": null,
+      "publish_to_dom_ms": 21.091,
+      "turn": "t7"
+    },
+    {
+      "arguments_grounding_ms": null,
+      "bridge_crossing_ms": 0.06,
+      "core_and_provider_and_verify_ms": null,
+      "decision_kind": "conversation",
+      "decision_ms": 5869.914,
+      "dispatch_ms": 0.338,
+      "dom_to_paint_ms": 20.421,
+      "first_indication_ms": 1.42,
+      "keystroke_to_paint_ms": 5908.859,
+      "keystroke_to_submit_ms": 0.656,
+      "llm_composition_ms": null,
+      "publish_to_dom_ms": 16.783,
+      "turn": "t8"
+    },
+    {
+      "arguments_grounding_ms": null,
+      "bridge_crossing_ms": 0.204,
+      "core_and_provider_and_verify_ms": null,
+      "decision_kind": "conversation",
+      "decision_ms": 4325.07,
+      "dispatch_ms": 0.335,
+      "dom_to_paint_ms": 20.017,
+      "first_indication_ms": 2.852,
+      "keystroke_to_paint_ms": 4365.471,
+      "keystroke_to_submit_ms": 1.926,
+      "llm_composition_ms": null,
+      "publish_to_dom_ms": 17.15,
+      "turn": "t9"
+    },
+    {
+      "arguments_grounding_ms": 1371.376,
+      "bridge_crossing_ms": 0.07,
+      "core_and_provider_and_verify_ms": 189.342,
+      "decision_kind": "action",
+      "decision_ms": 2.148,
+      "dispatch_ms": 0.795,
+      "dom_to_paint_ms": 19.511,
+      "first_indication_ms": 2.085,
+      "keystroke_to_paint_ms": 2236.497,
+      "keystroke_to_submit_ms": 0.589,
+      "llm_composition_ms": 501.286,
+      "publish_to_dom_ms": 19.997,
+      "turn": "t10"
+    },
+    {
+      "arguments_grounding_ms": 1172.793,
+      "bridge_crossing_ms": 0.064,
+      "core_and_provider_and_verify_ms": 187.137,
+      "decision_kind": "action",
+      "decision_ms": 2.673,
+      "dispatch_ms": 0.647,
+      "dom_to_paint_ms": 20.34,
+      "first_indication_ms": 1.897,
+      "keystroke_to_paint_ms": 2247.942,
+      "keystroke_to_submit_ms": 0.741,
+      "llm_composition_ms": 726.515,
+      "publish_to_dom_ms": 15.174,
+      "turn": "t11"
+    },
+    {
+      "arguments_grounding_ms": 1407.769,
+      "bridge_crossing_ms": 0.073,
+      "core_and_provider_and_verify_ms": 188.532,
+      "decision_kind": "action",
+      "decision_ms": 1.909,
+      "dispatch_ms": 0.397,
+      "dom_to_paint_ms": 22.214,
+      "first_indication_ms": 2.29,
+      "keystroke_to_paint_ms": 2164.498,
+      "keystroke_to_submit_ms": 1.469,
+      "llm_composition_ms": 392.811,
+      "publish_to_dom_ms": 21.354,
+      "turn": "t12"
+    }
+  ],
+  "what_this_measures": "the person's real Enter keypress inside the sealed FieldUi document through to the frame the compositor delivered, in the running product with the real mind, the real Core and the real message.compose. Core+provider+verification and the LLM composition are now separate segments."
+}

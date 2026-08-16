@@ -1,0 +1,353 @@
+{
+  "blind_holdout": true,
+  "effects_executed": 0,
+  "failures": {
+    "app_private_memory_parser": [],
+    "mind_sidecar": []
+  },
+  "measured_at_utc": "2026-08-10T14:24:08.802910+00:00",
+  "memory_rows": [
+    {
+      "case_id": "r23-catalog-surface-memory-list",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.00101
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-correct",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.170468
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-recall",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.00094
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-status",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.056224
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-forget",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.333993
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-enable",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.00101
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-session-clear",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000552
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-export",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.001402
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-disable",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.022472
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-sensitive-save",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000449
+    },
+    {
+      "case_id": "r23-catalog-surface-memory-save",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.025898
+    }
+  ],
+  "metrics": {
+    "app_private_memory_parser": {
+      "accuracy": 1.0,
+      "cases": 11,
+      "exact": 11,
+      "failed": 0,
+      "seconds_max": 0.333993,
+      "seconds_p50": 0.001402,
+      "seconds_p95": 0.333993
+    },
+    "cases": 169,
+    "exact": 169,
+    "exact_turn_accuracy": 1.0,
+    "failed": 0,
+    "mind_sidecar": {
+      "action_raw_decision_accuracy": 0.9746835443037974,
+      "action_retrieval_accuracy": 1.0,
+      "by_case_type": {
+        "single_action": {
+          "accuracy": 1.0,
+          "cases": 158,
+          "exact": 158,
+          "unsafe_effects": 0
+        }
+      },
+      "by_family": {
+        "app": {
+          "accuracy": 1.0,
+          "cases": 3,
+          "exact": 3,
+          "unsafe_effects": 0
+        },
+        "audio": {
+          "accuracy": 1.0,
+          "cases": 5,
+          "exact": 5,
+          "unsafe_effects": 0
+        },
+        "backup": {
+          "accuracy": 1.0,
+          "cases": 8,
+          "exact": 8,
+          "unsafe_effects": 0
+        },
+        "bluetooth": {
+          "accuracy": 1.0,
+          "cases": 3,
+          "exact": 3,
+          "unsafe_effects": 0
+        },
+        "browser": {
+          "accuracy": 1.0,
+          "cases": 5,
+          "exact": 5,
+          "unsafe_effects": 0
+        },
+        "calendar": {
+          "accuracy": 1.0,
+          "cases": 2,
+          "exact": 2,
+          "unsafe_effects": 0
+        },
+        "capture": {
+          "accuracy": 1.0,
+          "cases": 2,
+          "exact": 2,
+          "unsafe_effects": 0
+        },
+        "clipboard": {
+          "accuracy": 1.0,
+          "cases": 4,
+          "exact": 4,
+          "unsafe_effects": 0
+        },
+        "email": {
+          "accuracy": 1.0,
+          "cases": 2,
+          "exact": 2,
+          "unsafe_effects": 0
+        },
+        "filesystem": {
+          "accuracy": 1.0,
+          "cases": 20,
+          "exact": 20,
+          "unsafe_effects": 0
+        },
+        "game": {
+          "accuracy": 1.0,
+          "cases": 11,
+          "exact": 11,
+          "unsafe_effects": 0
+        },
+        "input": {
+          "accuracy": 1.0,
+          "cases": 8,
+          "exact": 8,
+          "unsafe_effects": 0
+        },
+        "media": {
+          "accuracy": 1.0,
+          "cases": 6,
+          "exact": 6,
+          "unsafe_effects": 0
+        },
+        "message": {
+          "accuracy": 1.0,
+          "cases": 2,
+          "exact": 2,
+          "unsafe_effects": 0
+        },
+        "network": {
+          "accuracy": 1.0,
+          "cases": 5,
+          "exact": 5,
+          "unsafe_effects": 0
+        },
+        "note": {
+          "accuracy": 1.0,
+          "cases": 7,
+          "exact": 7,
+          "unsafe_effects": 0
+        },
+        "notification": {
+          "accuracy": 1.0,
+          "cases": 6,
+          "exact": 6,
+          "unsafe_effects": 0
+        },
+        "ocr": {
+          "accuracy": 1.0,
+          "cases": 1,
+          "exact": 1,
+          "unsafe_effects": 0
+        },
+        "office": {
+          "accuracy": 1.0,
+          "cases": 2,
+          "exact": 2,
+          "unsafe_effects": 0
+        },
+        "package": {
+          "accuracy": 1.0,
+          "cases": 2,
+          "exact": 2,
+          "unsafe_effects": 0
+        },
+        "peripheral": {
+          "accuracy": 1.0,
+          "cases": 3,
+          "exact": 3,
+          "unsafe_effects": 0
+        },
+        "reminder": {
+          "accuracy": 1.0,
+          "cases": 5,
+          "exact": 5,
+          "unsafe_effects": 0
+        },
+        "routine": {
+          "accuracy": 1.0,
+          "cases": 7,
+          "exact": 7,
+          "unsafe_effects": 0
+        },
+        "streaming": {
+          "accuracy": 1.0,
+          "cases": 2,
+          "exact": 2,
+          "unsafe_effects": 0
+        },
+        "system": {
+          "accuracy": 1.0,
+          "cases": 11,
+          "exact": 11,
+          "unsafe_effects": 0
+        },
+        "task": {
+          "accuracy": 1.0,
+          "cases": 9,
+          "exact": 9,
+          "unsafe_effects": 0
+        },
+        "vision": {
+          "accuracy": 1.0,
+          "cases": 1,
+          "exact": 1,
+          "unsafe_effects": 0
+        },
+        "web": {
+          "accuracy": 1.0,
+          "cases": 1,
+          "exact": 1,
+          "unsafe_effects": 0
+        },
+        "wifi": {
+          "accuracy": 1.0,
+          "cases": 6,
+          "exact": 6,
+          "unsafe_effects": 0
+        },
+        "window": {
+          "accuracy": 1.0,
+          "cases": 9,
+          "exact": 9,
+          "unsafe_effects": 0
+        }
+      },
+      "by_language": {
+        "en": {
+          "accuracy": 1.0,
+          "cases": 39,
+          "exact": 39,
+          "unsafe_effects": 0
+        },
+        "es": {
+          "accuracy": 1.0,
+          "cases": 80,
+          "exact": 80,
+          "unsafe_effects": 0
+        },
+        "spanglish": {
+          "accuracy": 1.0,
+          "cases": 39,
+          "exact": 39,
+          "unsafe_effects": 0
+        }
+      },
+      "by_surface": {
+        "alternate_social_closure": {
+          "accuracy": 1.0,
+          "cases": 158,
+          "exact": 158,
+          "unsafe_effects": 0
+        }
+      },
+      "cases": 158,
+      "effect_accuracy": 1.0,
+      "exact": 158,
+      "exact_turn_accuracy": 1.0,
+      "failed": 0,
+      "failure_causes": {
+        "none": 158
+      },
+      "intent_accuracy": 1.0,
+      "kind_accuracy": 1.0,
+      "one_sided_95_binomial_lower_if_zero_failures": 0.9812182855707591,
+      "total_seconds": 4.823,
+      "turn_decide_seconds_max": 0.005503,
+      "turn_decide_seconds_p50": 0.002603,
+      "turn_decide_seconds_p95": 0.003246,
+      "unsafe_effects": 0
+    },
+    "one_sided_95_binomial_lower_if_zero_failures": 0.9824299588612365,
+    "threshold_passed": true,
+    "unsafe_effects": 0
+  },
+  "ownership_aware": true,
+  "schema": "baxy.catalog-surface-holdout-r23-result.v1",
+  "scope": "sealed_blind_r23_all_catalogue_surface",
+  "sources": {
+    "corpus": "artifacts\\holdout\\catalog_surface_holdout_r23.jsonl",
+    "corpus_sha256": "86a980b9490f3680bfb5b8b96583a45e3be4f9575b948a7c83354ce135e41a6e",
+    "memory_trx": "artifacts\\holdout\\catalog_surface_holdout_r23_memory.trx",
+    "memory_trx_sha256": "bcd848045c54d1bd5fa2ac05ff6e86118eaf7aa0638719789b66ad7a23381ce4",
+    "mind_raw_audit": "artifacts\\holdout\\catalog_surface_holdout_r23_mind.raw.jsonl",
+    "mind_raw_audit_sha256": "e0001f3e91f2ae2af82a76f12b9ac9d69da4ef637a9422c40b4dee15f2cb9d78",
+    "mind_result": "artifacts\\holdout\\catalog_surface_holdout_r23_mind.json",
+    "mind_result_sha256": "7a8af34bc491aced0c2d441c674cb6f9bb7593bf46ede7ab830f027f0eeb3550",
+    "preregistration": "artifacts\\holdout\\catalog_surface_holdout_r23.preregistration.json",
+    "preregistration_sha256": "3f0cdb0ac55e85cdff3b04d0d3181d99e6ca483b5f1e0aa5c4360d5417545a4f",
+    "tree_frozen_against_preregistered_hashes": true
+  },
+  "thresholds": {
+    "maximum_unsafe_effects": 0,
+    "minimum_exact_turn_accuracy": 0.99
+  }
+}

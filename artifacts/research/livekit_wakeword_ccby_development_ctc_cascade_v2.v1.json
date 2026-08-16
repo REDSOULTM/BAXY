@@ -1,0 +1,2987 @@
+{
+  "schema": "baxy.ccby-wake-ctc-cascade-development.v1",
+  "measured_at_utc": "2026-08-04T17:43:45.022718+00:00",
+  "partition": "development",
+  "architecture": "LiveKit_or_Parakeet_permissive_proposal_then_exact_CTC_target_vs_confusables",
+  "corpus_manifest": "D:/BAXYRuntime/experiments/wakeword/ccby_wake_holdout_v1/corpus.manifest.v1.json",
+  "corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+  "preregistration_sha256": "710932009064a00fcd925c4a95042069cfc0e68ae91acd22d779588be6a0b3d3",
+  "parakeet_audit": "D:/BAXY/source/artifacts/research/livekit_wakeword_ccby_development_parakeet_proposals.v1.json",
+  "parakeet_audit_sha256": "8876d2225e2e877ec122a1c379db5030b01bc7e252686e40ed9784ee8ed52088",
+  "livekit": {
+    "model": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_mixed_development_v4/baxy_voxcpm2_mixed_development_v4.onnx",
+    "model_sha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "proposal_threshold": 0.05,
+    "lexical_corroboration_threshold": 0.02,
+    "product_operating_point": false,
+    "window_seconds": 2.0,
+    "step_seconds": 0.25
+  },
+  "ctc_verifier": {
+    "model_directory": "D:/BAXYRuntime/experiments/wakeword/phoneme_audit/facebook-wav2vec2-lv-60-espeak-cv-ft-ae45363b",
+    "weights_sha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "target_sequences": [
+      [
+        "b",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "b",
+        "æ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "b",
+        "æ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "b",
+        "ɑ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "b",
+        "a",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "b",
+        "ɑ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "b",
+        "ʌ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "b",
+        "a",
+        "ɾ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "β",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "β",
+        "a",
+        "ɾ",
+        "k",
+        "s",
+        "i"
+      ]
+    ],
+    "confusable_sequences": [
+      [
+        "v",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "v",
+        "a",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "v",
+        "a",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "v",
+        "a",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "v",
+        "æ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "v",
+        "æ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "v",
+        "æ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "v",
+        "æ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "v",
+        "ɑ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "v",
+        "ɑ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "v",
+        "ɑ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "v",
+        "ɑ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "v",
+        "ʌ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "v",
+        "ʌ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "v",
+        "ʌ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "v",
+        "ʌ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "f",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "f",
+        "a",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "f",
+        "a",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "f",
+        "a",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "f",
+        "æ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "f",
+        "æ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "f",
+        "æ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "f",
+        "æ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "f",
+        "ɑ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "f",
+        "ɑ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "f",
+        "ɑ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "f",
+        "ɑ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "f",
+        "ʌ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "f",
+        "ʌ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "f",
+        "ʌ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "f",
+        "ʌ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "p",
+        "a",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "p",
+        "a",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "p",
+        "a",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "p",
+        "a",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "p",
+        "æ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "p",
+        "æ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "p",
+        "æ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "p",
+        "æ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "p",
+        "ɑ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "p",
+        "ɑ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "p",
+        "ɑ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "p",
+        "ɑ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "p",
+        "ʌ",
+        "k",
+        "s",
+        "i"
+      ],
+      [
+        "p",
+        "ʌ",
+        "k",
+        "s",
+        "ɪ"
+      ],
+      [
+        "p",
+        "ʌ",
+        "k",
+        "sʲ",
+        "i"
+      ],
+      [
+        "p",
+        "ʌ",
+        "k",
+        "sʲ",
+        "ɪ"
+      ],
+      [
+        "b",
+        "a",
+        "k",
+        "ʃ",
+        "i"
+      ],
+      [
+        "b",
+        "a",
+        "k",
+        "ʃ",
+        "ɪ"
+      ],
+      [
+        "b",
+        "æ",
+        "k",
+        "ʃ",
+        "i"
+      ],
+      [
+        "b",
+        "æ",
+        "k",
+        "ʃ",
+        "ɪ"
+      ],
+      [
+        "b",
+        "ɑ",
+        "k",
+        "ʃ",
+        "i"
+      ],
+      [
+        "b",
+        "ɑ",
+        "k",
+        "ʃ",
+        "ɪ"
+      ],
+      [
+        "b",
+        "ʌ",
+        "k",
+        "ʃ",
+        "i"
+      ],
+      [
+        "b",
+        "ʌ",
+        "k",
+        "ʃ",
+        "ɪ"
+      ],
+      [
+        "β",
+        "a",
+        "k",
+        "ʃ",
+        "i"
+      ],
+      [
+        "β",
+        "a",
+        "k",
+        "ʃ",
+        "ɪ"
+      ],
+      [
+        "β",
+        "æ",
+        "k",
+        "ʃ",
+        "i"
+      ],
+      [
+        "β",
+        "æ",
+        "k",
+        "ʃ",
+        "ɪ"
+      ],
+      [
+        "β",
+        "ɑ",
+        "k",
+        "ʃ",
+        "i"
+      ],
+      [
+        "β",
+        "ɑ",
+        "k",
+        "ʃ",
+        "ɪ"
+      ],
+      [
+        "β",
+        "ʌ",
+        "k",
+        "ʃ",
+        "i"
+      ],
+      [
+        "β",
+        "ʌ",
+        "k",
+        "ʃ",
+        "ɪ"
+      ]
+    ],
+    "margin_threshold": 0.5,
+    "context_before_seconds": 0.2,
+    "context_after_seconds": 0.2,
+    "device": "cuda",
+    "model_load_seconds": 1.91477,
+    "batch_inference_seconds": 0.586307,
+    "samples_per_output_frame": 320
+  },
+  "runtime": {
+    "torch": "2.10.0+cu130",
+    "transformers": "5.14.1",
+    "espeak": null
+  },
+  "metrics": {
+    "positive_clips": 14,
+    "hard_negative_clips": 4,
+    "stage1_positive_proposals": 14,
+    "stage1_recall": 1.0,
+    "true_positive": 14,
+    "false_negative": 0,
+    "recall": 1.0,
+    "false_positive": 0,
+    "true_negative": 4,
+    "hard_negative_rejection": 1.0,
+    "development_gate_passed": true
+  },
+  "records": [
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "livekit_proposal": {
+        "score": 0.24007484316825867,
+        "window_end_seconds": 2.0,
+        "windows_scored": 9
+      },
+      "lexical_acoustic_corroboration": null,
+      "parakeet_transcript": "",
+      "parakeet_lexical_proposals": [],
+      "parakeet_lexical_words": [],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 63,
+          "locator_end_frame": 79,
+          "greedy_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 53,
+          "end_frame": 89,
+          "target_log_probability": -29.484475425528803,
+          "confusable_log_probability": -33.62513263721642,
+          "margin": 4.140657211687614,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            36,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.26,
+          "locator_end_seconds": 1.58,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 63,
+        "locator_end_frame": 79,
+        "greedy_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 53,
+        "end_frame": 89,
+        "target_log_probability": -29.484475425528803,
+        "confusable_log_probability": -33.62513263721642,
+        "margin": 4.140657211687614,
+        "target_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          36,
+          11,
+          5,
+          10
+        ],
+        "locator_start_seconds": 1.26,
+        "locator_end_seconds": 1.58,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "livekit_proposal": {
+        "score": 0.16085341572761536,
+        "window_end_seconds": 1.0,
+        "windows_scored": 5
+      },
+      "lexical_acoustic_corroboration": null,
+      "parakeet_transcript": "Faxi is an innovative",
+      "parakeet_lexical_proposals": [],
+      "parakeet_lexical_words": [
+        {
+          "surface": "faxi",
+          "first_token": 0,
+          "last_token": 2,
+          "start_seconds": 0.96,
+          "end_seconds": 1.52
+        },
+        {
+          "surface": "is",
+          "first_token": 3,
+          "last_token": 3,
+          "start_seconds": 2.0,
+          "end_seconds": 2.16
+        },
+        {
+          "surface": "an",
+          "first_token": 4,
+          "last_token": 4,
+          "start_seconds": 2.16,
+          "end_seconds": 2.3200000000000003
+        },
+        {
+          "surface": "innovative",
+          "first_token": 5,
+          "last_token": 8,
+          "start_seconds": 2.32,
+          "end_seconds": 2.8000000000000003
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 62,
+          "locator_end_frame": 80,
+          "greedy_sequence": [
+            26,
+            36,
+            11,
+            5,
+            17
+          ],
+          "start_frame": 52,
+          "end_frame": 90,
+          "target_log_probability": -3.1143333574346874,
+          "confusable_log_probability": -4.014221702893029,
+          "margin": 0.8998883454583417,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            17
+          ],
+          "confusable_sequence": [
+            25,
+            36,
+            11,
+            5,
+            17
+          ],
+          "locator_start_seconds": 1.24,
+          "locator_end_seconds": 1.6,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 62,
+        "locator_end_frame": 80,
+        "greedy_sequence": [
+          26,
+          36,
+          11,
+          5,
+          17
+        ],
+        "start_frame": 52,
+        "end_frame": 90,
+        "target_log_probability": -3.1143333574346874,
+        "confusable_log_probability": -4.014221702893029,
+        "margin": 0.8998883454583417,
+        "target_sequence": [
+          26,
+          36,
+          11,
+          5,
+          17
+        ],
+        "confusable_sequence": [
+          25,
+          36,
+          11,
+          5,
+          17
+        ],
+        "locator_start_seconds": 1.24,
+        "locator_end_seconds": 1.6,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "livekit_proposal": {
+        "score": 0.07252541184425354,
+        "window_end_seconds": 2.0,
+        "windows_scored": 9
+      },
+      "lexical_acoustic_corroboration": null,
+      "parakeet_transcript": "",
+      "parakeet_lexical_proposals": [],
+      "parakeet_lexical_words": [],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 61,
+          "locator_end_frame": 77,
+          "greedy_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 51,
+          "end_frame": 87,
+          "target_log_probability": -15.947766573812721,
+          "confusable_log_probability": -20.36954902079743,
+          "margin": 4.421782446984707,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            36,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.22,
+          "locator_end_seconds": 1.54,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 61,
+        "locator_end_frame": 77,
+        "greedy_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 51,
+        "end_frame": 87,
+        "target_log_probability": -15.947766573812721,
+        "confusable_log_probability": -20.36954902079743,
+        "margin": 4.421782446984707,
+        "target_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          36,
+          11,
+          5,
+          10
+        ],
+        "locator_start_seconds": 1.22,
+        "locator_end_seconds": 1.54,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "livekit_proposal": {
+        "score": 0.9840795397758484,
+        "window_end_seconds": 2.0,
+        "windows_scored": 9
+      },
+      "lexical_acoustic_corroboration": null,
+      "parakeet_transcript": "Boilers.",
+      "parakeet_lexical_proposals": [],
+      "parakeet_lexical_words": [
+        {
+          "surface": "boilers",
+          "first_token": 0,
+          "last_token": 2,
+          "start_seconds": 0.16,
+          "end_seconds": 0.56
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 67,
+          "locator_end_frame": 83,
+          "greedy_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 57,
+          "end_frame": 93,
+          "target_log_probability": -6.602956309307732,
+          "confusable_log_probability": -8.528645484657112,
+          "margin": 1.9256891753493797,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            17
+          ],
+          "confusable_sequence": [
+            18,
+            36,
+            11,
+            5,
+            17
+          ],
+          "locator_start_seconds": 1.34,
+          "locator_end_seconds": 1.66,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 67,
+        "locator_end_frame": 83,
+        "greedy_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 57,
+        "end_frame": 93,
+        "target_log_probability": -6.602956309307732,
+        "confusable_log_probability": -8.528645484657112,
+        "margin": 1.9256891753493797,
+        "target_sequence": [
+          26,
+          36,
+          11,
+          5,
+          17
+        ],
+        "confusable_sequence": [
+          18,
+          36,
+          11,
+          5,
+          17
+        ],
+        "locator_start_seconds": 1.34,
+        "locator_end_seconds": 1.66,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "livekit_proposal": {
+        "score": 0.10035732388496399,
+        "window_end_seconds": 1.75,
+        "windows_scored": 8
+      },
+      "lexical_acoustic_corroboration": {
+        "score": 0.10035732388496399,
+        "window_end_seconds": 1.75,
+        "windows_scored": 8
+      },
+      "parakeet_transcript": "Here's how the Baxi ecogen system works.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "baxi",
+          "first_token": 6,
+          "last_token": 8,
+          "start_seconds": 0.9599999785423279,
+          "end_seconds": 1.4399999713897704
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "here",
+          "first_token": 0,
+          "last_token": 1,
+          "start_seconds": 0.24,
+          "end_seconds": 0.56
+        },
+        {
+          "surface": "s",
+          "first_token": 3,
+          "last_token": 3,
+          "start_seconds": 0.64,
+          "end_seconds": 0.8
+        },
+        {
+          "surface": "how",
+          "first_token": 4,
+          "last_token": 4,
+          "start_seconds": 0.64,
+          "end_seconds": 0.8
+        },
+        {
+          "surface": "the",
+          "first_token": 5,
+          "last_token": 5,
+          "start_seconds": 0.8,
+          "end_seconds": 0.9600000000000001
+        },
+        {
+          "surface": "baxi",
+          "first_token": 6,
+          "last_token": 8,
+          "start_seconds": 0.96,
+          "end_seconds": 1.44
+        },
+        {
+          "surface": "ecogen",
+          "first_token": 9,
+          "last_token": 10,
+          "start_seconds": 1.6,
+          "end_seconds": 2.0
+        },
+        {
+          "surface": "system",
+          "first_token": 11,
+          "last_token": 11,
+          "start_seconds": 2.4,
+          "end_seconds": 2.56
+        },
+        {
+          "surface": "works",
+          "first_token": 12,
+          "last_token": 13,
+          "start_seconds": 2.64,
+          "end_seconds": 2.8800000000000003
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 62,
+          "locator_end_frame": 78,
+          "greedy_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 52,
+          "end_frame": 88,
+          "target_log_probability": -18.21619029718086,
+          "confusable_log_probability": -23.802308860391364,
+          "margin": 5.586118563210505,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            17
+          ],
+          "confusable_sequence": [
+            25,
+            36,
+            11,
+            5,
+            17
+          ],
+          "locator_start_seconds": 1.24,
+          "locator_end_seconds": 1.56,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "baxi",
+          "locator_start_frame": 47,
+          "locator_end_frame": 72,
+          "start_frame": 37,
+          "end_frame": 82,
+          "target_log_probability": -35.282890829940605,
+          "confusable_log_probability": -40.865302854719694,
+          "margin": 5.582412024779089,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            25,
+            36,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 0.94,
+          "locator_end_seconds": 1.44,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 62,
+        "locator_end_frame": 78,
+        "greedy_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 52,
+        "end_frame": 88,
+        "target_log_probability": -18.21619029718086,
+        "confusable_log_probability": -23.802308860391364,
+        "margin": 5.586118563210505,
+        "target_sequence": [
+          26,
+          36,
+          11,
+          5,
+          17
+        ],
+        "confusable_sequence": [
+          25,
+          36,
+          11,
+          5,
+          17
+        ],
+        "locator_start_seconds": 1.24,
+        "locator_end_seconds": 1.56,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "livekit_proposal": {
+        "score": 0.3281131982803345,
+        "window_end_seconds": 1.75,
+        "windows_scored": 8
+      },
+      "lexical_acoustic_corroboration": {
+        "score": 0.02687498927116394,
+        "window_end_seconds": 1.0,
+        "windows_scored": 5
+      },
+      "parakeet_transcript": "Baxi has an unparalleled combination",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "baxi",
+          "first_token": 0,
+          "last_token": 2,
+          "start_seconds": 0.9599999785423279,
+          "end_seconds": 1.5200000143051147
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "baxi",
+          "first_token": 0,
+          "last_token": 2,
+          "start_seconds": 0.96,
+          "end_seconds": 1.52
+        },
+        {
+          "surface": "has",
+          "first_token": 3,
+          "last_token": 3,
+          "start_seconds": 1.76,
+          "end_seconds": 1.92
+        },
+        {
+          "surface": "an",
+          "first_token": 4,
+          "last_token": 4,
+          "start_seconds": 1.84,
+          "end_seconds": 2.0
+        },
+        {
+          "surface": "unparalleled",
+          "first_token": 5,
+          "last_token": 9,
+          "start_seconds": 1.92,
+          "end_seconds": 2.56
+        },
+        {
+          "surface": "combination",
+          "first_token": 10,
+          "last_token": 12,
+          "start_seconds": 2.48,
+          "end_seconds": 2.8800000000000003
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 64,
+          "locator_end_frame": 82,
+          "greedy_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 54,
+          "end_frame": 92,
+          "target_log_probability": -14.012249379470948,
+          "confusable_log_probability": -17.872719763795963,
+          "margin": 3.8604703843250157,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            36,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.28,
+          "locator_end_seconds": 1.64,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "baxi",
+          "locator_start_frame": 47,
+          "locator_end_frame": 77,
+          "start_frame": 37,
+          "end_frame": 87,
+          "target_log_probability": -6.143691823926485,
+          "confusable_log_probability": -10.004162184971772,
+          "margin": 3.8604703610452873,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            36,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 0.94,
+          "locator_end_seconds": 1.54,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 64,
+        "locator_end_frame": 82,
+        "greedy_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 54,
+        "end_frame": 92,
+        "target_log_probability": -14.012249379470948,
+        "confusable_log_probability": -17.872719763795963,
+        "margin": 3.8604703843250157,
+        "target_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          36,
+          11,
+          5,
+          10
+        ],
+        "locator_start_seconds": 1.28,
+        "locator_end_seconds": 1.64,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "livekit_proposal": {
+        "score": 0.3949349522590637,
+        "window_end_seconds": 1.75,
+        "windows_scored": 8
+      },
+      "lexical_acoustic_corroboration": {
+        "score": 0.024363338947296143,
+        "window_end_seconds": 0.5,
+        "windows_scored": 3
+      },
+      "parakeet_transcript": "With Baxi Ikogen",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "baxi",
+          "first_token": 2,
+          "last_token": 4,
+          "start_seconds": 1.0399999618530273,
+          "end_seconds": 1.4399999713897704
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "with",
+          "first_token": 0,
+          "last_token": 1,
+          "start_seconds": 0.64,
+          "end_seconds": 1.04
+        },
+        {
+          "surface": "baxi",
+          "first_token": 2,
+          "last_token": 4,
+          "start_seconds": 1.04,
+          "end_seconds": 1.44
+        },
+        {
+          "surface": "ikogen",
+          "first_token": 5,
+          "last_token": 6,
+          "start_seconds": 1.68,
+          "end_seconds": 2.24
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 64,
+          "locator_end_frame": 81,
+          "greedy_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 54,
+          "end_frame": 91,
+          "target_log_probability": -20.771620162905943,
+          "confusable_log_probability": -24.1774715267752,
+          "margin": 3.4058513638692567,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            36,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.28,
+          "locator_end_seconds": 1.62,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "baxi",
+          "locator_start_frame": 51,
+          "locator_end_frame": 72,
+          "start_frame": 41,
+          "end_frame": 82,
+          "target_log_probability": -15.474714144513555,
+          "confusable_log_probability": -18.880565105690483,
+          "margin": 3.4058509611769274,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            36,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.02,
+          "locator_end_seconds": 1.44,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 64,
+        "locator_end_frame": 81,
+        "greedy_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 54,
+        "end_frame": 91,
+        "target_log_probability": -20.771620162905943,
+        "confusable_log_probability": -24.1774715267752,
+        "margin": 3.4058513638692567,
+        "target_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          36,
+          11,
+          5,
+          10
+        ],
+        "locator_start_seconds": 1.28,
+        "locator_end_seconds": 1.62,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "LNZyJcCArhc",
+      "speaker_group": "jesus_marcos",
+      "label": "positive",
+      "output_relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "livekit_proposal": null,
+      "lexical_acoustic_corroboration": {
+        "score": 0.0201873779296875,
+        "window_end_seconds": 1.75,
+        "windows_scored": 8
+      },
+      "parakeet_transcript": "Vamos a hablar de la caldera Basi Roca Victoria.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "basi",
+          "first_token": 10,
+          "last_token": 11,
+          "start_seconds": 1.1200000047683716,
+          "end_seconds": 1.4399999713897704
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "vamos",
+          "first_token": 0,
+          "last_token": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 0.24
+        },
+        {
+          "surface": "a",
+          "first_token": 2,
+          "last_token": 2,
+          "start_seconds": 0.16,
+          "end_seconds": 0.32
+        },
+        {
+          "surface": "hablar",
+          "first_token": 3,
+          "last_token": 4,
+          "start_seconds": 0.32,
+          "end_seconds": 0.56
+        },
+        {
+          "surface": "de",
+          "first_token": 5,
+          "last_token": 5,
+          "start_seconds": 0.48,
+          "end_seconds": 0.64
+        },
+        {
+          "surface": "la",
+          "first_token": 6,
+          "last_token": 6,
+          "start_seconds": 0.56,
+          "end_seconds": 0.7200000000000001
+        },
+        {
+          "surface": "caldera",
+          "first_token": 7,
+          "last_token": 9,
+          "start_seconds": 0.64,
+          "end_seconds": 1.1199999999999999
+        },
+        {
+          "surface": "basi",
+          "first_token": 10,
+          "last_token": 11,
+          "start_seconds": 1.12,
+          "end_seconds": 1.44
+        },
+        {
+          "surface": "roca",
+          "first_token": 12,
+          "last_token": 13,
+          "start_seconds": 1.68,
+          "end_seconds": 2.0
+        },
+        {
+          "surface": "victoria",
+          "first_token": 14,
+          "last_token": 17,
+          "start_seconds": 2.32,
+          "end_seconds": 2.8800000000000003
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 58,
+          "locator_end_frame": 75,
+          "greedy_sequence": [
+            26,
+            9,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 48,
+          "end_frame": 85,
+          "target_log_probability": -12.080556609952156,
+          "confusable_log_probability": -14.06004711390358,
+          "margin": 1.9794905039514248,
+          "target_sequence": [
+            26,
+            9,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.16,
+          "locator_end_seconds": 1.5,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "basi",
+          "locator_start_frame": 56,
+          "locator_end_frame": 72,
+          "start_frame": 46,
+          "end_frame": 82,
+          "target_log_probability": -14.183524968354936,
+          "confusable_log_probability": -16.16299540424772,
+          "margin": 1.9794704358927842,
+          "target_sequence": [
+            26,
+            9,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.12,
+          "locator_end_seconds": 1.44,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 58,
+        "locator_end_frame": 75,
+        "greedy_sequence": [
+          26,
+          9,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 48,
+        "end_frame": 85,
+        "target_log_probability": -12.080556609952156,
+        "confusable_log_probability": -14.06004711390358,
+        "margin": 1.9794905039514248,
+        "target_sequence": [
+          26,
+          9,
+          11,
+          5,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          9,
+          11,
+          5,
+          10
+        ],
+        "locator_start_seconds": 1.16,
+        "locator_end_seconds": 1.5,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "livekit_proposal": null,
+      "lexical_acoustic_corroboration": {
+        "score": 0.020220071077346802,
+        "window_end_seconds": 3.5,
+        "windows_scored": 15
+      },
+      "parakeet_transcript": "отдела сервиса Бакси Алексей Тукай.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "бакси",
+          "first_token": 5,
+          "last_token": 7,
+          "start_seconds": 1.0399999618530273,
+          "end_seconds": 1.4399999713897704
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "отдела",
+          "first_token": 0,
+          "last_token": 1,
+          "start_seconds": 0.4,
+          "end_seconds": 0.64
+        },
+        {
+          "surface": "сервиса",
+          "first_token": 2,
+          "last_token": 4,
+          "start_seconds": 0.64,
+          "end_seconds": 0.9600000000000001
+        },
+        {
+          "surface": "бакси",
+          "first_token": 5,
+          "last_token": 7,
+          "start_seconds": 1.04,
+          "end_seconds": 1.44
+        },
+        {
+          "surface": "алексеи",
+          "first_token": 8,
+          "last_token": 11,
+          "start_seconds": 1.52,
+          "end_seconds": 2.0
+        },
+        {
+          "surface": "тукаи",
+          "first_token": 12,
+          "last_token": 15,
+          "start_seconds": 1.92,
+          "end_seconds": 2.48
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 53,
+          "locator_end_frame": 67,
+          "greedy_sequence": [
+            26,
+            9,
+            11,
+            102,
+            10
+          ],
+          "start_frame": 43,
+          "end_frame": 77,
+          "target_log_probability": -22.58330119567142,
+          "confusable_log_probability": -25.977237019701416,
+          "margin": 3.3939358240299953,
+          "target_sequence": [
+            26,
+            9,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 1.06,
+          "locator_end_seconds": 1.34,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "бакси",
+          "locator_start_frame": 51,
+          "locator_end_frame": 72,
+          "start_frame": 41,
+          "end_frame": 82,
+          "target_log_probability": -34.332042981529945,
+          "confusable_log_probability": -37.72597823184911,
+          "margin": 3.393935250319167,
+          "target_sequence": [
+            26,
+            9,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 1.02,
+          "locator_end_seconds": 1.44,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 53,
+        "locator_end_frame": 67,
+        "greedy_sequence": [
+          26,
+          9,
+          11,
+          102,
+          10
+        ],
+        "start_frame": 43,
+        "end_frame": 77,
+        "target_log_probability": -22.58330119567142,
+        "confusable_log_probability": -25.977237019701416,
+        "margin": 3.3939358240299953,
+        "target_sequence": [
+          26,
+          9,
+          11,
+          102,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          9,
+          11,
+          102,
+          10
+        ],
+        "locator_start_seconds": 1.06,
+        "locator_end_seconds": 1.34,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "livekit_proposal": null,
+      "lexical_acoustic_corroboration": {
+        "score": 0.038324981927871704,
+        "window_end_seconds": 4.0,
+        "windows_scored": 17
+      },
+      "parakeet_transcript": "с настенными котлами Бакси серии Луна 3.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "бакси",
+          "first_token": 9,
+          "last_token": 11,
+          "start_seconds": 1.0399999618530273,
+          "end_seconds": 1.4399999713897704
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "с",
+          "first_token": 0,
+          "last_token": 0,
+          "start_seconds": 0.0,
+          "end_seconds": 0.16
+        },
+        {
+          "surface": "настенными",
+          "first_token": 1,
+          "last_token": 4,
+          "start_seconds": 0.08,
+          "end_seconds": 0.64
+        },
+        {
+          "surface": "котлами",
+          "first_token": 5,
+          "last_token": 8,
+          "start_seconds": 0.64,
+          "end_seconds": 1.04
+        },
+        {
+          "surface": "бакси",
+          "first_token": 9,
+          "last_token": 11,
+          "start_seconds": 1.04,
+          "end_seconds": 1.44
+        },
+        {
+          "surface": "серии",
+          "first_token": 12,
+          "last_token": 14,
+          "start_seconds": 1.44,
+          "end_seconds": 1.76
+        },
+        {
+          "surface": "луна",
+          "first_token": 15,
+          "last_token": 17,
+          "start_seconds": 1.76,
+          "end_seconds": 2.16
+        },
+        {
+          "surface": "3",
+          "first_token": 19,
+          "last_token": 19,
+          "start_seconds": 2.32,
+          "end_seconds": 2.48
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 52,
+          "locator_end_frame": 67,
+          "greedy_sequence": [
+            26,
+            59,
+            11,
+            102,
+            10
+          ],
+          "start_frame": 42,
+          "end_frame": 77,
+          "target_log_probability": -29.76178237149153,
+          "confusable_log_probability": -34.02117699748681,
+          "margin": 4.259394625995281,
+          "target_sequence": [
+            26,
+            59,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            59,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 1.04,
+          "locator_end_seconds": 1.34,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "бакси",
+          "locator_start_frame": 51,
+          "locator_end_frame": 72,
+          "start_frame": 41,
+          "end_frame": 82,
+          "target_log_probability": -45.612891150765,
+          "confusable_log_probability": -49.872285632477364,
+          "margin": 4.259394481712363,
+          "target_sequence": [
+            26,
+            59,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            59,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 1.02,
+          "locator_end_seconds": 1.44,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 52,
+        "locator_end_frame": 67,
+        "greedy_sequence": [
+          26,
+          59,
+          11,
+          102,
+          10
+        ],
+        "start_frame": 42,
+        "end_frame": 77,
+        "target_log_probability": -29.76178237149153,
+        "confusable_log_probability": -34.02117699748681,
+        "margin": 4.259394625995281,
+        "target_sequence": [
+          26,
+          59,
+          11,
+          102,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          59,
+          11,
+          102,
+          10
+        ],
+        "locator_start_seconds": 1.04,
+        "locator_end_seconds": 1.34,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "livekit_proposal": null,
+      "lexical_acoustic_corroboration": {
+        "score": 0.02214178442955017,
+        "window_end_seconds": 3.25,
+        "windows_scored": 14
+      },
+      "parakeet_transcript": "На заводе Бакси Спа в городе Басана дели.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "бакси",
+          "first_token": 4,
+          "last_token": 6,
+          "start_seconds": 0.9599999785423279,
+          "end_seconds": 1.4399999713897704
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "на",
+          "first_token": 0,
+          "last_token": 0,
+          "start_seconds": 0.56,
+          "end_seconds": 0.7200000000000001
+        },
+        {
+          "surface": "заводе",
+          "first_token": 1,
+          "last_token": 3,
+          "start_seconds": 0.64,
+          "end_seconds": 0.9600000000000001
+        },
+        {
+          "surface": "бакси",
+          "first_token": 4,
+          "last_token": 6,
+          "start_seconds": 0.96,
+          "end_seconds": 1.44
+        },
+        {
+          "surface": "спа",
+          "first_token": 7,
+          "last_token": 8,
+          "start_seconds": 1.44,
+          "end_seconds": 1.68
+        },
+        {
+          "surface": "в",
+          "first_token": 9,
+          "last_token": 9,
+          "start_seconds": 1.84,
+          "end_seconds": 2.0
+        },
+        {
+          "surface": "городе",
+          "first_token": 10,
+          "last_token": 12,
+          "start_seconds": 2.0,
+          "end_seconds": 2.3200000000000003
+        },
+        {
+          "surface": "басана",
+          "first_token": 13,
+          "last_token": 16,
+          "start_seconds": 2.24,
+          "end_seconds": 2.64
+        },
+        {
+          "surface": "дели",
+          "first_token": 17,
+          "last_token": 18,
+          "start_seconds": 2.64,
+          "end_seconds": 2.8800000000000003
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 53,
+          "locator_end_frame": 65,
+          "greedy_sequence": [
+            26,
+            33,
+            11,
+            102,
+            10
+          ],
+          "start_frame": 43,
+          "end_frame": 75,
+          "target_log_probability": -30.51966049889876,
+          "confusable_log_probability": -33.55665318052068,
+          "margin": 3.0369926816219177,
+          "target_sequence": [
+            26,
+            33,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            33,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 1.06,
+          "locator_end_seconds": 1.3,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "бакси",
+          "locator_start_frame": 47,
+          "locator_end_frame": 72,
+          "start_frame": 37,
+          "end_frame": 82,
+          "target_log_probability": -51.981764639290994,
+          "confusable_log_probability": -50.740182210824095,
+          "margin": -1.2415824284668986,
+          "target_sequence": [
+            26,
+            33,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            25,
+            33,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 0.94,
+          "locator_end_seconds": 1.44,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 53,
+        "locator_end_frame": 65,
+        "greedy_sequence": [
+          26,
+          33,
+          11,
+          102,
+          10
+        ],
+        "start_frame": 43,
+        "end_frame": 75,
+        "target_log_probability": -30.51966049889876,
+        "confusable_log_probability": -33.55665318052068,
+        "margin": 3.0369926816219177,
+        "target_sequence": [
+          26,
+          33,
+          11,
+          102,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          33,
+          11,
+          102,
+          10
+        ],
+        "locator_start_seconds": 1.06,
+        "locator_end_seconds": 1.3,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "livekit_proposal": null,
+      "lexical_acoustic_corroboration": {
+        "score": 0.028844892978668213,
+        "window_end_seconds": 1.75,
+        "windows_scored": 8
+      },
+      "parakeet_transcript": "позиционировании Баксе и имеют широкий модельный ряд.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "баксе",
+          "first_token": 7,
+          "last_token": 9,
+          "start_seconds": 0.9599999785423279,
+          "end_seconds": 1.3599999284744262
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "позиционировании",
+          "first_token": 0,
+          "last_token": 6,
+          "start_seconds": 0.24,
+          "end_seconds": 0.9600000000000001
+        },
+        {
+          "surface": "баксе",
+          "first_token": 7,
+          "last_token": 9,
+          "start_seconds": 0.96,
+          "end_seconds": 1.3599999999999999
+        },
+        {
+          "surface": "и",
+          "first_token": 10,
+          "last_token": 10,
+          "start_seconds": 1.44,
+          "end_seconds": 1.5999999999999999
+        },
+        {
+          "surface": "имеют",
+          "first_token": 11,
+          "last_token": 12,
+          "start_seconds": 1.6,
+          "end_seconds": 1.8399999999999999
+        },
+        {
+          "surface": "широкии",
+          "first_token": 14,
+          "last_token": 16,
+          "start_seconds": 1.92,
+          "end_seconds": 2.24
+        },
+        {
+          "surface": "модельныи",
+          "first_token": 17,
+          "last_token": 20,
+          "start_seconds": 2.24,
+          "end_seconds": 2.64
+        },
+        {
+          "surface": "ряд",
+          "first_token": 22,
+          "last_token": 23,
+          "start_seconds": 2.64,
+          "end_seconds": 2.8800000000000003
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 49,
+          "locator_end_frame": 64,
+          "greedy_sequence": [
+            26,
+            9,
+            11,
+            102,
+            10
+          ],
+          "start_frame": 39,
+          "end_frame": 74,
+          "target_log_probability": -17.08495951003673,
+          "confusable_log_probability": -20.559844577551125,
+          "margin": 3.4748850675143963,
+          "target_sequence": [
+            26,
+            9,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 0.98,
+          "locator_end_seconds": 1.28,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "баксе",
+          "locator_start_frame": 47,
+          "locator_end_frame": 68,
+          "start_frame": 37,
+          "end_frame": 78,
+          "target_log_probability": -26.820050926375895,
+          "confusable_log_probability": -30.29314776277131,
+          "margin": 3.4730968363954133,
+          "target_sequence": [
+            26,
+            9,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 0.94,
+          "locator_end_seconds": 1.36,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 49,
+        "locator_end_frame": 64,
+        "greedy_sequence": [
+          26,
+          9,
+          11,
+          102,
+          10
+        ],
+        "start_frame": 39,
+        "end_frame": 74,
+        "target_log_probability": -17.08495951003673,
+        "confusable_log_probability": -20.559844577551125,
+        "margin": 3.4748850675143963,
+        "target_sequence": [
+          26,
+          9,
+          11,
+          102,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          9,
+          11,
+          102,
+          10
+        ],
+        "locator_start_seconds": 0.98,
+        "locator_end_seconds": 1.28,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "livekit_proposal": {
+        "score": 0.06255283951759338,
+        "window_end_seconds": 0.75,
+        "windows_scored": 4
+      },
+      "lexical_acoustic_corroboration": {
+        "score": 0.06255283951759338,
+        "window_end_seconds": 0.75,
+        "windows_scored": 4
+      },
+      "parakeet_transcript": "В линейке Баксе. Давайте ознакомься с.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "баксе",
+          "first_token": 5,
+          "last_token": 7,
+          "start_seconds": 1.0399999618530273,
+          "end_seconds": 1.5200000143051147
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "в",
+          "first_token": 0,
+          "last_token": 0,
+          "start_seconds": 0.48,
+          "end_seconds": 0.64
+        },
+        {
+          "surface": "линеике",
+          "first_token": 1,
+          "last_token": 4,
+          "start_seconds": 0.64,
+          "end_seconds": 1.04
+        },
+        {
+          "surface": "баксе",
+          "first_token": 5,
+          "last_token": 7,
+          "start_seconds": 1.04,
+          "end_seconds": 1.52
+        },
+        {
+          "surface": "даваите",
+          "first_token": 9,
+          "last_token": 10,
+          "start_seconds": 1.76,
+          "end_seconds": 2.08
+        },
+        {
+          "surface": "ознакомься",
+          "first_token": 11,
+          "last_token": 15,
+          "start_seconds": 2.08,
+          "end_seconds": 2.72
+        },
+        {
+          "surface": "с",
+          "first_token": 16,
+          "last_token": 16,
+          "start_seconds": 2.64,
+          "end_seconds": 2.8000000000000003
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 0,
+      "verifier_locators": [
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "баксе",
+          "locator_start_frame": 51,
+          "locator_end_frame": 77,
+          "start_frame": 41,
+          "end_frame": 87,
+          "target_log_probability": -19.550051051387204,
+          "confusable_log_probability": -22.065302051108294,
+          "margin": 2.51525099972109,
+          "target_sequence": [
+            26,
+            9,
+            11,
+            102,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            102,
+            10
+          ],
+          "locator_start_seconds": 1.02,
+          "locator_end_seconds": 1.54,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "parakeet_lexical_proposal",
+        "surface": "баксе",
+        "locator_start_frame": 51,
+        "locator_end_frame": 77,
+        "start_frame": 41,
+        "end_frame": 87,
+        "target_log_probability": -19.550051051387204,
+        "confusable_log_probability": -22.065302051108294,
+        "margin": 2.51525099972109,
+        "target_sequence": [
+          26,
+          9,
+          11,
+          102,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          9,
+          11,
+          102,
+          10
+        ],
+        "locator_start_seconds": 1.02,
+        "locator_end_seconds": 1.54,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "BJLgprj4ztE",
+      "speaker_group": "baxi_ferrol_welcome_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "livekit_proposal": null,
+      "lexical_acoustic_corroboration": {
+        "score": 0.020529210567474365,
+        "window_end_seconds": 3.75,
+        "windows_scored": 16
+      },
+      "parakeet_transcript": "Esperamos en nuestra casa, Baxiferrol.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "baxiferrol",
+          "first_token": 8,
+          "last_token": 12,
+          "start_seconds": 1.0399999618530273,
+          "end_seconds": 2.079999957084656
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "esperamos",
+          "first_token": 0,
+          "last_token": 2,
+          "start_seconds": 0.08,
+          "end_seconds": 0.48
+        },
+        {
+          "surface": "en",
+          "first_token": 3,
+          "last_token": 3,
+          "start_seconds": 0.48,
+          "end_seconds": 0.64
+        },
+        {
+          "surface": "nuestra",
+          "first_token": 4,
+          "last_token": 5,
+          "start_seconds": 0.56,
+          "end_seconds": 0.88
+        },
+        {
+          "surface": "casa",
+          "first_token": 6,
+          "last_token": 6,
+          "start_seconds": 0.8,
+          "end_seconds": 0.9600000000000001
+        },
+        {
+          "surface": "baxiferrol",
+          "first_token": 8,
+          "last_token": 12,
+          "start_seconds": 1.04,
+          "end_seconds": 2.08
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 61,
+          "locator_end_frame": 74,
+          "greedy_sequence": [
+            45,
+            9,
+            15,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 51,
+          "end_frame": 84,
+          "target_log_probability": -22.421698304033423,
+          "confusable_log_probability": -24.49027088869093,
+          "margin": 2.068572584657506,
+          "target_sequence": [
+            45,
+            9,
+            15,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.22,
+          "locator_end_seconds": 1.48,
+          "multiword_non_target_veto": false
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "baxiferrol",
+          "locator_start_frame": 51,
+          "locator_end_frame": 104,
+          "start_frame": 41,
+          "end_frame": 114,
+          "target_log_probability": -64.7911699046154,
+          "confusable_log_probability": -66.78799693641042,
+          "margin": 1.9968270317950214,
+          "target_sequence": [
+            45,
+            9,
+            15,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            9,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.02,
+          "locator_end_seconds": 2.08,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 61,
+        "locator_end_frame": 74,
+        "greedy_sequence": [
+          45,
+          9,
+          15,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 51,
+        "end_frame": 84,
+        "target_log_probability": -22.421698304033423,
+        "confusable_log_probability": -24.49027088869093,
+        "margin": 2.068572584657506,
+        "target_sequence": [
+          45,
+          9,
+          15,
+          11,
+          5,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          9,
+          11,
+          5,
+          10
+        ],
+        "locator_start_seconds": 1.22,
+        "locator_end_seconds": 1.48,
+        "multiword_non_target_veto": false
+      },
+      "detected": true,
+      "correct": true
+    },
+    {
+      "source_id": "jYChxFZPNNQ",
+      "speaker_group": "tarang_bakshi",
+      "label": "hard_negative",
+      "output_relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "livekit_proposal": null,
+      "lexical_acoustic_corroboration": null,
+      "parakeet_transcript": "",
+      "parakeet_lexical_proposals": [],
+      "parakeet_lexical_words": [],
+      "stage1_proposed": false,
+      "ctc_greedy_target_span_count": 0,
+      "verifier_locators": [],
+      "best_verifier": null,
+      "detected": false,
+      "correct": true
+    },
+    {
+      "source_id": "olFKsOxLG8k",
+      "speaker_group": "upendra_bakshi",
+      "label": "hard_negative",
+      "output_relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "livekit_proposal": {
+        "score": 0.4009726941585541,
+        "window_end_seconds": 1.5,
+        "windows_scored": 7
+      },
+      "lexical_acoustic_corroboration": null,
+      "parakeet_transcript": "Yeah.",
+      "parakeet_lexical_proposals": [],
+      "parakeet_lexical_words": [
+        {
+          "surface": "yeah",
+          "first_token": 0,
+          "last_token": 1,
+          "start_seconds": 0.08,
+          "end_seconds": 0.32
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 0,
+      "verifier_locators": [],
+      "best_verifier": null,
+      "detected": false,
+      "correct": true
+    },
+    {
+      "source_id": "S_7-Gxa6ANU",
+      "speaker_group": "mahesh_faxi",
+      "label": "hard_negative",
+      "output_relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "livekit_proposal": null,
+      "lexical_acoustic_corroboration": {
+        "score": 0.020117878913879395,
+        "window_end_seconds": 3.25,
+        "windows_scored": 14
+      },
+      "parakeet_transcript": "We're really excited to be talking with Mehesh Baxi today, who is the coach.",
+      "parakeet_lexical_proposals": [
+        {
+          "surface": "baxi",
+          "first_token": 17,
+          "last_token": 19,
+          "start_seconds": 1.7599999904632568,
+          "end_seconds": 2.079999957084656
+        }
+      ],
+      "parakeet_lexical_words": [
+        {
+          "surface": "we",
+          "first_token": 0,
+          "last_token": 0,
+          "start_seconds": 0.08,
+          "end_seconds": 0.24
+        },
+        {
+          "surface": "re",
+          "first_token": 2,
+          "last_token": 2,
+          "start_seconds": 0.24,
+          "end_seconds": 0.4
+        },
+        {
+          "surface": "really",
+          "first_token": 3,
+          "last_token": 3,
+          "start_seconds": 0.24,
+          "end_seconds": 0.4
+        },
+        {
+          "surface": "excited",
+          "first_token": 4,
+          "last_token": 6,
+          "start_seconds": 0.4,
+          "end_seconds": 0.7200000000000001
+        },
+        {
+          "surface": "to",
+          "first_token": 7,
+          "last_token": 7,
+          "start_seconds": 0.64,
+          "end_seconds": 0.8
+        },
+        {
+          "surface": "be",
+          "first_token": 8,
+          "last_token": 8,
+          "start_seconds": 0.8,
+          "end_seconds": 0.9600000000000001
+        },
+        {
+          "surface": "talking",
+          "first_token": 9,
+          "last_token": 11,
+          "start_seconds": 0.88,
+          "end_seconds": 1.1199999999999999
+        },
+        {
+          "surface": "with",
+          "first_token": 12,
+          "last_token": 12,
+          "start_seconds": 1.04,
+          "end_seconds": 1.2
+        },
+        {
+          "surface": "mehesh",
+          "first_token": 13,
+          "last_token": 16,
+          "start_seconds": 1.12,
+          "end_seconds": 1.68
+        },
+        {
+          "surface": "baxi",
+          "first_token": 17,
+          "last_token": 19,
+          "start_seconds": 1.76,
+          "end_seconds": 2.08
+        },
+        {
+          "surface": "today",
+          "first_token": 20,
+          "last_token": 21,
+          "start_seconds": 2.16,
+          "end_seconds": 2.4000000000000004
+        },
+        {
+          "surface": "who",
+          "first_token": 23,
+          "last_token": 23,
+          "start_seconds": 2.4,
+          "end_seconds": 2.56
+        },
+        {
+          "surface": "is",
+          "first_token": 24,
+          "last_token": 24,
+          "start_seconds": 2.48,
+          "end_seconds": 2.64
+        },
+        {
+          "surface": "the",
+          "first_token": 25,
+          "last_token": 25,
+          "start_seconds": 2.56,
+          "end_seconds": 2.72
+        },
+        {
+          "surface": "coach",
+          "first_token": 26,
+          "last_token": 27,
+          "start_seconds": 2.64,
+          "end_seconds": 2.96
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 0,
+      "verifier_locators": [
+        {
+          "source": "parakeet_lexical_proposal",
+          "surface": "baxi",
+          "locator_start_frame": 87,
+          "locator_end_frame": 104,
+          "start_frame": 77,
+          "end_frame": 114,
+          "target_log_probability": -31.501482625061485,
+          "confusable_log_probability": -30.03516544556429,
+          "margin": -1.4663171794971959,
+          "target_sequence": [
+            26,
+            36,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            18,
+            36,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.74,
+          "locator_end_seconds": 2.08,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "parakeet_lexical_proposal",
+        "surface": "baxi",
+        "locator_start_frame": 87,
+        "locator_end_frame": 104,
+        "start_frame": 77,
+        "end_frame": 114,
+        "target_log_probability": -31.501482625061485,
+        "confusable_log_probability": -30.03516544556429,
+        "margin": -1.4663171794971959,
+        "target_sequence": [
+          26,
+          36,
+          11,
+          5,
+          10
+        ],
+        "confusable_sequence": [
+          18,
+          36,
+          11,
+          5,
+          10
+        ],
+        "locator_start_seconds": 1.74,
+        "locator_end_seconds": 2.08,
+        "multiword_non_target_veto": false
+      },
+      "detected": false,
+      "correct": true
+    },
+    {
+      "source_id": "PuSaeFStpwc",
+      "speaker_group": "viplav_vaxi",
+      "label": "hard_negative",
+      "output_relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "livekit_proposal": {
+        "score": 0.09408330917358398,
+        "window_end_seconds": 2.25,
+        "windows_scored": 10
+      },
+      "lexical_acoustic_corroboration": null,
+      "parakeet_transcript": "Yeah.",
+      "parakeet_lexical_proposals": [],
+      "parakeet_lexical_words": [
+        {
+          "surface": "yeah",
+          "first_token": 0,
+          "last_token": 1,
+          "start_seconds": 0.16,
+          "end_seconds": 0.4
+        }
+      ],
+      "stage1_proposed": true,
+      "ctc_greedy_target_span_count": 1,
+      "verifier_locators": [
+        {
+          "source": "ctc_greedy_exact_target",
+          "locator_start_frame": 51,
+          "locator_end_frame": 74,
+          "greedy_sequence": [
+            26,
+            9,
+            11,
+            5,
+            10
+          ],
+          "start_frame": 41,
+          "end_frame": 84,
+          "target_log_probability": -5.80438029091733,
+          "confusable_log_probability": -5.296717645371001,
+          "margin": -0.5076626455463291,
+          "target_sequence": [
+            26,
+            9,
+            11,
+            5,
+            10
+          ],
+          "confusable_sequence": [
+            25,
+            9,
+            11,
+            5,
+            10
+          ],
+          "locator_start_seconds": 1.02,
+          "locator_end_seconds": 1.48,
+          "multiword_non_target_veto": false
+        }
+      ],
+      "best_verifier": {
+        "source": "ctc_greedy_exact_target",
+        "locator_start_frame": 51,
+        "locator_end_frame": 74,
+        "greedy_sequence": [
+          26,
+          9,
+          11,
+          5,
+          10
+        ],
+        "start_frame": 41,
+        "end_frame": 84,
+        "target_log_probability": -5.80438029091733,
+        "confusable_log_probability": -5.296717645371001,
+        "margin": -0.5076626455463291,
+        "target_sequence": [
+          26,
+          9,
+          11,
+          5,
+          10
+        ],
+        "confusable_sequence": [
+          25,
+          9,
+          11,
+          5,
+          10
+        ],
+        "locator_start_seconds": 1.02,
+        "locator_end_seconds": 1.48,
+        "multiword_non_target_veto": false
+      },
+      "detected": false,
+      "correct": true
+    }
+  ],
+  "blind_human_partition_accessed": false,
+  "candidate_frozen": false,
+  "effects_executed": 0
+}

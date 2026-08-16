@@ -1,0 +1,445 @@
+{
+  "authority": "development diagnostic; the sidecar runs unmodified behind a recording proxy. It decides turns and dispatches no operation.",
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-13T00:31:29.990074+00:00",
+  "rows": [
+    {
+      "calls": [
+        {
+          "call": "turn_policy_native_tools",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 9152,
+          "seconds": 2.3747,
+          "structured": false,
+          "tool_count": 28
+        },
+        {
+          "call": "unnamed:Clasifica semanticamente el pedido actual. reque",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1558,
+          "seconds": 0.5463,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1447,
+          "seconds": 0.2298,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "unnamed:Eres BAXY, un asistente local que vive en la PC ",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1443,
+          "seconds": 1.0403,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "es-knowledge",
+      "kind": "conversation",
+      "model_calls": 4,
+      "seconds_in_model_calls": 4.1911,
+      "seconds_total": 4.403,
+      "text": "Explicame en dos frases que es la fotosintesis."
+    },
+    {
+      "calls": [
+        {
+          "call": "unnamed:Eres BAXY, un asistente local que vive en la PC ",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1444,
+          "seconds": 0.5814,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "unnamed:Eres BAXY, un asistente local que vive en la PC ",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 1569,
+          "seconds": 0.7147,
+          "structured": true,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "es-opinion",
+      "kind": "conversation",
+      "model_calls": 2,
+      "seconds_in_model_calls": 1.2961,
+      "seconds_total": 1.3446,
+      "text": "Que te parece el pan recien hecho por la manana?"
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy_native_tools",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 9021,
+          "seconds": 2.6249,
+          "structured": false,
+          "tool_count": 28
+        },
+        {
+          "call": "unnamed:Clasifica semanticamente el pedido actual. reque",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1541,
+          "seconds": 0.5383,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_compatibility",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 1170,
+          "seconds": 0.4289,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1430,
+          "seconds": 0.1596,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "unnamed:Eres el redactor final de BAXY para un resultado",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 1842,
+          "seconds": 0.3715,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "es-unsupported",
+      "kind": "conversation",
+      "model_calls": 5,
+      "seconds_in_model_calls": 4.1232,
+      "seconds_total": 4.1551,
+      "text": "Riega los geranios del balcon."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy_native_tools",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 4567,
+          "seconds": 2.1309,
+          "structured": false,
+          "tool_count": 11
+        },
+        {
+          "call": "unnamed:Clasifica semanticamente el pedido actual. reque",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1538,
+          "seconds": 0.5662,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1427,
+          "seconds": 0.1636,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "unnamed:Eres el redactor final de BAXY para una observac",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 843,
+          "seconds": 0.2643,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "es-checkin",
+      "kind": "conversation",
+      "model_calls": 4,
+      "seconds_in_model_calls": 3.125,
+      "seconds_total": 3.1377,
+      "text": "Estoy bastante cansado hoy."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy_native_tools",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 1793,
+          "seconds": 1.2727,
+          "structured": false,
+          "tool_count": 2
+        },
+        {
+          "call": "unnamed:Clasifica semanticamente el pedido actual. reque",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1554,
+          "seconds": 0.3856,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1443,
+          "seconds": 0.1689,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "unnamed:Eres BAXY, un asistente local que vive en la PC ",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1422,
+          "seconds": 0.746,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "en-knowledge",
+      "kind": "conversation",
+      "model_calls": 4,
+      "seconds_in_model_calls": 2.5732,
+      "seconds_total": 2.6287,
+      "text": "Tell me in two sentences what a taskbar is."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy_native_tools",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 3551,
+          "seconds": 1.5157,
+          "structured": false,
+          "tool_count": 9
+        },
+        {
+          "call": "unnamed:Clasifica semanticamente el pedido actual. reque",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1539,
+          "seconds": 0.4598,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "operation_compatibility",
+          "max_tokens": 24,
+          "max_tokens_requested": 24,
+          "prompt_bytes": 1165,
+          "seconds": 0.4088,
+          "structured": true,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1428,
+          "seconds": 0.1556,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "unnamed:Eres el redactor final de BAXY para un resultado",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 1749,
+          "seconds": 0.2767,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "en-unsupported",
+      "kind": "conversation",
+      "model_calls": 5,
+      "seconds_in_model_calls": 2.8166,
+      "seconds_total": 2.8286,
+      "text": "Book an uber to the airport."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy_native_tools",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 1791,
+          "seconds": 1.7236,
+          "structured": false,
+          "tool_count": 2
+        },
+        {
+          "call": "unnamed:Clasifica semanticamente el pedido actual. reque",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1552,
+          "seconds": 0.3901,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1441,
+          "seconds": 0.1647,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "unnamed:Eres BAXY, un asistente local que vive en la PC ",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1420,
+          "seconds": 0.9359,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "en-curious",
+      "kind": "conversation",
+      "model_calls": 4,
+      "seconds_in_model_calls": 3.2143,
+      "seconds_total": 3.2299,
+      "text": "Tell me something odd about walnut trees."
+    },
+    {
+      "calls": [
+        {
+          "call": "turn_policy_native_tools",
+          "max_tokens": 96,
+          "max_tokens_requested": 96,
+          "prompt_bytes": 3318,
+          "seconds": 1.816,
+          "structured": false,
+          "tool_count": 6
+        },
+        {
+          "call": "unnamed:Clasifica semanticamente el pedido actual. reque",
+          "max_tokens": 64,
+          "max_tokens_requested": 64,
+          "prompt_bytes": 1555,
+          "seconds": 0.5501,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "response_language",
+          "max_tokens": 12,
+          "max_tokens_requested": 12,
+          "prompt_bytes": 1444,
+          "seconds": 0.1602,
+          "structured": false,
+          "tool_count": 0
+        },
+        {
+          "call": "unnamed:Eres BAXY, un asistente local que vive en la PC ",
+          "max_tokens": 128,
+          "max_tokens_requested": 128,
+          "prompt_bytes": 1440,
+          "seconds": 1.2401,
+          "structured": false,
+          "tool_count": 0
+        }
+      ],
+      "case_id": "spanglish-mixed",
+      "kind": "conversation",
+      "model_calls": 4,
+      "seconds_in_model_calls": 3.7664,
+      "seconds_total": 3.7812,
+      "text": "Cuentame algo curioso about los rose bushes."
+    }
+  ],
+  "schema": "baxy.turn-call-decomposition.v1",
+  "summary": {
+    "by_call": {
+      "operation_compatibility": {
+        "count": 2,
+        "max_seconds": 0.4289,
+        "median_prompt_bytes": 1167.5,
+        "median_seconds": 0.4189,
+        "median_tool_count": 0.0,
+        "total_seconds": 0.8377
+      },
+      "response_language": {
+        "count": 7,
+        "max_seconds": 0.2298,
+        "median_prompt_bytes": 1441,
+        "median_seconds": 0.1636,
+        "median_tool_count": 0,
+        "total_seconds": 1.2024
+      },
+      "turn_policy_native_tools": {
+        "count": 7,
+        "max_seconds": 2.6249,
+        "median_prompt_bytes": 3551,
+        "median_seconds": 1.816,
+        "median_tool_count": 9,
+        "total_seconds": 13.4585
+      },
+      "unnamed:Clasifica semanticamente el pedido actual. reque": {
+        "count": 7,
+        "max_seconds": 0.5662,
+        "median_prompt_bytes": 1552,
+        "median_seconds": 0.5383,
+        "median_tool_count": 0,
+        "total_seconds": 3.4364
+      },
+      "unnamed:Eres BAXY, un asistente local que vive en la PC ": {
+        "count": 6,
+        "max_seconds": 1.2401,
+        "median_prompt_bytes": 1441.5,
+        "median_seconds": 0.8409,
+        "median_tool_count": 0.0,
+        "total_seconds": 5.2584
+      },
+      "unnamed:Eres el redactor final de BAXY para un resultado": {
+        "count": 2,
+        "max_seconds": 0.3715,
+        "median_prompt_bytes": 1795.5,
+        "median_seconds": 0.3241,
+        "median_tool_count": 0.0,
+        "total_seconds": 0.6482
+      },
+      "unnamed:Eres el redactor final de BAXY para una observac": {
+        "count": 1,
+        "max_seconds": 0.2643,
+        "median_prompt_bytes": 843,
+        "median_seconds": 0.2643,
+        "median_tool_count": 0,
+        "total_seconds": 0.2643
+      }
+    },
+    "model_calls_per_turn": {
+      "max": 5,
+      "min": 2
+    },
+    "note": "seconds_total is the sidecar round trip; seconds_in_model_calls is the sum of the completions it issued. Calls that run concurrently make the sum exceed the wall clock, which is itself informative: it says the turn is already overlapping work.",
+    "seconds_in_model_calls_p50": 3.1696,
+    "seconds_total_max": 4.403,
+    "seconds_total_p50": 3.1838,
+    "turns": 8
+  }
+}

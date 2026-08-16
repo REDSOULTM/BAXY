@@ -1,0 +1,26 @@
+{
+  "schema": "baxy.wake-cascade-openslr-negative-regression.v1",
+  "measuredAtUtc": "2026-08-10T01:48:30.9495715Z",
+  "scope": "previously_opened_100h_negative_development_regression_early_rejection",
+  "sources": {
+    "cascadeManifestSha256": "4a1c7140d0609faa92ad9364d82376a13bf76e1c3bc108d1c83b800391a516d4",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "exactCheckpointSha256": "3d0d684670c06a59b9a0a0ba9357331ecd59aa4884379e068d874abb0065e6e6"
+  },
+  "metrics": {
+    "completedBroadScreenRecords": 4096,
+    "exactUpstreamProposals": 3122,
+    "negativeFalseActivations": 2
+  },
+  "falseActivationAudioSha256": [
+    "206c8e9ec882e55c3a11b364cf03def04396c9e09abfa26f14db91d4fef61dbf",
+    "c42c8c4e1798b85e937512e6b7e2558786e3e588a897b69f8321e5c17c7c4d9d"
+  ],
+  "regressionPassed": false,
+  "candidateDevelopmentUse": true,
+  "candidateFrozen": true,
+  "negativeCorpusPreviouslyAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "transcriptsOrFilenamesRetained": false,
+  "effectsExecuted": 0
+}

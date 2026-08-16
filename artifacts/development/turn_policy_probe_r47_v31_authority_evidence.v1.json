@@ -1,0 +1,320 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v31_authority_evidence.v1.raw.jsonl",
+    "sha256": "87041a376570235c5526d0d919920f4ea8e43616338d010b4ca635b159b994b5"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:4776",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-cc054d302f68c116854788da",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0102,
+        "operation": "notification.diagnose",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9942",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d4b44ea1dcd09be5c1c16375",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.225,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "A red velvet cake includes flour, sugar, cocoa powder, buttermilk, baking powder, salt, and vanilla extract. It is typically baked in a round pan and has a rich, chocolatey flavor with a slight tang from the buttermilk. The cake is often topped with a cream cheese frosting. The texture is moist and slightly dense, with a distinctive red color from the cocoa powder.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10031",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d404c9e3bff3db3a2d27a9c4",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.3077,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Tienes los ingredientes necesarios para hacer una receta.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14555",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-08597464e7da20339015bc10",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.1754,
+        "operation": null,
+        "question": "¿cuál es la empresa y la fuente de monitoreo en tiempo real que me avisan sobre los cambios en el precio de las acciones?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2035",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e76502e780d59fd9545ee292",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.3584,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar comida tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:6127",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e65746bd0865e97799bc8b35",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0087,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:82598817bbb760750b13f7e3e96981afe08c8e4b274e55dcb242f355c9f14525",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a71d58f90ead0a9d6f84f6c0",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.8759,
+        "operation": null,
+        "question": "What time should the note contain for ordering groceries?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:e0be30943333119135d34c769b673747509a0ddce588026024dd1c3669df2156",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-528b79e5137925c7c27f4fb3",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2596,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Can you confirm the name of the card you want to use?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:ebed4458e51ae490adf5c0bc198fd4c19bf90fded79cb2565da8ea998dd9c4c9",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e128fdba39507a171fe5cb62",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0049,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:0b36d74317507696f7c504aa0f7c1ec24b7d2b9c41292713f952321b37e2ebe8",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dc4cd1978fb2dbe9fee10c47",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.3111,
+        "operation": null,
+        "question": "¿Cuál es el título del juego de construcción de imperios de Ubi que deseas probar y en qué dispositivo?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:201809f8c9fbb815245b2256198eca912d3dd25a940f26db0905f315b933f575",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f15b67b4a00b83cd6d47b2d6",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0122,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:381c8bed72f1f8f1a8e8a93fb6a8ab880079e01c962d56d40cc5f9ebb4c12788",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e69960b355b0e5d528b53326",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.9535,
+        "operation": null,
+        "question": "¿Cuál es el título del juego de fútbol y en qué dispositivo se debe jugar?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:96e104c983195c3ee64fff75d5c89a4ff59b022fb200dc52fcd5c7ccb2b73b06",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-af73704063267b1606af08a7",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0063,
+        "operation": "note.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T06:49:25.734326+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 13,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "baxy.turn-evidence-restoration.r234.v1",
+  "authority": "canonical_input_restoration_not_a_model_or_product_measurement",
+  "runtime_corpus": {
+    "path": "tests\\data\\turn_evidence_runtime.v1.jsonl",
+    "rows": 25156,
+    "sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+    "git_ignored": true
+  },
+  "public_holdout": {
+    "path": "tests\\data\\turn_evidence_public_holdout.v1.jsonl",
+    "rows": 9172,
+    "sha256": "e1ee1746a3cb110799997367490def6199e09fa3bc9f900b2d2dd99dc9c174be",
+    "used_for_calibration": false
+  },
+  "sources": {
+    "manifest_sha256": "1e07d87a50fa7af6fa45246a0151a99042600aaf94690fecb9ce3780c9c25d26",
+    "policy_sha256": "7768fe1a5d13349f590d7a6f24d4fe0b4769e56cd76967807d0fb2239aec06c2",
+    "policy_runtime_source_sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680"
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Preregister an independently calibrated semantic abstention candidate; R228 and the public holdout remain unopened for that purpose.",
+  "identities": {
+    "program_sha256": "dc35e81fdc9cfdaaaff7db84d05d867698fa4e09088f9e2cc7dd8e77e98d5c73"
+  }
+}

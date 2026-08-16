@@ -1,0 +1,73 @@
+{
+  "cancellation": {
+    "method": "client socket close 0.5s into a 512-token decode",
+    "short_probe_after_cancel_seconds": {
+      "count": 5,
+      "maximum": 0.4980548000021372,
+      "minimum": 0.4734018000017386,
+      "p50": 0.487618899991503,
+      "p95_nearest_rank": 0.4980548000021372
+    },
+    "short_probe_baseline_seconds": {
+      "count": 5,
+      "maximum": 0.40547919999517035,
+      "minimum": 0.3943013999960385,
+      "p50": 0.40137000000686385,
+      "p95_nearest_rank": 0.40547919999517035
+    }
+  },
+  "concurrency": {
+    "width_1": {
+      "makespan_seconds": 0.730284399993252,
+      "per_request": {
+        "count": 1,
+        "maximum": 0.729823400004534,
+        "minimum": 0.729823400004534,
+        "p50": 0.729823400004534,
+        "p95_nearest_rank": 0.729823400004534
+      },
+      "queueing_estimate_seconds": null
+    },
+    "width_2": {
+      "makespan_seconds": 0.899399000001722,
+      "per_request": {
+        "count": 2,
+        "maximum": 0.8990491000004113,
+        "minimum": 0.8982646999938879,
+        "p50": 0.8986568999971496,
+        "p95_nearest_rank": 0.8990491000004113
+      },
+      "queueing_estimate_seconds": null
+    },
+    "width_3": {
+      "makespan_seconds": 1.066434800013667,
+      "per_request": {
+        "count": 3,
+        "maximum": 1.0661521000001812,
+        "minimum": 1.0651461999950698,
+        "p50": 1.0653135000029579,
+        "p95_nearest_rank": 1.0661521000001812
+      },
+      "queueing_estimate_seconds": null
+    },
+    "width_4": {
+      "makespan_seconds": 1.8182372999872314,
+      "per_request": {
+        "count": 4,
+        "maximum": 1.8174577000027057,
+        "minimum": 1.0782650000037393,
+        "p50": 1.079824649998045,
+        "p95_nearest_rank": 1.8174577000027057
+      },
+      "queueing_estimate_seconds": 0.7391926999989664
+    }
+  },
+  "gpu_state_after": "63, 900, P3, 852",
+  "gpu_state_before": "59, 900, P3, 845",
+  "runtime": {
+    "gpu_layers": 99,
+    "model": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+  },
+  "schema": "baxy.server-concurrency-cancel.v1",
+  "scope": "owned llama-server, identical prompts, no product change"
+}

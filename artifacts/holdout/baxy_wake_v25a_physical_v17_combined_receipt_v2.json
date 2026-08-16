@@ -1,0 +1,36 @@
+{
+  "schema": "baxy.wake-v17-combined-validation-receipt.v2",
+  "measuredAtUtc": "2026-08-11T16:47:52.052555+00:00",
+  "supplementSha256": "16f3c354e88ddfca40168adc7f03d1b2888c573cce0f3ebe670dc72c027072f5",
+  "basePreregistrationSha256": "73c561c0e9861958ecfa62779ec16ff79b74352e663ef501d0defb876c21c958",
+  "corpusManifestSha256": "6df54b361c491da6d76f04e1e6ef986c69166616fdc8ee5e1d768a8dd8cb14d3",
+  "sourceReports": {
+    "cascadeSha256": "8279dbf8d5e0c49c5bd727b10bf4f49bce77e30645dbc419bf5b45e4f089de2c",
+    "endpointSha256": "19f45f3ef871b376daf5d7d6a978ab3e1c9e483ba346bfa2880db80171cfdceb",
+    "fusionSha256": "acb7880308c41ab97a115d4ef92477a58fbb188cdb84f78ac7b8e690ce09ead5"
+  },
+  "combinedPolicy": "cascade_or_score_gated_endpoint",
+  "metrics": {
+    "positiveHits": 46,
+    "positiveFiles": 48,
+    "negativeFalseActivations": 0,
+    "negativeFiles": 96,
+    "latencyP50Seconds": 0.4072689000167884,
+    "latencyP95Seconds": 1.0083445999771357
+  },
+  "checks": {
+    "positiveHitsExact": false,
+    "negativeHitsWithinMaximum": true,
+    "latencyP50WithinMaximum": true,
+    "latencyP95WithinMaximum": true,
+    "positiveNegativeAudioDisjoint": true,
+    "allReportIdentitiesMatched": true,
+    "allFrozenSourcesMatched": true,
+    "effectsExecutedZero": true
+  },
+  "validationPassed": false,
+  "promotionEligible": false,
+  "promotionExecuted": false,
+  "blindHumanPartitionAccessed": false,
+  "effectsExecuted": 0
+}

@@ -1,0 +1,40 @@
+﻿powershell : You must install or update .NET to run this application.
+En línea: 1 Carácter: 495
++ ... -Seconds 3; powershell -NoProfile -ExecutionPolicy Bypass -File "D:\B ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (You must instal...is application.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+App: D:\BAXY\source\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.exe
+Architecture: x64
+Framework: 'Microsoft.NETCore.App', version '10.0.0' (x64)
+.NET location: C:\Program Files\dotnet
+
+The following frameworks were found:
+  6.0.16 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  6.0.36 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  7.0.20 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.6 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.11 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.19 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.21 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.29 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  9.0.0 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+
+Learn more:
+https://aka.ms/dotnet/app-launch-failed
+
+To install missing framework, download:
+https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=10.0.0&arch=x64&rid=win-x64&os=w
+in10
+BAXY no abriÃ³ su traza en 
+D:\BAXY\source\artifacts\fixes\app_visible_path_v3\trace-adf2834effac41a69040e898538eb82f-r0b0-cold.jsonl; lo que 
+arrancÃ³ no es la app instrumentada.
+En D:\BAXY\source\scripts\measure_app_visible_path.ps1: 187 Carácter: 9
++         throw "BAXY no abriÃ³ su traza en $tracePath; lo que arrancÃ³ ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (BAXY no abriÃ³ ... instrumentada.:String) [], RuntimeException
+    + FullyQualifiedErrorId : BAXY no abriÃ³ su traza en D:\BAXY\source\artifacts\fixes\app_visible_path_v3\trace-adf2 
+   834effac41a69040e898538eb82f-r0b0-cold.jsonl; lo que arrancÃ³ no es la app instrumentada.
+ 

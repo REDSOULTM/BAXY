@@ -1,0 +1,4464 @@
+{
+  "schema": "baxy.mvp-catalog-execution-matrix.v1",
+  "measuredAtUtc": "2026-08-11T20:50:56.773969+00:00",
+  "scope": "all_catalog_operations_routed_and_bound_to_provider_verifier_evidence",
+  "status": "approved_current_tree_safe_execution_matrix",
+  "actualUserEffectsExecuted": 0,
+  "sources": {
+    "routing": {
+      "path": "D:\\BAXY\\source\\artifacts\\mvp\\catalog_routing_matrix_v1.json",
+      "schema": "baxy.mvp-catalog-routing-matrix.v1",
+      "sha256": "7e0c9e59dc341be4175387ade9576a46088a65d9e9e8d132fb44066cc5aa08f1"
+    },
+    "core": {
+      "path": "D:\\BAXY\\source\\artifacts\\mvp\\catalog_core_read_only_gate_v1.json",
+      "schema": "baxy.mvp-core-provider-matrix.v1",
+      "sha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1"
+    },
+    "external": {
+      "path": "D:\\BAXY\\source\\artifacts\\mvp\\external_provider_contract_matrix_v1.json",
+      "schema": "baxy.mvp-external-provider-contract-matrix.v1",
+      "sha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764"
+    },
+    "stateful": {
+      "path": "D:\\BAXY\\source\\artifacts\\mvp\\local_stateful_handler_matrix_v1.json",
+      "schema": "baxy.mvp-local-stateful-handler-matrix.v1",
+      "sha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84"
+    },
+    "transient": {
+      "path": "D:\\BAXY\\source\\artifacts\\mvp\\local_transient_handler_matrix_v2.json",
+      "schema": "baxy.mvp-local-transient-handler-matrix.v1",
+      "sha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083"
+    },
+    "memory": {
+      "path": "D:\\BAXY\\source\\artifacts\\mvp\\memory_handler_matrix_v1.json",
+      "schema": "baxy.mvp-memory-handler-matrix.v1",
+      "sha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141"
+    }
+  },
+  "metrics": {
+    "catalogOperations": 169,
+    "routingPassed": 169,
+    "contractBoundariesPassed": 169,
+    "providerExecutionEvidencePassed": 169,
+    "independentlyVerified": 169,
+    "realOrIsolatedEvidence": 80,
+    "safeContractSimulations": 89,
+    "physicalExternalEffectsExecuted": 0,
+    "actualUserEffectsExecuted": 0,
+    "gaps": 0,
+    "failed": 0,
+    "strengthCounts": {
+      "real_isolated_encrypted_store": 11,
+      "real_isolated_stateful_provider": 45,
+      "real_read_only_provider": 24,
+      "safe_external_contract_simulation": 73,
+      "safe_sensitive_contract_simulation": 4,
+      "safe_verified_contract_simulation": 12
+    }
+  },
+  "policy": {
+    "externalEffects": "safe contract simulations; no user effects were produced",
+    "simulationIsExplicit": true,
+    "simulationIsNeverReportedAsPhysicalExecution": true,
+    "successRequiresIndependentVerification": true
+  },
+  "gaps": [],
+  "rows": [
+    {
+      "operation": "app.close",
+      "family": "app",
+      "risk": "work_loss",
+      "caseId": "catalog-seen-natural-app-close",
+      "example": {
+        "language": "es",
+        "text": "Cierra la ventana de Bloc de notas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.006085
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "independent_window_absence_receipt",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "app.installed",
+      "family": "app",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-app-installed",
+      "example": {
+        "language": "en",
+        "text": "Check whether Obsidian is installed without opening it."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002679
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "app.open",
+      "family": "app",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-app-open",
+      "example": {
+        "language": "es",
+        "text": "Abre la calculadora."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003803
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "application_launch_receipt_plus_window_identity",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "audio.microphone.mute",
+      "family": "audio",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-audio-microphone-mute",
+      "example": {
+        "language": "spanglish",
+        "text": "Mutea el microphone del computador."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002234
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "audio.mute",
+      "family": "audio",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-audio-mute",
+      "example": {
+        "language": "es",
+        "text": "Silencia el audio del computador."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00322
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "endpoint_hash_and_exact_postread",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "audio.status",
+      "family": "audio",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-audio-status",
+      "example": {
+        "language": "en",
+        "text": "Tell me the current speaker volume and mute state."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002434
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "audio.volume",
+      "family": "audio",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-audio-volume",
+      "example": {
+        "language": "es",
+        "text": "Pon el volumen del computador al 37 por ciento."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003212
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "endpoint_hash_and_tolerant_exact_postread",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "audio.volume.adjust",
+      "family": "audio",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-audio-volume-adjust",
+      "example": {
+        "language": "spanglish",
+        "text": "Baja el volume del PC en 8 puntos."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002932
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "backup.create",
+      "family": "backup",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-backup-create",
+      "example": {
+        "language": "es",
+        "text": "Crea una copia privada del archivo que acabo de seleccionar y verifica su hash."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002762
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_hash_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "backup.known.create",
+      "family": "backup",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-backup-known-create",
+      "example": {
+        "language": "en",
+        "text": "Create a verified private ZIP backup of my Documents folder."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003189
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "backup.known.list",
+      "family": "backup",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-backup-known-list",
+      "example": {
+        "language": "es",
+        "text": "Lista mis copias ZIP de carpetas conocidas y verifica sus hashes."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002871
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "backup.known.restore.latest",
+      "family": "backup",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-backup-known-restore-latest",
+      "example": {
+        "language": "spanglish",
+        "text": "Restore el backup ZIP más reciente de Documents en una carpeta privada nueva."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003399
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "backup.known.verify.latest",
+      "family": "backup",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-backup-known-verify-latest",
+      "example": {
+        "language": "es",
+        "text": "Verifica el backup ZIP más reciente de Documentos."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003156
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "backup.list",
+      "family": "backup",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-backup-list",
+      "example": {
+        "language": "en",
+        "text": "List my verified private backups, newest first."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003429
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_hash_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "backup.restore",
+      "family": "backup",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-backup-restore",
+      "example": {
+        "language": "es",
+        "text": "Restaura el backup privado que acabo de elegir en un destino nuevo."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003109
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_hash_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "backup.verify",
+      "family": "backup",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-backup-verify",
+      "example": {
+        "language": "spanglish",
+        "text": "Verify el tamaño y SHA-256 del backup que seleccioné."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003648
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_hash_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "bluetooth.device.list",
+      "family": "bluetooth",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-bluetooth-device-list",
+      "example": {
+        "language": "es",
+        "text": "Muéstrame los dispositivos Bluetooth visibles."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002884
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "bluetooth.device.pair",
+      "family": "bluetooth",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-bluetooth-device-pair",
+      "example": {
+        "language": "en",
+        "text": "Pair the Bluetooth headset named Living Room Buds."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002563
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "bluetooth.radio.set",
+      "family": "bluetooth",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-bluetooth-radio-set",
+      "example": {
+        "language": "es",
+        "text": "Enciende el Bluetooth y comprueba que quede encendido."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002841
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "browser.control",
+      "family": "browser",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-browser-control",
+      "example": {
+        "language": "spanglish",
+        "text": "Go back una página en la pestaña actual."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002675
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "browser.navigate",
+      "family": "browser",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-browser-navigate",
+      "example": {
+        "language": "es",
+        "text": "Navega la sesión web actual a https://example.com/docs."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.0036
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "browser.navigate.named",
+      "family": "browser",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-browser-navigate-named",
+      "example": {
+        "language": "en",
+        "text": "Open https://example.com/account specifically in Opera."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004283
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "browser.page.read",
+      "family": "browser",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-browser-page-read",
+      "example": {
+        "language": "es",
+        "text": "Lee el título, la URL y el texto visible de la página actual."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003804
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "browser.tabs.list",
+      "family": "browser",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-browser-tabs-list",
+      "example": {
+        "language": "spanglish",
+        "text": "List las pestañas abiertas de la sesión web local."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003258
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "calendar.event.create",
+      "family": "calendar",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-calendar-event-create",
+      "example": {
+        "language": "es",
+        "text": "Crea en mi calendario un evento llamado Revisión mañana de nueve a diez."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004253
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "calendar.event.list",
+      "family": "calendar",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-calendar-event-list",
+      "example": {
+        "language": "en",
+        "text": "List my calendar events for tomorrow without changing them."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003158
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "capture.active.window",
+      "family": "capture",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-capture-active-window",
+      "example": {
+        "language": "es",
+        "text": "Captura solamente la ventana que está activa."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004292
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "opaque_capture_id_dimensions_and_sha256",
+      "executionEvidenceKind": "safe_sensitive_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "capture.screenshot",
+      "family": "capture",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-capture-screenshot",
+      "example": {
+        "language": "spanglish",
+        "text": "Take un screenshot de todo el escritorio."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002937
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "opaque_capture_id_dimensions_and_sha256",
+      "executionEvidenceKind": "safe_sensitive_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "clipboard.copy",
+      "family": "clipboard",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-clipboard-copy",
+      "example": {
+        "language": "es",
+        "text": "Copia la selección actual al portapapeles."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002961
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "clipboard.paste",
+      "family": "clipboard",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-clipboard-paste",
+      "example": {
+        "language": "en",
+        "text": "Paste the current clipboard into the focused field."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003087
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "clipboard.read.text",
+      "family": "clipboard",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-clipboard-read-text",
+      "example": {
+        "language": "es",
+        "text": "Lee el texto que tengo ahora en el portapapeles."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003671
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "bounded_private_snapshot",
+      "executionEvidenceKind": "safe_sensitive_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "clipboard.write.text",
+      "family": "clipboard",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-clipboard-write-text",
+      "example": {
+        "language": "spanglish",
+        "text": "Pon en el clipboard el texto literal reunión a las cinco."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002795
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "sequence_and_character_count_receipt",
+      "executionEvidenceKind": "safe_sensitive_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "email.latest.read",
+      "family": "email",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-email-latest-read",
+      "example": {
+        "language": "es",
+        "text": "Lee el correo más reciente de mi Outlook."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003061
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "email.latest.reply",
+      "family": "email",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-email-latest-reply",
+      "example": {
+        "language": "en",
+        "text": "Reply to my latest Outlook email with: I received it, thank you."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002917
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "filesystem.copy",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-copy",
+      "example": {
+        "language": "es",
+        "text": "Copia el archivo seleccionado a la carpeta archivo dentro del sandbox."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002733
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.create.directory",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-create-directory",
+      "example": {
+        "language": "spanglish",
+        "text": "Create una carpeta del sandbox llamada pruebas agosto."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002808
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.file.open.latest",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-file-open-latest",
+      "example": {
+        "language": "es",
+        "text": "Abre el archivo modificado más recientemente de Descargas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00321
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "filesystem.folder.open",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-folder-open",
+      "example": {
+        "language": "en",
+        "text": "Open my Downloads folder in File Explorer."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002868
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "filesystem.hash",
+      "family": "filesystem",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-filesystem-hash",
+      "example": {
+        "language": "es",
+        "text": "Calcula el SHA-256 del archivo que acabo de seleccionar."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002021
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.known.duplicates",
+      "family": "filesystem",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-filesystem-known-duplicates",
+      "example": {
+        "language": "spanglish",
+        "text": "Find duplicate files en Descargas sin borrarlos."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002508
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.known.search",
+      "family": "filesystem",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-filesystem-known-search",
+      "example": {
+        "language": "es",
+        "text": "Busca en Documentos un archivo llamado informe final."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002632
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.known.trash.named",
+      "family": "filesystem",
+      "risk": "recoverable_delete",
+      "caseId": "catalog-seen-natural-filesystem-known-trash-named",
+      "example": {
+        "language": "en",
+        "text": "Move the uniquely named file draft-old.txt from Downloads to the private trash."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002044
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "filesystem.list",
+      "family": "filesystem",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-filesystem-list",
+      "example": {
+        "language": "es",
+        "text": "Lista el contenido de la carpeta raíz del sandbox."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002423
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.move",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-move",
+      "example": {
+        "language": "spanglish",
+        "text": "Move el archivo seleccionado a archivo/terminado.txt dentro del sandbox."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002538
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.path.ensure.absent",
+      "family": "filesystem",
+      "risk": "recoverable_delete",
+      "caseId": "catalog-seen-natural-filesystem-path-ensure-absent",
+      "example": {
+        "language": "es",
+        "text": "Asegúrate de que C:\\Users\\Public\\Temp\\baxy-prueba.txt no exista y usa la papelera recuperable si existe."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002314
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "filesystem.read.text",
+      "family": "filesystem",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-filesystem-read-text",
+      "example": {
+        "language": "en",
+        "text": "Read the selected UTF-8 text file and verify its hash."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003404
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.sandbox.append.named",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-sandbox-append-named",
+      "example": {
+        "language": "es",
+        "text": "Añade la línea revisión completa al archivo único registro.txt del sandbox."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003059
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "filesystem.sandbox.diff.named",
+      "family": "filesystem",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-filesystem-sandbox-diff-named",
+      "example": {
+        "language": "spanglish",
+        "text": "Compare notas-a.txt con notas-b.txt in the sandbox y dime las líneas distintas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003446
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "filesystem.sandbox.move.named",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-sandbox-move-named",
+      "example": {
+        "language": "es",
+        "text": "Mueve el archivo único borrador.txt del sandbox a archivo/borrador.txt."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002688
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "filesystem.search",
+      "family": "filesystem",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-filesystem-search",
+      "example": {
+        "language": "en",
+        "text": "Search the sandbox for names containing invoice."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002572
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.trash.commit",
+      "family": "filesystem",
+      "risk": "recoverable_delete",
+      "caseId": "catalog-seen-natural-filesystem-trash-commit",
+      "example": {
+        "language": "es",
+        "text": "Confirma la selección de papelera que acabo de revisar."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00274
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.trash.prepare",
+      "family": "filesystem",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-filesystem-trash-prepare",
+      "example": {
+        "language": "spanglish",
+        "text": "Prepare el archivo seleccionado para enviarlo a la papelera, pero no lo muevas aún."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002968
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.trash.restore",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-trash-restore",
+      "example": {
+        "language": "es",
+        "text": "Restaura de la papelera privada el archivo que acabo de seleccionar."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003144
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "filesystem.write.text",
+      "family": "filesystem",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-filesystem-write-text",
+      "example": {
+        "language": "en",
+        "text": "Write the text quarterly review into reports/review.txt in the sandbox."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002718
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "local_filesystem_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "game.catalog.list",
+      "family": "game",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-game-catalog-list",
+      "example": {
+        "language": "es",
+        "text": "Lista mi catálogo local de Steam."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002102
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "game.install.cancel",
+      "family": "game",
+      "risk": "work_loss",
+      "caseId": "catalog-seen-natural-game-install-cancel",
+      "example": {
+        "language": "spanglish",
+        "text": "Cancel la descarga de Steam del AppID 730."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002597
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "game.install.cancel.active",
+      "family": "game",
+      "risk": "work_loss",
+      "caseId": "catalog-seen-natural-game-install-cancel-active",
+      "example": {
+        "language": "es",
+        "text": "Cancela todas las descargas activas de Steam."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002553
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "game.install.commit",
+      "family": "game",
+      "risk": "installation",
+      "caseId": "catalog-seen-natural-game-install-commit",
+      "example": {
+        "language": "en",
+        "text": "Confirm the Steam installation I just prepared."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002604
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "game.install.named",
+      "family": "game",
+      "risk": "installation",
+      "caseId": "catalog-seen-natural-game-install-named",
+      "example": {
+        "language": "es",
+        "text": "Instala Portal desde mi biblioteca de Steam si lo tengo comprado."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002695
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "game.install.prepare",
+      "family": "game",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-game-install-prepare",
+      "example": {
+        "language": "spanglish",
+        "text": "Prepare la instalación del AppID 620 sin descargar todavía."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002807
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "game.install.status",
+      "family": "game",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-game-install-status",
+      "example": {
+        "language": "es",
+        "text": "Dime el progreso de instalación en Steam del AppID 730."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002899
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "game.installed.named",
+      "family": "game",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-game-installed-named",
+      "example": {
+        "language": "en",
+        "text": "Check whether Rocket League is installed without launching it."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002998
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "game.launch",
+      "family": "game",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-game-launch",
+      "example": {
+        "language": "es",
+        "text": "Inicia el juego Cuphead desde Steam."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.006442
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "game.purchase.commit",
+      "family": "game",
+      "risk": "monetary",
+      "caseId": "catalog-seen-natural-game-purchase-commit",
+      "example": {
+        "language": "spanglish",
+        "text": "Confirm the game purchase que acabo de revisar al precio exacto mostrado."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004882
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "game.purchase.prepare",
+      "family": "game",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-game-purchase-prepare",
+      "example": {
+        "language": "es",
+        "text": "Prepara la compra de Hades y muéstrame el precio sin comprarlo."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00416
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "input.key.press",
+      "family": "input",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-input-key-press",
+      "example": {
+        "language": "en",
+        "text": "Press Control Shift Escape in the focused window."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004855
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "input.keyboard.layout",
+      "family": "input",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-input-keyboard-layout",
+      "example": {
+        "language": "es",
+        "text": "Cambia el teclado de la ventana activa a español."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004901
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "input.keyboard.open",
+      "family": "input",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-input-keyboard-open",
+      "example": {
+        "language": "spanglish",
+        "text": "Open el teclado en pantalla de Windows."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003881
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "input.keyboard.status",
+      "family": "input",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-input-keyboard-status",
+      "example": {
+        "language": "es",
+        "text": "Dime qué distribución de teclado usa la ventana enfocada."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003663
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "input.pointer.control",
+      "family": "input",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-input-pointer-control",
+      "example": {
+        "language": "en",
+        "text": "Move the mouse pointer to the center of the screen."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003557
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "input.select.all",
+      "family": "input",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-input-select-all",
+      "example": {
+        "language": "es",
+        "text": "Selecciona todo en el control que está enfocado."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004883
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "input.text.type",
+      "family": "input",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-input-text-type",
+      "example": {
+        "language": "spanglish",
+        "text": "Type el texto literal pedido recibido en el campo enfocado."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004994
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "input.visible.click",
+      "family": "input",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-input-visible-click",
+      "example": {
+        "language": "es",
+        "text": "Haz clic una sola vez en el botón visible que dice Continuar."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003728
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "media.control",
+      "family": "media",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-media-control",
+      "example": {
+        "language": "en",
+        "text": "Pause the current Windows media session."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003102
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "media.play.exact",
+      "family": "media",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-media-play-exact",
+      "example": {
+        "language": "es",
+        "text": "Reproduce el resultado musical exacto que acabo de seleccionar en Spotify."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00447
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "media.play.query",
+      "family": "media",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-media-play-query",
+      "example": {
+        "language": "spanglish",
+        "text": "Play la canción Space Oddity en Spotify."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003077
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "media.play.youtube",
+      "family": "media",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-media-play-youtube",
+      "example": {
+        "language": "es",
+        "text": "Busca y reproduce en YouTube el video oficial de Space Oddity."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.0044
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "media.seek.relative",
+      "family": "media",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-media-seek-relative",
+      "example": {
+        "language": "en",
+        "text": "Skip forward thirty seconds in the current media session."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003362
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "media.status",
+      "family": "media",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-media-status",
+      "example": {
+        "language": "es",
+        "text": "Dime qué está sonando ahora y si está pausado."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003954
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "memory.correct",
+      "family": "memory",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-memory-correct",
+      "example": {
+        "language": "spanglish",
+        "text": "Corrige mi memory: mi color favorito ahora es verde, no azul."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.19766
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.disable",
+      "family": "memory",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-memory-disable",
+      "example": {
+        "language": "es",
+        "text": "Desactiva la memoria local de BAXY."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.003529
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.enable",
+      "family": "memory",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-memory-enable",
+      "example": {
+        "language": "en",
+        "text": "Enable BAXY's private local memory."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.000487
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.export",
+      "family": "memory",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-memory-export",
+      "example": {
+        "language": "es",
+        "text": "Exporta una copia privada de todo lo que BAXY recuerda de mí."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.000717
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.forget",
+      "family": "memory",
+      "risk": "work_loss",
+      "caseId": "catalog-seen-natural-memory-forget",
+      "example": {
+        "language": "spanglish",
+        "text": "Forget todo lo que recuerdas sobre mi proyecto Atlas."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.335809
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.list",
+      "family": "memory",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-memory-list",
+      "example": {
+        "language": "es",
+        "text": "Muéstrame la lista de recuerdos locales que guardaste."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.000948
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.recall",
+      "family": "memory",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-memory-recall",
+      "example": {
+        "language": "en",
+        "text": "What do you remember about my preferred editor?"
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.000766
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.save",
+      "family": "memory",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-memory-save",
+      "example": {
+        "language": "es",
+        "text": "Recuerda que mi editor preferido es Visual Studio Code."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.033096
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.sensitive.save",
+      "family": "memory",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-memory-sensitive-save",
+      "example": {
+        "language": "spanglish",
+        "text": "Guarda como sensitive memory que mi alergia es al maní."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.000548
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.session.clear",
+      "family": "memory",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-memory-session-clear",
+      "example": {
+        "language": "es",
+        "text": "Borra solamente la memoria temporal de esta conversación."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.000565
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "memory.status",
+      "family": "memory",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-memory-status",
+      "example": {
+        "language": "en",
+        "text": "Tell me whether local memory is enabled and what its limits are."
+      },
+      "routing": {
+        "owner": "app_memory_parser",
+        "passed": true,
+        "seconds": 0.050039
+      },
+      "contractBoundaryPassed": true,
+      "provider": "LocalMemoryStore + WindowsProtectedPayload",
+      "verifier": "bound_dpapi_envelope_plus_store_postread",
+      "executionEvidenceKind": "real_isolated_encrypted_store",
+      "executionEvidenceSource": "memory",
+      "executionEvidenceSourceSha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "message.recipient.resolve",
+      "family": "message",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-message-recipient-resolve",
+      "example": {
+        "language": "es",
+        "text": "Busca exactamente a Camila en WhatsApp y dime si hay un único contacto, sin enviar nada."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003611
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "message.send",
+      "family": "message",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-message-send",
+      "example": {
+        "language": "spanglish",
+        "text": "Send a Camila por WhatsApp: llegaré en veinte minutos."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003096
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "network.dns.status",
+      "family": "network",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-network-dns-status",
+      "example": {
+        "language": "es",
+        "text": "Dime qué servidores DNS usan ahora las interfaces activas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004017
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "network.ip.list",
+      "family": "network",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-network-ip-list",
+      "example": {
+        "language": "en",
+        "text": "List this computer's active unicast IP addresses."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00344
+      },
+      "contractBoundaryPassed": true,
+      "provider": "WindowsNetworkIpProvider",
+      "verifier": "two_equal_normalized_windows_reads",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "network.ping",
+      "family": "network",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-network-ping",
+      "example": {
+        "language": "es",
+        "text": "Haz un ping a example.com y dime la latencia."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002864
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "network.port.list",
+      "family": "network",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-network-port-list",
+      "example": {
+        "language": "spanglish",
+        "text": "List los puertos TCP y UDP que están escuchando localmente."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003355
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "network.status",
+      "family": "network",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-network-status",
+      "example": {
+        "language": "es",
+        "text": "Comprueba el estado general de la conexión de red."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.0037
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "note.create",
+      "family": "note",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-note-create",
+      "example": {
+        "language": "en",
+        "text": "Create a note titled Trip with the content bring the blue backpack."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003486
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "note_store_verified_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "note.list",
+      "family": "note",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-note-list",
+      "example": {
+        "language": "es",
+        "text": "Lista mis notas locales activas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003073
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "note_store_verified_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "note.read",
+      "family": "note",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-note-read",
+      "example": {
+        "language": "spanglish",
+        "text": "Read la nota que se llama Viaje."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "note_store_verified_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "note.restore",
+      "family": "note",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-note-restore",
+      "example": {
+        "language": "es",
+        "text": "Restaura desde la papelera la nota titulada Viaje."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003135
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "note_store_verified_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "note.search",
+      "family": "note",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-note-search",
+      "example": {
+        "language": "en",
+        "text": "Search my local notes for the phrase blue backpack."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003906
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "note_store_verified_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "note.trash",
+      "family": "note",
+      "risk": "recoverable_delete",
+      "caseId": "catalog-seen-natural-note-trash",
+      "example": {
+        "language": "es",
+        "text": "Mueve a la papelera la nota titulada Borrador viejo."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003442
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "note_store_verified_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "note.update",
+      "family": "note",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-note-update",
+      "example": {
+        "language": "spanglish",
+        "text": "Update la nota Viaje: título Viaje final y contenido llevar mochila azul y pasaporte."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004251
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "note_store_verified_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "notification.cancel.at",
+      "family": "notification",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-notification-cancel-at",
+      "example": {
+        "language": "es",
+        "text": "Cancela la alarma de BAXY de las cinco y media de la tarde."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003834
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "notification.cancel.latest",
+      "family": "notification",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-notification-cancel-latest",
+      "example": {
+        "language": "en",
+        "text": "Cancel the most recently created BAXY alarm."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003099
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "notification.diagnose",
+      "family": "notification",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-notification-diagnose",
+      "example": {
+        "language": "es",
+        "text": "Diagnostica por qué no sonó mi última alarma de BAXY."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002999
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "notification.dismiss",
+      "family": "notification",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-notification-dismiss",
+      "example": {
+        "language": "spanglish",
+        "text": "Dismiss el recordatorio vencido que acabo de seleccionar."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.01246
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "reminder_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "notification.list.due",
+      "family": "notification",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-notification-list-due",
+      "example": {
+        "language": "es",
+        "text": "Lista los recordatorios vencidos que aún no descarté."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002801
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "reminder_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "notification.schedule",
+      "family": "notification",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-notification-schedule",
+      "example": {
+        "language": "en",
+        "text": "Schedule an audible alarm for seven thirty tomorrow morning."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002839
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "ocr.read",
+      "family": "ocr",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-ocr-read",
+      "example": {
+        "language": "es",
+        "text": "Toma una captura y extrae todo el texto visible con OCR local en español."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00367
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "office.document.create",
+      "family": "office",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-office-document-create",
+      "example": {
+        "language": "spanglish",
+        "text": "Create un documento de Word llamado Resumen con el texto Reunión completada."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00325
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "office.document.read",
+      "family": "office",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-office-document-read",
+      "example": {
+        "language": "es",
+        "text": "Lee el documento que acabo de crear y dame su contenido estructurado."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00313
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "package.install.commit",
+      "family": "package",
+      "risk": "installation",
+      "caseId": "catalog-seen-natural-package-install-commit",
+      "example": {
+        "language": "en",
+        "text": "Confirm the winget package installation I just reviewed."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003383
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "package.install.prepare",
+      "family": "package",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-package-install-prepare",
+      "example": {
+        "language": "es",
+        "text": "Prepara la instalación exacta de Microsoft.PowerToys sin instalar aún."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003453
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "peripheral.list",
+      "family": "peripheral",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-peripheral-list",
+      "example": {
+        "language": "spanglish",
+        "text": "List los teclados y mouse conectados al computador."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002999
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "peripheral.print",
+      "family": "peripheral",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-peripheral-print",
+      "example": {
+        "language": "es",
+        "text": "Imprime el documento que seleccioné en la impresora Oficina."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003248
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "peripheral.scan",
+      "family": "peripheral",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-peripheral-scan",
+      "example": {
+        "language": "en",
+        "text": "Scan one page using the connected scanner named Office Scanner."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00262
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "reminder.create",
+      "family": "reminder",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-reminder-create",
+      "example": {
+        "language": "es",
+        "text": "Crea un recordatorio local durable para pagar el arriendo mañana a las nueve."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002943
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "reminder_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "reminder.delete",
+      "family": "reminder",
+      "risk": "recoverable_delete",
+      "caseId": "catalog-seen-natural-reminder-delete",
+      "example": {
+        "language": "spanglish",
+        "text": "Delete de forma recuperable el recordatorio llamado Pagar arriendo."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002922
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "reminder_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "reminder.list",
+      "family": "reminder",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-reminder-list",
+      "example": {
+        "language": "es",
+        "text": "Lista mis recordatorios locales programados."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002562
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "reminder_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "reminder.resolve.exact",
+      "family": "reminder",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-reminder-resolve-exact",
+      "example": {
+        "language": "en",
+        "text": "Find the exact reminder titled Pay rent and return its current identity without changing it."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003249
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "reminder_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "reminder.restore",
+      "family": "reminder",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-reminder-restore",
+      "example": {
+        "language": "es",
+        "text": "Restaura el recordatorio eliminado llamado Pagar arriendo."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002987
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "reminder_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "routine.delete",
+      "family": "routine",
+      "risk": "recoverable_delete",
+      "caseId": "catalog-seen-natural-routine-delete",
+      "example": {
+        "language": "spanglish",
+        "text": "Delete de forma recuperable la rutina llamada Música de trabajo."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004187
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "routine_store_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "routine.list",
+      "family": "routine",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-routine-list",
+      "example": {
+        "language": "es",
+        "text": "Lista las rutinas locales que tengo creadas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003631
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "routine_store_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "routine.phrase.create",
+      "family": "routine",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-routine-phrase-create",
+      "example": {
+        "language": "en",
+        "text": "Create a routine named Focus music that plays Spotify when I say start focus."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004192
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "routine_store_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "routine.read",
+      "family": "routine",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-routine-read",
+      "example": {
+        "language": "es",
+        "text": "Lee los metadatos de la rutina exacta llamada Música de trabajo."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003548
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "routine_store_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "routine.resolve.exact",
+      "family": "routine",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-routine-resolve-exact",
+      "example": {
+        "language": "spanglish",
+        "text": "Resolve la rutina exacta Música de trabajo sin ejecutarla."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003941
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "routine_store_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "routine.restore",
+      "family": "routine",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-routine-restore",
+      "example": {
+        "language": "es",
+        "text": "Restaura deshabilitada la rutina eliminada Música de trabajo."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003331
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "routine_store_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "routine.set.enabled",
+      "family": "routine",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-routine-set-enabled",
+      "example": {
+        "language": "en",
+        "text": "Disable the routine named Focus music without running it."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00322
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "routine_store_cas",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "streaming.navigate",
+      "family": "streaming",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-streaming-navigate",
+      "example": {
+        "language": "es",
+        "text": "Navega mi sesión autenticada de streaming a https://www.netflix.com/browse."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003129
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "streaming.play.named",
+      "family": "streaming",
+      "risk": "external_communication",
+      "caseId": "catalog-seen-natural-streaming-play-named",
+      "example": {
+        "language": "spanglish",
+        "text": "Play The Crown en mi sesión autenticada de Netflix."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002982
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "system.application.crash.diagnose",
+      "family": "system",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-system-application-crash-diagnose",
+      "example": {
+        "language": "es",
+        "text": "Busca fallos recientes de aplicaciones en Windows y dime cuál se bloqueó."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003082
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "system.identity",
+      "family": "system",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-system-identity",
+      "example": {
+        "language": "en",
+        "text": "Tell me the effective Windows user and domain running BAXY."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002867
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "system.power",
+      "family": "system",
+      "risk": "work_loss",
+      "caseId": "catalog-seen-natural-system-power",
+      "example": {
+        "language": "es",
+        "text": "Bloquea esta sesión de Windows ahora."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002309
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "system.process.list",
+      "family": "system",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-system-process-list",
+      "example": {
+        "language": "spanglish",
+        "text": "List los procesos que más memoria están usando."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002287
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "system.process.terminate.named",
+      "family": "system",
+      "risk": "work_loss",
+      "caseId": "catalog-seen-natural-system-process-terminate-named",
+      "example": {
+        "language": "es",
+        "text": "Fuerza el cierre de notepad.exe y verifica que ese proceso desaparezca."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002892
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "system.recyclebin.empty",
+      "family": "system",
+      "risk": "work_loss",
+      "caseId": "catalog-seen-natural-system-recyclebin-empty",
+      "example": {
+        "language": "en",
+        "text": "Empty the Windows Recycle Bin and verify it is empty."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002573
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "system.settings.adjust",
+      "family": "system",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-system-settings-adjust",
+      "example": {
+        "language": "es",
+        "text": "Sube el brillo de la pantalla en diez puntos."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002518
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "system.settings.set",
+      "family": "system",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-system-settings-set",
+      "example": {
+        "language": "spanglish",
+        "text": "Turn on la luz nocturna de Windows."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002364
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "system.settings.status",
+      "family": "system",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-system-settings-status",
+      "example": {
+        "language": "es",
+        "text": "Dime el brillo actual de cada monitor compatible."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002711
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "system.status",
+      "family": "system",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-system-status",
+      "example": {
+        "language": "en",
+        "text": "Show me this computer's current CPU, memory, disk, battery, and GPU status."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003088
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "system.time",
+      "family": "system",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-system-time",
+      "example": {
+        "language": "es",
+        "text": "Dime la fecha y la hora local actuales."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00253
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.complete",
+      "family": "task",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-task-complete",
+      "example": {
+        "language": "spanglish",
+        "text": "Mark complete la tarea exacta llamada Enviar informe."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002567
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.create",
+      "family": "task",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-task-create",
+      "example": {
+        "language": "es",
+        "text": "Crea una tarea llamada Enviar informe con fecha para el viernes."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002757
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.delete",
+      "family": "task",
+      "risk": "recoverable_delete",
+      "caseId": "catalog-seen-natural-task-delete",
+      "example": {
+        "language": "en",
+        "text": "Move the exact task Send report to the recoverable trash."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002739
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.list",
+      "family": "task",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-task-list",
+      "example": {
+        "language": "es",
+        "text": "Lista mis tareas locales que siguen abiertas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003947
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.reopen",
+      "family": "task",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-task-reopen",
+      "example": {
+        "language": "spanglish",
+        "text": "Reopen la tarea completada llamada Enviar informe."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004219
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.resolve.exact",
+      "family": "task",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-task-resolve-exact",
+      "example": {
+        "language": "es",
+        "text": "Resuelve la tarea exacta titulada Enviar informe sin modificarla."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004181
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.restore",
+      "family": "task",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-task-restore",
+      "example": {
+        "language": "en",
+        "text": "Restore the deleted task titled Send report."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.005519
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.search",
+      "family": "task",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-task-search",
+      "example": {
+        "language": "es",
+        "text": "Busca en mis tareas locales la frase informe trimestral."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.006016
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "task.update",
+      "family": "task",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-task-update",
+      "example": {
+        "language": "spanglish",
+        "text": "Update la tarea Enviar informe: nuevo título Enviar informe final y fecha el lunes."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.008169
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree local stateful provider",
+      "verifier": "task_store_cas_postread",
+      "executionEvidenceKind": "real_isolated_stateful_provider",
+      "executionEvidenceSource": "stateful",
+      "executionEvidenceSourceSha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "vision.describe",
+      "family": "vision",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-vision-describe",
+      "example": {
+        "language": "es",
+        "text": "Toma una captura y describe localmente lo que aparece en la imagen."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.006785
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "web.search",
+      "family": "web",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-web-search",
+      "example": {
+        "language": "en",
+        "text": "Search the web for the official Python documentation."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.006379
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "wifi.connect",
+      "family": "wifi",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-wifi-connect",
+      "example": {
+        "language": "es",
+        "text": "Conecta el perfil Wi-Fi que acabo de seleccionar."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.004391
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "wifi.connect.named",
+      "family": "wifi",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-wifi-connect-named",
+      "example": {
+        "language": "spanglish",
+        "text": "Connect al perfil Wi-Fi guardado llamado Casa."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.00309
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "wifi.disconnect",
+      "family": "wifi",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-wifi-disconnect",
+      "example": {
+        "language": "es",
+        "text": "Desconecta el Wi-Fi y comprueba que quede desconectado."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003377
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "wifi.ensure.connected",
+      "family": "wifi",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-wifi-ensure-connected",
+      "example": {
+        "language": "en",
+        "text": "Check that Wi-Fi is already connected without changing it."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003234
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "wifi.profile.list",
+      "family": "wifi",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-wifi-profile-list",
+      "example": {
+        "language": "es",
+        "text": "Lista los perfiles Wi-Fi guardados sin mostrar credenciales."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003002
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "wifi.status",
+      "family": "wifi",
+      "risk": "privacy_sensitive",
+      "caseId": "catalog-seen-natural-wifi-status",
+      "example": {
+        "language": "spanglish",
+        "text": "Tell me el estado actual de la conexión Wi-Fi."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.003718
+      },
+      "contractBoundaryPassed": true,
+      "provider": "IExternalCapabilityProvider",
+      "verifier": "verified_receipt_acceptance_and_unverified_rejection",
+      "executionEvidenceKind": "safe_external_contract_simulation",
+      "executionEvidenceSource": "external",
+      "executionEvidenceSourceSha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "window.active",
+      "family": "window",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-window-active",
+      "example": {
+        "language": "es",
+        "text": "Dime qué ventana está activa ahora y cuál es su geometría."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002837
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "post_action_window_state_or_exact_bounds",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "window.application.status",
+      "family": "window",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-window-application-status",
+      "example": {
+        "language": "en",
+        "text": "Check whether Visual Studio Code currently has a visible window without opening it."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002869
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree Core real read-only provider",
+      "verifier": "verified_terminal_from_real_provider",
+      "executionEvidenceKind": "real_read_only_provider",
+      "executionEvidenceSource": "core",
+      "executionEvidenceSourceSha256": "2211c6b5179f871d0f58c94729f6a3e74b883cf5b9faa6e7d08baaf4e4e24cd1",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_real_isolated_or_read_only"
+    },
+    {
+      "operation": "window.focus",
+      "family": "window",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-window-focus",
+      "example": {
+        "language": "es",
+        "text": "Enfoca la ventana de Bloc de notas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002493
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "post_action_window_state_or_exact_bounds",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "window.maximize",
+      "family": "window",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-window-maximize",
+      "example": {
+        "language": "spanglish",
+        "text": "Maximize la ventana de Bloc de notas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002384
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "post_action_window_state_or_exact_bounds",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "window.minimize",
+      "family": "window",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-window-minimize",
+      "example": {
+        "language": "es",
+        "text": "Minimiza la ventana de Bloc de notas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002311
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "post_action_window_state_or_exact_bounds",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "window.move",
+      "family": "window",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-window-move",
+      "example": {
+        "language": "en",
+        "text": "Move the Notepad window to desktop coordinates 120, 80."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002129
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "post_action_window_state_or_exact_bounds",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "window.resize",
+      "family": "window",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-window-resize",
+      "example": {
+        "language": "es",
+        "text": "Redimensiona la ventana de Bloc de notas a 900 por 600 píxeles."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002549
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "post_action_window_state_or_exact_bounds",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "window.resolve",
+      "family": "window",
+      "risk": "read_only",
+      "caseId": "catalog-seen-natural-window-resolve",
+      "example": {
+        "language": "spanglish",
+        "text": "Resolve las ventanas visibles de notepad.exe y devuelve sus identificadores."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002539
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "post_action_window_state_or_exact_bounds",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    },
+    {
+      "operation": "window.restore",
+      "family": "window",
+      "risk": "low_reversible",
+      "caseId": "catalog-seen-natural-window-restore",
+      "example": {
+        "language": "es",
+        "text": "Restaura la ventana minimizada de Bloc de notas."
+      },
+      "routing": {
+        "owner": "mind_sidecar",
+        "passed": true,
+        "seconds": 0.002001
+      },
+      "contractBoundaryPassed": true,
+      "provider": "current-tree handler + safe verified provider double",
+      "verifier": "post_action_window_state_or_exact_bounds",
+      "executionEvidenceKind": "safe_verified_contract_simulation",
+      "executionEvidenceSource": "transient",
+      "executionEvidenceSourceSha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "providerExecutionPassed": true,
+      "independentlyVerified": true,
+      "physicalExternalEffectExecuted": false,
+      "actualUserEffectsExecuted": 0,
+      "status": "approved_safe_contract_simulation"
+    }
+  ],
+  "gatePassed": true
+}

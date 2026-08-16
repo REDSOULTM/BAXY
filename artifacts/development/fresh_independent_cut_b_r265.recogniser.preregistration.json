@@ -1,0 +1,43 @@
+{
+  "schema": "baxy.fresh-independent-cut-b-recogniser-r265-preregistration.v1",
+  "authority": "sealed_before_first_r264_recogniser_measurement",
+  "source": {
+    "r264_rows": 114,
+    "r264_corpus_sha256": "d36489e735bda4bec4fc4a5d14be8b14577741ff5b4d843ee0395d8f7eb758b2",
+    "r264_preregistration_sha256": "e287ff9cef249d166d7775c1b4ca4e2f7b6bde73af2f45fd504a3b67d2049535"
+  },
+  "scoring": {
+    "runner": "experiments/mind_router_spike/run_fresh_independent_cut_b_recogniser_r265.py",
+    "runner_sha256": "1b7d03d361dab3f848addea80f947bcefa0ea9a3f5d4ce6fc9c83b8a2307bad4",
+    "expected_operation_match": "resolve_explicit_effects operations equal the complete expected_operations tuple",
+    "outcomes": [
+      "resolved_expected",
+      "resolved_other",
+      "unresolved"
+    ],
+    "cuts": [
+      "overall",
+      "family",
+      "language",
+      "expected_operation"
+    ],
+    "recogniser_majority_limit": 0.5,
+    "alias_surface_reported": true
+  },
+  "constraints": {
+    "recogniser_measured": false,
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_step": "Commit this scorer and preregistration unchanged, freeze the worktree, then invoke the runner exactly once.",
+  "identities": {
+    "program_sha256": "da8a5c7169d6fa54af4c26b449947cae589451a9120c6b28386b3e6fafa31227"
+  }
+}

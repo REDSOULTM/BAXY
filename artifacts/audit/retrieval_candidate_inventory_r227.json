@@ -1,0 +1,47 @@
+{
+  "schema": "baxy.retrieval-candidate-inventory.r227.v1",
+  "authority": "read_only_inventory_of_existing_development_evidence_not_a_new_model_measurement",
+  "state_of_art_sources": [
+    "https://github.com/QwenLM/Qwen3-Embedding",
+    "https://github.com/FlagOpen/FlagEmbedding/blob/master/docs/source/bge/bge_m3.rst",
+    "https://www.sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html"
+  ],
+  "available_locally": {
+    "Qwen/Qwen3-Embedding-0.6B": {
+      "snapshot_ids": [
+        "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3"
+      ],
+      "cached": true
+    },
+    "BAAI/bge-m3": {
+      "cached": false,
+      "reason": "no local Hugging Face snapshot discovered"
+    }
+  },
+  "existing_qwen_development_evidence": {
+    "coverage_accuracy": 0.9941,
+    "loo_accuracy": 0.883,
+    "loo_dangerous_failures": 28,
+    "single_query_cpu_ms": 243.4,
+    "process_ram_mib": 1177.8,
+    "scope": "2026-07 frozen encoder tournament; not a fresh Cut B and not usable for tuning"
+  },
+  "verdict": {
+    "qwen_embedding_direct_retriever": "rejected_for_adoption_without_new_evidence",
+    "reason": "existing development hard coverage is below one and LOO has 28 dangerous failures; it cannot be promoted or tuned against consumed R215",
+    "next_candidate_requirement": "fresh independently generated Cut B plus separated development evidence before any hybrid/re-rank architecture is adopted"
+  },
+  "constraints": {
+    "model_started": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "scorecard_sha256": "e18cb8490762474f617c28ca95008790021b9d658ab33bd3cb3394b090a91e23",
+    "coverage_sha256": "ec1bc13b4c8df8924a25484e2422229b4bf34caaadfc673ded3577db0241b19f",
+    "loo_sha256": "fb77c81d9b4ec08adb49e9094d8bedf6a692f4e56ebabb6d80f5ff5231da067d",
+    "program_sha256": "4cc12ed7e7bceb2aceeb314d644365e692a859849eab188fb5d3aa3b18b9b618"
+  }
+}

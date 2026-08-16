@@ -1,0 +1,60 @@
+{
+  "schema": "baxy.llama-slot-pinning-verdict.v1",
+  "date": "2026-07-29",
+  "candidate": "Pin P/G/L to llama.cpp slots 0/1/2 on the owned three-slot GPU runtime",
+  "runtime": {
+    "llama_cpp_build": "b9980",
+    "commit": "8014d2cf97a2419ca00d9d902be73ee411d61630"
+  },
+  "evidence": [
+    {
+      "artifact": "llama_slot_pinning_ab_20260729.json",
+      "arm_order": [
+        "auto",
+        "pinned"
+      ],
+      "exact_outputs": true,
+      "mode_contracts": true,
+      "auto_p50_seconds": 5.38747659999899,
+      "pinned_p50_seconds": 5.133013499998924,
+      "auto_total_seconds": 31.601115599994955,
+      "pinned_total_seconds": 30.68728789999659
+    },
+    {
+      "artifact": "llama_slot_pinning_ab_reverse_20260729.json",
+      "arm_order": [
+        "pinned",
+        "auto"
+      ],
+      "exact_outputs": true,
+      "mode_contracts": true,
+      "auto_p50_seconds": 5.351569350001228,
+      "pinned_p50_seconds": 5.079906650000339,
+      "auto_total_seconds": 31.469032900000457,
+      "pinned_total_seconds": 30.399991899997985
+    },
+    {
+      "artifact": "llama_slot_pinning_promoted_smoke_20260729.json",
+      "arm_order": [
+        "auto",
+        "pinned"
+      ],
+      "exact_outputs": true,
+      "mode_contracts": true,
+      "auto_p50_seconds": 5.3055901499992615,
+      "pinned_p50_seconds": 5.396467549999215,
+      "auto_total_seconds": 31.203112999995938,
+      "pinned_total_seconds": 32.492070799999055
+    }
+  ],
+  "aggregate": {
+    "paired_cases": 18,
+    "pinned_faster_cases": 9,
+    "median_pinned_minus_auto_seconds": -0.010725150001235306,
+    "mean_pinned_minus_auto_seconds": -0.038550605555428774,
+    "total_pinned_minus_auto_seconds": -0.6939108999977179
+  },
+  "verdict": "rejected",
+  "reason": "The candidate won exactly half of the paired cases and the production-like repeat regressed p50 by 90.9 ms and total latency by 1.289 s. The measured effect is not stable enough to displace llama.cpp automatic longest-common-prefix and prompt-cache scheduling.",
+  "product_state": "No id_slot pinning is present in BAXY production requests."
+}

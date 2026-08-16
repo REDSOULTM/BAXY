@@ -1,0 +1,87 @@
+{
+  "schema": "baxy.hyperspotter-fusion-physical-room-development.v1",
+  "measuredAtUtc": "2026-08-08T02:46:45.734002+00:00",
+  "scope": "explicit_speaker_room_microphone_development_smoke",
+  "candidate": {
+    "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+    "ctcVerifierManifestSha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "hyperGraphSha256": "5934226a5abe42610d4e4575f3b2ee2489dd5a6c03911bf1d1f24095b536d10e",
+    "policy": {
+      "ctc_center": 1.0294370984258552,
+      "ctc_scale": 3.016261781303341,
+      "ctc_weight": 1.0,
+      "decision_threshold": 3.1947298114265843
+    }
+  },
+  "model": {
+    "backend": "onnxruntime-hyperspotter-phoneme-ctc-fusion",
+    "model": "baxy-hyperspotter-fusion-v2",
+    "phrase": "Baxy",
+    "sampleRate": 16000,
+    "windowSamples": 48000,
+    "hopSamples": 16000,
+    "debounceSeconds": 2.0
+  },
+  "physicalPath": {
+    "topology": "explicit speaker -> room -> explicit microphone",
+    "inputDevice": "Varios micrófonos (Realtek(R) A",
+    "outputDevice": "Altavoces (Realtek(R) Audio)",
+    "hardwareSampleRate": 44100,
+    "playbackGain": 0.2,
+    "minimumPathCorrelation": 0.02,
+    "minimumCapturedSnrDb": 3.0,
+    "capturedAudioRetained": false
+  },
+  "corpus": {
+    "positiveFiles": 3,
+    "negativeFiles": 3,
+    "positiveSha256": "3fc9eb24d67189e5c62030154f00fad796a7bc9fda6ad7651be86395e7d3cc63",
+    "negativeSha256": "2ac2ce9d5644f2c438dcd130e3a7e94a94406a3f5262dd37c438a948e1dae37c",
+    "filenamesOrTranscriptsRetained": false
+  },
+  "positive": {
+    "files": 3,
+    "invalid_acoustic_paths": 2,
+    "matched_files": 0,
+    "activations": 0,
+    "audio_seconds": 6.0,
+    "path_correlation_p05": 0.0014116843553314755,
+    "path_correlation_p50": 0.005890755250767397,
+    "captured_snr_db_p05": -5.838060448650754,
+    "captured_snr_db_p50": 15.159232143651835,
+    "activation_p50_seconds": null,
+    "activation_p95_seconds": null,
+    "prediction_p50_seconds": 1.0656103000510484,
+    "prediction_p95_seconds": 1.0722338000778109
+  },
+  "negative": {
+    "files": 3,
+    "invalid_acoustic_paths": 2,
+    "matched_files": 0,
+    "activations": 0,
+    "audio_seconds": 6.0,
+    "path_correlation_p05": 0.02515915219630045,
+    "path_correlation_p50": 0.026743542279962763,
+    "captured_snr_db_p05": -7.438306964978465,
+    "captured_snr_db_p50": -5.137956917546699,
+    "activation_p50_seconds": null,
+    "activation_p95_seconds": null,
+    "prediction_p50_seconds": 1.0239239999791607,
+    "prediction_p95_seconds": 1.0773456000024453
+  },
+  "recall": 0.0,
+  "falseActivationsPerHourObserved": 0.0,
+  "elapsedWallSeconds": 33.775104100001045,
+  "smokePassed": false,
+  "promotable": false,
+  "promotionBlockedBy": [
+    "development_corpus",
+    "insufficient_positive_population",
+    "insufficient_negative_exposure",
+    "blind_human_physical_holdout_not_run",
+    "runtime_backend_not_integrated"
+  ],
+  "effectsExecuted": 0,
+  "developmentOnly": true,
+  "capturedAudioRetained": false
+}

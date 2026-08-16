@@ -1,0 +1,122 @@
+{
+  "schema": "baxy-gate14-lifecycle-gate-v1",
+  "status": "partial_pass",
+  "scope": "clean source build reproducibility plus same-host install, update, rollback, and keep-data uninstall",
+  "source": {
+    "commit": "d69a960226bb6e9a81de4bd39d9d708afc6f63a8",
+    "dirty": false,
+    "provenance": "git_head_snapshot",
+    "source_date_epoch": 1784164291,
+    "branch": "codex/baxy-rebuild-v3",
+    "runtime": "win-x64",
+    "target_framework": "net10.0-windows10.0.19041.0",
+    "dotnet_sdk": "10.0.100",
+    "powershell": "5.1.26100.8737"
+  },
+  "release": {
+    "predecessor": {
+      "version": "1.0.0",
+      "package_bytes": 83098194,
+      "package_sha256": "bdd3fdab2d4c4bc817cc19fe16be3e8a880ffa6d23d61c838e3f13e980299a7c",
+      "setup_bytes": 87016960,
+      "setup_sha256": "c02defb9ad471cec4962c6a13f57a96edb27650e186b2cd765df8331fdf39a6b"
+    },
+    "candidate": {
+      "version": "1.0.1",
+      "package_bytes": 83098211,
+      "package_sha256": "7f74a66a8b6e40c4bf1c0dfc64a14d0300980db39a3b258a3cf448c409f05607",
+      "setup_bytes": 87016960,
+      "setup_sha256": "fe2b16c14a7369713cb76333ce8a248b27ede216c357a45c55d253e5ee9b5be5",
+      "app_sha256": "454cb2fdd7ddbd8d6852ac7ab01d26105740c80841f1816a9afe2c12af6829b4",
+      "core_sha256": "8b230462012bae51701695e612fa21de9f198faaa13432466e47da645b2fc63e"
+    },
+    "authenticity": "not_provided",
+    "authenticode": "NotSigned",
+    "sha256_sidecars_verified": true
+  },
+  "same_host_reproducibility": {
+    "candidate_replicas": 2,
+    "product_trees_byte_identical": true,
+    "product_files_per_replica": 8,
+    "product_bytes_per_replica": 83096367,
+    "package_trees_byte_identical": true,
+    "package_files_per_replica": 2,
+    "package_bytes_per_replica": 83098313,
+    "setup_trees_byte_identical": true,
+    "setup_files_per_replica": 3,
+    "setup_tree_bytes_per_replica": 87018211
+  },
+  "physical_lifecycle": {
+    "performed_scope_status": "passed",
+    "medium": "same-host existing-user profile",
+    "clean_profile": false,
+    "data_root_preexisted": true,
+    "purge_data_exercised": false,
+    "first_launch_exercised": false,
+    "install": {
+      "version": "1.0.0",
+      "committed": true,
+      "package_sha256": "bdd3fdab2d4c4bc817cc19fe16be3e8a880ffa6d23d61c838e3f13e980299a7c",
+      "stable_setup_sha256": "c02defb9ad471cec4962c6a13f57a96edb27650e186b2cd765df8331fdf39a6b"
+    },
+    "update": {
+      "from": "1.0.0",
+      "to": "1.0.1",
+      "exit_code": 0,
+      "committed": true,
+      "current_previous": "1.0.0",
+      "package_sha256": "7f74a66a8b6e40c4bf1c0dfc64a14d0300980db39a3b258a3cf448c409f05607",
+      "stable_setup_sha256": "fe2b16c14a7369713cb76333ce8a248b27ede216c357a45c55d253e5ee9b5be5"
+    },
+    "rollback": {
+      "from": "1.0.1",
+      "to": "1.0.0",
+      "exit_code": 0,
+      "committed": true,
+      "current_previous": "1.0.1",
+      "active_package_sha256": "bdd3fdab2d4c4bc817cc19fe16be3e8a880ffa6d23d61c838e3f13e980299a7c",
+      "stable_setup_sha256_observed": "fe2b16c14a7369713cb76333ce8a248b27ede216c357a45c55d253e5ee9b5be5"
+    },
+    "uninstall_keep_data": {
+      "exit_code": 0,
+      "installation_root_absent": true,
+      "shortcut_absent": true,
+      "uninstall_registry_absent": true,
+      "tombstones_absent": true,
+      "owned_canary_preserved_byte_identical": true,
+      "data_root_top_level_count_before": 3,
+      "data_root_top_level_count_after_owned_cleanup": 3
+    },
+    "postconditions": {
+      "residual_baxy_processes": 0,
+      "residual_owned_canaries": 0,
+      "preexisting_notepad_5472_preserved": true
+    },
+    "completed_utc": "2026-07-16T01:25:37.3406692Z"
+  },
+  "regression": {
+    "setup_release_tests_passed": 472,
+    "setup_release_tests_failed": 0,
+    "running_executable_explicit_test_passed": 1,
+    "focused_uninstall_tests_passed": 8,
+    "reviewer_targeted_tests_passed": 50,
+    "reviewer_p0": 0,
+    "reviewer_p1": 0,
+    "payloadless_native_aot_single_exe_bytes": 3917824,
+    "payloadless_native_aot_single_exe_sha256": "37703252c4266f3e1a5bdfb96ad2a49407edf3a1d13583c177c931fa2a390644"
+  },
+  "acceptance": {
+    "gate_14_status": "pending",
+    "artifact_and_checksum_proven": true,
+    "same_host_install_update_rollback_keep_uninstall_proven": true,
+    "clean_windows_lifecycle_proven": false,
+    "purge_uninstall_proven": false
+  },
+  "limitations": [
+    "The physical lifecycle used the current Windows account, whose BAXY data root already contained three entries; no preexisting data content was inspected or removed.",
+    "Purge-data uninstall was deliberately not run against the user's existing data and still requires a disposable profile or clean Windows medium.",
+    "First installed launch and the GUI fidelity gate were outside this execution.",
+    "Reproducibility is same-host with shared SDK, linker, Windows SDK, and caches, not cross-host or clean-room.",
+    "The Setup and product payload are unsigned; hashes prove consistency with recorded metadata, not publisher identity."
+  ]
+}

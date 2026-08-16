@@ -1,0 +1,70 @@
+{
+  "schema": "baxy.structured-top-k1-verdict.v1",
+  "status": "rejected",
+  "candidate": {
+    "samplers": [
+      "top_k"
+    ],
+    "top_k": 1,
+    "scope": "request-local P/G/L/V/C/E calls with effective temperature exactly 0.0"
+  },
+  "production_changed": false,
+  "runtime": {
+    "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+    "model_sha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+    "parallel": 3,
+    "context_per_slot": 4096,
+    "ngl": 99
+  },
+  "measurement": {
+    "artifact": "artifacts/fixes/llama_structured_top_k1_ab_20260729.json",
+    "artifact_sha256": "92f556af82b3b918fcf6f1705a77db77db3ce52c1e6f919413e0a29142c0115c",
+    "fresh_server_per_arm": true,
+    "arms": 4,
+    "opposite_orders": true,
+    "raw_tokens": "llama.cpp b9980 __verbose.tokens with identical response-only instrumentation in both arms"
+  },
+  "selector_contract": {
+    "passed": true,
+    "checks": 12,
+    "excluded": [
+      "logical retries at temperature 0.1 or 0.2",
+      "chat at every temperature",
+      "narration at temperature 0.4",
+      "all unrecognized stages"
+    ]
+  },
+  "baseline_then_topk1": {
+    "exact_tokens": false,
+    "exact_content": false,
+    "exact_final_decisions": false,
+    "structured_post_count_equal": false,
+    "changes": [
+      "P changed one knowledge case from 72 to 71 generated tokens",
+      "V changed two action cases from effect_count=zero to effect_count=multiple",
+      "both affected final modes changed from action to plan",
+      "two C calls and two E calls disappeared after the changed decisions"
+    ],
+    "candidate_minus_baseline_structured_total_seconds": -0.17427250001492212,
+    "candidate_minus_baseline_case_p50_seconds": -0.05410824999853503,
+    "candidate_minus_baseline_case_total_seconds": -1.7783897000117577,
+    "latency_is_not_comparable": true,
+    "latency_note": "The candidate skipped downstream C/E work after changing decisions."
+  },
+  "topk1_then_baseline": {
+    "exact_tokens": true,
+    "exact_content": true,
+    "exact_final_decisions": true,
+    "structured_post_count_equal": true,
+    "candidate_minus_baseline_structured_total_seconds": -0.4058821000144235,
+    "candidate_minus_baseline_case_p50_seconds": 0.04891784999563242,
+    "candidate_minus_baseline_case_total_seconds": -0.12112440000782954
+  },
+  "promotion_gate_passed": false,
+  "rejection_reasons": [
+    "Token, content and final-decision equality failed in one of the two orders.",
+    "The apparent first-order latency reduction is confounded by skipped C/E calls.",
+    "In the exact opposite-order pair, end-to-end case p50 regressed by 48.9 ms.",
+    "The candidate did not produce a stable latency improvement across both orders."
+  ]
+}

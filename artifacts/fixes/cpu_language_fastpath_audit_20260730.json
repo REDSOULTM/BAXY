@@ -1,0 +1,1606 @@
+{
+  "schema": "baxy.cpu-language-fastpath-audit.v1",
+  "generated_at_utc": "2026-07-30T07:26:23.479356+00:00",
+  "scope": {
+    "cpu_only": true,
+    "gpu_or_llama_started": false,
+    "downloads_or_installs": false,
+    "production_files_modified": false,
+    "registered_assets_modified": false
+  },
+  "inputs": {
+    "historical_corpus": {
+      "path": "tests\\data\\historical_messages.jsonl",
+      "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+      "labeled_occurrences": 8099,
+      "unique_exact_texts": 5975,
+      "source_label_counts": {
+        "en": 1146,
+        "es": 6470,
+        "spanglish": 483
+      },
+      "unique_runtime_label_counts": {
+        "en": 884,
+        "es": 4620,
+        "mixed": 471
+      }
+    },
+    "historical_language_builder": {
+      "path": "scripts\\build_historical_corpus.py",
+      "sha256": "341e86f39c90c18f7c3cfa44f651b86139a64f298043a6b86a5c160df62c74ea",
+      "language_function_lines": "566-586",
+      "independent_human_oracle": false,
+      "warning": "The broad corpus language field is generated in part by small ES/EN regex marker lists. It cannot certify an independent detector or the current meaningful-code-switch contract."
+    },
+    "reviewed_contract_probes": {
+      "count": 60,
+      "prompt_examples": 5,
+      "versioned_test_assertions": 15,
+      "reviewed_budget_turns": 30,
+      "reviewed_adversaries": 10,
+      "held_out_from_lexicon_development": false,
+      "warning": "The research lexicons were developed with these probes visible. Their measurements are development evidence, not a blind validation result.",
+      "records": [
+        {
+          "probe_id": "prompt-00",
+          "text": "Necesito saber la hora",
+          "expected": "es",
+          "source": "llm_prompt_example"
+        },
+        {
+          "probe_id": "prompt-01",
+          "text": "Abre Chrome ahora",
+          "expected": "es",
+          "source": "llm_prompt_example"
+        },
+        {
+          "probe_id": "prompt-02",
+          "text": "Thanks for the explanation",
+          "expected": "en",
+          "source": "llm_prompt_example"
+        },
+        {
+          "probe_id": "prompt-03",
+          "text": "Please abre la calculadora",
+          "expected": "mixed",
+          "source": "llm_prompt_example"
+        },
+        {
+          "probe_id": "prompt-04",
+          "text": "Reproduce some music y sube el volumen",
+          "expected": "mixed",
+          "source": "llm_prompt_example"
+        },
+        {
+          "probe_id": "test-00",
+          "text": "Gracias",
+          "expected": "es",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-01",
+          "text": "Muchas gracias.",
+          "expected": "es",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-02",
+          "text": "Mil gracias!",
+          "expected": "es",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-03",
+          "text": "Thanks a lot!",
+          "expected": "en",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-04",
+          "text": "Thank you very much.",
+          "expected": "en",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-05",
+          "text": "No entendí",
+          "expected": "es",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-06",
+          "text": "No entiendo.",
+          "expected": "es",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-07",
+          "text": "No comprendí",
+          "expected": "es",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-08",
+          "text": "No me quedó claro",
+          "expected": "es",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-09",
+          "text": "I didn't understand.",
+          "expected": "en",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-10",
+          "text": "I don't get it",
+          "expected": "en",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-11",
+          "text": "I'm confused",
+          "expected": "en",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-12",
+          "text": "¿Qué hora es?",
+          "expected": "es",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-13",
+          "text": "open calculator",
+          "expected": "en",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "test-14",
+          "text": "abre Spotify and pause",
+          "expected": "mixed",
+          "source": "test_turn_policy"
+        },
+        {
+          "probe_id": "budget-00",
+          "text": "che baxy fijate cuanta bateria le queda al notebook",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-01",
+          "text": "how much free space do I have left on disk",
+          "expected": "en",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-02",
+          "text": "pon el volumen de la compu al 30 por ciento",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-03",
+          "text": "mute everything please",
+          "expected": "en",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-04",
+          "text": "en cuanto esta el volumen ahora",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-05",
+          "text": "que gpu tiene este equipo",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-06",
+          "text": "cuanta vram se esta usando",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-07",
+          "text": "crea una nota que diga pagar el arriendo el viernes",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-08",
+          "text": "remember que mi hermana se llama Carla",
+          "expected": "mixed",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-09",
+          "text": "que sabes de mis preferencias de cafe",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-10",
+          "text": "olvidate de mi direccion vieja",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-11",
+          "text": "cuanta ram estoy usando ahora mismo",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-12",
+          "text": "dime la version de windows que tengo",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-13",
+          "text": "como anda la pc en general",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-14",
+          "text": "revisa cpu y ram juntos",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-15",
+          "text": "contame un chiste corto",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-16",
+          "text": "what do you think about pineapple on pizza",
+          "expected": "en",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-17",
+          "text": "abrime spotify y pone musica",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-18",
+          "text": "sube el volumen",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-19",
+          "text": "por que mi gpu no se usa",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-20",
+          "text": "gracias baxy, sos un capo",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-21",
+          "text": "make a note that says call the dentist tomorrow",
+          "expected": "en",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-22",
+          "text": "cuanto espacio libre queda en el disco",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-23",
+          "text": "esta cargando la bateria?",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-24",
+          "text": "is the sound muted right now",
+          "expected": "en",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-25",
+          "text": "guarda que uso talla M",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-26",
+          "text": "que no puedes hacer",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-27",
+          "text": "hola, todo bien?",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-28",
+          "text": "set the volume to seventy five percent",
+          "expected": "en",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "budget-29",
+          "text": "cuantos nucleos tiene el procesador",
+          "expected": "es",
+          "source": "reviewed_mind_budget_turn"
+        },
+        {
+          "probe_id": "adversarial-00",
+          "text": "Abre la browser ahora",
+          "expected": "mixed",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-01",
+          "text": "Abre la folder ahora",
+          "expected": "mixed",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-02",
+          "text": "Dime el forecast",
+          "expected": "mixed",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-03",
+          "text": "Necesito una document",
+          "expected": "mixed",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-04",
+          "text": "Need saber la hora",
+          "expected": "mixed",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-05",
+          "text": "Reproduce some jazz y sube el volumen",
+          "expected": "mixed",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-06",
+          "text": "Quiero ver The Devil en Disney",
+          "expected": "es",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-07",
+          "text": "Abre Chrome ahora",
+          "expected": "es",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-08",
+          "text": "Play Despacito now",
+          "expected": "en",
+          "source": "reviewed_contract_adversary"
+        },
+        {
+          "probe_id": "adversarial-09",
+          "text": "Open Spotify now",
+          "expected": "en",
+          "source": "reviewed_contract_adversary"
+        }
+      ]
+    },
+    "source_hashes": {
+      "tests\\test_turn_policy.py": "4ca80975b721e7cda1c64500da0ff4181879e5f61e207aea8ad8d9edffd02ab4",
+      "scripts\\measure_mind_budget.py": "b4665859c123074ff15310ea85515c9f1203ef4ac83cf2bf140ddefb3e142883"
+    }
+  },
+  "dependencies": {
+    "cld3": {
+      "importable": false,
+      "installed_version": null
+    },
+    "fasttext": {
+      "importable": false,
+      "installed_version": null
+    },
+    "gcld3": {
+      "importable": false,
+      "installed_version": null
+    },
+    "langdetect": {
+      "importable": false,
+      "installed_version": null
+    },
+    "langid": {
+      "importable": false,
+      "installed_version": null
+    },
+    "lingua-language-detector": {
+      "importable": false,
+      "installed_version": null
+    },
+    "pycld2": {
+      "importable": false,
+      "installed_version": null
+    },
+    "py3langid": {
+      "importable": false,
+      "installed_version": null
+    }
+  },
+  "evaluations": {
+    "existing_explicit_response_language": {
+      "prompt_and_versioned_tests": {
+        "total": 20,
+        "accepted": 20,
+        "abstained": 0,
+        "correct": 18,
+        "wrong": 2,
+        "precision_on_accepted": 0.9,
+        "coverage": 1.0,
+        "accepted_by_expected_label": {
+          "en": 7,
+          "es": 10,
+          "mixed": 3
+        },
+        "correct_by_expected_label": {
+          "en": 7,
+          "es": 10,
+          "mixed": 1
+        },
+        "confusion": {
+          "en->en": 7,
+          "es->es": 10,
+          "mixed->es": 2,
+          "mixed->mixed": 1
+        },
+        "sample_errors": [
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Please abre la calculadora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Reproduce some music y sube el volumen"
+          }
+        ]
+      },
+      "reviewed_mind_budget_30": {
+        "total": 30,
+        "accepted": 30,
+        "abstained": 0,
+        "correct": 27,
+        "wrong": 3,
+        "precision_on_accepted": 0.9,
+        "coverage": 1.0,
+        "accepted_by_expected_label": {
+          "en": 6,
+          "es": 23,
+          "mixed": 1
+        },
+        "correct_by_expected_label": {
+          "en": 4,
+          "es": 23
+        },
+        "confusion": {
+          "en->en": 4,
+          "en->es": 2,
+          "es->es": 23,
+          "mixed->es": 1
+        },
+        "sample_errors": [
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "how much free space do I have left on disk"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "mute everything please"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "remember que mi hermana se llama Carla"
+          }
+        ]
+      },
+      "reviewed_adversarial": {
+        "total": 10,
+        "accepted": 10,
+        "abstained": 0,
+        "correct": 3,
+        "wrong": 7,
+        "precision_on_accepted": 0.3,
+        "coverage": 1.0,
+        "accepted_by_expected_label": {
+          "en": 2,
+          "es": 2,
+          "mixed": 6
+        },
+        "correct_by_expected_label": {
+          "en": 2,
+          "es": 1
+        },
+        "confusion": {
+          "en->en": 2,
+          "es->en": 1,
+          "es->es": 1,
+          "mixed->es": 6
+        },
+        "sample_errors": [
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Abre la browser ahora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Abre la folder ahora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Dime el forecast"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Necesito una document"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Need saber la hora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Reproduce some jazz y sube el volumen"
+          },
+          {
+            "expected": "es",
+            "predicted": "en",
+            "text": "Quiero ver The Devil en Disney"
+          }
+        ]
+      },
+      "all_reviewed_contract_probes": {
+        "total": 60,
+        "accepted": 60,
+        "abstained": 0,
+        "correct": 48,
+        "wrong": 12,
+        "precision_on_accepted": 0.8,
+        "coverage": 1.0,
+        "accepted_by_expected_label": {
+          "en": 15,
+          "es": 35,
+          "mixed": 10
+        },
+        "correct_by_expected_label": {
+          "en": 13,
+          "es": 34,
+          "mixed": 1
+        },
+        "confusion": {
+          "en->en": 13,
+          "en->es": 2,
+          "es->en": 1,
+          "es->es": 34,
+          "mixed->es": 9,
+          "mixed->mixed": 1
+        },
+        "sample_errors": [
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Please abre la calculadora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Reproduce some music y sube el volumen"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "how much free space do I have left on disk"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "mute everything please"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "remember que mi hermana se llama Carla"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Abre la browser ahora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Abre la folder ahora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Dime el forecast"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Necesito una document"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Need saber la hora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Reproduce some jazz y sube el volumen"
+          },
+          {
+            "expected": "es",
+            "predicted": "en",
+            "text": "Quiero ver The Devil en Disney"
+          }
+        ]
+      },
+      "historical_occurrences_generated_labels": {
+        "total": 8099,
+        "accepted": 8099,
+        "abstained": 0,
+        "correct": 7598,
+        "wrong": 501,
+        "precision_on_accepted": 0.938140511,
+        "coverage": 1.0,
+        "accepted_by_expected_label": {
+          "en": 1146,
+          "es": 6470,
+          "mixed": 483
+        },
+        "correct_by_expected_label": {
+          "en": 848,
+          "es": 6431,
+          "mixed": 319
+        },
+        "confusion": {
+          "en->en": 848,
+          "en->es": 286,
+          "en->mixed": 12,
+          "es->en": 6,
+          "es->es": 6431,
+          "es->mixed": 33,
+          "mixed->en": 140,
+          "mixed->es": 24,
+          "mixed->mixed": 319
+        },
+        "sample_errors": [
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "- **Must para BAXY 1.0:** todos los mensajes históricos hasta el cutoff, deduplicados en misiones canónicas pero con trazabilidad individual, además de seguridad, instalación, recuperación, recursos y evidencia de producto. - **Should si cabe:** mejoras de calidad que superan el resultado histórico esperado sin ser necesarias para resolverlo confiablemente. - **Después de 1.0:** capacidades nunca pedidas en el corpus, optimizaciones no necesarias y experimentos."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "Límite importante: en smart mode la clasificación read/write depende del LLM. El [adversary reviewer](https://goose-docs.ai/docs/guides/security/adversary-mode/) también es un LLM y falla abierto si el reviewer falla. BAXY debe adoptar el UX de perfiles y no esa frontera de autorización."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "**Verificado en vivo (sesión elevada):** perfil BAXY borrado -> re-seed -> 298 archivos, cookies_ok=True (VSS copió Cookies; único skip: Cookies-journal, transitorio) -> Netflix /search?q=dark, Disney+ /browse/search y Prime Video HOME cargan los tres LOGUEADOS, sin login wall. El navegador del usuario nunca se tocó. Suite 60 passed + 1 skip (5 tests de seed nuevos: layout Opera plano y Chrome Default, source ausente, skip de gigantes, cadena de fallback a VSS)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "**Cambios:** 1. **Prewarm del VL** (main.py `_warm_vl`, espejo del `_warm_asr` D44): con BAXY_VISION_ENGINE=qwen el server :8084 levanta en el boot de BAXY, en paralelo con los demás. El primer \"qué estás viendo\" ya no paga los ~5s. 2. **OCR en paralelo** (`_OcrFuture` en tools/vision.py): Tesseract arranca en un thread apenas hay captura y solo se JOINEA donde se necesita — el ancla del motor gemma (`ocr_get` callable en _vlm_analyze: el camino qwen nunca espera), el modo read (es la fuente), y la evidencia/anclaje cuando el título del SO no corroboró. El fast path corroborado por título responde sin esperar al Tesseract. `ocr_available` pasa a ser True/False/ None — None = \"el OCR seguía corriendo cuando salió la respuesta\" (honesto, no adivinado)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "| Tool | Paquetes | Binarios/artefactos | Nota | |---|---|---|---| | pc_status | psutil; WMI de fallback | nvidia-smi opcional | — | | media | pycaw, comtypes | — | CoInitialize por thread | | web_search | ddgs opcional | scrapers propios de fallback | red | | apps | psutil para verificación | PATH/StartApps/registry/Steam/Epic | — | | reminders | dateparser | PowerShell incluido en Windows | crea tasks `\\Baxy\\` | | whatsapp | mss opcional | WhatsApp instalado y logueado | contactos en `data/contacts.json` | | streaming/music | Playwright 1.61 | navegador Chromium vía CDP; UWP opcional | perfil BAXY aislado con login manual; nunca clona cookies/passwords; prefs en `data/prefs.json` | | vision | mss; pytesseract+Pillow opcional | Gemma 4 + mmproj; Qwen-VL opt-in | no afirma identidades sin evidencia corroborada | | routine | stdlib | `data/routines.json` en runtime | macros locales; familia incluida en el bridge FG |"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "ejecuta diagnóstico read-only de Carter y crea resumen"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "- Contra Agent-S: Carter no gana en GUI benchmark, pero puede ganar en acciones Windows directas, privadas y verificadas. - Contra Open Interpreter: Carter no gana en codigo arbitrario, pero puede ganar en safety y UX de usuario normal. - Contra Mark-XXXIX: Carter puede ganar en privacidad y verificabilidad, aunque pierda en voz/live multimodal. - Contra goose/openclaw: Carter debe especializarse mas en Windows PC real, no extension ecosystem general. - Contra OpenHands: Carter no compite en coding."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "| Experimento | Baselines sugeridos | Resultado minimo necesario | |---|---|---| | Tareas OS directas Windows | Open Interpreter, Mark-XXXIX, goose | Carter debe ganar o empatar en acciones simples con menor fake success. | | GUI apps comunes | Agent-S, Mark-XXXIX | Carter no necesita ganar OSWorld, pero debe demostrar GUI razonable en apps objetivo. | | Terminal/filesystem seguro | Open Interpreter, OS-Copilot | Carter debe mostrar menos riesgo y buena tasa de exito en tareas acotadas. | | Safety destructiva | Todos los comparables instalables | Carter debe bloquear o pedir confirmacion de forma consistente. | | Latencia local | Carter perfiles 4B/14B y competidores locales | Carter debe sostener interactividad en tareas comunes. | | Evaluacion auditor | Manual ciego vs automatico Carter | Reducir falsos positivos por debajo de un umbral publicado. |"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "| # | Cambio | Esfuerzo | Impacto esperado | Riesgo | |---|--------|----------|------------------|--------| | 1 | **Sampling oficial Qwen3-Instruct-2507**: `temperature=0.7, top_p=0.8, top_k=20, min_p=0, presence_penalty=1.0` (set \"principal\"). Para tools destructivas: bajar a `temperature=0.2, top_p=0.8, top_k=20, min_p=0.05, presence_penalty=0`. Tu `0.1+rep_pen=1.1` actual está **fuera de la recomendación oficial** y rep_penalty puede romper formato. | **S** | +2–5 % parse rate de `<tool_call>`, mejor multilingüe ES/EN, menos repeticiones | Bajo | | 2 | `OLLAMA_FLASH_ATTENTION=1` + `OLLAMA_KV_CACHE_TYPE=q8_0` como variables de entorno **de sistema** (no del shell) en Windows. | **S** | KV cache cae ~50 %, libera 0.5–1 GB VRAM, no se nota en quality (Qwen3-4B usa GQA con solo 8 KV heads → es bastante robusto a q8_0). | Bajo | | 3 | `OLLAMA_KEEP_ALIVE=24h` + warm-up con request dummy al boot del proceso Carter. Verificar con `expires_at` en `/api/ps` (debe ser `0001-01-01T00:00:00Z` si pasás `keep_alive=-1`). | **S** | Elimina cold-start (~1.5–4 s en TTFT) en chat trivial. | Nulo | | 4 | **Bajar `num_ctx` a 4096 para chat-mode, mantener 8192 sólo para tool-mode**, y compactar a 16384 sólo en misiones largas. Cada token de contexto cuesta ~36 KB de KV en f16 (8.6 KB en q8_0 cache) para Qwen3-4B. | **S** | TTFT cae ~30–40 % en triviales; libera VRAM para más loaded models o draft model futuro. | Bajo | | 5 | **Stream=True + parser de `<tool_call>` incremental** que arranca a generar UI mientras el modelo decide si va a llamar tool. Hoy estás esperando el final completo. | **M** | TTFT percibido baja drásticamente; chat trivial pasa de 3-8s → 1.5-3s perceptual. | Medio (parser) |"
+          },
+          {
+            "expected": "es",
+            "predicted": "en",
+            "text": "Set destructive-strict (temp 0.2, min_p 0.05) solo para 5-10 tools peligrosos."
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "vscode://file/<path>`, `vscode://settings`, `vscode:extension/<id>"
+          },
+          {
+            "expected": "es",
+            "predicted": "en",
+            "text": "Hybrid retrieval = (cosine e5-small) ⊕ (BM25 over tool name+description) fused with RRF (k=60); dynamic K (12 default, 20 if len(query)<15 chars or pronoun detected); anaphora anchor: if last assistant turn called `app_open(X)`, force-include `app_close`, `window_manage`, `app_focus` candidates with score boost. Snowball-based pronoun/imperative detection across ES/EN/PT/DE/FR (no per-lang keyword list)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "C01-30: detect \"olvida lo que dijimos / start over\" pre-LLM, route to `conversation_reset` not `memory_delete`. C02-10: relax bench limit 200→250 chars on trivia. C08-05/14: web_open_url when URL detected in user_text via regex; web_search otherwise. C13-25: verifier accept \"no dialog appeared\" as PASS for window_manage when target window has no dialog children."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "- Modelo fijo: `gemma-4-E4B-it-UD-IQ2_M` - Hardware fijo: RTX 4060 Ti 16 GB CUDA - Stack fijo: llama.cpp b9090, llama-server, Carter v4 con sus 59 tools - VRAM target: ≤8 GB pico - Latencia Alexa-tier: trivial <5s, tool simple <8s, app open <15s, misión <30s - Sin per-app hardcodes - Audio nativo: omitido (Whisper aparte futuro) - NO romper qwen3 fallback (módulo `models/qwen3.py` debe seguir funcionando) - Doble número en techo: PASS oficial + PASS REAL (delta = deuda de honestidad)"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "abre yutu\" → A: web_open_url(\"https://www.youtube.com\")` con anti-ejemplo \"no inventes scheme `yutu://`\"."
+          },
+          {
+            "expected": "en",
+            "predicted": "mixed",
+            "text": "'abrí Steam' → use gui_deeplink(app='steam', intent='library'). 'buscá X en Steam' → use gui_deeplink(app='steam', intent='search', params={'query':'X'})."
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "how much RAM do I have"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close calculator"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close Notepad"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close Discord"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close everything"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close current tab"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "download this file"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "write hello to a new temp file"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "delete that temp file"
+          }
+        ]
+      },
+      "historical_unique_generated_labels": {
+        "total": 5975,
+        "accepted": 5975,
+        "abstained": 0,
+        "correct": 5503,
+        "wrong": 472,
+        "precision_on_accepted": 0.921004184,
+        "coverage": 1.0,
+        "accepted_by_expected_label": {
+          "en": 884,
+          "es": 4620,
+          "mixed": 471
+        },
+        "correct_by_expected_label": {
+          "en": 612,
+          "es": 4584,
+          "mixed": 307
+        },
+        "confusion": {
+          "en->en": 612,
+          "en->es": 260,
+          "en->mixed": 12,
+          "es->en": 6,
+          "es->es": 4584,
+          "es->mixed": 30,
+          "mixed->en": 140,
+          "mixed->es": 24,
+          "mixed->mixed": 307
+        },
+        "sample_errors": [
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "- **Must para BAXY 1.0:** todos los mensajes históricos hasta el cutoff, deduplicados en misiones canónicas pero con trazabilidad individual, además de seguridad, instalación, recuperación, recursos y evidencia de producto. - **Should si cabe:** mejoras de calidad que superan el resultado histórico esperado sin ser necesarias para resolverlo confiablemente. - **Después de 1.0:** capacidades nunca pedidas en el corpus, optimizaciones no necesarias y experimentos."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "Límite importante: en smart mode la clasificación read/write depende del LLM. El [adversary reviewer](https://goose-docs.ai/docs/guides/security/adversary-mode/) también es un LLM y falla abierto si el reviewer falla. BAXY debe adoptar el UX de perfiles y no esa frontera de autorización."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "**Verificado en vivo (sesión elevada):** perfil BAXY borrado -> re-seed -> 298 archivos, cookies_ok=True (VSS copió Cookies; único skip: Cookies-journal, transitorio) -> Netflix /search?q=dark, Disney+ /browse/search y Prime Video HOME cargan los tres LOGUEADOS, sin login wall. El navegador del usuario nunca se tocó. Suite 60 passed + 1 skip (5 tests de seed nuevos: layout Opera plano y Chrome Default, source ausente, skip de gigantes, cadena de fallback a VSS)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "**Cambios:** 1. **Prewarm del VL** (main.py `_warm_vl`, espejo del `_warm_asr` D44): con BAXY_VISION_ENGINE=qwen el server :8084 levanta en el boot de BAXY, en paralelo con los demás. El primer \"qué estás viendo\" ya no paga los ~5s. 2. **OCR en paralelo** (`_OcrFuture` en tools/vision.py): Tesseract arranca en un thread apenas hay captura y solo se JOINEA donde se necesita — el ancla del motor gemma (`ocr_get` callable en _vlm_analyze: el camino qwen nunca espera), el modo read (es la fuente), y la evidencia/anclaje cuando el título del SO no corroboró. El fast path corroborado por título responde sin esperar al Tesseract. `ocr_available` pasa a ser True/False/ None — None = \"el OCR seguía corriendo cuando salió la respuesta\" (honesto, no adivinado)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "| Tool | Paquetes | Binarios/artefactos | Nota | |---|---|---|---| | pc_status | psutil; WMI de fallback | nvidia-smi opcional | — | | media | pycaw, comtypes | — | CoInitialize por thread | | web_search | ddgs opcional | scrapers propios de fallback | red | | apps | psutil para verificación | PATH/StartApps/registry/Steam/Epic | — | | reminders | dateparser | PowerShell incluido en Windows | crea tasks `\\Baxy\\` | | whatsapp | mss opcional | WhatsApp instalado y logueado | contactos en `data/contacts.json` | | streaming/music | Playwright 1.61 | navegador Chromium vía CDP; UWP opcional | perfil BAXY aislado con login manual; nunca clona cookies/passwords; prefs en `data/prefs.json` | | vision | mss; pytesseract+Pillow opcional | Gemma 4 + mmproj; Qwen-VL opt-in | no afirma identidades sin evidencia corroborada | | routine | stdlib | `data/routines.json` en runtime | macros locales; familia incluida en el bridge FG |"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "ejecuta diagnóstico read-only de Carter y crea resumen"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "- Contra Agent-S: Carter no gana en GUI benchmark, pero puede ganar en acciones Windows directas, privadas y verificadas. - Contra Open Interpreter: Carter no gana en codigo arbitrario, pero puede ganar en safety y UX de usuario normal. - Contra Mark-XXXIX: Carter puede ganar en privacidad y verificabilidad, aunque pierda en voz/live multimodal. - Contra goose/openclaw: Carter debe especializarse mas en Windows PC real, no extension ecosystem general. - Contra OpenHands: Carter no compite en coding."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "| Experimento | Baselines sugeridos | Resultado minimo necesario | |---|---|---| | Tareas OS directas Windows | Open Interpreter, Mark-XXXIX, goose | Carter debe ganar o empatar en acciones simples con menor fake success. | | GUI apps comunes | Agent-S, Mark-XXXIX | Carter no necesita ganar OSWorld, pero debe demostrar GUI razonable en apps objetivo. | | Terminal/filesystem seguro | Open Interpreter, OS-Copilot | Carter debe mostrar menos riesgo y buena tasa de exito en tareas acotadas. | | Safety destructiva | Todos los comparables instalables | Carter debe bloquear o pedir confirmacion de forma consistente. | | Latencia local | Carter perfiles 4B/14B y competidores locales | Carter debe sostener interactividad en tareas comunes. | | Evaluacion auditor | Manual ciego vs automatico Carter | Reducir falsos positivos por debajo de un umbral publicado. |"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "| # | Cambio | Esfuerzo | Impacto esperado | Riesgo | |---|--------|----------|------------------|--------| | 1 | **Sampling oficial Qwen3-Instruct-2507**: `temperature=0.7, top_p=0.8, top_k=20, min_p=0, presence_penalty=1.0` (set \"principal\"). Para tools destructivas: bajar a `temperature=0.2, top_p=0.8, top_k=20, min_p=0.05, presence_penalty=0`. Tu `0.1+rep_pen=1.1` actual está **fuera de la recomendación oficial** y rep_penalty puede romper formato. | **S** | +2–5 % parse rate de `<tool_call>`, mejor multilingüe ES/EN, menos repeticiones | Bajo | | 2 | `OLLAMA_FLASH_ATTENTION=1` + `OLLAMA_KV_CACHE_TYPE=q8_0` como variables de entorno **de sistema** (no del shell) en Windows. | **S** | KV cache cae ~50 %, libera 0.5–1 GB VRAM, no se nota en quality (Qwen3-4B usa GQA con solo 8 KV heads → es bastante robusto a q8_0). | Bajo | | 3 | `OLLAMA_KEEP_ALIVE=24h` + warm-up con request dummy al boot del proceso Carter. Verificar con `expires_at` en `/api/ps` (debe ser `0001-01-01T00:00:00Z` si pasás `keep_alive=-1`). | **S** | Elimina cold-start (~1.5–4 s en TTFT) en chat trivial. | Nulo | | 4 | **Bajar `num_ctx` a 4096 para chat-mode, mantener 8192 sólo para tool-mode**, y compactar a 16384 sólo en misiones largas. Cada token de contexto cuesta ~36 KB de KV en f16 (8.6 KB en q8_0 cache) para Qwen3-4B. | **S** | TTFT cae ~30–40 % en triviales; libera VRAM para más loaded models o draft model futuro. | Bajo | | 5 | **Stream=True + parser de `<tool_call>` incremental** que arranca a generar UI mientras el modelo decide si va a llamar tool. Hoy estás esperando el final completo. | **M** | TTFT percibido baja drásticamente; chat trivial pasa de 3-8s → 1.5-3s perceptual. | Medio (parser) |"
+          },
+          {
+            "expected": "es",
+            "predicted": "en",
+            "text": "Set destructive-strict (temp 0.2, min_p 0.05) solo para 5-10 tools peligrosos."
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "vscode://file/<path>`, `vscode://settings`, `vscode:extension/<id>"
+          },
+          {
+            "expected": "es",
+            "predicted": "en",
+            "text": "Hybrid retrieval = (cosine e5-small) ⊕ (BM25 over tool name+description) fused with RRF (k=60); dynamic K (12 default, 20 if len(query)<15 chars or pronoun detected); anaphora anchor: if last assistant turn called `app_open(X)`, force-include `app_close`, `window_manage`, `app_focus` candidates with score boost. Snowball-based pronoun/imperative detection across ES/EN/PT/DE/FR (no per-lang keyword list)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "C01-30: detect \"olvida lo que dijimos / start over\" pre-LLM, route to `conversation_reset` not `memory_delete`. C02-10: relax bench limit 200→250 chars on trivia. C08-05/14: web_open_url when URL detected in user_text via regex; web_search otherwise. C13-25: verifier accept \"no dialog appeared\" as PASS for window_manage when target window has no dialog children."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "- Modelo fijo: `gemma-4-E4B-it-UD-IQ2_M` - Hardware fijo: RTX 4060 Ti 16 GB CUDA - Stack fijo: llama.cpp b9090, llama-server, Carter v4 con sus 59 tools - VRAM target: ≤8 GB pico - Latencia Alexa-tier: trivial <5s, tool simple <8s, app open <15s, misión <30s - Sin per-app hardcodes - Audio nativo: omitido (Whisper aparte futuro) - NO romper qwen3 fallback (módulo `models/qwen3.py` debe seguir funcionando) - Doble número en techo: PASS oficial + PASS REAL (delta = deuda de honestidad)"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "abre yutu\" → A: web_open_url(\"https://www.youtube.com\")` con anti-ejemplo \"no inventes scheme `yutu://`\"."
+          },
+          {
+            "expected": "en",
+            "predicted": "mixed",
+            "text": "'abrí Steam' → use gui_deeplink(app='steam', intent='library'). 'buscá X en Steam' → use gui_deeplink(app='steam', intent='search', params={'query':'X'})."
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "how much RAM do I have"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close calculator"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close Notepad"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close Discord"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close everything"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close current tab"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "download this file"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "write hello to a new temp file"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "delete that temp file"
+          }
+        ]
+      },
+      "product_1_0_unique_generated_labels": {
+        "total": 5229,
+        "accepted": 5229,
+        "abstained": 0,
+        "correct": 4775,
+        "wrong": 454,
+        "precision_on_accepted": 0.913176516,
+        "coverage": 1.0,
+        "accepted_by_expected_label": {
+          "en": 867,
+          "es": 3896,
+          "mixed": 466
+        },
+        "correct_by_expected_label": {
+          "en": 609,
+          "es": 3864,
+          "mixed": 302
+        },
+        "confusion": {
+          "en->en": 609,
+          "en->es": 246,
+          "en->mixed": 12,
+          "es->en": 6,
+          "es->es": 3864,
+          "es->mixed": 26,
+          "mixed->en": 140,
+          "mixed->es": 24,
+          "mixed->mixed": 302
+        },
+        "sample_errors": [
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "- **Must para BAXY 1.0:** todos los mensajes históricos hasta el cutoff, deduplicados en misiones canónicas pero con trazabilidad individual, además de seguridad, instalación, recuperación, recursos y evidencia de producto. - **Should si cabe:** mejoras de calidad que superan el resultado histórico esperado sin ser necesarias para resolverlo confiablemente. - **Después de 1.0:** capacidades nunca pedidas en el corpus, optimizaciones no necesarias y experimentos."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "Límite importante: en smart mode la clasificación read/write depende del LLM. El [adversary reviewer](https://goose-docs.ai/docs/guides/security/adversary-mode/) también es un LLM y falla abierto si el reviewer falla. BAXY debe adoptar el UX de perfiles y no esa frontera de autorización."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "**Verificado en vivo (sesión elevada):** perfil BAXY borrado -> re-seed -> 298 archivos, cookies_ok=True (VSS copió Cookies; único skip: Cookies-journal, transitorio) -> Netflix /search?q=dark, Disney+ /browse/search y Prime Video HOME cargan los tres LOGUEADOS, sin login wall. El navegador del usuario nunca se tocó. Suite 60 passed + 1 skip (5 tests de seed nuevos: layout Opera plano y Chrome Default, source ausente, skip de gigantes, cadena de fallback a VSS)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "**Cambios:** 1. **Prewarm del VL** (main.py `_warm_vl`, espejo del `_warm_asr` D44): con BAXY_VISION_ENGINE=qwen el server :8084 levanta en el boot de BAXY, en paralelo con los demás. El primer \"qué estás viendo\" ya no paga los ~5s. 2. **OCR en paralelo** (`_OcrFuture` en tools/vision.py): Tesseract arranca en un thread apenas hay captura y solo se JOINEA donde se necesita — el ancla del motor gemma (`ocr_get` callable en _vlm_analyze: el camino qwen nunca espera), el modo read (es la fuente), y la evidencia/anclaje cuando el título del SO no corroboró. El fast path corroborado por título responde sin esperar al Tesseract. `ocr_available` pasa a ser True/False/ None — None = \"el OCR seguía corriendo cuando salió la respuesta\" (honesto, no adivinado)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "| Tool | Paquetes | Binarios/artefactos | Nota | |---|---|---|---| | pc_status | psutil; WMI de fallback | nvidia-smi opcional | — | | media | pycaw, comtypes | — | CoInitialize por thread | | web_search | ddgs opcional | scrapers propios de fallback | red | | apps | psutil para verificación | PATH/StartApps/registry/Steam/Epic | — | | reminders | dateparser | PowerShell incluido en Windows | crea tasks `\\Baxy\\` | | whatsapp | mss opcional | WhatsApp instalado y logueado | contactos en `data/contacts.json` | | streaming/music | Playwright 1.61 | navegador Chromium vía CDP; UWP opcional | perfil BAXY aislado con login manual; nunca clona cookies/passwords; prefs en `data/prefs.json` | | vision | mss; pytesseract+Pillow opcional | Gemma 4 + mmproj; Qwen-VL opt-in | no afirma identidades sin evidencia corroborada | | routine | stdlib | `data/routines.json` en runtime | macros locales; familia incluida en el bridge FG |"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "ejecuta diagnóstico read-only de Carter y crea resumen"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "- Contra Agent-S: Carter no gana en GUI benchmark, pero puede ganar en acciones Windows directas, privadas y verificadas. - Contra Open Interpreter: Carter no gana en codigo arbitrario, pero puede ganar en safety y UX de usuario normal. - Contra Mark-XXXIX: Carter puede ganar en privacidad y verificabilidad, aunque pierda en voz/live multimodal. - Contra goose/openclaw: Carter debe especializarse mas en Windows PC real, no extension ecosystem general. - Contra OpenHands: Carter no compite en coding."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "| Experimento | Baselines sugeridos | Resultado minimo necesario | |---|---|---| | Tareas OS directas Windows | Open Interpreter, Mark-XXXIX, goose | Carter debe ganar o empatar en acciones simples con menor fake success. | | GUI apps comunes | Agent-S, Mark-XXXIX | Carter no necesita ganar OSWorld, pero debe demostrar GUI razonable en apps objetivo. | | Terminal/filesystem seguro | Open Interpreter, OS-Copilot | Carter debe mostrar menos riesgo y buena tasa de exito en tareas acotadas. | | Safety destructiva | Todos los comparables instalables | Carter debe bloquear o pedir confirmacion de forma consistente. | | Latencia local | Carter perfiles 4B/14B y competidores locales | Carter debe sostener interactividad en tareas comunes. | | Evaluacion auditor | Manual ciego vs automatico Carter | Reducir falsos positivos por debajo de un umbral publicado. |"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "| # | Cambio | Esfuerzo | Impacto esperado | Riesgo | |---|--------|----------|------------------|--------| | 1 | **Sampling oficial Qwen3-Instruct-2507**: `temperature=0.7, top_p=0.8, top_k=20, min_p=0, presence_penalty=1.0` (set \"principal\"). Para tools destructivas: bajar a `temperature=0.2, top_p=0.8, top_k=20, min_p=0.05, presence_penalty=0`. Tu `0.1+rep_pen=1.1` actual está **fuera de la recomendación oficial** y rep_penalty puede romper formato. | **S** | +2–5 % parse rate de `<tool_call>`, mejor multilingüe ES/EN, menos repeticiones | Bajo | | 2 | `OLLAMA_FLASH_ATTENTION=1` + `OLLAMA_KV_CACHE_TYPE=q8_0` como variables de entorno **de sistema** (no del shell) en Windows. | **S** | KV cache cae ~50 %, libera 0.5–1 GB VRAM, no se nota en quality (Qwen3-4B usa GQA con solo 8 KV heads → es bastante robusto a q8_0). | Bajo | | 3 | `OLLAMA_KEEP_ALIVE=24h` + warm-up con request dummy al boot del proceso Carter. Verificar con `expires_at` en `/api/ps` (debe ser `0001-01-01T00:00:00Z` si pasás `keep_alive=-1`). | **S** | Elimina cold-start (~1.5–4 s en TTFT) en chat trivial. | Nulo | | 4 | **Bajar `num_ctx` a 4096 para chat-mode, mantener 8192 sólo para tool-mode**, y compactar a 16384 sólo en misiones largas. Cada token de contexto cuesta ~36 KB de KV en f16 (8.6 KB en q8_0 cache) para Qwen3-4B. | **S** | TTFT cae ~30–40 % en triviales; libera VRAM para más loaded models o draft model futuro. | Bajo | | 5 | **Stream=True + parser de `<tool_call>` incremental** que arranca a generar UI mientras el modelo decide si va a llamar tool. Hoy estás esperando el final completo. | **M** | TTFT percibido baja drásticamente; chat trivial pasa de 3-8s → 1.5-3s perceptual. | Medio (parser) |"
+          },
+          {
+            "expected": "es",
+            "predicted": "en",
+            "text": "Set destructive-strict (temp 0.2, min_p 0.05) solo para 5-10 tools peligrosos."
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "vscode://file/<path>`, `vscode://settings`, `vscode:extension/<id>"
+          },
+          {
+            "expected": "es",
+            "predicted": "en",
+            "text": "Hybrid retrieval = (cosine e5-small) ⊕ (BM25 over tool name+description) fused with RRF (k=60); dynamic K (12 default, 20 if len(query)<15 chars or pronoun detected); anaphora anchor: if last assistant turn called `app_open(X)`, force-include `app_close`, `window_manage`, `app_focus` candidates with score boost. Snowball-based pronoun/imperative detection across ES/EN/PT/DE/FR (no per-lang keyword list)."
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "C01-30: detect \"olvida lo que dijimos / start over\" pre-LLM, route to `conversation_reset` not `memory_delete`. C02-10: relax bench limit 200→250 chars on trivia. C08-05/14: web_open_url when URL detected in user_text via regex; web_search otherwise. C13-25: verifier accept \"no dialog appeared\" as PASS for window_manage when target window has no dialog children."
+          },
+          {
+            "expected": "mixed",
+            "predicted": "en",
+            "text": "- Modelo fijo: `gemma-4-E4B-it-UD-IQ2_M` - Hardware fijo: RTX 4060 Ti 16 GB CUDA - Stack fijo: llama.cpp b9090, llama-server, Carter v4 con sus 59 tools - VRAM target: ≤8 GB pico - Latencia Alexa-tier: trivial <5s, tool simple <8s, app open <15s, misión <30s - Sin per-app hardcodes - Audio nativo: omitido (Whisper aparte futuro) - NO romper qwen3 fallback (módulo `models/qwen3.py` debe seguir funcionando) - Doble número en techo: PASS oficial + PASS REAL (delta = deuda de honestidad)"
+          },
+          {
+            "expected": "es",
+            "predicted": "mixed",
+            "text": "abre yutu\" → A: web_open_url(\"https://www.youtube.com\")` con anti-ejemplo \"no inventes scheme `yutu://`\"."
+          },
+          {
+            "expected": "en",
+            "predicted": "mixed",
+            "text": "'abrí Steam' → use gui_deeplink(app='steam', intent='library'). 'buscá X en Steam' → use gui_deeplink(app='steam', intent='search', params={'query':'X'})."
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "how much RAM do I have"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close calculator"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close Notepad"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close Discord"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close everything"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "close current tab"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "download this file"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "write hello to a new temp file"
+          },
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "delete that temp file"
+          }
+        ]
+      }
+    },
+    "research_open_two_marker": {
+      "prompt_and_versioned_tests": {
+        "total": 20,
+        "accepted": 13,
+        "abstained": 7,
+        "correct": 13,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.65,
+        "accepted_by_expected_label": {
+          "en": 7,
+          "es": 6
+        },
+        "correct_by_expected_label": {
+          "en": 7,
+          "es": 6
+        },
+        "confusion": {
+          "en->en": 7,
+          "es->abstain": 4,
+          "es->es": 6,
+          "mixed->abstain": 3
+        },
+        "sample_errors": []
+      },
+      "reviewed_mind_budget_30": {
+        "total": 30,
+        "accepted": 29,
+        "abstained": 1,
+        "correct": 29,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.966666667,
+        "accepted_by_expected_label": {
+          "en": 6,
+          "es": 23
+        },
+        "correct_by_expected_label": {
+          "en": 6,
+          "es": 23
+        },
+        "confusion": {
+          "en->en": 6,
+          "es->es": 23,
+          "mixed->abstain": 1
+        },
+        "sample_errors": []
+      },
+      "reviewed_adversarial": {
+        "total": 10,
+        "accepted": 7,
+        "abstained": 3,
+        "correct": 3,
+        "wrong": 4,
+        "precision_on_accepted": 0.428571429,
+        "coverage": 0.7,
+        "accepted_by_expected_label": {
+          "en": 2,
+          "es": 1,
+          "mixed": 4
+        },
+        "correct_by_expected_label": {
+          "en": 2,
+          "es": 1
+        },
+        "confusion": {
+          "en->en": 2,
+          "es->abstain": 1,
+          "es->es": 1,
+          "mixed->abstain": 2,
+          "mixed->es": 4
+        },
+        "sample_errors": [
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Abre la browser ahora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Abre la folder ahora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Dime el forecast"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Necesito una document"
+          }
+        ]
+      },
+      "all_reviewed_contract_probes": {
+        "total": 60,
+        "accepted": 49,
+        "abstained": 11,
+        "correct": 45,
+        "wrong": 4,
+        "precision_on_accepted": 0.918367347,
+        "coverage": 0.816666667,
+        "accepted_by_expected_label": {
+          "en": 15,
+          "es": 30,
+          "mixed": 4
+        },
+        "correct_by_expected_label": {
+          "en": 15,
+          "es": 30
+        },
+        "confusion": {
+          "en->en": 15,
+          "es->abstain": 5,
+          "es->es": 30,
+          "mixed->abstain": 6,
+          "mixed->es": 4
+        },
+        "sample_errors": [
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Abre la browser ahora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Abre la folder ahora"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Dime el forecast"
+          },
+          {
+            "expected": "mixed",
+            "predicted": "es",
+            "text": "Necesito una document"
+          }
+        ]
+      },
+      "historical_occurrences_generated_labels": {
+        "total": 8099,
+        "accepted": 4960,
+        "abstained": 3139,
+        "correct": 4959,
+        "wrong": 1,
+        "precision_on_accepted": 0.999798387,
+        "coverage": 0.612421287,
+        "accepted_by_expected_label": {
+          "en": 608,
+          "es": 4352
+        },
+        "correct_by_expected_label": {
+          "en": 607,
+          "es": 4352
+        },
+        "confusion": {
+          "en->abstain": 538,
+          "en->en": 607,
+          "en->es": 1,
+          "es->abstain": 2118,
+          "es->es": 4352,
+          "mixed->abstain": 483
+        },
+        "sample_errors": [
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "unisci le tre registrazioni del concerto in un unico file"
+          }
+        ]
+      },
+      "historical_unique_generated_labels": {
+        "total": 5975,
+        "accepted": 3372,
+        "abstained": 2603,
+        "correct": 3371,
+        "wrong": 1,
+        "precision_on_accepted": 0.99970344,
+        "coverage": 0.564351464,
+        "accepted_by_expected_label": {
+          "en": 432,
+          "es": 2940
+        },
+        "correct_by_expected_label": {
+          "en": 431,
+          "es": 2940
+        },
+        "confusion": {
+          "en->abstain": 452,
+          "en->en": 431,
+          "en->es": 1,
+          "es->abstain": 1680,
+          "es->es": 2940,
+          "mixed->abstain": 471
+        },
+        "sample_errors": [
+          {
+            "expected": "en",
+            "predicted": "es",
+            "text": "unisci le tre registrazioni del concerto in un unico file"
+          }
+        ]
+      },
+      "product_1_0_unique_generated_labels": {
+        "total": 5229,
+        "accepted": 3118,
+        "abstained": 2111,
+        "correct": 3118,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.596289922,
+        "accepted_by_expected_label": {
+          "en": 431,
+          "es": 2687
+        },
+        "correct_by_expected_label": {
+          "en": 431,
+          "es": 2687
+        },
+        "confusion": {
+          "en->abstain": 436,
+          "en->en": 431,
+          "es->abstain": 1209,
+          "es->es": 2687,
+          "mixed->abstain": 466
+        },
+        "sample_errors": []
+      }
+    },
+    "research_closed_vocabulary": {
+      "prompt_and_versioned_tests": {
+        "total": 20,
+        "accepted": 17,
+        "abstained": 3,
+        "correct": 17,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.85,
+        "accepted_by_expected_label": {
+          "en": 7,
+          "es": 10
+        },
+        "correct_by_expected_label": {
+          "en": 7,
+          "es": 10
+        },
+        "confusion": {
+          "en->en": 7,
+          "es->es": 10,
+          "mixed->abstain": 3
+        },
+        "sample_errors": []
+      },
+      "reviewed_mind_budget_30": {
+        "total": 30,
+        "accepted": 29,
+        "abstained": 1,
+        "correct": 29,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.966666667,
+        "accepted_by_expected_label": {
+          "en": 6,
+          "es": 23
+        },
+        "correct_by_expected_label": {
+          "en": 6,
+          "es": 23
+        },
+        "confusion": {
+          "en->en": 6,
+          "es->es": 23,
+          "mixed->abstain": 1
+        },
+        "sample_errors": []
+      },
+      "reviewed_adversarial": {
+        "total": 10,
+        "accepted": 2,
+        "abstained": 8,
+        "correct": 2,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.2,
+        "accepted_by_expected_label": {
+          "en": 1,
+          "es": 1
+        },
+        "correct_by_expected_label": {
+          "en": 1,
+          "es": 1
+        },
+        "confusion": {
+          "en->abstain": 1,
+          "en->en": 1,
+          "es->abstain": 1,
+          "es->es": 1,
+          "mixed->abstain": 6
+        },
+        "sample_errors": []
+      },
+      "all_reviewed_contract_probes": {
+        "total": 60,
+        "accepted": 48,
+        "abstained": 12,
+        "correct": 48,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.8,
+        "accepted_by_expected_label": {
+          "en": 14,
+          "es": 34
+        },
+        "correct_by_expected_label": {
+          "en": 14,
+          "es": 34
+        },
+        "confusion": {
+          "en->abstain": 1,
+          "en->en": 14,
+          "es->abstain": 1,
+          "es->es": 34,
+          "mixed->abstain": 10
+        },
+        "sample_errors": []
+      },
+      "historical_occurrences_generated_labels": {
+        "total": 8099,
+        "accepted": 300,
+        "abstained": 7799,
+        "correct": 300,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.03704161,
+        "accepted_by_expected_label": {
+          "en": 60,
+          "es": 240
+        },
+        "correct_by_expected_label": {
+          "en": 60,
+          "es": 240
+        },
+        "confusion": {
+          "en->abstain": 1086,
+          "en->en": 60,
+          "es->abstain": 6230,
+          "es->es": 240,
+          "mixed->abstain": 483
+        },
+        "sample_errors": []
+      },
+      "historical_unique_generated_labels": {
+        "total": 5975,
+        "accepted": 164,
+        "abstained": 5811,
+        "correct": 164,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.027447699,
+        "accepted_by_expected_label": {
+          "en": 35,
+          "es": 129
+        },
+        "correct_by_expected_label": {
+          "en": 35,
+          "es": 129
+        },
+        "confusion": {
+          "en->abstain": 849,
+          "en->en": 35,
+          "es->abstain": 4491,
+          "es->es": 129,
+          "mixed->abstain": 471
+        },
+        "sample_errors": []
+      },
+      "product_1_0_unique_generated_labels": {
+        "total": 5229,
+        "accepted": 161,
+        "abstained": 5068,
+        "correct": 161,
+        "wrong": 0,
+        "precision_on_accepted": 1.0,
+        "coverage": 0.030789826,
+        "accepted_by_expected_label": {
+          "en": 35,
+          "es": 126
+        },
+        "correct_by_expected_label": {
+          "en": 35,
+          "es": 126
+        },
+        "confusion": {
+          "en->abstain": 832,
+          "en->en": 35,
+          "es->abstain": 3770,
+          "es->es": 126,
+          "mixed->abstain": 466
+        },
+        "sample_errors": []
+      }
+    }
+  },
+  "warm_cpu_latency": {
+    "existing_explicit_response_language": {
+      "calls": 30000,
+      "texts_per_round": 60,
+      "rounds": 500,
+      "accepted_checksum": 30000,
+      "per_call_microseconds": {
+        "minimum": 5.603,
+        "p50": 5.708,
+        "p95": 6.22,
+        "maximum": 9.295
+      }
+    },
+    "research_open_two_marker": {
+      "calls": 30000,
+      "texts_per_round": 60,
+      "rounds": 500,
+      "accepted_checksum": 24500,
+      "per_call_microseconds": {
+        "minimum": 4.523,
+        "p50": 4.629,
+        "p95": 7.287,
+        "maximum": 9.008
+      }
+    },
+    "research_closed_vocabulary": {
+      "calls": 30000,
+      "texts_per_round": 60,
+      "rounds": 500,
+      "accepted_checksum": 24000,
+      "per_call_microseconds": {
+        "minimum": 9.46,
+        "p50": 9.759,
+        "p95": 15.235,
+        "maximum": 18.947
+      }
+    }
+  },
+  "promotion_gate": {
+    "closed_vocabulary_zero_wrong_on_accepted_reviewed": true,
+    "closed_vocabulary_reviewed_coverage": 0.8,
+    "open_two_marker_adversarially_safe": false,
+    "blind_reviewed_holdout_passed": false,
+    "independent_exhaustive_runtime_oracle_available": false,
+    "drop_in_language_dependency_available": false,
+    "remove_gpu_L_without_quality_loss_proven": false,
+    "promote_any_production_change": false
+  },
+  "verdict": {
+    "remove_L_now": false,
+    "reason": "No installed drop-in detector implements BAXY's three-way contract. The broad historical labels are circular, the high-coverage open lexicon has concrete mixed-language false positives, and the closed-vocabulary abstainer lacks an independent exhaustive oracle even when its accepted reviewed subset is exact.",
+    "safe_current_action": "Keep authoritative L for every case not already closed by an existing deterministic product fast path. Build a separately reviewed token/span-level ES/EN/mixed holdout before evaluating a selective CPU replacement."
+  }
+}

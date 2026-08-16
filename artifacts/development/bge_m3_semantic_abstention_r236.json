@@ -1,0 +1,57 @@
+{
+  "schema": "baxy.bge-m3-semantic-abstention.r236-development-result.v1",
+  "authority": "development_only_cpu_probe_not_a_runtime_or_r228_measurement",
+  "candidate": {
+    "model_id": "BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "device": "cpu",
+    "family_documents": 31,
+    "catalog_operations": 174,
+    "threshold": 0.242803618311882,
+    "threshold_rule": "nextafter_below_minimum_selected_inside_score"
+  },
+  "development_population": {
+    "inside_rows": 256,
+    "outside_rows": 256,
+    "sources": [
+      "PRESTO v1",
+      "MASSIVE v1.1"
+    ],
+    "texts_retained": false,
+    "source_ids_retained": false
+  },
+  "observed": {
+    "inside_rows_lost": 0,
+    "outside_zero_candidates": 15,
+    "outside_zero_candidate_rate": 0.05859375,
+    "inside_score_quantiles": {
+      "min": 0.24280361831188202,
+      "p50": 0.4325036406517029,
+      "p95": 0.564130425453186,
+      "max": 0.6235697269439697
+    },
+    "outside_score_quantiles": {
+      "min": 0.19105716049671173,
+      "p50": 0.36032311618328094,
+      "p95": 0.48657990992069244,
+      "max": 0.5681055784225464
+    },
+    "elapsed_seconds": 20.843999999997322
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "A fresh OOS population and full runner remain required before any R228 opening or runtime integration.",
+  "identities": {
+    "preregistration_sha256": "145f94e9c4bd4665884bd1a51019b33f67a5f1e64f0c91a4a98d09ddf8b00fa7",
+    "runtime_corpus_sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "6954d359f74a9a284e275c83170b14658893e98080d993edbde39c0072a83e95"
+  }
+}

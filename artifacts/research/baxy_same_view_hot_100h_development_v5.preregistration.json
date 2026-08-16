@@ -1,0 +1,42 @@
+{
+  "schema": "baxy.same-view-hot-negative-regression-preregistration.v1",
+  "registeredAtUtc": "2026-08-07T05:23:58.5468990Z",
+  "authority": "development_only",
+  "blindHoldout": false,
+  "freshHoldoutClaimSupported": false,
+  "farCertificationSupported": false,
+  "openedCorpus": true,
+  "candidate": {
+    "fusionManifest": "D:\\BAXYRuntime\\experiments\\wakeword\\baxy_hyperspotter_fusion_hardnegative_development_v5\\baxy-hyperspotter-fusion-v1.json",
+    "fusionManifestSha256": "87dd1534fdf9d513b5fc4ae58f4fc4dc8a4489452c554f362285e615a700b77d",
+    "ctcVerifierManifest": "D:\\BAXYRuntime\\experiments\\wakeword\\phoneme_teacher_onnx_hardnegative_development_v5\\baxy-wake-verifier-v1.json",
+    "ctcVerifierManifestSha256": "a0d699db419dc00ec5d7bf81090953081db3fdca6abaec8b22bce073af87710a",
+    "stage1Model": "D:\\BAXYRuntime\\experiments\\wakeword\\phoneme_teacher_onnx_hardnegative_development_v5\\baxy_voxcpm2_mixed_hardnegative_development_v5.onnx",
+    "stage1ModelSha256": "dadb657e6ea0ea0241bc38130123b50bc63f08e6b99431393adc00b4eeb28921"
+  },
+  "fixedEvidence": {
+    "humanContextualReport": "D:\\BAXY\\source\\artifacts\\research\\baxy_hardnegative_contextual_consensus_development_v7.v1.json",
+    "humanContextualReportSha256": "745635a474ccc1f8c0f904b62d62799ac83df20136f1d94bbbe5714f83548afc",
+    "cudaParityReport": "D:\\BAXY\\source\\artifacts\\research\\phoneme_teacher_cuda_hardnegative_development_v5.v1.json",
+    "cudaParityReportSha256": "4a3602b15b0e695b3c2fa7d78849dcb0e3c5aecb479e526de915e026c72c3a79",
+    "corpusManifest": "D:\\BAXYRuntime\\experiments\\wakeword\\openslr12_train_clean_100_holdout_v1\\corpus.manifest.v1.json",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "priorHoldoutEvaluator": "D:\\BAXY\\source\\experiments\\voice_latency\\evaluate_wake_verifier_negative_holdout_v1.py",
+    "priorHoldoutEvaluatorSha256": "e007afb74796c647b18a5d7b18f01158594f5c643b35d8d2bfea1970cbbb1b27",
+    "evaluator": "D:\\BAXY\\source\\experiments\\voice_latency\\evaluate_baxy_contextual_fusion_negative_regression_v2.py",
+    "evaluatorSha256": "f48605b7935ee71dafd50e0aea8b14e78d85b4f077fa486968e0eb96fa69bb6b"
+  },
+  "policy": {
+    "name": "sameViewHot",
+    "contextualViewPolicy": "same_exact_fusion_view",
+    "requireExactCpuFusionPass": true,
+    "requireContextualWakeEvidenceInSameExactFusionView": true,
+    "allowFullCaptureEvidenceFromAnotherView": false,
+    "maximumGuardedNegativeFalseActivations": 0
+  },
+  "plannedInputs": {
+    "stage1Scan": "D:\\BAXY\\source\\artifacts\\research\\livekit_wakeword_openslr12_train_clean_100_hardnegative_development_v5.json",
+    "priorHoldoutReport": "D:\\BAXY\\source\\artifacts\\research\\wake_verifier_negative_holdout_hardnegative_development_v5.v1.json"
+  },
+  "plannedOutput": "D:\\BAXY\\source\\artifacts\\research\\baxy_same_view_hot_negative_regression_development_v5.v1.json"
+}

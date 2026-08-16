@@ -1,0 +1,198 @@
+{
+  "schema": "baxy.audit.filesystem-chain.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "elapsed_seconds": 0.22276180000062595,
+  "total": 6,
+  "verified": 6,
+  "cases": [
+    {
+      "operation": "filesystem.create.directory",
+      "arguments": {
+        "relativePath": "documents"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "9f24ae93-b5b8-4539-9595-51995df97c6a",
+          "missionId": "2af04363-51f7-4e7a-a19a-0e250cc28033",
+          "invocationId": "22821167-305e-4612-8287-b85fa055708d",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_be2a7f6b446e427d82cd4901974585a9",
+            "name": "documents",
+            "kind": "directory",
+            "size": 0,
+            "sha256": null,
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.034019099999568425
+    },
+    {
+      "operation": "filesystem.create.directory",
+      "arguments": {
+        "relativePath": "moved"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "72f605b9-eec9-49ee-bc2f-52e1983a48b5",
+          "missionId": "4f33aa28-8ef2-405d-bce7-0e958a2920e2",
+          "invocationId": "3b8d4188-0cdf-42e1-8d50-95cae20a1d6a",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_e88861fcb4424c3aa8482aee56e33e99",
+            "name": "moved",
+            "kind": "directory",
+            "size": 0,
+            "sha256": null,
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03638700000010431
+    },
+    {
+      "operation": "filesystem.write.text",
+      "arguments": {
+        "relativePath": "documents/source.txt",
+        "text": "BAXY synthetic filesystem audit: alpha\n",
+        "expectedSha256": null
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "d1a633eb-0e75-46e9-8157-9385e160ad47",
+          "missionId": "71368592-8727-459d-8235-e5f614bf1ea0",
+          "invocationId": "26efc8b2-0b8b-4d1d-b739-08e0d68b97e8",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_ebe22b435fdf408d975cef4ec29c3c08",
+            "name": "source.txt",
+            "kind": "file",
+            "size": 39,
+            "sha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03263839999999618
+    },
+    {
+      "operation": "filesystem.read.text",
+      "arguments": {
+        "resourceId": "fs_ebe22b435fdf408d975cef4ec29c3c08",
+        "maximumBytes": 4096
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "82cbd4e8-f32a-499e-9737-aecec7d1046b",
+          "missionId": "51ae076a-f6bf-42e8-89bd-15d03243ae12",
+          "invocationId": "6c015018-b647-4d86-b04f-790e59686ba2",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_ebe22b435fdf408d975cef4ec29c3c08",
+            "text": "BAXY synthetic filesystem audit: alpha\n",
+            "utf8Bytes": 39,
+            "sha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.029886500000429805
+    },
+    {
+      "operation": "filesystem.write.text",
+      "arguments": {
+        "relativePath": "documents/source.txt",
+        "text": "BAXY synthetic filesystem audit: beta\n",
+        "expectedSha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ff1a07ca-5ada-4670-8635-eb82da33e3de",
+          "missionId": "29de4f7f-c02a-4a7a-89f1-a70c75398474",
+          "invocationId": "c9d2432b-ccf4-4f0f-97af-5952f67a7c45",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_7c48f815906a4163bf08d04a539a6782",
+            "name": "source.txt",
+            "kind": "file",
+            "size": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.042726499999844236
+    },
+    {
+      "operation": "filesystem.list",
+      "arguments": {
+        "relativeDirectory": "documents",
+        "limit": 20
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "22257929-17b0-4f46-9fb3-298b0d1099cd",
+          "missionId": "fc9f4d52-f4f6-4978-ad3c-6a726bfcd357",
+          "invocationId": "17c39566-6674-4fb7-9a9d-512b4ea0ffcd",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "entries": [
+              {
+                "resourceId": "fs_7cd5467a156b47e3a86f0678893c2267",
+                "name": "source.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T06:31:39.1552215+00:00",
+                "sha256": null
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03491229999963252
+    }
+  ],
+  "error": "RuntimeError: filesystem.list disagreed with replaced file",
+  "process_exit_code": 0,
+  "stderr": ""
+}

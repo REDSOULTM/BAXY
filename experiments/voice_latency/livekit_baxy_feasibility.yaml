@@ -1,0 +1,58 @@
+# Reproducible feasibility run. It is deliberately smaller than promotion
+# training and never substitutes the held-out physical microphone corpus.
+model_name: baxy_feasibility
+target_phrases:
+  - "baxy"
+  - "hey baxy"
+  - "oye baxy"
+
+n_samples: 1000
+n_samples_val: 200
+n_background_samples: 200
+n_background_samples_val: 40
+tts_batch_size: 10
+
+custom_negative_phrases:
+  - "taxi"
+  - "maxi"
+  - "Betsy"
+  - "Baxter"
+  - "Paxi"
+  - "back seat"
+  - "back soon"
+  - "backs easy"
+  - "hey Betsy"
+  - "oye taxi"
+  - "hola Maxi"
+
+noise_scales: [0.8, 0.98]
+noise_scale_ws: [0.8, 0.98]
+length_scales: [0.75, 1.0, 1.25]
+slerp_weights: [0.2, 0.5, 0.8]
+
+data_dir: ./data/baxy_feasibility
+output_dir: ./output/baxy_feasibility
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 8
+  rounds: 3
+  background_paths: [./data/baxy_feasibility/backgrounds]
+  rir_paths: [./data/baxy_feasibility/rirs]
+
+model:
+  model_type: conv_attention
+  model_size: small
+
+steps: 5000
+learning_rate: 0.0003
+weight_decay: 0.01
+label_smoothing: 0.05
+max_negative_weight: 2000
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 32
+  adversarial_negative: 32
+  ACAV100M_sample: 0
+  background_noise: 16

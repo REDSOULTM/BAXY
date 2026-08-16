@@ -1,0 +1,47 @@
+{
+  "schema": "baxy.b9553-mtp-assistant-verdict.v1",
+  "measured_at_utc": "2026-07-30",
+  "status": "rejected_physically",
+  "effect_free": true,
+  "authorization": "user-authorized isolated batch (2026-07-30); nothing entered Git, the registered runtime and manifests are untouched, no downgrade promoted",
+  "assets": {
+    "llama_b9553_bin": {
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b9553/llama-b9553-bin-win-cuda-12.4-x64.zip",
+      "bytes": 261168405,
+      "commit": "9e3b928fd8c9d14dbf15a8768b9fdd7e5c721d66"
+    },
+    "cudart_b9553": {
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b9553/cudart-llama-bin-win-cuda-12.4-x64.zip",
+      "bytes": 391443627
+    },
+    "assistant_source": {
+      "url": "https://huggingface.co/google/gemma-4-E2B-it-assistant (model.safetensors)",
+      "bytes": 157565344,
+      "license": "Apache 2.0 (repo not gated)",
+      "conversion": "convert_hf_to_gguf.py from llama.cpp b10182 source (Gemma4AssistantForCausalLM, masked_embedding tensors filtered) -> Q8_0 GGUF, 49 tensors, 82.1 MB"
+    },
+    "provenance_hashes": "D:/BAXY/experimental_assets_20260730/provenance_partial.json"
+  },
+  "load_gates": {
+    "b9553_loads_current_target_qat_q4_k_xl": true,
+    "b9553_loads_assistant_with_spec_type_draft_mtp": true,
+    "flags": "--spec-type draft-mtp --model-draft <assistant> -ngld 99 --spec-draft-n-max 4"
+  },
+  "ab_protocol": "fresh server per block, ABBA (target, assistant, assistant, target), 3 rounds x (4 chat cases + real dumped P payload), temperature 0, seed 0, same grammar/budgets, SM clock pinned 900 MHz",
+  "results": {
+    "chat_total_p50_seconds": {"target": 2.523, "assistant": 3.110},
+    "chat_regression_percent": 23.3,
+    "p_policy_total_p50_seconds": {"target": 3.236, "assistant": 3.163},
+    "p_policy_delta": "-73 ms, within block-to-block noise (blocks: 3.258/3.202 target vs 3.252/3.116 assistant)",
+    "draft_acceptance_overall": "1730/6092 = 28.4%",
+    "draft_acceptance_p_policy": "496/1128 = 44.0%",
+    "vram_peak_mib": {"target": 2499, "assistant": 2597},
+    "output_equivalence": "all four free-chat cases produced different outputs across arms (cross_arm_identical=false); only the constrained P output stayed identical"
+  },
+  "interpretation": "The official E2B assistant drafts against the QAT Q4_K_XL target with only 28% acceptance on free text (community figures of ~62% were reported for larger BF16/Q8 targets). Low acceptance makes verification overhead dominate: free chat regresses 23% and the structured path gains nothing outside noise, while visible chat outputs change. The candidate fails the exact-output gate, the latency gate and the resource gate simultaneously.",
+  "scope_limits": "Measured on b9553 (the only build whose gemma4-assistant loader works; llama.cpp#24795 still open for b9702+). Acceptance rate is dominated by the target/assistant distribution match, which is a property of the QAT-quantized target, so a future fixed build is not expected to flip the verdict without a different target checkpoint; re-testing after #24795 is fixed remains cheap with benchmark_b9553_mtp_assistant.py.",
+  "evidence": [
+    "b9553_mtp_assistant_ab_20260730.json (flags without spec-type: speculation inactive, arms identical)",
+    "b9553_mtp_assistant_ab_v2_20260730.json (speculation active)"
+  ]
+}

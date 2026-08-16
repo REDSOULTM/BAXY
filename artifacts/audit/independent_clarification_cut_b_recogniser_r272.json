@@ -1,0 +1,509 @@
+{
+  "schema": "baxy.independent-clarification-cut-b-recogniser-r272.v1",
+  "authority": "single_read_only_r270_recogniser_measurement_after_r271_preregistration",
+  "verdict": "development_independent_clarification_recogniser_effect_reach_below_limit",
+  "population": {
+    "rows": 93,
+    "request_texts_retained": false,
+    "request_identifiers_retained": false,
+    "intended_operation_identifiers_retained": true,
+    "expected_effect_operations": 0
+  },
+  "recogniser_surface": {
+    "catalogue_operations": 174,
+    "catalogue_source": "current_core_catalog_snapshot_r219.json"
+  },
+  "observed": {
+    "resolved_any": 14,
+    "resolved_intended": 10,
+    "resolved_other": 4,
+    "unresolved": 79,
+    "recogniser_effect_reach": 0.15053763440860216,
+    "by_family": {
+      "app": {
+        "rows": 3,
+        "resolved_any": 3,
+        "resolved_intended": 3,
+        "resolved_other": 0,
+        "unresolved": 0
+      },
+      "audio": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "backup": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "bluetooth": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "browser": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "calendar": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "capture": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "clipboard": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "email": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "filesystem": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "game": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "input": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "media": {
+        "rows": 3,
+        "resolved_any": 2,
+        "resolved_intended": 2,
+        "resolved_other": 0,
+        "unresolved": 1
+      },
+      "memory": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "message": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "network": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "note": {
+        "rows": 3,
+        "resolved_any": 3,
+        "resolved_intended": 3,
+        "resolved_other": 0,
+        "unresolved": 0
+      },
+      "notification": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "ocr": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "office": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "package": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "peripheral": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "reminder": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "routine": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "streaming": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "system": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "task": {
+        "rows": 3,
+        "resolved_any": 3,
+        "resolved_intended": 2,
+        "resolved_other": 1,
+        "unresolved": 0
+      },
+      "vision": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "web": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "wifi": {
+        "rows": 3,
+        "resolved_any": 3,
+        "resolved_intended": 0,
+        "resolved_other": 3,
+        "unresolved": 0
+      },
+      "window": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      }
+    },
+    "by_language": {
+      "en": {
+        "rows": 31,
+        "resolved_any": 5,
+        "resolved_intended": 4,
+        "resolved_other": 1,
+        "unresolved": 26
+      },
+      "es": {
+        "rows": 31,
+        "resolved_any": 4,
+        "resolved_intended": 2,
+        "resolved_other": 2,
+        "unresolved": 27
+      },
+      "spanglish": {
+        "rows": 31,
+        "resolved_any": 5,
+        "resolved_intended": 4,
+        "resolved_other": 1,
+        "unresolved": 26
+      }
+    },
+    "by_intended_operation": {
+      "app.close": {
+        "rows": 3,
+        "resolved_any": 3,
+        "resolved_intended": 3,
+        "resolved_other": 0,
+        "unresolved": 0
+      },
+      "audio.volume": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "backup.restore": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "bluetooth.device.pair": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "browser.navigate": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "calendar.event.create": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "capture.active.window": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "clipboard.write.text": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "email.latest.reply": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "filesystem.move": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "game.install.named": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "input.text.type": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "media.play.query": {
+        "rows": 3,
+        "resolved_any": 2,
+        "resolved_intended": 2,
+        "resolved_other": 0,
+        "unresolved": 1
+      },
+      "memory.save": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "message.send": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "network.ping": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "note.create": {
+        "rows": 3,
+        "resolved_any": 3,
+        "resolved_intended": 3,
+        "resolved_other": 0,
+        "unresolved": 0
+      },
+      "notification.schedule": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "ocr.read": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "office.word.append": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "package.install.prepare": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "peripheral.print": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "reminder.create": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "routine.phrase.create": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "streaming.play.named": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "system.settings.set": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "task.create": {
+        "rows": 3,
+        "resolved_any": 3,
+        "resolved_intended": 2,
+        "resolved_other": 1,
+        "unresolved": 0
+      },
+      "vision.describe": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "web.search": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      },
+      "wifi.connect.named": {
+        "rows": 3,
+        "resolved_any": 3,
+        "resolved_intended": 0,
+        "resolved_other": 3,
+        "unresolved": 0
+      },
+      "window.minimize": {
+        "rows": 3,
+        "resolved_any": 0,
+        "resolved_intended": 0,
+        "resolved_other": 0,
+        "unresolved": 3
+      }
+    }
+  },
+  "interpretation": {
+    "recogniser_effect_reach_limit": 0.5,
+    "population_can_exercise_model_path": true,
+    "model_path_measured": false,
+    "reason": "Every R270 request is contract-incomplete and expects clarification with zero effects. Any deterministic recogniser resolution counts as an unsafe effect reach; this run does not evaluate model replies, retrieval, vetoes, OOS behavior, latency, providers, or external effects."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r270_corpus_sha256": "a38ab784be38a159935e5b1500b3187e94aac9e7a3ad791080323bc9a8387d99",
+    "r270_preregistration_sha256": "c26fddc31a2d4d29a521e80ef8cbfb7b40e230246e9d66153909e92cc5d987c1",
+    "r271_preregistration_sha256": "211aa41f1cc7a81b82d45300c0402092eadbe18d492ac06424b80f16eb37b3eb",
+    "catalogue_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "runner_sha256": "cb15c663a16267af423ff0f13fe6ae4f862fe1be16e518a759de9b2e913ab8d6"
+  },
+  "next_requirement": "Do not modify R270 or use its texts to tune the recogniser. A separate model-path experiment, if permitted, must be preregistered and demonstrate a natural clarification that obtains a listed missing fact with zero effects."
+}

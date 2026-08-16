@@ -1,0 +1,29 @@
+{
+  "schema": "baxy.mswc-hyperspotter-ctc-score-cache-build.v6",
+  "measured_at_utc": "2026-08-06T08:57:47.607480+00:00",
+  "scope": "reserved_aggregate_score_cache_without_label_metrics",
+  "sources": {
+    "hyperspotter_feature_manifest_sha256": "fb767ad10b590e3d73b809e771aef472d3c909cbc77f66419cd4d9ccf1595b6f",
+    "ctc_feature_manifest_sha256": "b93e849cf0f542d6b435df9019fc9d57a2d37d6b24b9e8a5d57b595d5c558913",
+    "adapted_checkpoint_sha256": "c042d8f24f6a7b298f18d142c6ac91551e829d553b475f7a0bd4e9b96f45747b",
+    "score_cache_sha256": "75933083f9ed8bd131dc8f525dec6ef598149be4873d2d60c6ad195890ddaf06"
+  },
+  "contract": {
+    "split_seed": 6501,
+    "word_set": "reserved",
+    "word_classes": 200,
+    "query_examples_per_word": 6,
+    "hard_negative_candidates_per_query": 40,
+    "ctc_length_bonus": 0.05,
+    "label_metrics_computed": false
+  },
+  "queries_cached": 1200,
+  "accepted": false,
+  "runtime_seconds": 24.8562439000234,
+  "individual_examples_exported": true,
+  "research_tuning_examples_scored": false,
+  "research_reserved_examples_scored": true,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

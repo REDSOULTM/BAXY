@@ -1,0 +1,65 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v22_failures_fixes.baseline.v1.raw.jsonl",
+    "sha256": "5d184730ac534b1e5456780351d1d88c12081cb9387f2558380874b459c1220d"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:40d107b3362f5720eccec9131e68e37cde1b9f048e378821c4b82f8cdd86341d",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-187b1cc701c48868b3edc37f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0452,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6305",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5af0c94d4b3885d291ec4a84",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0052,
+        "operation": "task.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T01:26:22.502522+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 2,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

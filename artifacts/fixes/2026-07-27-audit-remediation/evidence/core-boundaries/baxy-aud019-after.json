@@ -1,0 +1,744 @@
+{
+  "schema": "baxy.audit.filesystem-chain.v1",
+  "core": "D:\\BAXY\\source\\src\\Baxy.Core\\bin\\Release\\net10.0-windows10.0.19041.0\\win-x64\\publish\\baxy-core.exe",
+  "core_version": "1.0.0",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74282,
+  "elapsed_seconds": 1.6037824000013643,
+  "total": 23,
+  "verified": 23,
+  "cases": [
+    {
+      "operation": "filesystem.create.directory",
+      "arguments": {
+        "relativePath": "documents"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "97fc9d6e-6005-4e55-8c33-95aa727417ba",
+          "missionId": "ae4b38fb-8d12-42ce-8c04-b0f294383cbf",
+          "invocationId": "e0da4648-03f8-45ad-8f98-02a2214b8ab0",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_ec5e638dd9a840bdb481ad1fe4b5545f",
+            "name": "documents",
+            "kind": "directory",
+            "size": 0,
+            "sha256": null,
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.08668029999535065
+    },
+    {
+      "operation": "filesystem.create.directory",
+      "arguments": {
+        "relativePath": "moved"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "46972826-47c1-4e85-a7ae-4d6b7948c3ac",
+          "missionId": "e03adbc0-f91d-465f-8fc0-8e7061a89e29",
+          "invocationId": "2e4ea85b-2193-4fbd-ab96-67bb595c3f43",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_5103c4882ab74c0aa979c1af23e80708",
+            "name": "moved",
+            "kind": "directory",
+            "size": 0,
+            "sha256": null,
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.08181360000162385
+    },
+    {
+      "operation": "filesystem.write.text",
+      "arguments": {
+        "relativePath": "documents/source.txt",
+        "text": "BAXY synthetic filesystem audit: alpha\n",
+        "expectedSha256": null
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "b0006540-91b7-48a8-b678-5ba28bc1718c",
+          "missionId": "68ea703b-d2b9-4219-bf25-5779cc3f09ae",
+          "invocationId": "887c85cc-214e-4c9b-92db-b1b9597c3a29",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_99c5c73ecf9a40e58208aa3562ef2aa6",
+            "name": "source.txt",
+            "kind": "file",
+            "size": 39,
+            "sha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.07772219999606023
+    },
+    {
+      "operation": "filesystem.read.text",
+      "arguments": {
+        "resourceId": "fs_99c5c73ecf9a40e58208aa3562ef2aa6",
+        "maximumBytes": 4096
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "f9006a63-7bac-4560-a76c-8ead3a545c11",
+          "missionId": "f4b31698-d0d7-471a-9b44-55cc4776007a",
+          "invocationId": "97bb24a7-eef6-4643-b76a-405894249f66",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_99c5c73ecf9a40e58208aa3562ef2aa6",
+            "text": "BAXY synthetic filesystem audit: alpha\n",
+            "utf8Bytes": 39,
+            "sha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.06429449999995995
+    },
+    {
+      "operation": "filesystem.hash",
+      "arguments": {
+        "resourceId": "fs_99c5c73ecf9a40e58208aa3562ef2aa6"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ad990234-79b4-4ae7-b24b-e3dbf88a599e",
+          "missionId": "aa30a112-bc2c-4946-a973-3ab0d2c7a78a",
+          "invocationId": "a9340579-7d52-47ec-8121-3b669842f5b9",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_99c5c73ecf9a40e58208aa3562ef2aa6",
+            "name": "source.txt",
+            "kind": "file",
+            "size": 39,
+            "lastWriteUtc": "2026-07-27T18:39:48.8552237+00:00",
+            "sha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.0666484000030323
+    },
+    {
+      "operation": "filesystem.write.text",
+      "arguments": {
+        "relativePath": "documents/source.txt",
+        "text": "BAXY synthetic filesystem audit: beta\n",
+        "expectedSha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "6ce5a69b-a983-4d2a-95a4-dac0e8da7d56",
+          "missionId": "771c2c2e-5e43-4c5f-9e54-028585ec351c",
+          "invocationId": "0a4d9a57-bed7-4f44-be4f-4f21bbf2379c",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_d0aaa2957bbf457e8b7721006a9d9363",
+            "name": "source.txt",
+            "kind": "file",
+            "size": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.09182039999723202
+    },
+    {
+      "operation": "filesystem.list",
+      "arguments": {
+        "relativeDirectory": "documents",
+        "limit": 20
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "559e1601-100d-405a-91bf-5c3944be6e3a",
+          "missionId": "28c262d2-6851-4d82-97a1-732d1e33d4f9",
+          "invocationId": "36395a8d-8667-4f5d-8495-d10fd0c07d68",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "entries": [
+              {
+                "resourceId": "fs_ea82261b7c3b4afea6395b99219de52d",
+                "name": "source.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.06644990000495454
+    },
+    {
+      "operation": "filesystem.search",
+      "arguments": {
+        "query": "source",
+        "limit": 20
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "17ca22cf-1bd9-48d0-a71e-3408ee73f932",
+          "missionId": "5f0a5561-38d3-4005-904d-e76c2fe6514e",
+          "invocationId": "3a3e6714-3378-4a50-9101-81f1614f52e9",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "entries": [
+              {
+                "resourceId": "fs_d08f36d0613447cb9757ade0aae4f010",
+                "name": "source.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.0687571999951615
+    },
+    {
+      "operation": "filesystem.copy",
+      "arguments": {
+        "resourceId": "fs_d08f36d0613447cb9757ade0aae4f010",
+        "destinationRelativePath": "documents/copy.txt",
+        "expectedSha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "8f56e017-cd4e-46f3-b810-f338c85e0f7c",
+          "missionId": "45c36391-4c53-4996-b981-9a362ea07729",
+          "invocationId": "6e0352ab-8a47-4cb5-bc66-080ecd013354",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_6576ea590a8242ee9c7683670d1e8dfc",
+            "name": "copy.txt",
+            "kind": "file",
+            "size": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.07956099999864819
+    },
+    {
+      "operation": "filesystem.list",
+      "arguments": {
+        "relativeDirectory": "documents",
+        "limit": 20
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "4b646660-40bc-4721-b931-7bac47b54bb8",
+          "missionId": "06322e9e-38f7-41e7-a0bd-e5abee317c6d",
+          "invocationId": "8b7d2241-5622-4a54-9c3b-107f77b9c0b6",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "entries": [
+              {
+                "resourceId": "fs_49f971ef5fe349b582b0141366c5327a",
+                "name": "copy.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              },
+              {
+                "resourceId": "fs_491b3dd7862349e48e85374f33bc3024",
+                "name": "source.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              }
+            ],
+            "count": 2
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.06179709999560146
+    },
+    {
+      "operation": "backup.create",
+      "arguments": {
+        "resourceId": "fs_49f971ef5fe349b582b0141366c5327a",
+        "expectedSha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "9b98160d-35eb-4656-812e-7accffd91575",
+          "missionId": "0fb69599-ceee-4f50-9623-eaa2377df882",
+          "invocationId": "3fc6e989-7a75-49bc-a7df-6495bfcf6dd7",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "backupId": "backup_8b0082f82fe544a3a9f14776fa7c97d1",
+            "size": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+            "verified": true
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.05217599999741651
+    },
+    {
+      "operation": "backup.verify",
+      "arguments": {
+        "backupId": "backup_8b0082f82fe544a3a9f14776fa7c97d1"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "50e65fd3-b93e-4899-817a-3e0a7985c101",
+          "missionId": "14b37ff8-7b63-4adb-9587-a7f59d18e934",
+          "invocationId": "9c4e1645-574d-47bf-bce7-deea8c8a17de",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "backupId": "backup_8b0082f82fe544a3a9f14776fa7c97d1",
+            "size": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+            "verified": true
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.04504610000003595
+    },
+    {
+      "operation": "backup.list",
+      "arguments": {
+        "limit": 20
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "0a637ca6-7df2-47b8-a60b-8112d6310ceb",
+          "missionId": "285fccba-5f27-4561-8c92-51a1a0dd10b9",
+          "invocationId": "715986e4-0459-4a3a-810e-af6fbcc28fe3",
+          "status": "completed",
+          "message": "Hay una copia privada verificada.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "backups": [
+              {
+                "backupId": "backup_8b0082f82fe544a3a9f14776fa7c97d1",
+                "size": 38,
+                "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+                "verified": true
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.07066969999868888
+    },
+    {
+      "operation": "backup.restore",
+      "arguments": {
+        "backupId": "backup_8b0082f82fe544a3a9f14776fa7c97d1",
+        "destinationRelativePath": "documents/restored.txt"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "8ed34150-ac08-493b-a60b-c65e241eb7f4",
+          "missionId": "6410efc8-83b4-42c7-ae43-b97f80349e42",
+          "invocationId": "7c73283c-051a-435b-8502-dd1f432590c4",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_42a5bc72f3464dcdbd205bd5ed383524",
+            "name": "restored.txt",
+            "kind": "file",
+            "size": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.08565410000301199
+    },
+    {
+      "operation": "filesystem.move",
+      "arguments": {
+        "resourceId": "fs_d08f36d0613447cb9757ade0aae4f010",
+        "destinationRelativePath": "moved/source-moved.txt",
+        "expectedSha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "2f5e4fc3-763c-46b0-8181-ce2fe3cc48d8",
+          "missionId": "24036b96-4a13-49cf-b99f-c67990529ee1",
+          "invocationId": "d818e1ed-9d8f-4f8d-a61d-452ef64c6c2e",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_d228d50ad9e1483284d614a7cfcb83c5",
+            "name": "source-moved.txt",
+            "kind": "file",
+            "size": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.07311570000456413
+    },
+    {
+      "operation": "filesystem.list",
+      "arguments": {
+        "relativeDirectory": "moved",
+        "limit": 20
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "bbd884b3-bc8d-464a-9580-b46fcbb46bb4",
+          "missionId": "7febcc49-64e4-420c-929e-da91731f2ba0",
+          "invocationId": "ee0a7ba8-b1d7-4328-b57c-918018edf08e",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "entries": [
+              {
+                "resourceId": "fs_234bbc0212df4f1f83aaed4e85517c75",
+                "name": "source-moved.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.08220109999820124
+    },
+    {
+      "operation": "filesystem.read.text",
+      "arguments": {
+        "resourceId": "fs_234bbc0212df4f1f83aaed4e85517c75",
+        "maximumBytes": 4096
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "d843081e-85eb-4711-8116-572c43cc58b7",
+          "missionId": "a5f2ca0c-134d-4afb-b22d-bac2ec0943cb",
+          "invocationId": "7a7258b8-c541-496a-a712-964604873ac4",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_234bbc0212df4f1f83aaed4e85517c75",
+            "text": "BAXY synthetic filesystem audit: beta\n",
+            "utf8Bytes": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.07868779999989783
+    },
+    {
+      "operation": "filesystem.list",
+      "arguments": {
+        "relativeDirectory": "documents",
+        "limit": 20
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "14cfbe03-d1a7-4795-95f5-467809672a43",
+          "missionId": "91c9f87d-807f-4552-bcd8-60abacf3fa8c",
+          "invocationId": "eec83011-8bf6-4d36-b1a7-42c091b141ff",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "entries": [
+              {
+                "resourceId": "fs_6576ea590a8242ee9c7683670d1e8dfc",
+                "name": "copy.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              },
+              {
+                "resourceId": "fs_77f19907c0dc471fb0f58e29efc1981d",
+                "name": "restored.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              }
+            ],
+            "count": 2
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.05935319999844069
+    },
+    {
+      "operation": "filesystem.trash.prepare",
+      "arguments": {
+        "resourceId": "fs_6576ea590a8242ee9c7683670d1e8dfc"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "dd5dbed6-1a99-4b05-bda8-f42e0d027452",
+          "missionId": "0eff905b-2f79-41dc-b592-d206b826c8bf",
+          "invocationId": "77ab2c25-8ad5-4444-89b7-61d343fa6a5d",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "trashId": "trash_b419b6240c7943e0acfc64f9798c4be1",
+            "reviewLabel": "copy.txt",
+            "kind": "file",
+            "size": 38
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.07497500000317814
+    },
+    {
+      "operation": "filesystem.trash.commit",
+      "arguments": {
+        "trashId": "trash_b419b6240c7943e0acfc64f9798c4be1",
+        "reviewLabel": "copy.txt"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "97838a1a-7cf9-4345-b083-5296497c49d2",
+          "missionId": "2c65a3af-7a66-4042-820a-745deb57e238",
+          "invocationId": "6271a137-7ff5-49a9-bd5c-0b774bf47406",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "restoreId": "restore_31ac59fca5044fdd9a4616901e5226b5",
+            "reviewLabel": "copy.txt",
+            "trashed": true
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.05470939999941038
+    },
+    {
+      "operation": "filesystem.trash.restore",
+      "arguments": {
+        "restoreId": "restore_31ac59fca5044fdd9a4616901e5226b5"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "a280e380-0485-42c3-8018-45f28ffffff2",
+          "missionId": "3bd6a91e-697a-4c3a-b2ec-7327e042d83d",
+          "invocationId": "e4189403-d79f-46a5-866f-6fabc49138aa",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_ed8f96c98fb24f9cbb2a13912679b367",
+            "name": "copy.txt",
+            "kind": "file",
+            "size": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.05114529999991646
+    },
+    {
+      "operation": "filesystem.list",
+      "arguments": {
+        "relativeDirectory": "documents",
+        "limit": 20
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "0b1ae4ec-988c-4a7b-bcaf-3e9cf3e5981f",
+          "missionId": "9471300f-5e20-44ac-8e27-531817d2fcf1",
+          "invocationId": "7151fcad-9764-414c-bc3e-1d1f582f1f9e",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "entries": [
+              {
+                "resourceId": "fs_0226ccd12e9c425c9fd047bfa1005f2b",
+                "name": "copy.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              },
+              {
+                "resourceId": "fs_4e7b2441408a4147b1ca8e5c4e088878",
+                "name": "restored.txt",
+                "kind": "file",
+                "size": 38,
+                "lastWriteUtc": "2026-07-27T18:39:49.059059+00:00",
+                "sha256": null
+              }
+            ],
+            "count": 2
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.06754269999510143
+    },
+    {
+      "operation": "filesystem.read.text",
+      "arguments": {
+        "resourceId": "fs_0226ccd12e9c425c9fd047bfa1005f2b",
+        "maximumBytes": 4096
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "8a6f4986-d766-4ae7-b7b2-d2d3f6fa31fd",
+          "missionId": "4e05d17b-d394-418f-98e9-77b34b89eb7d",
+          "invocationId": "15689049-9963-477c-9e1c-e710de0feeb2",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_0226ccd12e9c425c9fd047bfa1005f2b",
+            "text": "BAXY synthetic filesystem audit: beta\n",
+            "utf8Bytes": 38,
+            "sha256": "f0918b13c9c724873d3aacb981f8c738f9c1920007a586d23cc07782bcf1a3cb"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.04884740000125021
+    }
+  ],
+  "error": null,
+  "process_exit_code": 0,
+  "stderr": ""
+}

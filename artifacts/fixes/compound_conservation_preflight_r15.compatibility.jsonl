@@ -1,0 +1,3 @@
+{"clause": "send lucas the message hello.", "operation": "message.send", "compatible": true}
+{"clause": "lucas should receive a whatsapp saying hello.", "operation": "message.send", "compatible": true}
+{"clause": "I need you to open Spotify, then do the other thing.", "operation": "app.open", "compatible": false}

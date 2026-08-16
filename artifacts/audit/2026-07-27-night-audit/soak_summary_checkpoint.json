@@ -1,0 +1,526 @@
+{
+  "schema": "baxy.audit.soak-summary.v1",
+  "core": {
+    "running": true,
+    "startedUtc": "2026-07-27T06:50:52.026825+00:00",
+    "checkpointUtc": "2026-07-27T13:15:30.024491+00:00",
+    "deadline": "2026-07-27T12:52:00-04:00",
+    "elapsedSeconds": 23078.392,
+    "coreVersion": "1.0.8",
+    "catalogCount": 168,
+    "calls": 4365,
+    "aggregateOperationCalls": 4365,
+    "operationsSampled": 26,
+    "statuses": {
+      "completed": 4120,
+      "failed": 245
+    },
+    "expectedErrors": {
+      "outlook_profile_not_configured": 7,
+      "media_session_not_found": 238
+    },
+    "weightedMeanSeconds": 0.3506775945017182,
+    "maximumSeconds": 9.9191,
+    "anomalies": [],
+    "segments": [
+      {
+        "index": 1,
+        "pid": 22520,
+        "startedUtc": "2026-07-27T06:50:52.327963+00:00",
+        "helloUtf8Bytes": 74283,
+        "catalogCount": 168,
+        "exitCode": 0,
+        "stderrTail": "",
+        "endedUtc": "2026-07-27T08:50:52.539458+00:00"
+      },
+      {
+        "index": 2,
+        "pid": 28764,
+        "startedUtc": "2026-07-27T08:50:52.719742+00:00",
+        "helloUtf8Bytes": 74283,
+        "catalogCount": 168,
+        "exitCode": 0,
+        "stderrTail": "",
+        "endedUtc": "2026-07-27T10:50:52.703458+00:00"
+      },
+      {
+        "index": 3,
+        "pid": 20656,
+        "startedUtc": "2026-07-27T10:50:52.952446+00:00",
+        "helloUtf8Bytes": 74283,
+        "catalogCount": 168,
+        "exitCode": 0,
+        "stderrTail": "",
+        "endedUtc": "2026-07-27T12:50:54.164784+00:00"
+      },
+      {
+        "index": 4,
+        "pid": 2284,
+        "startedUtc": "2026-07-27T12:50:54.448359+00:00",
+        "helloUtf8Bytes": 74282,
+        "catalogCount": 168,
+        "exitCode": null,
+        "stderrTail": ""
+      }
+    ],
+    "resources": {
+      "samples": 371,
+      "overall": {
+        "rssBytes": {
+          "minimum": 36823040.0,
+          "maximum": 64933888.0
+        },
+        "privateBytes": {
+          "minimum": 16969728.0,
+          "maximum": 35790848.0
+        },
+        "handles": {
+          "minimum": 370.0,
+          "maximum": 454.0
+        },
+        "threads": {
+          "minimum": 7.0,
+          "maximum": 15.0
+        }
+      },
+      "segments": [
+        {
+          "segment": 1,
+          "samples": 116,
+          "first": {
+            "rssBytes": 36823040,
+            "privateBytes": 16969728,
+            "handles": 370,
+            "threads": 14
+          },
+          "last": {
+            "rssBytes": 55013376,
+            "privateBytes": 24883200,
+            "handles": 425,
+            "threads": 10
+          },
+          "maximum": {
+            "rssBytes": 55029760.0,
+            "privateBytes": 24993792.0,
+            "handles": 452.0,
+            "threads": 15.0
+          }
+        },
+        {
+          "segment": 2,
+          "samples": 115,
+          "first": {
+            "rssBytes": 40513536,
+            "privateBytes": 19951616,
+            "handles": 374,
+            "threads": 14
+          },
+          "last": {
+            "rssBytes": 60010496,
+            "privateBytes": 30367744,
+            "handles": 414,
+            "threads": 9
+          },
+          "maximum": {
+            "rssBytes": 60571648.0,
+            "privateBytes": 30822400.0,
+            "handles": 454.0,
+            "threads": 14.0
+          }
+        },
+        {
+          "segment": 3,
+          "samples": 116,
+          "first": {
+            "rssBytes": 47435776,
+            "privateBytes": 26308608,
+            "handles": 379,
+            "threads": 14
+          },
+          "last": {
+            "rssBytes": 63102976,
+            "privateBytes": 33554432,
+            "handles": 421,
+            "threads": 10
+          },
+          "maximum": {
+            "rssBytes": 64823296.0,
+            "privateBytes": 34795520.0,
+            "handles": 444.0,
+            "threads": 14.0
+          }
+        },
+        {
+          "segment": 4,
+          "samples": 24,
+          "first": {
+            "rssBytes": 49745920,
+            "privateBytes": 30015488,
+            "handles": 374,
+            "threads": 14
+          },
+          "last": {
+            "rssBytes": 64811008,
+            "privateBytes": 35733504,
+            "handles": 415,
+            "threads": 8
+          },
+          "maximum": {
+            "rssBytes": 64933888.0,
+            "privateBytes": 35790848.0,
+            "handles": 431.0,
+            "threads": 14.0
+          }
+        }
+      ]
+    },
+    "finalError": null
+  },
+  "mind": {
+    "running": true,
+    "startedUtc": "2026-07-27T08:09:14.191867+00:00",
+    "checkpointUtc": "2026-07-27T13:15:19.376840+00:00",
+    "deadline": "2026-07-27T12:52:00-04:00",
+    "coreVersion": "1.0.8",
+    "catalogCount": 168,
+    "intervalSeconds": 60.0,
+    "decisions": 306,
+    "matched": 119,
+    "mismatched": 187,
+    "matchRate": 0.3888888888888889,
+    "protocolAnomalies": 0,
+    "meanSeconds": 5.986455165359373,
+    "p95Seconds": 11.124839899999643,
+    "maximumSeconds": 15.46057859999928,
+    "cases": [
+      {
+        "text": "Abre Opera",
+        "runs": 24,
+        "matched": 24,
+        "mismatched": 0,
+        "matchRate": 1.0,
+        "meanSeconds": 3.9758176833336165,
+        "p95Seconds": 4.526546599998255,
+        "maximumSeconds": 4.692347100000916
+      },
+      {
+        "text": "Abre Opera, navega a https://example.com/ y lee la página",
+        "runs": 23,
+        "matched": 20,
+        "mismatched": 3,
+        "matchRate": 0.8695652173913043,
+        "meanSeconds": 8.257193243478152,
+        "p95Seconds": 8.941018800000165,
+        "maximumSeconds": 8.975990099999763
+      },
+      {
+        "text": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+        "runs": 23,
+        "matched": 0,
+        "mismatched": 23,
+        "matchRate": 0.0,
+        "meanSeconds": 10.919313000000013,
+        "p95Seconds": 14.396498699999938,
+        "maximumSeconds": 15.46057859999928
+      },
+      {
+        "text": "Abre la calculadora",
+        "runs": 24,
+        "matched": 23,
+        "mismatched": 1,
+        "matchRate": 0.9583333333333334,
+        "meanSeconds": 3.6229979666666168,
+        "p95Seconds": 4.036986299999626,
+        "maximumSeconds": 4.739876900002855
+      },
+      {
+        "text": "Busca OpenAI en la web",
+        "runs": 24,
+        "matched": 0,
+        "mismatched": 24,
+        "matchRate": 0.0,
+        "meanSeconds": 5.585880966666385,
+        "p95Seconds": 7.049079100001109,
+        "maximumSeconds": 7.30928810000114
+      },
+      {
+        "text": "Haz una captura de pantalla y luego léela con OCR",
+        "runs": 23,
+        "matched": 0,
+        "mismatched": 23,
+        "matchRate": 0.0,
+        "meanSeconds": 9.989084482608593,
+        "p95Seconds": 13.293891699999222,
+        "maximumSeconds": 13.830025100000057
+      },
+      {
+        "text": "Hola",
+        "runs": 24,
+        "matched": 24,
+        "mismatched": 0,
+        "matchRate": 1.0,
+        "meanSeconds": 3.622692633333145,
+        "p95Seconds": 4.2211934000006295,
+        "maximumSeconds": 4.236077400000795
+      },
+      {
+        "text": "Lista mis notas",
+        "runs": 23,
+        "matched": 4,
+        "mismatched": 19,
+        "matchRate": 0.17391304347826086,
+        "meanSeconds": 3.574018134782502,
+        "p95Seconds": 4.042516199999227,
+        "maximumSeconds": 7.945671000001312
+      },
+      {
+        "text": "Lista mis tareas pendientes",
+        "runs": 23,
+        "matched": 0,
+        "mismatched": 23,
+        "matchRate": 0.0,
+        "meanSeconds": 4.499236930434721,
+        "p95Seconds": 5.319464500000322,
+        "maximumSeconds": 5.389296900000772
+      },
+      {
+        "text": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+        "runs": 23,
+        "matched": 0,
+        "mismatched": 23,
+        "matchRate": 0.0,
+        "meanSeconds": 10.709372882608754,
+        "p95Seconds": 12.27777590000187,
+        "maximumSeconds": 12.284983599998668
+      },
+      {
+        "text": "¿Cómo está el equipo?",
+        "runs": 24,
+        "matched": 0,
+        "mismatched": 24,
+        "matchRate": 0.0,
+        "meanSeconds": 4.414816091666277,
+        "p95Seconds": 4.939129000000321,
+        "maximumSeconds": 4.9551357999989705
+      },
+      {
+        "text": "¿En qué volumen está el computador?",
+        "runs": 24,
+        "matched": 0,
+        "mismatched": 24,
+        "matchRate": 0.0,
+        "meanSeconds": 4.7097992916665135,
+        "p95Seconds": 4.959527600000001,
+        "maximumSeconds": 5.5422152999999525
+      },
+      {
+        "text": "¿Qué hora es?",
+        "runs": 24,
+        "matched": 24,
+        "mismatched": 0,
+        "matchRate": 1.0,
+        "meanSeconds": 4.444922495833073,
+        "p95Seconds": 5.111437499999738,
+        "maximumSeconds": 5.376502899998741
+      }
+    ],
+    "segments": [
+      {
+        "index": 1,
+        "pid": 15168,
+        "startedUtc": "2026-07-27T08:09:27.643465+00:00",
+        "hello": {
+          "type": "hello",
+          "protocol": "baxy.mind.v1",
+          "mindVersion": "1.0.0",
+          "models": {
+            "router": "intfloat/multilingual-e5-small",
+            "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+          },
+          "requests": [
+            "catalog.configure",
+            "turn.decide",
+            "plan",
+            "plan.ground",
+            "narrate",
+            "voice.start",
+            "voice.stop",
+            "voice.status",
+            "voice.speak",
+            "voice.cancel",
+            "shutdown"
+          ]
+        },
+        "catalogReady": {
+          "type": "catalog.ready",
+          "id": "4a9bfdcf-ec9d-451e-8936-f4aa50d386fa",
+          "count": 168
+        },
+        "exitCode": 0,
+        "stderrTail": "",
+        "stoppedUtc": "2026-07-27T10:09:34.778156+00:00",
+        "descendantsAfterShutdown": []
+      },
+      {
+        "index": 2,
+        "pid": 1860,
+        "startedUtc": "2026-07-27T10:09:48.199315+00:00",
+        "hello": {
+          "type": "hello",
+          "protocol": "baxy.mind.v1",
+          "mindVersion": "1.0.0",
+          "models": {
+            "router": "intfloat/multilingual-e5-small",
+            "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+          },
+          "requests": [
+            "catalog.configure",
+            "turn.decide",
+            "plan",
+            "plan.ground",
+            "narrate",
+            "voice.start",
+            "voice.stop",
+            "voice.status",
+            "voice.speak",
+            "voice.cancel",
+            "shutdown"
+          ]
+        },
+        "catalogReady": {
+          "type": "catalog.ready",
+          "id": "3cace04c-95d0-4ff5-bdfe-dc5d80cba9c5",
+          "count": 168
+        },
+        "exitCode": 0,
+        "stderrTail": "",
+        "stoppedUtc": "2026-07-27T12:09:55.566033+00:00",
+        "descendantsAfterShutdown": []
+      },
+      {
+        "index": 3,
+        "pid": 3884,
+        "startedUtc": "2026-07-27T12:10:08.999721+00:00",
+        "hello": {
+          "type": "hello",
+          "protocol": "baxy.mind.v1",
+          "mindVersion": "1.0.0",
+          "models": {
+            "router": "intfloat/multilingual-e5-small",
+            "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+          },
+          "requests": [
+            "catalog.configure",
+            "turn.decide",
+            "plan",
+            "plan.ground",
+            "narrate",
+            "voice.start",
+            "voice.stop",
+            "voice.status",
+            "voice.speak",
+            "voice.cancel",
+            "shutdown"
+          ]
+        },
+        "catalogReady": {
+          "type": "catalog.ready",
+          "id": "c34b9dfe-f04d-4178-a2f3-9dba8e15df27",
+          "count": 168
+        },
+        "exitCode": null,
+        "stderrTail": ""
+      }
+    ],
+    "resources": {
+      "samples": 306,
+      "overall": {
+        "rssBytes": {
+          "minimum": 2288480256.0,
+          "maximum": 3031449600.0
+        },
+        "privateBytes": {
+          "minimum": 2935230464.0,
+          "maximum": 4063584256.0
+        },
+        "handles": {
+          "minimum": 1049.0,
+          "maximum": 1071.0
+        },
+        "threads": {
+          "minimum": 44.0,
+          "maximum": 59.0
+        }
+      },
+      "segments": [
+        {
+          "segment": 1,
+          "samples": 120,
+          "first": {
+            "rssBytes": 2288480256,
+            "privateBytes": 2935230464,
+            "handles": 1049,
+            "threads": 59
+          },
+          "last": {
+            "rssBytes": 2996895744,
+            "privateBytes": 4046704640,
+            "handles": 1062,
+            "threads": 45
+          },
+          "maximum": {
+            "rssBytes": 3022036992.0,
+            "privateBytes": 4060291072.0,
+            "handles": 1066.0,
+            "threads": 59.0
+          }
+        },
+        {
+          "segment": 2,
+          "samples": 120,
+          "first": {
+            "rssBytes": 2301235200,
+            "privateBytes": 3413774336,
+            "handles": 1071,
+            "threads": 59
+          },
+          "last": {
+            "rssBytes": 3015925760,
+            "privateBytes": 4059197440,
+            "handles": 1062,
+            "threads": 45
+          },
+          "maximum": {
+            "rssBytes": 3031449600.0,
+            "privateBytes": 4063584256.0,
+            "handles": 1071.0,
+            "threads": 59.0
+          }
+        },
+        {
+          "segment": 3,
+          "samples": 66,
+          "first": {
+            "rssBytes": 2665738240,
+            "privateBytes": 3788640256,
+            "handles": 1058,
+            "threads": 59
+          },
+          "last": {
+            "rssBytes": 2986848256,
+            "privateBytes": 4032417792,
+            "handles": 1062,
+            "threads": 45
+          },
+          "maximum": {
+            "rssBytes": 3007275008.0,
+            "privateBytes": 4037287936.0,
+            "handles": 1068.0,
+            "threads": 59.0
+          }
+        }
+      ]
+    },
+    "finalError": null
+  }
+}

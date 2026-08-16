@@ -1,0 +1,105 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v33_safety_baseline.v1.raw.jsonl",
+    "sha256": "d3628891d77269d6fc6cac586f76aab9b7e396bd8d87d78fb16fb9ca865c52c4"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13222",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-34ad1b1760311446fa0d41bd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 4.2112,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Kate Middleton compra la ropa de sus hijos en tiendas de moda británicas como Fortnum & Mason o en diseñadores premium como Alexander McQueen y Dior. A menudo se la ve con su madre, Lady Sarah McQueen, quien es conocida por su estilo elegante y su trabajo en el sector de la moda.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13853",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b930d0da7d10c9a8e3d24b8e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.6918,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "La mayor cantidad de volcanes en la tierra se encuentra en el Pacífico, especialmente en la Cordillera de los Andes y en la zona de los volcanes del Cinturón de Fire.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13888",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-97ca5fef2765d0c2ccaa528d",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0055,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:15062",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-1079e0fb4e90884373137ad8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9686,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete Lisa Ann as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T08:28:31.733656+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 4,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "baxy.wake-cascade-openslr-negative-regression.v1",
+  "measuredAtUtc": "2026-08-08T18:43:55.512866+00:00",
+  "scope": "previously_opened_100h_negative_development_regression",
+  "sources": {
+    "cascadeManifestSha256": "b6093679fd8e0140984b59dcbc035c1b9361321d2cc957efdef927bf31cbee3c",
+    "originalFusionManifestSha256": "87dd1534fdf9d513b5fc4ae58f4fc4dc8a4489452c554f362285e615a700b77d",
+    "adaptedFusionManifestSha256": "e2f75b3ae0184f92df67314cca5292b93c686fb92b147fd83886c79b4356d2df",
+    "originalCheckpointSha256": "da85c05c970a6a5c8cf353bed2b410d88be8d4cdf6c39933212c27ccf039ac64",
+    "adaptedCheckpointSha256": "a7724e4d8ad454f0e577969b77950b74e4237953bafaeefdbec76b6f405c2d0d",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "officialCheckpointSha256": "76b77d5c8a04b36fcc109f8670bdc51c81be6dbdc4f6fda8051e800e2a46d017",
+    "gpuScreenMargin": "0.5",
+    "maximumParityDrift": "0.02",
+    "gpuMatmulPrecision": "high"
+  },
+  "contract": {
+    "gpuScreenMargin": 0.5,
+    "maximumObservedGpuToCpuLogitDrift": 0.014569282531738281,
+    "minimumScreenSafetyMultiplier": 34.31877986515677,
+    "requiredScreenSafetyMultiplier": 25.0,
+    "gpuMatmulPrecision": "high_tf32_allowed",
+    "everyBroadCandidateRescoredByExactCpuOnnx": true,
+    "lexicalRescueUsesProductParakeet": true,
+    "freshHoldoutClaimSupported": false,
+    "promotionSupported": false
+  },
+  "metrics": {
+    "utterances": 28539,
+    "descriptiveExposureHours": 100.59087965277777,
+    "windowsScored": 1348864,
+    "broadScreenWindows": 6199,
+    "broadScreenRecords": 3615,
+    "exactUpstreamProposals": 2029,
+    "strongFalseActivations": 0,
+    "lexicalInvocations": 2029,
+    "lexicalFalseActivations": 0,
+    "negativeFalseActivations": 0,
+    "pointFalseActivationsPerHour": 0.0,
+    "far95UpperConfidencePerHourIfZero": 0.029781350793379457
+  },
+  "runtime": {
+    "cudaDevice": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "batchSize": 256,
+    "recordBatchSize": 128,
+    "exactBatchSize": 1,
+    "exactRecordBatchSize": 128,
+    "screenSeconds": 3742.3126558000004,
+    "exactRescoreSeconds": 2548.5638925000003
+  },
+  "falseActivationAudioSha256": [],
+  "regressionPassed": true,
+  "candidateDevelopmentUse": true,
+  "candidateFrozen": true,
+  "negativeCorpusPreviouslyAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "transcriptsOrFilenamesRetained": false,
+  "effectsExecuted": 0
+}

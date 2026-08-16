@@ -1,0 +1,334 @@
+{
+  "schema": "baxy.wake-verifier-product-capture-development.v1",
+  "measured_at_utc": "2026-08-05T02:42:15.553619+00:00",
+  "sources": {
+    "corpus_manifest": "D:/BAXYRuntime/experiments/wakeword/ccby_wake_holdout_v1/corpus.manifest.v1.json",
+    "corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+    "stage1_model_sha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "verifier_manifest_sha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "stt_files_sha256": {
+      "encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    },
+    "ffmpeg_sha256": "1fcb0cb525085cc5be3ad4be16799d60786b65cc36951622a018d00f78c0fb5d"
+  },
+  "contract": {
+    "first_causal_broad_hit": true,
+    "stt_decode_schedule": "single_stream_product_equivalent",
+    "stage1_hop_samples": 2560,
+    "audio_frame_samples": 512,
+    "pre_roll_seconds": 5.0,
+    "pre_roll_samples": 79872,
+    "trailing_silence_samples": 10752,
+    "verification_samples": 48000,
+    "primary_view_start_samples": 64000,
+    "activity_lookback_samples": 2560,
+    "activity_alignment_samples": 320,
+    "activity_vad_threshold": 0.1,
+    "maximum_turn_samples": 480000
+  },
+  "metrics": {
+    "positive_accepted": 14,
+    "positive_total": 14,
+    "hard_negative_false_accepts": 0,
+    "hard_negative_total": 4,
+    "gate_passed": true
+  },
+  "records": [
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.88,
+        "score": 0.02083653211593628
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 124544,
+      "verification_start_sample": 65920,
+      "transcript": "the fuel used in Baxi ecogen will generate",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 3.9695807640595255,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.05670797824859619
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 71040,
+      "transcript": "Faxi is an innovative.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 0.34266893127205655,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.01868438720703125
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 70720,
+      "transcript": "The technology Baxi's ecogen boilers.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 4.161409030258657,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.72,
+        "score": 0.0193345844745636
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 127104,
+      "verification_start_sample": 68160,
+      "transcript": "Baxi Ecogen converts the",
+      "stage1_eligible": true,
+      "method": "ctc_lexical_anchor",
+      "margin": 2.7152783703363372,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 1.68,
+        "score": 0.034724265336990356
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 111744,
+      "verification_start_sample": 62080,
+      "transcript": "Here's how the Baxi Ecogen system works.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 5.408601692896138,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.88,
+        "score": 0.022713422775268555
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 124544,
+      "verification_start_sample": 73600,
+      "transcript": "Baxi has an unparalleled combination.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 4.636816356940685,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.0207633376121521
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 73280,
+      "transcript": "With Baxi Eco Gen, we can",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 4.808183743473897,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.03096526861190796
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 70720,
+      "transcript": "Vamos a hablar de la caldera Baxi Roca Victoria.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 1.0428722323654007,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 2.64,
+        "score": 0.01804676651954651
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 96384,
+      "verification_start_sample": 37440,
+      "transcript": "Налист отдела сервиса Баксин Алексей Тукай.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 1.1909270694982972,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.72,
+        "score": 0.02185612916946411
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 127104,
+      "verification_start_sample": 69760,
+      "transcript": "С настенными котлами Бакси серии Луна 3.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 3.8445384629999992,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.88,
+        "score": 0.02239176630973816
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 124544,
+      "verification_start_sample": 65920,
+      "transcript": "На заводе Бакси Спа в городе Басана Дель.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 4.117691698538767,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.018228650093078613
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 70720,
+      "transcript": "В позиционировании Бакси и имеют широкий модельный ряд.",
+      "stage1_eligible": true,
+      "method": "ctc_lexical_anchor",
+      "margin": 3.508819654046256,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.03504106402397156
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 71040,
+      "transcript": "В линейке Бакси. Давайте ознакомься с ус...",
+      "stage1_eligible": true,
+      "method": "ctc_lexical_anchor",
+      "margin": 3.552664978531322,
+      "detected": true
+    },
+    {
+      "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.72,
+        "score": 0.022600173950195312
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 127104,
+      "verification_start_sample": 69120,
+      "transcript": "Esperamos en nuestra casa, Maxi Ferrol.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 0.8547739731815653,
+      "detected": true
+    },
+    {
+      "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 1.04,
+        "score": 0.018072068691253662
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 121984,
+      "verification_start_sample": 72640,
+      "transcript": "",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 1.52,
+        "score": 0.44256195425987244
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 114304,
+      "verification_start_sample": 59840,
+      "transcript": "uh pimper bakshi.",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 0.88,
+        "score": 0.019141972064971924
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 124544,
+      "verification_start_sample": 65600,
+      "transcript": "We're really excited to be talking with Mehesh Faxi today, who is the co",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 2.32,
+        "score": 0.4752587080001831
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 101504,
+      "verification_start_sample": 42880,
+      "transcript": "",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    }
+  ],
+  "runtime_seconds": 46.94780190003803,
+  "candidate_frozen": false,
+  "product_operating_point": true,
+  "blind_human_partition_accessed": false,
+  "effects_executed": 0
+}

@@ -1,0 +1,169 @@
+{
+  "schema": "baxy.ccby-wake-development-whisper-audit.v1",
+  "measured_at_utc": "2026-08-06T01:00:09.497363+00:00",
+  "scope": "development_only_diagnostic",
+  "sources": {
+    "corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+    "model_sha256": "65147644a518d12f04e32d6f3b26facc3f8dd46e5390956a9424a650c0ce22b9",
+    "ffmpeg_sha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf"
+  },
+  "metrics": {
+    "positive_exact_lexical": 8,
+    "positive_total": 14,
+    "positive_exact_lexical_rate": 0.5714285714285714,
+    "hard_negative_exact_lexical_false": 1,
+    "hard_negative_total": 4,
+    "diagnostic_zero_false": false
+  },
+  "records": [
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "language": "en",
+      "transcript": "sent of a few used in Baxi Iike Gen. Well, generally,",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "language": "en",
+      "transcript": "Backsy is an innovative",
+      "exact_lexical_target": false
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "language": "en",
+      "transcript": "the technology behind Baxi's EcoGen Voillers.",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "language": "en",
+      "transcript": "",
+      "exact_lexical_target": false
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "language": "en",
+      "transcript": "Here's how the Baxi E-cogen system works.",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "language": "en",
+      "transcript": "Backsy has an unparalleled combination.",
+      "exact_lexical_target": false
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "language": "en",
+      "transcript": "with backsy e-cogen we can",
+      "exact_lexical_target": false
+    },
+    {
+      "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "speaker_group": "jesus_marcos",
+      "label": "positive",
+      "language": "es",
+      "transcript": "a hablar de la Calde la Baxi roca, Vitoria.",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "language": "ru",
+      "transcript": "Стариста Дело серию с баксей Алексей Тукай. Вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там, вон там",
+      "exact_lexical_target": false
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "language": "ru",
+      "transcript": "на стенными котлами Бакси сериала на три.",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "language": "ru",
+      "transcript": "на заводе Баксиспа в городе Басана Далилева.",
+      "exact_lexical_target": false
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "language": "ru",
+      "transcript": "позиционирую не бакси, имеет широкий модельный ряд.",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "language": "ru",
+      "transcript": "на хулинике бакси. Давайте ознакомимся с услуними.",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "speaker_group": "baxi_ferrol_welcome_narrator",
+      "label": "positive",
+      "language": "es",
+      "transcript": "esperamos en nuestra casa, Baxi Cerole.",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "speaker_group": "tarang_bakshi",
+      "label": "hard_negative",
+      "language": "en",
+      "transcript": "So my name is Tarang Bakshi.",
+      "exact_lexical_target": false
+    },
+    {
+      "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "speaker_group": "upendra_bakshi",
+      "label": "hard_negative",
+      "language": "cy",
+      "transcript": "yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn ymthioedd yn",
+      "exact_lexical_target": false
+    },
+    {
+      "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "speaker_group": "mahesh_faxi",
+      "label": "hard_negative",
+      "language": "en",
+      "transcript": "We're really excited to be talking with Mahesh Baxi today, who is the co-",
+      "exact_lexical_target": true
+    },
+    {
+      "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "speaker_group": "viplav_vaxi",
+      "label": "hard_negative",
+      "language": "en",
+      "transcript": "of the Diplof vaccine.",
+      "exact_lexical_target": false
+    }
+  ],
+  "runtime_seconds": 49.73566850001225,
+  "candidate_frozen": false,
+  "product_operating_point": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

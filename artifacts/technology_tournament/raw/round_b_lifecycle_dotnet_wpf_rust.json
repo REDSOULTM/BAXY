@@ -1,0 +1,294 @@
+{
+    "schema_version":  1,
+    "protocol_id":  "baxy-technology-tournament-v1",
+    "round":  "b_lifecycle",
+    "system_id":  "dotnet-wpf-rust",
+    "started_utc":  "2026-07-19T03:40:55.7199438Z",
+    "finished_utc":  "2026-07-19T03:41:27.0081942Z",
+    "provenance":  {
+                       "harness":  {
+                                       "path":  "experiments/technology_tournament/round_b/lifecycle_harness.ps1",
+                                       "sha256":  "f94829704361ffddc972626df93b3f8f93cd40aaa316552ceafbf45b853d5b63"
+                                   },
+                       "protocol":  {
+                                        "path":  "artifacts/technology_tournament/protocol.json",
+                                        "sha256":  "383a9e54cfc5a186de61f060aeb2a6cd013bab3ec21bdeb387063d935d99a892"
+                                    },
+                       "cases":  {
+                                     "path":  "experiments/technology_tournament/cases.json",
+                                     "sha256":  "62eb63e108256f5b91da4834d13efb8febc5aa137cb369acac966adce0dbf59d"
+                                 }
+                   },
+    "hashes":  {
+                   "shell_bundle_sha256":  "284d6c8f63c79ddb5770dea242e8742e6e3554a6fc35accbc22e59b90dfe247f",
+                   "shell_entrypoint_sha256":  "be1248232d2631a72a292030b3a4c9a978732c1723bfc9ad600f782d38c589f9",
+                   "core_sha256":  "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063"
+               },
+    "cold_start":  {
+                       "repetitions":  7,
+                       "valid":  7,
+                       "p50_ms":  1281.9927,
+                       "p95_ms":  1319.28004,
+                       "samples":  [
+                                       {
+                                           "index":  0,
+                                           "ready_ms":  1316.755,
+                                           "valid":  true,
+                                           "root_exited_prematurely":  false,
+                                           "orphan_process_ids":  [
+
+                                                                  ]
+                                       },
+                                       {
+                                           "index":  1,
+                                           "ready_ms":  1281.9927,
+                                           "valid":  true,
+                                           "root_exited_prematurely":  false,
+                                           "orphan_process_ids":  [
+
+                                                                  ]
+                                       },
+                                       {
+                                           "index":  2,
+                                           "ready_ms":  1320.3622,
+                                           "valid":  true,
+                                           "root_exited_prematurely":  false,
+                                           "orphan_process_ids":  [
+
+                                                                  ]
+                                       },
+                                       {
+                                           "index":  3,
+                                           "ready_ms":  1249.8694,
+                                           "valid":  true,
+                                           "root_exited_prematurely":  false,
+                                           "orphan_process_ids":  [
+
+                                                                  ]
+                                       },
+                                       {
+                                           "index":  4,
+                                           "ready_ms":  1259.5251,
+                                           "valid":  true,
+                                           "root_exited_prematurely":  false,
+                                           "orphan_process_ids":  [
+
+                                                                  ]
+                                       },
+                                       {
+                                           "index":  5,
+                                           "ready_ms":  1245.5825,
+                                           "valid":  true,
+                                           "root_exited_prematurely":  false,
+                                           "orphan_process_ids":  [
+
+                                                                  ]
+                                       },
+                                       {
+                                           "index":  6,
+                                           "ready_ms":  1295.1950000000002,
+                                           "valid":  true,
+                                           "root_exited_prematurely":  false,
+                                           "orphan_process_ids":  [
+
+                                                                  ]
+                                       }
+                                   ]
+                   },
+    "warm_ui":  {
+                    "warmup_discarded":  {
+                                             "index":  0,
+                                             "elapsed_ms":  166.127,
+                                             "valid":  true
+                                         },
+                    "valid":  30,
+                    "p50_ms":  204.57155,
+                    "p95_ms":  263.31399999999996,
+                    "throughput_per_second":  4.6585441636431026,
+                    "samples":  [
+                                    {
+                                        "index":  1,
+                                        "elapsed_ms":  180.00390000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  2,
+                                        "elapsed_ms":  176.2408,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  3,
+                                        "elapsed_ms":  162.37040000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  4,
+                                        "elapsed_ms":  168.48600000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  5,
+                                        "elapsed_ms":  180.5464,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  6,
+                                        "elapsed_ms":  186.2526,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  7,
+                                        "elapsed_ms":  177.6004,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  8,
+                                        "elapsed_ms":  189.8099,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  9,
+                                        "elapsed_ms":  196.13660000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  10,
+                                        "elapsed_ms":  200.5376,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  11,
+                                        "elapsed_ms":  203.07430000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  12,
+                                        "elapsed_ms":  199.90130000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  13,
+                                        "elapsed_ms":  217.93310000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  14,
+                                        "elapsed_ms":  221.8254,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  15,
+                                        "elapsed_ms":  233.4796,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  16,
+                                        "elapsed_ms":  206.0688,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  17,
+                                        "elapsed_ms":  191.0175,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  18,
+                                        "elapsed_ms":  199.1801,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  19,
+                                        "elapsed_ms":  199.27120000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  20,
+                                        "elapsed_ms":  235.0591,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  21,
+                                        "elapsed_ms":  294.9262,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  22,
+                                        "elapsed_ms":  269.7868,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  23,
+                                        "elapsed_ms":  252.9635,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  24,
+                                        "elapsed_ms":  242.04950000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  25,
+                                        "elapsed_ms":  244.44410000000002,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  26,
+                                        "elapsed_ms":  242.53930000000003,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  27,
+                                        "elapsed_ms":  255.4028,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  28,
+                                        "elapsed_ms":  246.0543,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  29,
+                                        "elapsed_ms":  224.8229,
+                                        "valid":  true
+                                    },
+                                    {
+                                        "index":  30,
+                                        "elapsed_ms":  241.9957,
+                                        "valid":  true
+                                    }
+                                ],
+                    "orphan_process_ids":  [
+
+                                           ]
+                },
+    "single_instance":  {
+                            "passed":  true,
+                            "second_exited_within_ms":  3000,
+                            "second_exit_code":  0,
+                            "primary_core_pid":  24884
+                        },
+    "crash_and_restart":  {
+                              "create_verified":  true,
+                              "crash_orphan_process_ids":  [
+
+                                                           ],
+                              "job_cleanup_passed":  true,
+                              "restart_read_verified":  true,
+                              "graceful_restart_orphan_process_ids":  [
+
+                                                                      ]
+                          },
+    "scale_and_contrast":  {
+                               "equivalent_work_area":  "900x520 DIPs; physical 200 percent monitor not available on this host",
+                               "controls_contained":  true,
+                               "responsive_activity_hidden":  true,
+                               "editor_offscreen":  false,
+                               "send_offscreen":  false,
+                               "contrast_help_text":  "Contraste alto activado",
+                               "sampled_pixel_change_ratio":  0.88337273443656428,
+                               "contrast_toggled":  true,
+                               "orphan_process_ids":  [
+
+                                                      ]
+                           }
+}

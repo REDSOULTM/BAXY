@@ -1,0 +1,44 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74282,
+  "operation": "audio.volume",
+  "arguments": {
+    "level": 3
+  },
+  "confirmation_followed": true,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "77ebc0ff-7444-4af6-8cd2-6a32ad25f3a8",
+      "missionId": "5455f6c1-e721-455b-b765-7fcdd603fa6f",
+      "invocationId": "ec8d8ae5-0729-4a10-8105-b46479a6da30",
+      "status": "completed",
+      "message": "Listo, el volumen del sistema ya estaba en 5 %.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "operation": "audio.volume",
+        "targetId": "default_output",
+        "endpointIdHash": "44e1f90e029a6991840dffe535820f5f85c97081bf9c4f680088270ba5fd046d",
+        "baseline": {
+          "volumePercent": 5,
+          "muted": false
+        },
+        "final": {
+          "volumePercent": 5,
+          "muted": false
+        },
+        "applied": false,
+        "reconciled": false
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 0.298924700000498,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

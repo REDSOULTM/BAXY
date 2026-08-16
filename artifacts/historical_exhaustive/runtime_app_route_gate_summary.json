@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "scope": "every_exact_runtime_message_real_gui_input_pipeline_no_effect",
+  "uniqueRuntimeCases": 14845,
+  "allCasesAccounted": true,
+  "sourceCaseSha256": "561f67ce527fba5544eafbca79dec2aacc2be8f8a248ffca145cacf9f7f4a6d6",
+  "sourceOracleSha256": "5707a97f385e94e3313c48a4f73eab225c27a4ba145b0c3ec2b6f36c5b0ae1c8",
+  "statusCounts": {
+    "mind_required": 6766,
+    "pass_direct_operation_family": 574,
+    "pass_no_direct_effect": 5896,
+    "review_oracle": 1597,
+    "review_oracle_direct_effect": 12
+  },
+  "directFailures": 0,
+  "toolsExecuted": 0,
+  "failureCases": []
+}

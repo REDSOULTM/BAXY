@@ -1,0 +1,36 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "operation": "audio.status",
+  "arguments": {},
+  "confirmation_followed": false,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "32c22e9a-c885-4f96-8d5a-b9769f68c58b",
+      "missionId": "8190d2c9-2047-4b12-92f9-d5b94050fbcb",
+      "invocationId": "ecb99a06-da1e-4905-a9a5-9403453317bc",
+      "status": "completed",
+      "message": "El volumen de la salida predeterminada está en 3 % y el audio está activo.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "operation": "audio.status",
+        "targetId": "default_output",
+        "endpointIdHash": "44e1f90e029a6991840dffe535820f5f85c97081bf9c4f680088270ba5fd046d",
+        "state": {
+          "volumePercent": 3,
+          "muted": false
+        }
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 0.2697072000000844,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

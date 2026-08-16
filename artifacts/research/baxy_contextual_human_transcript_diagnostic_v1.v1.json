@@ -1,0 +1,145 @@
+{
+  "schema": "baxy.contextual-human-transcript-diagnostic.v1",
+  "measuredAtUtc": "2026-08-07T21:43:46.462821+00:00",
+  "scope": "opened_human_development_contextual_failure_analysis",
+  "sources": {
+    "innerReportSha256": "d0fa78d777adcfef11ebbd0f8ca164e7ecb86abac5e413b55c7b3a8a259b73e7"
+  },
+  "decoded": {
+    "full_plain": [
+      {
+        "label": "positive",
+        "viewStartSample": null,
+        "transcript": "tú con una bufanda del báximan reza, me explica."
+      },
+      {
+        "label": "matched_negative",
+        "viewStartSample": null,
+        "transcript": "es una historia aquí porque una..."
+      },
+      {
+        "label": "matched_negative",
+        "viewStartSample": null,
+        "transcript": ""
+      },
+      {
+        "label": "positive",
+        "viewStartSample": null,
+        "transcript": "bueno, nuestra caldera paz y roca, victoria."
+      },
+      {
+        "label": "matched_negative",
+        "viewStartSample": null,
+        "transcript": "seguimos adelante un vídeo"
+      },
+      {
+        "label": "matched_negative",
+        "viewStartSample": null,
+        "transcript": "y tenemos el mismo problema. ¿vale, amigo?"
+      },
+      {
+        "label": "positive",
+        "viewStartSample": null,
+        "transcript": "gracias."
+      },
+      {
+        "label": "matched_negative",
+        "viewStartSample": null,
+        "transcript": "la presión correcta, ¿vale? chao."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": null,
+        "transcript": "кимпи торговой марки бакси."
+      }
+    ],
+    "full_hot": [
+      {
+        "label": "positive",
+        "viewStartSample": null,
+        "transcript": "¿tú con una bufanda baxy manreza, me explica?"
+      },
+      {
+        "label": "positive",
+        "viewStartSample": null,
+        "transcript": "bueno, nuestra caldera paz y roca, victoria."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": null,
+        "transcript": "del grupo basiroca, victoria."
+      }
+    ],
+    "view_plain": [
+      {
+        "label": "positive",
+        "viewStartSample": 40000,
+        "transcript": "tú con una bufanda del baxi manresa me explica."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 64000,
+        "transcript": ""
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 40000,
+        "transcript": "bueno, nuestra caldera básica."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 64000,
+        "transcript": "bueno, nuestra caldera basi roca, victoria."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 40000,
+        "transcript": "del grupo basiroca."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 64000,
+        "transcript": "grupo basi roca victoria"
+      }
+    ],
+    "view_hot": [
+      {
+        "label": "positive",
+        "viewStartSample": 40000,
+        "transcript": "tú con una bufanda de baxy manresa me explica."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 64000,
+        "transcript": "fan baxy man reza me explica"
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 40000,
+        "transcript": "bueno, nuestra caldera básica."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 64000,
+        "transcript": "bueno, nuestra caldera basi roca, basi."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 40000,
+        "transcript": "del grupo basiroca."
+      },
+      {
+        "label": "positive",
+        "viewStartSample": 64000,
+        "transcript": "... grupo basi roca,"
+      }
+    ]
+  },
+  "developmentOnly": true,
+  "blindHumanAudioAccessed": false,
+  "normalizedTranscriptsRetained": true,
+  "filenamesRetained": false,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "effectsExecuted": 0
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "baxy.qbyt-dual-100h-preregistration.v10",
+  "registeredAtUtc": "2026-08-07T21:52:52.1112337Z",
+  "authority": "opened_development_regression_only",
+  "blindHoldout": false,
+  "freshHoldoutClaimSupported": false,
+  "farCertificationSupported": false,
+  "openedCorpus": true,
+  "candidateFrozen": false,
+  "policy": {
+    "name": "exactConfusableVetoThenQbyTOrPlainThenHotSameView",
+    "expectedSentinelCandidates": 20962,
+    "maximumGuardedNegativeFalseActivations": 0,
+    "sameExactCpuFusionView": true,
+    "humanDevelopmentPositiveHits": 4,
+    "humanDevelopmentPositiveTotal": 4,
+    "humanDevelopmentFalseHits": 0,
+    "humanDevelopmentNegativeTotal": 8
+  },
+  "fixedEvidence": {
+    "innerEvaluatorSha256": "b9d974c497036fb48e4c72d65c92a1281066f99f2b15818d39eeab71ac94e3e2",
+    "evaluatorSha256": "41be78662b798a084bbfa8e2154db3c8397aa7dc264967a85aa72d8eb6e5f3bc",
+    "qbytVerifierSha256": "c4e8718c590b69cebacc03adfc0097cd8bb9b3e76f5a619e834cf2db8eb1b5ae",
+    "qbytCandidateSha256": "4fb8519351decf74c958256c7fe5b48af2872ce4a89f8a1441d9e4ab05660781",
+    "humanEvidenceSha256": "585bd7d5f0569287bfd7a5623f3339dfda1cb5efbfdc987b5f4fe7ed9fb520f8",
+    "screeningCacheSha256": "374d19d4381d3b573a82749851d1760c6cc581b55c052c84166750428fa5de34",
+    "fusionManifestSha256": "87dd1534fdf9d513b5fc4ae58f4fc4dc8a4489452c554f362285e615a700b77d",
+    "ctcVerifierManifestSha256": "a0d699db419dc00ec5d7bf81090953081db3fdca6abaec8b22bce073af87710a",
+    "cudaParityReportSha256": "4a3602b15b0e695b3c2fa7d78849dcb0e3c5aecb479e526de915e026c72c3a79",
+    "priorHoldoutReportSha256": "3177273095ac8c7c4400a63ab5f4ddf9a6770520295ee25779fbe0f586ecb132",
+    "priorStage1ScanSha256": "d3a1dd8458324b1e646167de43d426db0012439b8a97585e78c6421b08c040a1",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "stage1ModelSha256": "dadb657e6ea0ea0241bc38130123b50bc63f08e6b99431393adc00b4eeb28921"
+  },
+  "cache": {
+    "reused": true,
+    "completeCandidates": 20962,
+    "containsTranscriptsOrFilenames": false
+  },
+  "schedule": {
+    "cudaBatchSize": 32,
+    "recordBatchSize": 64,
+    "sttBatchSize": 8,
+    "stage1Workers": 16,
+    "device": "cuda"
+  },
+  "plannedOutput": "D:\\BAXY\\source\\artifacts\\research\\baxy_qbyt_dual_same_view_negative_regression_development_v10.v1.json"
+}

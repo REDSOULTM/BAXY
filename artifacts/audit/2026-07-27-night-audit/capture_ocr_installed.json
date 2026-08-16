@@ -1,0 +1,87 @@
+{
+  "schema": "baxy.audit.capture-ocr.v1",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "elapsed_seconds": 0.20865210000010848,
+  "capture_responses": [
+    {
+      "type": "operation.response",
+      "requestId": "26303440-de65-4e50-82a8-ef3dbb3557d5",
+      "missionId": "acd86bea-cd93-4e3f-b089-7974f9b573bb",
+      "invocationId": "c37c0cbd-b02b-4c9c-bcf4-f27bee79cb1f",
+      "status": "pending",
+      "message": "Necesito tu confirmación antes de hacer eso.",
+      "verified": false,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "token": "ecvNWl-IGD-sljXoNvq8RQw1AWxI-oskkvCUdAhApDw",
+        "expiresAtUtc": "2026-07-27T06:22:05.0560485+00:00",
+        "reconciliationRequired": false
+      },
+      "errorCode": "confirmation_required"
+    },
+    {
+      "type": "operation.response",
+      "requestId": "7c7a099f-64bf-4a4d-94dd-3496079eebdc",
+      "missionId": "acd86bea-cd93-4e3f-b089-7974f9b573bb",
+      "invocationId": "c37c0cbd-b02b-4c9c-bcf4-f27bee79cb1f",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "captureId": "capture_7c76d0304d6446a4809019da481d0c87",
+        "width": 1280,
+        "height": 720,
+        "sha256": "f545d19d9d172505cff2efcfe8f5131b7f2da33baf7126d7efa3f9c00811fe98",
+        "scope": "virtual_screen",
+        "createdAtUtc": "2026-07-27T06:20:05.1150993+00:00"
+      },
+      "errorCode": null
+    }
+  ],
+  "ocr_responses_sanitized": [
+    {
+      "type": "operation.response",
+      "requestId": "76f0529f-ba2f-496b-a081-dec0bab6676f",
+      "missionId": "2b9923e1-a194-4653-9974-7beea3d10b5c",
+      "invocationId": "c9b9b4fe-1bca-4ee8-81c1-10675a4b3d5a",
+      "status": "pending",
+      "message": "Necesito tu confirmación antes de hacer eso.",
+      "verified": false,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "token": "18qgCMGPUlaQtf0Nrr690A8joS2VcRmaj2OoUTvTGoQ",
+        "expiresAtUtc": "2026-07-27T06:22:05.1301679+00:00",
+        "reconciliationRequired": false
+      },
+      "errorCode": "confirmation_required"
+    },
+    {
+      "type": "operation.response",
+      "requestId": "6377bf42-ca49-4a52-af9c-e68c13156968",
+      "missionId": "2b9923e1-a194-4653-9974-7beea3d10b5c",
+      "invocationId": "c9b9b4fe-1bca-4ee8-81c1-10675a4b3d5a",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "captureId": "capture_7c76d0304d6446a4809019da481d0c87",
+        "language": "es-MX",
+        "textSha256": "0a7e08d9c0cbaaa13b79ad093f4f4cde22ce773acda3ecdaf55462fb5112c259",
+        "lineCount": 32,
+        "authority": "windows_media_ocr",
+        "textCharacterCount": 998
+      },
+      "errorCode": null
+    }
+  ],
+  "private_capture_deleted_with_data_root": true,
+  "process_exit_code": 0,
+  "stderr": ""
+}

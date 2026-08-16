@@ -1,0 +1,111 @@
+{
+  "schema": "baxy.turn-policy-e5-selective-preregistration.v1",
+  "state": "locked",
+  "run_id": "turn-policy-e5-selective-development-v3",
+  "scope": "development_train_calibration_evaluation_only",
+  "architecture": {
+    "hierarchy": [
+      "no_effect_or_supported_effect",
+      "conversation_or_unsupported_ood",
+      "family_shortlist",
+      "operation_shortlist"
+    ],
+    "fit_unit": "individual_utterance_with_inverse_mission_variant_weight",
+    "partition_unit": "mission_id",
+    "calibration_unit": "worst_utterance_per_mission",
+    "evaluation_unit": "individual_utterance_and_all_variants_per_mission",
+    "conformal_alpha": 0.05,
+    "selective_guard_delta": 0.05,
+    "selective_guard_comparator": "strictly_greater_than_calibration_negative_maximum",
+    "conversation_fast_path_requires": [
+      "singleton_no_effect",
+      "singleton_conversation",
+      "one_sided_selective_guard"
+    ],
+    "supported_signal_requires": [
+      "singleton_supported_effect",
+      "nonempty_conformal_family_shortlist",
+      "one_sided_selective_guard"
+    ],
+    "unsupported_ood_can_authorize_fast_chat": false,
+    "execution_authority": false
+  },
+  "frozen_inputs": {
+    "runtime_train": {
+      "sha256": "33b12d44a70c8f540f7bfcb7a838e7ed4d96ed49117c150ca6a945131a7eb0bc"
+    },
+    "runtime_validation": {
+      "sha256": "f09e3224df670404ddcbdbfa523ee4ff3879046433fc08e1ad69f285e1093228"
+    },
+    "runtime_development_manifest": {
+      "repo_path": "artifacts/development/turn_policy_runtime_development_manifest.json",
+      "sha256": "5478a2367b4a4c502f0dbacc0616211d8184fea449b5203f94f64928b3d6ace9"
+    },
+    "mtop_development": {
+      "sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802"
+    },
+    "mtop_development_manifest": {
+      "repo_path": "artifacts/development/turn_policy_e5_selective_v3_mtop_manifest.json",
+      "sha256": "856bda3430530825af8288793cdee23fd23f3b9ae25fbe0d7cd0cc0a0019d99a"
+    },
+    "mtop_projection_map": {
+      "repo_path": "src/baxy_mind/data/mtop_turn_evidence_map.v1.json",
+      "sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d"
+    },
+    "product_catalog": {
+      "repo_path": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "sha256": "b577462ec8a15b1c5cf12309a7e344c936c14fffe24d115c053499167063696d"
+    },
+    "trainer": {
+      "repo_path": "scripts/train_turn_policy_e5_development.py",
+      "sha256": "849b6d3d21e4c1c32a99821d05a161c58a56db11d0a144b91cad280abeb51832"
+    },
+    "unit_tests": {
+      "repo_path": "tests/test_turn_policy_e5_development.py",
+      "sha256": "5d59359199672b0242a2f841d42aa82df71bc4685fa41a5b0930212af25aae78"
+    }
+  },
+  "acceptance": {
+    "exact_zero_counts": [
+      "metrics.selective_outcome.directional_safety.unsafe_conversation_as_supported",
+      "metrics.selective_outcome.directional_safety.unsafe_ood_as_supported",
+      "metrics.selective_outcome.directional_safety.unsafe_supported_as_conversation",
+      "metrics.selective_outcome.directional_safety.unsafe_ood_as_conversation",
+      "metrics.worst_locale.maximum_directional_errors"
+    ],
+    "minimums": {
+      "metrics.effect_gate.mission_all_variants_coverage": 0.9,
+      "metrics.no_effect_disposition.mission_all_variants_coverage": 0.9,
+      "metrics.selective_outcome.per_class.conversation_no_effect.selection_rate": 0.02,
+      "metrics.selective_outcome.per_class.supported_effect.selection_rate": 0.02,
+      "metrics.family_shortlist.coverage": 0.93,
+      "metrics.operation_shortlist.coverage": 0.9
+    },
+    "maximums": {
+      "thresholds.selective_guards.supported_effect.wilks_upper_rate": 0.01,
+      "thresholds.selective_guards.conversation_fast_path.wilks_upper_rate": 0.01
+    },
+    "required_constraints": {
+      "privacy.contains_text": false,
+      "constraints.execution_authority": false,
+      "constraints.sealed_final_test_reserve_opened": false,
+      "constraints.v4_opened": false,
+      "constraints.ood_can_authorize_fast_chat": false
+    }
+  },
+  "iteration_control": {
+    "change_reason": "public_catalog_expanded_with_notification_cancel_at",
+    "prior_binary_run_status": "rejected_architecture_and_safety",
+    "prior_binary_artifact_sha256": "0cc671ea5a2b3094d033814462a9e5cf8e0bb489cdb2e002104421a29ee5cc5a",
+    "selective_v3_runs_allowed": 1,
+    "thresholds_changed_from_v2": false,
+    "threshold_tuning_after_v3": false,
+    "official_mtop_test_may_be_opened_by_this_run": false,
+    "sealed_public_holdout_may_be_opened_by_this_run": false
+  },
+  "output": {
+    "repo_path": "artifacts/development/turn_policy_e5_selective_v3_development.json",
+    "must_not_exist_before_run": true,
+    "contains_text": false
+  }
+}

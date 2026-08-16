@@ -1,0 +1,1094 @@
+{
+  "protocol": "mind-router-spike-v2-loo",
+  "model": "intfloat/multilingual-e5-small",
+  "frozen_tau": 0.9,
+  "frozen_margin": 0.005,
+  "corpus_exemplars": 336,
+  "total_cases": 675,
+  "per_set": {
+    "audio_mute": {
+      "total": 16,
+      "correct": 14,
+      "accuracy": 0.875
+    },
+    "audio_negative": {
+      "total": 128,
+      "correct": 121,
+      "accuracy": 0.9453
+    },
+    "audio_status": {
+      "total": 16,
+      "correct": 16,
+      "accuracy": 1.0
+    },
+    "audio_volume": {
+      "total": 127,
+      "correct": 125,
+      "accuracy": 0.9843
+    },
+    "audio_volume_alias": {
+      "total": 12,
+      "correct": 12,
+      "accuracy": 1.0
+    },
+    "gpu_composition": {
+      "total": 17,
+      "correct": 17,
+      "accuracy": 1.0
+    },
+    "gpu_negative": {
+      "total": 34,
+      "correct": 30,
+      "accuracy": 0.8824
+    },
+    "gpu_status": {
+      "total": 26,
+      "correct": 21,
+      "accuracy": 0.8077
+    },
+    "memory_negative": {
+      "total": 34,
+      "correct": 33,
+      "accuracy": 0.9706
+    },
+    "memory_positive": {
+      "total": 105,
+      "correct": 65,
+      "accuracy": 0.619
+    },
+    "note_create": {
+      "total": 40,
+      "correct": 40,
+      "accuracy": 1.0
+    },
+    "note_negative": {
+      "total": 7,
+      "correct": 7,
+      "accuracy": 1.0
+    },
+    "system_status": {
+      "total": 113,
+      "correct": 102,
+      "accuracy": 0.9027
+    }
+  },
+  "overall_accuracy": 0.8933,
+  "regex_baseline": {
+    "coverage": "100% en sets congelados por construcción (tests .NET verdes)",
+    "generalization": "≈0% fuera de patrones literales; sin capacidad semántica"
+  },
+  "failure_modes": {
+    "dangerous_wrong_or_false_route": 37,
+    "safe_over_abstention": 35
+  },
+  "process_ram_mib": 880.3,
+  "weights_size_mib": 470.4,
+  "batch_seconds": 2.83,
+  "single_query_cpu_ms": 15.8,
+  "confusion": [
+    {
+      "expected": "ABSTAIN",
+      "predicted": "ABSTAIN",
+      "count": 175
+    },
+    {
+      "expected": "audio.volume",
+      "predicted": "audio.volume",
+      "count": 137
+    },
+    {
+      "expected": "system.status:battery",
+      "predicted": "system.status:battery",
+      "count": 54
+    },
+    {
+      "expected": "note.create",
+      "predicted": "note.create",
+      "count": 40
+    },
+    {
+      "expected": "memory.save",
+      "predicted": "memory.save",
+      "count": 40
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "ABSTAIN",
+      "count": 23
+    },
+    {
+      "expected": "system.status:memory",
+      "predicted": "system.status:memory",
+      "count": 21
+    },
+    {
+      "expected": "audio.status",
+      "predicted": "audio.status",
+      "count": 16
+    },
+    {
+      "expected": "memory.recall",
+      "predicted": "memory.recall",
+      "count": 16
+    },
+    {
+      "expected": "system.status:gpu_usage",
+      "predicted": "system.status:gpu_usage",
+      "count": 15
+    },
+    {
+      "expected": "audio.mute",
+      "predicted": "audio.mute",
+      "count": 14
+    },
+    {
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "count": 11
+    },
+    {
+      "expected": "system.status:disk",
+      "predicted": "system.status:disk",
+      "count": 10
+    },
+    {
+      "expected": "system.status:cpu",
+      "predicted": "system.status:cpu",
+      "count": 9
+    },
+    {
+      "expected": "memory.forget",
+      "predicted": "memory.forget",
+      "count": 9
+    },
+    {
+      "expected": "system.status:cpu_memory",
+      "predicted": "system.status:cpu_memory",
+      "count": 7
+    },
+    {
+      "expected": "system.status:gpu_identity",
+      "predicted": "system.status:gpu_identity",
+      "count": 6
+    },
+    {
+      "expected": "memory.save",
+      "predicted": "memory.forget",
+      "count": 6
+    },
+    {
+      "expected": "memory.forget",
+      "predicted": "memory.save",
+      "count": 6
+    },
+    {
+      "expected": "memory.forget",
+      "predicted": "ABSTAIN",
+      "count": 5
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "memory.save",
+      "count": 5
+    },
+    {
+      "expected": "system.status:memory",
+      "predicted": "ABSTAIN",
+      "count": 4
+    },
+    {
+      "expected": "ABSTAIN",
+      "predicted": "audio.volume",
+      "count": 4
+    },
+    {
+      "expected": "ABSTAIN",
+      "predicted": "system.status:gpu_usage",
+      "count": 4
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "memory.forget",
+      "count": 4
+    },
+    {
+      "expected": "system.status:cpu",
+      "predicted": "ABSTAIN",
+      "count": 3
+    },
+    {
+      "expected": "ABSTAIN",
+      "predicted": "audio.mute",
+      "count": 3
+    },
+    {
+      "expected": "memory.recall",
+      "predicted": "ABSTAIN",
+      "count": 3
+    },
+    {
+      "expected": "memory.correct",
+      "predicted": "ABSTAIN",
+      "count": 3
+    },
+    {
+      "expected": "system.status:cpu_memory",
+      "predicted": "system.status:memory",
+      "count": 2
+    },
+    {
+      "expected": "system.status:battery",
+      "predicted": "system.status:summary",
+      "count": 2
+    },
+    {
+      "expected": "audio.volume",
+      "predicted": "ABSTAIN",
+      "count": 2
+    },
+    {
+      "expected": "audio.mute",
+      "predicted": "ABSTAIN",
+      "count": 2
+    },
+    {
+      "expected": "system.status:gpu_usage",
+      "predicted": "system.status:cpu_memory",
+      "count": 2
+    },
+    {
+      "expected": "system.status:gpu_usage",
+      "predicted": "ABSTAIN",
+      "count": 2
+    },
+    {
+      "expected": "memory.save",
+      "predicted": "memory.correct",
+      "count": 2
+    },
+    {
+      "expected": "memory.forget",
+      "predicted": "memory.recall",
+      "count": 2
+    },
+    {
+      "expected": "memory.correct",
+      "predicted": "memory.save",
+      "count": 2
+    },
+    {
+      "expected": "system.status:os_memory",
+      "predicted": "system.status:os_memory",
+      "count": 1
+    },
+    {
+      "expected": "system.status:gpu_identity",
+      "predicted": "system.status:gpu_usage",
+      "count": 1
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "system.status:memory",
+      "count": 1
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "memory.recall",
+      "count": 1
+    }
+  ],
+  "failures": [
+    {
+      "set": "system_status",
+      "message_id": "msg_1b10f518d3a54a52103a",
+      "text": "how much memory and CPU am I using?",
+      "expected": "system.status:cpu_memory",
+      "predicted": "system.status:memory",
+      "winner_pool": "system.status:memory",
+      "best_score": 0.9481,
+      "margin": 0.0067,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_23261ba16990dd80130f",
+      "text": "how much memory and CPU am I using?",
+      "expected": "system.status:cpu_memory",
+      "predicted": "system.status:memory",
+      "winner_pool": "system.status:memory",
+      "best_score": 0.9481,
+      "margin": 0.0067,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_0c2c1faad4bf7ca17fd1",
+      "text": "how's my battery doing",
+      "expected": "system.status:battery",
+      "predicted": "system.status:summary",
+      "winner_pool": "system.status:summary",
+      "best_score": 0.9326,
+      "margin": 0.0166,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_33e3d0f43f11dd8a38c5",
+      "text": "how's my battery doing",
+      "expected": "system.status:battery",
+      "predicted": "system.status:summary",
+      "winner_pool": "system.status:summary",
+      "best_score": 0.9326,
+      "margin": 0.0166,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_0c35a4ab3357b902e2de",
+      "text": "current CPU usage",
+      "expected": "system.status:cpu",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:cpu",
+      "best_score": 0.9528,
+      "margin": 0.0015,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_2df3e502cfc925b58696",
+      "text": "current CPU usage",
+      "expected": "system.status:cpu",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:cpu",
+      "best_score": 0.9528,
+      "margin": 0.0015,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_fa16ccc70caa9c2dd63a",
+      "text": "muestra el uso de CPU",
+      "expected": "system.status:cpu",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:cpu",
+      "best_score": 0.94,
+      "margin": 0.0042,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_123626fa859a6b023cf9",
+      "text": "Cuanta ram tengo",
+      "expected": "system.status:memory",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:memory",
+      "best_score": 0.9558,
+      "margin": 0.0039,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_2b867fdbfa754c00e9ee",
+      "text": "Cuanta ram tengo",
+      "expected": "system.status:memory",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:memory",
+      "best_score": 0.9558,
+      "margin": 0.0039,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_3167fccc13f13ba3d119",
+      "text": "Dime cuánta RAM tiene este PC",
+      "expected": "system.status:memory",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:memory",
+      "best_score": 0.9506,
+      "margin": 0.0026,
+      "category": null
+    },
+    {
+      "set": "system_status",
+      "message_id": "msg_37eac1ca65ec94567c41",
+      "text": "Cuanta ram tengo",
+      "expected": "system.status:memory",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:memory",
+      "best_score": 0.9558,
+      "margin": 0.0039,
+      "category": null
+    },
+    {
+      "set": "audio_volume",
+      "message_id": "msg_20670a153dd7ac1c94a6",
+      "text": "sube el volumen del compu a 10.",
+      "expected": "audio.volume",
+      "predicted": "ABSTAIN",
+      "winner_pool": "ABSTAIN__corpus",
+      "best_score": 0.9622,
+      "margin": 0.0027,
+      "category": null
+    },
+    {
+      "set": "audio_volume",
+      "message_id": "msg_e2ee3500130619bf1821",
+      "text": "turn the volume down to 15",
+      "expected": "audio.volume",
+      "predicted": "ABSTAIN",
+      "winner_pool": "ABSTAIN__corpus",
+      "best_score": 0.9428,
+      "margin": 0.0052,
+      "category": null
+    },
+    {
+      "set": "audio_mute",
+      "message_id": "msg_5104c628778381b8d449",
+      "text": "silencia el audio",
+      "expected": "audio.mute",
+      "predicted": "ABSTAIN",
+      "winner_pool": "ABSTAIN__corpus",
+      "best_score": 0.9927,
+      "margin": 0.0126,
+      "category": null
+    },
+    {
+      "set": "audio_mute",
+      "message_id": "msg_660a81fe0d01c4b96729",
+      "text": "mute everything",
+      "expected": "audio.mute",
+      "predicted": "ABSTAIN",
+      "winner_pool": "ABSTAIN__negated_command",
+      "best_score": 0.9344,
+      "margin": 0.003,
+      "category": null
+    },
+    {
+      "set": "audio_negative",
+      "message_id": "msg_83fa827afa29b6b37198",
+      "text": "turn the volume down a bit",
+      "expected": "ABSTAIN",
+      "predicted": "audio.volume",
+      "winner_pool": "audio.volume",
+      "best_score": 0.9428,
+      "margin": 0.014,
+      "category": "relative"
+    },
+    {
+      "set": "audio_negative",
+      "message_id": "msg_845217eff716801c0606",
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo",
+      "expected": "ABSTAIN",
+      "predicted": "audio.volume",
+      "winner_pool": "audio.volume",
+      "best_score": 0.9205,
+      "margin": 0.0176,
+      "category": "relative"
+    },
+    {
+      "set": "audio_negative",
+      "message_id": "msg_88e1695b86f1d43f7567",
+      "text": "Baja el volumen 10%",
+      "expected": "ABSTAIN",
+      "predicted": "audio.volume",
+      "winner_pool": "audio.volume",
+      "best_score": 0.956,
+      "margin": 0.033,
+      "category": "relative"
+    },
+    {
+      "set": "audio_negative",
+      "message_id": "msg_ce0dfe761ea3ea849242",
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo",
+      "expected": "ABSTAIN",
+      "predicted": "audio.volume",
+      "winner_pool": "audio.volume",
+      "best_score": 0.9205,
+      "margin": 0.0176,
+      "category": "relative"
+    },
+    {
+      "set": "audio_negative",
+      "message_id": "msg_3ee5c3e1caa301a802b3",
+      "text": "make it almost mute",
+      "expected": "ABSTAIN",
+      "predicted": "audio.mute",
+      "winner_pool": "audio.mute",
+      "best_score": 0.9268,
+      "margin": 0.019,
+      "category": "ambiguous_mute"
+    },
+    {
+      "set": "audio_negative",
+      "message_id": "msg_12c34f82447d58a6ed9d",
+      "text": "silenciá el audio",
+      "expected": "ABSTAIN",
+      "predicted": "audio.mute",
+      "winner_pool": "audio.mute",
+      "best_score": 0.9927,
+      "margin": 0.0347,
+      "category": "accent_polarity"
+    },
+    {
+      "set": "audio_negative",
+      "message_id": "msg_22d9f38bed38ed73f74b",
+      "text": "silenciá el audio",
+      "expected": "ABSTAIN",
+      "predicted": "audio.mute",
+      "winner_pool": "audio.mute",
+      "best_score": 0.9927,
+      "margin": 0.0347,
+      "category": "accent_polarity"
+    },
+    {
+      "set": "gpu_status",
+      "message_id": "msg_fb24f22424798be96fd1",
+      "text": "Cuanta vram tengo?",
+      "expected": "system.status:gpu_identity",
+      "predicted": "system.status:gpu_usage",
+      "winner_pool": "system.status:gpu_usage",
+      "best_score": 0.9439,
+      "margin": 0.0096,
+      "category": null
+    },
+    {
+      "set": "gpu_status",
+      "message_id": "msg_cd154c6dc694f0965f55",
+      "text": "revisa VRAM",
+      "expected": "system.status:gpu_usage",
+      "predicted": "system.status:cpu_memory",
+      "winner_pool": "system.status:cpu_memory",
+      "best_score": 0.9352,
+      "margin": 0.0065,
+      "category": null
+    },
+    {
+      "set": "gpu_status",
+      "message_id": "msg_4f686d943b3dc84caa8c",
+      "text": "revisa VRAM",
+      "expected": "system.status:gpu_usage",
+      "predicted": "system.status:cpu_memory",
+      "winner_pool": "system.status:cpu_memory",
+      "best_score": 0.9352,
+      "margin": 0.0065,
+      "category": null
+    },
+    {
+      "set": "gpu_status",
+      "message_id": "msg_154315b7b3ae85edc2bb",
+      "text": "revisa nvidia-smi",
+      "expected": "system.status:gpu_usage",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:gpu_usage",
+      "best_score": 0.9147,
+      "margin": 0.0005,
+      "category": null
+    },
+    {
+      "set": "gpu_status",
+      "message_id": "msg_a5775b36707885259ffa",
+      "text": "revisa nvidia-smi",
+      "expected": "system.status:gpu_usage",
+      "predicted": "ABSTAIN",
+      "winner_pool": "system.status:gpu_usage",
+      "best_score": 0.9147,
+      "margin": 0.0005,
+      "category": null
+    },
+    {
+      "set": "gpu_negative",
+      "message_id": "msg_be1aef7279cebeec4ad3",
+      "text": "si nvidia-smi muestra 0% explica posibles razones",
+      "expected": "ABSTAIN",
+      "predicted": "system.status:gpu_usage",
+      "winner_pool": "system.status:gpu_usage",
+      "best_score": 0.9003,
+      "margin": 0.0325,
+      "category": "conditional_or_policy"
+    },
+    {
+      "set": "gpu_negative",
+      "message_id": "msg_c0eec94c521a035a8fec",
+      "text": "si nvidia-smi muestra 0% explica posibles razones",
+      "expected": "ABSTAIN",
+      "predicted": "system.status:gpu_usage",
+      "winner_pool": "system.status:gpu_usage",
+      "best_score": 0.9003,
+      "margin": 0.0325,
+      "category": "conditional_or_policy"
+    },
+    {
+      "set": "gpu_negative",
+      "message_id": "msg_83ec349f31c83424d841",
+      "text": "GPU cara o nube",
+      "expected": "ABSTAIN",
+      "predicted": "system.status:gpu_usage",
+      "winner_pool": "system.status:gpu_usage",
+      "best_score": 0.9222,
+      "margin": 0.0067,
+      "category": "fragment_or_monitoring_ambiguity"
+    },
+    {
+      "set": "gpu_negative",
+      "message_id": "msg_f9b7fc6890f8b020d3b1",
+      "text": "monitoreo de GPU",
+      "expected": "ABSTAIN",
+      "predicted": "system.status:gpu_usage",
+      "winner_pool": "system.status:gpu_usage",
+      "best_score": 0.9343,
+      "margin": 0.0165,
+      "category": "fragment_or_monitoring_ambiguity"
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_bc3204deb99f79653bd4",
+      "text": "recuerda que Carter está en Carter_v3",
+      "expected": "memory.save",
+      "predicted": "memory.correct",
+      "winner_pool": "memory.correct",
+      "best_score": 0.939,
+      "margin": 0.0055,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_d9488045282cb9d28f4d",
+      "text": "recuerda que Carter está en Carter_v3",
+      "expected": "memory.save",
+      "predicted": "memory.correct",
+      "winner_pool": "memory.correct",
+      "best_score": 0.939,
+      "margin": 0.0055,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_982f7f951ae7a4fc5184",
+      "text": "recuerda que mi carpeta de pruebas es %USERPROFILE%\\Desktop\\Carter_Test",
+      "expected": "memory.save",
+      "predicted": "memory.forget",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9227,
+      "margin": 0.0075,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_f619ef1009e1304e66b1",
+      "text": "recuerda que mi carpeta de pruebas es %USERPROFILE%\\Desktop\\Carter_Test",
+      "expected": "memory.save",
+      "predicted": "memory.forget",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9227,
+      "margin": 0.0075,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_850213b2d5a018a82e77",
+      "text": "recuerda que prefiero español",
+      "expected": "memory.save",
+      "predicted": "memory.forget",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9707,
+      "margin": 0.0494,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_856fc78f70087a498598",
+      "text": "recuerda que prefiero español",
+      "expected": "memory.save",
+      "predicted": "memory.forget",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9707,
+      "margin": 0.0494,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_124adfb41e8c88ac0614",
+      "text": "recuerda que soy menor de edad",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9179,
+      "margin": 0.0,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_28d3c4d65d0deddb4c72",
+      "text": "recuerda que soy menor de edad",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9179,
+      "margin": 0.0,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_67c534980edcf1f23fdb",
+      "text": "recuerda que soy menor de edad",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9179,
+      "margin": 0.0,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_0a2be6557a4637c1c77b",
+      "text": "recuerda que tengo prueba mañana",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.save",
+      "best_score": 0.9214,
+      "margin": 0.0009,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_85859ee8ca08c9398830",
+      "text": "recuerda que tengo prueba mañana",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.save",
+      "best_score": 0.9214,
+      "margin": 0.0009,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_b8daaa7f59adf680b807",
+      "text": "recuerda que uso Windows",
+      "expected": "memory.save",
+      "predicted": "memory.forget",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9234,
+      "margin": 0.006,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_bccc948333d76cbb44ea",
+      "text": "recuerda que uso Windows",
+      "expected": "memory.save",
+      "predicted": "memory.forget",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9234,
+      "margin": 0.006,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_30099a4ea5af21afe0cf",
+      "text": "recuerda temporalmente que esta corrida es smoke 12",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.save",
+      "best_score": 0.8824,
+      "margin": 0.0055,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_d6c5259944a1815fac1a",
+      "text": "recuerda temporalmente que esta corrida es smoke 12",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.save",
+      "best_score": 0.8824,
+      "margin": 0.0055,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_4b91b6c0340cee3dcb7a",
+      "text": "remember my favorite color is blue",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9337,
+      "margin": 0.0026,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_6d8350ff24d0c26a183f",
+      "text": "remember my favorite color is blue",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9337,
+      "margin": 0.0026,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_e5e907d0aa8d34518921",
+      "text": "remember my name is Alex",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.save",
+      "best_score": 0.8879,
+      "margin": 0.003,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_6d12eff26f0c24128e65",
+      "text": "remember that I prefer dark mode",
+      "expected": "memory.save",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.save",
+      "best_score": 0.8729,
+      "margin": 0.0084,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_4df104e0dc7b5bd5f289",
+      "text": "what's my favorite color",
+      "expected": "memory.recall",
+      "predicted": "ABSTAIN",
+      "winner_pool": "ABSTAIN__statement_no_request",
+      "best_score": 0.9339,
+      "margin": 0.0002,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_ec44602bbb738d79c540",
+      "text": "what's my favorite color",
+      "expected": "memory.recall",
+      "predicted": "ABSTAIN",
+      "winner_pool": "ABSTAIN__statement_no_request",
+      "best_score": 0.9339,
+      "margin": 0.0002,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_693d5db133942324eb62",
+      "text": "que me gusta tomar.",
+      "expected": "memory.recall",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.8805,
+      "margin": 0.0062,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_117b165804492dd6054c",
+      "text": "borra la memoria de que uso Windows",
+      "expected": "memory.forget",
+      "predicted": "memory.save",
+      "winner_pool": "memory.save",
+      "best_score": 0.9234,
+      "margin": 0.0169,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_8e85dc63397324d57bda",
+      "text": "borra la memoria de que uso Windows",
+      "expected": "memory.forget",
+      "predicted": "memory.save",
+      "winner_pool": "memory.save",
+      "best_score": 0.9234,
+      "margin": 0.0169,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_f134ccd31bff2005a116",
+      "text": "delete my favorite color",
+      "expected": "memory.forget",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9316,
+      "margin": 0.0015,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_fef46876346ae1ddf7d3",
+      "text": "delete my favorite color",
+      "expected": "memory.forget",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9316,
+      "margin": 0.0015,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_27c9cdbb7324a576c9ad",
+      "text": "borra tus recuerdos sobre mi",
+      "expected": "memory.forget",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9195,
+      "margin": 0.0011,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_c9e92fb12ce1a7377255",
+      "text": "borra tus recuerdos sobre mi",
+      "expected": "memory.forget",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9195,
+      "margin": 0.0011,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_584474717f59a066f8b1",
+      "text": "forget everything about me",
+      "expected": "memory.forget",
+      "predicted": "memory.recall",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9136,
+      "margin": 0.0111,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_d380f45502734dc26fbf",
+      "text": "forget everything about me",
+      "expected": "memory.forget",
+      "predicted": "memory.recall",
+      "winner_pool": "memory.recall",
+      "best_score": 0.9136,
+      "margin": 0.0111,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_6c24855a84f7fb731155",
+      "text": "olvida mi carpeta de pruebas",
+      "expected": "memory.forget",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.save",
+      "best_score": 0.9227,
+      "margin": 0.0035,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_a02d10dddef5b1ef0dd3",
+      "text": "olvida mi preferencia de respuestas cortas",
+      "expected": "memory.forget",
+      "predicted": "memory.save",
+      "winner_pool": "memory.save",
+      "best_score": 0.9447,
+      "margin": 0.0067,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_ddd7e942ea46ad3c901e",
+      "text": "olvida mi preferencia de respuestas cortas",
+      "expected": "memory.forget",
+      "predicted": "memory.save",
+      "winner_pool": "memory.save",
+      "best_score": 0.9447,
+      "margin": 0.0067,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_1b6a3ace43016ca0f24f",
+      "text": "olvida que prefiero español",
+      "expected": "memory.forget",
+      "predicted": "memory.save",
+      "winner_pool": "memory.save",
+      "best_score": 0.9707,
+      "margin": 0.0407,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_8be0a10a1ac10ae9ba1a",
+      "text": "olvida que prefiero español",
+      "expected": "memory.forget",
+      "predicted": "memory.save",
+      "winner_pool": "memory.save",
+      "best_score": 0.9707,
+      "margin": 0.0407,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_c63e16f388e9c514103b",
+      "text": "corrige la memoria: no es Carter v2, es Carter v3",
+      "expected": "memory.correct",
+      "predicted": "memory.save",
+      "winner_pool": "memory.save",
+      "best_score": 0.939,
+      "margin": 0.033,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_d72e015e9e5a6c80347c",
+      "text": "corrige la memoria: no es Carter v2, es Carter v3",
+      "expected": "memory.correct",
+      "predicted": "memory.save",
+      "winner_pool": "memory.save",
+      "best_score": 0.939,
+      "margin": 0.033,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_5aa39b6d909e0b8d4bf3",
+      "text": "cambia mi preferencia: ahora respuestas técnicas pero breves",
+      "expected": "memory.correct",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9094,
+      "margin": 0.0005,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_804c29f3b35735387760",
+      "text": "cambia mi preferencia: ahora respuestas técnicas pero breves",
+      "expected": "memory.correct",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9094,
+      "margin": 0.0005,
+      "category": null
+    },
+    {
+      "set": "memory_positive",
+      "message_id": "msg_f98a7dee0392ad997fd5",
+      "text": "cambia mi preferencia: ahora respuestas técnicas pero breves",
+      "expected": "memory.correct",
+      "predicted": "ABSTAIN",
+      "winner_pool": "memory.forget",
+      "best_score": 0.9094,
+      "margin": 0.0005,
+      "category": null
+    },
+    {
+      "set": "memory_negative",
+      "message_id": "msg_b7d59617a32e63aca567",
+      "text": "cuánta memoria me queda libre",
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "system.status:memory",
+      "winner_pool": "system.status:memory",
+      "best_score": 0.9411,
+      "margin": 0.0338,
+      "category": "memory_word_homonym"
+    }
+  ]
+}

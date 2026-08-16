@@ -1,0 +1,1851 @@
+{
+  "schema_version": 1,
+  "protocol_id": "baxy-technology-tournament-v1",
+  "weights_unchanged": true,
+  "source_results_sha256": "19d508c1510ff330c2f234e51c01b2ed77f5bc102424dbbb2f90e33a40063ce2",
+  "scores": {
+    "python_embedded_runtime": {
+      "family": "Python",
+      "disqualified": false,
+      "gate_failures": [],
+      "gates": {
+        "functional_90_percent": true,
+        "unauthorized_workspace": true,
+        "nul_traversal_absolute_and_protected": true,
+        "no_network": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_request_redacted": true
+      },
+      "raw": {
+        "functional_weight_passed": 34,
+        "functional_weight_total": 34,
+        "cold_start_p95_ms": 78.5821,
+        "warm_p95_ms": 10.31631,
+        "throughput_per_second": 119.07000137287712,
+        "idle_private_mib": 11.0703125,
+        "peak_private_mib": 11.26953125,
+        "artifact_mib": 21.477479934692383,
+        "runtime_external": false,
+        "build_seconds": 0.4006762,
+        "implementation_source_lines": 545
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "evidence": {
+            "passed_weight": 34,
+            "total_weight": 34
+          }
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 3,
+          "maximum": 3,
+          "evidence": 11.0703125
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 11.26953125
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "evidence": 21.477479934692383
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": "0 MiB: el corte no carga inferencia"
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 78.5821
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 10.31631
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 119.07000137287712
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.keyboard_and_focus": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "workspace": true,
+            "hostile_inputs": true
+          }
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte no maneja secretos ni instala un usuario de servicio."
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "measured",
+          "points": 0,
+          "maximum": 2,
+          "evidence": {
+            "verified": true,
+            "idempotent": true,
+            "journal": true,
+            "tamper_evidence": false,
+            "reason": "El JSONL durable no incluye todavía MAC ni firma."
+          }
+        },
+        "installation.reproducible_clean_build": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 1.0
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Se revisará en la arquitectura integrada, no por lenguaje nominal."
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "functional_90_percent": true,
+            "unauthorized_workspace": true,
+            "nul_traversal_absolute_and_protected": true,
+            "no_network": true,
+            "verified_effects": true,
+            "idempotent_replay": true,
+            "journal_tail_recovery": true,
+            "malformed_request_redacted": true
+          }
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de revisión estructural de ronda B."
+        },
+        "license.compatible_and_recorded": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.maintained_supported_components": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": "Mismo protocolo derivado del corpus congelado"
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte fue reescrito de forma equivalente."
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Requiere el corte integrado."
+        }
+      },
+      "provisional_points_earned": 66.0,
+      "provisional_points_available": 68,
+      "provisional_normalized_100": 97.05882352941177
+    },
+    "python_pyinstaller_onedir": {
+      "family": "Python",
+      "disqualified": false,
+      "gate_failures": [],
+      "gates": {
+        "functional_90_percent": true,
+        "unauthorized_workspace": true,
+        "nul_traversal_absolute_and_protected": true,
+        "no_network": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_request_redacted": true
+      },
+      "raw": {
+        "functional_weight_passed": 34,
+        "functional_weight_total": 34,
+        "cold_start_p95_ms": 85.5499,
+        "warm_p95_ms": 6.367199999999999,
+        "throughput_per_second": 216.5108113591098,
+        "idle_private_mib": 12.6796875,
+        "peak_private_mib": 12.6796875,
+        "artifact_mib": 18.27511978149414,
+        "runtime_external": false,
+        "build_seconds": 5.2860331,
+        "implementation_source_lines": 553
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "evidence": {
+            "passed_weight": 34,
+            "total_weight": 34
+          }
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 3,
+          "maximum": 3,
+          "evidence": 12.6796875
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 12.6796875
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "evidence": 18.27511978149414
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": "0 MiB: el corte no carga inferencia"
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 85.5499
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 6.367199999999999
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 216.5108113591098
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.keyboard_and_focus": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "workspace": true,
+            "hostile_inputs": true
+          }
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte no maneja secretos ni instala un usuario de servicio."
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "measured",
+          "points": 0,
+          "maximum": 2,
+          "evidence": {
+            "verified": true,
+            "idempotent": true,
+            "journal": true,
+            "tamper_evidence": false,
+            "reason": "El JSONL durable no incluye todavía MAC ni firma."
+          }
+        },
+        "installation.reproducible_clean_build": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 1.0
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Se revisará en la arquitectura integrada, no por lenguaje nominal."
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "functional_90_percent": true,
+            "unauthorized_workspace": true,
+            "nul_traversal_absolute_and_protected": true,
+            "no_network": true,
+            "verified_effects": true,
+            "idempotent_replay": true,
+            "journal_tail_recovery": true,
+            "malformed_request_redacted": true
+          }
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de revisión estructural de ronda B."
+        },
+        "license.compatible_and_recorded": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.maintained_supported_components": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": "Mismo protocolo derivado del corpus congelado"
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte fue reescrito de forma equivalente."
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Requiere el corte integrado."
+        }
+      },
+      "provisional_points_earned": 66.0,
+      "provisional_points_available": 68,
+      "provisional_normalized_100": 97.05882352941177
+    },
+    "python_pyinstaller_onefile": {
+      "family": "Python",
+      "disqualified": false,
+      "gate_failures": [],
+      "gates": {
+        "functional_90_percent": true,
+        "unauthorized_workspace": true,
+        "nul_traversal_absolute_and_protected": true,
+        "no_network": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_request_redacted": true
+      },
+      "raw": {
+        "functional_weight_passed": 34,
+        "functional_weight_total": 34,
+        "cold_start_p95_ms": 554.9218,
+        "warm_p95_ms": 5.66483,
+        "throughput_per_second": 241.80323310266917,
+        "idle_private_mib": 12.9609375,
+        "peak_private_mib": 15.41796875,
+        "artifact_mib": 7.769069671630859,
+        "runtime_external": false,
+        "build_seconds": 7.0236016,
+        "implementation_source_lines": 553
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "evidence": {
+            "passed_weight": 34,
+            "total_weight": 34
+          }
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 3,
+          "maximum": 3,
+          "evidence": 12.9609375
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 15.41796875
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "evidence": 7.769069671630859
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": "0 MiB: el corte no carga inferencia"
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 3.3030358857142854,
+          "maximum": 4,
+          "evidence": 554.9218
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 5.66483
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 241.80323310266917
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.keyboard_and_focus": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "workspace": true,
+            "hostile_inputs": true
+          }
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte no maneja secretos ni instala un usuario de servicio."
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "measured",
+          "points": 0,
+          "maximum": 2,
+          "evidence": {
+            "verified": true,
+            "idempotent": true,
+            "journal": true,
+            "tamper_evidence": false,
+            "reason": "El JSONL durable no incluye todavía MAC ni firma."
+          }
+        },
+        "installation.reproducible_clean_build": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 1.0
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Se revisará en la arquitectura integrada, no por lenguaje nominal."
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "functional_90_percent": true,
+            "unauthorized_workspace": true,
+            "nul_traversal_absolute_and_protected": true,
+            "no_network": true,
+            "verified_effects": true,
+            "idempotent_replay": true,
+            "journal_tail_recovery": true,
+            "malformed_request_redacted": true
+          }
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de revisión estructural de ronda B."
+        },
+        "license.compatible_and_recorded": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.maintained_supported_components": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": "Mismo protocolo derivado del corpus congelado"
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte fue reescrito de forma equivalente."
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Requiere el corte integrado."
+        }
+      },
+      "provisional_points_earned": 65.30303588571428,
+      "provisional_points_available": 68,
+      "provisional_normalized_100": 96.033876302521
+    },
+    "dotnet_fdd_single": {
+      "family": ".NET/Windows",
+      "disqualified": false,
+      "gate_failures": [],
+      "gates": {
+        "functional_90_percent": true,
+        "unauthorized_workspace": true,
+        "nul_traversal_absolute_and_protected": true,
+        "no_network": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_request_redacted": true
+      },
+      "raw": {
+        "functional_weight_passed": 34,
+        "functional_weight_total": 34,
+        "cold_start_p95_ms": 72.051,
+        "warm_p95_ms": 8.757405,
+        "throughput_per_second": 182.1049474454227,
+        "idle_private_mib": 5.27734375,
+        "peak_private_mib": 23.91015625,
+        "artifact_mib": 0.17782211303710938,
+        "runtime_external": true,
+        "build_seconds": 1.7168398,
+        "implementation_source_lines": 575
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "evidence": {
+            "passed_weight": 34,
+            "total_weight": 34
+          }
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 3,
+          "maximum": 3,
+          "evidence": 5.27734375
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 23.91015625
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "NE",
+          "points": null,
+          "maximum": 4,
+          "reason": "El runtime externo no está incluido en el artefacto."
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": "0 MiB: el corte no carga inferencia"
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 72.051
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 8.757405
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 182.1049474454227
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.keyboard_and_focus": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "workspace": true,
+            "hostile_inputs": true
+          }
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte no maneja secretos ni instala un usuario de servicio."
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "measured",
+          "points": 0,
+          "maximum": 2,
+          "evidence": {
+            "verified": true,
+            "idempotent": true,
+            "journal": true,
+            "tamper_evidence": false,
+            "reason": "El JSONL durable no incluye todavía MAC ni firma."
+          }
+        },
+        "installation.reproducible_clean_build": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 1.0
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Se revisará en la arquitectura integrada, no por lenguaje nominal."
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "functional_90_percent": true,
+            "unauthorized_workspace": true,
+            "nul_traversal_absolute_and_protected": true,
+            "no_network": true,
+            "verified_effects": true,
+            "idempotent_replay": true,
+            "journal_tail_recovery": true,
+            "malformed_request_redacted": true
+          }
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de revisión estructural de ronda B."
+        },
+        "license.compatible_and_recorded": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.maintained_supported_components": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": "Mismo protocolo derivado del corpus congelado"
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte fue reescrito de forma equivalente."
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Requiere el corte integrado."
+        }
+      },
+      "provisional_points_earned": 62.0,
+      "provisional_points_available": 64,
+      "provisional_normalized_100": 96.875
+    },
+    "dotnet_sc_single": {
+      "family": ".NET/Windows",
+      "disqualified": false,
+      "gate_failures": [],
+      "gates": {
+        "functional_90_percent": true,
+        "unauthorized_workspace": true,
+        "nul_traversal_absolute_and_protected": true,
+        "no_network": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_request_redacted": true
+      },
+      "raw": {
+        "functional_weight_passed": 34,
+        "functional_weight_total": 34,
+        "cold_start_p95_ms": 80.3065,
+        "warm_p95_ms": 8.190885,
+        "throughput_per_second": 186.89199362175003,
+        "idle_private_mib": 5.5234375,
+        "peak_private_mib": 24.14453125,
+        "artifact_mib": 70.0955867767334,
+        "runtime_external": false,
+        "build_seconds": 2.1571312,
+        "implementation_source_lines": 575
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "evidence": {
+            "passed_weight": 34,
+            "total_weight": 34
+          }
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 3,
+          "maximum": 3,
+          "evidence": 5.5234375
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 24.14453125
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "evidence": 70.0955867767334
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": "0 MiB: el corte no carga inferencia"
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 80.3065
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 8.190885
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 186.89199362175003
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.keyboard_and_focus": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "workspace": true,
+            "hostile_inputs": true
+          }
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte no maneja secretos ni instala un usuario de servicio."
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "measured",
+          "points": 0,
+          "maximum": 2,
+          "evidence": {
+            "verified": true,
+            "idempotent": true,
+            "journal": true,
+            "tamper_evidence": false,
+            "reason": "El JSONL durable no incluye todavía MAC ni firma."
+          }
+        },
+        "installation.reproducible_clean_build": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 1.0
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Se revisará en la arquitectura integrada, no por lenguaje nominal."
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "functional_90_percent": true,
+            "unauthorized_workspace": true,
+            "nul_traversal_absolute_and_protected": true,
+            "no_network": true,
+            "verified_effects": true,
+            "idempotent_replay": true,
+            "journal_tail_recovery": true,
+            "malformed_request_redacted": true
+          }
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de revisión estructural de ronda B."
+        },
+        "license.compatible_and_recorded": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.maintained_supported_components": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": "Mismo protocolo derivado del corpus congelado"
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte fue reescrito de forma equivalente."
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Requiere el corte integrado."
+        }
+      },
+      "provisional_points_earned": 66.0,
+      "provisional_points_available": 68,
+      "provisional_normalized_100": 97.05882352941177
+    },
+    "dotnet_native_aot": {
+      "family": ".NET/Windows",
+      "disqualified": false,
+      "gate_failures": [],
+      "gates": {
+        "functional_90_percent": true,
+        "unauthorized_workspace": true,
+        "nul_traversal_absolute_and_protected": true,
+        "no_network": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_request_redacted": true
+      },
+      "raw": {
+        "functional_weight_passed": 34,
+        "functional_weight_total": 34,
+        "cold_start_p95_ms": 22.7768,
+        "warm_p95_ms": 7.77076,
+        "throughput_per_second": 206.09199699435433,
+        "idle_private_mib": 3.22265625,
+        "peak_private_mib": 19.8203125,
+        "artifact_mib": 1.765625,
+        "runtime_external": false,
+        "build_seconds": 4.9151058,
+        "implementation_source_lines": 575
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "evidence": {
+            "passed_weight": 34,
+            "total_weight": 34
+          }
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 3,
+          "maximum": 3,
+          "evidence": 3.22265625
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 19.8203125
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "evidence": 1.765625
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": "0 MiB: el corte no carga inferencia"
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 22.7768
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 7.77076
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 206.09199699435433
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.keyboard_and_focus": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "workspace": true,
+            "hostile_inputs": true
+          }
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte no maneja secretos ni instala un usuario de servicio."
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "measured",
+          "points": 0,
+          "maximum": 2,
+          "evidence": {
+            "verified": true,
+            "idempotent": true,
+            "journal": true,
+            "tamper_evidence": false,
+            "reason": "El JSONL durable no incluye todavía MAC ni firma."
+          }
+        },
+        "installation.reproducible_clean_build": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 1.0
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Se revisará en la arquitectura integrada, no por lenguaje nominal."
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "functional_90_percent": true,
+            "unauthorized_workspace": true,
+            "nul_traversal_absolute_and_protected": true,
+            "no_network": true,
+            "verified_effects": true,
+            "idempotent_replay": true,
+            "journal_tail_recovery": true,
+            "malformed_request_redacted": true
+          }
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de revisión estructural de ronda B."
+        },
+        "license.compatible_and_recorded": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.maintained_supported_components": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": "Mismo protocolo derivado del corpus congelado"
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte fue reescrito de forma equivalente."
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Requiere el corte integrado."
+        }
+      },
+      "provisional_points_earned": 66.0,
+      "provisional_points_available": 68,
+      "provisional_normalized_100": 97.05882352941177
+    },
+    "rust_native": {
+      "family": "Rust",
+      "disqualified": false,
+      "gate_failures": [],
+      "gates": {
+        "functional_90_percent": true,
+        "unauthorized_workspace": true,
+        "nul_traversal_absolute_and_protected": true,
+        "no_network": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_request_redacted": true
+      },
+      "raw": {
+        "functional_weight_passed": 34,
+        "functional_weight_total": 34,
+        "cold_start_p95_ms": 22.0405,
+        "warm_p95_ms": 5.348235,
+        "throughput_per_second": 287.84582517050546,
+        "idle_private_mib": 1.66015625,
+        "peak_private_mib": 2.3203125,
+        "artifact_mib": 0.2998046875,
+        "runtime_external": false,
+        "build_seconds": 0.0738096,
+        "implementation_source_lines": 862
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "evidence": {
+            "passed_weight": 34,
+            "total_weight": 34
+          }
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 3,
+          "maximum": 3,
+          "evidence": 1.66015625
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 2.3203125
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "evidence": 0.2998046875
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": "0 MiB: el corte no carga inferencia"
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 22.0405
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 4,
+          "maximum": 4,
+          "evidence": 5.348235
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 287.84582517050546
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.keyboard_and_focus": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Exclusivo de la ronda B con GUI instalada."
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "workspace": true,
+            "hostile_inputs": true
+          }
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte no maneja secretos ni instala un usuario de servicio."
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "measured",
+          "points": 0,
+          "maximum": 2,
+          "evidence": {
+            "verified": true,
+            "idempotent": true,
+            "journal": true,
+            "tamper_evidence": false,
+            "reason": "El JSONL durable no incluye todavía MAC ni firma."
+          }
+        },
+        "installation.reproducible_clean_build": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Requiere repetición de build o instalador de ronda B, no solo un bundle."
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": 1.0
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Se revisará en la arquitectura integrada, no por lenguaje nominal."
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": {
+            "functional_90_percent": true,
+            "unauthorized_workspace": true,
+            "nul_traversal_absolute_and_protected": true,
+            "no_network": true,
+            "verified_effects": true,
+            "idempotent_replay": true,
+            "journal_tail_recovery": true,
+            "malformed_request_redacted": true
+          }
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": true
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de revisión estructural de ronda B."
+        },
+        "license.compatible_and_recorded": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.maintained_supported_components": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Pendiente de inventario y SBOM final."
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "measured",
+          "points": 2,
+          "maximum": 2,
+          "evidence": "Mismo protocolo derivado del corpus congelado"
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "NE",
+          "points": null,
+          "maximum": 2,
+          "reason": "El corte fue reescrito de forma equivalente."
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "NE",
+          "points": null,
+          "maximum": 1,
+          "reason": "Requiere el corte integrado."
+        }
+      },
+      "provisional_points_earned": 66.0,
+      "provisional_points_available": 68,
+      "provisional_normalized_100": 97.05882352941177
+    }
+  },
+  "pareto": {
+    "self_contained_performance": [
+      "rust_native"
+    ],
+    "self_contained_protocol_dimensions": [
+      "dotnet_native_aot",
+      "dotnet_sc_single",
+      "python_embedded_runtime",
+      "python_pyinstaller_onedir",
+      "python_pyinstaller_onefile",
+      "rust_native"
+    ],
+    "dimensions_performance": [
+      "cold_start_p95_ms",
+      "warm_p95_ms",
+      "peak_private_mib",
+      "artifact_mib"
+    ],
+    "dimensions_protocol": [
+      "cold_start_p95_ms",
+      "warm_p95_ms",
+      "peak_private_mib",
+      "artifact_mib",
+      "build_seconds",
+      "implementation_source_lines"
+    ],
+    "note": "Los bundles con runtime externo se publican pero no compiten como artefactos autocontenidos."
+  },
+  "round_a_promotion": {
+    "integrated_finalists": [
+      "dotnet_windows_core",
+      "rust_core"
+    ],
+    "python_status": "No pasa como control plane a ronda B; sigue como candidato de sidecar de modelos y automatización.",
+    "reason": "Rust ocupa la frontera estricta de rendimiento en esta repetición. .NET queda a menos de 7 puntos y pasa para falsar su hipótesis de integración Windows, GUI y lifecycle. Python no mostró una ventaja de control plane que compense una tercera GUI completa.",
+    "winner_declared": false
+  }
+}

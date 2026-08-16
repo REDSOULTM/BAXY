@@ -1,0 +1,793 @@
+{
+  "type": "hello",
+  "protocol": "baxy.local.v1",
+  "coreVersion": "1.0.0",
+  "pid": 28156,
+  "capabilities": [
+    {
+      "name": "app.open",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string",
+            "enum": [
+              "windows.notepad"
+            ]
+          }
+        },
+        "required": [
+          "appId"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "app.open.process.window.focus.v1",
+      "description": "Abre una aplicación local permitida y verifica su proceso, ventana visible y foco."
+    },
+    {
+      "name": "audio.mute",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "audio.mute.endpoint.postread.v1",
+      "description": "Silencia o reactiva la salida predeterminada y corrobora la postlectura."
+    },
+    {
+      "name": "audio.status",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "risk": "read_only",
+      "verifierContractId": "audio.status.endpoint.read.v1",
+      "description": "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla."
+    },
+    {
+      "name": "audio.volume",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "level"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "audio.volume.endpoint.postread.v1",
+      "description": "Fija el volumen absoluto de la salida predeterminada y corrobora la postlectura."
+    },
+    {
+      "name": "memory.correct",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "expectedValue": {
+            "type": [
+              "null",
+              "boolean",
+              "number",
+              "string"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "context",
+              "fact",
+              "preference",
+              "rule"
+            ]
+          },
+          "retention": {
+            "type": "string",
+            "enum": [
+              "persistent",
+              "session",
+              "temporary"
+            ]
+          },
+          "selector": {
+            "type": "string",
+            "x-maxUtf8Bytes": 256,
+            "x-nonWhitespace": true
+          },
+          "value": {
+            "type": [
+              "null",
+              "boolean",
+              "number",
+              "string"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "retention",
+          "selector",
+          "value",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "memory.correct.protected.postread.v1",
+      "description": "Corrige una memoria local mediante comparación y sustitución."
+    },
+    {
+      "name": "memory.disable",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "const": false
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "enabled",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "memory.disable.protected.status.v1",
+      "description": "Deshabilita nuevas lecturas y escrituras de memoria local."
+    },
+    {
+      "name": "memory.enable",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "const": true
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "enabled",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "privacy_sensitive",
+      "verifierContractId": "memory.enable.protected.status.v1",
+      "description": "Habilita la memoria privada local con confirmación explícita."
+    },
+    {
+      "name": "memory.export",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "destination": {
+            "type": "string",
+            "enum": [
+              "documents"
+            ]
+          },
+          "includeSecrets": {
+            "type": "boolean",
+            "const": false
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "destination",
+          "includeSecrets",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "privacy_sensitive",
+      "verifierContractId": "memory.export.protected.receipt.v1",
+      "description": "Prepara una exportación privada local sin secretos."
+    },
+    {
+      "name": "memory.forget",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "confirmationRequired": {
+            "type": "boolean",
+            "const": true
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "all",
+              "exact",
+              "kind",
+              "topic"
+            ]
+          },
+          "selector": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "x-maxUtf8Bytes": 256
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "confirmationRequired",
+          "scope",
+          "selector",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "work_loss",
+      "verifierContractId": "memory.forget.protected.absence.v1",
+      "description": "Elimina memorias locales del alcance confirmado."
+    },
+    {
+      "name": "memory.list",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 512
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "limit",
+          "offset",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "read_only",
+      "verifierContractId": "memory.list.protected.page.v1",
+      "description": "Lista memoria local visible de forma acotada."
+    },
+    {
+      "name": "memory.recall",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "all",
+              "exact",
+              "kind"
+            ]
+          },
+          "selector": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "x-maxUtf8Bytes": 256
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "scope",
+          "selector",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "read_only",
+      "verifierContractId": "memory.recall.protected.records.v1",
+      "description": "Recupera memorias locales visibles para la sesión actual."
+    },
+    {
+      "name": "memory.save",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "expiryPolicy": {
+            "type": "string",
+            "enum": [
+              "after_relevance_window",
+              "session_end"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "context",
+              "fact",
+              "preference",
+              "rule"
+            ]
+          },
+          "retention": {
+            "type": "string",
+            "enum": [
+              "persistent",
+              "session",
+              "temporary"
+            ]
+          },
+          "selector": {
+            "type": "string",
+            "x-maxUtf8Bytes": 256,
+            "x-nonWhitespace": true
+          },
+          "sensitivity": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "personal"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "maxItems": 16,
+            "items": {
+              "type": "string",
+              "x-maxUtf8Bytes": 64,
+              "x-nonWhitespace": true
+            }
+          },
+          "value": {
+            "type": [
+              "null",
+              "boolean",
+              "number",
+              "string"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "kind",
+          "retention",
+          "selector",
+          "sensitivity",
+          "tags",
+          "value",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "memory.save.protected.postread.v1",
+      "description": "Guarda una memoria explícita local no secreta."
+    },
+    {
+      "name": "memory.sensitive.save",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "expiryPolicy": {
+            "type": "string",
+            "enum": [
+              "after_relevance_window",
+              "session_end"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "context",
+              "fact",
+              "preference",
+              "rule"
+            ]
+          },
+          "retention": {
+            "type": "string",
+            "enum": [
+              "persistent",
+              "session",
+              "temporary"
+            ]
+          },
+          "selector": {
+            "type": "string",
+            "x-maxUtf8Bytes": 256,
+            "x-nonWhitespace": true
+          },
+          "sensitivity": {
+            "type": "string",
+            "enum": [
+              "secret",
+              "sensitive"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "maxItems": 16,
+            "items": {
+              "type": "string",
+              "x-maxUtf8Bytes": 64,
+              "x-nonWhitespace": true
+            }
+          },
+          "value": {
+            "type": [
+              "null",
+              "boolean",
+              "number",
+              "string"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "kind",
+          "retention",
+          "selector",
+          "sensitivity",
+          "tags",
+          "value",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "privacy_sensitive",
+      "verifierContractId": "memory.sensitive.save.protected.postread.v1",
+      "description": "Guarda una memoria sensible local después de confirmación."
+    },
+    {
+      "name": "memory.session.clear",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "confirmationRequired": {
+            "type": "boolean",
+            "const": false
+          },
+          "mustNotDeletePersistent": {
+            "type": "boolean",
+            "const": true
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "session"
+            ]
+          },
+          "selector": {
+            "type": "null"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "confirmationRequired",
+          "mustNotDeletePersistent",
+          "scope",
+          "selector",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "memory.session.clear.protected.scope.v1",
+      "description": "Elimina únicamente la memoria temporal de la sesión actual."
+    },
+    {
+      "name": "memory.status",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "read_only",
+      "verifierContractId": "memory.status.protected.snapshot.v1",
+      "description": "Informa el estado y los límites de la memoria local."
+    },
+    {
+      "name": "note.create",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "x-maxUtf8Bytes": 65536
+          },
+          "title": {
+            "type": "string",
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "content",
+          "title"
+        ],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "note.create.local.reopen.v1",
+      "description": "Crea una nota privada local y verifica su relectura."
+    },
+    {
+      "name": "note.list",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "minimum": 0
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "enum": [
+              null,
+              "active",
+              "all",
+              "trashed"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "risk": "read_only",
+      "verifierContractId": "note.list.local.snapshot.v1",
+      "description": "Enumera notas privadas locales activas o enviadas a la papelera."
+    },
+    {
+      "name": "note.read",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "expectedIsTrashed": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "expectedRevision": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "minimum": 1
+          },
+          "expectedTitle": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          },
+          "noteId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "maxLength": 36
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "risk": "read_only",
+      "verifierContractId": "note.read.local.identity.v1",
+      "description": "Lee una nota privada local por su identificador o título exacto."
+    },
+    {
+      "name": "note.restore",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "expectedIsTrashed": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "expectedRevision": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "minimum": 1
+          },
+          "expectedTitle": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          },
+          "noteId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "maxLength": 36
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "risk": "low_reversible",
+      "verifierContractId": "note.restore.local.postread.v1",
+      "description": "Restaura una nota privada local, seleccionada por identificador o título exacto, desde la papelera."
+    },
+    {
+      "name": "note.trash",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "expectedIsTrashed": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "expectedRevision": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "minimum": 1
+          },
+          "expectedTitle": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          },
+          "noteId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "maxLength": 36
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "risk": "recoverable_delete",
+      "verifierContractId": "note.trash.local.postread.v1",
+      "description": "Mueve una nota privada local, seleccionada por identificador o título exacto, a una papelera reversible."
+    },
+    {
+      "name": "system.status",
+      "argumentsSchema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "battery",
+              "cpu",
+              "cpu_memory",
+              "disk",
+              "gpu_identity",
+              "gpu_usage",
+              "memory",
+              "os",
+              "os_memory",
+              "summary"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "risk": "read_only",
+      "verifierContractId": "system.status.windows.measurement.v1",
+      "description": "Mide CPU, memoria, disco, batería, GPU y Windows sin modificar el equipo."
+    }
+  ]
+}

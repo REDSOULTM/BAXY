@@ -1,0 +1,39 @@
+{
+  "schema": "baxy.clinc-oos-development.r251.v1",
+  "authority": "read_only_external_development_source_attestation_not_model_training_or_evaluation",
+  "source": {
+    "url": "https://raw.githubusercontent.com/clinc/oos-eval/master/data/data_oos_plus.json",
+    "license": "CC-BY-4.0",
+    "path": "D:\\BAXYRuntime\\datasets\\clinc150-v1\\source\\data_oos_plus.json",
+    "bytes": 2509789,
+    "sha256": "bfcca9ae515623541dc1983c94c4ed7cae9d26b42ae47d74b972e51bb6f7a21f"
+  },
+  "development": {
+    "members_decoded": [
+      "oos_train",
+      "oos_val"
+    ],
+    "oos_train_rows": 250,
+    "oos_validation_rows": 100,
+    "texts_retained": false
+  },
+  "test_seal": {
+    "members_decoded": false,
+    "test_rows_read": false,
+    "method": "only development arrays are structurally located and UTF-8 decoded; test arrays remain opaque bytes"
+  },
+  "constraints": {
+    "model_started": false,
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "program_sha256": "7c5e231fc2f25cb59a4500e29aa9f0e8f797d7f39eac77d46a1cc151f2819c37"
+  },
+  "next_requirement": "Any candidate must seal its model, new in-catalog development selection, and CLINC train-versus-validation role before importing model weights; CLINC test remains unavailable."
+}

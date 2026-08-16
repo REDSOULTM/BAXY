@@ -1,0 +1,75 @@
+{
+  "schema": "baxy.hyperspotter-feasibility.v1",
+  "measured_at_utc": "2026-08-04T09:58:40.726080+00:00",
+  "method": {
+    "upstream_commit": "08d226c93563f997008ba510421a5ab7d6b65b25",
+    "checkpoint_sha256": "76B77D5C8A04B36FCC109F8670BDC51C81BE6DBDC4F6FDA8051E800E2A46D017",
+    "probe_sha256": "B33D04D27428DB306F00A78FFA524C764EEF06C2C39669EAF9A7C8683EB14A68",
+    "model": "official Conformer HyperSpotter checkpoint",
+    "parameters": 8185961,
+    "keywords": [
+      "baxy",
+      "baxi"
+    ],
+    "decision_score": "maximum probability across keyword aliases",
+    "ctc_decoder_initialization_suppressed": true,
+    "device": "cpu"
+  },
+  "sample": {
+    "selection": "lexicographically first fixed WAV prefix per class",
+    "positive_files": 256,
+    "negative_files": 256,
+    "positive_audio_seconds": 161.02093749999977,
+    "negative_audio_seconds": 197.87524999999974,
+    "audio_or_filenames_retained": false
+  },
+  "scores": {
+    "positive": {
+      "minimum": 0.008513608947396278,
+      "p05": 0.02654137648642063,
+      "p50": 0.4414268732070923,
+      "p95": 0.9240603446960449,
+      "maximum": 0.9623456001281738
+    },
+    "negative": {
+      "minimum": 0.004456476774066687,
+      "p05": 0.017200132831931114,
+      "p50": 0.3297293484210968,
+      "p95": 0.927731454372406,
+      "maximum": 0.9683381915092468
+    }
+  },
+  "threshold_0_5": {
+    "threshold": 0.5,
+    "positive_hits": 116,
+    "false_hits": 98,
+    "recall": 0.453125,
+    "false_reject_rate": 0.546875,
+    "false_positive_rate_per_clip": 0.3828125,
+    "observed_false_activations_per_hour": 1782.9415250265026,
+    "zero_event_poisson_upper_95_per_hour": null,
+    "accuracy": 0.53515625
+  },
+  "best_development_threshold": {
+    "threshold": 0.63,
+    "positive_hits": 99,
+    "false_hits": 73,
+    "recall": 0.38671875,
+    "false_reject_rate": 0.61328125,
+    "false_positive_rate_per_clip": 0.28515625,
+    "observed_false_activations_per_hour": 1328.1095033360684,
+    "zero_event_poisson_upper_95_per_hour": null,
+    "accuracy": 0.55078125
+  },
+  "latency": {
+    "model_load_seconds": 0.9664524999679998,
+    "inference_seconds": 72.89331340003991,
+    "total_seconds": 73.85976590000791,
+    "clips_per_second_including_load": 6.9320555482554695
+  },
+  "promotable": false,
+  "candidate_status": "rejected",
+  "rejection": "The official open-vocabulary checkpoint does not separate BAXY positives from adversarial negatives: both fixed and development-selected thresholds miss the required recall and false-activation bounds by large margins.",
+  "promotion_note": "Development feasibility only; threshold was inspected on this sample and there is no independent physical microphone holdout.",
+  "effects_executed": 0
+}

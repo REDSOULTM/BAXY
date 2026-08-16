@@ -1,0 +1,103 @@
+{
+  "schema": "baxy-wake-corpus-gate-v3",
+  "measured_at": "2026-08-08T05:33:48.054373+00:00",
+  "mode": "acoustic",
+  "model": {
+    "backend": "livekit-wakeword",
+    "architecture": "Product AcousticWakeDetector over physical microphone capture",
+    "model": "baxy_physicalhuman_v8",
+    "phrase": "Baxy",
+    "sample_rate": 16000,
+    "window_samples": 32000,
+    "threshold": 0.001,
+    "hop_samples": 4000,
+    "debounce_seconds": 2.0,
+    "model_sha256": "a7af4bdb6932941c9258ab1a244e64c636e49ca6053cb063b4daaaaac2c5a965"
+  },
+  "physical_path": {
+    "topology": "explicit speaker -> room -> explicit microphone",
+    "input_device": "Varios micrófonos (Realtek(R) Audio)",
+    "output_device": "Altavoces (Realtek(R) Audio)",
+    "hardware_sample_rate": 48000,
+    "playback_gain": 0.25,
+    "minimum_path_correlation": 0.02,
+    "minimum_captured_snr_db": 3.0,
+    "captured_audio_retained": false
+  },
+  "corpus": {
+    "selection": "sorted unique source WAVs; no repetition",
+    "positive_sha256": "e91ee28c9aa032f2bf9438e9544100c38f49a61b80c47f03dd6afbebb2f7be36",
+    "negative_sha256": "907cab5671312e0aaac971c45d1be7f94c3e4a4230f68149508041235c8bff4c",
+    "filenames_or_transcripts_retained": false
+  },
+  "positive": {
+    "files": 4,
+    "invalid_acoustic_paths": 2,
+    "invalid_reason_counts": {
+      "captured_snr_below_floor": 2
+    },
+    "matched_files": 4,
+    "activations": 8,
+    "audio_seconds": 12.0,
+    "path_correlation_p05": 0.20910007975277986,
+    "path_correlation_p50": 0.4437163703792198,
+    "captured_snr_db_p05": 1.8219779250236812,
+    "captured_snr_db_p50": 8.604257153668057,
+    "activation_p50_seconds": 2.016,
+    "activation_p95_seconds": 2.016,
+    "prediction_p50_seconds": 0.05096709995996207,
+    "prediction_p95_seconds": 0.08910730003844947,
+    "score_p05": 0.004963576793670654,
+    "score_p50": 0.021032273769378662,
+    "score_p95": 0.31963127851486206,
+    "score_maximum": 0.5055744647979736
+  },
+  "negative": {
+    "files": 8,
+    "invalid_acoustic_paths": 1,
+    "invalid_reason_counts": {
+      "captured_snr_below_floor": 1
+    },
+    "matched_files": 8,
+    "activations": 16,
+    "audio_seconds": 24.0,
+    "path_correlation_p05": 0.1640666190806957,
+    "path_correlation_p50": 0.3455773362954631,
+    "captured_snr_db_p05": -2.8204152617829776,
+    "captured_snr_db_p50": 8.856304232389984,
+    "activation_p50_seconds": 2.0159999999999982,
+    "activation_p95_seconds": 2.0159999999999982,
+    "prediction_p50_seconds": 0.054132399964146316,
+    "prediction_p95_seconds": 0.0883123999228701,
+    "score_p05": 0.005371361970901489,
+    "score_p50": 0.020709753036499023,
+    "score_p95": 0.3418842554092407,
+    "score_maximum": 0.7779879570007324
+  },
+  "recall": 1.0,
+  "false_reject_rate": 0.0,
+  "false_activations_per_hour": 2400.0,
+  "far": {
+    "method": "poisson_one_sided_upper_exact",
+    "confidence": 0.95,
+    "observed_activations": 16,
+    "exposure_hours": 0.006666666666666667,
+    "observed_per_hour": 2400.0,
+    "upper_confidence_per_hour": 3645.1775525470653
+  },
+  "minimum_positive": 200,
+  "minimum_negative_hours": 30.0,
+  "minimum_zero_event_hours_for_far": 29.957322735539897,
+  "effective_minimum_negative_hours": 30.0,
+  "corpus_sufficient": false,
+  "promotion_criteria": {
+    "mode": "acoustic",
+    "false_reject_rate_lte": 0.05,
+    "false_activations_per_hour_lte": 0.1,
+    "far_confidence_gte": 0.95
+  },
+  "elapsed_wall_seconds": 66.70736120000947,
+  "promotable": false,
+  "privacy": "no captured audio, filename, or transcript is written to this report",
+  "effects_executed": 0
+}

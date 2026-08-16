@@ -1,0 +1,175 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+/.tmp/
+
+# Capturas de pantalla (se regeneran; pesan MB)
+data/captures/
+
+# Estado local de sesiones de la GUI
+data/sessions/
+data/ui_settings.json
+# Preferencias/caches locales de streaming (perfil y URLs de sesión).
+data/prefs.json
+# Memoria personal persistente del usuario.
+data/memory.json
+
+# Node (la GUI compilada dist/ SÍ se versiona)
+gui/ui_field/node_modules/
+
+# Transcripts de sesiones de desarrollo
+ContextoFable.md
+
+# Estado local del harness
+.claude/
+
+# Encoder experimental 9-tools (reproducible: scripts/train_encoder_9tools.py, determinista)
+data/router_encoder_ft9/
+data/router_encoder_ft9_torch/
+
+# Artefactos internalizados (D35): binarios regenerables con scripts/sync_artifacts.py
+# (el GGUF de 292MB excede el límite de GitHub; el corpus del bench en data/ SÍ se versiona)
+models/artifacts/
+
+# Runtime de JARVIS (default-on D31): se generan solos por usuario, NO versionar.
+# OJO: data/knowledge.sqlite SÍ está versionado (seed del RAG) — por eso son
+# patrones específicos, no *.sqlite en bloque. (.gitignore NO admite comentarios
+# inline: cada patrón en su línea.)
+# behavior_log (<usuario>.db):
+data/*.db
+# memoria semántica de turnos (JARVIS):
+data/experience.sqlite
+# log_recorder por sesión (full.log + chat.log):
+data/logs/
+data/cache/
+# Caches binarios legacy: ahora se regeneran como NPZ seguro bajo data/cache.
+data/fg/fg_family_emb.npy
+data/fg/fg_tool_emb.npy
+
+# Runtime de reminders (mismo patrón D34): el store arranca vacío y el
+# runner PS se regenera desde _RUNNER_PS en tools/reminders.py.
+data/reminders.json
+data/notifications/
+
+# Estado privado de Tool Ecosystem v2. Las bases y claves pertenecen al usuario
+# local; los directorios de acceptance son evidencia reproducible generada por
+# harnesses, no fuentes versionables.
+data/tooling-v2/
+data/privacy/
+data/notes-v2.sqlite3*
+data/tasks-v2.sqlite3*
+data/reminders-v2.sqlite3*
+data/acceptance/
+
+# Runtime de la GUI (D38): preferencia de accesibilidad + imágenes adjuntas
+data/accessibility.json
+data/uploads/
+
+# Audio humano usado para validación local: conservar solo manifests/texto.
+tests/data/*.wav
+
+# Laboratorio local preservado fuera del producto hasta migrar su evidencia.
+/Experimentando/
+
+# Base de conocimiento del RAG (D39): documentos PERSONALES del usuario,
+# runtime puro (el "seed" versionado era un test_doc de la migración; el
+# schema se crea solo en el primer uso). Patrón D34.
+data/knowledge.sqlite
+# candidatos a exemplar propuestos por el miner (se curan a mano y se borran)
+data/exemplar_candidates.json
+
+# Snapshot local completo del BAXY anterior. Su historia permanece disponible
+# en Git hasta ee06786; esta copia se conserva solo como referencia de lectura.
+/legacy/
+
+# Export privado de sesiones Codex/subagentes. Puede contener comandos, salidas
+# y contexto sensible; el manifiesto sanitizado sí se versiona.
+/documentacion/agentes/privado/
+
+# Investigación competitiva extraoficial y sus posibles checkouts de lectura.
+# Puede contener notas de mercado, precios fechados y análisis no destinado a
+# la distribución pública del producto.
+/competidores/
+
+# Salidas regenerables del torneo tecnológico; los JSON crudos publicados sí
+# se versionan bajo artifacts/technology_tournament/raw.
+/experiments/technology_tournament/**/bin/
+/experiments/technology_tournament/**/obj/
+/experiments/technology_tournament/**/target/
+/experiments/technology_tournament/**/.venv/
+/experiments/**/bin/
+/experiments/**/obj/
+/artifacts/technology_tournament/work/
+/artifacts/technology_tournament/build/
+/artifacts/technology_tournament/cache/
+/artifacts/technology_tournament/runtime/
+/experiments/technology_tournament/round_b/tauri_rust/node_modules/
+
+# Producto .NET: compilación y estado privado local.
+/src/**/bin/
+/src/**/obj/
+/tests/Baxy.*/bin/
+/tests/Baxy.*/obj/
+/artifacts/product/runtime/
+/artifacts/product/build/
+/artifacts/product/gate-work/
+/artifacts/product/turn_evidence_encoder_gate_cache/
+/artifacts/product/turn_policy_gate.jsonl
+/artifacts/product/turn_policy_gate*.bak
+/artifacts/product/*.trx
+/artifacts/test-results/**/core/
+/artifacts/setup/build/
+/artifacts/setup/runtime/
+
+# Corpus runtime derivado: combina evidencia pública y mensajes históricos
+# privados. Se regenera localmente; el holdout público y su manifiesto sí se
+# versionan.
+/tests/data/turn_evidence_runtime.v1.jsonl
+
+# Evidencia local regenerable de gates de comportamiento y cobertura.
+/artifacts/validation/
+
+# Ledger local exhaustivo: conserva 710k apariciones y supera 1 GiB. Se
+# regenera con scripts/build_exhaustive_message_ledger.py; solo los manifiestos
+# y reportes compactos se versionan.
+/artifacts/historical_exhaustive/*.jsonl
+/artifacts/historical_exhaustive/*.checkpoint.json
+/artifacts/historical_exhaustive/runtime_fast_gate.json
+/artifacts/historical_exhaustive/runtime_model_gate.json
+/artifacts/historical_exhaustive/runtime_model_gate.jsonl
+/artifacts/historical_exhaustive/runtime_model_gate*.jsonl.lock
+/artifacts/historical_exhaustive/runtime_model_gate*.stdout.log
+/artifacts/historical_exhaustive/runtime_model_gate*.stderr.log
+
+# ---------------------------------------------------------------------------
+# BAXY Definitivo — el repositorio guarda fuente y evidencia viva, no binarios.
+# Modelos, ejecutables y corpus pesados se regeneran desde scripts versionados.
+# ---------------------------------------------------------------------------
+*.gguf
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.bin
+*.npz
+*.exe
+*.dll
+*.pdb
+*.lib
+*.exp
+*.zip
+*.7z
+*.msi
+*.nupkg
+*.wav
+*.mp3
+*.flac
+*.mp4
+/legacy/
+**/target/
+**/dist/
+**/build/
+**/TestResults/
+**/packages/
+/documentacion/agentes/privado/

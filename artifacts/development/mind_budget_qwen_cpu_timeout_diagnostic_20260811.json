@@ -1,0 +1,38 @@
+{
+  "schema": "baxy.mind-budget-focused-diagnostic.v1",
+  "measured_at_utc": "2026-08-11T11:47:09.8143305+00:00",
+  "source_probe": {
+    "path": "artifacts/product/mind_budget_gate_qwen_current_tree_20260811.json",
+    "sha256": "1e5a6eaa06945a93b82fec036fee3a35c5a87c5b8509600efd34a1f5225c14b2a",
+    "status": "failed",
+    "gpu": "45/45 requests, zero errors, passed",
+    "cpu": "45/45 requests, one arguments-06 request_failed at 19.011 seconds"
+  },
+  "hypothesis": "The budget gate forces a 19-second llama-server timeout in both profiles even though the product runtime defaults to 120 seconds when BAXY_MIND_NGL=0.",
+  "focused_reproduction": {
+    "profile": "cpu_fallback",
+    "case_id": "arguments-06",
+    "operation": "app.open",
+    "input": "abre la calculadora",
+    "llm_http_timeout_seconds": 120.0,
+    "outer_timeout_seconds": 121.0,
+    "requests_completed": 1,
+    "errors": [],
+    "latency_seconds": 12.425,
+    "contract_projection": {
+      "type": "arguments.result",
+      "operation": "app.open",
+      "ok": true,
+      "arguments": {
+        "appId": "calculadora"
+      },
+      "question_nonempty": false,
+      "code": null
+    },
+    "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+    "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+    "effect_executed": false
+  },
+  "conclusion": "The Qwen3 CPU contract is correct and completed inside the product timeout. The current budget gate's CPU HTTP timeout is inconsistent with the product CPU profile and remains an open source defect until the wake-v17 tree is unfrozen.",
+  "promotion": "forbidden_until_gate_fix_and_full_gpu_cpu_rerun"
+}

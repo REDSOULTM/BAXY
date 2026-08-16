@@ -1,0 +1,123 @@
+gemma4-e2b-qat: auto-pass 27/30
+--- [0] es Q: qué es una resistencia eléctrica
+    A: Una resistencia eléctrica es un componente electrónico que se utiliza para limitar o controlar el flujo de corriente eléctrica en un circuito.  In English, it is a component used to limit or control the flow of electric 
+--- [1] es Q: qué pasa si cierro Steam
+    A: Si cierras Steam, generalmente lo que sucede es que dejas de ejecutar la aplicación Steam. Dependiendo de lo que estuvieras haciendo en ese momento, puede ocurrir varias cosas:  1.  **Si estabas jugando o descargando alg
+--- [2] <FAIL-AUTO> en Q: what's the foreground process
+    A: system_status(scope='os')
+--- [3] en Q: Thanku what a great work!
+    A: You're welcome! I'm glad I could help. Is there anything else you need assistance with? 😊
+--- [4] <FAIL-AUTO> en Q: open calcualtor
+    A: No tengo una aplicación llamada "calculatort". ¿Te refieres a alguna otra?
+--- [5] en Q: What is a winglet?
+    A: A winglet is a device attached to the wing of an aircraft, typically an airplane, that is designed to reduce drag and increase lift. It's a common aerodynamic feature on modern aircraft.  ¿Necesitas más detalles sobre có
+--- [6] es Q: jamás apagues la pc
+    A: Entendido. No apagaré la PC. ¿Hay algo más en lo que pueda ayudarte?
+--- [7] en Q: Can you please make it easier to understand?
+    A: To make things easier to understand, I need to know **what** you are referring to! 😊  Could you please tell me what you want me to rephrase, explain, or simplify? For example, are you asking about:  1.  A previous respon
+--- [8] es Q: Cómo puedo encontrar sentido a la vida
+    A: That's a deep question, and as BAXY, I don't have personal beliefs or life experiences to give you a definitive answer. Finding meaning in life is a very personal journey, and there's no single, universal way to do it.  
+--- [9] es Q: qué fue lo primero que te pregunté
+    A: Lo primero que me preguntaste fue: "¿qué fue lo primero que te pregunté".
+--- [10] es Q: hablame de Mortal Kombat
+    A: Claro, te hablaré de Mortal Kombat. Es una de las franquicias de videojuegos más icónicas y con una historia muy profunda.  **¿Qué quieres saber específicamente?** Por ejemplo, puedo contarte sobre:  1.  **La historia:**
+--- [11] es Q: ¿Podrías traducir ese código para que también corra en Python?
+    A: Por favor, proporciona el código que quieres que traduzca. I need the code to be able to translate it for you!
+--- [12] es Q: Podrías decirme 5 palabras que comiencen con H?
+    A: ¡Claro! Aquí tienes 5 palabras que empiezan con H:  1. Hola 2. Hombre 3. Hermoso 4. Historia 5. Hielo
+--- [13] es Q: Espera ra como quye al e2b?, si se supone que el modelo de vram4 ddebe
+    A: Lo siento, no entiendo tu pregunta. ¿Podrías reformularla o explicar qué significa "e2b" y "qat" en este contexto? Necesito más información para poder ayudarte.
+--- [14] es Q: Gracias por tu ayuda. Nos hablamos pronto.
+    A: ¡De nada! Que tengas un buen día. ¡Nos vemos!
+--- [15] es Q: capital de francia
+    A: Paris.
+--- [16] es Q: entra a discord al chat de juanpi
+    A: Lo siento, no tengo la capacidad de entrar a aplicaciones externas como Discord. Solo puedo interactuar con las herramientas que tengo disponibles en este sistema.
+--- [17] es Q: Cierra Opera ahora
+    A: No tengo la capacidad de cerrar aplicaciones directamente. Solo puedo abrir aplicaciones permitidas como el Bloc de notas (`windows.notepad`).
+--- [18] <FAIL-AUTO> en Q: is Steam open right now?
+    A: No tengo la capacidad de verificar el estado de aplicaciones como Steam. Solo puedo ejecutar las herramientas que tengo disponibles, que incluyen abrir aplicaciones locales como el Bloc de notas, gestionar audio, memoria
+--- [19] es Q: qué no puedes hacer
+    A: Como BAXY, un asistente local en tu PC Windows, no tengo capacidades que no estén definidas en mis herramientas.  **Lo que SÍ puedo hacer es:**  *   **Manejar tus archivos de memoria local:** Puedo leer, escribir, crear,
+--- [20] es Q: ¿Qué es ChatGPT?
+    A: ChatGPT es un modelo de lenguaje grande desarrollado por OpenAI. Es un programa de inteligencia artificial diseñado para conversar con humanos, responder preguntas, escribir textos, traducir idiomas y muchas otras tareas
+--- [21] es Q: Háblame de ti, tú que se supone que haces.
+    A: ¡Hola! Soy BAXY, un asistente local que vive en tu PC con Windows.  Mi función principal es ayudarte con tareas locales, interactuar con tu sistema y gestionar la información que se guarda en tu máquina, utilizando las h
+--- [22] es Q: qué clima hace hoy en Buenos Aires
+    A: Lo siento, no tengo la capacidad de buscar información en tiempo real como el clima.
+--- [23] es Q: recordame tomar la pastilla a las 3
+    A: No tengo una herramienta para establecer recordatorios. ¿Hay algo más en lo que te pueda ayudar?
+--- [24] es Q: hola baxy, qué puedes hacer?
+    A: ¡Hola! Soy BAXY, tu asistente local en esta PC Windows. Puedo ayudarte con varias cosas, dependiendo de lo que necesites.  Por ejemplo, puedo:  *   **Abrir aplicaciones:** Como el Bloc de notas (`windows.notepad`). *   *
+--- [25] en Q: who are you and what can you do on this pc?
+    A: ¡Hola! I am BAXY, your local assistant here on your Windows PC.  I can help you with a few things:  *   **Manage your system memory and notes:** I can save, recall, list, and delete local memories and notes. *   **Contro
+--- [26] es Q: explícame en simple qué es la memoria RAM
+    A: La memoria RAM (Random Access Memory) es como la "memoria a corto plazo" de tu computadora.  **En simple, es el espacio de trabajo temporal donde el sistema guarda toda la información y los programas que estás usando *en
+--- [27] spanglish Q: oye can you help me practicar mi english?
+    A: Sure, I can help you practice your English! We can chat about any topic you like. What do you want to talk about today?
+--- [28] es Q: puedes mandar correos o entrar a internet?
+    A: No, no puedo mandar correos ni entrar a internet. Soy BAXY, un asistente local que vive en tu PC Windows. Solo puedo ejecutar las herramientas que tengo disponibles localmente.
+--- [29] es Q: gracias, eso era todo por hoy
+    A: De nada! ¡Que tengas un buen día! 👋
+qwen3.5-4b: auto-pass 23/30
+--- [0] es Q: qué es una resistencia eléctrica
+    A: Una **resistencia eléctrica** es un componente electrónico que se opone al flujo de corriente eléctrica en un circuito. Su función principal es limitar la corriente que circula por un circuito o disipar energía en forma 
+--- [1] es Q: qué pasa si cierro Steam
+    A: Si cierras la aplicación Steam, no ocurrirá ningún problema en el sistema. Steam es solo una aplicación que ejecuta en tu PC. Cerrarla es como cerrar cualquier otro programa (como Chrome o Word): dejarás de usarla tempor
+--- [2] <FAIL-AUTO> en Q: what's the foreground process
+    A: No puedo acceder directamente a la información del sistema operativo o al proceso de primer plano.  Sin embargo, si quieres abrir una aplicación local (como el Bloc de notas) para verificar su proceso, ventana visible y 
+--- [3] <FAIL-AUTO> en Q: Thanku what a great work!
+    A: ¡Gracias! Me alegra haber podido ayudarte. ¿Hay algo más en lo que pueda asistirte hoy?
+--- [4] <FAIL-AUTO> en Q: open calcualtor
+    A: No puedo abrir el calculador directamente, ya que no tengo acceso a aplicaciones específicas como el Calculador de Windows. Sin embargo, te recomiendo que busques el icono del calculador en el menú de inicio o en tu escr
+--- [5] en Q: What is a winglet?
+    A: A **winglet** is a small, curved wing tip extension designed to be added to the ends of an aircraft's wings.  Here are the key points about them:  *   **Purpose:** Their main goal is to reduce **induced drag**, a type of
+--- [6] es Q: jamás apagues la pc
+    A: Entendido. No apagaré la PC. Estoy aquí para ayudarte con lo que necesites en este dispositivo.
+--- [7] <FAIL-AUTO> en Q: Can you please make it easier to understand?
+    A: ¡Claro que sí! Aquí tienes un resumen más simple y claro de lo que puedo hacer:  **Lo que puedo hacer:** 1.  **Leer y escribir en Notepad:** Puedo abrir el Bloc de Notas de Windows y escribir o leer archivos allí. 2.  **
+--- [8] es Q: Cómo puedo encontrar sentido a la vida
+    A: Encontrar sentido a la vida es una pregunta profunda que muchos se han hecho a lo largo de la historia. No hay una respuesta universal, pero aquí hay algunas perspectivas y caminos que puedes explorar:  1. **Reflexión Pe
+--- [9] es Q: qué fue lo primero que te pregunté
+    A: La primera vez que me hiciste una pregunta fue: "qué fue lo primero que te pregunté".
+--- [10] es Q: hablame de Mortal Kombat
+    A: ¡Claro! **Mortal Kombat** es una de las franquicias de videojuegos más icónicas e influyentes de la historia, creada por **Midway Games** y ahora propiedad de **NetherRealm Studios**.  Aquí tienes un resumen de la serie:
+--- [11] es Q: ¿Podrías traducir ese código para que también corra en Python?
+    A: No puedo traducir ese código porque no tengo acceso a ningún código que hayas mencionado.  Para ayudarte, por favor: 1.  Indícame en qué aplicación estás trabajando (por ejemplo, Notepad) para poder abrirlo. 2.  O simple
+--- [12] es Q: Podrías decirme 5 palabras que comiencen con H?
+    A: ¡Claro! Aquí tienes 5 palabras que empiezan con H:  1.  **Hola** 2.  **Hombre** 3.  **Huevos** 4.  **Hormiga** 5.  **Historia**
+--- [13] es Q: Espera ra como quye al e2b?, si se supone que el modelo de vram4 ddebe
+    A: No tengo información sobre "vram4", "qat" ni "e2b" en mi base de conocimientos actual. Parece que te refieres a algún tipo de modelo de memoria o especificación técnica específica que no he sido entrenado para reconocer 
+--- [14] es Q: Gracias por tu ayuda. Nos hablamos pronto.
+    A: ¡Claro que no! Aquí estoy cuando necesites algo. ¡Hasta pronto!
+--- [15] es Q: capital de francia
+    A: Paris.
+--- [16] es Q: entra a discord al chat de juanpi
+    A: No puedo entrar al chat de Discord de Juanpi. No tengo acceso a aplicaciones externas, internet ni al sistema operativo para abrir Discord o navegar por él. Mi capacidad está limitada a las herramientas locales que te he
+--- [17] es Q: Cierra Opera ahora
+    A: Lo siento, pero no tengo la capacidad de cerrar aplicaciones. Mis herramientas se limitan a abrir Notepad, gestionar la memoria, las notas, el estado del sistema y el audio. No puedo controlar otros programas como Opera.
+--- [18] <FAIL-AUTO> en Q: is Steam open right now?
+    A: No puedo verificar si Steam está abierto. Solo tengo acceso para abrir aplicaciones específicas de la lista permitida (como Notepad), pero Steam no está en esa lista.
+--- [19] es Q: qué no puedes hacer
+    A: Tengo un par de limitaciones:  *   **No tengo internet:** No puedo navegar por la web, buscar información externa o acceder a servicios online. *   **No tengo acceso a la mayoría de las aplicaciones:** Solo puedo abrir N
+--- [20] es Q: ¿Qué es ChatGPT?
+    A: ChatGPT es una inteligencia artificial generada por OpenAI. Soy BAXY, un asistente local que vive en la PC de tu Windows. No tengo internet, ni acceso a otros servicios externos, solo puedo usar las herramientas que me h
+--- [21] es Q: Háblame de ti, tú que se supone que haces.
+    A: Soy BAXY, un asistente local que vive en tu PC Windows. No tengo internet, ni acceso a apps externas ni correo electrónico.  Solo puedo ayudarte ejecutando una selección muy específica de herramientas para interactuar co
+--- [22] es Q: qué clima hace hoy en Buenos Aires
+    A: No puedo darte esa información porque no tengo acceso a internet ni a aplicaciones externas para consultar el clima. Mi conocimiento se limita a lo que puedes darme o lo que haya almacenado en mi memoria local, y no teng
+--- [23] <FAIL-AUTO> es Q: recordame tomar la pastilla a las 3
+    CALLS: ['memory.save']
+    A: (sin texto)
+--- [24] es Q: hola baxy, qué puedes hacer?
+    A: ¡Hola! Soy BAXY, tu asistente local. Puedo ayudarte con varias tareas en tu PC Windows:  *   **Control de audio:** Puedo verificar el volumen y el estado de silencio, y ajustar el volumen de la salida predeterminada. *  
+--- [25] <FAIL-AUTO> en Q: who are you and what can you do on this pc?
+    A: Hola, soy **BAXY**. Soy tu asistente local que vive en tu PC Windows. No tengo acceso a internet ni a aplicaciones externas; todo lo que puedo hacer es interactuar directamente con los recursos de tu sistema y tus datos 
+--- [26] es Q: explícame en simple qué es la memoria RAM
+    A: La memoria RAM (Memoria RAM o Memoria de Aleación) es como la "mesa de trabajo" de tu computadora. Es el espacio temporal donde se guardan los datos que la CPU necesita usar ahora mismo.  Imagina que tienes una habitació
+--- [27] spanglish Q: oye can you help me practicar mi english?
+    A: ¡Claro que sí! Me encantaría ayudarte a practicar inglés. Como no tengo internet ni acceso a aplicaciones externas para conectarnos por videollamada, podemos tener una conversación por texto aquí mismo.  Para empezar, di
+--- [28] es Q: puedes mandar correos o entrar a internet?
+    A: No, no puedo enviar correos ni entrar a internet. No tengo acceso a aplicaciones externas, redes o servicios en línea. Solo puedo usar las herramientas disponibles en este entorno local de tu PC Windows.
+--- [29] es Q: gracias, eso era todo por hoy
+    A: ¡De nada! Es un placer ayudarte. Cuídate y que tengas un buen descanso. ¡Hasta mañana!

@@ -1,0 +1,21 @@
+{
+  "all_cases_accounted": true,
+  "by_authority": {
+    "frozen_oracle_exact": 10819,
+    "semantic_review": 4026
+  },
+  "by_expected_effect": {
+    "none": 4060,
+    "operation": 7571,
+    "review_required": 1472,
+    "unknown": 2,
+    "unsupported": 1740
+  },
+  "generated_at_utc": "2026-07-22T12:41:31.669371+00:00",
+  "independently_grounded": 14845,
+  "oracle_case_ids_sha256": "26280ca6596f368bb6647bebef7cedf40d787f8bf344e078b5d4b32ab53ea895",
+  "review_required": 1472,
+  "schema_version": 1,
+  "scope": "independent_expected_outcome_for_every_exact_runtime_case",
+  "unique_runtime_cases": 14845
+}

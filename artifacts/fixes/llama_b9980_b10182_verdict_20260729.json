@@ -1,0 +1,67 @@
+{
+  "schema": "baxy.llama-version-verdict.v1",
+  "date": "2026-07-29",
+  "baseline": {
+    "release": "b9980",
+    "commit": "8014d2c",
+    "role": "registered BAXY runtime"
+  },
+  "candidate": {
+    "release": "b10182",
+    "commit": "afeebe1",
+    "role": "isolated temporary audit runtime",
+    "official_archive_sha256": "5835bbe18c8dcdbcb229a77c625916be4ec6ed378bba33241df41304a305875d"
+  },
+  "safety": {
+    "installation_changed": false,
+    "runtime_manifest_changed": false,
+    "core_started": false,
+    "external_effects_executed": false,
+    "fresh_server_per_arm": true
+  },
+  "replicas": [
+    {
+      "artifact": "llama_b9980_b10182_ab_20260729.json",
+      "arm_order": [
+        "old",
+        "new"
+      ],
+      "exact_outputs": true,
+      "new_minus_old_p50_seconds": -0.1954523499989591,
+      "new_minus_old_p50_percent": -3.716885859487306,
+      "new_minus_old_total_seconds": -1.6911788999968849
+    },
+    {
+      "artifact": "llama_b9980_b10182_ab_reverse_20260729.json",
+      "arm_order": [
+        "new",
+        "old"
+      ],
+      "exact_outputs": true,
+      "new_minus_old_p50_seconds": 0.17892439999923226,
+      "new_minus_old_p50_percent": 3.5415811474319936,
+      "new_minus_old_total_seconds": -0.12607220000427333
+    },
+    {
+      "artifact": "llama_b9980_b10182_ab_third_20260729.json",
+      "arm_order": [
+        "old",
+        "new"
+      ],
+      "exact_outputs": true,
+      "new_minus_old_p50_seconds": 0.28952969999954803,
+      "new_minus_old_p50_percent": 6.139435757415512,
+      "new_minus_old_total_seconds": 1.1494547999973292
+    }
+  ],
+  "aggregate": {
+    "turns": 18,
+    "exact_outputs": true,
+    "p50_improved_replicas": 1,
+    "p50_regressed_replicas": 2,
+    "total_delta_seconds": -0.667796300003829,
+    "mean_delta_seconds_per_turn": -0.037099794444657164
+  },
+  "verdict": "rejected",
+  "reason": "The candidate preserved outputs but did not provide a repeatable latency gain: p50 improved once and regressed twice, including a 6.14% regression in the third replica. The registered b9980 runtime and manifest remain unchanged."
+}

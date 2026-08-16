@@ -1,0 +1,31 @@
+{
+  "schema": "baxy.supervised-reranker-domain.r244-nonfinite-rejection.v1",
+  "authority": "read_only_attestation_of_completed_r243_result",
+  "verdict": "rejected_invalid_nonfinite_training",
+  "reason": "R243 contains non-finite training loss, threshold and score quantiles; its mechanically derived zero-candidate count is not admissible evidence.",
+  "nonfinite_fields": [
+    "$.candidate.threshold",
+    "$.training.mean_loss",
+    "$.observed.inside_score_quantiles.min",
+    "$.observed.inside_score_quantiles.p50",
+    "$.observed.inside_score_quantiles.p95",
+    "$.observed.inside_score_quantiles.max",
+    "$.observed.outside_score_quantiles.min",
+    "$.observed.outside_score_quantiles.p50",
+    "$.observed.outside_score_quantiles.p95",
+    "$.observed.outside_score_quantiles.max"
+  ],
+  "constraints": {
+    "model_started": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false,
+    "r228_opened": false
+  },
+  "identities": {
+    "r243_sha256": "26ba75a58ae6c49556454cb8125860daace15d78a65d81a48d1dca19096a5485",
+    "program_sha256": "ad1c1e2205f5a1458f01fef62c4aa36e0680d1a017417a2fdd88695bae196a7d"
+  },
+  "next_requirement": "Do not tune or rerun R243. A successor must change numerical training stability under a new preregistration and retain finite-score validation before any OOS claim."
+}

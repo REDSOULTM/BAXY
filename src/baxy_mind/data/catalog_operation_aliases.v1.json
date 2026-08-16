@@ -1,0 +1,1297 @@
+{
+  "alias_count": 157,
+  "aliases": [
+    {
+      "normalized_text": "cierra la ventana de bloc de notas.",
+      "operations": [
+        "window.resolve",
+        "app.close"
+      ],
+      "target_operation": "app.close",
+      "text": "Cierra la ventana de Bloc de notas."
+    },
+    {
+      "normalized_text": "check whether obsidian is installed without opening it.",
+      "operations": [
+        "app.installed"
+      ],
+      "target_operation": "app.installed",
+      "text": "Check whether Obsidian is installed without opening it."
+    },
+    {
+      "normalized_text": "abre la calculadora.",
+      "operations": [
+        "app.open"
+      ],
+      "target_operation": "app.open",
+      "text": "Abre la calculadora."
+    },
+    {
+      "normalized_text": "mutea el microphone del computador.",
+      "operations": [
+        "audio.microphone.mute"
+      ],
+      "target_operation": "audio.microphone.mute",
+      "text": "Mutea el microphone del computador."
+    },
+    {
+      "normalized_text": "silencia el audio del computador.",
+      "operations": [
+        "audio.mute"
+      ],
+      "target_operation": "audio.mute",
+      "text": "Silencia el audio del computador."
+    },
+    {
+      "normalized_text": "tell me the current speaker volume and mute state.",
+      "operations": [
+        "audio.status"
+      ],
+      "target_operation": "audio.status",
+      "text": "Tell me the current speaker volume and mute state."
+    },
+    {
+      "normalized_text": "pon el volumen del computador al 37 por ciento.",
+      "operations": [
+        "audio.volume"
+      ],
+      "target_operation": "audio.volume",
+      "text": "Pon el volumen del computador al 37 por ciento."
+    },
+    {
+      "normalized_text": "baja el volume del pc en 8 puntos.",
+      "operations": [
+        "audio.volume.adjust"
+      ],
+      "target_operation": "audio.volume.adjust",
+      "text": "Baja el volume del PC en 8 puntos."
+    },
+    {
+      "normalized_text": "crea una copia privada del archivo que acabo de seleccionar y verifica su hash.",
+      "operations": [
+        "backup.create"
+      ],
+      "target_operation": "backup.create",
+      "text": "Crea una copia privada del archivo que acabo de seleccionar y verifica su hash."
+    },
+    {
+      "normalized_text": "create a verified private zip backup of my documents folder.",
+      "operations": [
+        "backup.known.create"
+      ],
+      "target_operation": "backup.known.create",
+      "text": "Create a verified private ZIP backup of my Documents folder."
+    },
+    {
+      "normalized_text": "lista mis copias zip de carpetas conocidas y verifica sus hashes.",
+      "operations": [
+        "backup.known.list"
+      ],
+      "target_operation": "backup.known.list",
+      "text": "Lista mis copias ZIP de carpetas conocidas y verifica sus hashes."
+    },
+    {
+      "normalized_text": "restore el backup zip mas reciente de documents en una carpeta privada nueva.",
+      "operations": [
+        "backup.known.restore.latest"
+      ],
+      "target_operation": "backup.known.restore.latest",
+      "text": "Restore el backup ZIP más reciente de Documents en una carpeta privada nueva."
+    },
+    {
+      "normalized_text": "verifica el backup zip mas reciente de documentos.",
+      "operations": [
+        "backup.known.verify.latest"
+      ],
+      "target_operation": "backup.known.verify.latest",
+      "text": "Verifica el backup ZIP más reciente de Documentos."
+    },
+    {
+      "normalized_text": "list my verified private backups, newest first.",
+      "operations": [
+        "backup.list"
+      ],
+      "target_operation": "backup.list",
+      "text": "List my verified private backups, newest first."
+    },
+    {
+      "normalized_text": "restaura el backup privado que acabo de elegir en un destino nuevo.",
+      "operations": [
+        "backup.restore"
+      ],
+      "target_operation": "backup.restore",
+      "text": "Restaura el backup privado que acabo de elegir en un destino nuevo."
+    },
+    {
+      "normalized_text": "verify el tamano y sha-256 del backup que seleccione.",
+      "operations": [
+        "backup.verify"
+      ],
+      "target_operation": "backup.verify",
+      "text": "Verify el tamaño y SHA-256 del backup que seleccioné."
+    },
+    {
+      "normalized_text": "muestrame los dispositivos bluetooth visibles.",
+      "operations": [
+        "bluetooth.device.list"
+      ],
+      "target_operation": "bluetooth.device.list",
+      "text": "Muéstrame los dispositivos Bluetooth visibles."
+    },
+    {
+      "normalized_text": "pair the bluetooth headset named living room buds.",
+      "operations": [
+        "bluetooth.device.list",
+        "bluetooth.device.pair"
+      ],
+      "target_operation": "bluetooth.device.pair",
+      "text": "Pair the Bluetooth headset named Living Room Buds."
+    },
+    {
+      "normalized_text": "enciende el bluetooth y comprueba que quede encendido.",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "target_operation": "bluetooth.radio.set",
+      "text": "Enciende el Bluetooth y comprueba que quede encendido."
+    },
+    {
+      "normalized_text": "go back una pagina en la pestana actual.",
+      "operations": [
+        "browser.control"
+      ],
+      "target_operation": "browser.control",
+      "text": "Go back una página en la pestaña actual."
+    },
+    {
+      "normalized_text": "navega la sesion web actual a https://example.com/docs.",
+      "operations": [
+        "browser.navigate"
+      ],
+      "target_operation": "browser.navigate",
+      "text": "Navega la sesión web actual a https://example.com/docs."
+    },
+    {
+      "normalized_text": "open https://example.com/account specifically in opera.",
+      "operations": [
+        "browser.navigate.named"
+      ],
+      "target_operation": "browser.navigate.named",
+      "text": "Open https://example.com/account specifically in Opera."
+    },
+    {
+      "normalized_text": "lee el titulo, la url y el texto visible de la pagina actual.",
+      "operations": [
+        "browser.page.read"
+      ],
+      "target_operation": "browser.page.read",
+      "text": "Lee el título, la URL y el texto visible de la página actual."
+    },
+    {
+      "normalized_text": "list las pestanas abiertas de la sesion web local.",
+      "operations": [
+        "browser.tabs.list"
+      ],
+      "target_operation": "browser.tabs.list",
+      "text": "List las pestañas abiertas de la sesión web local."
+    },
+    {
+      "normalized_text": "crea en mi calendario un evento llamado revision manana de nueve a diez.",
+      "operations": [
+        "calendar.event.create"
+      ],
+      "target_operation": "calendar.event.create",
+      "text": "Crea en mi calendario un evento llamado Revisión mañana de nueve a diez."
+    },
+    {
+      "normalized_text": "list my calendar events for tomorrow without changing them.",
+      "operations": [
+        "calendar.event.list"
+      ],
+      "target_operation": "calendar.event.list",
+      "text": "List my calendar events for tomorrow without changing them."
+    },
+    {
+      "normalized_text": "captura solamente la ventana que esta activa.",
+      "operations": [
+        "capture.active.window"
+      ],
+      "target_operation": "capture.active.window",
+      "text": "Captura solamente la ventana que está activa."
+    },
+    {
+      "normalized_text": "take un screenshot de todo el escritorio.",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "target_operation": "capture.screenshot",
+      "text": "Take un screenshot de todo el escritorio."
+    },
+    {
+      "normalized_text": "copia la seleccion actual al portapapeles.",
+      "operations": [
+        "clipboard.copy"
+      ],
+      "target_operation": "clipboard.copy",
+      "text": "Copia la selección actual al portapapeles."
+    },
+    {
+      "normalized_text": "paste the current clipboard into the focused field.",
+      "operations": [
+        "clipboard.paste"
+      ],
+      "target_operation": "clipboard.paste",
+      "text": "Paste the current clipboard into the focused field."
+    },
+    {
+      "normalized_text": "lee el texto que tengo ahora en el portapapeles.",
+      "operations": [
+        "clipboard.read.text"
+      ],
+      "target_operation": "clipboard.read.text",
+      "text": "Lee el texto que tengo ahora en el portapapeles."
+    },
+    {
+      "normalized_text": "pon en el clipboard el texto literal reunion a las cinco.",
+      "operations": [
+        "clipboard.write.text"
+      ],
+      "target_operation": "clipboard.write.text",
+      "text": "Pon en el clipboard el texto literal reunión a las cinco."
+    },
+    {
+      "normalized_text": "lee el correo mas reciente de mi outlook.",
+      "operations": [
+        "email.latest.read"
+      ],
+      "target_operation": "email.latest.read",
+      "text": "Lee el correo más reciente de mi Outlook."
+    },
+    {
+      "normalized_text": "reply to my latest outlook email with: i received it, thank you.",
+      "operations": [
+        "email.latest.reply"
+      ],
+      "target_operation": "email.latest.reply",
+      "text": "Reply to my latest Outlook email with: I received it, thank you."
+    },
+    {
+      "normalized_text": "copia el archivo seleccionado a la carpeta archivo dentro del sandbox.",
+      "operations": [
+        "filesystem.copy"
+      ],
+      "target_operation": "filesystem.copy",
+      "text": "Copia el archivo seleccionado a la carpeta archivo dentro del sandbox."
+    },
+    {
+      "normalized_text": "create una carpeta del sandbox llamada pruebas agosto.",
+      "operations": [
+        "filesystem.create.directory"
+      ],
+      "target_operation": "filesystem.create.directory",
+      "text": "Create una carpeta del sandbox llamada pruebas agosto."
+    },
+    {
+      "normalized_text": "abre el archivo modificado mas recientemente de descargas.",
+      "operations": [
+        "filesystem.file.open.latest"
+      ],
+      "target_operation": "filesystem.file.open.latest",
+      "text": "Abre el archivo modificado más recientemente de Descargas."
+    },
+    {
+      "normalized_text": "open my downloads folder in file explorer.",
+      "operations": [
+        "filesystem.folder.open"
+      ],
+      "target_operation": "filesystem.folder.open",
+      "text": "Open my Downloads folder in File Explorer."
+    },
+    {
+      "normalized_text": "calcula el sha-256 del archivo que acabo de seleccionar.",
+      "operations": [
+        "filesystem.hash"
+      ],
+      "target_operation": "filesystem.hash",
+      "text": "Calcula el SHA-256 del archivo que acabo de seleccionar."
+    },
+    {
+      "normalized_text": "find duplicate files en descargas sin borrarlos.",
+      "operations": [
+        "filesystem.known.duplicates"
+      ],
+      "target_operation": "filesystem.known.duplicates",
+      "text": "Find duplicate files en Descargas sin borrarlos."
+    },
+    {
+      "normalized_text": "busca en documentos un archivo llamado informe final.",
+      "operations": [
+        "filesystem.known.search"
+      ],
+      "target_operation": "filesystem.known.search",
+      "text": "Busca en Documentos un archivo llamado informe final."
+    },
+    {
+      "normalized_text": "move the uniquely named file draft-old.txt from downloads to the private trash.",
+      "operations": [
+        "filesystem.known.trash.named"
+      ],
+      "target_operation": "filesystem.known.trash.named",
+      "text": "Move the uniquely named file draft-old.txt from Downloads to the private trash."
+    },
+    {
+      "normalized_text": "lista el contenido de la carpeta raiz del sandbox.",
+      "operations": [
+        "filesystem.list"
+      ],
+      "target_operation": "filesystem.list",
+      "text": "Lista el contenido de la carpeta raíz del sandbox."
+    },
+    {
+      "normalized_text": "move el archivo seleccionado a archivo/terminado.txt dentro del sandbox.",
+      "operations": [
+        "filesystem.move"
+      ],
+      "target_operation": "filesystem.move",
+      "text": "Move el archivo seleccionado a archivo/terminado.txt dentro del sandbox."
+    },
+    {
+      "normalized_text": "asegurate de que c:\\users\\public\\temp\\baxy-prueba.txt no exista y usa la papelera recuperable si existe.",
+      "operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "target_operation": "filesystem.path.ensure.absent",
+      "text": "Asegúrate de que C:\\Users\\Public\\Temp\\baxy-prueba.txt no exista y usa la papelera recuperable si existe."
+    },
+    {
+      "normalized_text": "read the selected utf-8 text file and verify its hash.",
+      "operations": [
+        "filesystem.read.text"
+      ],
+      "target_operation": "filesystem.read.text",
+      "text": "Read the selected UTF-8 text file and verify its hash."
+    },
+    {
+      "normalized_text": "anade la linea revision completa al archivo unico registro.txt del sandbox.",
+      "operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "target_operation": "filesystem.sandbox.append.named",
+      "text": "Añade la línea revisión completa al archivo único registro.txt del sandbox."
+    },
+    {
+      "normalized_text": "compare notas-a.txt con notas-b.txt in the sandbox y dime las lineas distintas.",
+      "operations": [
+        "filesystem.sandbox.diff.named"
+      ],
+      "target_operation": "filesystem.sandbox.diff.named",
+      "text": "Compare notas-a.txt con notas-b.txt in the sandbox y dime las líneas distintas."
+    },
+    {
+      "normalized_text": "mueve el archivo unico borrador.txt del sandbox a archivo/borrador.txt.",
+      "operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "target_operation": "filesystem.sandbox.move.named",
+      "text": "Mueve el archivo único borrador.txt del sandbox a archivo/borrador.txt."
+    },
+    {
+      "normalized_text": "search the sandbox for names containing invoice.",
+      "operations": [
+        "filesystem.search"
+      ],
+      "target_operation": "filesystem.search",
+      "text": "Search the sandbox for names containing invoice."
+    },
+    {
+      "normalized_text": "confirma la seleccion de papelera que acabo de revisar.",
+      "operations": [
+        "filesystem.trash.commit"
+      ],
+      "target_operation": "filesystem.trash.commit",
+      "text": "Confirma la selección de papelera que acabo de revisar."
+    },
+    {
+      "normalized_text": "prepare el archivo seleccionado para enviarlo a la papelera, pero no lo muevas aun.",
+      "operations": [
+        "filesystem.trash.prepare"
+      ],
+      "target_operation": "filesystem.trash.prepare",
+      "text": "Prepare el archivo seleccionado para enviarlo a la papelera, pero no lo muevas aún."
+    },
+    {
+      "normalized_text": "restaura de la papelera privada el archivo que acabo de seleccionar.",
+      "operations": [
+        "filesystem.trash.restore"
+      ],
+      "target_operation": "filesystem.trash.restore",
+      "text": "Restaura de la papelera privada el archivo que acabo de seleccionar."
+    },
+    {
+      "normalized_text": "write the text quarterly review into reports/review.txt in the sandbox.",
+      "operations": [
+        "filesystem.write.text"
+      ],
+      "target_operation": "filesystem.write.text",
+      "text": "Write the text quarterly review into reports/review.txt in the sandbox."
+    },
+    {
+      "normalized_text": "lista mi catalogo local de steam.",
+      "operations": [
+        "game.catalog.list"
+      ],
+      "target_operation": "game.catalog.list",
+      "text": "Lista mi catálogo local de Steam."
+    },
+    {
+      "normalized_text": "cancel la descarga de steam del appid 730.",
+      "operations": [
+        "game.install.cancel"
+      ],
+      "target_operation": "game.install.cancel",
+      "text": "Cancel la descarga de Steam del AppID 730."
+    },
+    {
+      "normalized_text": "cancela todas las descargas activas de steam.",
+      "operations": [
+        "game.install.cancel.active"
+      ],
+      "target_operation": "game.install.cancel.active",
+      "text": "Cancela todas las descargas activas de Steam."
+    },
+    {
+      "normalized_text": "confirm the steam installation i just prepared.",
+      "operations": [
+        "game.install.prepare",
+        "game.install.commit"
+      ],
+      "target_operation": "game.install.commit",
+      "text": "Confirm the Steam installation I just prepared."
+    },
+    {
+      "normalized_text": "instala portal desde mi biblioteca de steam si lo tengo comprado.",
+      "operations": [
+        "game.install.named"
+      ],
+      "target_operation": "game.install.named",
+      "text": "Instala Portal desde mi biblioteca de Steam si lo tengo comprado."
+    },
+    {
+      "normalized_text": "prepare la instalacion del appid 620 sin descargar todavia.",
+      "operations": [
+        "game.install.prepare"
+      ],
+      "target_operation": "game.install.prepare",
+      "text": "Prepare la instalación del AppID 620 sin descargar todavía."
+    },
+    {
+      "normalized_text": "dime el progreso de instalacion en steam del appid 730.",
+      "operations": [
+        "game.install.status"
+      ],
+      "target_operation": "game.install.status",
+      "text": "Dime el progreso de instalación en Steam del AppID 730."
+    },
+    {
+      "normalized_text": "check whether rocket league is installed without launching it.",
+      "operations": [
+        "game.installed.named"
+      ],
+      "target_operation": "game.installed.named",
+      "text": "Check whether Rocket League is installed without launching it."
+    },
+    {
+      "normalized_text": "inicia el juego cuphead desde steam.",
+      "operations": [
+        "game.launch"
+      ],
+      "target_operation": "game.launch",
+      "text": "Inicia el juego Cuphead desde Steam."
+    },
+    {
+      "normalized_text": "confirm the game purchase que acabo de revisar al precio exacto mostrado.",
+      "operations": [
+        "game.purchase.prepare",
+        "game.purchase.commit"
+      ],
+      "target_operation": "game.purchase.commit",
+      "text": "Confirm the game purchase que acabo de revisar al precio exacto mostrado."
+    },
+    {
+      "normalized_text": "prepara la compra de hades y muestrame el precio sin comprarlo.",
+      "operations": [
+        "game.purchase.prepare"
+      ],
+      "target_operation": "game.purchase.prepare",
+      "text": "Prepara la compra de Hades y muéstrame el precio sin comprarlo."
+    },
+    {
+      "normalized_text": "press control shift escape in the focused window.",
+      "operations": [
+        "input.key.press"
+      ],
+      "target_operation": "input.key.press",
+      "text": "Press Control Shift Escape in the focused window."
+    },
+    {
+      "normalized_text": "cambia el teclado de la ventana activa a espanol.",
+      "operations": [
+        "input.keyboard.layout"
+      ],
+      "target_operation": "input.keyboard.layout",
+      "text": "Cambia el teclado de la ventana activa a español."
+    },
+    {
+      "normalized_text": "open el teclado en pantalla de windows.",
+      "operations": [
+        "input.keyboard.open"
+      ],
+      "target_operation": "input.keyboard.open",
+      "text": "Open el teclado en pantalla de Windows."
+    },
+    {
+      "normalized_text": "dime que distribucion de teclado usa la ventana enfocada.",
+      "operations": [
+        "input.keyboard.status"
+      ],
+      "target_operation": "input.keyboard.status",
+      "text": "Dime qué distribución de teclado usa la ventana enfocada."
+    },
+    {
+      "normalized_text": "move the mouse pointer to the center of the screen.",
+      "operations": [
+        "input.pointer.control"
+      ],
+      "target_operation": "input.pointer.control",
+      "text": "Move the mouse pointer to the center of the screen."
+    },
+    {
+      "normalized_text": "selecciona todo en el control que esta enfocado.",
+      "operations": [
+        "input.select.all"
+      ],
+      "target_operation": "input.select.all",
+      "text": "Selecciona todo en el control que está enfocado."
+    },
+    {
+      "normalized_text": "type el texto literal pedido recibido en el campo enfocado.",
+      "operations": [
+        "input.text.type"
+      ],
+      "target_operation": "input.text.type",
+      "text": "Type el texto literal pedido recibido en el campo enfocado."
+    },
+    {
+      "normalized_text": "haz clic una sola vez en el boton visible que dice continuar.",
+      "operations": [
+        "input.visible.click"
+      ],
+      "target_operation": "input.visible.click",
+      "text": "Haz clic una sola vez en el botón visible que dice Continuar."
+    },
+    {
+      "normalized_text": "pause the current windows media session.",
+      "operations": [
+        "media.control"
+      ],
+      "target_operation": "media.control",
+      "text": "Pause the current Windows media session."
+    },
+    {
+      "normalized_text": "reproduce el resultado musical exacto que acabo de seleccionar en spotify.",
+      "operations": [
+        "media.play.exact"
+      ],
+      "target_operation": "media.play.exact",
+      "text": "Reproduce el resultado musical exacto que acabo de seleccionar en Spotify."
+    },
+    {
+      "normalized_text": "play la cancion space oddity en spotify.",
+      "operations": [
+        "media.play.query"
+      ],
+      "target_operation": "media.play.query",
+      "text": "Play la canción Space Oddity en Spotify."
+    },
+    {
+      "normalized_text": "busca y reproduce en youtube el video oficial de space oddity.",
+      "operations": [
+        "media.play.youtube"
+      ],
+      "target_operation": "media.play.youtube",
+      "text": "Busca y reproduce en YouTube el video oficial de Space Oddity."
+    },
+    {
+      "normalized_text": "skip forward thirty seconds in the current media session.",
+      "operations": [
+        "media.seek.relative"
+      ],
+      "target_operation": "media.seek.relative",
+      "text": "Skip forward thirty seconds in the current media session."
+    },
+    {
+      "normalized_text": "dime que esta sonando ahora y si esta pausado.",
+      "operations": [
+        "media.status"
+      ],
+      "target_operation": "media.status",
+      "text": "Dime qué está sonando ahora y si está pausado."
+    },
+    {
+      "normalized_text": "busca exactamente a camila en whatsapp y dime si hay un unico contacto, sin enviar nada.",
+      "operations": [
+        "message.recipient.resolve"
+      ],
+      "target_operation": "message.recipient.resolve",
+      "text": "Busca exactamente a Camila en WhatsApp y dime si hay un único contacto, sin enviar nada."
+    },
+    {
+      "normalized_text": "send a camila por whatsapp: llegare en veinte minutos.",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "target_operation": "message.send",
+      "text": "Send a Camila por WhatsApp: llegaré en veinte minutos."
+    },
+    {
+      "normalized_text": "dime que servidores dns usan ahora las interfaces activas.",
+      "operations": [
+        "network.dns.status"
+      ],
+      "target_operation": "network.dns.status",
+      "text": "Dime qué servidores DNS usan ahora las interfaces activas."
+    },
+    {
+      "normalized_text": "list this computer's active unicast ip addresses.",
+      "operations": [
+        "network.ip.list"
+      ],
+      "target_operation": "network.ip.list",
+      "text": "List this computer's active unicast IP addresses."
+    },
+    {
+      "normalized_text": "haz un ping a example.com y dime la latencia.",
+      "operations": [
+        "network.ping"
+      ],
+      "target_operation": "network.ping",
+      "text": "Haz un ping a example.com y dime la latencia."
+    },
+    {
+      "normalized_text": "list los puertos tcp y udp que estan escuchando localmente.",
+      "operations": [
+        "network.port.list"
+      ],
+      "target_operation": "network.port.list",
+      "text": "List los puertos TCP y UDP que están escuchando localmente."
+    },
+    {
+      "normalized_text": "comprueba el estado general de la conexion de red.",
+      "operations": [
+        "network.status"
+      ],
+      "target_operation": "network.status",
+      "text": "Comprueba el estado general de la conexión de red."
+    },
+    {
+      "normalized_text": "create a note titled trip with the content bring the blue backpack.",
+      "operations": [
+        "note.create"
+      ],
+      "target_operation": "note.create",
+      "text": "Create a note titled Trip with the content bring the blue backpack."
+    },
+    {
+      "normalized_text": "lista mis notas locales activas.",
+      "operations": [
+        "note.list"
+      ],
+      "target_operation": "note.list",
+      "text": "Lista mis notas locales activas."
+    },
+    {
+      "normalized_text": "read la nota que se llama viaje.",
+      "operations": [
+        "note.read"
+      ],
+      "target_operation": "note.read",
+      "text": "Read la nota que se llama Viaje."
+    },
+    {
+      "normalized_text": "restaura desde la papelera la nota titulada viaje.",
+      "operations": [
+        "note.restore"
+      ],
+      "target_operation": "note.restore",
+      "text": "Restaura desde la papelera la nota titulada Viaje."
+    },
+    {
+      "normalized_text": "search my local notes for the phrase blue backpack.",
+      "operations": [
+        "note.search"
+      ],
+      "target_operation": "note.search",
+      "text": "Search my local notes for the phrase blue backpack."
+    },
+    {
+      "normalized_text": "mueve a la papelera la nota titulada borrador viejo.",
+      "operations": [
+        "note.trash"
+      ],
+      "target_operation": "note.trash",
+      "text": "Mueve a la papelera la nota titulada Borrador viejo."
+    },
+    {
+      "normalized_text": "update la nota viaje: titulo viaje final y contenido llevar mochila azul y pasaporte.",
+      "operations": [
+        "note.update"
+      ],
+      "target_operation": "note.update",
+      "text": "Update la nota Viaje: título Viaje final y contenido llevar mochila azul y pasaporte."
+    },
+    {
+      "normalized_text": "cancel the most recently created baxy alarm.",
+      "operations": [
+        "notification.cancel.latest"
+      ],
+      "target_operation": "notification.cancel.latest",
+      "text": "Cancel the most recently created BAXY alarm."
+    },
+    {
+      "normalized_text": "diagnostica por que no sono mi ultima alarma de baxy.",
+      "operations": [
+        "notification.diagnose"
+      ],
+      "target_operation": "notification.diagnose",
+      "text": "Diagnostica por qué no sonó mi última alarma de BAXY."
+    },
+    {
+      "normalized_text": "dismiss el recordatorio vencido que acabo de seleccionar.",
+      "operations": [
+        "notification.list.due",
+        "notification.dismiss"
+      ],
+      "target_operation": "notification.dismiss",
+      "text": "Dismiss el recordatorio vencido que acabo de seleccionar."
+    },
+    {
+      "normalized_text": "lista los recordatorios vencidos que aun no descarte.",
+      "operations": [
+        "notification.list.due"
+      ],
+      "target_operation": "notification.list.due",
+      "text": "Lista los recordatorios vencidos que aún no descarté."
+    },
+    {
+      "normalized_text": "schedule an audible alarm for seven thirty tomorrow morning.",
+      "operations": [
+        "notification.schedule"
+      ],
+      "target_operation": "notification.schedule",
+      "text": "Schedule an audible alarm for seven thirty tomorrow morning."
+    },
+    {
+      "normalized_text": "toma una captura y extrae todo el texto visible con ocr local en espanol.",
+      "operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "target_operation": "ocr.read",
+      "text": "Toma una captura y extrae todo el texto visible con OCR local en español."
+    },
+    {
+      "normalized_text": "create un documento de word llamado resumen con el texto reunion completada.",
+      "operations": [
+        "office.document.create"
+      ],
+      "target_operation": "office.document.create",
+      "text": "Create un documento de Word llamado Resumen con el texto Reunión completada."
+    },
+    {
+      "normalized_text": "lee el documento que acabo de crear y dame su contenido estructurado.",
+      "operations": [
+        "office.document.read"
+      ],
+      "target_operation": "office.document.read",
+      "text": "Lee el documento que acabo de crear y dame su contenido estructurado."
+    },
+    {
+      "normalized_text": "confirm the winget package installation i just reviewed.",
+      "operations": [
+        "package.install.prepare",
+        "package.install.commit"
+      ],
+      "target_operation": "package.install.commit",
+      "text": "Confirm the winget package installation I just reviewed."
+    },
+    {
+      "normalized_text": "prepara la instalacion exacta de microsoft.powertoys sin instalar aun.",
+      "operations": [
+        "package.install.prepare"
+      ],
+      "target_operation": "package.install.prepare",
+      "text": "Prepara la instalación exacta de Microsoft.PowerToys sin instalar aún."
+    },
+    {
+      "normalized_text": "list los teclados y mouse conectados al computador.",
+      "operations": [
+        "peripheral.list"
+      ],
+      "target_operation": "peripheral.list",
+      "text": "List los teclados y mouse conectados al computador."
+    },
+    {
+      "normalized_text": "imprime el documento que seleccione en la impresora oficina.",
+      "operations": [
+        "peripheral.list",
+        "peripheral.print"
+      ],
+      "target_operation": "peripheral.print",
+      "text": "Imprime el documento que seleccioné en la impresora Oficina."
+    },
+    {
+      "normalized_text": "scan one page using the connected scanner named office scanner.",
+      "operations": [
+        "peripheral.list",
+        "peripheral.scan"
+      ],
+      "target_operation": "peripheral.scan",
+      "text": "Scan one page using the connected scanner named Office Scanner."
+    },
+    {
+      "normalized_text": "crea un recordatorio local durable para pagar el arriendo manana a las nueve.",
+      "operations": [
+        "reminder.create"
+      ],
+      "target_operation": "reminder.create",
+      "text": "Crea un recordatorio local durable para pagar el arriendo mañana a las nueve."
+    },
+    {
+      "normalized_text": "delete de forma recuperable el recordatorio llamado pagar arriendo.",
+      "operations": [
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ],
+      "target_operation": "reminder.delete",
+      "text": "Delete de forma recuperable el recordatorio llamado Pagar arriendo."
+    },
+    {
+      "normalized_text": "lista mis recordatorios locales programados.",
+      "operations": [
+        "reminder.list"
+      ],
+      "target_operation": "reminder.list",
+      "text": "Lista mis recordatorios locales programados."
+    },
+    {
+      "normalized_text": "find the exact reminder titled pay rent and return its current identity without changing it.",
+      "operations": [
+        "reminder.resolve.exact"
+      ],
+      "target_operation": "reminder.resolve.exact",
+      "text": "Find the exact reminder titled Pay rent and return its current identity without changing it."
+    },
+    {
+      "normalized_text": "restaura el recordatorio eliminado llamado pagar arriendo.",
+      "operations": [
+        "reminder.restore"
+      ],
+      "target_operation": "reminder.restore",
+      "text": "Restaura el recordatorio eliminado llamado Pagar arriendo."
+    },
+    {
+      "normalized_text": "delete de forma recuperable la rutina llamada musica de trabajo.",
+      "operations": [
+        "routine.delete"
+      ],
+      "target_operation": "routine.delete",
+      "text": "Delete de forma recuperable la rutina llamada Música de trabajo."
+    },
+    {
+      "normalized_text": "lista las rutinas locales que tengo creadas.",
+      "operations": [
+        "routine.list"
+      ],
+      "target_operation": "routine.list",
+      "text": "Lista las rutinas locales que tengo creadas."
+    },
+    {
+      "normalized_text": "create a routine named focus music that plays spotify when i say start focus.",
+      "operations": [
+        "routine.phrase.create"
+      ],
+      "target_operation": "routine.phrase.create",
+      "text": "Create a routine named Focus music that plays Spotify when I say start focus."
+    },
+    {
+      "normalized_text": "lee los metadatos de la rutina exacta llamada musica de trabajo.",
+      "operations": [
+        "routine.read"
+      ],
+      "target_operation": "routine.read",
+      "text": "Lee los metadatos de la rutina exacta llamada Música de trabajo."
+    },
+    {
+      "normalized_text": "resolve la rutina exacta musica de trabajo sin ejecutarla.",
+      "operations": [
+        "routine.resolve.exact"
+      ],
+      "target_operation": "routine.resolve.exact",
+      "text": "Resolve la rutina exacta Música de trabajo sin ejecutarla."
+    },
+    {
+      "normalized_text": "restaura deshabilitada la rutina eliminada musica de trabajo.",
+      "operations": [
+        "routine.restore"
+      ],
+      "target_operation": "routine.restore",
+      "text": "Restaura deshabilitada la rutina eliminada Música de trabajo."
+    },
+    {
+      "normalized_text": "disable the routine named focus music without running it.",
+      "operations": [
+        "routine.set.enabled"
+      ],
+      "target_operation": "routine.set.enabled",
+      "text": "Disable the routine named Focus music without running it."
+    },
+    {
+      "normalized_text": "navega mi sesion autenticada de streaming a https://www.netflix.com/browse.",
+      "operations": [
+        "streaming.navigate"
+      ],
+      "target_operation": "streaming.navigate",
+      "text": "Navega mi sesión autenticada de streaming a https://www.netflix.com/browse."
+    },
+    {
+      "normalized_text": "play the crown en mi sesion autenticada de netflix.",
+      "operations": [
+        "streaming.play.named"
+      ],
+      "target_operation": "streaming.play.named",
+      "text": "Play The Crown en mi sesión autenticada de Netflix."
+    },
+    {
+      "normalized_text": "busca fallos recientes de aplicaciones en windows y dime cual se bloqueo.",
+      "operations": [
+        "system.application.crash.diagnose"
+      ],
+      "target_operation": "system.application.crash.diagnose",
+      "text": "Busca fallos recientes de aplicaciones en Windows y dime cuál se bloqueó."
+    },
+    {
+      "normalized_text": "tell me the effective windows user and domain running baxy.",
+      "operations": [
+        "system.identity"
+      ],
+      "target_operation": "system.identity",
+      "text": "Tell me the effective Windows user and domain running BAXY."
+    },
+    {
+      "normalized_text": "bloquea esta sesion de windows ahora.",
+      "operations": [
+        "system.power"
+      ],
+      "target_operation": "system.power",
+      "text": "Bloquea esta sesión de Windows ahora."
+    },
+    {
+      "normalized_text": "list los procesos que mas memoria estan usando.",
+      "operations": [
+        "system.process.list"
+      ],
+      "target_operation": "system.process.list",
+      "text": "List los procesos que más memoria están usando."
+    },
+    {
+      "normalized_text": "fuerza el cierre de notepad.exe y verifica que ese proceso desaparezca.",
+      "operations": [
+        "system.process.terminate.named"
+      ],
+      "target_operation": "system.process.terminate.named",
+      "text": "Fuerza el cierre de notepad.exe y verifica que ese proceso desaparezca."
+    },
+    {
+      "normalized_text": "empty the windows recycle bin and verify it is empty.",
+      "operations": [
+        "system.recyclebin.empty"
+      ],
+      "target_operation": "system.recyclebin.empty",
+      "text": "Empty the Windows Recycle Bin and verify it is empty."
+    },
+    {
+      "normalized_text": "sube el brillo de la pantalla en diez puntos.",
+      "operations": [
+        "system.settings.adjust"
+      ],
+      "target_operation": "system.settings.adjust",
+      "text": "Sube el brillo de la pantalla en diez puntos."
+    },
+    {
+      "normalized_text": "turn on la luz nocturna de windows.",
+      "operations": [
+        "system.settings.set"
+      ],
+      "target_operation": "system.settings.set",
+      "text": "Turn on la luz nocturna de Windows."
+    },
+    {
+      "normalized_text": "dime el brillo actual de cada monitor compatible.",
+      "operations": [
+        "system.settings.status"
+      ],
+      "target_operation": "system.settings.status",
+      "text": "Dime el brillo actual de cada monitor compatible."
+    },
+    {
+      "normalized_text": "show me this computer's current cpu, memory, disk, battery, and gpu status.",
+      "operations": [
+        "system.status"
+      ],
+      "target_operation": "system.status",
+      "text": "Show me this computer's current CPU, memory, disk, battery, and GPU status."
+    },
+    {
+      "normalized_text": "dime la fecha y la hora local actuales.",
+      "operations": [
+        "system.time"
+      ],
+      "target_operation": "system.time",
+      "text": "Dime la fecha y la hora local actuales."
+    },
+    {
+      "normalized_text": "mark complete la tarea exacta llamada enviar informe.",
+      "operations": [
+        "task.complete"
+      ],
+      "target_operation": "task.complete",
+      "text": "Mark complete la tarea exacta llamada Enviar informe."
+    },
+    {
+      "normalized_text": "crea una tarea llamada enviar informe con fecha para el viernes.",
+      "operations": [
+        "task.create"
+      ],
+      "target_operation": "task.create",
+      "text": "Crea una tarea llamada Enviar informe con fecha para el viernes."
+    },
+    {
+      "normalized_text": "move the exact task send report to the recoverable trash.",
+      "operations": [
+        "task.delete"
+      ],
+      "target_operation": "task.delete",
+      "text": "Move the exact task Send report to the recoverable trash."
+    },
+    {
+      "normalized_text": "lista mis tareas locales que siguen abiertas.",
+      "operations": [
+        "task.list"
+      ],
+      "target_operation": "task.list",
+      "text": "Lista mis tareas locales que siguen abiertas."
+    },
+    {
+      "normalized_text": "reopen la tarea completada llamada enviar informe.",
+      "operations": [
+        "task.reopen"
+      ],
+      "target_operation": "task.reopen",
+      "text": "Reopen la tarea completada llamada Enviar informe."
+    },
+    {
+      "normalized_text": "resuelve la tarea exacta titulada enviar informe sin modificarla.",
+      "operations": [
+        "task.resolve.exact"
+      ],
+      "target_operation": "task.resolve.exact",
+      "text": "Resuelve la tarea exacta titulada Enviar informe sin modificarla."
+    },
+    {
+      "normalized_text": "restore the deleted task titled send report.",
+      "operations": [
+        "task.restore"
+      ],
+      "target_operation": "task.restore",
+      "text": "Restore the deleted task titled Send report."
+    },
+    {
+      "normalized_text": "busca en mis tareas locales la frase informe trimestral.",
+      "operations": [
+        "task.search"
+      ],
+      "target_operation": "task.search",
+      "text": "Busca en mis tareas locales la frase informe trimestral."
+    },
+    {
+      "normalized_text": "update la tarea enviar informe: nuevo titulo enviar informe final y fecha el lunes.",
+      "operations": [
+        "task.update"
+      ],
+      "target_operation": "task.update",
+      "text": "Update la tarea Enviar informe: nuevo título Enviar informe final y fecha el lunes."
+    },
+    {
+      "normalized_text": "toma una captura y describe localmente lo que aparece en la imagen.",
+      "operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "target_operation": "vision.describe",
+      "text": "Toma una captura y describe localmente lo que aparece en la imagen."
+    },
+    {
+      "normalized_text": "search the web for the official python documentation.",
+      "operations": [
+        "web.search"
+      ],
+      "target_operation": "web.search",
+      "text": "Search the web for the official Python documentation."
+    },
+    {
+      "normalized_text": "conecta el perfil wi-fi que acabo de seleccionar.",
+      "operations": [
+        "wifi.profile.list",
+        "wifi.connect"
+      ],
+      "target_operation": "wifi.connect",
+      "text": "Conecta el perfil Wi-Fi que acabo de seleccionar."
+    },
+    {
+      "normalized_text": "connect al perfil wi-fi guardado llamado casa.",
+      "operations": [
+        "wifi.connect.named"
+      ],
+      "target_operation": "wifi.connect.named",
+      "text": "Connect al perfil Wi-Fi guardado llamado Casa."
+    },
+    {
+      "normalized_text": "desconecta el wi-fi y comprueba que quede desconectado.",
+      "operations": [
+        "wifi.disconnect"
+      ],
+      "target_operation": "wifi.disconnect",
+      "text": "Desconecta el Wi-Fi y comprueba que quede desconectado."
+    },
+    {
+      "normalized_text": "check that wi-fi is already connected without changing it.",
+      "operations": [
+        "wifi.ensure.connected"
+      ],
+      "target_operation": "wifi.ensure.connected",
+      "text": "Check that Wi-Fi is already connected without changing it."
+    },
+    {
+      "normalized_text": "lista los perfiles wi-fi guardados sin mostrar credenciales.",
+      "operations": [
+        "wifi.profile.list"
+      ],
+      "target_operation": "wifi.profile.list",
+      "text": "Lista los perfiles Wi-Fi guardados sin mostrar credenciales."
+    },
+    {
+      "normalized_text": "tell me el estado actual de la conexion wi-fi.",
+      "operations": [
+        "wifi.status"
+      ],
+      "target_operation": "wifi.status",
+      "text": "Tell me el estado actual de la conexión Wi-Fi."
+    },
+    {
+      "normalized_text": "dime que ventana esta activa ahora y cual es su geometria.",
+      "operations": [
+        "window.active"
+      ],
+      "target_operation": "window.active",
+      "text": "Dime qué ventana está activa ahora y cuál es su geometría."
+    },
+    {
+      "normalized_text": "check whether visual studio code currently has a visible window without opening it.",
+      "operations": [
+        "window.application.status"
+      ],
+      "target_operation": "window.application.status",
+      "text": "Check whether Visual Studio Code currently has a visible window without opening it."
+    },
+    {
+      "normalized_text": "enfoca la ventana de bloc de notas.",
+      "operations": [
+        "window.resolve",
+        "window.focus"
+      ],
+      "target_operation": "window.focus",
+      "text": "Enfoca la ventana de Bloc de notas."
+    },
+    {
+      "normalized_text": "maximize la ventana de bloc de notas.",
+      "operations": [
+        "window.resolve",
+        "window.maximize"
+      ],
+      "target_operation": "window.maximize",
+      "text": "Maximize la ventana de Bloc de notas."
+    },
+    {
+      "normalized_text": "minimiza la ventana de bloc de notas.",
+      "operations": [
+        "window.resolve",
+        "window.minimize"
+      ],
+      "target_operation": "window.minimize",
+      "text": "Minimiza la ventana de Bloc de notas."
+    },
+    {
+      "normalized_text": "move the notepad window to desktop coordinates 120, 80.",
+      "operations": [
+        "window.resolve",
+        "window.move"
+      ],
+      "target_operation": "window.move",
+      "text": "Move the Notepad window to desktop coordinates 120, 80."
+    },
+    {
+      "normalized_text": "redimensiona la ventana de bloc de notas a 900 por 600 pixeles.",
+      "operations": [
+        "window.resolve",
+        "window.resize"
+      ],
+      "target_operation": "window.resize",
+      "text": "Redimensiona la ventana de Bloc de notas a 900 por 600 píxeles."
+    },
+    {
+      "normalized_text": "resolve las ventanas visibles de notepad.exe y devuelve sus identificadores.",
+      "operations": [
+        "window.resolve"
+      ],
+      "target_operation": "window.resolve",
+      "text": "Resolve las ventanas visibles de notepad.exe y devuelve sus identificadores."
+    },
+    {
+      "normalized_text": "restaura la ventana minimizada de bloc de notas.",
+      "operations": [
+        "window.resolve",
+        "window.restore"
+      ],
+      "target_operation": "window.restore",
+      "text": "Restaura la ventana minimizada de Bloc de notas."
+    }
+  ],
+  "authority": "proposal_only_authenticated_catalog_intersection",
+  "catalog_operations": 174,
+  "catalog_sha256": "23784c0d5e223c368be9e7665067378ad369aa5e934d9c27de5bd5a8dac518ae",
+  "excluded_app_memory_operations": [
+    "memory.correct",
+    "memory.disable",
+    "memory.enable",
+    "memory.export",
+    "memory.forget",
+    "memory.list",
+    "memory.recall",
+    "memory.save",
+    "memory.sensitive.save",
+    "memory.session.clear",
+    "memory.status"
+  ],
+  "schema": "baxy.catalog-operation-aliases.v1"
+}

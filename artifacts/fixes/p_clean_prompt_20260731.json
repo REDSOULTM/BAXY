@@ -1,0 +1,2366 @@
+{
+ "baseline": {
+  "max_s": 5.8034,
+  "mean_s": 2.1934,
+  "min_s": 0.0007,
+  "n": 48,
+  "p50_s": 1.9721,
+  "stdev_s": 1.5019
+ },
+ "clean_prompt": {
+  "max_s": 6.1598,
+  "mean_s": 2.1592,
+  "min_s": 0.0007,
+  "n": 48,
+  "p50_s": 1.9318,
+  "stdev_s": 1.532
+ },
+ "delta_p50_s": -0.0403,
+ "effects_executed": 0,
+ "gate": "the candidate may not introduce a decision the baseline never produced, on any case of the frozen turn corpus. A variant that invents one decision is rejected however much it saves. Cases that are nondeterministic inside a single arm are reported rather than hidden, because a set comparison alone would overstate the gate.",
+ "measured_at_utc": "2026-07-31T16:50:18.932559+00:00",
+ "method": "the real sidecar per variant, whole sessions alternated in ABBA order, the same 12-case corpus twice per session. The candidate removes the two fields from the schema and BAXY fills them back in from mode and effect_operations, so everything downstream sees the identical decision shape.",
+ "no_new_decisions": false,
+ "nondeterministic_cases": [
+  "guard-01",
+  "guard-04"
+ ],
+ "per_case": {
+  "act-01": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [
+      "audio.volume"
+     ],
+     "kind": "action",
+     "operation": "audio.volume",
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [
+      "audio.volume"
+     ],
+     "kind": "action",
+     "operation": "audio.volume",
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "act-02": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [
+      "audio.volume"
+     ],
+     "kind": "action",
+     "operation": "audio.volume",
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [
+      "audio.volume"
+     ],
+     "kind": "action",
+     "operation": "audio.volume",
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "clarify-01": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "conv-01": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "conv-02": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "conv-03": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "guard-01": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "clarify",
+     "operation": null,
+     "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+    },
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "clarify",
+     "operation": null,
+     "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+    },
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": false,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "guard-02": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "guard-03": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "guard-04": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "clarify",
+     "operation": null,
+     "question": "¿Qué aplicación deseas abrir?"
+    },
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": false,
+   "introduced_by_candidate": [
+    {
+     "effectOperations": [],
+     "kind": "clarify",
+     "operation": null,
+     "question": "¿Qué aplicación deseas abrir?"
+    }
+   ],
+   "same_outcome_set": false
+  },
+  "plan-01": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [
+      "audio.volume.adjust"
+     ],
+     "kind": "plan",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [
+      "audio.volume.adjust"
+     ],
+     "kind": "plan",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  },
+  "tail-01": {
+   "baseline_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "clean_prompt_outcomes": [
+    {
+     "effectOperations": [],
+     "kind": "conversation",
+     "operation": null,
+     "question": ""
+    }
+   ],
+   "deterministic_in_both": true,
+   "introduced_by_candidate": [],
+   "same_outcome_set": true
+  }
+ },
+ "policy_baseline": {
+  "ms_per_token_p50": 21.37,
+  "p_calls": 42,
+  "predicted_ms_mean": 1513.7,
+  "predicted_ms_p50": 1318.4,
+  "predicted_ms_stdev": 556.1,
+  "predicted_n_mean": 65.29,
+  "predicted_n_p50": 61.0,
+  "prompt_ms_p50": 332.7
+ },
+ "policy_calls": [
+  {
+   "cache_n": 0,
+   "predicted_ms": 1245.805,
+   "predicted_n": 59,
+   "prompt_ms": 662.224,
+   "prompt_n": 1213,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1270.677,
+   "predicted_n": 59,
+   "prompt_ms": 459.473,
+   "prompt_n": 681,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1348.326,
+   "predicted_n": 62,
+   "prompt_ms": 399.43,
+   "prompt_n": 813,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1441.461,
+   "predicted_n": 58,
+   "prompt_ms": 422.167,
+   "prompt_n": 731,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 2934.581,
+   "predicted_n": 59,
+   "prompt_ms": 434.111,
+   "prompt_n": 821,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 2647.877,
+   "predicted_n": 85,
+   "prompt_ms": 423.706,
+   "prompt_n": 762,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 2237.795,
+   "predicted_n": 70,
+   "prompt_ms": 528.212,
+   "prompt_n": 836,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 2345.289,
+   "predicted_n": 64,
+   "prompt_ms": 513.678,
+   "prompt_n": 682,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1723.317,
+   "predicted_n": 61,
+   "prompt_ms": 322.742,
+   "prompt_n": 527,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1551.586,
+   "predicted_n": 61,
+   "prompt_ms": 391.981,
+   "prompt_n": 680,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1270.91,
+   "predicted_n": 73,
+   "prompt_ms": 342.625,
+   "prompt_n": 625,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1141.203,
+   "predicted_n": 78,
+   "prompt_ms": 275.241,
+   "prompt_n": 638,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1422.717,
+   "predicted_n": 54,
+   "prompt_ms": 272.347,
+   "prompt_n": 623,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 876.84,
+   "predicted_n": 57,
+   "prompt_ms": 285.63,
+   "prompt_n": 683,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1081.363,
+   "predicted_n": 59,
+   "prompt_ms": 215.17,
+   "prompt_n": 606,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 957.718,
+   "predicted_n": 84,
+   "prompt_ms": 213.384,
+   "prompt_n": 594,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 971.041,
+   "predicted_n": 68,
+   "prompt_ms": 220.529,
+   "prompt_n": 470,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1251.487,
+   "predicted_n": 59,
+   "prompt_ms": 233.503,
+   "prompt_n": 585,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 1076,
+   "predicted_ms": 1268.837,
+   "predicted_n": 61,
+   "prompt_ms": 89.376,
+   "prompt_n": 5,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 1229,
+   "predicted_ms": 1358.217,
+   "predicted_n": 61,
+   "prompt_ms": 148.142,
+   "prompt_n": 5,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 1174,
+   "predicted_ms": 1013.498,
+   "predicted_n": 73,
+   "prompt_ms": 110.411,
+   "prompt_n": 5,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 0,
+   "predicted_ms": 1077.909,
+   "predicted_n": 52,
+   "prompt_ms": 616.005,
+   "prompt_n": 1182,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1164.042,
+   "predicted_n": 52,
+   "prompt_ms": 463.561,
+   "prompt_n": 681,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1157.386,
+   "predicted_n": 52,
+   "prompt_ms": 410.118,
+   "prompt_n": 813,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1163.247,
+   "predicted_n": 58,
+   "prompt_ms": 384.184,
+   "prompt_n": 731,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 2363.082,
+   "predicted_n": 60,
+   "prompt_ms": 449.597,
+   "prompt_n": 821,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 2022.918,
+   "predicted_n": 52,
+   "prompt_ms": 441.901,
+   "prompt_n": 762,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 2398.222,
+   "predicted_n": 52,
+   "prompt_ms": 536.774,
+   "prompt_n": 836,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 3372.906,
+   "predicted_n": 60,
+   "prompt_ms": 475.391,
+   "prompt_n": 733,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1890.303,
+   "predicted_n": 62,
+   "prompt_ms": 347.203,
+   "prompt_n": 527,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1513.541,
+   "predicted_n": 62,
+   "prompt_ms": 369.726,
+   "prompt_n": 680,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1591.563,
+   "predicted_n": 63,
+   "prompt_ms": 393.31,
+   "prompt_n": 625,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1101.579,
+   "predicted_n": 77,
+   "prompt_ms": 308.095,
+   "prompt_n": 638,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1491.536,
+   "predicted_n": 54,
+   "prompt_ms": 296.089,
+   "prompt_n": 623,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 899.595,
+   "predicted_n": 58,
+   "prompt_ms": 307.181,
+   "prompt_n": 683,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1122.637,
+   "predicted_n": 60,
+   "prompt_ms": 271.824,
+   "prompt_n": 606,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1798.211,
+   "predicted_n": 160,
+   "prompt_ms": 230.092,
+   "prompt_n": 594,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 1116,
+   "predicted_ms": 599.246,
+   "predicted_n": 52,
+   "prompt_ms": 67.15,
+   "prompt_n": 1,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 816.417,
+   "predicted_n": 53,
+   "prompt_ms": 238.718,
+   "prompt_n": 470,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1097.239,
+   "predicted_n": 60,
+   "prompt_ms": 231.103,
+   "prompt_n": 585,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 1045,
+   "predicted_ms": 1125.523,
+   "predicted_n": 62,
+   "prompt_ms": 89.037,
+   "prompt_n": 5,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 1198,
+   "predicted_ms": 1194.201,
+   "predicted_n": 62,
+   "prompt_ms": 150.679,
+   "prompt_n": 5,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 1143,
+   "predicted_ms": 968.3,
+   "predicted_n": 79,
+   "prompt_ms": 108.036,
+   "prompt_n": 5,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 0,
+   "predicted_ms": 1082.383,
+   "predicted_n": 52,
+   "prompt_ms": 604.696,
+   "prompt_n": 1182,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1230.874,
+   "predicted_n": 52,
+   "prompt_ms": 403.619,
+   "prompt_n": 681,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1111.54,
+   "predicted_n": 52,
+   "prompt_ms": 393.021,
+   "prompt_n": 813,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1111.7,
+   "predicted_n": 58,
+   "prompt_ms": 375.846,
+   "prompt_n": 731,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 2371.985,
+   "predicted_n": 60,
+   "prompt_ms": 423.213,
+   "prompt_n": 821,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1879.508,
+   "predicted_n": 52,
+   "prompt_ms": 435.443,
+   "prompt_n": 762,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 2272.959,
+   "predicted_n": 52,
+   "prompt_ms": 539.415,
+   "prompt_n": 836,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 3195.215,
+   "predicted_n": 60,
+   "prompt_ms": 487.709,
+   "prompt_n": 733,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1934.565,
+   "predicted_n": 62,
+   "prompt_ms": 344.471,
+   "prompt_n": 527,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1547.382,
+   "predicted_n": 62,
+   "prompt_ms": 415.788,
+   "prompt_n": 680,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 2038.521,
+   "predicted_n": 100,
+   "prompt_ms": 376.038,
+   "prompt_n": 625,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1096.859,
+   "predicted_n": 77,
+   "prompt_ms": 296.884,
+   "prompt_n": 638,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1449.717,
+   "predicted_n": 54,
+   "prompt_ms": 302.891,
+   "prompt_n": 623,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 901.405,
+   "predicted_n": 58,
+   "prompt_ms": 306.396,
+   "prompt_n": 683,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1167.831,
+   "predicted_n": 60,
+   "prompt_ms": 234.832,
+   "prompt_n": 606,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1779.62,
+   "predicted_n": 160,
+   "prompt_ms": 233.121,
+   "prompt_n": 594,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 1116,
+   "predicted_ms": 606.385,
+   "predicted_n": 52,
+   "prompt_ms": 66.902,
+   "prompt_n": 1,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 800.4,
+   "predicted_n": 53,
+   "prompt_ms": 236.743,
+   "prompt_n": 470,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 523,
+   "predicted_ms": 1103.725,
+   "predicted_n": 60,
+   "prompt_ms": 232.781,
+   "prompt_n": 585,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 1045,
+   "predicted_ms": 1143.53,
+   "predicted_n": 62,
+   "prompt_ms": 85.316,
+   "prompt_n": 5,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 1198,
+   "predicted_ms": 1211.317,
+   "predicted_n": 62,
+   "prompt_ms": 150.922,
+   "prompt_n": 5,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 1143,
+   "predicted_ms": 970.194,
+   "predicted_n": 79,
+   "prompt_ms": 107.881,
+   "prompt_n": 5,
+   "variant": "clean_prompt"
+  },
+  {
+   "cache_n": 0,
+   "predicted_ms": 1210.436,
+   "predicted_n": 59,
+   "prompt_ms": 612.615,
+   "prompt_n": 1213,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1365.812,
+   "predicted_n": 59,
+   "prompt_ms": 440.836,
+   "prompt_n": 681,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1351.336,
+   "predicted_n": 62,
+   "prompt_ms": 428.417,
+   "prompt_n": 813,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1440.128,
+   "predicted_n": 58,
+   "prompt_ms": 410.863,
+   "prompt_n": 731,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 2769.611,
+   "predicted_n": 59,
+   "prompt_ms": 427.001,
+   "prompt_n": 821,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 2974.673,
+   "predicted_n": 85,
+   "prompt_ms": 408.242,
+   "prompt_n": 762,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 2154.817,
+   "predicted_n": 70,
+   "prompt_ms": 543.877,
+   "prompt_n": 836,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1995.595,
+   "predicted_n": 64,
+   "prompt_ms": 521.003,
+   "prompt_n": 682,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 2034.019,
+   "predicted_n": 61,
+   "prompt_ms": 375.399,
+   "prompt_n": 527,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1620.827,
+   "predicted_n": 61,
+   "prompt_ms": 408.335,
+   "prompt_n": 680,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1456.298,
+   "predicted_n": 79,
+   "prompt_ms": 371.043,
+   "prompt_n": 625,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1183.918,
+   "predicted_n": 78,
+   "prompt_ms": 292.779,
+   "prompt_n": 638,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1598.115,
+   "predicted_n": 54,
+   "prompt_ms": 292.801,
+   "prompt_n": 623,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 964.587,
+   "predicted_n": 57,
+   "prompt_ms": 306.182,
+   "prompt_n": 683,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1222.941,
+   "predicted_n": 59,
+   "prompt_ms": 235.651,
+   "prompt_n": 606,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1111.679,
+   "predicted_n": 84,
+   "prompt_ms": 236.477,
+   "prompt_n": 594,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1079.49,
+   "predicted_n": 74,
+   "prompt_ms": 266.656,
+   "prompt_n": 470,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 554,
+   "predicted_ms": 1203.276,
+   "predicted_n": 59,
+   "prompt_ms": 235.571,
+   "prompt_n": 585,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 1076,
+   "predicted_ms": 1160.396,
+   "predicted_n": 61,
+   "prompt_ms": 90.862,
+   "prompt_n": 5,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 1229,
+   "predicted_ms": 1288.393,
+   "predicted_n": 61,
+   "prompt_ms": 148.841,
+   "prompt_n": 5,
+   "variant": "baseline"
+  },
+  {
+   "cache_n": 1174,
+   "predicted_ms": 1029.448,
+   "predicted_n": 73,
+   "prompt_ms": 109.332,
+   "prompt_n": 5,
+   "variant": "baseline"
+  }
+ ],
+ "policy_clean_prompt": {
+  "ms_per_token_p50": 20.22,
+  "p_calls": 44,
+  "predicted_ms_mean": 1453.1,
+  "predicted_ms_p50": 1165.9,
+  "predicted_ms_stdev": 622.8,
+  "predicted_n_mean": 64.57,
+  "predicted_n_p50": 60.0,
+  "prompt_ms_p50": 326.3
+ },
+ "policy_delta": {
+  "predicted_ms_mean": -60.6,
+  "predicted_ms_p50": -152.5,
+  "predicted_n": -0.72
+ },
+ "policy_note": "these are the primary policy's own llama-server timings, one row per P call. Turn wall time cannot resolve this effect: that distribution is bimodal, mixing deterministic turns near 0.001 s with model turns of several seconds.",
+ "question": "the primary schema makes the model write `operation` and `effect_count`, which the prompt itself declares as functions of `mode` and `effect_operations`. If BAXY derives them instead, does any turn decide differently?",
+ "runtime": {
+  "gguf": {
+   "bytes": 2620370976,
+   "name": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+  },
+  "llama_server": {
+   "bytes": 9216,
+   "name": "llama-server.exe"
+  },
+  "manifest_sha256": "35e3a73d2f6ef88dad7bd3b17d29d3113f132deb1f70c2cdc0b6065dc0a126d6",
+  "mind": {
+   "module": "baxy_mind"
+  },
+  "profiles": {
+   "cpu_fallback_layers": 0,
+   "gpu_layers": 99
+  },
+  "python": {
+   "bytes": 274424,
+   "name": "python.exe"
+  },
+  "source": "registered_manifest"
+ },
+ "samples": [
+  {
+   "case_id": "conv-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+   "seconds": 1.774117,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¡Mmm, la pizza con piña suena deliciosa! Es una combinación dulce y salada que suele ser un éxito. ¿Te gusta el sabor dulce en la pizza?",
+   "seconds": 2.838065,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+   "seconds": 2.15057,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "act-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 0.00572,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "act-02",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 0.001015,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "clarify",
+    "operation": null,
+    "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 4.345118,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "Para ver cómo está todo por dentro de la máquina, ¿te refieres a revisar el hardware, el sistema operativo, o quizás algún archivo específico?",
+   "seconds": 5.058386,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Quieres que te recuerde la cita con el dentista?",
+   "seconds": 4.320631,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-04",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+   "seconds": 5.803425,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "plan-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 2.167882,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "clarify-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué necesitas que haga?",
+   "seconds": 2.830791,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "tail-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué tarjeta gráfica tienes instalada?",
+   "seconds": 1.784834,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+   "seconds": 1.787644,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "La pizza con piña es una combinación bastante inusual, pero puede ser bastante interesante. Depende mucho de cómo se prepare.\n\nAlgunas personas la disfrutan porque el dulzor de la piña contrasta bien con la salinidad de la pizza y el queso. Si se usa piña fresca, puede aportar un toque tropical y ácido que equilibra la riqueza de la pizza.\n\nSin embargo, si no se hace bien, puede resultar un poco desequilibrada. A veces, el exceso de dulzor puede opacar los sabores principales de la pizza.\n\n¿Te refieres a una pizza con piña fresca, o quizás con algún tipo de salsa o adición específica?",
+   "seconds": 2.581819,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+   "seconds": 1.503989,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "act-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 0.001022,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "act-02",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 0.000675,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+   "seconds": 1.932867,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Para ver cómo está todo por dentro de la máquina, ¿te refieres a revisar el hardware, el sistema operativo, o quizás algún archivo específico?",
+   "seconds": 2.77582,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Quieres que te recuerde la cita con el dentista? ¿Necesitas que te ponga una alarma o un recordatorio en tu calendario?",
+   "seconds": 1.368463,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-04",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué necesitas que haga para dejar tu pantalla lista para trabajar?",
+   "seconds": 2.159174,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "plan-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 1.493543,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "clarify-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué necesitas que haga?",
+   "seconds": 1.778059,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "tail-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que la GPU está activa en algún programa?",
+   "seconds": 1.288949,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+   "seconds": 1.655067,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "La pizza con piña es una combinación bastante inusual, pero puede ser interesante. Depende mucho de los gustos personales.\n\nAlgunas personas la encuentran deliciosa porque el dulzor de la piña contrasta bien con la salinidad de la pizza y el queso. Es una opción más tropical y dulce.\n\nOtras personas prefieren evitarla porque sienten que el sabor de la piña no complementa bien los ingredientes tradicionales de la pizza.\n\n¿Tú qué opinas de ella?",
+   "seconds": 2.342164,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+   "seconds": 1.812406,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "act-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 0.005679,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "act-02",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 0.00103,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "clarify",
+    "operation": null,
+    "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 3.884147,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "Para ver cómo está todo por dentro de la máquina, ¿te refieres a revisar el hardware, el sistema operativo, o quizás algún archivo específico?",
+   "seconds": 4.52932,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Quieres que te recuerde la cita con el dentista? ¿Necesitas que te ponga una alarma o un recordatorio en tu calendario?",
+   "seconds": 4.477416,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-04",
+   "decision": {
+    "effectOperations": [],
+    "kind": "clarify",
+    "operation": null,
+    "question": "¿Qué aplicación deseas abrir?"
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 6.159785,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "plan-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 2.388655,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "clarify-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué necesitas que haga?",
+   "seconds": 2.827351,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "tail-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que la GPU está trabajando?",
+   "seconds": 2.15883,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+   "seconds": 1.578636,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "La pizza con piña es una combinación bastante inusual, pero puede ser interesante. Depende mucho de los gustos personales.\n\nAlgunas personas la disfrutan porque el dulzor de la piña contrasta bien con la salinidad de la pizza y el queso. Es una opción más dulce y tropical.\n\nOtras personas no la encuentran muy sabrosa porque sienten que el sabor de la piña no complementa bien los ingredientes tradicionales de la pizza.\n\n¿Te gusta probar sabores dulces en la comida?",
+   "seconds": 2.400178,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+   "seconds": 1.582614,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "act-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 0.001192,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "act-02",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 0.000806,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+   "seconds": 2.121221,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Para ver cómo está todo por dentro de la máquina, ¿te refieres a revisar el hardware, el sistema operativo, o quizás algún archivo específico?",
+   "seconds": 4.358396,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Quieres que te recuerde la cita con el dentista?",
+   "seconds": 1.492302,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-04",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+   "seconds": 2.05129,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "plan-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 1.352762,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "clarify-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué necesitas que haga?",
+   "seconds": 1.615549,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "tail-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que la GPU está activa en algún programa?",
+   "seconds": 1.239144,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+   "seconds": 1.654343,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "La pizza con piña es una combinación bastante inusual, pero puede ser interesante. Depende mucho de los gustos personales.\n\nAlgunas personas la encuentran deliciosa porque el dulzor de la piña contrasta bien con la salinidad de la pizza y el queso. Es una opción más tropical y dulce.\n\nOtras personas prefieren evitarla porque sienten que el sabor de la piña no complementa bien los ingredientes tradicionales de la pizza.\n\n¿Tú qué opinas de ella?",
+   "seconds": 2.265671,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+   "seconds": 1.746652,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "act-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 0.00537,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "act-02",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 0.001085,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "clarify",
+    "operation": null,
+    "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 3.758487,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "Para ver cómo está todo por dentro de la máquina, ¿te refieres a revisar el hardware, el sistema operativo, o quizás algún archivo específico?",
+   "seconds": 4.28753,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Quieres que te recuerde la cita con el dentista? ¿Necesitas que te ponga una alarma o un recordatorio en tu calendario?",
+   "seconds": 4.369718,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-04",
+   "decision": {
+    "effectOperations": [],
+    "kind": "clarify",
+    "operation": null,
+    "question": "¿Qué aplicación deseas abrir?"
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 5.828406,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "plan-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 2.428034,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "clarify-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué necesitas que haga?",
+   "seconds": 2.92108,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "tail-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que la GPU está trabajando?",
+   "seconds": 2.568665,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+   "seconds": 1.557926,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "La pizza con piña es una combinación bastante inusual, pero puede ser interesante. Depende mucho de los gustos personales.\n\nAlgunas personas la disfrutan porque el dulzor de la piña contrasta bien con la salinidad de la pizza y el queso. Es una opción más dulce y tropical.\n\nOtras personas no la encuentran muy sabrosa porque sienten que el sabor de la piña no complementa bien los ingredientes tradicionales de la pizza.\n\n¿Te gusta probar sabores dulces en la comida?",
+   "seconds": 2.366937,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+   "seconds": 1.587521,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "act-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 0.001328,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "act-02",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 0.000728,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+   "seconds": 2.110695,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Para ver cómo está todo por dentro de la máquina, ¿te refieres a revisar el hardware, el sistema operativo, o quizás algún archivo específico?",
+   "seconds": 4.343656,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Quieres que te recuerde la cita con el dentista?",
+   "seconds": 1.472914,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "guard-04",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+   "seconds": 2.066061,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "plan-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 1.367483,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "clarify-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué necesitas que haga?",
+   "seconds": 1.646169,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "tail-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que la GPU está activa en algún programa?",
+   "seconds": 1.248732,
+   "variant": "clean_prompt"
+  },
+  {
+   "case_id": "conv-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+   "seconds": 1.833245,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¡Mmm, la pizza con piña suena deliciosa! Es una combinación dulce y salada que suele ser un éxito. ¿Te gusta el sabor dulce en la pizza?",
+   "seconds": 2.875321,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+   "seconds": 2.109799,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "act-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 0.005699,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "act-02",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 0.001071,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "clarify",
+    "operation": null,
+    "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 4.154561,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "Para ver cómo está todo por dentro de la máquina, ¿te refieres a revisar el hardware, el sistema operativo, o quizás algún archivo específico?",
+   "seconds": 5.400773,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Quieres que te recuerde la cita con el dentista?",
+   "seconds": 4.256472,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-04",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+   "seconds": 5.249207,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "plan-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "",
+   "seconds": 2.565533,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "clarify-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué necesitas que haga?",
+   "seconds": 3.097444,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "tail-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 0,
+   "reply_text": "¿Qué tarjeta gráfica tienes instalada?",
+   "seconds": 2.01128,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+   "seconds": 1.887612,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "La pizza con piña es una combinación bastante inusual, pero puede ser bastante interesante. Depende mucho de cómo se prepare.\n\nAlgunas personas la disfrutan porque el dulzor de la piña contrasta bien con la salinidad de la pizza y el queso. Si se usa piña fresca, puede aportar un toque tropical y ácido que equilibra la riqueza de la pizza.\n\nSin embargo, si no se hace bien, puede resultar un poco desequilibrada. A veces, el exceso de dulzor puede opacar los sabores principales de la pizza.\n\n¿Te refieres a una pizza con piña fresca, o quizás con algún tipo de salsa o adición específica?",
+   "seconds": 2.890594,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "conv-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+   "seconds": 1.662055,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "act-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 0.001454,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "act-02",
+   "decision": {
+    "effectOperations": [
+     "audio.volume"
+    ],
+    "kind": "action",
+    "operation": "audio.volume",
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 0.000862,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+   "seconds": 2.174087,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-02",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "Para ver cómo está todo por dentro de la máquina, ¿te refieres a revisar el hardware, el sistema operativo, o quizás algún archivo específico?",
+   "seconds": 3.008048,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-03",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Quieres que te recuerde la cita con el dentista?",
+   "seconds": 1.743715,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "guard-04",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué necesitas que haga para dejar tu pantalla lista para trabajar?",
+   "seconds": 2.173682,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "plan-01",
+   "decision": {
+    "effectOperations": [
+     "audio.volume.adjust"
+    ],
+    "kind": "plan",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "",
+   "seconds": 1.39736,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "clarify-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Qué necesitas que haga?",
+   "seconds": 1.724884,
+   "variant": "baseline"
+  },
+  {
+   "case_id": "tail-01",
+   "decision": {
+    "effectOperations": [],
+    "kind": "conversation",
+    "operation": null,
+    "question": ""
+   },
+   "repeat": 1,
+   "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que la GPU está activa en algún programa?",
+   "seconds": 1.305122,
+   "variant": "baseline"
+  }
+ ],
+ "schema": "baxy.p-derived-fields.v1",
+ "verdict": {
+  "status": "REJECTED. Not promoted; production is unchanged.",
+  "gate": "FAILED. no_new_decisions = false.",
+  "what_broke": "guard-04 ('podrias dejarme la pantalla lista para trabajar') decided conversation deterministically in the baseline. With the cleaned prompt it sometimes decided clarify, asking '¿Que aplicacion deseas abrir?'. The case also went from deterministic to nondeterministic.",
+  "likely_cause": "the removed text included 'operation debe estar vacio salvo en action, donde debe coincidir con el unico elemento de effect_operations'. That sentence anchored the idea that a non-action turn carries no operation. Removing it loosened that anchor even though the field itself no longer exists.",
+  "value_it_would_have_bought": "essentially nothing: -0.72 emitted tokens. Those sentences live in the cached system prefix, so they cost almost no prefill (332.7 -> 326.3 ms) and no decode. The -152.5 ms p50 decode delta is not attributable to the change, since the token count barely moved; it is session noise.",
+  "lesson": "this looked obviously safe: it deleted instructions about two fields that no longer exist in the schema. It still moved a decision. Prompt text that describes a removed field can still be carrying semantics for a field that remains."
+ }
+}

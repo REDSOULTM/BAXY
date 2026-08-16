@@ -1,0 +1,6372 @@
+{
+  "authority": "tool_selection_only_no_core_plan_or_provider",
+  "contains_utterance_text": false,
+  "effects_executed": 0,
+  "metrics": {
+    "accuracy": 0.8670886075949367,
+    "action_cases": 158,
+    "action_correct": 137,
+    "correct": 137,
+    "false_actions": 0,
+    "no_action_cases": 0,
+    "seconds_p50": 0.6231995,
+    "seconds_p95": 1.370598,
+    "wrong_action_selection": 18
+  },
+  "rows": [
+    {
+      "accepted_operation_sets": [
+        [
+          "app.close"
+        ]
+      ],
+      "candidate_operations": [
+        "app.close",
+        "note.search",
+        "browser.control",
+        "note.list",
+        "window.resize",
+        "window.maximize",
+        "window.minimize",
+        "window.active",
+        "filesystem.sandbox.move.named",
+        "window.move"
+      ],
+      "case_id": "catalog-seen-natural-app-close",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "app.close",
+        "note.search",
+        "browser.control",
+        "note.list",
+        "window.resize",
+        "window.maximize",
+        "window.minimize",
+        "window.active",
+        "filesystem.sandbox.move.named",
+        "window.move"
+      ],
+      "seconds": 3.779589,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.maximize"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "app.installed"
+        ]
+      ],
+      "candidate_operations": [
+        "app.installed",
+        "web.search",
+        "game.installed.named",
+        "game.install.prepare",
+        "package.install.prepare",
+        "package.install.commit",
+        "notification.diagnose",
+        "filesystem.search",
+        "browser.navigate.named",
+        "window.application.status"
+      ],
+      "case_id": "catalog-seen-natural-app-installed",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "app.installed",
+        "web.search",
+        "game.installed.named",
+        "game.install.prepare",
+        "package.install.prepare",
+        "package.install.commit",
+        "notification.diagnose",
+        "filesystem.search",
+        "browser.navigate.named",
+        "window.application.status"
+      ],
+      "seconds": 0.572717,
+      "selected_no_match": false,
+      "selected_operations": [
+        "app.installed"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "app.open"
+        ]
+      ],
+      "candidate_operations": [
+        "app.open",
+        "web.search",
+        "filesystem.folder.open",
+        "filesystem.hash",
+        "input.keyboard.open",
+        "task.reopen",
+        "filesystem.file.open.latest",
+        "routine.list",
+        "browser.navigate.named",
+        "game.install.named"
+      ],
+      "case_id": "catalog-seen-natural-app-open",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "app.open",
+        "web.search",
+        "filesystem.folder.open",
+        "filesystem.hash",
+        "input.keyboard.open",
+        "task.reopen",
+        "filesystem.file.open.latest",
+        "routine.list",
+        "browser.navigate.named",
+        "game.install.named"
+      ],
+      "seconds": 0.620724,
+      "selected_no_match": false,
+      "selected_operations": [
+        "app.open"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "audio.microphone.mute"
+        ]
+      ],
+      "candidate_operations": [
+        "audio.microphone.mute",
+        "audio.mute",
+        "game.install.named",
+        "system.identity",
+        "system.status",
+        "audio.volume.adjust",
+        "filesystem.sandbox.move.named",
+        "backup.create",
+        "system.settings.set",
+        "bluetooth.device.list"
+      ],
+      "case_id": "catalog-seen-natural-audio-microphone-mute",
+      "correct": false,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "audio.microphone.mute",
+        "audio.mute",
+        "game.install.named",
+        "system.identity",
+        "system.status",
+        "audio.volume.adjust",
+        "filesystem.sandbox.move.named",
+        "backup.create",
+        "system.settings.set",
+        "bluetooth.device.list"
+      ],
+      "seconds": 2.083358,
+      "selected_no_match": true,
+      "selected_operations": []
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "audio.mute"
+        ]
+      ],
+      "candidate_operations": [
+        "audio.mute",
+        "audio.microphone.mute",
+        "audio.volume.adjust",
+        "game.install.named",
+        "system.identity",
+        "system.status",
+        "system.settings.set",
+        "bluetooth.device.list",
+        "clipboard.write.text",
+        "routine.set.enabled"
+      ],
+      "case_id": "catalog-seen-natural-audio-mute",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "audio.mute",
+        "audio.microphone.mute",
+        "audio.volume.adjust",
+        "game.install.named",
+        "system.identity",
+        "system.status",
+        "system.settings.set",
+        "bluetooth.device.list",
+        "clipboard.write.text",
+        "routine.set.enabled"
+      ],
+      "seconds": 0.581654,
+      "selected_no_match": false,
+      "selected_operations": [
+        "audio.mute"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "audio.status"
+        ]
+      ],
+      "candidate_operations": [
+        "audio.mute",
+        "audio.status",
+        "audio.volume",
+        "window.active",
+        "system.status",
+        "system.time",
+        "browser.page.read",
+        "peripheral.list",
+        "media.control",
+        "system.identity"
+      ],
+      "case_id": "catalog-seen-natural-audio-status",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "audio.mute",
+        "audio.status",
+        "audio.volume",
+        "window.active",
+        "system.status",
+        "system.time",
+        "browser.page.read",
+        "peripheral.list",
+        "media.control",
+        "system.identity"
+      ],
+      "seconds": 0.556244,
+      "selected_no_match": false,
+      "selected_operations": [
+        "audio.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "audio.volume"
+        ]
+      ],
+      "candidate_operations": [
+        "audio.volume",
+        "system.settings.set",
+        "audio.microphone.mute",
+        "audio.volume.adjust",
+        "game.install.named",
+        "media.play.query",
+        "system.status",
+        "bluetooth.device.list",
+        "system.identity",
+        "routine.list"
+      ],
+      "case_id": "catalog-seen-natural-audio-volume",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "audio.volume",
+        "system.settings.set",
+        "audio.microphone.mute",
+        "audio.volume.adjust",
+        "game.install.named",
+        "media.play.query",
+        "system.status",
+        "bluetooth.device.list",
+        "system.identity",
+        "routine.list"
+      ],
+      "seconds": 0.652075,
+      "selected_no_match": false,
+      "selected_operations": [
+        "audio.volume"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "audio.volume.adjust"
+        ]
+      ],
+      "candidate_operations": [
+        "audio.volume.adjust",
+        "audio.volume",
+        "filesystem.search",
+        "backup.known.verify.latest",
+        "game.installed.named",
+        "input.pointer.control",
+        "filesystem.known.search",
+        "clipboard.paste",
+        "streaming.play.named",
+        "web.search"
+      ],
+      "case_id": "catalog-seen-natural-audio-volume-adjust",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "audio.volume.adjust",
+        "audio.volume",
+        "filesystem.search",
+        "backup.known.verify.latest",
+        "game.installed.named",
+        "input.pointer.control",
+        "filesystem.known.search",
+        "clipboard.paste",
+        "streaming.play.named",
+        "web.search"
+      ],
+      "seconds": 0.640343,
+      "selected_no_match": false,
+      "selected_operations": [
+        "audio.volume.adjust"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "backup.create"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.create",
+        "clipboard.copy",
+        "filesystem.copy",
+        "filesystem.read.text",
+        "note.create",
+        "task.create",
+        "filesystem.trash.commit",
+        "routine.delete",
+        "backup.known.create",
+        "input.select.all"
+      ],
+      "case_id": "catalog-seen-natural-backup-create",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.create",
+        "clipboard.copy",
+        "filesystem.copy",
+        "filesystem.read.text",
+        "note.create",
+        "task.create",
+        "filesystem.trash.commit",
+        "routine.delete",
+        "backup.known.create",
+        "input.select.all"
+      ],
+      "seconds": 0.589072,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.copy"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "backup.known.create"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.known.verify.latest",
+        "backup.known.create",
+        "backup.known.restore.latest",
+        "backup.list",
+        "backup.restore",
+        "filesystem.known.trash.named",
+        "note.create",
+        "filesystem.known.search",
+        "backup.known.list",
+        "capture.active.window"
+      ],
+      "case_id": "catalog-seen-natural-backup-known-create",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.known.verify.latest",
+        "backup.known.create",
+        "backup.known.restore.latest",
+        "backup.list",
+        "backup.restore",
+        "filesystem.known.trash.named",
+        "note.create",
+        "filesystem.known.search",
+        "backup.known.list",
+        "capture.active.window"
+      ],
+      "seconds": 0.597412,
+      "selected_no_match": false,
+      "selected_operations": [
+        "backup.known.create"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "backup.known.list"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.known.list",
+        "backup.known.create",
+        "filesystem.known.trash.named",
+        "backup.known.verify.latest",
+        "filesystem.sandbox.diff.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.copy",
+        "clipboard.copy",
+        "system.process.list",
+        "filesystem.known.search"
+      ],
+      "case_id": "catalog-seen-natural-backup-known-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.known.list",
+        "backup.known.create",
+        "filesystem.known.trash.named",
+        "backup.known.verify.latest",
+        "filesystem.sandbox.diff.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.copy",
+        "clipboard.copy",
+        "system.process.list",
+        "filesystem.known.search"
+      ],
+      "seconds": 0.606763,
+      "selected_no_match": false,
+      "selected_operations": [
+        "backup.known.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "backup.known.restore.latest"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.known.restore.latest",
+        "backup.known.verify.latest",
+        "backup.restore",
+        "web.search",
+        "notification.cancel.latest",
+        "peripheral.scan",
+        "filesystem.file.open.latest",
+        "routine.restore",
+        "email.latest.reply",
+        "peripheral.print"
+      ],
+      "case_id": "catalog-seen-natural-backup-known-restore-latest",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.known.restore.latest",
+        "backup.known.verify.latest",
+        "backup.restore",
+        "web.search",
+        "notification.cancel.latest",
+        "peripheral.scan",
+        "filesystem.file.open.latest",
+        "routine.restore",
+        "email.latest.reply",
+        "peripheral.print"
+      ],
+      "seconds": 0.625693,
+      "selected_no_match": false,
+      "selected_operations": [
+        "backup.known.restore.latest"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "backup.known.verify.latest"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.known.verify.latest",
+        "backup.known.restore.latest",
+        "filesystem.file.open.latest",
+        "notification.cancel.latest",
+        "audio.volume.adjust",
+        "peripheral.scan",
+        "email.latest.reply",
+        "backup.known.list",
+        "backup.restore",
+        "peripheral.print"
+      ],
+      "case_id": "catalog-seen-natural-backup-known-verify-latest",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.known.verify.latest",
+        "backup.known.restore.latest",
+        "filesystem.file.open.latest",
+        "notification.cancel.latest",
+        "audio.volume.adjust",
+        "peripheral.scan",
+        "email.latest.reply",
+        "backup.known.list",
+        "backup.restore",
+        "peripheral.print"
+      ],
+      "seconds": 0.62861,
+      "selected_no_match": false,
+      "selected_operations": [
+        "backup.known.verify.latest"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "backup.list"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.list",
+        "backup.known.list",
+        "backup.restore",
+        "backup.verify",
+        "capture.active.window",
+        "backup.known.restore.latest",
+        "media.play.query",
+        "browser.navigate.named",
+        "web.search",
+        "note.create"
+      ],
+      "case_id": "catalog-seen-natural-backup-list",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.list",
+        "backup.known.list",
+        "backup.restore",
+        "backup.verify",
+        "capture.active.window",
+        "backup.known.restore.latest",
+        "media.play.query",
+        "browser.navigate.named",
+        "web.search",
+        "note.create"
+      ],
+      "seconds": 0.569117,
+      "selected_no_match": false,
+      "selected_operations": [
+        "backup.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "backup.restore"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.verify",
+        "backup.restore",
+        "backup.known.restore.latest",
+        "filesystem.trash.restore",
+        "message.send",
+        "web.search",
+        "capture.active.window",
+        "window.restore",
+        "browser.navigate.named",
+        "filesystem.move"
+      ],
+      "case_id": "catalog-seen-natural-backup-restore",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.verify",
+        "backup.restore",
+        "backup.known.restore.latest",
+        "filesystem.trash.restore",
+        "message.send",
+        "web.search",
+        "capture.active.window",
+        "window.restore",
+        "browser.navigate.named",
+        "filesystem.move"
+      ],
+      "seconds": 0.667259,
+      "selected_no_match": false,
+      "selected_operations": [
+        "backup.restore"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "backup.verify"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.known.verify.latest",
+        "backup.verify",
+        "filesystem.known.duplicates",
+        "backup.restore",
+        "input.select.all",
+        "routine.delete",
+        "window.resize",
+        "clipboard.copy",
+        "filesystem.hash",
+        "game.purchase.prepare"
+      ],
+      "case_id": "catalog-seen-natural-backup-verify",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.known.verify.latest",
+        "backup.verify",
+        "filesystem.known.duplicates",
+        "backup.restore",
+        "input.select.all",
+        "routine.delete",
+        "window.resize",
+        "clipboard.copy",
+        "filesystem.hash",
+        "game.purchase.prepare"
+      ],
+      "seconds": 0.592232,
+      "selected_no_match": false,
+      "selected_operations": [
+        "backup.verify"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "bluetooth.device.list"
+        ]
+      ],
+      "candidate_operations": [
+        "bluetooth.device.list",
+        "bluetooth.device.pair",
+        "bluetooth.radio.set",
+        "capture.active.window",
+        "browser.page.read",
+        "web.search",
+        "input.visible.click",
+        "wifi.profile.list",
+        "filesystem.list",
+        "media.play.query"
+      ],
+      "case_id": "catalog-seen-natural-bluetooth-device-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "bluetooth.device.list",
+        "bluetooth.device.pair",
+        "bluetooth.radio.set",
+        "capture.active.window",
+        "browser.page.read",
+        "web.search",
+        "input.visible.click",
+        "wifi.profile.list",
+        "filesystem.list",
+        "media.play.query"
+      ],
+      "seconds": 0.620087,
+      "selected_no_match": false,
+      "selected_operations": [
+        "bluetooth.device.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "bluetooth.device.pair"
+        ]
+      ],
+      "candidate_operations": [
+        "bluetooth.device.pair",
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "web.search",
+        "filesystem.known.search",
+        "media.play.query",
+        "system.process.terminate.named",
+        "app.open",
+        "wifi.connect.named",
+        "input.visible.click"
+      ],
+      "case_id": "catalog-seen-natural-bluetooth-device-pair",
+      "correct": false,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "bluetooth.device.pair",
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "web.search",
+        "filesystem.known.search",
+        "media.play.query",
+        "system.process.terminate.named",
+        "app.open",
+        "wifi.connect.named",
+        "input.visible.click"
+      ],
+      "seconds": 2.0295,
+      "selected_no_match": true,
+      "selected_operations": []
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "candidate_operations": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "notification.schedule",
+        "media.play.query",
+        "input.visible.click",
+        "package.install.commit",
+        "audio.mute",
+        "message.send",
+        "network.ping"
+      ],
+      "case_id": "catalog-seen-natural-bluetooth-radio-set",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "notification.schedule",
+        "media.play.query",
+        "input.visible.click",
+        "package.install.commit",
+        "audio.mute",
+        "message.send",
+        "network.ping"
+      ],
+      "seconds": 0.637994,
+      "selected_no_match": false,
+      "selected_operations": [
+        "bluetooth.radio.set"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "browser.control"
+        ]
+      ],
+      "candidate_operations": [
+        "browser.control",
+        "browser.navigate",
+        "media.control",
+        "browser.page.read",
+        "browser.tabs.list",
+        "media.seek.relative",
+        "window.active",
+        "backup.restore",
+        "input.key.press",
+        "system.time"
+      ],
+      "case_id": "catalog-seen-natural-browser-control",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "browser.control",
+        "browser.navigate",
+        "media.control",
+        "browser.page.read",
+        "browser.tabs.list",
+        "media.seek.relative",
+        "window.active",
+        "backup.restore",
+        "input.key.press",
+        "system.time"
+      ],
+      "seconds": 0.578163,
+      "selected_no_match": false,
+      "selected_operations": [
+        "browser.control"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "browser.navigate"
+        ]
+      ],
+      "candidate_operations": [
+        "browser.navigate",
+        "browser.tabs.list",
+        "browser.control",
+        "media.status",
+        "media.seek.relative",
+        "system.time",
+        "input.key.press",
+        "streaming.navigate",
+        "filesystem.sandbox.move.named",
+        "window.minimize"
+      ],
+      "case_id": "catalog-seen-natural-browser-navigate",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "browser.navigate",
+        "browser.tabs.list",
+        "browser.control",
+        "media.status",
+        "media.seek.relative",
+        "system.time",
+        "input.key.press",
+        "streaming.navigate",
+        "filesystem.sandbox.move.named",
+        "window.minimize"
+      ],
+      "seconds": 0.608271,
+      "selected_no_match": false,
+      "selected_operations": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "browser.navigate.named"
+        ]
+      ],
+      "candidate_operations": [
+        "browser.navigate.named",
+        "browser.navigate",
+        "media.play.query",
+        "task.list",
+        "game.catalog.list",
+        "network.ping",
+        "filesystem.sandbox.append.named",
+        "filesystem.known.trash.named",
+        "task.reopen",
+        "app.open"
+      ],
+      "case_id": "catalog-seen-natural-browser-navigate-named",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "browser.navigate.named",
+        "browser.navigate",
+        "media.play.query",
+        "task.list",
+        "game.catalog.list",
+        "network.ping",
+        "filesystem.sandbox.append.named",
+        "filesystem.known.trash.named",
+        "task.reopen",
+        "app.open"
+      ],
+      "seconds": 0.632716,
+      "selected_no_match": false,
+      "selected_operations": [
+        "browser.navigate.named"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "browser.page.read"
+        ]
+      ],
+      "candidate_operations": [
+        "browser.page.read",
+        "browser.navigate",
+        "task.search",
+        "browser.control",
+        "note.trash",
+        "input.visible.click",
+        "capture.active.window",
+        "game.install.named",
+        "input.text.type",
+        "task.resolve.exact"
+      ],
+      "case_id": "catalog-seen-natural-browser-page-read",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "browser.page.read",
+        "browser.navigate",
+        "task.search",
+        "browser.control",
+        "note.trash",
+        "input.visible.click",
+        "capture.active.window",
+        "game.install.named",
+        "input.text.type",
+        "task.resolve.exact"
+      ],
+      "seconds": 0.610546,
+      "selected_no_match": false,
+      "selected_operations": [
+        "browser.page.read"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "browser.tabs.list"
+        ]
+      ],
+      "candidate_operations": [
+        "browser.tabs.list",
+        "task.list",
+        "browser.control",
+        "notification.schedule",
+        "window.minimize",
+        "web.search",
+        "window.resize",
+        "media.seek.relative",
+        "input.key.press",
+        "backup.list"
+      ],
+      "case_id": "catalog-seen-natural-browser-tabs-list",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "browser.tabs.list",
+        "task.list",
+        "browser.control",
+        "notification.schedule",
+        "window.minimize",
+        "web.search",
+        "window.resize",
+        "media.seek.relative",
+        "input.key.press",
+        "backup.list"
+      ],
+      "seconds": 0.604881,
+      "selected_no_match": false,
+      "selected_operations": [
+        "browser.tabs.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "candidate_operations": [
+        "calendar.event.create",
+        "calendar.event.list",
+        "reminder.create",
+        "note.update",
+        "filesystem.known.search",
+        "routine.restore",
+        "game.install.named",
+        "filesystem.create.directory",
+        "filesystem.trash.prepare",
+        "input.key.press"
+      ],
+      "case_id": "catalog-seen-natural-calendar-event-create",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "calendar.event.create",
+        "calendar.event.list",
+        "reminder.create",
+        "note.update",
+        "filesystem.known.search",
+        "routine.restore",
+        "game.install.named",
+        "filesystem.create.directory",
+        "filesystem.trash.prepare",
+        "input.key.press"
+      ],
+      "seconds": 0.60364,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.create"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "calendar.event.list"
+        ]
+      ],
+      "candidate_operations": [
+        "calendar.event.list",
+        "calendar.event.create",
+        "filesystem.known.duplicates",
+        "notification.diagnose",
+        "wifi.profile.list",
+        "backup.list",
+        "filesystem.search",
+        "browser.control",
+        "input.key.press",
+        "window.resize"
+      ],
+      "case_id": "catalog-seen-natural-calendar-event-list",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "calendar.event.list",
+        "calendar.event.create",
+        "filesystem.known.duplicates",
+        "notification.diagnose",
+        "wifi.profile.list",
+        "backup.list",
+        "filesystem.search",
+        "browser.control",
+        "input.key.press",
+        "window.resize"
+      ],
+      "seconds": 0.599802,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "capture.active.window"
+        ]
+      ],
+      "candidate_operations": [
+        "capture.active.window",
+        "input.keyboard.status",
+        "window.active",
+        "window.resolve",
+        "window.restore",
+        "window.resize",
+        "app.close",
+        "input.key.press",
+        "window.focus",
+        "vision.describe"
+      ],
+      "case_id": "catalog-seen-natural-capture-active-window",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "capture.active.window",
+        "input.keyboard.status",
+        "window.active",
+        "window.resolve",
+        "window.restore",
+        "window.resize",
+        "app.close",
+        "input.key.press",
+        "window.focus",
+        "vision.describe"
+      ],
+      "seconds": 0.60229,
+      "selected_no_match": false,
+      "selected_operations": [
+        "capture.active.window"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "capture.screenshot"
+        ]
+      ],
+      "candidate_operations": [
+        "web.search",
+        "capture.screenshot",
+        "filesystem.known.trash.named",
+        "filesystem.known.search",
+        "routine.phrase.create",
+        "message.send",
+        "reminder.create",
+        "audio.volume.adjust",
+        "input.select.all",
+        "window.move"
+      ],
+      "case_id": "catalog-seen-natural-capture-screenshot",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "web.search",
+        "capture.screenshot",
+        "filesystem.known.trash.named",
+        "filesystem.known.search",
+        "routine.phrase.create",
+        "message.send",
+        "reminder.create",
+        "audio.volume.adjust",
+        "input.select.all",
+        "window.move"
+      ],
+      "seconds": 0.603954,
+      "selected_no_match": false,
+      "selected_operations": [
+        "capture.screenshot"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "clipboard.copy"
+        ]
+      ],
+      "candidate_operations": [
+        "clipboard.copy",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "input.select.all",
+        "backup.create",
+        "filesystem.copy",
+        "email.latest.reply",
+        "filesystem.trash.commit",
+        "routine.delete",
+        "media.seek.relative"
+      ],
+      "case_id": "catalog-seen-natural-clipboard-copy",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "clipboard.copy",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "input.select.all",
+        "backup.create",
+        "filesystem.copy",
+        "email.latest.reply",
+        "filesystem.trash.commit",
+        "routine.delete",
+        "media.seek.relative"
+      ],
+      "seconds": 0.603141,
+      "selected_no_match": false,
+      "selected_operations": [
+        "clipboard.copy"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "clipboard.paste"
+        ]
+      ],
+      "candidate_operations": [
+        "clipboard.paste",
+        "web.search",
+        "input.keyboard.status",
+        "clipboard.write.text",
+        "media.seek.relative",
+        "window.focus",
+        "browser.control",
+        "audio.volume.adjust",
+        "system.time",
+        "input.text.type"
+      ],
+      "case_id": "catalog-seen-natural-clipboard-paste",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "clipboard.paste",
+        "web.search",
+        "input.keyboard.status",
+        "clipboard.write.text",
+        "media.seek.relative",
+        "window.focus",
+        "browser.control",
+        "audio.volume.adjust",
+        "system.time",
+        "input.text.type"
+      ],
+      "seconds": 0.597741,
+      "selected_no_match": false,
+      "selected_operations": [
+        "clipboard.paste"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "clipboard.read.text"
+        ]
+      ],
+      "candidate_operations": [
+        "clipboard.write.text",
+        "clipboard.paste",
+        "clipboard.read.text",
+        "browser.page.read",
+        "clipboard.copy",
+        "filesystem.read.text",
+        "web.search",
+        "audio.volume.adjust",
+        "input.keyboard.status",
+        "input.text.type"
+      ],
+      "case_id": "catalog-seen-natural-clipboard-read-text",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "clipboard.write.text",
+        "clipboard.paste",
+        "clipboard.read.text",
+        "browser.page.read",
+        "clipboard.copy",
+        "filesystem.read.text",
+        "web.search",
+        "audio.volume.adjust",
+        "input.keyboard.status",
+        "input.text.type"
+      ],
+      "seconds": 0.75397,
+      "selected_no_match": false,
+      "selected_operations": [
+        "clipboard.read.text"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "clipboard.write.text"
+        ]
+      ],
+      "candidate_operations": [
+        "clipboard.write.text",
+        "clipboard.paste",
+        "media.play.query",
+        "clipboard.read.text",
+        "notification.schedule",
+        "input.text.type",
+        "browser.page.read",
+        "audio.mute",
+        "peripheral.list",
+        "input.visible.click"
+      ],
+      "case_id": "catalog-seen-natural-clipboard-write-text",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "clipboard.write.text",
+        "clipboard.paste",
+        "media.play.query",
+        "clipboard.read.text",
+        "notification.schedule",
+        "input.text.type",
+        "browser.page.read",
+        "audio.mute",
+        "peripheral.list",
+        "input.visible.click"
+      ],
+      "seconds": 0.638901,
+      "selected_no_match": false,
+      "selected_operations": [
+        "clipboard.write.text"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "email.latest.read"
+        ]
+      ],
+      "candidate_operations": [
+        "email.latest.read",
+        "email.latest.reply",
+        "web.search",
+        "backup.known.verify.latest",
+        "notification.cancel.latest",
+        "filesystem.file.open.latest",
+        "window.restore",
+        "backup.known.restore.latest",
+        "window.minimize",
+        "backup.list"
+      ],
+      "case_id": "catalog-seen-natural-email-latest-read",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "email.latest.read",
+        "email.latest.reply",
+        "web.search",
+        "backup.known.verify.latest",
+        "notification.cancel.latest",
+        "filesystem.file.open.latest",
+        "window.restore",
+        "backup.known.restore.latest",
+        "window.minimize",
+        "backup.list"
+      ],
+      "seconds": 0.605153,
+      "selected_no_match": false,
+      "selected_operations": [
+        "email.latest.read"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "email.latest.reply"
+        ]
+      ],
+      "candidate_operations": [
+        "email.latest.reply",
+        "web.search",
+        "email.latest.read",
+        "window.minimize",
+        "network.ping",
+        "clipboard.write.text",
+        "media.play.query",
+        "input.pointer.control",
+        "bluetooth.device.pair",
+        "window.move"
+      ],
+      "case_id": "catalog-seen-natural-email-latest-reply",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "email.latest.reply",
+        "web.search",
+        "email.latest.read",
+        "window.minimize",
+        "network.ping",
+        "clipboard.write.text",
+        "media.play.query",
+        "input.pointer.control",
+        "bluetooth.device.pair",
+        "window.move"
+      ],
+      "seconds": 0.605329,
+      "selected_no_match": false,
+      "selected_operations": [
+        "email.latest.reply"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.copy"
+        ]
+      ],
+      "candidate_operations": [
+        "clipboard.copy",
+        "filesystem.sandbox.move.named",
+        "filesystem.copy",
+        "filesystem.file.open.latest",
+        "filesystem.list",
+        "filesystem.sandbox.append.named",
+        "backup.restore",
+        "backup.known.create",
+        "backup.create",
+        "filesystem.search"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-copy",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "clipboard.copy",
+        "filesystem.sandbox.move.named",
+        "filesystem.copy",
+        "filesystem.file.open.latest",
+        "filesystem.list",
+        "filesystem.sandbox.append.named",
+        "backup.restore",
+        "backup.known.create",
+        "backup.create",
+        "filesystem.search"
+      ],
+      "seconds": 0.590602,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.copy"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.create.directory"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.list",
+        "backup.restore",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "reminder.create",
+        "filesystem.search",
+        "backup.known.create",
+        "notification.schedule",
+        "filesystem.create.directory",
+        "filesystem.folder.open"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-create-directory",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.list",
+        "backup.restore",
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "reminder.create",
+        "filesystem.search",
+        "backup.known.create",
+        "notification.schedule",
+        "filesystem.create.directory",
+        "filesystem.folder.open"
+      ],
+      "seconds": 0.653847,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.create.directory"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.file.open.latest"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.file.open.latest",
+        "web.search",
+        "filesystem.known.search",
+        "filesystem.known.duplicates",
+        "system.settings.adjust",
+        "game.install.prepare",
+        "message.recipient.resolve",
+        "backup.known.restore.latest",
+        "audio.volume.adjust",
+        "email.latest.reply"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-file-open-latest",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.file.open.latest",
+        "web.search",
+        "filesystem.known.search",
+        "filesystem.known.duplicates",
+        "system.settings.adjust",
+        "game.install.prepare",
+        "message.recipient.resolve",
+        "backup.known.restore.latest",
+        "audio.volume.adjust",
+        "email.latest.reply"
+      ],
+      "seconds": 0.810528,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.known.search"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.folder.open"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.folder.open",
+        "filesystem.known.search",
+        "filesystem.file.open.latest",
+        "filesystem.known.duplicates",
+        "media.play.query",
+        "system.process.terminate.named",
+        "game.install.cancel.active",
+        "filesystem.write.text",
+        "window.maximize",
+        "web.search"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-folder-open",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.folder.open",
+        "filesystem.known.search",
+        "filesystem.file.open.latest",
+        "filesystem.known.duplicates",
+        "media.play.query",
+        "system.process.terminate.named",
+        "game.install.cancel.active",
+        "filesystem.write.text",
+        "window.maximize",
+        "web.search"
+      ],
+      "seconds": 0.710909,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.folder.open"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.hash"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.hash",
+        "backup.known.verify.latest",
+        "input.select.all",
+        "backup.create",
+        "web.search",
+        "filesystem.known.duplicates",
+        "routine.delete",
+        "clipboard.copy",
+        "app.open",
+        "notification.cancel.latest"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-hash",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.hash",
+        "backup.known.verify.latest",
+        "input.select.all",
+        "backup.create",
+        "web.search",
+        "filesystem.known.duplicates",
+        "routine.delete",
+        "clipboard.copy",
+        "app.open",
+        "notification.cancel.latest"
+      ],
+      "seconds": 0.600483,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.hash"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.known.duplicates"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.known.duplicates",
+        "filesystem.known.search",
+        "wifi.profile.list",
+        "backup.known.restore.latest",
+        "game.install.cancel.active",
+        "game.install.prepare",
+        "filesystem.known.trash.named",
+        "filesystem.sandbox.diff.named",
+        "filesystem.path.ensure.absent",
+        "game.install.cancel"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-known-duplicates",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.known.duplicates",
+        "filesystem.known.search",
+        "wifi.profile.list",
+        "backup.known.restore.latest",
+        "game.install.cancel.active",
+        "game.install.prepare",
+        "filesystem.known.trash.named",
+        "filesystem.sandbox.diff.named",
+        "filesystem.path.ensure.absent",
+        "game.install.cancel"
+      ],
+      "seconds": 0.639441,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.known.duplicates"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.known.search"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.known.search",
+        "filesystem.write.text",
+        "peripheral.scan",
+        "office.document.create",
+        "filesystem.copy",
+        "filesystem.file.open.latest",
+        "peripheral.print",
+        "backup.create",
+        "filesystem.read.text",
+        "media.seek.relative"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-known-search",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.known.search",
+        "filesystem.write.text",
+        "peripheral.scan",
+        "office.document.create",
+        "filesystem.copy",
+        "filesystem.file.open.latest",
+        "peripheral.print",
+        "backup.create",
+        "filesystem.read.text",
+        "media.seek.relative"
+      ],
+      "seconds": 0.613686,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.known.search"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.known.trash.named"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.known.trash.named",
+        "note.trash",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.restore",
+        "filesystem.trash.commit",
+        "filesystem.path.ensure.absent",
+        "note.list",
+        "filesystem.sandbox.append.named",
+        "filesystem.write.text",
+        "filesystem.known.search"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-known-trash-named",
+      "correct": false,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.known.trash.named",
+        "note.trash",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.restore",
+        "filesystem.trash.commit",
+        "filesystem.path.ensure.absent",
+        "note.list",
+        "filesystem.sandbox.append.named",
+        "filesystem.write.text",
+        "filesystem.known.search"
+      ],
+      "seconds": 2.01101,
+      "selected_no_match": true,
+      "selected_operations": []
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.list"
+        ]
+      ],
+      "candidate_operations": [
+        "backup.restore",
+        "filesystem.list",
+        "filesystem.sandbox.move.named",
+        "note.update",
+        "browser.page.read",
+        "filesystem.sandbox.append.named",
+        "web.search",
+        "filesystem.folder.open",
+        "backup.known.create",
+        "note.create"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "backup.restore",
+        "filesystem.list",
+        "filesystem.sandbox.move.named",
+        "note.update",
+        "browser.page.read",
+        "filesystem.sandbox.append.named",
+        "web.search",
+        "filesystem.folder.open",
+        "backup.known.create",
+        "note.create"
+      ],
+      "seconds": 0.61638,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.move"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "clipboard.copy",
+        "backup.restore",
+        "filesystem.file.open.latest",
+        "filesystem.list",
+        "filesystem.move",
+        "filesystem.search",
+        "filesystem.hash",
+        "filesystem.write.text"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-move",
+      "correct": false,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "clipboard.copy",
+        "backup.restore",
+        "filesystem.file.open.latest",
+        "filesystem.list",
+        "filesystem.move",
+        "filesystem.search",
+        "filesystem.hash",
+        "filesystem.write.text"
+      ],
+      "seconds": 0.670858,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.sandbox.move.named"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.path.ensure.absent"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.known.trash.named",
+        "filesystem.path.ensure.absent",
+        "notification.cancel.latest",
+        "system.recyclebin.empty",
+        "note.restore",
+        "notification.diagnose",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.commit",
+        "filesystem.trash.restore",
+        "message.send"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-path-ensure-absent",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.known.trash.named",
+        "filesystem.path.ensure.absent",
+        "notification.cancel.latest",
+        "system.recyclebin.empty",
+        "note.restore",
+        "notification.diagnose",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.commit",
+        "filesystem.trash.restore",
+        "message.send"
+      ],
+      "seconds": 0.677588,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.path.ensure.absent"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.read.text"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.read.text",
+        "filesystem.write.text",
+        "clipboard.copy",
+        "routine.delete",
+        "filesystem.sandbox.append.named",
+        "input.select.all",
+        "filesystem.copy",
+        "backup.create",
+        "task.complete",
+        "filesystem.trash.prepare"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-read-text",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.read.text",
+        "filesystem.write.text",
+        "clipboard.copy",
+        "routine.delete",
+        "filesystem.sandbox.append.named",
+        "input.select.all",
+        "filesystem.copy",
+        "backup.create",
+        "task.complete",
+        "filesystem.trash.prepare"
+      ],
+      "seconds": 0.620962,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.read.text"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.sandbox.append.named"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "backup.restore",
+        "note.update",
+        "filesystem.list",
+        "browser.control",
+        "task.complete",
+        "filesystem.trash.prepare",
+        "filesystem.search",
+        "filesystem.write.text"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-sandbox-append-named",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "backup.restore",
+        "note.update",
+        "filesystem.list",
+        "browser.control",
+        "task.complete",
+        "filesystem.trash.prepare",
+        "filesystem.search",
+        "filesystem.write.text"
+      ],
+      "seconds": 0.684259,
+      "selected_no_match": false,
+      "selected_operations": [
+        "browser.control"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.sandbox.diff.named"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.sandbox.diff.named",
+        "filesystem.sandbox.move.named",
+        "note.search",
+        "backup.restore",
+        "filesystem.list",
+        "note.list",
+        "filesystem.search",
+        "web.search",
+        "filesystem.sandbox.append.named",
+        "filesystem.known.trash.named"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-sandbox-diff-named",
+      "correct": false,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.sandbox.diff.named",
+        "filesystem.sandbox.move.named",
+        "note.search",
+        "backup.restore",
+        "filesystem.list",
+        "note.list",
+        "filesystem.search",
+        "web.search",
+        "filesystem.sandbox.append.named",
+        "filesystem.known.trash.named"
+      ],
+      "seconds": 0.617025,
+      "selected_no_match": false,
+      "selected_operations": [
+        "note.search"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.sandbox.move.named"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "filesystem.known.trash.named",
+        "filesystem.list",
+        "filesystem.file.open.latest",
+        "filesystem.hash",
+        "backup.restore",
+        "filesystem.search",
+        "filesystem.write.text"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-sandbox-move-named",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.sandbox.move.named",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "filesystem.known.trash.named",
+        "filesystem.list",
+        "filesystem.file.open.latest",
+        "filesystem.hash",
+        "backup.restore",
+        "filesystem.search",
+        "filesystem.write.text"
+      ],
+      "seconds": 0.562598,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.move"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.search"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.search",
+        "web.search",
+        "filesystem.list",
+        "backup.restore",
+        "filesystem.sandbox.append.named",
+        "filesystem.sandbox.move.named",
+        "note.search",
+        "task.search",
+        "media.play.query",
+        "input.visible.click"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-search",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.search",
+        "web.search",
+        "filesystem.list",
+        "backup.restore",
+        "filesystem.sandbox.append.named",
+        "filesystem.sandbox.move.named",
+        "note.search",
+        "task.search",
+        "media.play.query",
+        "input.visible.click"
+      ],
+      "seconds": 0.56996,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.search"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.trash.commit"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.trash.commit",
+        "input.select.all",
+        "clipboard.copy",
+        "package.install.commit",
+        "filesystem.trash.prepare",
+        "notification.cancel.latest",
+        "task.delete",
+        "note.restore",
+        "system.recyclebin.empty",
+        "streaming.navigate"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-trash-commit",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.trash.commit",
+        "input.select.all",
+        "clipboard.copy",
+        "package.install.commit",
+        "filesystem.trash.prepare",
+        "notification.cancel.latest",
+        "task.delete",
+        "note.restore",
+        "system.recyclebin.empty",
+        "streaming.navigate"
+      ],
+      "seconds": 0.611289,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.trash.commit"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.trash.prepare"
+        ]
+      ],
+      "candidate_operations": [
+        "clipboard.copy",
+        "filesystem.trash.prepare",
+        "message.send",
+        "filesystem.trash.commit",
+        "notification.list.due",
+        "game.purchase.prepare",
+        "filesystem.trash.restore",
+        "filesystem.file.open.latest",
+        "package.install.prepare",
+        "media.control"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-trash-prepare",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "clipboard.copy",
+        "filesystem.trash.prepare",
+        "message.send",
+        "filesystem.trash.commit",
+        "notification.list.due",
+        "game.purchase.prepare",
+        "filesystem.trash.restore",
+        "filesystem.file.open.latest",
+        "package.install.prepare",
+        "media.control"
+      ],
+      "seconds": 0.62426,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.trash.prepare"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.trash.restore"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.trash.restore",
+        "filesystem.trash.commit",
+        "note.restore",
+        "clipboard.copy",
+        "window.restore",
+        "filesystem.path.ensure.absent",
+        "note.list",
+        "filesystem.trash.prepare",
+        "filesystem.file.open.latest",
+        "input.select.all"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-trash-restore",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.trash.restore",
+        "filesystem.trash.commit",
+        "note.restore",
+        "clipboard.copy",
+        "window.restore",
+        "filesystem.path.ensure.absent",
+        "note.list",
+        "filesystem.trash.prepare",
+        "filesystem.file.open.latest",
+        "input.select.all"
+      ],
+      "seconds": 0.639306,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.trash.restore"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "filesystem.write.text"
+        ]
+      ],
+      "candidate_operations": [
+        "clipboard.write.text",
+        "filesystem.sandbox.move.named",
+        "filesystem.write.text",
+        "backup.restore",
+        "web.search",
+        "filesystem.list",
+        "filesystem.search",
+        "filesystem.sandbox.append.named",
+        "note.search",
+        "email.latest.reply"
+      ],
+      "case_id": "catalog-seen-natural-filesystem-write-text",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "clipboard.write.text",
+        "filesystem.sandbox.move.named",
+        "filesystem.write.text",
+        "backup.restore",
+        "web.search",
+        "filesystem.list",
+        "filesystem.search",
+        "filesystem.sandbox.append.named",
+        "note.search",
+        "email.latest.reply"
+      ],
+      "seconds": 0.66615,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.write.text"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.catalog.list"
+        ]
+      ],
+      "candidate_operations": [
+        "game.catalog.list",
+        "app.installed",
+        "game.install.named",
+        "game.installed.named",
+        "game.install.cancel.active",
+        "media.play.query",
+        "task.list",
+        "game.install.cancel",
+        "note.create",
+        "backup.known.list"
+      ],
+      "case_id": "catalog-seen-natural-game-catalog-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.catalog.list",
+        "app.installed",
+        "game.install.named",
+        "game.installed.named",
+        "game.install.cancel.active",
+        "media.play.query",
+        "task.list",
+        "game.install.cancel",
+        "note.create",
+        "backup.known.list"
+      ],
+      "seconds": 0.611859,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.catalog.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.install.cancel"
+        ]
+      ],
+      "candidate_operations": [
+        "game.install.cancel",
+        "game.launch",
+        "game.install.cancel.active",
+        "game.install.prepare",
+        "game.catalog.list",
+        "game.install.named",
+        "notification.cancel.latest",
+        "game.installed.named",
+        "reminder.delete",
+        "filesystem.known.trash.named"
+      ],
+      "case_id": "catalog-seen-natural-game-install-cancel",
+      "correct": false,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.install.cancel",
+        "game.launch",
+        "game.install.cancel.active",
+        "game.install.prepare",
+        "game.catalog.list",
+        "game.install.named",
+        "notification.cancel.latest",
+        "game.installed.named",
+        "reminder.delete",
+        "filesystem.known.trash.named"
+      ],
+      "seconds": 1.05199,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.install.cancel.active"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.install.cancel.active"
+        ]
+      ],
+      "candidate_operations": [
+        "game.install.cancel.active",
+        "game.catalog.list",
+        "notification.cancel.latest",
+        "filesystem.known.duplicates",
+        "game.install.cancel",
+        "note.list",
+        "game.install.named",
+        "filesystem.known.search",
+        "network.ip.list",
+        "game.installed.named"
+      ],
+      "case_id": "catalog-seen-natural-game-install-cancel-active",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.install.cancel.active",
+        "game.catalog.list",
+        "notification.cancel.latest",
+        "filesystem.known.duplicates",
+        "game.install.cancel",
+        "note.list",
+        "game.install.named",
+        "filesystem.known.search",
+        "network.ip.list",
+        "game.installed.named"
+      ],
+      "seconds": 0.641494,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.install.cancel.active"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.install.commit"
+        ]
+      ],
+      "candidate_operations": [
+        "package.install.commit",
+        "game.install.commit",
+        "game.install.cancel.active",
+        "game.catalog.list",
+        "game.installed.named",
+        "filesystem.trash.commit",
+        "game.install.named",
+        "game.install.prepare",
+        "audio.volume.adjust",
+        "input.visible.click"
+      ],
+      "case_id": "catalog-seen-natural-game-install-commit",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "package.install.commit",
+        "game.install.commit",
+        "game.install.cancel.active",
+        "game.catalog.list",
+        "game.installed.named",
+        "filesystem.trash.commit",
+        "game.install.named",
+        "game.install.prepare",
+        "audio.volume.adjust",
+        "input.visible.click"
+      ],
+      "seconds": 0.616155,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.install.commit"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.install.named"
+        ]
+      ],
+      "candidate_operations": [
+        "game.catalog.list",
+        "game.install.named",
+        "game.install.cancel.active",
+        "message.send",
+        "game.installed.named",
+        "package.install.commit",
+        "backup.known.verify.latest",
+        "clipboard.copy",
+        "app.installed",
+        "audio.volume.adjust"
+      ],
+      "case_id": "catalog-seen-natural-game-install-named",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.catalog.list",
+        "game.install.named",
+        "game.install.cancel.active",
+        "message.send",
+        "game.installed.named",
+        "package.install.commit",
+        "backup.known.verify.latest",
+        "clipboard.copy",
+        "app.installed",
+        "audio.volume.adjust"
+      ],
+      "seconds": 0.620864,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.install.named"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.install.prepare"
+        ]
+      ],
+      "candidate_operations": [
+        "game.install.prepare",
+        "package.install.commit",
+        "package.install.prepare",
+        "web.search",
+        "game.install.commit",
+        "game.purchase.prepare",
+        "game.install.status",
+        "filesystem.known.duplicates",
+        "game.install.cancel",
+        "app.installed"
+      ],
+      "case_id": "catalog-seen-natural-game-install-prepare",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.install.prepare",
+        "package.install.commit",
+        "package.install.prepare",
+        "web.search",
+        "game.install.commit",
+        "game.purchase.prepare",
+        "game.install.status",
+        "filesystem.known.duplicates",
+        "game.install.cancel",
+        "app.installed"
+      ],
+      "seconds": 0.62391,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.install.prepare"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.install.status"
+        ]
+      ],
+      "candidate_operations": [
+        "game.install.status",
+        "game.install.cancel.active",
+        "game.launch",
+        "web.search",
+        "game.install.cancel",
+        "game.install.named",
+        "game.catalog.list",
+        "package.install.commit",
+        "filesystem.sandbox.move.named",
+        "streaming.play.named"
+      ],
+      "case_id": "catalog-seen-natural-game-install-status",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.install.status",
+        "game.install.cancel.active",
+        "game.launch",
+        "web.search",
+        "game.install.cancel",
+        "game.install.named",
+        "game.catalog.list",
+        "package.install.commit",
+        "filesystem.sandbox.move.named",
+        "streaming.play.named"
+      ],
+      "seconds": 0.882624,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.install.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.installed.named"
+        ]
+      ],
+      "candidate_operations": [
+        "app.installed",
+        "web.search",
+        "game.installed.named",
+        "package.install.prepare",
+        "package.install.commit",
+        "notification.diagnose",
+        "game.install.prepare",
+        "wifi.connect.named",
+        "filesystem.search",
+        "routine.read"
+      ],
+      "case_id": "catalog-seen-natural-game-installed-named",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "app.installed",
+        "web.search",
+        "game.installed.named",
+        "package.install.prepare",
+        "package.install.commit",
+        "notification.diagnose",
+        "game.install.prepare",
+        "wifi.connect.named",
+        "filesystem.search",
+        "routine.read"
+      ],
+      "seconds": 0.54692,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.installed.named"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.launch"
+        ]
+      ],
+      "candidate_operations": [
+        "game.launch",
+        "game.install.named",
+        "game.catalog.list",
+        "game.installed.named",
+        "web.search",
+        "game.install.cancel.active",
+        "peripheral.scan",
+        "audio.volume.adjust",
+        "input.visible.click",
+        "notification.schedule"
+      ],
+      "case_id": "catalog-seen-natural-game-launch",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.launch",
+        "game.install.named",
+        "game.catalog.list",
+        "game.installed.named",
+        "web.search",
+        "game.install.cancel.active",
+        "peripheral.scan",
+        "audio.volume.adjust",
+        "input.visible.click",
+        "notification.schedule"
+      ],
+      "seconds": 0.603689,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.launch"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.purchase.commit"
+        ]
+      ],
+      "candidate_operations": [
+        "game.purchase.commit",
+        "game.purchase.prepare",
+        "media.play.exact",
+        "notification.cancel.latest",
+        "web.search",
+        "email.latest.reply",
+        "task.delete",
+        "note.search",
+        "game.installed.named",
+        "system.process.terminate.named"
+      ],
+      "case_id": "catalog-seen-natural-game-purchase-commit",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.purchase.commit",
+        "game.purchase.prepare",
+        "media.play.exact",
+        "notification.cancel.latest",
+        "web.search",
+        "email.latest.reply",
+        "task.delete",
+        "note.search",
+        "game.installed.named",
+        "system.process.terminate.named"
+      ],
+      "seconds": 0.638699,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.purchase.commit"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "game.purchase.prepare"
+        ]
+      ],
+      "candidate_operations": [
+        "game.purchase.commit",
+        "web.search",
+        "game.purchase.prepare",
+        "package.install.prepare",
+        "game.install.prepare",
+        "system.status",
+        "notification.diagnose",
+        "clipboard.write.text",
+        "audio.mute",
+        "filesystem.known.duplicates"
+      ],
+      "case_id": "catalog-seen-natural-game-purchase-prepare",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.purchase.commit",
+        "web.search",
+        "game.purchase.prepare",
+        "package.install.prepare",
+        "game.install.prepare",
+        "system.status",
+        "notification.diagnose",
+        "clipboard.write.text",
+        "audio.mute",
+        "filesystem.known.duplicates"
+      ],
+      "seconds": 0.583408,
+      "selected_no_match": false,
+      "selected_operations": [
+        "game.purchase.prepare"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "input.key.press"
+        ]
+      ],
+      "candidate_operations": [
+        "input.key.press",
+        "web.search",
+        "input.select.all",
+        "input.keyboard.status",
+        "clipboard.paste",
+        "window.focus",
+        "input.keyboard.open",
+        "routine.list",
+        "window.resize",
+        "window.minimize"
+      ],
+      "case_id": "catalog-seen-natural-input-key-press",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "input.key.press",
+        "web.search",
+        "input.select.all",
+        "input.keyboard.status",
+        "clipboard.paste",
+        "window.focus",
+        "input.keyboard.open",
+        "routine.list",
+        "window.resize",
+        "window.minimize"
+      ],
+      "seconds": 0.600422,
+      "selected_no_match": false,
+      "selected_operations": [
+        "input.key.press"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "input.keyboard.layout"
+        ]
+      ],
+      "candidate_operations": [
+        "input.keyboard.layout",
+        "input.keyboard.open",
+        "window.active",
+        "window.resize",
+        "app.close",
+        "capture.active.window",
+        "peripheral.list",
+        "window.maximize",
+        "input.key.press",
+        "window.minimize"
+      ],
+      "case_id": "catalog-seen-natural-input-keyboard-layout",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "input.keyboard.layout",
+        "input.keyboard.open",
+        "window.active",
+        "window.resize",
+        "app.close",
+        "capture.active.window",
+        "peripheral.list",
+        "window.maximize",
+        "input.key.press",
+        "window.minimize"
+      ],
+      "seconds": 0.614958,
+      "selected_no_match": false,
+      "selected_operations": [
+        "input.keyboard.layout"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "input.keyboard.open"
+        ]
+      ],
+      "candidate_operations": [
+        "input.keyboard.open",
+        "web.search",
+        "input.keyboard.layout",
+        "peripheral.list",
+        "app.installed",
+        "bluetooth.radio.set",
+        "system.settings.adjust",
+        "window.minimize",
+        "input.keyboard.status",
+        "audio.microphone.mute"
+      ],
+      "case_id": "catalog-seen-natural-input-keyboard-open",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "input.keyboard.open",
+        "web.search",
+        "input.keyboard.layout",
+        "peripheral.list",
+        "app.installed",
+        "bluetooth.radio.set",
+        "system.settings.adjust",
+        "window.minimize",
+        "input.keyboard.status",
+        "audio.microphone.mute"
+      ],
+      "seconds": 0.611099,
+      "selected_no_match": false,
+      "selected_operations": [
+        "input.keyboard.open"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "input.keyboard.status"
+        ]
+      ],
+      "candidate_operations": [
+        "input.keyboard.status",
+        "window.focus",
+        "input.keyboard.open",
+        "window.resize",
+        "input.key.press",
+        "peripheral.list",
+        "app.close",
+        "window.maximize",
+        "web.search",
+        "window.minimize"
+      ],
+      "case_id": "catalog-seen-natural-input-keyboard-status",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "input.keyboard.status",
+        "window.focus",
+        "input.keyboard.open",
+        "window.resize",
+        "input.key.press",
+        "peripheral.list",
+        "app.close",
+        "window.maximize",
+        "web.search",
+        "window.minimize"
+      ],
+      "seconds": 0.603038,
+      "selected_no_match": false,
+      "selected_operations": [
+        "input.keyboard.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "input.pointer.control"
+        ]
+      ],
+      "candidate_operations": [
+        "input.pointer.control",
+        "system.settings.adjust",
+        "window.move",
+        "peripheral.list",
+        "filesystem.move",
+        "notification.list.due",
+        "note.trash",
+        "filesystem.sandbox.move.named",
+        "message.send",
+        "filesystem.path.ensure.absent"
+      ],
+      "case_id": "catalog-seen-natural-input-pointer-control",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "input.pointer.control",
+        "system.settings.adjust",
+        "window.move",
+        "peripheral.list",
+        "filesystem.move",
+        "notification.list.due",
+        "note.trash",
+        "filesystem.sandbox.move.named",
+        "message.send",
+        "filesystem.path.ensure.absent"
+      ],
+      "seconds": 0.618082,
+      "selected_no_match": false,
+      "selected_operations": [
+        "input.pointer.control"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "input.select.all"
+        ]
+      ],
+      "candidate_operations": [
+        "input.select.all",
+        "web.search",
+        "clipboard.paste",
+        "input.text.type",
+        "media.control",
+        "input.keyboard.status",
+        "notification.dismiss",
+        "input.keyboard.open",
+        "browser.control",
+        "routine.delete"
+      ],
+      "case_id": "catalog-seen-natural-input-select-all",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "input.select.all",
+        "web.search",
+        "clipboard.paste",
+        "input.text.type",
+        "media.control",
+        "input.keyboard.status",
+        "notification.dismiss",
+        "input.keyboard.open",
+        "browser.control",
+        "routine.delete"
+      ],
+      "seconds": 0.610139,
+      "selected_no_match": false,
+      "selected_operations": [
+        "input.select.all"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "input.text.type"
+        ]
+      ],
+      "candidate_operations": [
+        "input.text.type",
+        "web.search",
+        "clipboard.paste",
+        "clipboard.write.text",
+        "browser.page.read",
+        "filesystem.read.text",
+        "email.latest.reply",
+        "input.pointer.control",
+        "window.focus",
+        "input.keyboard.status"
+      ],
+      "case_id": "catalog-seen-natural-input-text-type",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "input.text.type",
+        "web.search",
+        "clipboard.paste",
+        "clipboard.write.text",
+        "browser.page.read",
+        "filesystem.read.text",
+        "email.latest.reply",
+        "input.pointer.control",
+        "window.focus",
+        "input.keyboard.status"
+      ],
+      "seconds": 0.612438,
+      "selected_no_match": false,
+      "selected_operations": [
+        "input.text.type"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "input.visible.click"
+        ]
+      ],
+      "candidate_operations": [
+        "input.visible.click",
+        "browser.page.read",
+        "input.pointer.control",
+        "web.search",
+        "input.keyboard.open",
+        "capture.active.window",
+        "window.application.status",
+        "routine.list",
+        "clipboard.paste",
+        "system.settings.status"
+      ],
+      "case_id": "catalog-seen-natural-input-visible-click",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "input.visible.click",
+        "browser.page.read",
+        "input.pointer.control",
+        "web.search",
+        "input.keyboard.open",
+        "capture.active.window",
+        "window.application.status",
+        "routine.list",
+        "clipboard.paste",
+        "system.settings.status"
+      ],
+      "seconds": 0.645727,
+      "selected_no_match": false,
+      "selected_operations": [
+        "input.visible.click"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "media.control"
+        ]
+      ],
+      "candidate_operations": [
+        "media.control",
+        "media.status",
+        "bluetooth.radio.set",
+        "audio.microphone.mute",
+        "input.text.type",
+        "input.key.press",
+        "system.application.crash.diagnose",
+        "peripheral.list",
+        "window.resize",
+        "app.installed"
+      ],
+      "case_id": "catalog-seen-natural-media-control",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "media.control",
+        "media.status",
+        "bluetooth.radio.set",
+        "audio.microphone.mute",
+        "input.text.type",
+        "input.key.press",
+        "system.application.crash.diagnose",
+        "peripheral.list",
+        "window.resize",
+        "app.installed"
+      ],
+      "seconds": 0.588749,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.control"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "media.play.exact"
+        ]
+      ],
+      "candidate_operations": [
+        "media.play.exact",
+        "media.play.query",
+        "input.select.all",
+        "web.search",
+        "clipboard.copy",
+        "routine.delete",
+        "game.purchase.commit",
+        "system.process.terminate.named",
+        "window.resize",
+        "filesystem.sandbox.move.named"
+      ],
+      "case_id": "catalog-seen-natural-media-play-exact",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "media.play.exact",
+        "media.play.query",
+        "input.select.all",
+        "web.search",
+        "clipboard.copy",
+        "routine.delete",
+        "game.purchase.commit",
+        "system.process.terminate.named",
+        "window.resize",
+        "filesystem.sandbox.move.named"
+      ],
+      "seconds": 0.645994,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.exact"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "media.play.query"
+        ]
+      ],
+      "candidate_operations": [
+        "media.play.query",
+        "media.play.exact",
+        "system.status",
+        "media.seek.relative",
+        "web.search",
+        "backup.restore",
+        "app.installed",
+        "filesystem.sandbox.move.named",
+        "network.ping",
+        "input.key.press"
+      ],
+      "case_id": "catalog-seen-natural-media-play-query",
+      "correct": false,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "media.play.query",
+        "media.play.exact",
+        "system.status",
+        "media.seek.relative",
+        "web.search",
+        "backup.restore",
+        "app.installed",
+        "filesystem.sandbox.move.named",
+        "network.ping",
+        "input.key.press"
+      ],
+      "seconds": 0.638478,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.exact"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "media.play.youtube"
+        ]
+      ],
+      "candidate_operations": [
+        "media.play.youtube",
+        "media.play.query",
+        "streaming.play.named",
+        "bluetooth.radio.set",
+        "system.status",
+        "streaming.navigate",
+        "web.search",
+        "office.document.read",
+        "filesystem.known.search",
+        "filesystem.search"
+      ],
+      "case_id": "catalog-seen-natural-media-play-youtube",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "media.play.youtube",
+        "media.play.query",
+        "streaming.play.named",
+        "bluetooth.radio.set",
+        "system.status",
+        "streaming.navigate",
+        "web.search",
+        "office.document.read",
+        "filesystem.known.search",
+        "filesystem.search"
+      ],
+      "seconds": 0.792404,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.youtube"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "media.seek.relative"
+        ]
+      ],
+      "candidate_operations": [
+        "media.control",
+        "media.seek.relative",
+        "media.status",
+        "browser.tabs.list",
+        "browser.navigate",
+        "reminder.create",
+        "browser.control",
+        "window.resize",
+        "window.minimize",
+        "filesystem.sandbox.move.named"
+      ],
+      "case_id": "catalog-seen-natural-media-seek-relative",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "media.control",
+        "media.seek.relative",
+        "media.status",
+        "browser.tabs.list",
+        "browser.navigate",
+        "reminder.create",
+        "browser.control",
+        "window.resize",
+        "window.minimize",
+        "filesystem.sandbox.move.named"
+      ],
+      "seconds": 0.596357,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.seek.relative"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "media.status"
+        ]
+      ],
+      "candidate_operations": [
+        "media.status",
+        "media.control",
+        "notification.dismiss",
+        "web.search",
+        "audio.status",
+        "game.installed.named",
+        "audio.microphone.mute",
+        "filesystem.trash.restore",
+        "browser.page.read",
+        "message.send"
+      ],
+      "case_id": "catalog-seen-natural-media-status",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "media.status",
+        "media.control",
+        "notification.dismiss",
+        "web.search",
+        "audio.status",
+        "game.installed.named",
+        "audio.microphone.mute",
+        "filesystem.trash.restore",
+        "browser.page.read",
+        "message.send"
+      ],
+      "seconds": 0.583625,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "message.recipient.resolve"
+        ]
+      ],
+      "candidate_operations": [
+        "message.send",
+        "network.ping",
+        "input.text.type",
+        "window.resize",
+        "clipboard.write.text",
+        "filesystem.sandbox.append.named",
+        "app.open",
+        "filesystem.known.search",
+        "system.settings.set",
+        "game.install.prepare"
+      ],
+      "case_id": "catalog-seen-natural-message-recipient-resolve",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "message.send",
+        "network.ping",
+        "input.text.type",
+        "window.resize",
+        "clipboard.write.text",
+        "filesystem.sandbox.append.named",
+        "app.open",
+        "filesystem.known.search",
+        "system.settings.set",
+        "game.install.prepare"
+      ],
+      "seconds": 1.134659,
+      "selected_no_match": false,
+      "selected_operations": [
+        "filesystem.known.search",
+        "message.send"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "message.send"
+        ]
+      ],
+      "candidate_operations": [
+        "message.send",
+        "email.latest.reply",
+        "web.search",
+        "input.visible.click",
+        "filesystem.sandbox.move.named",
+        "network.dns.status",
+        "window.minimize",
+        "network.ping",
+        "peripheral.print",
+        "browser.navigate.named"
+      ],
+      "case_id": "catalog-seen-natural-message-send",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "message.send",
+        "email.latest.reply",
+        "web.search",
+        "input.visible.click",
+        "filesystem.sandbox.move.named",
+        "network.dns.status",
+        "window.minimize",
+        "network.ping",
+        "peripheral.print",
+        "browser.navigate.named"
+      ],
+      "seconds": 0.595445,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "network.dns.status"
+        ]
+      ],
+      "candidate_operations": [
+        "network.dns.status",
+        "network.status",
+        "network.ip.list",
+        "game.install.cancel.active",
+        "notification.schedule",
+        "notification.list.due",
+        "bluetooth.radio.set",
+        "routine.list",
+        "notification.diagnose",
+        "note.list"
+      ],
+      "case_id": "catalog-seen-natural-network-dns-status",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "network.dns.status",
+        "network.status",
+        "network.ip.list",
+        "game.install.cancel.active",
+        "notification.schedule",
+        "notification.list.due",
+        "bluetooth.radio.set",
+        "routine.list",
+        "notification.diagnose",
+        "note.list"
+      ],
+      "seconds": 0.596857,
+      "selected_no_match": false,
+      "selected_operations": [
+        "network.dns.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "network.ip.list"
+        ]
+      ],
+      "candidate_operations": [
+        "network.ip.list",
+        "system.identity",
+        "browser.tabs.list",
+        "game.catalog.list",
+        "input.text.type",
+        "audio.mute",
+        "bluetooth.device.list",
+        "system.status",
+        "audio.volume.adjust",
+        "audio.microphone.mute"
+      ],
+      "case_id": "catalog-seen-natural-network-ip-list",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "network.ip.list",
+        "system.identity",
+        "browser.tabs.list",
+        "game.catalog.list",
+        "input.text.type",
+        "audio.mute",
+        "bluetooth.device.list",
+        "system.status",
+        "audio.volume.adjust",
+        "audio.microphone.mute"
+      ],
+      "seconds": 0.609714,
+      "selected_no_match": false,
+      "selected_operations": [
+        "network.ip.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "network.ping"
+        ]
+      ],
+      "candidate_operations": [
+        "network.ping",
+        "browser.navigate",
+        "window.resize",
+        "window.maximize",
+        "input.pointer.control",
+        "web.search",
+        "filesystem.create.directory",
+        "backup.known.create",
+        "input.key.press",
+        "backup.restore"
+      ],
+      "case_id": "catalog-seen-natural-network-ping",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "network.ping",
+        "browser.navigate",
+        "window.resize",
+        "window.maximize",
+        "input.pointer.control",
+        "web.search",
+        "filesystem.create.directory",
+        "backup.known.create",
+        "input.key.press",
+        "backup.restore"
+      ],
+      "seconds": 0.675505,
+      "selected_no_match": false,
+      "selected_operations": [
+        "network.ping"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "network.port.list"
+        ]
+      ],
+      "candidate_operations": [
+        "network.port.list",
+        "reminder.list",
+        "peripheral.list",
+        "browser.tabs.list",
+        "routine.phrase.create",
+        "task.list",
+        "game.catalog.list",
+        "media.play.query",
+        "calendar.event.list",
+        "bluetooth.device.list"
+      ],
+      "case_id": "catalog-seen-natural-network-port-list",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "network.port.list",
+        "reminder.list",
+        "peripheral.list",
+        "browser.tabs.list",
+        "routine.phrase.create",
+        "task.list",
+        "game.catalog.list",
+        "media.play.query",
+        "calendar.event.list",
+        "bluetooth.device.list"
+      ],
+      "seconds": 0.602214,
+      "selected_no_match": false,
+      "selected_operations": [
+        "network.port.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "network.status"
+        ]
+      ],
+      "candidate_operations": [
+        "wifi.status",
+        "window.application.status",
+        "wifi.connect.named",
+        "audio.mute",
+        "wifi.disconnect",
+        "network.ping",
+        "network.status",
+        "web.search",
+        "media.play.query",
+        "package.install.commit"
+      ],
+      "case_id": "catalog-seen-natural-network-status",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "wifi.status",
+        "window.application.status",
+        "wifi.connect.named",
+        "audio.mute",
+        "wifi.disconnect",
+        "network.ping",
+        "network.status",
+        "web.search",
+        "media.play.query",
+        "package.install.commit"
+      ],
+      "seconds": 0.58221,
+      "selected_no_match": false,
+      "selected_operations": [
+        "network.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "note.create"
+        ]
+      ],
+      "candidate_operations": [
+        "note.create",
+        "note.restore",
+        "web.search",
+        "clipboard.write.text",
+        "bluetooth.device.pair",
+        "note.read",
+        "notification.schedule",
+        "note.update",
+        "browser.page.read",
+        "office.document.create"
+      ],
+      "case_id": "catalog-seen-natural-note-create",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "note.create",
+        "note.restore",
+        "web.search",
+        "clipboard.write.text",
+        "bluetooth.device.pair",
+        "note.read",
+        "notification.schedule",
+        "note.update",
+        "browser.page.read",
+        "office.document.create"
+      ],
+      "seconds": 0.567004,
+      "selected_no_match": false,
+      "selected_operations": [
+        "note.create"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "note.list"
+        ]
+      ],
+      "candidate_operations": [
+        "note.list",
+        "note.search",
+        "task.list",
+        "filesystem.sandbox.move.named",
+        "network.ip.list",
+        "filesystem.known.search",
+        "wifi.profile.list",
+        "note.create",
+        "game.install.cancel.active",
+        "backup.known.list"
+      ],
+      "case_id": "catalog-seen-natural-note-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "note.list",
+        "note.search",
+        "task.list",
+        "filesystem.sandbox.move.named",
+        "network.ip.list",
+        "filesystem.known.search",
+        "wifi.profile.list",
+        "note.create",
+        "game.install.cancel.active",
+        "backup.known.list"
+      ],
+      "seconds": 0.560939,
+      "selected_no_match": false,
+      "selected_operations": [
+        "note.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "note.read"
+        ]
+      ],
+      "candidate_operations": [
+        "note.read",
+        "note.restore",
+        "note.update",
+        "app.open",
+        "note.create",
+        "media.status",
+        "note.trash",
+        "note.search",
+        "input.visible.click",
+        "filesystem.copy"
+      ],
+      "case_id": "catalog-seen-natural-note-read",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "note.read",
+        "note.restore",
+        "note.update",
+        "app.open",
+        "note.create",
+        "media.status",
+        "note.trash",
+        "note.search",
+        "input.visible.click",
+        "filesystem.copy"
+      ],
+      "seconds": 0.581533,
+      "selected_no_match": false,
+      "selected_operations": [
+        "note.read"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "note.restore"
+        ]
+      ],
+      "candidate_operations": [
+        "note.restore",
+        "note.trash",
+        "web.search",
+        "system.recyclebin.empty",
+        "filesystem.known.trash.named",
+        "window.restore",
+        "filesystem.trash.restore",
+        "backup.restore",
+        "note.list",
+        "game.install.named"
+      ],
+      "case_id": "catalog-seen-natural-note-restore",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "note.restore",
+        "note.trash",
+        "web.search",
+        "system.recyclebin.empty",
+        "filesystem.known.trash.named",
+        "window.restore",
+        "filesystem.trash.restore",
+        "backup.restore",
+        "note.list",
+        "game.install.named"
+      ],
+      "seconds": 0.589414,
+      "selected_no_match": false,
+      "selected_operations": [
+        "note.restore"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "note.search"
+        ]
+      ],
+      "candidate_operations": [
+        "note.search",
+        "routine.phrase.create",
+        "filesystem.known.search",
+        "note.list",
+        "media.play.query",
+        "web.search",
+        "clipboard.write.text",
+        "note.create",
+        "bluetooth.device.list",
+        "bluetooth.device.pair"
+      ],
+      "case_id": "catalog-seen-natural-note-search",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "note.search",
+        "routine.phrase.create",
+        "filesystem.known.search",
+        "note.list",
+        "media.play.query",
+        "web.search",
+        "clipboard.write.text",
+        "note.create",
+        "bluetooth.device.list",
+        "bluetooth.device.pair"
+      ],
+      "seconds": 0.622587,
+      "selected_no_match": false,
+      "selected_operations": [
+        "note.search"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "note.trash"
+        ]
+      ],
+      "candidate_operations": [
+        "note.trash",
+        "note.restore",
+        "filesystem.known.trash.named",
+        "window.move",
+        "web.search",
+        "system.recyclebin.empty",
+        "filesystem.sandbox.move.named",
+        "note.read",
+        "filesystem.trash.commit",
+        "note.list"
+      ],
+      "case_id": "catalog-seen-natural-note-trash",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "note.trash",
+        "note.restore",
+        "filesystem.known.trash.named",
+        "window.move",
+        "web.search",
+        "system.recyclebin.empty",
+        "filesystem.sandbox.move.named",
+        "note.read",
+        "filesystem.trash.commit",
+        "note.list"
+      ],
+      "seconds": 0.580276,
+      "selected_no_match": false,
+      "selected_operations": [
+        "note.trash"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "note.update"
+        ]
+      ],
+      "candidate_operations": [
+        "web.search",
+        "note.update",
+        "note.read",
+        "note.restore",
+        "note.create",
+        "note.trash",
+        "browser.page.read",
+        "media.seek.relative",
+        "bluetooth.radio.set",
+        "streaming.play.named"
+      ],
+      "case_id": "catalog-seen-natural-note-update",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "web.search",
+        "note.update",
+        "note.read",
+        "note.restore",
+        "note.create",
+        "note.trash",
+        "browser.page.read",
+        "media.seek.relative",
+        "bluetooth.radio.set",
+        "streaming.play.named"
+      ],
+      "seconds": 1.370598,
+      "selected_no_match": false,
+      "selected_operations": [
+        "note.update"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "candidate_operations": [
+        "notification.cancel.latest",
+        "notification.diagnose",
+        "notification.schedule",
+        "notification.cancel.at",
+        "game.install.cancel",
+        "bluetooth.radio.set",
+        "backup.known.list",
+        "input.visible.click",
+        "window.resize",
+        "input.key.press"
+      ],
+      "case_id": "catalog-seen-natural-notification-cancel-at",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "notification.cancel.latest",
+        "notification.diagnose",
+        "notification.schedule",
+        "notification.cancel.at",
+        "game.install.cancel",
+        "bluetooth.radio.set",
+        "backup.known.list",
+        "input.visible.click",
+        "window.resize",
+        "input.key.press"
+      ],
+      "seconds": 0.611105,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "notification.cancel.latest"
+        ]
+      ],
+      "candidate_operations": [
+        "notification.cancel.latest",
+        "notification.diagnose",
+        "filesystem.file.open.latest",
+        "routine.list",
+        "game.install.cancel",
+        "input.pointer.control",
+        "web.search",
+        "backup.list",
+        "peripheral.list",
+        "network.ping"
+      ],
+      "case_id": "catalog-seen-natural-notification-cancel-latest",
+      "correct": false,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "notification.cancel.latest",
+        "notification.diagnose",
+        "filesystem.file.open.latest",
+        "routine.list",
+        "game.install.cancel",
+        "input.pointer.control",
+        "web.search",
+        "backup.list",
+        "peripheral.list",
+        "network.ping"
+      ],
+      "seconds": 0.564403,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.diagnose"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "notification.diagnose"
+        ]
+      ],
+      "candidate_operations": [
+        "notification.diagnose",
+        "notification.cancel.latest",
+        "system.recyclebin.empty",
+        "wifi.disconnect",
+        "window.move",
+        "system.process.terminate.named",
+        "network.port.list",
+        "audio.microphone.mute",
+        "notification.schedule",
+        "filesystem.move"
+      ],
+      "case_id": "catalog-seen-natural-notification-diagnose",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "notification.diagnose",
+        "notification.cancel.latest",
+        "system.recyclebin.empty",
+        "wifi.disconnect",
+        "window.move",
+        "system.process.terminate.named",
+        "network.port.list",
+        "audio.microphone.mute",
+        "notification.schedule",
+        "filesystem.move"
+      ],
+      "seconds": 0.823842,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.diagnose"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "notification.dismiss"
+        ]
+      ],
+      "candidate_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "reminder.resolve.exact",
+        "notification.list.due",
+        "input.select.all",
+        "reminder.delete",
+        "clipboard.copy",
+        "routine.delete",
+        "wifi.connect",
+        "reminder.create"
+      ],
+      "case_id": "catalog-seen-natural-notification-dismiss",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "reminder.resolve.exact",
+        "notification.list.due",
+        "input.select.all",
+        "reminder.delete",
+        "clipboard.copy",
+        "routine.delete",
+        "wifi.connect",
+        "reminder.create"
+      ],
+      "seconds": 0.884605,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.dismiss"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "notification.list.due"
+        ]
+      ],
+      "candidate_operations": [
+        "notification.list.due",
+        "reminder.list",
+        "notification.dismiss",
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "backup.known.list",
+        "wifi.profile.list",
+        "input.key.press",
+        "routine.list",
+        "game.install.prepare"
+      ],
+      "case_id": "catalog-seen-natural-notification-list-due",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "notification.list.due",
+        "reminder.list",
+        "notification.dismiss",
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "backup.known.list",
+        "wifi.profile.list",
+        "input.key.press",
+        "routine.list",
+        "game.install.prepare"
+      ],
+      "seconds": 0.595123,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.list.due"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "candidate_operations": [
+        "notification.schedule",
+        "filesystem.sandbox.move.named",
+        "backup.create",
+        "system.settings.status",
+        "audio.volume.adjust",
+        "routine.list",
+        "streaming.play.named",
+        "window.resize",
+        "input.visible.click",
+        "window.minimize"
+      ],
+      "case_id": "catalog-seen-natural-notification-schedule",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "notification.schedule",
+        "filesystem.sandbox.move.named",
+        "backup.create",
+        "system.settings.status",
+        "audio.volume.adjust",
+        "routine.list",
+        "streaming.play.named",
+        "window.resize",
+        "input.visible.click",
+        "window.minimize"
+      ],
+      "seconds": 0.583576,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "ocr.read"
+        ]
+      ],
+      "candidate_operations": [
+        "ocr.read",
+        "browser.page.read",
+        "capture.active.window",
+        "input.visible.click",
+        "routine.phrase.create",
+        "peripheral.scan",
+        "vision.describe",
+        "input.keyboard.layout",
+        "input.select.all",
+        "capture.screenshot"
+      ],
+      "case_id": "catalog-seen-natural-ocr-read",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "ocr.read",
+        "browser.page.read",
+        "capture.active.window",
+        "input.visible.click",
+        "routine.phrase.create",
+        "peripheral.scan",
+        "vision.describe",
+        "input.keyboard.layout",
+        "input.select.all",
+        "capture.screenshot"
+      ],
+      "seconds": 0.619038,
+      "selected_no_match": false,
+      "selected_operations": [
+        "ocr.read"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "office.document.create"
+        ]
+      ],
+      "candidate_operations": [
+        "office.document.create",
+        "peripheral.scan",
+        "filesystem.read.text",
+        "filesystem.write.text",
+        "filesystem.known.search",
+        "peripheral.print",
+        "clipboard.write.text",
+        "reminder.create",
+        "task.list",
+        "note.search"
+      ],
+      "case_id": "catalog-seen-natural-office-document-create",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "office.document.create",
+        "peripheral.scan",
+        "filesystem.read.text",
+        "filesystem.write.text",
+        "filesystem.known.search",
+        "peripheral.print",
+        "clipboard.write.text",
+        "reminder.create",
+        "task.list",
+        "note.search"
+      ],
+      "seconds": 0.665496,
+      "selected_no_match": false,
+      "selected_operations": [
+        "office.document.create"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "office.document.read"
+        ]
+      ],
+      "candidate_operations": [
+        "web.search",
+        "office.document.read",
+        "filesystem.read.text",
+        "note.create",
+        "peripheral.print",
+        "browser.page.read",
+        "notification.cancel.latest",
+        "filesystem.trash.restore",
+        "office.document.create",
+        "email.latest.reply"
+      ],
+      "case_id": "catalog-seen-natural-office-document-read",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "web.search",
+        "office.document.read",
+        "filesystem.read.text",
+        "note.create",
+        "peripheral.print",
+        "browser.page.read",
+        "notification.cancel.latest",
+        "filesystem.trash.restore",
+        "office.document.create",
+        "email.latest.reply"
+      ],
+      "seconds": 0.597578,
+      "selected_no_match": false,
+      "selected_operations": [
+        "office.document.read"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "package.install.commit"
+        ]
+      ],
+      "candidate_operations": [
+        "package.install.commit",
+        "package.install.prepare",
+        "browser.control",
+        "game.install.commit",
+        "note.search",
+        "audio.volume.adjust",
+        "task.delete",
+        "app.installed",
+        "routine.list",
+        "filesystem.create.directory"
+      ],
+      "case_id": "catalog-seen-natural-package-install-commit",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "package.install.commit",
+        "package.install.prepare",
+        "browser.control",
+        "game.install.commit",
+        "note.search",
+        "audio.volume.adjust",
+        "task.delete",
+        "app.installed",
+        "routine.list",
+        "filesystem.create.directory"
+      ],
+      "seconds": 0.619529,
+      "selected_no_match": false,
+      "selected_operations": [
+        "package.install.commit"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "package.install.prepare"
+        ]
+      ],
+      "candidate_operations": [
+        "game.install.prepare",
+        "package.install.prepare",
+        "game.install.status",
+        "package.install.commit",
+        "app.installed",
+        "game.install.commit",
+        "media.play.exact",
+        "routine.read",
+        "game.purchase.prepare",
+        "audio.microphone.mute"
+      ],
+      "case_id": "catalog-seen-natural-package-install-prepare",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "game.install.prepare",
+        "package.install.prepare",
+        "game.install.status",
+        "package.install.commit",
+        "app.installed",
+        "game.install.commit",
+        "media.play.exact",
+        "routine.read",
+        "game.purchase.prepare",
+        "audio.microphone.mute"
+      ],
+      "seconds": 0.653006,
+      "selected_no_match": false,
+      "selected_operations": [
+        "package.install.prepare"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "peripheral.list"
+        ]
+      ],
+      "candidate_operations": [
+        "peripheral.list",
+        "bluetooth.device.list",
+        "audio.mute",
+        "audio.microphone.mute",
+        "system.process.list",
+        "system.status",
+        "audio.volume.adjust",
+        "input.key.press",
+        "wifi.connect",
+        "message.send"
+      ],
+      "case_id": "catalog-seen-natural-peripheral-list",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "peripheral.list",
+        "bluetooth.device.list",
+        "audio.mute",
+        "audio.microphone.mute",
+        "system.process.list",
+        "system.status",
+        "audio.volume.adjust",
+        "input.key.press",
+        "wifi.connect",
+        "message.send"
+      ],
+      "seconds": 0.638877,
+      "selected_no_match": false,
+      "selected_operations": [
+        "peripheral.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "peripheral.print"
+        ]
+      ],
+      "candidate_operations": [
+        "peripheral.print",
+        "office.document.create",
+        "input.select.all",
+        "web.search",
+        "routine.delete",
+        "office.document.read",
+        "clipboard.copy",
+        "streaming.navigate",
+        "filesystem.known.search",
+        "filesystem.write.text"
+      ],
+      "case_id": "catalog-seen-natural-peripheral-print",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "peripheral.print",
+        "office.document.create",
+        "input.select.all",
+        "web.search",
+        "routine.delete",
+        "office.document.read",
+        "clipboard.copy",
+        "streaming.navigate",
+        "filesystem.known.search",
+        "filesystem.write.text"
+      ],
+      "seconds": 0.603003,
+      "selected_no_match": false,
+      "selected_operations": [
+        "peripheral.print"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "peripheral.scan"
+        ]
+      ],
+      "candidate_operations": [
+        "peripheral.scan",
+        "browser.control",
+        "web.search",
+        "peripheral.list",
+        "wifi.connect.named",
+        "office.document.create",
+        "network.ping",
+        "browser.page.read",
+        "game.installed.named",
+        "routine.delete"
+      ],
+      "case_id": "catalog-seen-natural-peripheral-scan",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "peripheral.scan",
+        "browser.control",
+        "web.search",
+        "peripheral.list",
+        "wifi.connect.named",
+        "office.document.create",
+        "network.ping",
+        "browser.page.read",
+        "game.installed.named",
+        "routine.delete"
+      ],
+      "seconds": 0.609929,
+      "selected_no_match": false,
+      "selected_operations": [
+        "peripheral.scan"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "reminder.create"
+        ]
+      ],
+      "candidate_operations": [
+        "reminder.create",
+        "note.create",
+        "notification.schedule",
+        "routine.list",
+        "filesystem.create.directory",
+        "ocr.read",
+        "backup.create",
+        "message.recipient.resolve",
+        "browser.control",
+        "filesystem.trash.prepare"
+      ],
+      "case_id": "catalog-seen-natural-reminder-create",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "reminder.create",
+        "note.create",
+        "notification.schedule",
+        "routine.list",
+        "filesystem.create.directory",
+        "ocr.read",
+        "backup.create",
+        "message.recipient.resolve",
+        "browser.control",
+        "filesystem.trash.prepare"
+      ],
+      "seconds": 0.690363,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "reminder.delete"
+        ]
+      ],
+      "candidate_operations": [
+        "reminder.delete",
+        "routine.delete",
+        "reminder.resolve.exact",
+        "filesystem.known.trash.named",
+        "reminder.restore",
+        "backup.create",
+        "game.install.named",
+        "browser.navigate.named",
+        "routine.list",
+        "system.process.terminate.named"
+      ],
+      "case_id": "catalog-seen-natural-reminder-delete",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "reminder.delete",
+        "routine.delete",
+        "reminder.resolve.exact",
+        "filesystem.known.trash.named",
+        "reminder.restore",
+        "backup.create",
+        "game.install.named",
+        "browser.navigate.named",
+        "routine.list",
+        "system.process.terminate.named"
+      ],
+      "seconds": 0.610561,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "reminder.list"
+        ]
+      ],
+      "candidate_operations": [
+        "reminder.list",
+        "reminder.create",
+        "task.list",
+        "filesystem.known.search",
+        "notification.list.due",
+        "wifi.profile.list",
+        "reminder.resolve.exact",
+        "window.resize",
+        "system.process.list",
+        "window.minimize"
+      ],
+      "case_id": "catalog-seen-natural-reminder-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "reminder.list",
+        "reminder.create",
+        "task.list",
+        "filesystem.known.search",
+        "notification.list.due",
+        "wifi.profile.list",
+        "reminder.resolve.exact",
+        "window.resize",
+        "system.process.list",
+        "window.minimize"
+      ],
+      "seconds": 0.586402,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "reminder.resolve.exact"
+        ]
+      ],
+      "candidate_operations": [
+        "reminder.resolve.exact",
+        "reminder.restore",
+        "media.status",
+        "reminder.create",
+        "window.active",
+        "reminder.delete",
+        "routine.read",
+        "browser.control",
+        "filesystem.read.text",
+        "capture.screenshot"
+      ],
+      "case_id": "catalog-seen-natural-reminder-resolve-exact",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "reminder.resolve.exact",
+        "reminder.restore",
+        "media.status",
+        "reminder.create",
+        "window.active",
+        "reminder.delete",
+        "routine.read",
+        "browser.control",
+        "filesystem.read.text",
+        "capture.screenshot"
+      ],
+      "seconds": 0.619273,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "reminder.restore"
+        ]
+      ],
+      "candidate_operations": [
+        "reminder.delete",
+        "reminder.restore",
+        "reminder.resolve.exact",
+        "window.restore",
+        "task.restore",
+        "backup.restore",
+        "backup.known.restore.latest",
+        "filesystem.trash.restore",
+        "routine.restore",
+        "system.process.terminate.named"
+      ],
+      "case_id": "catalog-seen-natural-reminder-restore",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "reminder.delete",
+        "reminder.restore",
+        "reminder.resolve.exact",
+        "window.restore",
+        "task.restore",
+        "backup.restore",
+        "backup.known.restore.latest",
+        "filesystem.trash.restore",
+        "routine.restore",
+        "system.process.terminate.named"
+      ],
+      "seconds": 0.603519,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.restore"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "routine.delete"
+        ]
+      ],
+      "candidate_operations": [
+        "routine.delete",
+        "filesystem.known.trash.named",
+        "reminder.delete",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.set.enabled",
+        "routine.restore",
+        "routine.list",
+        "filesystem.path.ensure.absent",
+        "backup.create"
+      ],
+      "case_id": "catalog-seen-natural-routine-delete",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "routine.delete",
+        "filesystem.known.trash.named",
+        "reminder.delete",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.set.enabled",
+        "routine.restore",
+        "routine.list",
+        "filesystem.path.ensure.absent",
+        "backup.create"
+      ],
+      "seconds": 0.60501,
+      "selected_no_match": false,
+      "selected_operations": [
+        "routine.delete"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "routine.list"
+        ]
+      ],
+      "candidate_operations": [
+        "routine.list",
+        "task.list",
+        "game.catalog.list",
+        "note.list",
+        "routine.delete",
+        "input.keyboard.status",
+        "routine.phrase.create",
+        "wifi.profile.list",
+        "routine.restore",
+        "routine.resolve.exact"
+      ],
+      "case_id": "catalog-seen-natural-routine-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "routine.list",
+        "task.list",
+        "game.catalog.list",
+        "note.list",
+        "routine.delete",
+        "input.keyboard.status",
+        "routine.phrase.create",
+        "wifi.profile.list",
+        "routine.restore",
+        "routine.resolve.exact"
+      ],
+      "seconds": 0.589514,
+      "selected_no_match": false,
+      "selected_operations": [
+        "routine.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "routine.phrase.create"
+        ]
+      ],
+      "candidate_operations": [
+        "window.focus",
+        "routine.phrase.create",
+        "media.play.exact",
+        "routine.resolve.exact",
+        "routine.delete",
+        "routine.restore",
+        "routine.read",
+        "routine.list",
+        "input.keyboard.open",
+        "clipboard.paste"
+      ],
+      "case_id": "catalog-seen-natural-routine-phrase-create",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.focus",
+        "routine.phrase.create",
+        "media.play.exact",
+        "routine.resolve.exact",
+        "routine.delete",
+        "routine.restore",
+        "routine.read",
+        "routine.list",
+        "input.keyboard.open",
+        "clipboard.paste"
+      ],
+      "seconds": 0.723192,
+      "selected_no_match": false,
+      "selected_operations": [
+        "routine.phrase.create"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "routine.read"
+        ]
+      ],
+      "candidate_operations": [
+        "routine.read",
+        "routine.set.enabled",
+        "routine.resolve.exact",
+        "media.play.exact",
+        "capture.active.window",
+        "routine.phrase.create",
+        "streaming.navigate",
+        "window.resize",
+        "task.create",
+        "window.move"
+      ],
+      "case_id": "catalog-seen-natural-routine-read",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "routine.read",
+        "routine.set.enabled",
+        "routine.resolve.exact",
+        "media.play.exact",
+        "capture.active.window",
+        "routine.phrase.create",
+        "streaming.navigate",
+        "window.resize",
+        "task.create",
+        "window.move"
+      ],
+      "seconds": 0.639422,
+      "selected_no_match": false,
+      "selected_operations": [
+        "routine.read"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "routine.resolve.exact"
+        ]
+      ],
+      "candidate_operations": [
+        "routine.read",
+        "routine.delete",
+        "media.play.exact",
+        "package.install.prepare",
+        "routine.resolve.exact",
+        "filesystem.create.directory",
+        "wifi.connect",
+        "routine.set.enabled",
+        "message.recipient.resolve",
+        "routine.phrase.create"
+      ],
+      "case_id": "catalog-seen-natural-routine-resolve-exact",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "routine.read",
+        "routine.delete",
+        "media.play.exact",
+        "package.install.prepare",
+        "routine.resolve.exact",
+        "filesystem.create.directory",
+        "wifi.connect",
+        "routine.set.enabled",
+        "message.recipient.resolve",
+        "routine.phrase.create"
+      ],
+      "seconds": 0.623812,
+      "selected_no_match": false,
+      "selected_operations": [
+        "routine.resolve.exact"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "routine.restore"
+        ]
+      ],
+      "candidate_operations": [
+        "routine.restore",
+        "task.restore",
+        "reminder.delete",
+        "media.play.query",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.set.enabled",
+        "window.restore",
+        "input.visible.click",
+        "note.restore"
+      ],
+      "case_id": "catalog-seen-natural-routine-restore",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "routine.restore",
+        "task.restore",
+        "reminder.delete",
+        "media.play.query",
+        "routine.resolve.exact",
+        "routine.read",
+        "routine.set.enabled",
+        "window.restore",
+        "input.visible.click",
+        "note.restore"
+      ],
+      "seconds": 0.618597,
+      "selected_no_match": false,
+      "selected_operations": [
+        "routine.restore"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "routine.set.enabled"
+        ]
+      ],
+      "candidate_operations": [
+        "routine.set.enabled",
+        "window.focus",
+        "routine.resolve.exact",
+        "routine.delete",
+        "routine.read",
+        "media.play.query",
+        "routine.restore",
+        "input.keyboard.open",
+        "routine.list",
+        "audio.microphone.mute"
+      ],
+      "case_id": "catalog-seen-natural-routine-set-enabled",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "routine.set.enabled",
+        "window.focus",
+        "routine.resolve.exact",
+        "routine.delete",
+        "routine.read",
+        "media.play.query",
+        "routine.restore",
+        "input.keyboard.open",
+        "routine.list",
+        "audio.microphone.mute"
+      ],
+      "seconds": 0.700989,
+      "selected_no_match": false,
+      "selected_operations": [
+        "routine.set.enabled"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "streaming.navigate"
+        ]
+      ],
+      "candidate_operations": [
+        "browser.navigate",
+        "streaming.navigate",
+        "streaming.play.named",
+        "browser.navigate.named",
+        "window.minimize",
+        "message.recipient.resolve",
+        "browser.tabs.list",
+        "window.resize",
+        "office.document.create",
+        "input.key.press"
+      ],
+      "case_id": "catalog-seen-natural-streaming-navigate",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "browser.navigate",
+        "streaming.navigate",
+        "streaming.play.named",
+        "browser.navigate.named",
+        "window.minimize",
+        "message.recipient.resolve",
+        "browser.tabs.list",
+        "window.resize",
+        "office.document.create",
+        "input.key.press"
+      ],
+      "seconds": 0.671314,
+      "selected_no_match": false,
+      "selected_operations": [
+        "streaming.navigate"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "streaming.play.named"
+        ]
+      ],
+      "candidate_operations": [
+        "streaming.play.named",
+        "media.play.query",
+        "streaming.navigate",
+        "message.recipient.resolve",
+        "office.document.create",
+        "browser.tabs.list",
+        "email.latest.read",
+        "window.minimize",
+        "input.key.press",
+        "game.installed.named"
+      ],
+      "case_id": "catalog-seen-natural-streaming-play-named",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "streaming.play.named",
+        "media.play.query",
+        "streaming.navigate",
+        "message.recipient.resolve",
+        "office.document.create",
+        "browser.tabs.list",
+        "email.latest.read",
+        "window.minimize",
+        "input.key.press",
+        "game.installed.named"
+      ],
+      "seconds": 0.69265,
+      "selected_no_match": false,
+      "selected_operations": [
+        "streaming.play.named"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.application.crash.diagnose"
+        ]
+      ],
+      "candidate_operations": [
+        "system.application.crash.diagnose",
+        "web.search",
+        "media.play.query",
+        "bluetooth.radio.set",
+        "input.key.press",
+        "filesystem.known.search",
+        "input.text.type",
+        "window.resize",
+        "app.installed",
+        "task.search"
+      ],
+      "case_id": "catalog-seen-natural-system-application-crash-diagnose",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.application.crash.diagnose",
+        "web.search",
+        "media.play.query",
+        "bluetooth.radio.set",
+        "input.key.press",
+        "filesystem.known.search",
+        "input.text.type",
+        "window.resize",
+        "app.installed",
+        "task.search"
+      ],
+      "seconds": 0.766406,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.application.crash.diagnose"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.identity"
+        ]
+      ],
+      "candidate_operations": [
+        "system.identity",
+        "notification.diagnose",
+        "bluetooth.radio.set",
+        "input.text.type",
+        "peripheral.list",
+        "input.key.press",
+        "audio.microphone.mute",
+        "system.application.crash.diagnose",
+        "message.send",
+        "app.installed"
+      ],
+      "case_id": "catalog-seen-natural-system-identity",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.identity",
+        "notification.diagnose",
+        "bluetooth.radio.set",
+        "input.text.type",
+        "peripheral.list",
+        "input.key.press",
+        "audio.microphone.mute",
+        "system.application.crash.diagnose",
+        "message.send",
+        "app.installed"
+      ],
+      "seconds": 0.657617,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.identity"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.power"
+        ]
+      ],
+      "candidate_operations": [
+        "system.application.crash.diagnose",
+        "media.status",
+        "bluetooth.radio.set",
+        "audio.microphone.mute",
+        "app.installed",
+        "browser.tabs.list",
+        "input.key.press",
+        "input.text.type",
+        "media.control",
+        "peripheral.list"
+      ],
+      "case_id": "catalog-seen-natural-system-power",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.application.crash.diagnose",
+        "media.status",
+        "bluetooth.radio.set",
+        "audio.microphone.mute",
+        "app.installed",
+        "browser.tabs.list",
+        "input.key.press",
+        "input.text.type",
+        "media.control",
+        "peripheral.list"
+      ],
+      "seconds": 0.628282,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.control"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.process.list"
+        ]
+      ],
+      "candidate_operations": [
+        "system.process.list",
+        "filesystem.file.open.latest",
+        "system.process.terminate.named",
+        "task.reopen",
+        "calendar.event.list",
+        "input.keyboard.open",
+        "audio.volume.adjust",
+        "peripheral.list",
+        "game.installed.named",
+        "network.port.list"
+      ],
+      "case_id": "catalog-seen-natural-system-process-list",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.process.list",
+        "filesystem.file.open.latest",
+        "system.process.terminate.named",
+        "task.reopen",
+        "calendar.event.list",
+        "input.keyboard.open",
+        "audio.volume.adjust",
+        "peripheral.list",
+        "game.installed.named",
+        "network.port.list"
+      ],
+      "seconds": 0.69333,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.process.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.process.terminate.named"
+        ]
+      ],
+      "candidate_operations": [
+        "system.process.terminate.named",
+        "input.visible.click",
+        "browser.control",
+        "app.close",
+        "web.search",
+        "filesystem.file.open.latest",
+        "system.power",
+        "input.keyboard.open",
+        "notification.dismiss",
+        "game.install.cancel"
+      ],
+      "case_id": "catalog-seen-natural-system-process-terminate-named",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.process.terminate.named",
+        "input.visible.click",
+        "browser.control",
+        "app.close",
+        "web.search",
+        "filesystem.file.open.latest",
+        "system.power",
+        "input.keyboard.open",
+        "notification.dismiss",
+        "game.install.cancel"
+      ],
+      "seconds": 1.756836,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.process.terminate.named"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.recyclebin.empty"
+        ]
+      ],
+      "candidate_operations": [
+        "system.recyclebin.empty",
+        "bluetooth.radio.set",
+        "app.installed",
+        "system.application.crash.diagnose",
+        "web.search",
+        "audio.microphone.mute",
+        "window.move",
+        "input.text.type",
+        "input.key.press",
+        "peripheral.list"
+      ],
+      "case_id": "catalog-seen-natural-system-recyclebin-empty",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.recyclebin.empty",
+        "bluetooth.radio.set",
+        "app.installed",
+        "system.application.crash.diagnose",
+        "web.search",
+        "audio.microphone.mute",
+        "window.move",
+        "input.text.type",
+        "input.key.press",
+        "peripheral.list"
+      ],
+      "seconds": 0.776633,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.recyclebin.empty"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.settings.adjust"
+        ]
+      ],
+      "candidate_operations": [
+        "system.settings.adjust",
+        "audio.volume.adjust",
+        "web.search",
+        "system.settings.set",
+        "message.send",
+        "input.keyboard.open",
+        "system.settings.status",
+        "filesystem.search",
+        "window.move",
+        "routine.phrase.create"
+      ],
+      "case_id": "catalog-seen-natural-system-settings-adjust",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.settings.adjust",
+        "audio.volume.adjust",
+        "web.search",
+        "system.settings.set",
+        "message.send",
+        "input.keyboard.open",
+        "system.settings.status",
+        "filesystem.search",
+        "window.move",
+        "routine.phrase.create"
+      ],
+      "seconds": 0.703751,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.settings.adjust"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.settings.set"
+        ]
+      ],
+      "candidate_operations": [
+        "system.settings.set",
+        "media.play.query",
+        "bluetooth.radio.set",
+        "audio.microphone.mute",
+        "app.installed",
+        "system.application.crash.diagnose",
+        "reminder.create",
+        "input.key.press",
+        "peripheral.list",
+        "input.text.type"
+      ],
+      "case_id": "catalog-seen-natural-system-settings-set",
+      "correct": false,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.settings.set",
+        "media.play.query",
+        "bluetooth.radio.set",
+        "audio.microphone.mute",
+        "app.installed",
+        "system.application.crash.diagnose",
+        "reminder.create",
+        "input.key.press",
+        "peripheral.list",
+        "input.text.type"
+      ],
+      "seconds": 0.722754,
+      "selected_no_match": false,
+      "selected_operations": [
+        "bluetooth.radio.set"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.settings.status"
+        ]
+      ],
+      "candidate_operations": [
+        "system.settings.status",
+        "system.settings.set",
+        "system.settings.adjust",
+        "note.trash",
+        "filesystem.sandbox.diff.named",
+        "note.search",
+        "filesystem.list",
+        "capture.screenshot",
+        "clipboard.copy",
+        "system.time"
+      ],
+      "case_id": "catalog-seen-natural-system-settings-status",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.settings.status",
+        "system.settings.set",
+        "system.settings.adjust",
+        "note.trash",
+        "filesystem.sandbox.diff.named",
+        "note.search",
+        "filesystem.list",
+        "capture.screenshot",
+        "clipboard.copy",
+        "system.time"
+      ],
+      "seconds": 0.649979,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.settings.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.status"
+        ]
+      ],
+      "candidate_operations": [
+        "system.status",
+        "system.process.list",
+        "system.identity",
+        "game.catalog.list",
+        "browser.control",
+        "network.ping",
+        "bluetooth.device.list",
+        "window.active",
+        "network.dns.status",
+        "input.pointer.control"
+      ],
+      "case_id": "catalog-seen-natural-system-status",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.status",
+        "system.process.list",
+        "system.identity",
+        "game.catalog.list",
+        "browser.control",
+        "network.ping",
+        "bluetooth.device.list",
+        "window.active",
+        "network.dns.status",
+        "input.pointer.control"
+      ],
+      "seconds": 0.621291,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [
+        "system.time",
+        "web.search",
+        "task.create",
+        "window.active",
+        "task.complete",
+        "system.process.list",
+        "input.key.press",
+        "window.resize",
+        "network.status",
+        "ocr.read"
+      ],
+      "case_id": "catalog-seen-natural-system-time",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "system.time",
+        "web.search",
+        "task.create",
+        "window.active",
+        "task.complete",
+        "system.process.list",
+        "input.key.press",
+        "window.resize",
+        "network.status",
+        "ocr.read"
+      ],
+      "seconds": 0.773712,
+      "selected_no_match": false,
+      "selected_operations": [
+        "system.time"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.complete"
+        ]
+      ],
+      "candidate_operations": [
+        "task.complete",
+        "message.send",
+        "task.delete",
+        "media.play.exact",
+        "routine.read",
+        "task.resolve.exact",
+        "task.reopen",
+        "app.open",
+        "game.purchase.prepare",
+        "network.ping"
+      ],
+      "case_id": "catalog-seen-natural-task-complete",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "task.complete",
+        "message.send",
+        "task.delete",
+        "media.play.exact",
+        "routine.read",
+        "task.resolve.exact",
+        "task.reopen",
+        "app.open",
+        "game.purchase.prepare",
+        "network.ping"
+      ],
+      "seconds": 1.153116,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.complete"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.create"
+        ]
+      ],
+      "candidate_operations": [
+        "task.create",
+        "notification.schedule",
+        "reminder.create",
+        "message.send",
+        "task.delete",
+        "task.restore",
+        "routine.phrase.create",
+        "task.update",
+        "task.reopen",
+        "network.ping"
+      ],
+      "case_id": "catalog-seen-natural-task-create",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "task.create",
+        "notification.schedule",
+        "reminder.create",
+        "message.send",
+        "task.delete",
+        "task.restore",
+        "routine.phrase.create",
+        "task.update",
+        "task.reopen",
+        "network.ping"
+      ],
+      "seconds": 1.753794,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.create",
+        "notification.schedule",
+        "routine.phrase.create",
+        "message.send",
+        "task.update"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.delete"
+        ]
+      ],
+      "candidate_operations": [
+        "filesystem.known.trash.named",
+        "message.send",
+        "filesystem.path.ensure.absent",
+        "task.delete",
+        "media.play.exact",
+        "note.trash",
+        "filesystem.sandbox.move.named",
+        "clipboard.write.text",
+        "input.pointer.control",
+        "streaming.navigate"
+      ],
+      "case_id": "catalog-seen-natural-task-delete",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "filesystem.known.trash.named",
+        "message.send",
+        "filesystem.path.ensure.absent",
+        "task.delete",
+        "media.play.exact",
+        "note.trash",
+        "filesystem.sandbox.move.named",
+        "clipboard.write.text",
+        "input.pointer.control",
+        "streaming.navigate"
+      ],
+      "seconds": 0.639392,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.delete"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.list"
+        ]
+      ],
+      "candidate_operations": [
+        "task.list",
+        "task.search",
+        "message.send",
+        "browser.tabs.list",
+        "wifi.profile.list",
+        "filesystem.known.search",
+        "note.list",
+        "network.port.list",
+        "web.search",
+        "window.minimize"
+      ],
+      "case_id": "catalog-seen-natural-task-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "task.list",
+        "task.search",
+        "message.send",
+        "browser.tabs.list",
+        "wifi.profile.list",
+        "filesystem.known.search",
+        "note.list",
+        "network.port.list",
+        "web.search",
+        "window.minimize"
+      ],
+      "seconds": 0.635726,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.reopen"
+        ]
+      ],
+      "candidate_operations": [
+        "task.reopen",
+        "message.send",
+        "task.delete",
+        "task.list",
+        "task.complete",
+        "task.create",
+        "task.resolve.exact",
+        "network.ping",
+        "task.update",
+        "filesystem.copy"
+      ],
+      "case_id": "catalog-seen-natural-task-reopen",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "task.reopen",
+        "message.send",
+        "task.delete",
+        "task.list",
+        "task.complete",
+        "task.create",
+        "task.resolve.exact",
+        "network.ping",
+        "task.update",
+        "filesystem.copy"
+      ],
+      "seconds": 1.425031,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.reopen"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.resolve.exact"
+        ]
+      ],
+      "candidate_operations": [
+        "task.resolve.exact",
+        "task.delete",
+        "message.send",
+        "media.play.exact",
+        "task.restore",
+        "package.install.prepare",
+        "window.resolve",
+        "browser.page.read",
+        "task.update",
+        "task.reopen"
+      ],
+      "case_id": "catalog-seen-natural-task-resolve-exact",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "task.resolve.exact",
+        "task.delete",
+        "message.send",
+        "media.play.exact",
+        "task.restore",
+        "package.install.prepare",
+        "window.resolve",
+        "browser.page.read",
+        "task.update",
+        "task.reopen"
+      ],
+      "seconds": 0.67348,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.resolve.exact"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.restore"
+        ]
+      ],
+      "candidate_operations": [
+        "task.restore",
+        "note.restore",
+        "message.send",
+        "window.restore",
+        "routine.restore",
+        "task.list",
+        "reminder.resolve.exact",
+        "backup.known.restore.latest",
+        "clipboard.write.text",
+        "task.create"
+      ],
+      "case_id": "catalog-seen-natural-task-restore",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "task.restore",
+        "note.restore",
+        "message.send",
+        "window.restore",
+        "routine.restore",
+        "task.list",
+        "reminder.resolve.exact",
+        "backup.known.restore.latest",
+        "clipboard.write.text",
+        "task.create"
+      ],
+      "seconds": 0.715139,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.restore"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.search"
+        ]
+      ],
+      "candidate_operations": [
+        "web.search",
+        "routine.phrase.create",
+        "filesystem.known.search",
+        "task.list",
+        "task.search",
+        "note.search",
+        "filesystem.known.trash.named",
+        "clipboard.write.text",
+        "media.play.query",
+        "network.dns.status"
+      ],
+      "case_id": "catalog-seen-natural-task-search",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "web.search",
+        "routine.phrase.create",
+        "filesystem.known.search",
+        "task.list",
+        "task.search",
+        "note.search",
+        "filesystem.known.trash.named",
+        "clipboard.write.text",
+        "media.play.query",
+        "network.dns.status"
+      ],
+      "seconds": 0.633899,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.search"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "task.update"
+        ]
+      ],
+      "candidate_operations": [
+        "message.send",
+        "web.search",
+        "task.create",
+        "task.resolve.exact",
+        "task.update",
+        "filesystem.known.search",
+        "media.seek.relative",
+        "task.delete",
+        "network.ping",
+        "clipboard.write.text"
+      ],
+      "case_id": "catalog-seen-natural-task-update",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "message.send",
+        "web.search",
+        "task.create",
+        "task.resolve.exact",
+        "task.update",
+        "filesystem.known.search",
+        "media.seek.relative",
+        "task.delete",
+        "network.ping",
+        "clipboard.write.text"
+      ],
+      "seconds": 0.618083,
+      "selected_no_match": false,
+      "selected_operations": [
+        "task.update"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "vision.describe"
+        ]
+      ],
+      "candidate_operations": [
+        "vision.describe",
+        "ocr.read",
+        "capture.screenshot",
+        "web.search",
+        "routine.phrase.create",
+        "capture.active.window",
+        "message.send",
+        "reminder.list",
+        "media.play.youtube",
+        "peripheral.scan"
+      ],
+      "case_id": "catalog-seen-natural-vision-describe",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "vision.describe",
+        "ocr.read",
+        "capture.screenshot",
+        "web.search",
+        "routine.phrase.create",
+        "capture.active.window",
+        "message.send",
+        "reminder.list",
+        "media.play.youtube",
+        "peripheral.scan"
+      ],
+      "seconds": 0.639067,
+      "selected_no_match": false,
+      "selected_operations": [
+        "capture.screenshot"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "web.search"
+        ]
+      ],
+      "candidate_operations": [
+        "web.search",
+        "office.document.read",
+        "filesystem.known.search",
+        "browser.tabs.list",
+        "office.document.create",
+        "media.play.query",
+        "message.send",
+        "browser.control",
+        "peripheral.print",
+        "task.search"
+      ],
+      "case_id": "catalog-seen-natural-web-search",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "web.search",
+        "office.document.read",
+        "filesystem.known.search",
+        "browser.tabs.list",
+        "office.document.create",
+        "media.play.query",
+        "message.send",
+        "browser.control",
+        "peripheral.print",
+        "task.search"
+      ],
+      "seconds": 0.635252,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "wifi.connect"
+        ]
+      ],
+      "candidate_operations": [
+        "wifi.connect",
+        "wifi.ensure.connected",
+        "wifi.disconnect",
+        "wifi.profile.list",
+        "input.select.all",
+        "clipboard.copy",
+        "routine.delete",
+        "wifi.connect.named",
+        "browser.navigate.named",
+        "notification.cancel.latest"
+      ],
+      "case_id": "catalog-seen-natural-wifi-connect",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "wifi.connect",
+        "wifi.ensure.connected",
+        "wifi.disconnect",
+        "wifi.profile.list",
+        "input.select.all",
+        "clipboard.copy",
+        "routine.delete",
+        "wifi.connect.named",
+        "browser.navigate.named",
+        "notification.cancel.latest"
+      ],
+      "seconds": 0.650409,
+      "selected_no_match": false,
+      "selected_operations": [
+        "wifi.connect"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "wifi.connect.named"
+        ]
+      ],
+      "candidate_operations": [
+        "wifi.connect",
+        "wifi.ensure.connected",
+        "wifi.profile.list",
+        "wifi.disconnect",
+        "wifi.connect.named",
+        "browser.navigate.named",
+        "wifi.status",
+        "game.install.named",
+        "clipboard.write.text",
+        "filesystem.path.ensure.absent"
+      ],
+      "case_id": "catalog-seen-natural-wifi-connect-named",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "wifi.connect",
+        "wifi.ensure.connected",
+        "wifi.profile.list",
+        "wifi.disconnect",
+        "wifi.connect.named",
+        "browser.navigate.named",
+        "wifi.status",
+        "game.install.named",
+        "clipboard.write.text",
+        "filesystem.path.ensure.absent"
+      ],
+      "seconds": 0.60247,
+      "selected_no_match": false,
+      "selected_operations": [
+        "wifi.connect.named"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "wifi.disconnect"
+        ]
+      ],
+      "candidate_operations": [
+        "wifi.disconnect",
+        "wifi.ensure.connected",
+        "wifi.connect",
+        "input.visible.click",
+        "wifi.profile.list",
+        "network.ping",
+        "wifi.status",
+        "package.install.commit",
+        "peripheral.list",
+        "media.play.youtube"
+      ],
+      "case_id": "catalog-seen-natural-wifi-disconnect",
+      "correct": false,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "wifi.disconnect",
+        "wifi.ensure.connected",
+        "wifi.connect",
+        "input.visible.click",
+        "wifi.profile.list",
+        "network.ping",
+        "wifi.status",
+        "package.install.commit",
+        "peripheral.list",
+        "media.play.youtube"
+      ],
+      "seconds": 0.999405,
+      "selected_no_match": false,
+      "selected_operations": [
+        "wifi.disconnect",
+        "wifi.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "wifi.ensure.connected"
+        ]
+      ],
+      "candidate_operations": [
+        "wifi.ensure.connected",
+        "wifi.disconnect",
+        "notification.dismiss",
+        "wifi.connect",
+        "wifi.profile.list",
+        "wifi.status",
+        "window.application.status",
+        "peripheral.list",
+        "peripheral.scan",
+        "notification.diagnose"
+      ],
+      "case_id": "catalog-seen-natural-wifi-ensure-connected",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "wifi.ensure.connected",
+        "wifi.disconnect",
+        "notification.dismiss",
+        "wifi.connect",
+        "wifi.profile.list",
+        "wifi.status",
+        "window.application.status",
+        "peripheral.list",
+        "peripheral.scan",
+        "notification.diagnose"
+      ],
+      "seconds": 0.639724,
+      "selected_no_match": false,
+      "selected_operations": [
+        "wifi.ensure.connected"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "wifi.profile.list"
+        ]
+      ],
+      "candidate_operations": [
+        "wifi.profile.list",
+        "wifi.ensure.connected",
+        "wifi.connect.named",
+        "filesystem.known.search",
+        "notification.list.due",
+        "backup.list",
+        "task.resolve.exact",
+        "game.install.prepare",
+        "filesystem.path.ensure.absent",
+        "peripheral.list"
+      ],
+      "case_id": "catalog-seen-natural-wifi-profile-list",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "wifi.profile.list",
+        "wifi.ensure.connected",
+        "wifi.connect.named",
+        "filesystem.known.search",
+        "notification.list.due",
+        "backup.list",
+        "task.resolve.exact",
+        "game.install.prepare",
+        "filesystem.path.ensure.absent",
+        "peripheral.list"
+      ],
+      "seconds": 0.652752,
+      "selected_no_match": false,
+      "selected_operations": [
+        "wifi.profile.list"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "wifi.status"
+        ]
+      ],
+      "candidate_operations": [
+        "wifi.status",
+        "wifi.disconnect",
+        "wifi.ensure.connected",
+        "audio.status",
+        "window.active",
+        "network.status",
+        "game.install.status",
+        "network.ping",
+        "wifi.profile.list",
+        "browser.page.read"
+      ],
+      "case_id": "catalog-seen-natural-wifi-status",
+      "correct": false,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "wifi.status",
+        "wifi.disconnect",
+        "wifi.ensure.connected",
+        "audio.status",
+        "window.active",
+        "network.status",
+        "game.install.status",
+        "network.ping",
+        "wifi.profile.list",
+        "browser.page.read"
+      ],
+      "seconds": 0.818612,
+      "selected_no_match": false,
+      "selected_operations": [
+        "network.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.active"
+        ]
+      ],
+      "candidate_operations": [
+        "media.status",
+        "web.search",
+        "window.active",
+        "window.resolve",
+        "input.keyboard.status",
+        "window.focus",
+        "window.resize",
+        "routine.restore",
+        "capture.active.window",
+        "system.identity"
+      ],
+      "case_id": "catalog-seen-natural-window-active",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "media.status",
+        "web.search",
+        "window.active",
+        "window.resolve",
+        "input.keyboard.status",
+        "window.focus",
+        "window.resize",
+        "routine.restore",
+        "capture.active.window",
+        "system.identity"
+      ],
+      "seconds": 0.597784,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.active"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.application.status"
+        ]
+      ],
+      "candidate_operations": [
+        "window.application.status",
+        "browser.page.read",
+        "window.active",
+        "input.keyboard.open",
+        "window.resize",
+        "app.close",
+        "input.text.type",
+        "capture.active.window",
+        "input.visible.click",
+        "vision.describe"
+      ],
+      "case_id": "catalog-seen-natural-window-application-status",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.application.status",
+        "browser.page.read",
+        "window.active",
+        "input.keyboard.open",
+        "window.resize",
+        "app.close",
+        "input.text.type",
+        "capture.active.window",
+        "input.visible.click",
+        "vision.describe"
+      ],
+      "seconds": 0.706832,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.application.status"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.focus"
+        ]
+      ],
+      "candidate_operations": [
+        "window.focus",
+        "note.search",
+        "input.keyboard.status",
+        "app.close",
+        "window.resize",
+        "window.maximize",
+        "window.minimize",
+        "note.list",
+        "filesystem.sandbox.move.named",
+        "media.play.query"
+      ],
+      "case_id": "catalog-seen-natural-window-focus",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.focus",
+        "note.search",
+        "input.keyboard.status",
+        "app.close",
+        "window.resize",
+        "window.maximize",
+        "window.minimize",
+        "note.list",
+        "filesystem.sandbox.move.named",
+        "media.play.query"
+      ],
+      "seconds": 0.627358,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.focus"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.maximize"
+        ]
+      ],
+      "candidate_operations": [
+        "window.maximize",
+        "app.close",
+        "note.search",
+        "window.resize",
+        "note.list",
+        "window.minimize",
+        "filesystem.sandbox.move.named",
+        "window.active",
+        "window.move",
+        "input.key.press"
+      ],
+      "case_id": "catalog-seen-natural-window-maximize",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.maximize",
+        "app.close",
+        "note.search",
+        "window.resize",
+        "note.list",
+        "window.minimize",
+        "filesystem.sandbox.move.named",
+        "window.active",
+        "window.move",
+        "input.key.press"
+      ],
+      "seconds": 0.767645,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.maximize"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.minimize"
+        ]
+      ],
+      "candidate_operations": [
+        "window.minimize",
+        "note.search",
+        "app.close",
+        "note.list",
+        "window.resize",
+        "filesystem.sandbox.move.named",
+        "window.maximize",
+        "filesystem.folder.open",
+        "input.key.press",
+        "capture.active.window"
+      ],
+      "case_id": "catalog-seen-natural-window-minimize",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.minimize",
+        "note.search",
+        "app.close",
+        "note.list",
+        "window.resize",
+        "filesystem.sandbox.move.named",
+        "window.maximize",
+        "filesystem.folder.open",
+        "input.key.press",
+        "capture.active.window"
+      ],
+      "seconds": 0.626455,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.minimize"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.move"
+        ]
+      ],
+      "candidate_operations": [
+        "window.move",
+        "window.resize",
+        "web.search",
+        "app.open",
+        "filesystem.known.search",
+        "capture.screenshot",
+        "filesystem.sandbox.move.named",
+        "note.trash",
+        "filesystem.move",
+        "window.active"
+      ],
+      "case_id": "catalog-seen-natural-window-move",
+      "correct": true,
+      "language": "en",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.move",
+        "window.resize",
+        "web.search",
+        "app.open",
+        "filesystem.known.search",
+        "capture.screenshot",
+        "filesystem.sandbox.move.named",
+        "note.trash",
+        "filesystem.move",
+        "window.active"
+      ],
+      "seconds": 0.691742,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.move"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.resize"
+        ]
+      ],
+      "candidate_operations": [
+        "window.resize",
+        "note.search",
+        "web.search",
+        "window.move",
+        "window.maximize",
+        "app.close",
+        "note.list",
+        "window.minimize",
+        "filesystem.folder.open",
+        "filesystem.sandbox.move.named"
+      ],
+      "case_id": "catalog-seen-natural-window-resize",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.resize",
+        "note.search",
+        "web.search",
+        "window.move",
+        "window.maximize",
+        "app.close",
+        "note.list",
+        "window.minimize",
+        "filesystem.folder.open",
+        "filesystem.sandbox.move.named"
+      ],
+      "seconds": 0.702615,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.resize"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.resolve"
+        ]
+      ],
+      "candidate_operations": [
+        "window.resolve",
+        "system.process.terminate.named",
+        "message.recipient.resolve",
+        "capture.active.window",
+        "backup.known.list",
+        "web.search",
+        "task.resolve.exact",
+        "package.install.prepare",
+        "filesystem.sandbox.diff.named",
+        "reminder.resolve.exact"
+      ],
+      "case_id": "catalog-seen-natural-window-resolve",
+      "correct": true,
+      "language": "spanglish",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.resolve",
+        "system.process.terminate.named",
+        "message.recipient.resolve",
+        "capture.active.window",
+        "backup.known.list",
+        "web.search",
+        "task.resolve.exact",
+        "package.install.prepare",
+        "filesystem.sandbox.diff.named",
+        "reminder.resolve.exact"
+      ],
+      "seconds": 0.627588,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.resolve"
+      ]
+    },
+    {
+      "accepted_operation_sets": [
+        [
+          "window.restore"
+        ]
+      ],
+      "candidate_operations": [
+        "window.minimize",
+        "window.restore",
+        "note.search",
+        "note.restore",
+        "task.restore",
+        "window.resize",
+        "app.close",
+        "window.maximize",
+        "note.list",
+        "filesystem.sandbox.move.named"
+      ],
+      "case_id": "catalog-seen-natural-window-restore",
+      "correct": true,
+      "language": "es",
+      "outcome": "action",
+      "ranker_candidates": [
+        "window.minimize",
+        "window.restore",
+        "note.search",
+        "note.restore",
+        "task.restore",
+        "window.resize",
+        "app.close",
+        "window.maximize",
+        "note.list",
+        "filesystem.sandbox.move.named"
+      ],
+      "seconds": 0.594168,
+      "selected_no_match": false,
+      "selected_operations": [
+        "window.restore"
+      ]
+    }
+  ],
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "schema": "baxy.ranker-native-selector-development-probe.v1",
+  "scope": "development_only_not_blind",
+  "source": {
+    "assets": "artifacts\\research\\operation_shortlist_v3",
+    "cases": 158,
+    "corpus": "artifacts\\development\\catalog_seen_scenarios_r1.jsonl",
+    "max_candidates": 10,
+    "parallel_tool_calls": false,
+    "product": null,
+    "ranker_count": 10
+  }
+}

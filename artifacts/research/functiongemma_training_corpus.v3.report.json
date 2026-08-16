@@ -1,0 +1,42 @@
+{
+  "inputs": [
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_training_corpus.v2.jsonl",
+      "sha256": "6d9a9f6f2f8d23a92a30e36b5a1d880a7a36025ea6974ed4d24b155cde88f17f"
+    },
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_r4_repair_seed.v1.jsonl",
+      "sha256": "5e79fd48c08feb1bbb355a1de502d4ead0338432c6e1c01767088ec41df611bb"
+    }
+  ],
+  "languages": {
+    "en": 1966,
+    "es": 2155,
+    "spanglish": 619
+  },
+  "maximum_examples_per_operation": 149,
+  "minimum_examples_per_operation": 6,
+  "operations": 170,
+  "output": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_training_corpus.v3.jsonl",
+  "output_sha256": "9370207421d59fb3f464a50c33c504a6fd43335d35e71671829054b0a0aff77d",
+  "rows": 4740,
+  "schema": "baxy.functiongemma-combined-corpus.v1",
+  "sources": {
+    "authored:audio-seed-v1": 12,
+    "core-contract-authored-contrastive-v3": 112,
+    "core-contract-authored-r4-repair-v1": 70,
+    "core-contract-authored-targeted-v1": 80,
+    "core-contract-authored-targeted-v2": 72,
+    "historical:ABSTAIN__app_specific_audio": 8,
+    "historical:ABSTAIN__hardware_knowledge": 10,
+    "historical:ABSTAIN__media_control": 8,
+    "historical:ABSTAIN__microphone": 5,
+    "historical:ABSTAIN__negated_command": 6,
+    "historical:ABSTAIN__relative_volume": 10,
+    "historical:ABSTAIN__statement_no_request": 9,
+    "historical:audio.mute": 22,
+    "historical:audio.status": 14,
+    "historical:audio.volume": 123,
+    "qwen-generator+gemma-reviewer": 4179
+  }
+}

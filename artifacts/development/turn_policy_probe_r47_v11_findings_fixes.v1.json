@@ -1,0 +1,65 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v11_findings_fixes.v1.raw.jsonl",
+    "sha256": "8e5e018a5741ebdd0b4b316039f508d23ee626eede8edd7b0fc76086db5a1188"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14414",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3c0f8d2830c471b84dd71914",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0649,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El disco duro es un dispositivo de almacenamiento interno en el computador que almacena datos permanentemente. Puede ser de tipo HDD (Hard Disk Drive) o SSD (Solid State Drive). Permite guardar archivos, programas y otros datos necesarios para el funcionamiento del sistema. Su capacidad varía según el modelo y la necesidad del usuario.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:533",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-720a0d5d087daaf00eb0a6c9",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.01,
+        "operation": "notification.schedule",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T21:30:27.278049+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 2,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

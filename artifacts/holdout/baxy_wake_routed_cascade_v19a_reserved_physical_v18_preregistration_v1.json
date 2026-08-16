@@ -1,0 +1,63 @@
+{
+  "schema": "baxy.wake-cascade-physical-validation-preregistration.v2",
+  "createdAtUtc": "2026-08-10T19:27:13.404489+00:00",
+  "role": "validation",
+  "candidateFrozen": true,
+  "corpusSelectionFrozen": true,
+  "candidate": {
+    "manifestSha256": "7ba2ed26c285d1a3ea0591811d5d6f0681fcc8fb2d00ff2b45012478a5c6730d",
+    "upstreamGraphSha256": [
+      "5934226a5abe42610d4e4575f3b2ee2489dd5a6c03911bf1d1f24095b536d10e",
+      "520726b44654f520af8fffb0fb01f4c4e124b5b1163c90f941db848db433b00b",
+      "f431744e153813a6df8afcefed46570345a4dc64c71a68f6a793ff05780f8cff"
+    ],
+    "melFiltersSha256": "94b385f1d7568735fa40099550f5d71e8210bef150a3c9d4d86f0d5f2eb86db8",
+    "logmelVerifierSha256": [
+      "b835475d6573217a24cd0b5c5c908dc9a64f432aafc998ca3e7b27c715e92c2a",
+      "aa507070699eeb4477741957bf30bf6170fe5242376f0419e05bed07281294b5",
+      "53b0ccdf860e104988a1a4697ffdb79926193c1e8fb110e97cb5b984defdae40"
+    ]
+  },
+  "sourceSelection": {
+    "seed": 20260812,
+    "positiveFiles": 48,
+    "negativeFiles": 96,
+    "positiveRootSha256": "862e18bbe9dd67fa95f3d39b830d4a5cc33641f7cf92fab5ab37c813731214a3",
+    "negativeRootSha256": "dc02dc7c753411315f6ea85fe276dd5b72dd4724bd84904afc7a1f22b78075a3"
+  },
+  "captureContract": {
+    "captureTransport": "wasapi_raw_iaudioclient2",
+    "rawCaptureHelperSha256": "0e00447efac6fbfab8cb144263527cca9119f5f5a1d6aa1d723828380a3922f8",
+    "playbackGain": 0.65,
+    "preRollSecondsNotRetained": 0.25,
+    "postRollSecondsNotRetained": 0.5,
+    "maximumSourceSeconds": 20.0,
+    "maximumCaptureAttempts": 6,
+    "minimumPathCorrelation": 0.1,
+    "minimumCapturedSnrDb": 3.0
+  },
+  "evaluationContract": {
+    "blockSamples": 512,
+    "verificationPolicy": "cascade",
+    "captureScriptSha256": "9f4dd64eaa610e45e25812457e2ed4fbe0af701b2433b073f831b4da17619f01",
+    "evaluatorScriptSha256": "bf28e63f85af6f5bc3bcd5b0e08a4cf000da1880f7304cdff3199452a1b5e57f",
+    "sttFilesSha256": {
+      "encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    },
+    "programTree": {
+      "schema": "baxy.wake-validation-program-tree.v1",
+      "roots": [
+        "experiments/voice_latency",
+        "scripts",
+        "src/baxy_mind"
+      ],
+      "pythonFiles": 339,
+      "sha256": "b68e2563553b7534e039190d20cb894f73846415cec72dabd8e6cbf7f4258f71"
+    }
+  },
+  "blindHumanPartitionAccessed": false,
+  "effectsExecuted": 0
+}

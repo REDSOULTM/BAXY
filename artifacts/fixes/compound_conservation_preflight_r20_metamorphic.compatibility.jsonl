@@ -1,0 +1,9 @@
+{"clause": "send lucas the message hello.", "operation": "message.send", "compatible": true}
+{"clause": "tell lucas hello on whatsapp.", "operation": "message.send", "compatible": true}
+{"clause": "lucas should receive a whatsapp saying hello.", "operation": "message.send", "compatible": true}
+{"clause": "Either open Spotify or send Lucas hello on WhatsApp.", "operation": "app.open", "compatible": false}
+{"clause": "Either open Spotify or send Lucas hello on WhatsApp.", "operation": "app.open", "compatible": false}
+{"clause": "I need you to open Spotify, then do the other thing.", "operation": "app.open", "compatible": false}
+{"clause": "Open Notepad, but do not type or select anything.", "operation": "app.open", "compatible": false}
+{"clause": "Open Notepad, but do not type or select anything.", "operation": "app.open", "compatible": false}
+{"clause": "Either connect Wi-Fi or read the latest email.", "operation": "wifi.connect", "compatible": false}

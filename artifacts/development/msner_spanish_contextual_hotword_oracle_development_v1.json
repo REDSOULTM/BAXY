@@ -1,0 +1,286 @@
+{
+  "schema": "baxy.msner-spanish-contextual-hotword-oracle-development.v1",
+  "measuredAtUtc": "2026-08-11T07:34:45.505734+00:00",
+  "partition": "development",
+  "status": "failed",
+  "diagnosticKind": "oracle_contained_contextual_hotwords",
+  "oracleTargetProvidedToAsr": true,
+  "candidatePromotable": false,
+  "configuration": {
+    "decodingMethod": "modified_beam_search",
+    "maxActivePaths": 8,
+    "hotwordsScore": 5.0,
+    "maximumHotwords": 64
+  },
+  "metrics": {
+    "selectedCases": 15,
+    "targetEntities": 18,
+    "targetsRecovered": 2,
+    "targetRecoveryRate": 0.111111,
+    "previouslyCorrectEntityDamages": 5,
+    "nonTargetEntityRecoveries": 0,
+    "distractorFalseInsertions": 6,
+    "semanticReferenceTokens": 698,
+    "baselineSemanticWordErrors": 120,
+    "contextualSemanticWordErrors": 167,
+    "semanticWordErrorDelta": 47,
+    "baselineSemanticWer": 0.17192,
+    "contextualSemanticWer": 0.239255,
+    "decodeErrors": 0,
+    "nonemptyRate": 1.0,
+    "latencyP50Seconds": 1.6070699999982025,
+    "latencyP95Seconds": 4.148837599990657,
+    "realTimeFactorP50": 0.10503796884063502,
+    "realTimeFactorP95": 0.1290243498870683,
+    "peakRssBytesObserved": 1114968064,
+    "elapsedSeconds": 28.162525799998548,
+    "rowsPerSecond": 0.5326226811659334
+  },
+  "checks": {
+    "selectedCases": true,
+    "targetEntities": true,
+    "targetRecoveryRate": false,
+    "previouslyCorrectEntityDamages": false,
+    "distractorFalseInsertions": false,
+    "semanticWordErrorDelta": false,
+    "decodeErrors": true,
+    "latencyP95": false,
+    "realTimeFactorP95": true,
+    "peakRss": true,
+    "effectsExecuted": true
+  },
+  "thresholds": {
+    "expectedSelectedCases": 15,
+    "expectedTargetEntities": 18,
+    "minimumTargetRecoveryRate": 0.8,
+    "maximumPreviouslyCorrectEntityDamages": 0,
+    "maximumDistractorFalseInsertions": 0,
+    "maximumSemanticWordErrorDelta": 0,
+    "maximumDecodeErrors": 0,
+    "maximumLatencyP95Seconds": 2.0,
+    "maximumRealTimeFactorP95": 0.5,
+    "maximumPeakRssBytes": 4294967296
+  },
+  "decision": {
+    "candidatePromoted": false,
+    "validationBlindMayOpen": false,
+    "finalBlindMayOpen": false,
+    "nextStepIfPassed": "develop_reference_independent_context_retrieval",
+    "nextStepIfFailed": "reject_product_score_contextual_hotword_path"
+  },
+  "source": {
+    "artifact": {
+      "path": "artifacts/development/msner_spanish_parakeet_greedy_development_v1.json",
+      "sha256": "e988aab17c350aa0c026673a3b4f00b0173b7e5b57de945dbb29d5974f258a12"
+    },
+    "detail": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_contextual_hotword_oracle_development_v1.detail.json",
+      "sha256": "66ddd7588b3891cdf0cd3f27f4d299cde9242ac1f7893968c1b2a0f3f4ab13cb"
+    },
+    "baselineDetailSha256": "1d0b32a62b2ebe25854fe62e5bc9118eeea85b9389cb5ebe52a80ceefab8d9be",
+    "extraction": {
+      "path": "artifacts/development/msner_spanish_entity_development_extraction_v1.json",
+      "sha256": "e85fc53af410a753f23c6f790bc53bb41eac1c1b45902d34e2391e88b3194b54"
+    }
+  },
+  "runtime": {
+    "manifest": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json",
+    "manifestSha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe",
+    "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "modelRoot": "D:/BAXYRuntime/assets/stt/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+    "modelFiles": {
+      "encoder.int8.onnx": {
+        "bytes": 652184281,
+        "sha256": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247"
+      },
+      "decoder.int8.onnx": {
+        "bytes": 11845275,
+        "sha256": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e"
+      },
+      "joiner.int8.onnx": {
+        "bytes": 6355277,
+        "sha256": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3"
+      },
+      "tokens.txt": {
+        "bytes": 93939,
+        "sha256": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+      }
+    },
+    "recognizerLoadSeconds": 2.8669011000019964
+  },
+  "evaluator": {
+    "path": "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle.py",
+    "sha256": "0897b66bbf931521bd823fc249784d35d9ec7f52b0bc7a40d993b19148a3848f"
+  },
+  "contextualCompiler": {
+    "path": "experiments/stt_quality/contextual_hotwords.py",
+    "sha256": "dc61cb2aec667fe05dceb06c5cc96eabaa2cede670ce3abcba78bf8651bce10b"
+  },
+  "caseCommitments": [
+    {
+      "caseId": "msner-es-development-0006",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "398f4ffe71c6c07739b19e8bc9b3a99f3c2094eb705a733b2c73abb79ed6025f",
+      "contextualTranscriptSha256": "04c843e6f502a4dba603282a893d163bfca4e3630a16bcae0603567d76ce326d",
+      "hotwordsSha256": "4dc1a24e854a2a65778a9a40c13aea3a6ee792f8457e5484abf697aa4d6cbe57"
+    },
+    {
+      "caseId": "msner-es-development-0042",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "541ab40115e3931a6624aedf999b62886231fde8f22013aba84cf4aee30ca79a",
+      "contextualTranscriptSha256": "d1664bb1bcf59ecf2050355bb8d616914a87dda080d3486f72aad12a0515b28d",
+      "hotwordsSha256": "4d4a86c7644e578d2f87b5c6765eeb923bf9af84074750a8374d36f18937de12"
+    },
+    {
+      "caseId": "msner-es-development-0092",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "7bef9e814077afcc68a226011be17f688794565aff16a754630a2e61400e87f0",
+      "contextualTranscriptSha256": "7bef9e814077afcc68a226011be17f688794565aff16a754630a2e61400e87f0",
+      "hotwordsSha256": "d71ca52f54caa2e7ac011b3722dd26ee3aba18475da7e137ba54c8dcded78ccf"
+    },
+    {
+      "caseId": "msner-es-development-0118",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "dcd5fb0ff4fa7b650e26b5c1a3d6dacf2d335c347d94e9e68851dd71a1eaad86",
+      "contextualTranscriptSha256": "dcd5fb0ff4fa7b650e26b5c1a3d6dacf2d335c347d94e9e68851dd71a1eaad86",
+      "hotwordsSha256": "4391e0f6684b3a518f204185bfedd96b83acc87a6a9059de3939aea99e594c23"
+    },
+    {
+      "caseId": "msner-es-development-0147",
+      "targetCount": 1,
+      "targetsRecovered": 1,
+      "previouslyCorrectEntityDamages": 3,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "ee642eb1d9fb62aff4a8e7f6d69d298e29d38c6d707043ec1d805021fe019966",
+      "contextualTranscriptSha256": "e219623427aa8898ac4c9bd8c09c493a2211fe34124eacbc5b3bba16674960f9",
+      "hotwordsSha256": "291a17c48f59f9402f17c8e0062114b516cdedf2d49946c13584b2b074515b2b"
+    },
+    {
+      "caseId": "msner-es-development-0189",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "4d43224ed134ebba9b87447b61f301fb653286ad7485b7da7c228288d8d25380",
+      "contextualTranscriptSha256": "968d41e5242e32c4f8bcf04a4d5beafa7438f8d3279c8ad3e5c44677e5e56df0",
+      "hotwordsSha256": "75672c8f13d2f885bafe1d065f9e8405b19376377f03e84872f16bc5a317764a"
+    },
+    {
+      "caseId": "msner-es-development-0301",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "7a7086873439f83b2e5b0cb23d914fc8b0ccff33b582787775d8abe34aeb0753",
+      "contextualTranscriptSha256": "7a7086873439f83b2e5b0cb23d914fc8b0ccff33b582787775d8abe34aeb0753",
+      "hotwordsSha256": "784ad5e5603dc4854165b893f0e6a04793d1f35f1f9cecf4a7852627f34db81e"
+    },
+    {
+      "caseId": "msner-es-development-0302",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "b4adc34b47b937e396fb8a0a51e24fdb8d1b682dfad20a25a4617e7c9a3396a2",
+      "contextualTranscriptSha256": "7cd40fcc96665cfddb50bdda558763757eda4ff72a1266b886e48cfff39daaff",
+      "hotwordsSha256": "2bb6b62e7e81d776fe05fcdf191699744dbde65a7818efbc663c8e3aeea434bf"
+    },
+    {
+      "caseId": "msner-es-development-0320",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "9865b81a36d0705793e8a826ce47990846edf78788d09cc9ad738e9381ad18c4",
+      "contextualTranscriptSha256": "ba7639f89ec2998a5d00a0e2ef932227cb97389610d7de118a37638d6e55f7e9",
+      "hotwordsSha256": "75672c8f13d2f885bafe1d065f9e8405b19376377f03e84872f16bc5a317764a"
+    },
+    {
+      "caseId": "msner-es-development-0344",
+      "targetCount": 3,
+      "targetsRecovered": 1,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 1,
+      "baselineTranscriptSha256": "660e4a96530508a00d848ecb9afa196188be80b9a75d3d2b0b3cfe9278c70849",
+      "contextualTranscriptSha256": "adcc66a5e4369627f28e37e02f2c05bc84d02ff5165236e514be1a6cee6fa552",
+      "hotwordsSha256": "64bd2083053a68e05d11950b2283df5d564285d920d58cdc2381797434994119"
+    },
+    {
+      "caseId": "msner-es-development-0394",
+      "targetCount": 2,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 1,
+      "baselineTranscriptSha256": "da4091685397b1025c36495c58508def7502590ef5c8a65b7e3d03d1c1479e81",
+      "contextualTranscriptSha256": "889e2beb2f63136b0bf9894316a2a7f0b067073a0fc59a797733f54e75757de2",
+      "hotwordsSha256": "4dc1a24e854a2a65778a9a40c13aea3a6ee792f8457e5484abf697aa4d6cbe57"
+    },
+    {
+      "caseId": "msner-es-development-0420",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "f62eb0581baf743693dcaba167dd900ad2029b8ffa2fb0f704e0fe4f1f104eb4",
+      "contextualTranscriptSha256": "335a9b4e6d763f45d0219da8c6ca84f299a3cc15543cb28472127ca3d704e06e",
+      "hotwordsSha256": "ff7f3271d530fa3acd9ba1aa24fda7c29578a584129b7ab6c5000c76b0c53124"
+    },
+    {
+      "caseId": "msner-es-development-0444",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 0,
+      "baselineTranscriptSha256": "4edde7db5d3496125e8c2e76370bd18d22c8cd570b4bf3ab4b5c5bce88ae59cb",
+      "contextualTranscriptSha256": "4edde7db5d3496125e8c2e76370bd18d22c8cd570b4bf3ab4b5c5bce88ae59cb",
+      "hotwordsSha256": "4dc1a24e854a2a65778a9a40c13aea3a6ee792f8457e5484abf697aa4d6cbe57"
+    },
+    {
+      "caseId": "msner-es-development-0450",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 0,
+      "distractorFalseInsertions": 2,
+      "baselineTranscriptSha256": "2cc25e1de5471cf8ef407e82245d1430b6eaef025c2819635a7d188577039800",
+      "contextualTranscriptSha256": "f50e38f01e595c7eb9832f749cd9c2541857418921061485fdaaa42b04f57aa7",
+      "hotwordsSha256": "57f5e2ec19ff97bfd412c51cd5e40491091104ed722d645803df4410a5c9532b"
+    },
+    {
+      "caseId": "msner-es-development-0474",
+      "targetCount": 1,
+      "targetsRecovered": 0,
+      "previouslyCorrectEntityDamages": 2,
+      "distractorFalseInsertions": 2,
+      "baselineTranscriptSha256": "c8dabde7d24aa42815704f326165ca02bedf201bf7fb4c7cc8989ecd4455e061",
+      "contextualTranscriptSha256": "23f6ef260fb7aa2d95a8d6aa8875fd82a7507ce4f461b7106eb6879ee789f281",
+      "hotwordsSha256": "e89a49837fbdde397d895957c3a283b80be426a1b65ff90c353ffd77c43751a6"
+    }
+  ],
+  "developmentRowsOpened": true,
+  "validationBlindOpened": false,
+  "finalBlindOpened": false,
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0
+}

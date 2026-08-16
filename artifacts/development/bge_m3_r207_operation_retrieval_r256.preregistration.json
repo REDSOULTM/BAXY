@@ -1,0 +1,53 @@
+{
+  "schema": "baxy.bge-m3-r207-operation-retrieval.r256-preregistration.v1",
+  "authority": "sealed_before_bge_m3_import_or_cuda_execution",
+  "hypothesis": {
+    "base": "BAAI/bge-m3@5617a9f61b028005a4858fdac845db406aefb181",
+    "architecture": "frozen BGE-M3 dense query embeddings; each typed catalogue operation is ranked by its maximum cosine against its query-disjoint positive R207 exemplars",
+    "difference_from_r255": "measures raw operation retrieval only: no family centroids, domain boundary, OOS gate, classifier head, threshold, decision, veto or runtime integration",
+    "device": "isolated_cuda_bf16_development_environment"
+  },
+  "selection": {
+    "source": "R207 positive rows whose operation appears in typed catalogue R219",
+    "inside": "deduplicate by normalized query; reserve SHA-256 first one per represented operation, then SHA-256 remainder to exactly 256 evaluation queries",
+    "overlap_rule": "no normalized query may occur in both exemplar training and evaluation, even if source labels differ",
+    "ranking": "maximum cosine over all training queries of each operation; operations with no R207 positive exemplar are reported, never imputed"
+  },
+  "development_evaluation": {
+    "inside": 256,
+    "metrics": [
+      "recall_top_1",
+      "recall_top_2",
+      "recall_top_5",
+      "recall_top_8",
+      "per_operation_coverage",
+      "per_family_coverage",
+      "gpu_embedding_and_ranking_latency",
+      "gpu_vram"
+    ],
+    "minimum_useful_comparison": {
+      "top_8": "A 28-to-8 shortlist needs 100% expected-operation recall in this query-disjoint population before it can justify any later full-path experiment.",
+      "top_2": "A 28-to-2 shortlist, the R134 latency lever, likewise needs 100% recall here before any later full-path experiment.",
+      "limitation": "R207 lacks exemplars for some catalogue operations; even a passing covered-population score cannot justify a production shortlist or claim full catalogue coverage."
+    },
+    "not_an_oos_gate_blind_measurement_or_runtime_measurement": true
+  },
+  "constraints": {
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "bge_m3_r232_sha256": "d6462c8c964887a99b5b6ad82f92606fe206c8b850c7d0e6f084180a0c64bb2c",
+    "r255_sha256": "bd8d7c2b91a2aee4cbd91e6c6300edf64053242a264aef7f4975769c10cec4b3",
+    "r207_sha256": "6be518643a188bc5402c4ced73e4da3049d43ed0dbd3a0d8114f6130784fa8b0",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "runner_sha256": "53cdacf026c8af46416f06bf16a1044b2d63a0ea6cf1526c5c45bdd793a4ae22",
+    "program_sha256": "ac611cebd033e962097b9c3d2eab77c74045f4dc27ab3f1cc8dd6b5310412c60"
+  }
+}

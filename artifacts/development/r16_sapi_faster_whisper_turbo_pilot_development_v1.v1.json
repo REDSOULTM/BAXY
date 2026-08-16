@@ -1,0 +1,197 @@
+{
+  "schema": "baxy.r16-sapi-faster-whisper-turbo-pilot-development.v1",
+  "measuredAtUtc": "2026-08-08T02:37:58.996898+00:00",
+  "scope": "opened_r16_single_sapi_candidate_rejection_pilot",
+  "sources": {
+    "sourceCorpusSha256": "56cc8c6acf9fed096bcdf22f46f1ed77cd9bd1e88102249fb36abd2f163d9db6",
+    "parakeetCorpusSha256": "fd6b121fdad379a82de9175c75d84f0d0b1fcd8ccf200b126c31601b6b23b327",
+    "modelTreeSha256": "2bbf4f77213aae02d99ce993cc93880b05d4204bb40c49d796b02b5f6b6d06a1",
+    "modelName": "faster-whisper-large-v3-turbo"
+  },
+  "case": {
+    "caseId": "r16-routine-06-plain",
+    "language": "spanglish",
+    "rate": 0,
+    "referenceTextSha256": "b493f4b0f593c4e85e141772e81beaac121be7a93b92d03d841f12c4dc6a261e"
+  },
+  "audio": {
+    "seconds": 6.0085625,
+    "segmentedSeconds": 6.144,
+    "synthesisSeconds": 0.12495640001725405,
+    "trailingSilenceSeconds": 0.95,
+    "retainedTrailingSilenceSeconds": 0.7
+  },
+  "decoding": {
+    "beamSize": 5,
+    "bestOf": 5,
+    "temperature": 0.0,
+    "language": "auto",
+    "initialPrompt": null,
+    "hotwords": null,
+    "expectedLabelsAvailableToAsr": false
+  },
+  "results": [
+    {
+      "device": "cuda",
+      "computeType": "float16",
+      "transcript": "One thing, porfa, one small request, show las app personal o temas chance. Gracias.",
+      "detectedLanguage": "es",
+      "languageProbability": 0.7275390625,
+      "loadSeconds": 3.8758074999786913,
+      "decodeSeconds": 1.8153190000448376,
+      "audioRealtimeFactor": 0.29546207683021447,
+      "actualOperations": [],
+      "deterministicSemanticCorrect": false,
+      "averageLogProbabilities": [
+        -0.14956826128457723,
+        -0.791015625
+      ],
+      "words": [
+        {
+          "text": " One",
+          "probability": 0.7705078125
+        },
+        {
+          "text": " thing,",
+          "probability": 0.9736328125
+        },
+        {
+          "text": " porfa,",
+          "probability": 0.957275390625
+        },
+        {
+          "text": " one",
+          "probability": 0.984375
+        },
+        {
+          "text": " small",
+          "probability": 0.9970703125
+        },
+        {
+          "text": " request,",
+          "probability": 0.99951171875
+        },
+        {
+          "text": " show",
+          "probability": 0.98193359375
+        },
+        {
+          "text": " las",
+          "probability": 0.662109375
+        },
+        {
+          "text": " app",
+          "probability": 0.81103515625
+        },
+        {
+          "text": " personal",
+          "probability": 0.99609375
+        },
+        {
+          "text": " o",
+          "probability": 0.9375
+        },
+        {
+          "text": " temas",
+          "probability": 0.9365234375
+        },
+        {
+          "text": " chance.",
+          "probability": 0.297119140625
+        },
+        {
+          "text": " Gracias.",
+          "probability": 0.1072998046875
+        }
+      ]
+    },
+    {
+      "device": "cpu",
+      "computeType": "int8",
+      "transcript": "One thing, porfa, one small request, show las app personal o temas chance. Gracias.",
+      "detectedLanguage": "es",
+      "languageProbability": 0.7642240524291992,
+      "loadSeconds": 5.539750700001605,
+      "decodeSeconds": 53.25641039991751,
+      "audioRealtimeFactor": 8.668035546861574,
+      "actualOperations": [],
+      "deterministicSemanticCorrect": false,
+      "averageLogProbabilities": [
+        -0.13857500176680715,
+        -0.40292803446451825
+      ],
+      "words": [
+        {
+          "text": " One",
+          "probability": 0.760596752166748
+        },
+        {
+          "text": " thing,",
+          "probability": 0.9695920348167419
+        },
+        {
+          "text": " porfa,",
+          "probability": 0.9551591277122498
+        },
+        {
+          "text": " one",
+          "probability": 0.9804573655128479
+        },
+        {
+          "text": " small",
+          "probability": 0.9971359968185425
+        },
+        {
+          "text": " request,",
+          "probability": 0.9992282390594482
+        },
+        {
+          "text": " show",
+          "probability": 0.9773475527763367
+        },
+        {
+          "text": " las",
+          "probability": 0.6125680208206177
+        },
+        {
+          "text": " app",
+          "probability": 0.8485645651817322
+        },
+        {
+          "text": " personal",
+          "probability": 0.9950018525123596
+        },
+        {
+          "text": " o",
+          "probability": 0.9350953102111816
+        },
+        {
+          "text": " temas",
+          "probability": 0.9300899505615234
+        },
+        {
+          "text": " chance.",
+          "probability": 0.40567222237586975
+        },
+        {
+          "text": " Gracias.",
+          "probability": 0.3368750214576721
+        }
+      ]
+    }
+  ],
+  "promotion": {
+    "promoted": false,
+    "semanticSuccesses": 0,
+    "evaluatedProfiles": 2,
+    "rejectionReasons": [
+      "opened_failure_not_recovered"
+    ]
+  },
+  "effectsExecuted": 0,
+  "developmentOnly": true,
+  "humanMicrophoneClaimSupported": false,
+  "blindHoldoutClaimSupported": false,
+  "candidateFrozen": false,
+  "productOperatingPoint": false
+}

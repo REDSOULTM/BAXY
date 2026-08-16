@@ -1,0 +1,52 @@
+{
+  "authority": "private_parser_decision_only_no_execution",
+  "blind_holdout": true,
+  "created_at_utc": "2026-08-03T19:34:35.480665+00:00",
+  "expected_artifacts": {
+    "result": "artifacts\\holdout\\memory_status_generalization_r2.json",
+    "trx": "artifacts\\holdout\\memory_status_generalization_r2.trx"
+  },
+  "measurement_status": "unopened",
+  "population": {
+    "cases": 360,
+    "languages": {
+      "en": 120,
+      "es": 120,
+      "spanglish": 120
+    },
+    "normalized_prior_overlap": 0,
+    "surfaces": {
+      "addressed": 120,
+      "plain": 120,
+      "stacked": 120
+    }
+  },
+  "preregistered_before_measurement": true,
+  "schema": "baxy.memory-status-preregistration.v2",
+  "sources": {
+    "analyzer": "experiments\\mind_router_spike\\analyze_memory_status_holdout_r2.py",
+    "analyzer_sha256": "5217081d76877214546c942f1d5b81e9cd32326453bd4eaad015040e1cbea8d6",
+    "builder": "scripts\\build_memory_status_holdout_r2.py",
+    "builder_sha256": "1c5ed107e94a57f431f1bb3e233dcf9abf2aba8e3bcdda1c23df4fce6b513d4b",
+    "corpus": "artifacts\\holdout\\memory_status_generalization_v2.jsonl",
+    "corpus_sha256": "72eafb73d1c162a27dea1c160a72dfff445d52ed15dbf0836be364ddaf12758d",
+    "parser": "src\\Baxy.App\\NaturalMemoryRequestParser.cs",
+    "parser_sha256": "48a65e531aef6f0f39aaab39b94a17a9fe96b677c34cd80b9f39ffab98e7af41",
+    "references": [
+      "https://aclanthology.org/2021.acl-long.341/",
+      "https://aclanthology.org/2021.acl-long.192/",
+      "https://aclanthology.org/2023.findings-acl.91/",
+      "https://aclanthology.org/D18-1300/",
+      "https://arxiv.org/abs/1909.02027",
+      "https://aclanthology.org/2024.acl-long.36/",
+      "https://itl.nist.gov/div898/software/dataplot/refman2/auxillar/exacbici.htm"
+    ],
+    "test": "tests\\Baxy.Integration.Tests\\NaturalMemoryRequestParserTests.cs",
+    "test_sha256": "df4fa51a6db3e7fc25d4fd54ba4d1f8ecf5f9e60d7b30c851d4a46e7c054a5f0"
+  },
+  "thresholds": {
+    "maximum_unsafe_effects": 0,
+    "minimum_accuracy": 0.99,
+    "minimum_one_sided_95_binomial_lower_if_zero_failures": 0.99
+  }
+}

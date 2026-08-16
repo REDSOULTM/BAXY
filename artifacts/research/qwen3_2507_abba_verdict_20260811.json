@@ -1,0 +1,359 @@
+{
+  "aggregate": {
+    "A": {
+      "all_profiles_passed": true,
+      "error_multiset": {},
+      "errors": 0,
+      "exact_contracts": 180,
+      "median": {
+        "cpu_catalog_ready_seconds": 3.446,
+        "cpu_narrate_p50_seconds": 3.165,
+        "cpu_ram_peak_mib": 5843.0,
+        "gpu_catalog_ready_seconds": 3.112,
+        "gpu_narrate_p50_seconds": 0.235,
+        "gpu_ram_peak_mib": 3336.75,
+        "gpu_vram_peak_mib": 3065.6
+      },
+      "reports": 2,
+      "requests_completed": 180,
+      "requests_expected": 180
+    },
+    "B": {
+      "all_profiles_passed": false,
+      "error_multiset": {
+        "gpu:arguments-06:sidecar_error:request_failed": 2
+      },
+      "errors": 2,
+      "exact_contracts": 178,
+      "median": {
+        "cpu_catalog_ready_seconds": 3.559,
+        "cpu_narrate_p50_seconds": 2.7,
+        "cpu_ram_peak_mib": 5840.0,
+        "gpu_catalog_ready_seconds": 15.838,
+        "gpu_narrate_p50_seconds": 0.183,
+        "gpu_ram_peak_mib": 3610.35,
+        "gpu_vram_peak_mib": 3065.6
+      },
+      "reports": 2,
+      "requests_completed": 180,
+      "requests_expected": 180
+    }
+  },
+  "comparison": {
+    "active_passed": true,
+    "candidate_cpu_narration_faster": true,
+    "candidate_gpu_narration_faster": true,
+    "candidate_passed": false
+  },
+  "model_hashes_verified": true,
+  "order_verified": "ABBA",
+  "preregistration": "artifacts/research/qwen3_2507_abba_preregistration_20260811.json",
+  "preregistration_sha256": "a3613f51a292a9511ac7f468863ea2f4d0ed65d1093225ae25f14664e4037ca1",
+  "program_sha256_verified": true,
+  "reports": [
+    {
+      "position": 1,
+      "profiles": {
+        "cpu_fallback": {
+          "errors": [],
+          "latency_seconds": {
+            "arguments": {
+              "count": 10,
+              "max": 8.764,
+              "p50": 0.001,
+              "p95": 8.764
+            },
+            "narrate": {
+              "count": 5,
+              "max": 5.192,
+              "p50": 3.308,
+              "p95": 5.192
+            },
+            "turn.decide": {
+              "count": 30,
+              "max": 9.054,
+              "p50": 0.007,
+              "p95": 7.69
+            }
+          },
+          "process_tree_vram_peak_mib": 109.5,
+          "requests_completed": 45,
+          "requests_expected": 45,
+          "startup": {
+            "catalog_ready_seconds": 3.432,
+            "hello_seconds": 1.486
+          },
+          "status": "passed",
+          "tree_ram_peak_mib": 5845.6
+        },
+        "gpu": {
+          "errors": [],
+          "latency_seconds": {
+            "arguments": {
+              "count": 10,
+              "max": 0.815,
+              "p50": 0.001,
+              "p95": 0.815
+            },
+            "narrate": {
+              "count": 5,
+              "max": 0.293,
+              "p50": 0.23,
+              "p95": 0.293
+            },
+            "turn.decide": {
+              "count": 30,
+              "max": 0.97,
+              "p50": 0.004,
+              "p95": 0.687
+            }
+          },
+          "process_tree_vram_peak_mib": 3065.6,
+          "requests_completed": 45,
+          "requests_expected": 45,
+          "startup": {
+            "catalog_ready_seconds": 2.729,
+            "hello_seconds": 1.548
+          },
+          "status": "passed",
+          "tree_ram_peak_mib": 3328.6
+        }
+      },
+      "report": "artifacts/product/mind_budget_abba_qwen3_active_a1_20260811.json",
+      "report_sha256": "f91f007ae0459823afcb1fbe5dcbe88f969d63405bdbaf5e99955a15c4ca2679",
+      "status": "passed",
+      "variant": "A"
+    },
+    {
+      "position": 2,
+      "profiles": {
+        "cpu_fallback": {
+          "errors": [],
+          "latency_seconds": {
+            "arguments": {
+              "count": 10,
+              "max": 11.073,
+              "p50": 0.001,
+              "p95": 11.073
+            },
+            "narrate": {
+              "count": 5,
+              "max": 4.064,
+              "p50": 2.501,
+              "p95": 4.064
+            },
+            "turn.decide": {
+              "count": 30,
+              "max": 9.614,
+              "p50": 0.005,
+              "p95": 8.365
+            }
+          },
+          "process_tree_vram_peak_mib": 109.5,
+          "requests_completed": 45,
+          "requests_expected": 45,
+          "startup": {
+            "catalog_ready_seconds": 3.581,
+            "hello_seconds": 1.52
+          },
+          "status": "passed",
+          "tree_ram_peak_mib": 5837.3
+        },
+        "gpu": {
+          "errors": [
+            "arguments-06:sidecar_error:request_failed"
+          ],
+          "latency_seconds": {
+            "arguments": {
+              "count": 10,
+              "max": 0.856,
+              "p50": 0.001,
+              "p95": 0.856
+            },
+            "narrate": {
+              "count": 5,
+              "max": 0.262,
+              "p50": 0.187,
+              "p95": 0.262
+            },
+            "turn.decide": {
+              "count": 30,
+              "max": 3.866,
+              "p50": 0.004,
+              "p95": 0.802
+            }
+          },
+          "process_tree_vram_peak_mib": 3065.6,
+          "requests_completed": 45,
+          "requests_expected": 45,
+          "startup": {
+            "catalog_ready_seconds": 28.982,
+            "hello_seconds": 1.459
+          },
+          "status": "failed",
+          "tree_ram_peak_mib": 3908.2
+        }
+      },
+      "report": "artifacts/product/mind_budget_abba_qwen3_2507_b1_20260811.json",
+      "report_sha256": "85418294ebdec4da27b110f2ec1cb277a1e846a4371d4cf408aa3d26db9b0412",
+      "status": "failed",
+      "variant": "B"
+    },
+    {
+      "position": 3,
+      "profiles": {
+        "cpu_fallback": {
+          "errors": [],
+          "latency_seconds": {
+            "arguments": {
+              "count": 10,
+              "max": 10.973,
+              "p50": 0.001,
+              "p95": 10.973
+            },
+            "narrate": {
+              "count": 5,
+              "max": 4.031,
+              "p50": 2.898,
+              "p95": 4.031
+            },
+            "turn.decide": {
+              "count": 30,
+              "max": 10.341,
+              "p50": 0.005,
+              "p95": 8.635
+            }
+          },
+          "process_tree_vram_peak_mib": 109.5,
+          "requests_completed": 45,
+          "requests_expected": 45,
+          "startup": {
+            "catalog_ready_seconds": 3.538,
+            "hello_seconds": 1.487
+          },
+          "status": "passed",
+          "tree_ram_peak_mib": 5842.7
+        },
+        "gpu": {
+          "errors": [
+            "arguments-06:sidecar_error:request_failed"
+          ],
+          "latency_seconds": {
+            "arguments": {
+              "count": 10,
+              "max": 0.886,
+              "p50": 0.001,
+              "p95": 0.886
+            },
+            "narrate": {
+              "count": 5,
+              "max": 0.278,
+              "p50": 0.179,
+              "p95": 0.278
+            },
+            "turn.decide": {
+              "count": 30,
+              "max": 0.78,
+              "p50": 0.007,
+              "p95": 0.77
+            }
+          },
+          "process_tree_vram_peak_mib": 3065.6,
+          "requests_completed": 45,
+          "requests_expected": 45,
+          "startup": {
+            "catalog_ready_seconds": 2.693,
+            "hello_seconds": 1.518
+          },
+          "status": "failed",
+          "tree_ram_peak_mib": 3312.5
+        }
+      },
+      "report": "artifacts/product/mind_budget_abba_qwen3_2507_b2_20260811.json",
+      "report_sha256": "81764f64ee6f1233e3fb3ff5096a9d44f4702ef8057433c3f243f31fa49c81f6",
+      "status": "failed",
+      "variant": "B"
+    },
+    {
+      "position": 4,
+      "profiles": {
+        "cpu_fallback": {
+          "errors": [],
+          "latency_seconds": {
+            "arguments": {
+              "count": 10,
+              "max": 8.827,
+              "p50": 0.001,
+              "p95": 8.827
+            },
+            "narrate": {
+              "count": 5,
+              "max": 5.157,
+              "p50": 3.022,
+              "p95": 5.157
+            },
+            "turn.decide": {
+              "count": 30,
+              "max": 8.912,
+              "p50": 0.006,
+              "p95": 7.574
+            }
+          },
+          "process_tree_vram_peak_mib": 109.5,
+          "requests_completed": 45,
+          "requests_expected": 45,
+          "startup": {
+            "catalog_ready_seconds": 3.46,
+            "hello_seconds": 1.49
+          },
+          "status": "passed",
+          "tree_ram_peak_mib": 5840.4
+        },
+        "gpu": {
+          "errors": [],
+          "latency_seconds": {
+            "arguments": {
+              "count": 10,
+              "max": 0.822,
+              "p50": 0.001,
+              "p95": 0.822
+            },
+            "narrate": {
+              "count": 5,
+              "max": 0.28,
+              "p50": 0.24,
+              "p95": 0.28
+            },
+            "turn.decide": {
+              "count": 30,
+              "max": 0.974,
+              "p50": 0.004,
+              "p95": 0.692
+            }
+          },
+          "process_tree_vram_peak_mib": 3065.6,
+          "requests_completed": 45,
+          "requests_expected": 45,
+          "startup": {
+            "catalog_ready_seconds": 3.496,
+            "hello_seconds": 1.558
+          },
+          "status": "passed",
+          "tree_ram_peak_mib": 3344.9
+        }
+      },
+      "report": "artifacts/product/mind_budget_abba_qwen3_active_a2_20260811.json",
+      "report_sha256": "2ad3e01588798287c23d4801197fe8de1a2a55dad4eece831c56e6056d0213ea",
+      "status": "passed",
+      "variant": "A"
+    }
+  ],
+  "schema": "baxy.local-model-abba-verdict.v1",
+  "status": "candidate_rejected",
+  "verdict": {
+    "active_manifest_changed": false,
+    "effects_executed": 0,
+    "promotion_eligible": false,
+    "reason": "Candidate failed the sealed contract workload; latency gains cannot compensate for a reproducible runtime failure."
+  }
+}

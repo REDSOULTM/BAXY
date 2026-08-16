@@ -1,0 +1,1688 @@
+{
+  "authority": "opened_once_read_only_recogniser_baseline_not_a_model_or_product_result",
+  "execution": {
+    "decider_invoked": false,
+    "dispatch_invoked": false,
+    "effects_executed": 0,
+    "model_started": false,
+    "opened_v9": false,
+    "product_started": false,
+    "providers_enabled": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "aliases_sha256": "173ee58ce0854b50c5ede012b1e72f15b8634aabb233bfebccf7ca545a077d09",
+    "corpus_sha256": "145723961eab24cc46922f601cd7497986e6b97f3e273cb66c1068098566dad3",
+    "effect_intent_sha256": "200b548949c46730b55174f4b452947f7fd068562115252556d0554693f8038c",
+    "preregistration_sha256": "7bca6b6f34c452c6e64e30979970beae896427b18b896de13554ccd8b3de6ffc",
+    "program_sha256": "e02f35b380155e53b2022b4c33e4d29f7c2dd1ce3403eb9c65ac25d93f61c6a1"
+  },
+  "next_step": "If reach is below one half, retain R228 unchanged and preregister a separate retrieval/model-path candidate. Otherwise reject R228 without editing or reusing it.",
+  "outcomes": [
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-app-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "app.installed"
+      ],
+      "family": "app",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Para el dibujo de mi sobrina, ¿ya está disponible Paint sin buscarlo por internet?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-app-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "app.installed"
+      ],
+      "family": "app",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "For my niece's drawing, is Paint already available without looking online?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-app-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "app.installed"
+      ],
+      "family": "app",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Para el drawing de mi niece, ¿Paint ya está available sin buscar online?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-audio-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "family": "audio",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "La clase suena pero no sé por dónde está saliendo; oriéntame sobre la salida actual."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-audio-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "family": "audio",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "The class is audible but I do not know where it is coming out; identify the current output."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-audio-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "family": "audio",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "La class suena pero no sé dónde está coming out; identify la salida actual."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-backup-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "backup.list"
+      ],
+      "family": "backup",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Antes de probar este cambio arriesgado, ¿qué puntos de regreso tengo guardados?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-backup-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "backup.list"
+      ],
+      "family": "backup",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Before trying this risky change, which saved return points do I have?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-backup-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "backup.list"
+      ],
+      "family": "backup",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Before probar este risky change, ¿qué saved return points tengo?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-bluetooth-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "family": "bluetooth",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Traje unos audífonos y quiero saber qué aparatos inalámbricos hay al alcance."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-bluetooth-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "family": "bluetooth",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I brought headphones and want to know which wireless things are within reach."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-bluetooth-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "family": "bluetooth",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Traje headphones y quiero know qué wireless things están within reach."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-browser-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "family": "browser",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Dejé varias lecturas para después; recuérdame cuáles páginas siguen esperándome."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-browser-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "family": "browser",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I left several readings for later; remind me which pages are still waiting for me."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-browser-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "family": "browser",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Dejé several readings para later; remind me qué pages siguen waiting."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-calendar-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "family": "calendar",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Quieren reunirse el viernes y necesito mirar primero qué ya prometí ese día."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-calendar-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "family": "calendar",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "They want to meet on Friday and I need to see what I already promised that day first."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-calendar-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "family": "calendar",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Quieren meet el Friday y necesito see qué already promised ese day."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-capture-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "family": "capture",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Este error podría desaparecer; guárdame una prueba visual antes de tocar nada."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-capture-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "family": "capture",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "This error may disappear; keep visual evidence before I touch anything."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-capture-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "family": "capture",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Este error may disappear; keep visual evidence before tocar anything."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-clipboard-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "family": "clipboard",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Iba a pegar un dato importante y se me fue de la cabeza qué llevaba conmigo."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-clipboard-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "family": "clipboard",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I was about to paste an important detail and forgot what I was carrying temporarily."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-clipboard-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "family": "clipboard",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Iba a paste an important detail y forgot qué llevaba temporarily."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-email-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "family": "email",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Volví de almorzar y parece que entró algo urgente; revisa la novedad más reciente."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-email-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "family": "email",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I came back from lunch and something urgent seems to have arrived; inspect the newest item."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-email-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "family": "email",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Volví from lunch y something urgent seems llegó; inspect la newest item."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-filesystem-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "family": "filesystem",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Necesito reenviar el presupuesto que guardé hace meses, pero perdí su pista."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-filesystem-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "family": "filesystem",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I need to forward the budget I saved months ago, but I lost its trail."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-filesystem-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "family": "filesystem",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Necesito forward el budget que saved months ago, pero lost su trail."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-game-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "family": "game",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Antes de comprar de nuevo, quiero recordar qué biblioteca de juegos ya me pertenece."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-game-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "family": "game",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Before buying again, I want to recall which game library already belongs to me."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-game-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "family": "game",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Before buying again, quiero recall qué game library already belongs to me."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-input-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "family": "input",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Los signos salen cambiados al escribir la contraseña; dime cómo quedó configurado el teclado."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-input-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "family": "input",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Symbols change while I type the password; tell me how the keyboard ended up configured."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-input-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "family": "input",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Los symbols change al type la password; tell me cómo quedó configured el keyboard."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-media-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "media.status"
+      ],
+      "family": "media",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Escucho ruido desde otra pieza; ¿qué quedó reproduciéndose en esta sesión?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-media-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "media.status"
+      ],
+      "family": "media",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I hear noise from another room; what was left playing in this session?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-media-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "media.status"
+      ],
+      "family": "media",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Escucho noise desde another room; what quedó playing en esta session?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-memory-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "memory.status"
+      ],
+      "family": "memory",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Quiero decidir si te cuento una preferencia personal; primero aclárame si tu recuerdo está activo."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-memory-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "memory.status"
+      ],
+      "family": "memory",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I need to decide whether to tell you a personal preference; first clarify whether your memory is active."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-memory-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "memory.status"
+      ],
+      "family": "memory",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Quiero decide si tell you a personal preference; first clarify si your memory está active."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-message-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "message.recipient.resolve"
+      ],
+      "family": "message",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Voy a escribirle a Daniela Pérez, pero en mis contactos aparecen dos iguales; ayúdame a distinguirla."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-message-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "message.recipient.resolve"
+      ],
+      "family": "message",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I will write Daniela Pérez, but two matching contacts appear; help me distinguish her."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-message-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "message.recipient.resolve"
+      ],
+      "family": "message",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Voy a write Daniela Pérez, but two matching contacts aparecen; help me distinguirla."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-network-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "network.status"
+      ],
+      "family": "network",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "El chat de trabajo dejó de actualizarse; necesito saber si el equipo aún ve la red exterior."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-network-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "network.status"
+      ],
+      "family": "network",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "The work chat stopped updating; I need to know whether the computer still sees the outside network."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-network-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "network.status"
+      ],
+      "family": "network",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "El work chat stopped updating; necesito know si el computer still sees la outside network."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-note-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "note.list"
+      ],
+      "family": "note",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Estoy preparando una charla y quiero rescatar las notas que dejé en el equipo."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-note-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "note.list"
+      ],
+      "family": "note",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I am preparing a talk and want to recover the notes I left on this computer."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-note-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "note.list"
+      ],
+      "family": "note",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Estoy preparing a talk y want to recover las notes que left en este computer."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-notification-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "family": "notification",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "No quiero que se me pase nada vencido: ¿qué avisos ya requieren atención?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-notification-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "family": "notification",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I do not want overdue things to slip past me: which notices already need attention?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-notification-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "family": "notification",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "No want overdue things slip past me: ¿qué notices already need attention?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-ocr-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "family": "ocr",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "El código aparece sólo en esta pantalla y debo anotarlo sin equivocarme."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-ocr-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "family": "ocr",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "The code appears only on this screen and I must write it down accurately."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-ocr-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "family": "ocr",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "El code appears sólo on this screen y debo write it down accurate."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-office-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "family": "office",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Mañana entrego una minuta y necesito partir con un documento Word en blanco."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-office-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "family": "office",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I deliver minutes tomorrow and need to start with a blank Word document."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-office-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "family": "office",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Mañana deliver minutes y necesito start con a blank Word document."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-package-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "package.install.prepare"
+      ],
+      "family": "package",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Me compartieron archivos comprimidos; deja preparado 7zip para que pueda autorizarlo después."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-package-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "package.install.prepare"
+      ],
+      "family": "package",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I was sent compressed files; prepare 7zip so I can authorize it later."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-package-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "package.install.prepare"
+      ],
+      "family": "package",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Me shared compressed files; prepare 7zip so pueda authorize it later."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-peripheral-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "family": "peripheral",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Quiero conectar una cámara, pero antes necesito saber qué hardware está viendo el PC."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-peripheral-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "family": "peripheral",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I want to connect a camera, but first need to know what hardware the PC can see."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-peripheral-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "family": "peripheral",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Quiero connect a camera, but first need know qué hardware el PC can see."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-reminder-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "family": "reminder",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Se me juntaron pendientes y quiero revisar qué dejé marcado para más adelante."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-reminder-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "family": "reminder",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "My pending items piled up and I want to review what I marked for later."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-reminder-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "family": "reminder",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Mis pending items piled up y want review qué marked para later."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-routine-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "routine.list"
+      ],
+      "family": "routine",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Estoy ordenando mi automatización y necesito ver las rutinas que aún conservo."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-routine-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "routine.list"
+      ],
+      "family": "routine",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I am organizing my automation and need to see which routines I still keep."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-routine-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "routine.list"
+      ],
+      "family": "routine",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Estoy organizing my automation y need see qué routines still keep."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-streaming-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "family": "streaming",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Después de cenar quiero poner el episodio 'The Constant' en Netflix."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-streaming-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "family": "streaming",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "After dinner I want to put on the episode 'The Constant' on Netflix."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-streaming-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "family": "streaming",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "After cenar quiero put on el episode 'The Constant' on Netflix."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-system-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "system.status"
+      ],
+      "family": "system",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Todo está más lento que de costumbre; necesito una radiografía general del equipo."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-system-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "system.status"
+      ],
+      "family": "system",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Everything is slower than usual; I need a general health picture of the computer."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-system-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "system.status"
+      ],
+      "family": "system",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Todo is slower than usual; necesito a general health picture del computer."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-task-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "task.list"
+      ],
+      "family": "task",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Antes de salir, quiero saber qué cosas siguen en mi lista de trabajo."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-task-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "task.list"
+      ],
+      "family": "task",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Before I leave, I want to know which things remain on my work list."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-task-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "task.list"
+      ],
+      "family": "task",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Before salir, want know qué things remain en mi work list."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-vision-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "family": "vision",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "No alcanzo a reconocer lo que muestra la ventana abierta; necesito una descripción de la escena."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-vision-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "family": "vision",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I cannot recognize what the open window shows; I need a description of the scene."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-vision-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "family": "vision",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "No puedo recognize what la open window shows; necesito a description de la scene."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-web-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "web.search"
+      ],
+      "family": "web",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Estoy comparando métodos de compostaje y quiero investigar cuál sirve para departamento."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-web-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "web.search"
+      ],
+      "family": "web",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "I am comparing composting methods and want to research which works for an apartment."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-web-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "web.search"
+      ],
+      "family": "web",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Estoy comparing composting methods y want research cuál works para an apartment."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-wifi-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "wifi.status"
+      ],
+      "family": "wifi",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Desde que me moví al balcón, necesito comprobar si sigo conectado por Wi‑Fi."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-wifi-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "wifi.status"
+      ],
+      "family": "wifi",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Since I moved to the balcony, I need to check whether I remain connected by Wi-Fi."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-wifi-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "wifi.status"
+      ],
+      "family": "wifi",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Since me moved al balcony, necesito check si remain connected by Wi-Fi."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-window-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "window.active"
+      ],
+      "family": "window",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Antes de pulsar Enter, necesito saber qué aplicación está recibiendo mis teclas."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-window-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "window.active"
+      ],
+      "family": "window",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Before pressing Enter, I need to know which application is receiving my keystrokes."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "situated-r228-window-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "window.active"
+      ],
+      "family": "window",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_situated_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.situated-cut-b.r228.v1",
+      "text": "Before pulsar Enter, need know qué application is receiving mis keystrokes."
+    }
+  ],
+  "population": {
+    "families": 31,
+    "languages": {
+      "en": 31,
+      "es": 31,
+      "spanglish": 31
+    },
+    "rows": 93
+  },
+  "recogniser": {
+    "available_operations": 158,
+    "by_family": {
+      "app": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "audio": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "backup": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "bluetooth": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "browser": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "calendar": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "capture": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "clipboard": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "email": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "filesystem": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "game": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "input": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "media": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "memory": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "message": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "network": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "note": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "notification": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "ocr": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "office": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "package": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "peripheral": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "reminder": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "routine": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "streaming": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "system": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "task": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "vision": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "web": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "wifi": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "window": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      }
+    },
+    "by_language": {
+      "en": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 31,
+        "unresolved": 31
+      },
+      "es": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 31,
+        "unresolved": 31
+      },
+      "spanglish": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 31,
+        "unresolved": 31
+      }
+    },
+    "independent_of_recogniser_grammar": true,
+    "majority_limit": 0.5,
+    "overall": {
+      "expected": 0,
+      "other": 0,
+      "reach": 0.0,
+      "rows": 93,
+      "unresolved": 93
+    }
+  },
+  "schema": "baxy.situated-cut-b.r228-recogniser-reach-r229.v1"
+}

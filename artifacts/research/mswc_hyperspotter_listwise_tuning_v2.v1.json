@@ -1,0 +1,54 @@
+{
+  "schema": "baxy.mswc-hyperspotter-spanish-tuning.v1",
+  "measured_at_utc": "2026-08-06T06:09:38.299929+00:00",
+  "scope": "train_split_only_disjoint_spanish_text_conditioned_detection_tuning",
+  "sources": {
+    "feature_manifest_sha256": "fb767ad10b590e3d73b809e771aef472d3c909cbc77f66419cd4d9ccf1595b6f",
+    "initial_checkpoint_sha256": "76b77d5c8a04b36fcc109f8670bdc51c81be6dbdc4f6fda8051e800e2a46d017",
+    "adapted_checkpoint_sha256": "c16de73a3a946167ed2edd97c729334a0e90505f8293c06a61b23e40e505eb3b",
+    "hyperspotter_upstream_commit": "08d226c93563f997008ba510421a5ab7d6b65b25"
+  },
+  "contract": {
+    "split_seed": 6501,
+    "tuning_word_classes": 400,
+    "reserved_word_classes": 200,
+    "query_examples_per_word": 6,
+    "hard_negative_candidates_per_query": 40,
+    "hard_negative_selection": "lowest_normalized_text_edit_distance_with_lexical_tiebreak",
+    "positive_candidate_position": 0,
+    "audio_enrollment_required": false,
+    "quality_floor": {
+      "hard_candidate_top1_accuracy_minimum": 0.94,
+      "pair_auc_minimum": 0.99,
+      "equal_error_rate_maximum": 0.05,
+      "zero_false_true_pair_recall_minimum": 0.2
+    }
+  },
+  "metrics": {
+    "query_audio": 2400,
+    "hard_negative_pairs": 96000,
+    "hard_candidate_top1_accuracy": 0.7279166666666667,
+    "macro_word_hard_candidate_top1_accuracy": 0.7279166666666668,
+    "pair_auc": 0.9720155685763888,
+    "equal_error_rate": 0.08707812499999998,
+    "equal_error_threshold": -2.0546875,
+    "accuracy_at_zero_logit": 0.9570426829268293,
+    "positive_recall_at_zero_logit": 0.8345833333333333,
+    "hard_negative_rejection_at_zero_logit": 0.9601041666666666,
+    "mean_true_minus_maximum_hard_negative_margin": 2.6293633766969045,
+    "median_true_minus_maximum_hard_negative_margin": 2.3818359375,
+    "positive_margin_queries": 1747,
+    "zero_false_pair_threshold": 7.621093750000001,
+    "true_pairs_accepted_at_zero_false_pairs": 22,
+    "true_pairs": 2400
+  },
+  "zero_false_true_pair_recall": 0.009166666666666667,
+  "accepted": false,
+  "runtime_seconds": 25.17392919998383,
+  "individual_examples_exported": false,
+  "research_tuning_examples_scored": true,
+  "research_reserved_examples_scored": false,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

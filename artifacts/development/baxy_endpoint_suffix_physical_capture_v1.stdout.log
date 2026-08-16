@@ -1,0 +1,16 @@
+positive:20/96
+positive:40/96
+positive:60/96
+positive:80/96
+positive:96/96
+negative:20/192
+negative:40/192
+negative:60/192
+negative:80/192
+negative:100/192
+negative:120/192
+negative:140/192
+negative:160/192
+negative:180/192
+negative:192/192
+{"negative": 192, "positive": 96}

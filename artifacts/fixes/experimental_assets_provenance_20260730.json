@@ -1,0 +1,73 @@
+﻿{
+    "schema":  "baxy.experimental-assets-provenance.v1",
+    "measured_at_utc":  "2026-07-30",
+    "folder":  "D:\\BAXY\\experimental_assets_20260730",
+    "authorization":  "user batch 2026-07-30",
+    "sources":  {
+                    "llama-b9553-bin-win-cuda-12.4-x64.zip":  "https://github.com/ggml-org/llama.cpp/releases/download/b9553/llama-b9553-bin-win-cuda-12.4-x64.zip",
+                    "cudart-llama-bin-win-cuda-12.4-x64.zip":  "https://github.com/ggml-org/llama.cpp/releases/download/b9553/cudart-llama-bin-win-cuda-12.4-x64.zip",
+                    "llama.cpp-src-b9553.zip":  "https://github.com/ggml-org/llama.cpp/archive/refs/tags/b9553.zip",
+                    "llama.cpp-src-b10182.zip":  "https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10182.zip (converter only)",
+                    "assistant_*":  "https://huggingface.co/google/gemma-4-E2B-it-assistant (Apache 2.0, not gated)",
+                    "gemma-4-E2B-it-assistant-Q8_0.gguf":  "converted locally with b10182 convert_hf_to_gguf.py",
+                    "Ministral-3-3B-Instruct-2512-Q4_K_M.gguf":  "https://huggingface.co/mistralai/Ministral-3-3B-Instruct-2512-GGUF (Apache 2.0)"
+                },
+    "files":  {
+                  "assistant_config.json":  {
+                                                "bytes":  2315,
+                                                "sha256":  "7f42f559a6a69ffaeaf6b61a1ece3a562a2ed5ad00b8d30f16917ba5ab1bcbe9"
+                                            },
+                  "assistant_generation_config.json":  {
+                                                           "bytes":  307,
+                                                           "sha256":  "8e58004dc0e2407b63410b190bb8470efbdcfeb71533f1770e09c20abe193a6f"
+                                                       },
+                  "assistant_model.safetensors":  {
+                                                      "bytes":  157565344,
+                                                      "sha256":  "93682eb1c97639d18f007704dc880bd74cbe530adaf7b1bb561213863fdad2a6"
+                                                  },
+                  "assistant_tokenizer.json":  {
+                                                   "bytes":  32169440,
+                                                   "sha256":  "75a6583c1a418e2bbd79c60d95d28e0f5bf549ad3f2990b5bdb5238c6c2bf70c"
+                                               },
+                  "assistant_tokenizer_config.json":  {
+                                                          "bytes":  822,
+                                                          "sha256":  "089594a3924fcfd4cb1c596a7906fbf476193519e5198f780912eed02b177e42"
+                                                      },
+                  "b9553_target_probe.err":  {
+                                                 "bytes":  4362,
+                                                 "sha256":  "52712143704e0c128b97d513b352226541658a363978c2f2319fff5f603efe0b"
+                                             },
+                  "b9553_target_probe.out":  {
+                                                 "bytes":  0,
+                                                 "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                             },
+                  "cudart-llama-bin-win-cuda-12.4-x64.zip":  {
+                                                                 "bytes":  391443627,
+                                                                 "sha256":  "8c79a9b226de4b3cacfd1f83d24f962d0773be79f1e7b75c6af4ded7e32ae1d6"
+                                                             },
+                  "gemma-4-E2B-it-assistant-Q8_0.gguf":  {
+                                                             "bytes":  97817504,
+                                                             "sha256":  "167ef8bbe60c39b0821cca0a92ec57c0f813397252d91678602bf5b96a85dba9"
+                                                         },
+                  "llama-b9553-bin-win-cuda-12.4-x64.zip":  {
+                                                                "bytes":  261168405,
+                                                                "sha256":  "c4267c20e592d7470b37ca15c6b6f69173a92fe2aeba12f80031b0198013ac3a"
+                                                            },
+                  "llama.cpp-src-b10182.zip":  {
+                                                   "bytes":  38069192,
+                                                   "sha256":  "c007e8beaa50cb17a17180f9ddec1d74d94e590000f9a9ea2942a67c6417fe30"
+                                               },
+                  "llama.cpp-src-b9553.zip":  {
+                                                  "bytes":  35479797,
+                                                  "sha256":  "ca00738677118c2da3a63d64a139a4aed4d5f73e14c09546cb444eee8c7f58ed"
+                                              },
+                  "Ministral-3-3B-Instruct-2512-Q4_K_M.gguf":  {
+                                                                   "bytes":  2147023008,
+                                                                   "sha256":  "9ed150d4367e68df0ac8e1540f6ddc65b42d0ee26378329d1ecbca60f93fc5f8"
+                                                               },
+                  "provenance_partial.json":  {
+                                                  "bytes":  2137,
+                                                  "sha256":  "7d4969de2971f650505c01314a01410eba7761877a8bef074ea5aa020b8bd05d"
+                                              }
+              }
+}

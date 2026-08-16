@@ -1,0 +1,187 @@
+{
+  "schema": "baxy.audit.mind-overnight-soak.v1",
+  "running": false,
+  "startedUtc": "2026-07-27T08:08:05.192648+00:00",
+  "checkpointUtc": "2026-07-27T08:08:56.478892+00:00",
+  "deadline": "2026-07-27T04:08:54.7040669-04:00",
+  "coreVersion": "1.0.8",
+  "catalogCount": 168,
+  "intervalSeconds": 12.0,
+  "calls": [
+    {
+      "index": 1,
+      "atUtc": "2026-07-27T08:08:18.657428+00:00",
+      "segment": 1,
+      "caseIndex": 0,
+      "text": "Hola",
+      "expected": {
+        "text": "Hola",
+        "kind": "conversation"
+      },
+      "decision": {
+        "type": "turn.result",
+        "id": "turn-1",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "El usuario saludó al asistente.",
+        "turn_attempts": 1
+      },
+      "plan": null,
+      "matched": true,
+      "problems": [],
+      "elapsedSeconds": 3.958002600000327
+    },
+    {
+      "index": 2,
+      "atUtc": "2026-07-27T08:08:30.728837+00:00",
+      "segment": 1,
+      "caseIndex": 1,
+      "text": "¿Qué hora es?",
+      "expected": {
+        "text": "¿Qué hora es?",
+        "kind": "action",
+        "operation": "system.time"
+      },
+      "decision": {
+        "type": "turn.result",
+        "id": "turn-2",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "Como modelo de lenguaje, no tengo acceso a la hora en tiempo real.",
+        "turn_attempts": 1
+      },
+      "plan": null,
+      "matched": false,
+      "problems": [
+        "kind:conversation!=expected:action",
+        "operation:None!=expected:system.time"
+      ],
+      "elapsedSeconds": 11.273900400001367
+    },
+    {
+      "index": 3,
+      "atUtc": "2026-07-27T08:08:42.761678+00:00",
+      "segment": 1,
+      "caseIndex": 2,
+      "text": "¿Cómo está el equipo?",
+      "expected": {
+        "text": "¿Cómo está el equipo?",
+        "kind": "action",
+        "operation": "system.status"
+      },
+      "decision": {
+        "type": "turn.result",
+        "id": "turn-3",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "El asistente está informando que el equipo está listo para ayudar.",
+        "turn_attempts": 1
+      },
+      "plan": null,
+      "matched": false,
+      "problems": [
+        "kind:conversation!=expected:action",
+        "operation:None!=expected:system.status"
+      ],
+      "elapsedSeconds": 4.313457700000072
+    }
+  ],
+  "aggregate": {
+    "decisions": 3,
+    "matched": 1,
+    "mismatched": 2,
+    "protocolAnomalies": 0
+  },
+  "segments": [
+    {
+      "index": 1,
+      "pid": 1240,
+      "startedUtc": "2026-07-27T08:08:18.657428+00:00",
+      "hello": {
+        "type": "hello",
+        "protocol": "baxy.mind.v1",
+        "mindVersion": "1.0.0",
+        "models": {
+          "router": "intfloat/multilingual-e5-small",
+          "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+        },
+        "requests": [
+          "catalog.configure",
+          "turn.decide",
+          "plan",
+          "plan.ground",
+          "narrate",
+          "voice.start",
+          "voice.stop",
+          "voice.status",
+          "voice.speak",
+          "voice.cancel",
+          "shutdown"
+        ]
+      },
+      "catalogReady": {
+        "type": "catalog.ready",
+        "id": "8fdf0639-9472-48da-bc1a-24d134ec3e31",
+        "count": 168
+      },
+      "exitCode": 0,
+      "stderrTail": "",
+      "stoppedUtc": "2026-07-27T08:08:56.472885+00:00",
+      "descendantsAfterShutdown": []
+    }
+  ],
+  "resourceSamples": [
+    {
+      "atUtc": "2026-07-27T08:08:22.673617+00:00",
+      "processCount": 6,
+      "processNames": {
+        "python.exe": 4,
+        "llama-server.exe": 1,
+        "conhost.exe": 1
+      },
+      "rssBytes": 2287796224,
+      "privateBytes": 2933858304,
+      "handles": 1049,
+      "threads": 59,
+      "segment": 1
+    },
+    {
+      "atUtc": "2026-07-27T08:08:42.033499+00:00",
+      "processCount": 6,
+      "processNames": {
+        "python.exe": 4,
+        "llama-server.exe": 1,
+        "conhost.exe": 1
+      },
+      "rssBytes": 2893758464,
+      "privateBytes": 3948142592,
+      "handles": 1069,
+      "threads": 56,
+      "segment": 1
+    },
+    {
+      "atUtc": "2026-07-27T08:08:47.113840+00:00",
+      "processCount": 6,
+      "processNames": {
+        "python.exe": 4,
+        "llama-server.exe": 1,
+        "conhost.exe": 1
+      },
+      "rssBytes": 2860646400,
+      "privateBytes": 3912671232,
+      "handles": 1073,
+      "threads": 56,
+      "segment": 1
+    }
+  ],
+  "finalError": null,
+  "latencySeconds": {
+    "minimum": 3.958002600000327,
+    "median": 4.313457700000072,
+    "maximum": 11.273900400001367,
+    "mean": 6.5151202333339215
+  }
+}

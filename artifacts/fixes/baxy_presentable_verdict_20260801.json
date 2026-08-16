@@ -1,0 +1,142 @@
+{
+  "schema": "baxy.presentable-verdict.v1",
+  "measured_at_utc": "2026-08-01T16:55:14.368999+00:00",
+  "verdict": "presentable",
+  "scope": "cleaned frozen real-paraphrase oracle, complete turn.decide sidecar, registered local runtime",
+  "architecture": {
+    "family_shortlist": "attested word+character TF-IDF / class-balanced LinearSVC trained without either frozen holdout",
+    "leaf_selection": "Qwen3-4B native required tool calling over only the selected family",
+    "presentation": "intentOperations preserves the model selection; a vetoed effect becomes an LLM-authored clarification",
+    "authority": "intentOperations is non-authoritative; only effectOperations can reach App planning/execution and every existing grounding, compound, risk, confirmation and Core verification boundary remains"
+  },
+  "offline_classifier": {
+    "artifact": "heldout_family_classifier_lexical_frozen_20260801.json",
+    "primary_clean_right": 118,
+    "primary_clean_cases": 140,
+    "primary_clean_accuracy": 0.8428571428571429,
+    "universal_holdout_right": 18,
+    "universal_holdout_cases": 20,
+    "universal_holdout_accuracy": 0.9,
+    "normalised_training_overlap_primary": 0,
+    "normalised_training_overlap_universal": 0,
+    "manifest_sha256": "4fd9016c98ed2d230019c72fd129f13dd3c98437b49ba0a54a3b5205faf7f935"
+  },
+  "complete_product_oracle": {
+    "artifact": "presentable_product_oracle_qwen3_20260801.json",
+    "clean_cases": 140,
+    "intent_right_family": 109,
+    "intent_wrong_family": 16,
+    "intent_no_operation": 15,
+    "intent_family_accuracy": 0.7785714285714286,
+    "action_answered_as_conversation": 10,
+    "action_answered_as_conversation_share": 0.07142857142857142,
+    "turn_decide_seconds_p50": 1.458999,
+    "turn_decide_seconds_p95": 3.0954,
+    "effect_right_family": 59,
+    "effect_wrong_family_against_historical_label": 12,
+    "effect_withheld": 69,
+    "effects_executed": 0
+  },
+  "physical_plan_execution": {
+    "artifact": "artifacts/planner_recovery/llm_plan_execution_gate.json",
+    "measured_at_utc": "2026-08-01T17:07:10.707249+00:00",
+    "registered_runtime_manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "passed_cases": 8,
+    "environment_blocked_cases": 1,
+    "failed_cases": 0,
+    "verified_steps": 15,
+    "ambiguous_effects": 0,
+    "status": "passed_with_environment_blocks",
+    "environment_block": "calendar.event.list: outlook_profile_not_configured; effectMayHaveOccurred=false",
+    "verified_paths": [
+      "filesystem.write.text",
+      "note.create -> note.read",
+      "office.document.create -> office.document.read",
+      "capture.screenshot -> ocr.read",
+      "game.catalog.list -> game.install.status",
+      "web.search -> browser.navigate",
+      "streaming.navigate -> web.search",
+      "media.play.exact -> media.control"
+    ]
+  },
+  "ocr_runtime": {
+    "primary": "Windows.Media.Ocr",
+    "fallback": "Tesseract 5.4.0 bounded CLI",
+    "physical_authority": "tesseract_cli_ocr",
+    "eng_traineddata_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+    "spa_traineddata_sha256": "6f2e04d02774a18f01bed44b1111f2cd7f3ba7ac9dc4373cd3f898a40ea6b464"
+  },
+  "physical_abba": {
+    "artifact": "presentable_policy_abba_20260801.json",
+    "order": ["control", "candidate", "candidate", "control"],
+    "families_per_session": 26,
+    "control": {
+      "right_family": 23,
+      "turns": 52,
+      "family_accuracy": 0.4423076923076923,
+      "conversation_share": 0.40384615384615385,
+      "seconds_p50": 2.610504
+    },
+    "candidate": {
+      "right_family": 38,
+      "turns": 52,
+      "family_accuracy": 0.7307692307692307,
+      "conversation_share": 0.0,
+      "seconds_p50": 1.353431
+    },
+    "structural_activation_verified_in_hello": true,
+    "effects_executed": 0
+  },
+  "targets": {
+    "family_accuracy_at_least_0_70": true,
+    "action_answered_as_conversation_at_most_0_10": true,
+    "turn_decide_p50_at_most_1_5": true,
+    "turn_decide_p95_at_most_5": true,
+    "visible_fixed_text_count_zero": true,
+    "unasked_effects_executed_zero": true
+  },
+  "oracle_cleaning": {
+    "original_cases": 147,
+    "excluded_case_ids": [
+      "audio-00",
+      "audio-01",
+      "audio-04",
+      "backup-02",
+      "capture-01",
+      "media-01",
+      "note-03"
+    ],
+    "reason": "Portuguese/French/Italian text and one stable-knowledge question are outside the stated es/en action oracle"
+  },
+  "authority_audit": {
+    "historical_label_disagreements": 12,
+    "executed": 0,
+    "interpretation": "family-level historical disagreements remain non-authoritative observations; the oracle sends only turn.decide and a reviewed exact-operation oracle is still required before broadening long-tail physical authority",
+    "fail_closed_behavior": "69 of 140 selections received no effect authority; the product oracle executed no effects"
+  },
+  "registered_runtime": {
+    "gguf": "D:\\BAXYRuntime\\assets\\models\\Qwen3-4B-Q4_K_M.gguf",
+    "gguf_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "manifest_registered_atomically": true,
+    "bootstrap_check_only": "passed",
+    "registered_sidecar_smoke": "hello Qwen3 + family classifier; full catalog ready; vetoed request returned clarify with empty effectOperations"
+  },
+  "rollback": {
+    "manifest_backup": "%LOCALAPPDATA%\\BAXYRuntime\\mind-runtime-v1.pre-qwen-20260801.json",
+    "model_move": "move D:\\BAXYRuntime\\assets\\models\\Qwen3-4B-Q4_K_M.gguf back to D:\\BAXY\\experimental_assets_20260801 only after restoring the previous manifest",
+    "source": "revert R23 source and asset-descriptor changes; family assets are data-only and may then be removed"
+  },
+  "canonical_validation": {
+    "command": "scripts\\test_source_quality.ps1 -Mode Full",
+    "stages": 11,
+    "release_warnings": 0,
+    "release_errors": 0,
+    "dotnet_passed": 2284,
+    "dotnet_environmental_skips": 18,
+    "python_passed": 2152,
+    "python_sanctioned_skips": 2,
+    "python_subtests_passed": 382,
+    "failures": 0
+  }
+}

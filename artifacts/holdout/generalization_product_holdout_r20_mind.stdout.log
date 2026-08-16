@@ -1,0 +1,30 @@
+{
+  "cases": 688,
+  "exact": 265,
+  "failed": 423,
+  "exact_turn_accuracy": 0.3851744186046512,
+  "action_retrieval_accuracy": 0.5857142857142857,
+  "action_raw_decision_accuracy": 0.4928571428571429,
+  "intent_accuracy": 0.4375,
+  "effect_accuracy": 0.4113372093023256,
+  "kind_accuracy": 0.43023255813953487,
+  "unsafe_effects": 37,
+  "failure_causes": {
+    "clarification_intent": 12,
+    "conversation_intent": 2,
+    "conversation_presentation": 3,
+    "decision": 138,
+    "none": 265,
+    "recovery": 34,
+    "retrieval": 198,
+    "unsafe_clarification_effect": 6,
+    "unsafe_conversation_effect": 1,
+    "veto:action_grounding": 2,
+    "veto:compound_conservation": 27
+  },
+  "one_sided_95_binomial_lower_if_zero_failures": null,
+  "turn_decide_seconds_p50": 1.5630155000000001,
+  "turn_decide_seconds_p95": 5.8306,
+  "turn_decide_seconds_max": 10.84899,
+  "total_seconds": 1282.209
+}

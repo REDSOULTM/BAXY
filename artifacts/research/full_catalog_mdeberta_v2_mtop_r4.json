@@ -1,0 +1,3356 @@
+{
+  "schema": "baxy.full-catalog-mdeberta-mtop-r4-probe.v1",
+  "scope": "opened_development_conditional_shortlist_no_promotion",
+  "source": {
+    "corpus_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "groups_per_stratum": 8,
+    "manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "selected_identity_sha256": "031d6173f29e1055b71fbd0da6e3fe13395fbc275c708f059a34ae788cb07f2d",
+    "selected_missions": 112,
+    "selected_rows": 198,
+    "test_content_read": false
+  },
+  "checkpoint": "D:\\BAXYRuntime\\experiments\\full-catalog-operation-classifier-v2-mdeberta",
+  "device": "cuda",
+  "cases": 185,
+  "excluded_no_effect_or_unavailable": 13,
+  "top_1_accuracy": 0.772973,
+  "top_3_accuracy": 0.864865,
+  "latency_seconds_per_case": {
+    "p50": 0.003802,
+    "p95": 0.009828
+  },
+  "rows": [
+    {
+      "source_id": "mtop-official-v2:en:3132353635313636",
+      "text": "can you play my country playlist",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "browser.navigate",
+        "routine.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.504972
+    },
+    {
+      "source_id": "mtop-official-v2:en:3132353731363536",
+      "text": "Change the artist, please",
+      "disposition": "candidate",
+      "expected": [
+        "media.control"
+      ],
+      "top_5": [
+        "media.control",
+        "browser.navigate.named",
+        "browser.control",
+        "clipboard.copy",
+        "filesystem.path.ensure.absent"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.834015
+    },
+    {
+      "source_id": "mtop-official-v2:es:3132353731363536",
+      "text": "Cambia el artista",
+      "disposition": "candidate",
+      "expected": [
+        "media.control"
+      ],
+      "top_5": [
+        "media.control",
+        "browser.control",
+        "filesystem.path.ensure.absent",
+        "clipboard.copy",
+        "browser.navigate.named"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.21876
+    },
+    {
+      "source_id": "mtop-official-v2:en:3132363230393230",
+      "text": "What was the weather like on this day last year",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.read",
+        "note.create",
+        "system.application.crash.diagnose",
+        "streaming.play.named"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.6446
+    },
+    {
+      "source_id": "mtop-official-v2:en:3133343439353837",
+      "text": "what spices do i use on chicken",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.read",
+        "package.install.prepare",
+        "system.application.crash.diagnose",
+        "note.create"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.573732
+    },
+    {
+      "source_id": "mtop-official-v2:en:3135323934363737",
+      "text": "Who is leading in the Cleveland Mayoral Election",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "system.application.crash.diagnose",
+        "note.read",
+        "email.latest.read",
+        "web.search",
+        "note.create"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.135647
+    },
+    {
+      "source_id": "mtop-official-v2:es:3135323934363737",
+      "text": "Quién lleva la delantera en la Votación de Alcaldía de Cleveland",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "system.application.crash.diagnose",
+        "email.latest.read",
+        "package.install.prepare",
+        "note.create",
+        "note.read"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.306812
+    },
+    {
+      "source_id": "mtop-official-v2:en:3135333030343036",
+      "text": "set alarm for snack time",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.192226
+    },
+    {
+      "source_id": "mtop-official-v2:es:3135333030343036",
+      "text": "pon la alarma para la hora de la merienda",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.349
+    },
+    {
+      "source_id": "mtop-official-v2:en:3135333031303832",
+      "text": "set an alarm 15 minutes before my meeting at 2 pm",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "calendar.event.create",
+        "office.document.read"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.496327
+    },
+    {
+      "source_id": "mtop-official-v2:en:3136343034383432",
+      "text": "I need to read the news",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.read",
+        "note.create",
+        "streaming.play.named",
+        "package.install.prepare"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.784782
+    },
+    {
+      "source_id": "mtop-official-v2:es:3136343034383432",
+      "text": "Necesito leer las noticias.",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.read",
+        "note.create",
+        "streaming.play.named",
+        "note.search"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 1.120011
+    },
+    {
+      "source_id": "mtop-official-v2:en:3138383931353330",
+      "text": "can you fry fish with canola oil",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.read",
+        "package.install.prepare",
+        "streaming.play.named",
+        "system.application.crash.diagnose"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.290309
+    },
+    {
+      "source_id": "mtop-official-v2:en:3139393736323530",
+      "text": "What's happening on New Year's Eve",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "office.document.create",
+        "backup.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.933103
+    },
+    {
+      "source_id": "mtop-official-v2:es:3139393736323530",
+      "text": "Qué sucede en Año Nuevo",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "office.document.create",
+        "note.list",
+        "reminder.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.909019
+    },
+    {
+      "source_id": "mtop-official-v2:en:3139393736363532",
+      "text": "Please tell me there is something to do this weekend",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "task.list",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.454465
+    },
+    {
+      "source_id": "mtop-official-v2:es:3139393736363532",
+      "text": "Por favor, dime que hay algo que hacer este fin de semana",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "backup.list",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.631667
+    },
+    {
+      "source_id": "mtop-official-v2:en:3139393739333636",
+      "text": "What is going on tonight",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "window.maximize",
+        "task.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.086143
+    },
+    {
+      "source_id": "mtop-official-v2:es:3139393739333636",
+      "text": "Qué hay hoy por la noche",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "office.document.create",
+        "task.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.783756
+    },
+    {
+      "source_id": "mtop-official-v2:en:3139393832313134",
+      "text": "Anything cool happening this weekend",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "office.document.create",
+        "backup.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.887744
+    },
+    {
+      "source_id": "mtop-official-v2:es:3139393832313134",
+      "text": "Cualquier cosa interesante que suceda este fin de semana",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "office.document.create",
+        "backup.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.981771
+    },
+    {
+      "source_id": "mtop-official-v2:en:3139393833363831",
+      "text": "places to go after midnight",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "office.document.create",
+        "task.list",
+        "filesystem.known.duplicates",
+        "note.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.070031
+    },
+    {
+      "source_id": "mtop-official-v2:es:3139393833363831",
+      "text": "Lugares para ir después de la medianoche",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "note.list",
+        "office.document.create",
+        "task.list",
+        "filesystem.known.duplicates"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.087261
+    },
+    {
+      "source_id": "mtop-official-v2:en:3139393835363939",
+      "text": "Anything I should do after work today",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "window.maximize",
+        "task.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.225275
+    },
+    {
+      "source_id": "mtop-official-v2:es:3139393835363939",
+      "text": "¿Tengo algo que hacer hoy después del trabajo?",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "task.list",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.935391
+    },
+    {
+      "source_id": "mtop-official-v2:en:3139393837323835",
+      "text": "Events this evening",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "backup.known.verify.latest",
+        "backup.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.03833
+    },
+    {
+      "source_id": "mtop-official-v2:es:3139393837323835",
+      "text": "Eventos de esta noche",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "window.maximize",
+        "vision.describe"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.303362
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231313436383932",
+      "text": "Set a reminder to check the chicken cooking in the oven for 20 minutes from now.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.162713
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231313437323638",
+      "text": "Set a reminder to collect all family photos for Reunion book April 30th.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.856182
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231313437353832",
+      "text": "Set up a reminder to chat with Walmart on Mondy.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.937358
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231313437353832",
+      "text": "Programa un recordatorio para chatear con Walmart el lunes.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.593233
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231313532373435",
+      "text": "Delete reminder to pick-up Evey",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "system.recyclebin.empty"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.262322
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231313532373435",
+      "text": "Elimina el recordatorio para ir a buscar a Evey.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.87466
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231313535313831",
+      "text": "set up a reminder to book my dining reservations at 7am tomorrow morning",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.606423
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323233383637",
+      "text": "Reminders for birthdays.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.resolve.exact"
+      ],
+      "top_5": [
+        "reminder.create",
+        "reminder.restore",
+        "package.install.commit",
+        "task.create",
+        "email.latest.reply"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.058497
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323233383637",
+      "text": "Recordatorios de cumpleaños.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.resolve.exact"
+      ],
+      "top_5": [
+        "reminder.restore",
+        "reminder.create",
+        "notification.cancel.latest",
+        "package.install.commit",
+        "notification.list.due"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 1.054095
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323235313134",
+      "text": "Set a reminder for Jose's birthday party tomorrow",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.641397
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323235313134",
+      "text": "Programa un recordatorio para la fiesta de cumpleaños de Jose mañana.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.556154
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323235323630",
+      "text": "Set a reminder to check the facebook event for the benefit concert location Sunday morning",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "peripheral.print"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.384467
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323235323630",
+      "text": "Crea un recordatorio para que mire en el evento de Facebook la ubicación del concierto benéfico del domingo por la mañana",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "peripheral.print"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.578938
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323235383134",
+      "text": "please delete alert birthday party reminder",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.401617
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323235383134",
+      "text": "Eliminar alerta de recordatorio de fiesta de cumpleaños",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "reminder.delete",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.342039
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323236363936",
+      "text": "set a reminder of when the library book is due",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "peripheral.print",
+        "email.latest.reply"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.078256
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323236363936",
+      "text": "Establece un recordatorio para el plazo límite de entrega del libro de la biblioteca(",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.812856
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323237353830",
+      "text": "Set a reminder to set an alarm according to my schedule",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "notification.schedule",
+        "task.create",
+        "routine.phrase.create",
+        "package.install.commit"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.535131
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323237353830",
+      "text": "Crea un recordatorio para programar una alarma según mi cronograma.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "notification.schedule",
+        "task.create",
+        "routine.phrase.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.835741
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323237383137",
+      "text": "Delete reminders to send out flyers to parents concerning the upcoming fall fundraiser at school.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.771784
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323237383137",
+      "text": "Elimina los recordatorios para enviar folletos a los padres sobre la próxima colecta de otoño en la escuela.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.720423
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323239383538",
+      "text": "Reminder to take grandma shopping needs to be cancelled.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.restore",
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "filesystem.create.directory"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.19541
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323239383538",
+      "text": "Recordatorio para llevar de compras a la abuela necesita cancelarse.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "reminder.restore",
+        "notification.cancel.at",
+        "notification.cancel.latest",
+        "audio.volume.adjust"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.185012
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323330343034",
+      "text": "set a reminder for tomorrow at 5 pm",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "reminder.create",
+        "task.create",
+        "routine.phrase.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 1.378391
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323330343034",
+      "text": "Crea un recordatorio para mañana a las 5 PM",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 2.531183
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323331353235",
+      "text": "Remove a reminder please.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "reminder.delete",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.145521
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323331353235",
+      "text": "Quita un recordatorio, por favor.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "reminder.delete",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.507767
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323331363732",
+      "text": "Make a reminder.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.751816
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323331363732",
+      "text": "Crea un recordatorio.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.509172
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323332373333",
+      "text": "Drinks after work has been cancelled so this reminder needs to be deleted.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "reminder.delete",
+        "notification.cancel.at",
+        "reminder.restore",
+        "routine.delete"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.146524
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323332373333",
+      "text": "Los tragos después del trabajo se cancelaron así que este recordatorio se tiene que eliminar.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.164246
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323334333230",
+      "text": "Find the reminder about the bowling fundraiser and remove it",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "reminder.delete",
+        "reminder.restore",
+        "notification.cancel.at",
+        "system.recyclebin.empty"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.07143
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323334333230",
+      "text": "Encuentra el recordatorio sobre la colecta para el juego de bolos y elimínalo.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.resolve.exact",
+        "reminder.restore",
+        "clipboard.read.text",
+        "system.recyclebin.empty",
+        "notification.cancel.latest"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.539654
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323335303038",
+      "text": "Can I see the reminder for Haley's birthday party again?",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.resolve.exact"
+      ],
+      "top_5": [
+        "reminder.restore",
+        "system.recyclebin.empty",
+        "notification.cancel.latest",
+        "reminder.delete",
+        "package.install.commit"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 1.509057
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323335303038",
+      "text": "¿Puedo ver otra vez el recordatorio para la fiesta de cumpleaños de Haley?",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.resolve.exact"
+      ],
+      "top_5": [
+        "reminder.restore",
+        "system.recyclebin.empty",
+        "reminder.delete",
+        "notification.cancel.latest",
+        "reminder.resolve.exact"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 1.39658
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323335343239",
+      "text": "No necesito comida para perro, cancela el recordatorio.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "system.recyclebin.empty"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.211493
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323336303131",
+      "text": "set the reminder for the beginning of school",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "peripheral.print"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.002168
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323336303131",
+      "text": "Configura el recordatorio para el comienzo de la escuela.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.352349
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323336313031",
+      "text": "delete reminder for thawing dinner",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.989489
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323336313031",
+      "text": "Borra recordatorio para descongelar la cena",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.delete"
+      ],
+      "top_5": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "routine.delete",
+        "reminder.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.249688
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323337333139",
+      "text": "set a reminder to watch the giants game at 5pm",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.632502
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323337333139",
+      "text": "Programa un recordatorio para ver el partido de los Giants a las 17:00.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.509341
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323337343333",
+      "text": "Set a reminder to turn the oven off",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "office.document.create",
+        "notification.schedule"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.388343
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323337343333",
+      "text": "Programa un recordatorio para apagar el horno.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "package.install.commit",
+        "task.create",
+        "backup.known.list",
+        "notification.schedule"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.887209
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323337383431",
+      "text": "create a reminder on the 30th at 3pm to mail rent",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "reminder.create",
+        "task.create",
+        "routine.phrase.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.581813
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323337383431",
+      "text": "Crea un recordatorio el día 30 a las 15:00 para enviar por correo la renta.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "reminder.create",
+        "task.create",
+        "routine.phrase.create",
+        "package.install.commit"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 1.322267
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323338323130",
+      "text": "Add a reminder to pick up dry cleaning on Friday",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.291412
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323338323130",
+      "text": "Agrega un recordatorio para recoger la ropa de la tintorería el viernes.",
+      "disposition": "candidate",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "package.install.commit",
+        "notification.schedule",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.237629
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323430343738",
+      "text": "Set bed time reminders.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "notification.schedule",
+        "task.create",
+        "routine.phrase.create",
+        "office.document.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.669933
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323430343738",
+      "text": "Pon recordatorios para la hora de dormir.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "reminder.create"
+      ],
+      "top_5": [
+        "reminder.create",
+        "task.create",
+        "notification.schedule",
+        "package.install.commit",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.220802
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323736333038",
+      "text": "Message lets meet at the restaurant then go the the movie.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "network.ping",
+        "message.send",
+        "calendar.event.create",
+        "peripheral.print",
+        "clipboard.write.text"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 1.337583
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323736333038",
+      "text": "Envía este mensaje: quedamos en el restaurante y luego vamos al cine.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.543699
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323738343339",
+      "text": "Message Riley to say I am going to be late",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.226172
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323738343339",
+      "text": "Envía un mensaje a Riley diciendo \"Llegaré tarde\".",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "note.update"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.055444
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323739343937",
+      "text": "Ask Bill if the rec center is open early tomorrow",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "filesystem.trash.commit"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.088538
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323831323533",
+      "text": "Message Robert and tell him I want the movie back I lent him",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.658972
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323831323533",
+      "text": "Envía mensaje a Roberto para pedirle la película que le presté,",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.76355
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323832333037",
+      "text": "Send Brad a message that we will be at the Comfort Inn by 6PM.",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "network.ping",
+        "message.send",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "clipboard.paste"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.748984
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323832333037",
+      "text": "Envía un mensaje a Brad para decirle que estaremos en el Comfort Inn a las 18:00.",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "network.ping",
+        "message.send",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "clipboard.paste"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.131747
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323835333232",
+      "text": "Ask Ryan if he wants to go to an FSU football game this fall.",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "network.ping",
+        "message.send",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "filesystem.trash.commit"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.233752
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323835333232",
+      "text": "Pregúntale a Ryan si quiere ir a un partido de fútbol de la FSU este otoño.",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "clipboard.paste"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.218578
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323835353835",
+      "text": "Warn Sarah I'm running late for Kevin's surprise party.",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "network.ping",
+        "message.send",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "filesystem.trash.commit"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.556712
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323835353835",
+      "text": "Avisar a Sarah que llegaré tarde a la fiesta sorpresa de Kevin.",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "network.ping",
+        "message.send",
+        "calendar.event.create",
+        "clipboard.write.text",
+        "filesystem.trash.commit"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.886166
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231323836303332",
+      "text": "send a message over to accounting to process the invoice asap",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "network.ping",
+        "message.send",
+        "clipboard.write.text",
+        "peripheral.print",
+        "clipboard.paste"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.162296
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231323836303332",
+      "text": "envía un mensaje a contabilidad para procesar la factura lo antes posible",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "network.ping",
+        "message.send",
+        "clipboard.write.text",
+        "peripheral.print",
+        "calendar.event.create"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": true,
+      "margin": 0.656067
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231333934383739",
+      "text": "Ask Lee what time she needs me at the school on Wednesday.",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "filesystem.trash.commit"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.232879
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231333934383739",
+      "text": "Pregúntale a Lee a qué hora necesita que esté en el colegio el miércoles.",
+      "disposition": "candidate",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "audio.volume"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.444024
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353232303237",
+      "text": "Any events going on this weekend",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "backup.list",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.227748
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231353232303237",
+      "text": "Algún evento que tenga lugar este fin de semana",
+      "disposition": "candidate",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "note.list",
+        "notification.diagnose",
+        "task.create",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.682972
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353232323839",
+      "text": "play the album My Dear Melancholy,",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "routine.list",
+        "vision.describe"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.46949
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231353232323839",
+      "text": "reproduce el álbum My Dear Melancholy,",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "routine.list",
+        "system.process.terminate.named",
+        "vision.describe"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.212083
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353438393331",
+      "text": "set for me an alarm",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "backup.known.list",
+        "task.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.892271
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231353438393331",
+      "text": "Programa una alarma.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.241418
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353439303936",
+      "text": "Delete my alarm",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.list.due",
+        "notification.cancel.at",
+        "reminder.delete",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.935991
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231353439303936",
+      "text": "Elimina mi alarma.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "reminder.delete",
+        "notification.list.due",
+        "notification.cancel.at",
+        "routine.delete"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.977617
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353439353537",
+      "text": "Cancel my current alarm",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.list.due",
+        "notification.cancel.at",
+        "reminder.delete",
+        "routine.delete"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.055699
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353533313534",
+      "text": "Record alarms for 3 and 4 in the afternoon.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "calendar.event.create",
+        "task.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.165488
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231353533313534",
+      "text": "Programa alarmas para las 15:00 y las 16:00.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "calendar.event.create",
+        "task.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.242387
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353533353835",
+      "text": "Create repeating alarms for Thursday and Friday at 3pm and 4pm",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "calendar.event.create",
+        "office.document.read"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.136073
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231353533353835",
+      "text": "Crea alarmas recurrentes para el jueves y el viernes a las 15:00 y 16:00.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "office.document.read",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.259057
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353535343436",
+      "text": "I heard it, now quit that annoying alarm.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "app.close",
+        "system.power",
+        "wifi.ensure.connected",
+        "window.minimize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.337835
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231353535343436",
+      "text": "Ya la oí, ahora quita esa molesta alarma.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "app.close",
+        "notification.list.due",
+        "network.dns.status"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.607328
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231353938383134",
+      "text": "Can the alarm that I have set, please be be turned of",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "notification.list.due",
+        "window.minimize",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.444113
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363030323639",
+      "text": "Set an alarm for the wake up",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "backup.known.list",
+        "office.document.read"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.159861
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363030323639",
+      "text": "Programar una alarma para despertarme",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "backup.known.list",
+        "office.document.read"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.287063
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363032323232",
+      "text": "Cancel alarm now",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "notification.list.due",
+        "reminder.delete",
+        "routine.delete"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.714357
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363032323232",
+      "text": "Cancela la alarma ya",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.list.due",
+        "notification.cancel.at",
+        "reminder.delete",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.766104
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363038353835",
+      "text": "make an alarm for 0760h",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "office.document.read",
+        "task.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.211502
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363038353835",
+      "text": "Programa una alarma para las 0760hs.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "office.document.read",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.437063
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363039353831",
+      "text": "Send a message that says What time are we leaving today",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.48289
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363039353831",
+      "text": "Envía un mensaje que diga \"¿a qué hora nos vamos hoy?\"",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "note.update"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.529174
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363333363135",
+      "text": "Make alarm called work",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "task.restore",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.509418
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363333363135",
+      "text": "Crea una alarma llamada trabajo",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.13987
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363334313532",
+      "text": "Create a work break alarm",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "task.create",
+        "routine.phrase.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.06457
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363334313532",
+      "text": "Crea una alarma de descanso en el trabajo",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "task.create",
+        "reminder.create",
+        "routine.phrase.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.717289
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363336353433",
+      "text": "Turn of alarm please",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "audio.microphone.mute",
+        "app.close",
+        "system.power",
+        "window.minimize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.222655
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363336363637",
+      "text": "Silence my alarm",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "audio.microphone.mute",
+        "app.close",
+        "system.power",
+        "input.select.all"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.601986
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363336363637",
+      "text": "Silencia mi alarma",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "app.close",
+        "audio.microphone.mute",
+        "system.power",
+        "window.minimize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.055459
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363336363935",
+      "text": "Stop alarm please",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "system.power",
+        "audio.microphone.mute",
+        "app.close",
+        "window.minimize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.473312
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363336363935",
+      "text": "Para la alarma, por favor",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "window.maximize",
+        "notification.list.due",
+        "reminder.create",
+        "notification.schedule"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.816348
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363336373731",
+      "text": "Deactivate alarm",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "window.minimize",
+        "audio.microphone.mute",
+        "app.close",
+        "notification.cancel.latest"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.93218
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363336383839",
+      "text": "Yeah, yeah I hear you",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "audio.microphone.mute",
+        "audio.mute",
+        "app.close",
+        "system.recyclebin.empty",
+        "window.minimize"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.299171
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363336383839",
+      "text": "Sí, sí, te oigo",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "audio.mute",
+        "audio.microphone.mute",
+        "app.close",
+        "window.minimize",
+        "system.power"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.467935
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231363337303139",
+      "text": "Make an alarm",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "office.document.read",
+        "reminder.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.886363
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231363337303139",
+      "text": "Pon una alarma.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.210888
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231373236373334",
+      "text": "send it to Zimlich Barney",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "filesystem.trash.commit"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.717917
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231373236373334",
+      "text": "Envíalo a Zimlich Barney.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "calendar.event.create",
+        "filesystem.trash.commit"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.037584
+    },
+    {
+      "source_id": "mtop-official-v2:en:3231393233313132",
+      "text": "have an alarm go off for me",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "vision.describe",
+        "task.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.929257
+    },
+    {
+      "source_id": "mtop-official-v2:es:3231393233313132",
+      "text": "activa una alarma para mí",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.666067
+    },
+    {
+      "source_id": "mtop-official-v2:en:3232323232333534",
+      "text": "show me more events please",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "backup.known.verify.latest",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.937052
+    },
+    {
+      "source_id": "mtop-official-v2:es:3232323232333534",
+      "text": "mostrarme más eventos por favor",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "top_5": [
+        "calendar.event.list",
+        "notification.diagnose",
+        "note.list",
+        "window.maximize",
+        "vision.describe"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.140119
+    },
+    {
+      "source_id": "mtop-official-v2:en:3232323830393133",
+      "text": "Play Tesla Live",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "vision.describe",
+        "browser.navigate"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.229531
+    },
+    {
+      "source_id": "mtop-official-v2:es:3232323830393133",
+      "text": "Pon Tesla en vivo",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "vision.describe",
+        "browser.navigate"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.159063
+    },
+    {
+      "source_id": "mtop-official-v2:en:3232353832383130",
+      "text": "can you send Laura and Lola",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.512356
+    },
+    {
+      "source_id": "mtop-official-v2:es:3232353832383130",
+      "text": "¿Puedes enviar a Laura y Lola?",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.708524
+    },
+    {
+      "source_id": "mtop-official-v2:en:3232353833353131",
+      "text": "send Josh and Harold message",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.805493
+    },
+    {
+      "source_id": "mtop-official-v2:es:3232353833353131",
+      "text": "Envía a Josh y Harold un mensaje.",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.898948
+    },
+    {
+      "source_id": "mtop-official-v2:en:3232353833383434",
+      "text": "can you please send message to Garrett and Jennifer",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "message.send"
+      ],
+      "top_5": [
+        "message.send",
+        "network.ping",
+        "clipboard.write.text",
+        "clipboard.paste",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.153767
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343635373334",
+      "text": "Can you tell me the name of this song?",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "system.time",
+        "browser.tabs.list",
+        "streaming.navigate"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.445417
+    },
+    {
+      "source_id": "mtop-official-v2:es:39343635373334",
+      "text": "¿Puedes decirme el nombre de esta canción?",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "system.time",
+        "streaming.navigate",
+        "media.play.youtube"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.441968
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343732383932",
+      "text": "Tell me the name of this artist.",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "system.time",
+        "window.application.status",
+        "filesystem.search"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.938943
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343734333932",
+      "text": "set my alarm for 5 minutes from now",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.454307
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343737333034",
+      "text": "Give me a news update on fake eclipse glasses.",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.read",
+        "note.create",
+        "streaming.play.named",
+        "package.install.prepare"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.41033
+    },
+    {
+      "source_id": "mtop-official-v2:es:39343737333034",
+      "text": "Dime noticias sobre las gafas de sol falsas para ver el eclipse.",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.read",
+        "system.application.crash.diagnose",
+        "package.install.prepare",
+        "note.create"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.381149
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343738333632",
+      "text": "CANCEL ALARM PLEASE.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.list.due",
+        "notification.dismiss",
+        "window.minimize",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.920429
+    },
+    {
+      "source_id": "mtop-official-v2:es:39343738333632",
+      "text": "CANCELA LA ALARMA.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "audio.microphone.mute",
+        "app.close",
+        "window.minimize",
+        "system.power"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 1.234755
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343739393837",
+      "text": "Please give me an update on the headlines.",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.create",
+        "note.read",
+        "note.search",
+        "streaming.play.named"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 1.13694
+    },
+    {
+      "source_id": "mtop-official-v2:es:39343739393837",
+      "text": "Por favor, muéstrame una actualización de los titulares.",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "email.latest.read",
+        "note.create",
+        "note.read",
+        "note.search",
+        "streaming.play.named"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 1.145484
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343837363034",
+      "text": "set alarm for 7 hours",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "task.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.419847
+    },
+    {
+      "source_id": "mtop-official-v2:es:39343837363034",
+      "text": "pon la alarma de aquí a 7 horas",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "reminder.create",
+        "backup.known.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.274982
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343931303336",
+      "text": "Play some rap music from the 90's.",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "routine.list",
+        "browser.navigate",
+        "system.process.terminate.named"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.44716
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343932323338",
+      "text": "Set alarm to give Mom her medications",
+      "disposition": "candidate_missing_information",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "task.create",
+        "reminder.create",
+        "routine.phrase.create",
+        "package.install.commit"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.043583
+    },
+    {
+      "source_id": "mtop-official-v2:en:39343936303234",
+      "text": "Please play Adele's most recent hit.",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "vision.describe",
+        "routine.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.830159
+    },
+    {
+      "source_id": "mtop-official-v2:es:39343936303234",
+      "text": "Por favor, pon la canción más reciente de Adele.",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "vision.describe",
+        "routine.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.911232
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353031323338",
+      "text": "set an alarm for Monday at 6 am",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "office.document.read",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.382115
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353031323338",
+      "text": "Pon una alarma para el lunes a las 6 a.m.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "office.document.read",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.404541
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353036333537",
+      "text": "What music is playing",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "input.keyboard.status",
+        "streaming.navigate",
+        "system.time"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.533989
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353036333537",
+      "text": "¿Qué música está sonando?",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "system.time",
+        "input.keyboard.status",
+        "streaming.navigate"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.53892
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353037313539",
+      "text": "set alarm for 7 tomorrow",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "calendar.event.create",
+        "task.restore"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.226326
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353037313539",
+      "text": "pon una alarma para mañana a las 7",
+      "disposition": "candidate",
+      "expected": [
+        "notification.schedule"
+      ],
+      "top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "task.create",
+        "office.document.read",
+        "calendar.event.create"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.404959
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353137313235",
+      "text": "Is OJ Simpson still in jail?",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "streaming.play.named",
+        "app.installed",
+        "note.read",
+        "game.installed.named",
+        "system.application.crash.diagnose"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.00432
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353137313235",
+      "text": "¿OJ Simpson está en la cárcel todavía?",
+      "disposition": "candidate",
+      "expected": [
+        "web.search"
+      ],
+      "top_5": [
+        "system.application.crash.diagnose",
+        "streaming.play.named",
+        "note.read",
+        "note.create",
+        "email.latest.read"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 0.28343
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353230313632",
+      "text": "Who is the producer of this album?",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "system.time",
+        "game.install.status",
+        "media.play.youtube"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.636354
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353230333237",
+      "text": "play dance music from the 80's",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "routine.list",
+        "browser.navigate",
+        "system.process.terminate.named"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.513924
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353230333237",
+      "text": "Pon música dance de los 80's",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "routine.list",
+        "browser.navigate"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.734808
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353232323538",
+      "text": "What album was this song on?",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "system.time",
+        "window.application.status",
+        "game.install.status"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.613983
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353232323538",
+      "text": "¿En qué álbum estaba esta canción?",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "system.time",
+        "game.install.status",
+        "media.play.youtube"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.588086
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353435313433",
+      "text": "Who is the current artist?",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "system.time",
+        "streaming.navigate",
+        "input.keyboard.status"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.529929
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353435313433",
+      "text": "¿Cuál es el artista que aparece ahora?",
+      "disposition": "candidate",
+      "expected": [
+        "media.status"
+      ],
+      "top_5": [
+        "media.status",
+        "browser.page.read",
+        "audio.status",
+        "game.install.status",
+        "system.time"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.678362
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353438393835",
+      "text": "Skip to track five.",
+      "disposition": "candidate",
+      "expected": [
+        "media.control"
+      ],
+      "top_5": [
+        "media.control",
+        "browser.control",
+        "browser.navigate.named",
+        "filesystem.path.ensure.absent",
+        "clipboard.copy"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.094282
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353530393635",
+      "text": "Can you play Jay Z?",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "vision.describe",
+        "browser.navigate"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.009635
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353630373036",
+      "text": "SKip this song.",
+      "disposition": "candidate",
+      "expected": [
+        "media.control"
+      ],
+      "top_5": [
+        "media.control",
+        "browser.navigate.named",
+        "clipboard.copy",
+        "system.process.terminate.named",
+        "filesystem.move"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 1.726999
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353630373036",
+      "text": "Saltea esta canción.",
+      "disposition": "candidate",
+      "expected": [
+        "media.control"
+      ],
+      "top_5": [
+        "media.control",
+        "browser.control",
+        "filesystem.path.ensure.absent",
+        "clipboard.copy",
+        "browser.navigate.named"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 3.147758
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353637313432",
+      "text": "turn off the alarms",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.list.due",
+        "notification.cancel.at",
+        "window.maximize",
+        "network.dns.status"
+      ],
+      "top_1_correct": false,
+      "top_3_correct": false,
+      "margin": 2.112835
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353637313432",
+      "text": "apaga las alarmas",
+      "disposition": "candidate",
+      "expected": [
+        "notification.dismiss"
+      ],
+      "top_5": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "app.close",
+        "window.minimize",
+        "audio.mute"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 0.357733
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353734343832",
+      "text": "Cancel alarms please.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.cancel.at",
+        "notification.list.due",
+        "reminder.delete",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.578033
+    },
+    {
+      "source_id": "mtop-official-v2:es:39353734343832",
+      "text": "Cancela las alarmas, por favor.",
+      "disposition": "candidate",
+      "expected": [
+        "notification.cancel.latest"
+      ],
+      "top_5": [
+        "notification.cancel.latest",
+        "notification.list.due",
+        "notification.cancel.at",
+        "reminder.delete",
+        "window.maximize"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.646449
+    },
+    {
+      "source_id": "mtop-official-v2:en:39353831333837",
+      "text": "please play Lyle Lovett",
+      "disposition": "candidate",
+      "expected": [
+        "media.play.query"
+      ],
+      "top_5": [
+        "media.play.query",
+        "media.play.exact",
+        "system.process.terminate.named",
+        "vision.describe",
+        "routine.list"
+      ],
+      "top_1_correct": true,
+      "top_3_correct": true,
+      "margin": 2.098124
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+<Window x:Class="Baxy.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="BAXY"
+        Width="1280"
+        Height="800"
+        MinWidth="1000"
+        MinHeight="600"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        Background="#0A0E14"
+        Loaded="OnLoaded"
+        Closing="OnClosing"
+        AutomationProperties.AutomationId="BaxyMainWindow"
+        AutomationProperties.Name="BAXY, asistente local">
+  <WindowChrome.WindowChrome>
+    <shell:WindowChrome CaptionHeight="0"
+                        ResizeBorderThickness="6"
+                        GlassFrameThickness="0"
+                        CornerRadius="0"
+                        UseAeroCaptionButtons="False" />
+  </WindowChrome.WindowChrome>
+
+  <Grid Background="#0A0E14">
+    <wv2:WebView2 x:Name="FieldWebView"
+                  DefaultBackgroundColor="#FF0A0E14"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  AutomationProperties.AutomationId="HistoricalFieldUi"
+                  AutomationProperties.Name="BAXY Field, interfaz local" />
+
+    <ContentControl x:Name="AppSurfaceLayer"
+                    Visibility="Collapsed"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    AutomationProperties.AutomationId="AppSurfaceLayer"
+                    AutomationProperties.Name="Superficie nativa de BAXY" />
+  </Grid>
+</Window>

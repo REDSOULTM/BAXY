@@ -1,0 +1,62 @@
+{
+  "schema": "baxy.primary-minified-prompt-verdict.v1",
+  "candidate_status": "rejected",
+  "candidate": {
+    "scope": "primary system prompt only",
+    "suffix": "Devuelve JSON minificado, sin espacios ni saltos de línea.",
+    "generic_json_schema_unchanged": true,
+    "all_cases_use_generic_json_schema": true
+  },
+  "replicas": [
+    {
+      "artifact": "D:\\BAXY\\source\\artifacts\\fixes\\primary_minified_prompt_ab_20260729.json",
+      "arm_order": [
+        "baseline",
+        "minified"
+      ],
+      "primary_semantic_mismatches": 7,
+      "final_decision_mismatches": 3,
+      "expected_mode_delta": -1,
+      "primary_predicted_token_delta": -350.0,
+      "primary_predicted_token_percent": -39.01895206243032,
+      "primary_p50_delta_seconds": -0.2715928999969037,
+      "primary_total_delta_seconds": -3.670061800006806,
+      "e2e_p50_delta_seconds": -0.30017080000106944,
+      "e2e_p95_delta_seconds": 0.08301740000206337,
+      "e2e_total_delta_seconds": -1.7499845999991521,
+      "baseline_primary_tokens": 897.0,
+      "candidate_primary_tokens": 547.0,
+      "baseline_minified_outputs": 0,
+      "candidate_minified_outputs": 10
+    },
+    {
+      "artifact": "D:\\BAXY\\source\\artifacts\\fixes\\primary_minified_prompt_reverse_20260729.json",
+      "arm_order": [
+        "minified",
+        "baseline"
+      ],
+      "primary_semantic_mismatches": 5,
+      "final_decision_mismatches": 3,
+      "expected_mode_delta": -1,
+      "primary_predicted_token_delta": -384.0,
+      "primary_predicted_token_percent": -42.80936454849498,
+      "primary_p50_delta_seconds": -0.31902930000433116,
+      "primary_total_delta_seconds": -2.8680779000060284,
+      "e2e_p50_delta_seconds": -0.2853691999989678,
+      "e2e_p95_delta_seconds": -0.2940430500002549,
+      "e2e_total_delta_seconds": -2.7671949000032328,
+      "baseline_primary_tokens": 897.0,
+      "candidate_primary_tokens": 513.0,
+      "baseline_minified_outputs": 0,
+      "candidate_minified_outputs": 11
+    }
+  ],
+  "replica_stability": {
+    "baseline_primary_semantics": true,
+    "candidate_primary_semantics": false,
+    "baseline_final_decisions": true,
+    "candidate_final_decisions": false
+  },
+  "verdict": "Rejected despite repeatable token/median-latency savings: both opposite-order replicas changed primary semantics and final decisions, and each lost one expected-mode case. The primary policy retains the current prompt and generic JSON Schema.",
+  "decision_rule": "Any primary semantic or final decision mismatch rejects the candidate, regardless of speed."
+}

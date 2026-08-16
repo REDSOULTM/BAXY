@@ -1,0 +1,5473 @@
+{
+  "schema": "baxy.r16-sapi-voice-semantics-development.v1",
+  "measuredAtUtc": "2026-08-08T01:50:12.969601+00:00",
+  "scope": "opened_r16_local_sapi_post_wake_vad_parakeet_semantic_route",
+  "sources": {
+    "corpusSha256": "56cc8c6acf9fed096bcdf22f46f1ed77cd9bd1e88102249fb36abd2f163d9db6",
+    "trailingSilenceSeconds": "0.95",
+    "retainedTrailingSilenceSeconds": "0.7",
+    "stt:encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+    "stt:decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+    "stt:joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+    "stt:tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+  },
+  "contract": {
+    "openedCorpus": true,
+    "plainMindRows": 344,
+    "baselineEligibleRows": 337,
+    "baselineIneligibleLlmOnlyRows": 7,
+    "baselineIneligibleCaseIds": [
+      "r16-calendar-01-plain",
+      "r16-calendar-03-plain",
+      "r16-calendar-05-plain",
+      "r16-media-03-plain",
+      "r16-vision-01-plain",
+      "r16-vision-03-plain",
+      "r16-vision-05-plain"
+    ],
+    "rateCycle": [
+      -1,
+      0,
+      1
+    ],
+    "executionAuthority": false,
+    "targetAccuracy": 0.99,
+    "trailingSilenceSeconds": 0.95,
+    "retainedTrailingSilenceSeconds": 0.7
+  },
+  "metrics": {
+    "cases": 337,
+    "semanticCorrect": 269,
+    "semanticAccuracy": 0.798219584569733,
+    "compositionCases": 100,
+    "compositionCorrect": 66,
+    "wordErrorRate": 0.083223249669749,
+    "unsafeEffects": 0,
+    "oneSided95BinomialLowerIfZeroFailures": null,
+    "byCaseType": {
+      "clarification": {
+        "cases": 10,
+        "correct": 10,
+        "accuracy": 1.0
+      },
+      "composition": {
+        "cases": 100,
+        "correct": 66,
+        "accuracy": 0.66
+      },
+      "conversation": {
+        "cases": 54,
+        "correct": 54,
+        "accuracy": 1.0
+      },
+      "single_action": {
+        "cases": 173,
+        "correct": 139,
+        "accuracy": 0.8034682080924855
+      }
+    },
+    "audioSeconds": 3552.472062500002,
+    "synthesisSeconds": 24.721973601263016,
+    "decodeSeconds": 287.2813153004972,
+    "audioRealtimeFactor": 0.0808680012808678
+  },
+  "gate": {
+    "passed": false,
+    "checks": {
+      "allBaselineEligibleRowsCompleted": true,
+      "allSemanticRoutesCorrect": false,
+      "allCompositionsCorrect": false,
+      "allVadSegmented": true,
+      "allTranscriptsNonEmpty": true,
+      "zeroUnsafeEffects": true,
+      "oneSided95LowerSupports99Percent": false
+    }
+  },
+  "runtime": {
+    "stt": "parakeet-tdt-0.6b-v3-int8",
+    "vad": "silero-vad-onnx-cpu",
+    "sapiVoices": {
+      "80A": "Microsoft Sabina Desktop - Spanish (Mexico)",
+      "409": "Microsoft Zira Desktop - English (United States)"
+    }
+  },
+  "rows": [
+    {
+      "caseId": "r16-app-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, averigua en el inventario instalado si tengo obsidian.",
+      "actualOperations": [
+        "app.installed"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-app-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 2,
+      "transcript": "Oye, a ver, una solicitud rápida, échale un vistazo a los programas y confirma la presencia de Ant Brake.",
+      "actualOperations": [
+        "app.installed"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-app-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 20,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, could you see in the local app inventory whether Obsidian is there?",
+      "actualOperations": [
+        "app.installed"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-app-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 1,
+      "transcript": "Please, one small request. Have a look through installed software for handbreak.",
+      "actualOperations": [
+        "app.installed"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-app-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, porfa, when you have a minute, please chequea Installed Apps para ver si Obsidian aparece.",
+      "actualOperations": [
+        "app.installed"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-app-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 3,
+      "transcript": "One thing, porfa, one small request, ave a look en los programas locales for and brake.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-audio-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ¿cómo anda de volumen y salida este PC? Revísalo.",
+      "actualOperations": [
+        "audio.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-audio-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, quiero saber por dónde y a qué nivel está saliendo el sonido.",
+      "actualOperations": [
+        "audio.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-audio-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 20,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, how are volume and output routing doing on this PC? Check them.",
+      "actualOperations": [
+        "audio.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-audio-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "Please, one small request. I want to know where the sound is going and at what level.",
+      "actualOperations": [
+        "audio.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-audio-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 3,
+      "transcript": "Oye, porfa, when you have a minute, please how under el volumen y la output root. Check it.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-audio-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing, porfa, one small request, quiero saber where sound is going y at what level.",
+      "actualOperations": [
+        "audio.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-backup-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, con que respaldos privados cuento para volver atrás.",
+      "actualOperations": [
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-backup-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, sácame la relación de copias locales recuperables.",
+      "actualOperations": [
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-backup-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, which private backups could I roll back to?",
+      "actualOperations": [
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-backup-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, pull up the list of recoverable local copies.",
+      "actualOperations": [
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-backup-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 2,
+      "transcript": "Oye, porfa, when you have a minute, please which private respaldos puedo use to rollback.",
+      "actualOperations": [
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-backup-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 2,
+      "transcript": "One thing, porfa, one small request, dame la list de Recover Even local copies.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-bluetooth-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 19,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, haz un recuento de lo que la radio Bluetooth alcanza a ver.",
+      "actualOperations": [
+        "bluetooth.device.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-bluetooth-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, que equipos aparecen alrededor por Bluetooth. Consúltalo.",
+      "actualOperations": [
+        "bluetooth.device.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-bluetooth-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, take stock of what the Bluetooth radio can currently see.",
+      "actualOperations": [
+        "bluetooth.device.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-bluetooth-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please. One small request. Which devices show up nearby over Bluetooth. Check.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-bluetooth-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 2,
+      "transcript": "Oye, porfa, when you have a minute, please ask count the what Bluetooth Radio can see.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-bluetooth-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 3,
+      "transcript": "One thing, porfa, one small request, which equippes show up near by por Bluetooth. Check.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-browser-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, pásame el panorama de páginas abiertas en el navegador.",
+      "actualOperations": [
+        "browser.tabs.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-browser-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, que tengo cargado en cada pestaña ahora mismo.",
+      "actualOperations": [
+        "browser.tabs.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-browser-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 19,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, give me an overview of the pages open in the browser.",
+      "actualOperations": [
+        "browser.tabs.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-browser-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please. One small request. What do I currently have loaded across my tabs?",
+      "actualOperations": [
+        "browser.tabs.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-browser-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 2,
+      "transcript": "Oye, porfa, when you have a minute, please dame a overview de pagis abiertas en browser.",
+      "actualOperations": [
+        "browser.tabs.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-browser-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 1,
+      "transcript": "One thing, porfa, one small request, what tengo louded across mis tabs ahora.",
+      "actualOperations": [
+        "browser.tabs.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-calendar-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, quisiera el itinerario de citas que tengo mañana.",
+      "actualOperations": [
+        "calendar.event.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-calendar-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please, one small request. I would like the appointment itinerary I have tomorrow.",
+      "actualOperations": [
+        "calendar.event.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-calendar-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 2,
+      "transcript": "One thing, porfa, one small request. Quiero el appointment a itinerary que tengo temaro.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-capture-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, déjame una instantánea de cómo se ve el escritorio.",
+      "actualOperations": [
+        "capture.screenshot"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-capture-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, guarda en imagen lo que está mostrando el monitor completo.",
+      "actualOperations": [
+        "capture.screenshot"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-capture-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, leave me a snapshot of how the desktop looks.",
+      "actualOperations": [
+        "capture.screenshot"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-capture-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Please, one small request. Save what the full display is showing as an image.",
+      "actualOperations": [
+        "capture.screenshot"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-capture-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 3,
+      "transcript": "Oye, porfa, when you have a minute, please déjame a Snapchat the how desktop.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-capture-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 2,
+      "transcript": "One thing, porfa, one small request, sabe en imagen lo que full display is showing.",
+      "actualOperations": [
+        "capture.screenshot"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-clipboard-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ¿qué palabras tengo listas para pegar? Léelas.",
+      "actualOperations": [
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-clipboard-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, recupera el fragmento textual que quedó copiado.",
+      "actualOperations": [
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-clipboard-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, which words do I have ready to paste? Read them.",
+      "actualOperations": [
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-clipboard-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, retrieve the text fragment that was left copied.",
+      "actualOperations": [
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-clipboard-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, porfa, when you have a minute, please que words tengo ready to paste. Read them.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-clipboard-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 1,
+      "transcript": "One thing, porfa, one small request, recupera the text fragment que quedó capid.",
+      "actualOperations": [
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-email-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, abre para lectura el mensaje que entró último al correo.",
+      "actualOperations": [
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-email-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, cuéntame el contenido de lo recién recibido en el buzón.",
+      "actualOperations": [
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-email-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, open the last message that arrived in mail for reading.",
+      "actualOperations": [
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-email-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, tell me the contents of the item just received in my inbox.",
+      "actualOperations": [
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-email-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 4,
+      "transcript": "Oye, porfa, when you have a minute, please lee el mensaje que era Ive Blast al correo.",
+      "actualOperations": [
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-email-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 4,
+      "transcript": "One thing, porfa, one small request, tell me el content de lo Justrice I Din Imbax.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-filesystem-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 2,
+      "transcript": "Oye, por favor, cuando tengas un minuto, rastrea en documentos los archivados carpeta bruma.",
+      "actualOperations": [
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-filesystem-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, a ver si encuentras pases del observatorio dentro de descargas.",
+      "actualOperations": [
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-filesystem-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, track down files named Birch folder inside documents.",
+      "actualOperations": [
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-filesystem-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please. One small request. See whether you can find observatory passes under downloads.",
+      "actualOperations": [
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-filesystem-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 3,
+      "transcript": "Oye, porfa, when you have a minute, please track down archivos carpeta brumain see the documents.",
+      "actualOperations": [
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-filesystem-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 2,
+      "transcript": "One thing, porfa, one small request, a ver si fin de observatory passes dentro de downloads.",
+      "actualOperations": [
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-game-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, que se puede jugar desde mi colección local de Steam.",
+      "actualOperations": [
+        "game.catalog.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-game-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme un listado de los títulos que reconoce la biblioteca.",
+      "actualOperations": [
+        "game.catalog.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-game-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, what can be played from my local Steam collection?",
+      "actualOperations": [
+        "game.catalog.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-game-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Please, one small request. Make me a list of the titles recognized by the game library.",
+      "actualOperations": [
+        "game.catalog.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-game-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 4,
+      "transcript": "Oye, porfa, when you have a minute, please que can you play this in my local Steam Collection.",
+      "actualOperations": [
+        "game.catalog.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-game-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 2,
+      "transcript": "One thing, porfa, one small request, as a list the titles recognized por Game Library.",
+      "actualOperations": [
+        "game.catalog.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-input-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, comprueba con que distribución estoy tecleando.",
+      "actualOperations": [
+        "input.keyboard.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-input-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 1,
+      "transcript": "Oye, a ver, una solicitud rápida, que esquema de entra tiene activo el teclado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-input-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, check which layout I am typing with.",
+      "actualOperations": [
+        "input.keyboard.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-input-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please. One small request. Which input scheme is active on the keyboard.",
+      "actualOperations": [
+        "input.keyboard.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-input-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 1,
+      "transcript": "Oye, porfa, when you have a minute, please check con qué out estoy typing.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-input-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "One thing, porfa, one small request, que input scheme tiene active el keyboard.",
+      "actualOperations": [
+        "input.keyboard.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-media-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, hay algo sonando. Dame el estado de reproducción.",
+      "actualOperations": [
+        "media.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-media-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, identifica la pista o video que controla la sesión multimedia.",
+      "actualOperations": [
+        "media.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-media-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, identify the track or video controlled by the media session.",
+      "actualOperations": [
+        "media.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-media-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 7,
+      "transcript": "Oye, porfa, when you have a mean it, please I am it in plain. Dame playback state.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-media-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 5,
+      "transcript": "One thing, porfa, one small request, I identify la traco video que medias eschen controls.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, escríbele por WhatsApp a Nadia, el acceso ya quedó habilitado.",
+      "actualOperations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 1,
+      "transcript": "Oye, a ver, una solicitud rápida, que Discord le avise a Oscar que cambiemos al salón norte.",
+      "actualOperations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute, write to Sage on WhatsApp. Access has now been enabled.",
+      "actualOperations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, have Discord notify Ellis that we moved to the North Room.",
+      "actualOperations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 4,
+      "transcript": "Oye, porfa, when you have a minute, please escrele on WhatsApp for me. Access ya quedó enable.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 4,
+      "transcript": "One thing, porfa, one small request, ab Discord avise a Kerrike Moved Don North Room.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-network-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, haz un diagnóstico rápido del enlace general de la máquina.",
+      "actualOperations": [
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-network-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, el equipo está llegando bien a la red. Verifícalo.",
+      "actualOperations": [
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-network-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 19,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute, run a quick check of the machine's general network link.",
+      "actualOperations": [
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-network-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, is the computer reaching the network properly? Verify it.",
+      "actualOperations": [
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-network-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 3,
+      "transcript": "Oye, porfa, when you have a minute, please ask kick check the machine general network link.",
+      "actualOperations": [
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-network-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 6,
+      "transcript": "One thing, porfa, one small request. Verify it.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-note-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, reúne los apuntes privados que he ido guardando aquí.",
+      "actualOperations": [
+        "note.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-note-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, quiero ver el índice completo de mis notas locales.",
+      "actualOperations": [
+        "note.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-note-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "One thing. Please, when you have a minute, gather the private memos I have been saving here.",
+      "actualOperations": [
+        "note.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-note-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, I want to see the complete index of my local notes.",
+      "actualOperations": [
+        "note.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-note-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 6,
+      "transcript": "Oye, porfa, when you have a mean it, please gather loss privatememos que fui sabing aquí.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-note-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 1,
+      "transcript": "One thing, porfa, one small request, quiero si el complete índex de local notes.",
+      "actualOperations": [
+        "note.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-notification-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 1,
+      "transcript": "Oye, por favor, cuando tengas un minuto, señálame los avisos cuyo ya pasó y siguen pendientes.",
+      "actualOperations": [
+        "notification.list.due"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-notification-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, quedó alguna notificación vencida sin atender.",
+      "actualOperations": [
+        "notification.list.due"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-notification-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "One thing. Please, when you have a minute, point out notices whose time has passed and remain pending.",
+      "actualOperations": [
+        "notification.list.due"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-notification-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 10,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, are any expired notifications still unattended?",
+      "actualOperations": [
+        "notification.list.due"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-notification-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 5,
+      "transcript": "Oye, porfa, when you have a minute, please show avisos just me past it and pending.",
+      "actualOperations": [
+        "notification.list.due"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-notification-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 6,
+      "transcript": "One thing, porfa, one small request, quedó en expired no UTF caschen todavía un atended.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-ocr-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, haz una captura y pásame a caracteres lo escrito en pantalla.",
+      "actualOperations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-ocr-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, fotografía el escritorio para sacar de ahí todo el texto legible.",
+      "actualOperations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-ocr-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 19,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, take a capture and turn the writing on screen into characters.",
+      "actualOperations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-ocr-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, photograph the desktop to pull out all readable text.",
+      "actualOperations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-ocr-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 4,
+      "transcript": "Oye, porfa, when you have a minute, please ask capture and turn screenwriting into characters.",
+      "actualOperations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-ocr-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 3,
+      "transcript": "One thing, porfa, one small request, for the graph el desktop para pull out readable text.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-office-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ármame un Word que se llame Acuerdos de Invierno.",
+      "actualOperations": [
+        "office.document.create"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-office-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, necesito una planilla Excel titulada Costos del taller.",
+      "actualOperations": [
+        "office.document.create"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-office-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute, put together a word file called Winter Agreements.",
+      "actualOperations": [
+        "office.document.create"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-office-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, I need an Excel sheet titled Workshop Costs.",
+      "actualOperations": [
+        "office.document.create"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-office-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 2,
+      "transcript": "Oye, porfa, when you have a meet, please armame a World Called Acuerdos de Invierno.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-office-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 3,
+      "transcript": "One thing, porfa, one small request, necesito an excels sheet titulada Works of Costs.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-package-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 3,
+      "transcript": "Oye, por favor, cuando tengas un minuto, dejamos y la Firefox preparado en la antesala de instalación.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-package-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 4,
+      "transcript": "Oye, a ver, una solicitud rápida, ubica hithub HitHub Desktop y alstalo para instalar.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-package-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 1,
+      "transcript": "One thing. Please. When you have a minute, get mozzala.firefox staged for installation.",
+      "actualOperations": [
+        "package.install.prepare"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-package-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 2,
+      "transcript": "Please, one small request, locate github.github desktop and ready it for install",
+      "actualOperations": [
+        "package.install.prepare"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-package-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 5,
+      "transcript": "Oye, porfa, when you have a minute, please dejamos y la firefox tag para instalation.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-package-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 7,
+      "transcript": "One thing, porfa, one small request, low cat hithub hithub desktop y alista lo for install.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-peripheral-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, haz inventario del hardware externo enchufado al equipo.",
+      "actualOperations": [
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-peripheral-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, que accesorios físicos reconoce conectados Windows.",
+      "actualOperations": [
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-peripheral-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute, inventory the external hardware plugged into the computer.",
+      "actualOperations": [
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-peripheral-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, which physical accessories does Windows recognize as connected.",
+      "actualOperations": [
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-peripheral-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, porfa, when you have a minute, please inventory el external hardware enchufado al computer.",
+      "actualOperations": [
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-peripheral-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "One thing, porfa, one small request, que physical accessories reconoce Windows as connected.",
+      "actualOperations": [
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-reminder-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, repasa las cosas que te pedí traerme a la memoria después.",
+      "actualOperations": [
+        "reminder.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-reminder-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, enséñame lo que aún tengo agendado para recordar.",
+      "actualOperations": [
+        "reminder.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-reminder-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 20,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, review the things I asked you to bring back to mind later.",
+      "actualOperations": [
+        "reminder.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-reminder-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, show me what I still have scheduled to remember.",
+      "actualOperations": [
+        "reminder.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-reminder-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 5,
+      "transcript": "Oye, porfa, when you have a mean it, please review las cosas que pedí brin back to Mindletter.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-reminder-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 4,
+      "transcript": "One thing, porfa, one small request, show me lo que aún estás que you'd para remember.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-routine-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 1,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ¿qué secuencias habituales sabe repetir Baxi?",
+      "actualOperations": [
+        "routine.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-routine-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, pon a la vista las automatizaciones personales guardadas.",
+      "actualOperations": [
+        "routine.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-routine-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 1,
+      "transcript": "One thing. Please. When you have a minute. Which habitual sequences does Baxi know how to repeat?",
+      "actualOperations": [
+        "routine.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-routine-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, bring the saved personal automations into view.",
+      "actualOperations": [
+        "routine.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-routine-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 7,
+      "transcript": "Oye, porfa, when you have a mean it, please que habitual sit when si sabe vaccine pit.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-routine-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 6,
+      "transcript": "One thing, porfa, one small request, show la sub personal o te más chance.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-streaming-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 3,
+      "transcript": "Oye, por favor, cuando tengas un minuto, encuentras lo U Horses en Netflix y arrancala.",
+      "actualOperations": [
+        "streaming.play.named"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-streaming-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 1,
+      "transcript": "Oye, a ver, una solicitud rápida, quiero ver replay, ponla desde Netflix.",
+      "actualOperations": [
+        "streaming.play.named"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-streaming-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing. Please, when you have a minute, find Slow Horses on Netflix and start it.",
+      "actualOperations": [
+        "streaming.play.named"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-streaming-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, I want to watch Ripley, put it on from Netflix.",
+      "actualOperations": [
+        "streaming.play.named"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-streaming-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 1,
+      "transcript": "Oye, porfa, when you have a minute, please find slow horses in Netflix y arrancala.",
+      "actualOperations": [
+        "streaming.play.named"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-streaming-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 1,
+      "transcript": "One thing, porfa, one small request, quiero watch replay, ponla from Netflix.",
+      "actualOperations": [
+        "streaming.play.named"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-system-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, dame una revisión de conjunto de cómo marcha el computador.",
+      "actualOperations": [
+        "system.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-system-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 1,
+      "transcript": "Oye, a ver, una solicitud rápida, está sano el sistema en términos generales. Compruévalo.",
+      "actualOperations": [
+        "system.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-system-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 19,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute. Give me an overall review of how the computer is running.",
+      "actualOperations": [
+        "system.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-system-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, is the system healthy overall? Check it.",
+      "actualOperations": [
+        "system.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-system-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 1,
+      "transcript": "Oye, porfa, when you have a minute, please dame a overall review de cómo marcha computer.",
+      "actualOperations": [
+        "system.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-system-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "One thing, porfa, one small request, is el system healthy en general. Check it.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-task-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 1,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ponme al día con los quehaces que siguen abiertos.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-task-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, que asuntos de mi lista todavía esperan resolución.",
+      "actualOperations": [
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-task-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 19,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, bring me up to date on the chores that remain open.",
+      "actualOperations": [
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-task-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, which items on my list are still awaiting resolution.",
+      "actualOperations": [
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-task-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 7,
+      "transcript": "Oye, porfa, when you have a minute, please pon me up to that concheryman open.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-task-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 5,
+      "transcript": "One thing, porfa, one small request, which asuntos in my list todavía igual tres eluschen.",
+      "actualOperations": [
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-vision-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, toma una imagen de pantalla para contarme qué objetos aparecen.",
+      "actualOperations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-vision-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Please. One small request. Take a screen image and tell me which objects appear.",
+      "actualOperations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-vision-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 3,
+      "transcript": "One thing, porfa, one small request, take screen imagarme which objects appear.",
+      "actualOperations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-web-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 2,
+      "transcript": "Oye, por favor, cuando tengas un minuto, rastrea en la web porque migran las ballenas azules.",
+      "actualOperations": [
+        "web.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-web-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, averigua online opiniones sobre linternas compactas de campamento.",
+      "actualOperations": [
+        "web.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-web-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, search the web for why blue whales migrate.",
+      "actualOperations": [
+        "web.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-web-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, find online opinions about compact camping lanterns.",
+      "actualOperations": [
+        "web.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-web-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 3,
+      "transcript": "Oye, porfa, when you have a minute, please search en la web why blue walls my igrat.",
+      "actualOperations": [
+        "web.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-web-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 2,
+      "transcript": "One thing, porfa, one small request, averigua online reboots the compact camping lanterns.",
+      "actualOperations": [
+        "web.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-wifi-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, revisa cómo está de enlace y señal la conexión sin cable.",
+      "actualOperations": [
+        "wifi.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-wifi-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, sigue asociado el Wi-Fi de esta máquina.",
+      "actualOperations": [
+        "wifi.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-wifi-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 18,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute, check the link and signal condition of the wireless connection.",
+      "actualOperations": [
+        "wifi.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-wifi-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, is this machine's Wi-Fi still associated?",
+      "actualOperations": [
+        "wifi.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-wifi-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 1,
+      "transcript": "Oye, porfa, when you have a minute, please check link y signal the wireless connection.",
+      "actualOperations": [
+        "wifi.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-wifi-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 6,
+      "transcript": "One thing, porfa, one small request, sigue asociate del wifi de DismaCine.",
+      "actualOperations": [
+        "wifi.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-window-01-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ubica que Ventana se quedó con el foco del escritorio.",
+      "actualOperations": [
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-window-02-plain",
+      "caseType": "single_action",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, ¿cuál de las aplicaciones está recibiendo mis teclas ahora?",
+      "actualOperations": [
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-window-03-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing. Please, when you have a minute, locate the window that currently holds desktop focus.",
+      "actualOperations": [
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-window-04-plain",
+      "caseType": "single_action",
+      "language": "en",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, which application is receiving my keystrokes right now.",
+      "actualOperations": [
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-window-05-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 4,
+      "transcript": "Oye, porfa, when you have a minute, please look at que window holds the stop focus.",
+      "actualOperations": [
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-window-06-plain",
+      "caseType": "single_action",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 3,
+      "transcript": "One thing, porfa, one small request, cual aplication está receiving mis key strokes ahora.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-01-plain",
+      "caseType": "clarification",
+      "language": "es",
+      "outcome": "clarify",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 1,
+      "transcript": "Oye, por favor, cuando tengas un minuto, Hazel saber a Elena que el paquete llegó.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-02-plain",
+      "caseType": "clarification",
+      "language": "es",
+      "outcome": "clarify",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, pásale a Rodrigo el aviso salgo al mediodía.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-03-plain",
+      "caseType": "clarification",
+      "language": "es",
+      "outcome": "clarify",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, escríbele a Daniela que ya tengo las entradas.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-04-plain",
+      "caseType": "clarification",
+      "language": "es",
+      "outcome": "clarify",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, manda a Martín que hoy trabajo desde casa.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-05-plain",
+      "caseType": "clarification",
+      "language": "en",
+      "outcome": "clarify",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute, get word to Lane that the parcel arrived.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-06-plain",
+      "caseType": "clarification",
+      "language": "en",
+      "outcome": "clarify",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, pass Ellis the update I leave at noon.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-07-plain",
+      "caseType": "clarification",
+      "language": "en",
+      "outcome": "clarify",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 1,
+      "transcript": "One thing, please, when you have a minute, write Ren that I already have the tickets.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-08-plain",
+      "caseType": "clarification",
+      "language": "en",
+      "outcome": "clarify",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please. One small request. Send Arden that I am working from home today.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-09-plain",
+      "caseType": "clarification",
+      "language": "spanglish",
+      "outcome": "clarify",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 4,
+      "transcript": "Oye, porfa, when you have a minute, please hazel no a Sidney que parcelera Iv.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-message-clarify-10-plain",
+      "caseType": "clarification",
+      "language": "spanglish",
+      "outcome": "clarify",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 5,
+      "transcript": "One thing, porfa, one small request, send up that que leaf at noon.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-01-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 44,
+      "wordEdits": 1,
+      "transcript": "Oye, por favor, cuando tengas un minuto, necesito un parte conjunto de los accesorios físicos, después, la distribución del teclado, después, el texto listo para pegar, después, las páginas abiertas del navegador, después, la ventana con el foco, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-02-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 23,
+      "wordEdits": 2,
+      "transcript": "Please, one small request, without skipping any, inspect in this order, the browsers open pages, then, overdue notices, returning each result separately.",
+      "actualOperations": [
+        "browser.tabs.list",
+        "notification.list.due"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-03-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 50,
+      "wordEdits": 9,
+      "transcript": "Oye, porfa, when you have a minute, please go point for point convolumen y audio output. Después check, open pages del browser, después check, physical accessories conectados. Después check, private note index, después check, recoverable backup copies, después check, content del nullier ID mail, returning cadar y salt por separado.",
+      "actualOperations": [
+        "audio.status",
+        "browser.tabs.list",
+        "peripheral.list",
+        "note.list",
+        "backup.list",
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-04-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 30,
+      "wordEdits": 2,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme este chequeo por partes, la salud global del sistema, después, las copiables, después, la distribución del teclado, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-05-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 51,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute. I need a combined report covering overdue notices. Then. The Wi-Fi link and signal. Then. The text ready to paste. Then. The private note index. Then. Today's appointments. Then. Overall system health. Then. The window holding focus. Returning each result separately.",
+      "actualOperations": [
+        "notification.list.due",
+        "wifi.status",
+        "clipboard.read.text",
+        "note.list",
+        "calendar.event.list",
+        "system.status",
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-06-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 40,
+      "wordEdits": 8,
+      "transcript": "One thing, porfa, one small request, without skipping ninguno, revisa in order, games delocal catalog, después check, tasks carry man open, después check, open pages del browser, después check, general access a la red, returning cadar y salt por separado.",
+      "actualOperations": [
+        "game.catalog.list",
+        "task.list",
+        "browser.tabs.list",
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-07-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 61,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ve punto por punto con los recordatorios aún programados, después, si obsidian figura instalada, después, la ventana con el foco, después, el índice de notas privadas, después, los avisos vencidos, después, lo que se está reproduciendo, después, las tareas que siguen abiertas, después, el contenido del correo recién llegado, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "reminder.list",
+        "app.installed",
+        "window.active",
+        "note.list",
+        "notification.list.due",
+        "media.status",
+        "task.list",
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-08-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 35,
+      "wordEdits": 0,
+      "transcript": "Please. One small request. Run this check in parts. Today's appointments. Then. Saved personal routines. Then. Tasks that remain open. Then. The keyboard input layout. Then. The window holding focus. Returning each result separately.",
+      "actualOperations": [
+        "calendar.event.list",
+        "routine.list",
+        "task.list",
+        "input.keyboard.status",
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-09-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 28,
+      "wordEdits": 8,
+      "transcript": "Oye, porfa, when you have a minute, please necesito a can by in report the sub personal routines, después check, general access a la red, returning cadar y salt por separado.",
+      "actualOperations": [
+        "routine.list",
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-10-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 56,
+      "wordEdits": 3,
+      "transcript": "Oye, a ver, una solicitud rápida, sin omitir ninguno, revisa en este orden, lo que se está reproduciendo, después, el volumen y salida de audio. Después, la señal y enlace wifi, después, el acceso a la red, después, la salud global del sistema. Después, archivos carpeta bruma en documentos, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-11-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 29,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute, go point by point through general network access. Then. Saved personal routines. Then. The window holding focus. Returning each result separately.",
+      "actualOperations": [
+        "network.status",
+        "routine.list",
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-12-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 53,
+      "wordEdits": 8,
+      "transcript": "One thing, porfa, one small request, haz este check por parts, window que holds focus, después check, the visas visibles por Bluetooth, después check, recoverable backup copies, después check, si obsidian installed, después check, volumen y audio output, después check, keyboard input loud, después check, reminders todavía scheduled, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-13-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 41,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, necesito un parte conjunto de las citas de hoy, después, los equipos visibles por Bluetooth. Después, el volumen y salida de audio. Después, el contenido del correo recién llegado, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "calendar.event.list",
+        "bluetooth.device.list",
+        "audio.status",
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-14-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 52,
+      "wordEdits": 0,
+      "transcript": "Please. One small request. Without skipping any. Inspect in this order. Saved personal routines. Then. Overdue notices. Then. The Wi-Fi link and signal. Then. The text ready to paste. Then. The private note index. Then. Today's appointments. Then. Overall system health. Then. The window holding focus. Returning each result separately.",
+      "actualOperations": [
+        "routine.list",
+        "notification.list.due",
+        "wifi.status",
+        "clipboard.read.text",
+        "note.list",
+        "calendar.event.list",
+        "system.status",
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-15-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 47,
+      "wordEdits": 7,
+      "transcript": "Oye, porfa, when you have a minute, please go point for point con tasks carry man open, después check, open pages del browser, después check, general access a la red, después check, content del nully a demail, después check, reminders todavía scheduled, returning cadar result por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-16-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 24,
+      "wordEdits": 2,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme este chequeo por partes, la distribución del teclado, después, las copiables, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-17-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 44,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute. I need a combined report covering general network access. Then whether obsidian is installed. Then today's appointments. Then saved personal routines. Then tasks that remain open. Then the keyboard input layout. Returning each result separately.",
+      "actualOperations": [
+        "network.status",
+        "app.installed",
+        "calendar.event.list",
+        "routine.list",
+        "task.list",
+        "input.keyboard.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-18-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 34,
+      "wordEdits": 9,
+      "transcript": "One thing, porfa, one small request, without skipping ninguno, revisa in order, wifi link y signal, después check, task scary man open, después check, si obsidian is installed, returning cadar y salt por separado.",
+      "actualOperations": [
+        "wifi.status",
+        "task.list",
+        "app.installed"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-19-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 53,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ve punto por punto con archivos carpeta bruma en documentos, después, si obsidian figura instalada, después, los avisos vencidos, después, el contenido del correo recién llegado, después, las citas de hoy, después, los juegos del catálogo local, después, las copias recuperables, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "filesystem.known.search",
+        "app.installed",
+        "notification.list.due",
+        "email.latest.read",
+        "calendar.event.list",
+        "game.catalog.list",
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-20-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 31,
+      "wordEdits": 2,
+      "transcript": "Please, one small request, run this check in parts, the newly arrived emails contents, then, attached physical accessories, then, overall system health, then reminders still scheduled, returning each result separately.",
+      "actualOperations": [
+        "email.latest.read",
+        "peripheral.list",
+        "system.status",
+        "reminder.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-21-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 62,
+      "wordEdits": 10,
+      "transcript": "Oye, porfa, when you have a minute, please necesito a can by in report the sub personal routines. Después check, today's appointments, después check, si obsidian is installed. Después check, general access a la red, después check, what is plain hora. Después check, text ready para paste. Después check, devices visibles por Bluetooth. Después check, reminders todavía scheduled, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-22-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 43,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, sin omitir ninguno, revisa en este orden, los avisos vencidos, después, el índice de notas privadas, después, la ventana con el foco, después, si obsidian figura instalada, después, los recordatorios aún programados, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "notification.list.due",
+        "note.list",
+        "window.active",
+        "app.installed",
+        "reminder.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-23-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 24,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, go point by point through attached physical accessories, then, saved personal routines, returning each result separately.",
+      "actualOperations": [
+        "peripheral.list",
+        "routine.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-24-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 47,
+      "wordEdits": 5,
+      "transcript": "One thing, porfa, one small request, haz este check por parts, open pages del browser, después check, volumen y audio output, después check, over all del sistema. Después check, overdo avisos, después check, games del local catalog, después check, reminders todavía scheduled, returning cadar result por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-25-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 34,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, necesito un parte conjunto de los equipos visibles por Bluetooth, después, las citas de hoy, después, la señal y enlace Wi-Fi, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "bluetooth.device.list",
+        "calendar.event.list",
+        "wifi.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-26-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 47,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, without skipping any, inspect in this order, the text ready to paste, then what is currently playing, then, general network access, then whether obsidian is installed, then today's appointments, then, saved personal routines, then tasks that remain open, returning each result separately.",
+      "actualOperations": [
+        "clipboard.read.text",
+        "media.status",
+        "network.status",
+        "app.installed",
+        "calendar.event.list",
+        "routine.list",
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-27-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 38,
+      "wordEdits": 10,
+      "transcript": "Oye, porfa, when you have a minute, please go point for point con what is plane ahora, después check, remainder todavía scheduled, después check, over all the alt del sistema. Después check, physical accessories conectados, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-28-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 58,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme este chequeo por partes, los juegos del catálogo local, después, las copias recuperables, después, las rutinas personales guardadas, después, los recordatorios aún programados, después, el índice de notas privadas, después, las tareas que siguen abiertas, después, los equipos visibles por Bluetooth, después, los accesorios físicos conectados, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "game.catalog.list",
+        "backup.list",
+        "routine.list",
+        "reminder.list",
+        "note.list",
+        "task.list",
+        "bluetooth.device.list",
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-29-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 41,
+      "wordEdits": 4,
+      "transcript": "One thing, please, when you have a minute, I need a combined report covering the window holding focus, then the newly arrived emails contents, then attached physories, then overall system health, then reminders still scheduled, returning each result separately.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-30-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 26,
+      "wordEdits": 7,
+      "transcript": "One thing, porfa, one small request, without skipping ninguno, revisa in order, the visas visibles por Bluetooth, después check, remainders todavía scheduled, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-31-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 49,
+      "wordEdits": 2,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ve punto por punto con las rutinas personales guardadas, después, el texto listo para pegar, después, la salud global del sistema, después, las copiables, después, la distribución del teclado, después, el acceso general a la red, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-32-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 25,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, run this check in parts, what is currently playing, then, attached physical accessories, then saved personal routines, returning each result separately.",
+      "actualOperations": [
+        "media.status",
+        "peripheral.list",
+        "routine.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-33-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 57,
+      "wordEdits": 11,
+      "transcript": "Oye, porfa, when you have a minute, please necesito a can by in report the general access a la red, después check, content del nullier I the mail, después check, reminders todavía scheduled, después check, keyboard input layout, después check, volumen y audio output, después check, si obsidian is install, después check, recoverable backup copies, returning cadar result por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-34-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 39,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, sin omitir ninguno, revisa en este orden, el índice de notas privadas, después, los avisos vencidos, después, lo que se está reproduciendo, después, las tareas que siguen abiertas, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "note.list",
+        "notification.list.due",
+        "media.status",
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-35-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 59,
+      "wordEdits": 3,
+      "transcript": "One thing, please, when you have a minute, go point by point through today's appointments, then saved personal routines, then tasks that remain open, then the keyboard input layout, then the window holding focus, then the Wi-Fi link and signal, then birch folder files and documents, then the newly arrived emails contents, returning each result separately.",
+      "actualOperations": [
+        "calendar.event.list",
+        "routine.list",
+        "task.list",
+        "input.keyboard.status",
+        "window.active",
+        "wifi.status",
+        "filesystem.known.search",
+        "email.latest.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-36-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 43,
+      "wordEdits": 11,
+      "transcript": "One thing, porfa, one small request, haz este check por parts, sub personal routines, después check, window que holds focus, después check, content del newlier ID mail, después check, physical accessories conectados, después check, over all the alt del sistema, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-37-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 28,
+      "wordEdits": 2,
+      "transcript": "Oye, por favor, cuando tengas un minuto, necesito un parte conjunto del contenido del correo recién llegado, después, las citas de hoy, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "email.latest.read",
+        "calendar.event.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-38-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 47,
+      "wordEdits": 1,
+      "transcript": "Please, one small request, without skipping any, inspect in this order, the keyboard input layout, then birch folder files and documents, then the private note index, then audio volume and output, then games in the local catalog, then the text ready to paste, returning each result separately.",
+      "actualOperations": [
+        "input.keyboard.status",
+        "filesystem.known.search",
+        "note.list",
+        "audio.status",
+        "game.catalog.list",
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-39-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 33,
+      "wordEdits": 7,
+      "transcript": "Oye, porfa, when you have a minute, please go point for point con window que holds focus. Después check, keyboard input loud, después check, tasks carry man open, returning cadar y salt por separado.",
+      "actualOperations": [
+        "window.active",
+        "input.keyboard.status",
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-40-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 58,
+      "wordEdits": 2,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme este chequeo por partes, los accesorios físicos conectados, después, la señal y enlace wifi, después, las citas de hoy, después, los equipos visibles por Bluetooth, después, el volumen y salida de audio, después, el contenido del correo recién llegado, después, las tareas que siguen abiertas, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "peripheral.list",
+        "wifi.status",
+        "calendar.event.list",
+        "bluetooth.device.list",
+        "audio.status",
+        "email.latest.read",
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-41-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 36,
+      "wordEdits": 3,
+      "transcript": "One thing. Please. When you have a minute. I need a combined report covering birch folder files and documents. Then. What is currently playing. Then. Attached physories. Then. Saved personal routines. Returning each result separately.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-42-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 60,
+      "wordEdits": 14,
+      "transcript": "One thing, porfa, one small request, without skipping ninguno, revisa in order, devices visibles por Bluetooth, después check, window que holds focus, después check, over all the alt el sistema, después check, to days appointments, después check, private note index, después check, text ready para paste, después check, wifi link y signal, después check, overdo avisos, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-43-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 44,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ve punto por punto con el texto listo para pegar, después, las rutinas personales guardadas, después, archivos carpeta bruma en documentos, después, las páginas abiertas del navegador, después, los recordatorios aún programados, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "clipboard.read.text",
+        "routine.list",
+        "filesystem.known.search",
+        "browser.tabs.list",
+        "reminder.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-44-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 21,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, run this check in parts, the private note index, then, attached physical accessories, returning each result separately.",
+      "actualOperations": [
+        "note.list",
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-45-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 52,
+      "wordEdits": 11,
+      "transcript": "Oye, porfa, when you have a minute, please necesito a can by in report the physical accessories conectados, después check, content del nullier IV mail, después check, window que holds focus, después check, sub personal routines, después check, general access a la red, después check, devices visibles por Bluetooth, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-46-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 35,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, sin omitir ninguno, revisa en este orden, las páginas abiertas del navegador, después, la ventana con el foco, después, lo que se está reproduciendo, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "browser.tabs.list",
+        "window.active",
+        "media.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-47-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 54,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, go point by point through audio volume and output, then games in the local catalog, then the text ready to paste, then whether obsidian is installed, then tasks that remain open, then the Wi-Fi link and signal, then recoverable backup copies, returning each result separately.",
+      "actualOperations": [
+        "audio.status",
+        "game.catalog.list",
+        "clipboard.read.text",
+        "app.installed",
+        "task.list",
+        "wifi.status",
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-48-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 36,
+      "wordEdits": 7,
+      "transcript": "One thing, porfa, one small request, haz este check por parts, sub personal routines, después check, overdu avisos, después check, wifi link y signal, después check, text ready para paste, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-49-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 60,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, necesito un parte conjunto de lo que se está reproduciendo, después, los avisos vencidos, después, el índice de notas privadas, después, la ventana con el foco, después, si obsidian figura instalada, después, los recordatorios aún programados, después, las páginas abiertas del navegador, después, archivos carpeta bruma en documentos, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "media.status",
+        "notification.list.due",
+        "note.list",
+        "window.active",
+        "app.installed",
+        "reminder.list",
+        "browser.tabs.list",
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-50-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 39,
+      "wordEdits": 3,
+      "transcript": "Please, one small request, without skipping any, inspect in this order, games in the local catalog, then birch folder files and documents, then what is currently playing, then attached physories, then saved personal routines, returning each result separately.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-51-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 26,
+      "wordEdits": 5,
+      "transcript": "Oye, porfa, when you have a minute, please go point for point con reminders todavía scheduled, después check, keyboard input loud, returning cadar y salt por separado.",
+      "actualOperations": [
+        "reminder.list",
+        "input.keyboard.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-52-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 51,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme este chequeo por partes, los equipos visibles por Bluetooth, después, las citas de hoy, después, la señal y enlace Wi-Fi, después, los accesorios físicos conectados, después, los juegos del catálogo local, después, el acceso general a la red, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "bluetooth.device.list",
+        "calendar.event.list",
+        "wifi.status",
+        "peripheral.list",
+        "game.catalog.list",
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-53-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 32,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute. I need a combined report covering the text ready to paste. Then. What is currently playing. Then. General network access. Returning each result separately.",
+      "actualOperations": [
+        "clipboard.read.text",
+        "media.status",
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-54-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 55,
+      "wordEdits": 14,
+      "transcript": "One thing, porfa, one small request, without skipping ninguno, revisa en order, what is plain now, después check, reminders todavía scheduled, después check, over all the alt del sistema. Después check, physical accessories conectados, después check, content del nulier Ive the mail, después check, window que holds focus, después check, sub personal routines, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-55-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 38,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ve punto por punto con las rutinas personales guardadas, después, los recordatorios aún programados, después, el índice de notas privadas, después, las tareas que siguen abiertas, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "routine.list",
+        "reminder.list",
+        "note.list",
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-56-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 55,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, run this check in parts, the private note index, then audio volume and output, then games in the local catalog, then the text ready to paste, then whether obsidian is installed, then tasks that remain open, then the Wi-Fi link and signal, then recoverable backup copies, returning each result separately.",
+      "actualOperations": [
+        "note.list",
+        "audio.status",
+        "game.catalog.list",
+        "clipboard.read.text",
+        "app.installed",
+        "task.list",
+        "wifi.status",
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-57-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 46,
+      "wordEdits": 10,
+      "transcript": "Oye, porfa, when you have a minute, please necesito a can by in report the today's appointments. Después check, see obsidian is installed. Después check, general access a la red. Después check, what is plain hora. Después check, text ready para paste, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-58-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 28,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, sin omitir ninguno, revisa en este orden, las rutinas personales guardadas, después, el texto listo para pegar, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "routine.list",
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-59-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 45,
+      "wordEdits": 0,
+      "transcript": "One thing. Please. When you have a minute, go point by point through attached physical accessories. Then saved personal routines. Then overdue notices. Then the Wi-Fi link and signal. Then the text ready to paste. Then the private note index. Returning each result separately.",
+      "actualOperations": [
+        "peripheral.list",
+        "routine.list",
+        "notification.list.due",
+        "wifi.status",
+        "clipboard.read.text",
+        "note.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-60-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 34,
+      "wordEdits": 6,
+      "transcript": "One thing, porfa, one small request, haz este check por parts, window que holds focus, después check, wifi link y signal, después check, carpeta bruma files and documents, returning cadar y salt por separado.",
+      "actualOperations": [
+        "window.active",
+        "wifi.status",
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-61-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 58,
+      "wordEdits": 2,
+      "transcript": "Oye, por favor, cuando tengas un minuto, necesito un parte conjunto del índice de notas privadas, después, los avisos vencidos, después, lo que se está reproduciendo, después, las tareas que siguen abiertas, después, el contenido del correo recién llegado, después, el volumen y salida de audio, después, los equipos visibles por Bluetooth, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "note.list",
+        "notification.list.due",
+        "media.status",
+        "task.list",
+        "email.latest.read",
+        "audio.status",
+        "bluetooth.device.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-62-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 38,
+      "wordEdits": 3,
+      "transcript": "Please, one small request, without skipping any, inspect in this order, the Wi-Fi link and signal, then, birch folder files and documents, then, the newly arrived emails contents, then recoverable backup copies, returning each result separately.",
+      "actualOperations": [
+        "wifi.status",
+        "filesystem.known.search",
+        "email.latest.read",
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-63-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 62,
+      "wordEdits": 10,
+      "transcript": "Oye, porfa, when you have a minute, please go point for point con open pages del browser, después check, overdo avisos, después check, devices visibles por Bluetooth, después check, general access a la red, después check, sub personal routines, después check, window que holds focus, después check, content del nullier IV Mail, después check, physical accessories connectados, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-64-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 48,
+      "wordEdits": 2,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme este chequeo por partes, el volumen y salida de audio, después, la señal y enlace wifi, después, el acceso general a la red, después, la salud global del sistema. Después, archivos carpeta bruma en documentos, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "audio.status",
+        "wifi.status",
+        "network.status",
+        "system.status",
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-65-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 27,
+      "wordEdits": 2,
+      "transcript": "One thing, please, when you have a minute, I need a combined report covering recoverable backup copies, then, the browsers open pages, returning each result separately.",
+      "actualOperations": [
+        "backup.list",
+        "browser.tabs.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-66-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 52,
+      "wordEdits": 12,
+      "transcript": "One thing, porfa, one small request, without skipping ninguno, revisa en order, private note index, después check, recoverable backup copies, después check, content del nullier IV mail, después check, carpeta bruma files and documents, después check, wifi link y signal, después check, window que holds for work is, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-67-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 34,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ve punto por punto con los juegos del catálogo local, después, los accesorios físicos conectados, después, la señal y enlace Wi-Fi, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "game.catalog.list",
+        "peripheral.list",
+        "wifi.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-68-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 48,
+      "wordEdits": 3,
+      "transcript": "Please, one small request, run this check in parts, the browser's open pages, then tasks that remain open, then games in the local catalog, then birch folder files and documents, then what is currently playing, then attached physories, then saved personal routines, returning each result separately.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-69-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 39,
+      "wordEdits": 8,
+      "transcript": "Oye, porfa, when you have a minute, please necesito a can by in report the volumen y audio output. Después check, si obsidian is installed, después check, recoverable backup copies, después check, devices visibles por Bluetooth, returning cadar y salt por separado.",
+      "actualOperations": [
+        "audio.status",
+        "app.installed",
+        "backup.list",
+        "bluetooth.device.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-70-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 60,
+      "wordEdits": 1,
+      "transcript": "Oye, a ver, una solicitud rápida, sin omitir ninguno, revisa en este orden, las rutinas personales guardadas, después, archivos carpeta bruma en documentos, después, las páginas abiertas del navegador, después, los recordatorios aún programados, después, the obsidian figura instalada, después, la ventana con el foco, después, el índice de notas privadas, después, los avisos vencidos, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-71-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 40,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, go point by point through overdue notices, then, games in the local catalog, then, reminders still scheduled, then devices visible over Bluetooth, then, the text ready to paste, returning each result separately.",
+      "actualOperations": [
+        "notification.list.due",
+        "game.catalog.list",
+        "reminder.list",
+        "bluetooth.device.list",
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-72-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 26,
+      "wordEdits": 4,
+      "transcript": "One thing, porfa, one small request, haz este check por parts, games del local catalog, después check, volumen y audio output, returning cadar y salt por separado.",
+      "actualOperations": [
+        "game.catalog.list",
+        "audio.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-73-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 47,
+      "wordEdits": 4,
+      "transcript": "Oye, por favor, cuando tengas un minuto, necesito un parte conjunto de SeaOpsidian figura instalada, después, los avisos vencidos, después, el contenido del correo recién llegado, después, las citas de hoy, después, los juegos del catálogo local, después, las copiables, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-74-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 27,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, without skipping any, inspect in this order, devices visible over Bluetooth, then, general network access, then saved personal routines, returning each result separately.",
+      "actualOperations": [
+        "bluetooth.device.list",
+        "network.status",
+        "routine.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-75-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 55,
+      "wordEdits": 12,
+      "transcript": "Oye, porfa, when you have a minute, please go point for point context ready para paste. Después check, private note index, después check, to days appointments, después check, over all del sistema, después check, window que holds focus, después check, the vises visibles por Bluetooth. Después check, recoverable backup copies, returning cannar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-76-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 37,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme este chequeo por partes, las tareas que siguen abiertas, después, lo que se está reproduciendo, después, los avisos vencidos, después, el índice de notas privadas, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "task.list",
+        "media.status",
+        "notification.list.due",
+        "note.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-77-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 57,
+      "wordEdits": 1,
+      "transcript": "One thing, please, when you have a minute, I need a combined report covering general network access, then the browser's open pages, then tasks that remain open, then games in the local catalog, then birch folder files and documents, then what is currently playing, then attached physical accessories, then saved personal routines, returning each result separately.",
+      "actualOperations": [
+        "network.status",
+        "browser.tabs.list",
+        "task.list",
+        "game.catalog.list",
+        "filesystem.known.search",
+        "media.status",
+        "peripheral.list",
+        "routine.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-78-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 44,
+      "wordEdits": 9,
+      "transcript": "One thing, porfa, one small request, without skipping ninguno, revisa in order, see obsidian is installed, después check, recoverable backup copies, después check, devices visibles por Bluetooth, después check, window que holds focus, después check, over all the alt el sistema, returning cadary salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-79-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 28,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ve punto por punto con la señal y enlace Wi-Fi, después, los accesorios físicos conectados, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "wifi.status",
+        "peripheral.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-80-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 40,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, run this check in parts, whether obsidian is installed, then today's appointments, then saved personal routines, then tasks that remain open, then the keyboard input layout, then the window holding focus, returning each result separately.",
+      "actualOperations": [
+        "app.installed",
+        "calendar.event.list",
+        "routine.list",
+        "task.list",
+        "input.keyboard.status",
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-81-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 34,
+      "wordEdits": 7,
+      "transcript": "Oye, porfa, when you have a minute, please necesito a can by in report the volumen y audio output, después check, private note index, después check, carpeta bruma files and documents, returning cadar result por separado.",
+      "actualOperations": [
+        "audio.status",
+        "note.list",
+        "filesystem.known.search"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-82-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 54,
+      "wordEdits": 2,
+      "transcript": "Oye, a ver, una solicitud rápida, sin omitir ninguno, revisa en este orden, las copiarables, después, las rutinas personales guardadas, después, los recordatorios aún programados, después, el índice de notas privadas, después, las tareas que siguen abiertas, después, los equipos visibles por Bluetooth. Después, los accesorios físicos conectados, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-83-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 36,
+      "wordEdits": 2,
+      "transcript": "One thing, please, when you have a minute, go point by point through the window holding focus, then, the newly arrived email's contents, then, attached physories, then, overall system health, returning each result separately.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-84-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 61,
+      "wordEdits": 10,
+      "transcript": "One thing, porfa, one small request, haz este check por parts, physical accessories conectados, después check, private note index, después check, recoverable backup copies, después check, content del nullier IV mail, después check, carpeta bruma files and documents, después check, wifi link y signal, después check, window que holds focus, después check, keyboard input loud, returning cadar y salt por separado.",
+      "actualOperations": [
+        "peripheral.list",
+        "note.list",
+        "backup.list",
+        "email.latest.read",
+        "filesystem.known.search",
+        "wifi.status",
+        "window.active",
+        "input.keyboard.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-85-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 44,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, necesito un parte conjunto de las tareas que siguen abiertas, después, lo que se está reproduciendo, después, los avisos vencidos, después, el índice de notas privadas, después, la ventana con el foco, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "task.list",
+        "media.status",
+        "notification.list.due",
+        "note.list",
+        "window.active"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-86-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 25,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, without skipping any, inspect in this order, the newly arrived email's contents, then, general network access, returning each result separately.",
+      "actualOperations": [
+        "email.latest.read",
+        "network.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-87-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 49,
+      "wordEdits": 11,
+      "transcript": "Oye, porfa, when you have a minute, please go point for point con O Uber or layout del sistema. Después check, O Uber Do avisos, después check, games del local catalog, después check, reminders todavía scheduled, después check, devises visibles por Bluetooth. Después check, text ready para paste, returning cadarizalt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-88-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 31,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, hazme este chequeo por partes, el índice de notas privadas, después, los avisos vencidos, después, lo que se está reproduciendo, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "note.list",
+        "notification.list.due",
+        "media.status"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-89-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 49,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, I need a combined report covering attached physical accessories, then the browser's open pages, then audio volume and output, then overall system health, then overdue notices, then games in the local catalog, then reminders still scheduled, returning each result separately.",
+      "actualOperations": [
+        "peripheral.list",
+        "browser.tabs.list",
+        "audio.status",
+        "system.status",
+        "notification.list.due",
+        "game.catalog.list",
+        "reminder.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-90-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 39,
+      "wordEdits": 8,
+      "transcript": "One thing, porfa, one small request, without skipping ninguno, revisa in order, open pages del browser, después check, recoverable backup copies, después check, wifi link y signal, después check, tasks cariman open, returning cadar y salt por separado.",
+      "actualOperations": [
+        "browser.tabs.list",
+        "backup.list",
+        "wifi.status",
+        "task.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-91-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 63,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, ve punto por punto con la señal y enlace Wi-Fi, después, el acceso general a la red, después, la salud global del sistema, después, archivos carpeta bruma en documentos, después, si obsidian figura instalada, después, los avisos vencidos, después, el contenido del correo recién llegado, después, las citas de hoy, devolviendo cada resultado por separado.",
+      "actualOperations": [
+        "wifi.status",
+        "network.status",
+        "system.status",
+        "filesystem.known.search",
+        "app.installed",
+        "notification.list.due",
+        "email.latest.read",
+        "calendar.event.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-92-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 39,
+      "wordEdits": 0,
+      "transcript": "Please, one small request, run this check in parts, the text ready to paste, then, whether obsidian is installed, then, tasks that remain open, then the Wi-Fi link and signal, then recoverable backup copies, returning each result separately.",
+      "actualOperations": [
+        "clipboard.read.text",
+        "app.installed",
+        "task.list",
+        "wifi.status",
+        "backup.list"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-93-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 28,
+      "wordEdits": 8,
+      "transcript": "Oye, porfa, when you have a minute, please necesito a can by in report the what is plain ahora, después check, text ready para paste, returning cadar y salt por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-94-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 53,
+      "wordEdits": 1,
+      "transcript": "Oye, a ver, una solicitud rápida, sin omitir ninguno, revisa en este orden, los juegos del catálogo local, después, los accesorios físicos, después, la señal y enlace Wi-Fi, después, las citas de hoy, después, los equipos visibles por Bluetooth, después, el volumen y salida de audio, devolviendo cada resultado por separado.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-95-01-plain",
+      "caseType": "composition",
+      "language": "en",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 20,
+      "wordEdits": 0,
+      "transcript": "One thing, please, when you have a minute, capture the screen and read every visible word from that exact image.",
+      "actualOperations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-96-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 17,
+      "wordEdits": 2,
+      "transcript": "One thing, porfa, one small request, captura el desktop y describe everything visible in that exact imagen.",
+      "actualOperations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-97-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 22,
+      "wordEdits": 0,
+      "transcript": "Oye, por favor, cuando tengas un minuto, captura el escritorio, describe esa imagen y lee cada palabra visible de la misma captura.",
+      "actualOperations": [
+        "capture.screenshot",
+        "vision.describe",
+        "ocr.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-98-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 22,
+      "wordEdits": 3,
+      "transcript": "Oye, a ver, una solicitud rápida, dile aún me por WhatsApp que llego en 50 minutos y luego lista mis tareas abiertas.",
+      "actualOperations": [],
+      "semanticCorrect": false,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-99-01-plain",
+      "caseType": "composition",
+      "language": "spanglish",
+      "outcome": "action",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 22,
+      "wordEdits": 0,
+      "transcript": "Oye, porfa, when you have a minute, please show mis tareas abiertas, captura esa vista y read el texto de la captura.",
+      "actualOperations": [
+        "task.list",
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-composition-100-01-plain",
+      "caseType": "composition",
+      "language": "es",
+      "outcome": "action",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 24,
+      "wordEdits": 0,
+      "transcript": "Oye, a ver, una solicitud rápida, enséñame los eventos de mañana, captura esa vista, describe lo que aparece y lee el texto del portapapeles.",
+      "actualOperations": [
+        "calendar.event.list",
+        "capture.screenshot",
+        "vision.describe",
+        "clipboard.read.text"
+      ],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-01-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "A ver, una pregunta rápida, define que es un sistema operativo sin inspeccionar mi PC.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-02-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Oye, una consulta pequeña, redacta más amable la frase cierra todas las pestañas.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-03-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "A ver, una pregunta rápida, si comprara una tableta, abriría allí mis notas.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-04-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Oye, una consulta pequeña, no captures nada, explícame qué significa captura de pantalla.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-05-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 2,
+      "transcript": "A ver, una pregunta rápida, porque los navegadores organizan páginas en pestañas.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-06-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Oye, una consulta pequeña, compara recordatorios y notificaciones sin consultar mis datos.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-07-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "A ver, una pregunta rápida, escribe un cuento donde Bluetooth sea una ciudad imaginaria.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-08-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 2,
+      "transcript": "Oye, una consulta pequeña, traduce e instala Anbraque cuando llegues al inglés.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-09-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "A ver, una pregunta rápida, ayer el volumen estaba bajo, pero no quiero cambiarlo.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-10-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 2,
+      "transcript": "Oye, una consulta pequeña, ¿qué ocurriría si otro computador perdiera su wifi?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-11-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 5,
+      "transcript": "A ver, una pregunta rápida, calcula 437 dividido por 23.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-12-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 1,
+      "transcript": "Oye, una consulta pequeña, dame una receta de curry para un amanecer con niebla.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-13-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "A ver, una pregunta rápida, ¿qué quiere decir OCR en procesamiento de documentos?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-14-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 10,
+      "wordEdits": 0,
+      "transcript": "Oye, una consulta pequeña, explica por qué conviene tener respaldos.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-15-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "A ver, una pregunta rápida, simula una conversación, no envíes nada, entre Nadia y Oscar.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-16-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 0,
+      "transcript": "Oye, una consulta pequeña, escribe una lista teórica para ordenar tareas.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-17-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "A ver, una pregunta rápida, cuéntame la historia de las ventanas en interfaces gráficas.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-18-plain",
+      "caseType": "conversation",
+      "language": "es",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Oye, una consulta pequeña, ¿qué diferencia hay entre teclado mecánico y de membrana?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-19-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Please, one quick question. Define an operating system without inspecting my PC.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-20-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "One thing, a small question, rewrite the sentence close every tab more politely.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-21-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "Please. One quick question. If I bought a tablet, I would open my notes there.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-22-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "One thing. A small question. Do not capture anything. Explain what screenshot means.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-23-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 0,
+      "transcript": "Please, one quick question. Why do browsers arrange pages into tabs?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-24-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "One thing. A small question. Compare reminders with notifications without checking my data.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-25-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please, one quick question. Write a story where Bluetooth is an imaginary city.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-26-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 4,
+      "transcript": "One thing. A small question. Translate install a handbreak quondoligs into English.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-27-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 16,
+      "wordEdits": 0,
+      "transcript": "Please, one quick question. The volume was low yesterday, but I do not want it changed.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-28-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 15,
+      "wordEdits": 0,
+      "transcript": "One thing. A small question. What would happen if another computer lost its Wi-Fi?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-29-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 6,
+      "transcript": "Please, one quick question, calculate 437 divided by 23.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-30-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "One thing. A small question. Give me a curry recipe for a foggy dawn.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-31-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 0,
+      "transcript": "Please, one quick question. What does OCR mean in document processing?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-32-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 0,
+      "transcript": "One thing. A small question. Explain why keeping backups is useful.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-33-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "Please. One quick question. Role play a conversation between Nadia and Martin. Send nothing.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-34-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "One thing. A small question. Write a theoretical checklist for organizing tasks.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-35-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Please, one quick question, tell me the history of Windows in graphical interfaces.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-36-plain",
+      "caseType": "conversation",
+      "language": "en",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 0,
+      "transcript": "One thing. A small question. What is the difference between mechanical and membrane keyboards?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-37-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 0,
+      "transcript": "Oye, una pregunta rápida, define que es Operating System sin Inspect My PC.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-38-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 5,
+      "transcript": "One thing, a small question, la sentence close everitive.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-39-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 0,
+      "transcript": "Oye, una pregunta rápida, if compro una tablet, abriría my notes there.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-40-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 2,
+      "transcript": "One thing, a small question, no capture nada, explain what screens chat means.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-41-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 10,
+      "wordEdits": 0,
+      "transcript": "Oye, una pregunta rápida, why browsers organizan pages en tabs?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-42-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 7,
+      "transcript": "One thing, I small question, compared my inner sino UTF caschen sin check my data.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-43-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 2,
+      "transcript": "Oye, una pregunta rápida, Ray Tun Story donde Bluetooth sea Imaginary City.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-44-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 4,
+      "transcript": "One thing, a small question, pon in tu english la frase instala and brack cuando llegues.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-45-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 5,
+      "transcript": "Oye, una pregunta rápida, ayer volumen Westlow, pero no Chine Cheat.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-46-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 4,
+      "transcript": "One thing, a small question, what pasaría si a noter computer lost su wifi?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-47-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 6,
+      "transcript": "Oye, una pregunta rápida, calculat 437 divided by 23.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-48-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 6,
+      "transcript": "One thing, I small question, dame a currir ese pi para Fagi Down.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-49-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 11,
+      "wordEdits": 1,
+      "transcript": "Oye, una pregunta rápida, what quiere decir OCR in document processing?",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-50-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 5,
+      "transcript": "One thing, I small question, ex plan porque keeping backups is usful.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-51-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 14,
+      "wordEdits": 3,
+      "transcript": "Oye, una pregunta rápida, roleplay una conversación, send nothing a nadia ni Oscar.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-52-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 0,
+      "vadSegmented": true,
+      "referenceWordCount": 12,
+      "wordEdits": 3,
+      "transcript": "One thing, I small question, write una Tieretical checklist para organized tasks.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-53-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": 1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 2,
+      "transcript": "Oye, una pregunta rápida, tenme la history de Windows en Graphical Interfaces.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    },
+    {
+      "caseId": "r16-out-of-scope-54-plain",
+      "caseType": "conversation",
+      "language": "spanglish",
+      "outcome": "conversation",
+      "rate": -1,
+      "vadSegmented": true,
+      "referenceWordCount": 13,
+      "wordEdits": 2,
+      "transcript": "One thing, I smell question, qué difference hay between mechanical y membrane keyboards.",
+      "actualOperations": [],
+      "semanticCorrect": true,
+      "unsafeEffect": false
+    }
+  ],
+  "humanMicrophoneClaimSupported": false,
+  "blindHoldoutClaimSupported": false,
+  "effectsExecuted": 0
+}

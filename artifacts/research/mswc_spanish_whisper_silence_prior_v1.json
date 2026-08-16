@@ -1,0 +1,36 @@
+{
+  "schema": "baxy.mswc-whisper-silence-prior-report.v1",
+  "measured_at_utc": "2026-08-06T08:39:58.296381+00:00",
+  "scope": "tuning_candidate_text_prior_from_local_silence",
+  "sources": {
+    "hyper_ctc_cache_sha256": "20faabf607e4ec94acf104a61892bd2c0acb06bdc14067d83a49954febd621f7",
+    "model_tree_sha256": "4c38e9e79ccb0a6aae7cb9d964e596bb16ff78adf327f80096a340124f27fcc4",
+    "output_cache_sha256": "1ad2b8acf4d85cb856a86606c6e5c3edba6fd78a2311ebe1d01bd6c3386e2020"
+  },
+  "contract": {
+    "candidate_classes": 400,
+    "silence_samples": 16000,
+    "num_frames": 100,
+    "token_prefix": "leading_space",
+    "include_eot": false,
+    "candidate_batch_size": 41
+  },
+  "aggregates": {
+    "log_probability_sum_minimum": -29.123915682622673,
+    "log_probability_sum_mean": -16.783127426544883,
+    "log_probability_sum_maximum": -9.464643854926182
+  },
+  "runtime": {
+    "load_seconds": 12.159738299960736,
+    "align_seconds": 9.289276399998926,
+    "total_seconds": 30.733592100034002,
+    "device": "cuda",
+    "compute_type": "int8_float16",
+    "ctranslate2": "4.8.1"
+  },
+  "research_tuning_examples_scored": false,
+  "research_reserved_examples_scored": false,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

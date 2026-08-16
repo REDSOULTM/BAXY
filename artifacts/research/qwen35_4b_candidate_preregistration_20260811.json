@@ -1,0 +1,47 @@
+{
+  "schema": "baxy.local-model-candidate-preregistration.v1",
+  "created_at_local": "2026-08-11T07:58:00-04:00",
+  "status": "sealed_before_download",
+  "purpose": "Determine whether Qwen3.5-4B can improve the local BAXY decision model without weakening privacy, exactness, latency or memory limits.",
+  "active_product_unchanged": {
+    "model": "D:/BAXYRuntime/assets/models/Qwen3-4B-Q4_K_M.gguf",
+    "mvp_launcher": "run_mvp.ps1",
+    "manifest_mutation_allowed": false,
+    "promotion_allowed_by_this_experiment": false
+  },
+  "candidate": {
+    "upstream_model": "Qwen/Qwen3.5-4B",
+    "upstream_model_card": "https://huggingface.co/Qwen/Qwen3.5-4B",
+    "upstream_license": "apache-2.0",
+    "quant_repository": "unsloth/Qwen3.5-4B-GGUF",
+    "quant_repository_revision": "e87f176479d0855a907a41277aca2f8ee7a09523",
+    "quant_file": "Qwen3.5-4B-Q4_K_M.gguf",
+    "quant_bytes": 2740937888,
+    "quant_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+    "download_url": "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/e87f176479d0855a907a41277aca2f8ee7a09523/Qwen3.5-4B-Q4_K_M.gguf",
+    "local_destination": "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf"
+  },
+  "frozen_evaluation_order": [
+    "Download to a .partial path, require the exact byte count and SHA-256, then rename inside the explicit experiment directory.",
+    "Start the current registered llama.cpp b9980 with product-equivalent GPU flags and require a healthy local endpoint.",
+    "Reject before semantic measurement if loading fails, the model format is unsupported, or attributable GPU memory exceeds 3072 MiB.",
+    "If startup passes, run the existing frozen 45-request semantic development workload on GPU and CPU to compare contract accuracy and latency.",
+    "Treat the already diagnosed 19-second CPU gate timeout as a harness defect, not as permission to ignore any semantic mismatch or runtime failure.",
+    "Do not open any blind or promotion holdout and do not modify BAXY runtime manifests, source prompts, model weights, thresholds or the MVP."
+  ],
+  "acceptance_for_future_promotion_work": {
+    "gpu_semantic_requests": "45/45 with zero errors",
+    "cpu_semantic_requests": "45/45 with zero errors under the product CPU deadline after the frozen gate defect is repaired",
+    "attributable_gpu_memory_mib_max": 3072,
+    "cpu_ram_mib_max": 8192,
+    "privacy": "fully local after the model download",
+    "effects_executed": 0,
+    "additional_requirement": "A distinct preregistered current-tree accuracy cut would still be required before promotion."
+  },
+  "program_constraints": {
+    "wake_v17_frozen_roots_modified": false,
+    "training_allowed": false,
+    "threshold_tuning_allowed": false,
+    "holdout_reuse_allowed": false
+  }
+}

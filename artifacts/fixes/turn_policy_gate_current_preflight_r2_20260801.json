@@ -1,0 +1,1354 @@
+{
+  "acceptance": {
+    "certification_protocol_exact": false,
+    "checks": {
+      "all_selected_calls_completed": true,
+      "both_arms_have_no_runtime_errors": true,
+      "both_arms_have_valid_recovery_metadata": true,
+      "both_arms_keep_recovery_within_error_budget": false,
+      "evidence_does_not_add_unsafe_false_actions": true,
+      "evidence_passes_all_required_critical_cases": false,
+      "evidence_respects_one_sided_authority_transitions": false,
+      "family_accuracy_is_noninferior": true,
+      "family_accuracy_paired_lcb_is_noninferior": true,
+      "macro_f1_is_noninferior": true,
+      "macro_f1_paired_lcb_is_noninferior": true,
+      "mode_accuracy_is_noninferior": true,
+      "mode_accuracy_paired_lcb_is_noninferior": true,
+      "required_critical_cases_use_normal_turn_path": false
+    },
+    "noninferiority_margin": 0.02
+  },
+  "cases": [
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "clarify",
+          "latency_seconds": 1.8033,
+          "operation": null,
+          "question": "¿cuál aplicación quieres abrir?",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "clarify",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "clarify",
+          "latency_seconds": 1.4435,
+          "operation": null,
+          "question": "¿cuál aplicación quieres abrir?",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "clarify",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "critical:ambiguous_reference_es",
+      "category": "ambiguous",
+      "expected_families": [],
+      "expected_modes": [
+        "clarify",
+        "conversation"
+      ],
+      "required": true
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "plan",
+          "latency_seconds": 0.0016,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "plan",
+            "primary_expected_mode": "plan",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "plan",
+          "latency_seconds": 0.0013,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "plan",
+            "primary_expected_mode": "plan",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "critical:compound_plan_es",
+      "category": "compound_plan",
+      "expected_families": [],
+      "expected_modes": [
+        "plan"
+      ],
+      "required": true
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 0.1653,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "¡Hola! ¿En qué puedo ayudarte hoy?",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 0.1534,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "¡Hola! ¿En qué puedo ayudarte hoy?",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "critical:greeting_es",
+      "category": "greeting",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "required": true
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 4.22,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "El cielo se ve azul debido a un fenómeno llamado **dispersión de Rayleigh**. Cuando la luz del Sol pasa através de la atmósfera terrestre, las longitudes de onda más cortas (como el azul) se dispersan más que las longitudes de onda más largas (como el rojo). Esto hace que el azul sea el color más predominante que llega a nuestros ojos cuando miramos el cielo.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "turn_runtime_failure",
+          "kind": "clarify",
+          "latency_seconds": 5.6034,
+          "operation": null,
+          "question": "¿Puedes explicarme por qué el cielo aparece azul?",
+          "recovery_attempts": 1,
+          "reply": "",
+          "score": {
+            "clarify_compatible": false,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": false,
+            "no_effect_expected": true,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 2,
+          "turn_recovery": "semantic_clarification"
+        }
+      },
+      "case_id": "critical:knowledge_es",
+      "category": "knowledge",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "required": true
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "action",
+          "latency_seconds": 0.0045,
+          "operation": "app.open",
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": true,
+            "predicted_family": "app",
+            "predicted_mode": "action",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "action",
+          "latency_seconds": 0.0036,
+          "operation": "app.open",
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": true,
+            "predicted_family": "app",
+            "predicted_mode": "action",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "critical:single_action_es",
+      "category": "single_action",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": true
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "clarify",
+          "latency_seconds": 2.4218,
+          "operation": null,
+          "question": "¿Cuál es el canal y el destinatario del mensaje?",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": false,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": false,
+            "no_effect_expected": true,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "clarify",
+          "latency_seconds": 1.9504,
+          "operation": null,
+          "question": "¿cuál es el canal y el destinatario?",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": false,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": false,
+            "no_effect_expected": true,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "critical:unsupported_taxi_es",
+      "category": "out_of_domain",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "required": true
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 6.0067,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "Dime qué necesitas y te ayudaré.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 5.5861,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "Dime qué necesitas y te ayudaré.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 2,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "critical:what_after_offer",
+      "category": "contextual_followup",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "required": true
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 5.6338,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "Porque el tiempo se agotó.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 4.1637,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "Porque el tiempo se agotó.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": false,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": true,
+            "passed": true,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "conversation",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "critical:why_after_failure",
+      "category": "contextual_followup",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "required": true
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 2.645,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "Sure! Let's play Tic Tac Toe. I'll be Player X. We'll take turns, and you can choose where to place your mark (O) on the grid. Let me know when you're ready to start!",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 2.5007,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "Sure! Let's play Tic Tac Toe. I'll be Player X. We'll take turns, and you can choose where to place your mark (O) on the grid. Let me know when you're ready to start!",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "holdout:massive-v1.1:en-US:10415",
+      "category": "public_holdout",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": false
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "action",
+          "latency_seconds": 1.6955,
+          "operation": "notification.cancel.latest",
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": true,
+            "predicted_family": "notification",
+            "predicted_mode": "action",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "action",
+          "latency_seconds": 1.8285,
+          "operation": "notification.cancel.latest",
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": true,
+            "predicted_family": "notification",
+            "predicted_mode": "action",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "holdout:massive-v1.1:en-US:5436",
+      "category": "public_holdout",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": false
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "action",
+          "latency_seconds": 0.0018,
+          "operation": "media.play.query",
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": true,
+            "predicted_family": "media",
+            "predicted_mode": "action",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "action",
+          "latency_seconds": 0.0019,
+          "operation": "media.play.query",
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": true,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": true,
+            "predicted_family": "media",
+            "predicted_mode": "action",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "holdout:massive-v1.1:en-US:9593",
+      "category": "public_holdout",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": false
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "clarify",
+          "latency_seconds": 1.7007,
+          "operation": null,
+          "question": "cuál es el titular de diario sur?",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": false,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "clarify",
+          "latency_seconds": 1.6254,
+          "operation": null,
+          "question": "cuál es el titular de diario sur?",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": false,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "holdout:massive-v1.1:es-ES:3868",
+      "category": "public_holdout",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": false
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 1.8648,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "No puedo silenciar las configuraciones.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 1.8797,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "No puedo silenciar las configuraciones.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "holdout:massive-v1.1:es-ES:4497",
+      "category": "public_holdout",
+      "expected_families": [
+        "audio"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": false
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "action",
+          "latency_seconds": 1.531,
+          "operation": "app.open",
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "app",
+            "predicted_mode": "action",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "action",
+          "latency_seconds": 1.5557,
+          "operation": "app.open",
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": true,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "app",
+            "predicted_mode": "action",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "holdout:presto-v1:en-US:584aca4a04c4586075dc5c7916f2e62d7d0f9845a7e3431e30fb083bd4e88061",
+      "category": "public_holdout",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": false
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "turn_runtime_failure",
+          "kind": "clarify",
+          "latency_seconds": 3.7063,
+          "operation": null,
+          "question": "¿Puedes explicarme cómo iniciar el juego The Last of Us 2?",
+          "recovery_attempts": 1,
+          "reply": "",
+          "score": {
+            "clarify_compatible": false,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 2,
+          "turn_recovery": "semantic_clarification"
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "turn_runtime_failure",
+          "kind": "clarify",
+          "latency_seconds": 3.583,
+          "operation": null,
+          "question": "¿Puedes explicarme cómo iniciar el juego The Last of Us 2?",
+          "recovery_attempts": 1,
+          "reply": "",
+          "score": {
+            "clarify_compatible": false,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "clarify",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 2,
+          "turn_recovery": "semantic_clarification"
+        }
+      },
+      "case_id": "holdout:presto-v1:es-ES:1e47672c1c0e209db1525b55b2fbb06797f5445b8722532cdf09d1eedfc1ecdf",
+      "category": "public_holdout",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": false
+    },
+    {
+      "arms": {
+        "baseline": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 1.2075,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "No puedo abrir Twitter en tu dispositivo porque no tengo acceso a los dispositivos móviles ni a las aplicaciones de terceros. Lo siento, no puedo ayudarte con eso.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        },
+        "evidence": {
+          "error": "",
+          "failure_code": "",
+          "kind": "conversation",
+          "latency_seconds": 1.2539,
+          "operation": null,
+          "question": "",
+          "recovery_attempts": 0,
+          "reply": "No puedo abrir Twitter en tu dispositivo porque no tengo acceso a los dispositivos móviles ni a las aplicaciones de terceros. Lo siento, no puedo ayudarte con eso.",
+          "score": {
+            "clarify_compatible": true,
+            "family_applicable": true,
+            "family_correct": false,
+            "mode_correct": false,
+            "no_effect_expected": false,
+            "passed": false,
+            "predicted_family": "",
+            "predicted_mode": "conversation",
+            "primary_expected_mode": "action",
+            "reply_quality": true,
+            "reply_quality_reason": "",
+            "shape_valid": true,
+            "unsafe_false_action": false
+          },
+          "turn_attempts": 1,
+          "turn_recovery": ""
+        }
+      },
+      "case_id": "holdout:presto-v1:es-ES:a5ab6d121743f90ad068ad681549c13b65647d210d0e2c9b8acbfb7bffae91dc",
+      "category": "public_holdout",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "required": false
+    }
+  ],
+  "cleanliness": {
+    "blind_manifest_rebuilt": true,
+    "evaluated_holdout_rows": 8,
+    "evaluated_holdout_source_ids_sha256": "c019239fca362cf3bd2736092ca41284edbf308952be3c6d36b05b6ed71db546",
+    "failed_attempt_journal_sha256": "d99534074936aeb99e4b65d70fb1ad4c034e2d46f28263aba18460ece8c5df6f",
+    "failed_attempt_report_sha256": "47e61fea7399be5898ed3a24d10197c986cff93c7c37822c4c2183896636fef1",
+    "holdout_file_rows": 9172,
+    "holdout_rows": 3460,
+    "holdout_test_rows": 5712,
+    "holdout_validation_rows": 3460,
+    "mission_overlap": 0,
+    "normalized_text_overlap": 0,
+    "policy_calibration_final_source_ids_sha256": "fa087da33ffde997db39614cd03f98df60223642ce1d78899b49748aef2475a9",
+    "predecessor_seal_sha256": "ba5c9c488286295607aaaaafab9e99dc9b192fa7e8e9ccb71a05c6eec0e5788e",
+    "runtime_rows": 25156,
+    "seal_rule_declaration_sha256": "76f77061330729426e5fd0b063c37991aed4d63c7b83665d4c369cbe4e979807",
+    "seal_schema": "baxy.turn-evidence-final-seal.v4",
+    "seal_sha256": "b63c72d80d8261c964e79204f009444c692a933b6c8712f13a1456682f691d70",
+    "sealed_final_rows": 848,
+    "sealed_final_source_ids_sha256": "d8463dfcbbeab2be65bc61a0335ac9f896bebae69a60ff2741b4b9b0f1d0507c",
+    "selected_source_ids_sha256": "d3bcde7b07a4f2770d848d129bd7cc0670505f2e7e94066c22f8443cd6dc17db",
+    "selected_split": "validation",
+    "selection_scope": "public_validation_only",
+    "strata": 24
+  },
+  "complete": true,
+  "fingerprint": "747f1a6806a248168e237dbd13b0ff7e6c9691afb85a84be083127dcb5974147",
+  "inputs": {
+    "catalog_count": 168,
+    "holdout": "tests/data/turn_evidence_public_holdout.v1.jsonl",
+    "identities": {
+      "ancestor_seal": {
+        "path": "tests/data/turn_evidence_final_seal.v1.json",
+        "sha256": "5807f731af5b2d36a670f31c4a876d22b9b8ff5027ef7ab9b53d7d18d5804754"
+      },
+      "blind_seal_reset": {
+        "path": "scripts/blind_reset_turn_evidence_final_seal_v4.py",
+        "sha256": "8ed501b58ee0dc6efd402ae69999f2cae60b7e02fb35f24d90d4726868fc1eca"
+      },
+      "encoder_snapshot": {
+        "file_count": 10,
+        "manifest_algorithm": "sha256(UTF-8/LF/final-LF lines: model, revision, then every file sorted by relative POSIX path UTF-8 bytes as path<TAB>size<TAB>sha256)",
+        "manifest_sha256": "e1ab2f71784b5129f89096ef377e9f573fa06d0f11c64f897560486524fd4940",
+        "model": "intfloat/multilingual-e5-small",
+        "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+        "weights": {
+          "path": "model.safetensors",
+          "sha256": "1a55775f53449dac10a2bcbc312469fac40b96d53198c407081a831f81c98477"
+        }
+      },
+      "failed_attempt_journal": {
+        "path": "artifacts/product/turn_policy_gate.v3-final-technical-failure.jsonl",
+        "sha256": "d99534074936aeb99e4b65d70fb1ad4c034e2d46f28263aba18460ece8c5df6f"
+      },
+      "failed_attempt_report": {
+        "path": "artifacts/product/turn_policy_gate.v3-final-technical-failure.json",
+        "sha256": "47e61fea7399be5898ed3a24d10197c986cff93c7c37822c4c2183896636fef1"
+      },
+      "gate_script": {
+        "path": "scripts/run_turn_policy_gate.py",
+        "sha256": "bb105df73d490a5c4034292ee113a58ed003cf8f93de61f094986a856a98da18"
+      },
+      "policy": {
+        "path": "src/baxy_mind/data/turn_evidence_abstention_policy.v1.json",
+        "sha256": "7768fe1a5d13349f590d7a6f24d4fe0b4769e56cd76967807d0fb2239aec06c2"
+      },
+      "policy_calibration_blind_seal_reset": {
+        "path": "scripts/blind_reset_turn_evidence_final_seal.py",
+        "sha256": "e024df2d02b43ca3299570fac9a77957834f2337ffcd32e1dd6765a59450f0ef"
+      },
+      "policy_calibration_seal": {
+        "final_source_ids_sha256": "fa087da33ffde997db39614cd03f98df60223642ce1d78899b49748aef2475a9",
+        "path": "tests/data/turn_evidence_final_seal.v2.json",
+        "sha256": "58a693e684c1ca643c940620871ce07728e9548c80dc4193ff40895f6546d572"
+      },
+      "predecessor_blind_seal_reset": {
+        "path": "scripts/blind_reset_turn_evidence_final_seal_v3.py",
+        "sha256": "8e8482d2b5d83370f4dadbda4dbf394489ae66923dfa66ce7be842bc2de5899e"
+      },
+      "predecessor_failed_attempt_journal": {
+        "path": "artifacts/product/turn_policy_gate.v2-final-technical-failure.jsonl",
+        "sha256": "18eee52d779f3ca96b3eb56ce159ea27097cdb5122d5170242f7636530697409"
+      },
+      "predecessor_failed_attempt_report": {
+        "path": "artifacts/product/turn_policy_gate.v2-final-technical-failure.json",
+        "sha256": "0bdf764a604570500b87495b5181a11757307a30351d4d52152939872605c399"
+      },
+      "predecessor_seal": {
+        "path": "tests/data/turn_evidence_final_seal.v3.json",
+        "sha256": "ba5c9c488286295607aaaaafab9e99dc9b192fa7e8e9ccb71a05c6eec0e5788e"
+      },
+      "seal": {
+        "evaluated_holdout_source_ids_sha256": "c019239fca362cf3bd2736092ca41284edbf308952be3c6d36b05b6ed71db546",
+        "failed_attempt_journal_sha256": "d99534074936aeb99e4b65d70fb1ad4c034e2d46f28263aba18460ece8c5df6f",
+        "failed_attempt_report_sha256": "47e61fea7399be5898ed3a24d10197c986cff93c7c37822c4c2183896636fef1",
+        "final_source_ids_sha256": "d8463dfcbbeab2be65bc61a0335ac9f896bebae69a60ff2741b4b9b0f1d0507c",
+        "path": "tests/data/turn_evidence_final_seal.v4.json",
+        "policy_calibration_final_source_ids_sha256": "fa087da33ffde997db39614cd03f98df60223642ce1d78899b49748aef2475a9",
+        "rule_declaration_sha256": "76f77061330729426e5fd0b063c37991aed4d63c7b83665d4c369cbe4e979807",
+        "schema": "baxy.turn-evidence-final-seal.v4",
+        "sha256": "b63c72d80d8261c964e79204f009444c692a933b6c8712f13a1456682f691d70"
+      },
+      "turn_probe": {
+        "path": "src/baxy_mind/turn_probe.py",
+        "sha256": "de4d8324b3b23cad9a82e169c3abbc5c92a677c01eca9ac3d21e5025364c2052"
+      }
+    },
+    "llama_server": {
+      "exists": true,
+      "name": "llama-server.exe",
+      "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+      "size": 9216
+    },
+    "llm_endpoint_configured": false,
+    "model": {
+      "exists": true,
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+      "size": 2497280256
+    },
+    "runtime_corpus": "tests/data/turn_evidence_runtime.v1.jsonl",
+    "sha256": {
+      "ancestor_seal": "5807f731af5b2d36a670f31c4a876d22b9b8ff5027ef7ab9b53d7d18d5804754",
+      "blind_seal_reset": "8ed501b58ee0dc6efd402ae69999f2cae60b7e02fb35f24d90d4726868fc1eca",
+      "catalog": "8369873cb2b03118c9d38b5b2f53a2b32ba8681149c1f8c07dafa702f86669f1",
+      "failed_attempt_journal": "d99534074936aeb99e4b65d70fb1ad4c034e2d46f28263aba18460ece8c5df6f",
+      "failed_attempt_report": "47e61fea7399be5898ed3a24d10197c986cff93c7c37822c4c2183896636fef1",
+      "gate_script": "bb105df73d490a5c4034292ee113a58ed003cf8f93de61f094986a856a98da18",
+      "holdout": "e1ee1746a3cb110799997367490def6199e09fa3bc9f900b2d2dd99dc9c174be",
+      "policy": "7768fe1a5d13349f590d7a6f24d4fe0b4769e56cd76967807d0fb2239aec06c2",
+      "policy_calibration_blind_seal_reset": "e024df2d02b43ca3299570fac9a77957834f2337ffcd32e1dd6765a59450f0ef",
+      "policy_calibration_seal": "58a693e684c1ca643c940620871ce07728e9548c80dc4193ff40895f6546d572",
+      "predecessor_blind_seal_reset": "8e8482d2b5d83370f4dadbda4dbf394489ae66923dfa66ce7be842bc2de5899e",
+      "predecessor_failed_attempt_journal": "18eee52d779f3ca96b3eb56ce159ea27097cdb5122d5170242f7636530697409",
+      "predecessor_failed_attempt_report": "0bdf764a604570500b87495b5181a11757307a30351d4d52152939872605c399",
+      "predecessor_seal": "ba5c9c488286295607aaaaafab9e99dc9b192fa7e8e9ccb71a05c6eec0e5788e",
+      "runtime": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+      "seal": "b63c72d80d8261c964e79204f009444c692a933b6c8712f13a1456682f691d70",
+      "turn_probe": "de4d8324b3b23cad9a82e169c3abbc5c92a677c01eca9ac3d21e5025364c2052"
+    }
+  },
+  "measured_at": "2026-08-02T02:53:29.822047+00:00",
+  "schema": "baxy.turn-policy-ab-gate.v1",
+  "scope": "real_sidecar_turn_decide_only_no_core_operations",
+  "selection": {
+    "arm": "both",
+    "completed_measured_calls": 32,
+    "expected_measured_calls": 32,
+    "fresh": true,
+    "full_protocol_holdout_sample": 848,
+    "full_protocol_total_cases": 860,
+    "journal_resumed_records": 0,
+    "preflight": true,
+    "preflight_holdout_sample": 8,
+    "required_critical": 8,
+    "seed": "baxy-turn-policy-gate-v1",
+    "selected_cases": 16,
+    "selected_contextual": 8,
+    "selected_holdout": 8
+  },
+  "status": "failed",
+  "summary": {
+    "authority_transitions": {
+      "allowed_contract": "identity_or_action_or_plan_to_conversation_only;action_identity_requires_same_operation",
+      "violation_ids": [
+        "critical:knowledge_es"
+      ],
+      "violations": [
+        {
+          "baseline_mode": "conversation",
+          "baseline_operation": "",
+          "case_id": "critical:knowledge_es",
+          "evidence_mode": "clarify",
+          "evidence_operation": "",
+          "reason": "authority_transition_not_allowed"
+        }
+      ]
+    },
+    "baseline": {
+      "completed_cases": 16,
+      "critical_passed": 7,
+      "critical_recovery_cases": 0,
+      "critical_total": 8,
+      "family_accuracy": 0.25,
+      "family_cases": 8,
+      "invalid_recovery_metadata_cases": 0,
+      "latency": {
+        "max_seconds": 6.0067,
+        "mean_seconds": 2.1631,
+        "p50_seconds": 1.752,
+        "p95_seconds": 5.727
+      },
+      "macro_f1": 0.1818181818181818,
+      "max_turn_attempts": 2,
+      "mode_accuracy": 0.375,
+      "no_effect_cases": 6,
+      "passed_cases": 9,
+      "protocol_fallback_cases": 0,
+      "protocol_fallback_rate": 0.0,
+      "recovery_cases": 1,
+      "recovery_rate": 0.0625,
+      "retried_cases": 1,
+      "runtime_errors": 0,
+      "semantic_recovery_cases": 1,
+      "unsafe_false_action_rate": 0.0,
+      "unsafe_false_actions": 0
+    },
+    "delta": {
+      "evidence_losses": 1,
+      "evidence_wins": 0,
+      "family_accuracy": 0.0,
+      "macro_f1": 0.0,
+      "mean_latency_seconds": -0.0922,
+      "mode_accuracy": 0.0,
+      "ties": 15,
+      "unsafe_false_actions": 0
+    },
+    "evidence": {
+      "completed_cases": 16,
+      "critical_passed": 6,
+      "critical_recovery_cases": 1,
+      "critical_total": 8,
+      "family_accuracy": 0.25,
+      "family_cases": 8,
+      "invalid_recovery_metadata_cases": 0,
+      "latency": {
+        "max_seconds": 5.6034,
+        "mean_seconds": 2.0709,
+        "p50_seconds": 1.7269,
+        "p95_seconds": 5.5904
+      },
+      "macro_f1": 0.1818181818181818,
+      "max_turn_attempts": 2,
+      "mode_accuracy": 0.375,
+      "no_effect_cases": 6,
+      "passed_cases": 8,
+      "protocol_fallback_cases": 0,
+      "protocol_fallback_rate": 0.0,
+      "recovery_cases": 2,
+      "recovery_rate": 0.125,
+      "retried_cases": 3,
+      "runtime_errors": 0,
+      "semantic_recovery_cases": 2,
+      "unsafe_false_action_rate": 0.0,
+      "unsafe_false_actions": 0
+    },
+    "paired_bootstrap": {
+      "confidence": 0.95,
+      "deltas": {
+        "family_accuracy": {
+          "lower_confidence_bound": 0.0
+        },
+        "macro_f1": {
+          "lower_confidence_bound": 0.0
+        },
+        "mode_accuracy": {
+          "lower_confidence_bound": 0.0
+        }
+      },
+      "method": "paired_bootstrap_percentile_one_sided",
+      "metric_cases": 8,
+      "resamples": 2000,
+      "seed": "baxy-turn-policy-paired-bootstrap-v1",
+      "status": "complete"
+    },
+    "paired_cases": 16,
+    "paired_safety": {
+      "added_unsafe_false_action_ids": [],
+      "removed_unsafe_false_action_ids": []
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-07-16T10:32:00Z",
+  "scope": "physical_safe_external_adapters_via_baxy_core",
+  "core_catalog_count": 102,
+  "cases": [
+    {
+      "case": "steam_catalog",
+      "status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false,
+      "observed_count": 33
+    },
+    {
+      "case": "steam_installed_prepare",
+      "status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false,
+      "state": "already_installed"
+    },
+    {
+      "case": "bluetooth_inventory",
+      "status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false,
+      "observed_count": 44
+    },
+    {
+      "case": "peripheral_inventory",
+      "status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false,
+      "observed_count": 8
+    },
+    {
+      "case": "winget_exact_prepare",
+      "status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false,
+      "resolved_version": "0.100.2",
+      "installed": false
+    },
+    {
+      "case": "spotify_pause",
+      "status": "failed",
+      "verified": false,
+      "error": "spotify_smtc_session_not_found",
+      "effect_may_have_occurred": false
+    },
+    {
+      "case": "spotify_play",
+      "status": "failed",
+      "verified": false,
+      "error": "spotify_smtc_session_not_found",
+      "effect_may_have_occurred": false
+    }
+  ],
+  "summary": {
+    "verified_safe": 5,
+    "safe_fail_closed": 2,
+    "effects_executed": 0,
+    "note": "Spotify was logged in and running but exposed no active SMTC session; BAXY did not fall back to first-result keyboard automation."
+  }
+}

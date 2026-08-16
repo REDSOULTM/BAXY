@@ -1,0 +1,132 @@
+{
+  "schema": "baxy.open-catalogue-candidate-rejected.v1",
+  "authority": "development_diagnostic_not_for_promotion",
+  "verdict": "rejected",
+  "effects_executed": 0,
+  "opened_v8": false,
+  "min_prediction_margin_changed": false,
+  "invalid_authored_candidate_removed": true,
+  "public_source_hypothesis": {
+    "sources": [
+      {
+        "path": "tests/data/turn_evidence_runtime.v1.jsonl",
+        "role": "train",
+        "datasets": [
+          "MASSIVE v1.1",
+          "PRESTO v1"
+        ],
+        "license": "CC-BY-4.0",
+        "local_created_utc": "2026-07-24T01:21:08.0237734Z"
+      },
+      {
+        "path": "tests/data/turn_evidence_public_holdout.v1.jsonl",
+        "role": "validation_only",
+        "datasets": [
+          "MASSIVE v1.1",
+          "PRESTO v1"
+        ],
+        "license": "CC-BY-4.0",
+        "local_created_utc": "2026-07-24T01:21:08.1867296Z"
+      }
+    ],
+    "test_split_opened": false,
+    "consumed_rows_used_for_training_or_selection": false,
+    "model": "word+character TF-IDF / class-balanced binary LinearSVC",
+    "training_rows": 17784,
+    "training_inside_rows": 14769,
+    "training_outside_rows": 3015,
+    "validation_rows": 3460,
+    "validation_inside_rows": 2919,
+    "validation_outside_rows": 541,
+    "selection_rule": "nextafter(max validation-inside decision score, +infinity)",
+    "selected_threshold": 1.334540710838645,
+    "validation_inside_predicted_outside": 0,
+    "validation_outside_predicted_outside": 72,
+    "validation_outside_recall": 0.133086876155268,
+    "taxi_scores": {
+      "Pide un taxi para las ocho.": -0.6771491245673295,
+      "Book a taxi for eight o'clock.": -0.9197836529145722
+    },
+    "taxis_predicted_outside": 0,
+    "diagnostic_threshold_required_for_both_taxis": -0.9197836529145722,
+    "validation_inside_rows_lost_at_taxi_threshold": 970,
+    "rejection_reason": "The only pre-existing public split source found does not classify either taxi outside at the zero-validation-loss threshold; forcing both taxis would reject 970 of 2919 validation-inside rows."
+  },
+  "consumed_row_identity_regression": {
+    "reference": "artifacts/development/consumed_retrieval_mechanism_pricing_20260812.json",
+    "closed_reversion": "artifacts/development/open_catalogue_closed_reversion_20260812.json",
+    "reference_served_rows": 772,
+    "closed_reversion_served_rows": 772,
+    "rows_lost": [
+      {
+        "population": "veto_reach_v3",
+        "row_id": "v3-cat-14",
+        "expected_operation": "capture.screenshot",
+        "reference_recalled": true,
+        "closed_reversion_recalled": false
+      },
+      {
+        "population": "veto_reach_v3",
+        "row_id": "v3-cat-28",
+        "expected_operation": "notification.list.due",
+        "reference_recalled": true,
+        "closed_reversion_recalled": false
+      }
+    ],
+    "rows_gained": [
+      {
+        "population": "veto_reach_v3",
+        "row_id": "v3-cat-04",
+        "expected_operation": "system.status",
+        "reference_recalled": false,
+        "closed_reversion_recalled": true
+      },
+      {
+        "population": "veto_reach_v3",
+        "row_id": "v3-cat-27",
+        "expected_operation": "system.process.list",
+        "reference_recalled": false,
+        "closed_reversion_recalled": true
+      }
+    ],
+    "aggregate_compensation_must_not_be_read_as_zero_loss": true
+  },
+  "honest_red": {
+    "test": "tests/test_family_classifier.py::test_family_classifier_names_genuinely_outside_requests_explicitly",
+    "spanish_actual_family": "reminder",
+    "spanish_margin": 0.08532489713245306,
+    "english_actual_family": "web",
+    "english_margin": 0.5062845045509113,
+    "expected_family": "__outside_catalogue__"
+  },
+  "closed_classifier_assets": {
+    "manifest_sha256": "4a287113c73e4371012af47c1dd6552ea1afcac7bf040ad547d6c6fd2896ec64",
+    "vocabulary_sha256": "293f114964d39fe8cac65c825c79a86ee236b033c143d0b3d68316d2d258462a",
+    "weights_sha256": "ab268510134f466448d4b7239e1a7c84a1004fde4d38c2c076f523de93495425",
+    "outside_arrays_present": false
+  },
+  "verification": {
+    "ruff_version": "0.16.2",
+    "ruff_plc0415_open_set_files": "passed",
+    "ruff_plc0415_files": [
+      "src/baxy_mind/family_classifier.py",
+      "scripts/build_family_classifier.py",
+      "experiments/mind_router_spike/price_consumed_retrieval_mechanisms.py",
+      "tests/test_family_classifier.py"
+    ],
+    "broader_test_turn_policy_plc0415": {
+      "status": "failed_preexisting_untouched",
+      "violations": 21
+    },
+    "closed_classifier_tests": "5 passed, 1 honest RED deselected",
+    "pricing_instrument_tests": "6 passed",
+    "step_2_audit_tests": "4 passed, 774 deselected",
+    "compileall": "passed"
+  },
+  "limits": [
+    "The strict acceptance gate is not met: two previously served row identities are lost.",
+    "Neither taxi reaches zero candidates after the invalid open-set branch is removed.",
+    "No threshold was selected from consumed populations.",
+    "No Full, E2E, V8, external effect, installation, or commit was performed."
+  ]
+}

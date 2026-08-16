@@ -1,0 +1,738 @@
+{
+  "authority": "development diagnostic over consumed rows; executes nothing and promotes nothing. Not production retrieval accuracy: production combines the family classifier, the semantic arbiter and literal-schema-grounded families over a shortlist, never the bi-encoder alone over the whole catalogue.",
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-12T18:31:13.234735+00:00",
+  "rows": [
+    {
+      "case_id": "v1-req-03",
+      "e5_rank_of_proposed": 40,
+      "e5_score_of_proposed": 0.8153,
+      "e5_top1": "memory.forget",
+      "e5_top1_score": 0.8467,
+      "e5_top5": [
+        [
+          "memory.forget",
+          0.8467
+        ],
+        [
+          "task.search",
+          0.8345
+        ],
+        [
+          "memory.session.clear",
+          0.8338
+        ],
+        [
+          "filesystem.search",
+          0.8338
+        ],
+        [
+          "backup.list",
+          0.8328
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": null,
+      "is_leak": true,
+      "population": "veto_reach_v1",
+      "proposed": "filesystem.sandbox.append.named",
+      "request_text": "Barre las hojas del sendero."
+    },
+    {
+      "case_id": "v1-cat-06",
+      "e5_rank_of_proposed": 106,
+      "e5_score_of_proposed": 0.8291,
+      "e5_top1": "audio.status",
+      "e5_top1_score": 0.8641,
+      "e5_top5": [
+        [
+          "audio.status",
+          0.8641
+        ],
+        [
+          "game.install.cancel.active",
+          0.8618
+        ],
+        [
+          "task.search",
+          0.8618
+        ],
+        [
+          "note.search",
+          0.8612
+        ],
+        [
+          "wifi.ensure.connected",
+          0.8589
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "system.status",
+      "is_leak": false,
+      "population": "veto_reach_v1",
+      "proposed": "task.list",
+      "request_text": "dame el panorama general de como esta funcionando esto"
+    },
+    {
+      "case_id": "v1-cat-08",
+      "e5_rank_of_proposed": 135,
+      "e5_score_of_proposed": 0.7964,
+      "e5_top1": "routine.read",
+      "e5_top1_score": 0.8422,
+      "e5_top5": [
+        [
+          "routine.read",
+          0.8422
+        ],
+        [
+          "memory.status",
+          0.8386
+        ],
+        [
+          "game.launch",
+          0.8377
+        ],
+        [
+          "wifi.ensure.connected",
+          0.8342
+        ],
+        [
+          "audio.status",
+          0.8335
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "system.status",
+      "is_leak": false,
+      "population": "veto_reach_v1",
+      "proposed": "task.list",
+      "request_text": "dame el panorama de como esta running esto"
+    },
+    {
+      "case_id": "v2-cat-09",
+      "e5_rank_of_proposed": 6,
+      "e5_score_of_proposed": 0.8393,
+      "e5_top1": "task.search",
+      "e5_top1_score": 0.8482,
+      "e5_top5": [
+        [
+          "task.search",
+          0.8482
+        ],
+        [
+          "filesystem.trash.commit",
+          0.8446
+        ],
+        [
+          "task.restore",
+          0.8426
+        ],
+        [
+          "task.reopen",
+          0.8405
+        ],
+        [
+          "task.complete",
+          0.8398
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": null,
+      "is_leak": false,
+      "population": "veto_reach_v2",
+      "proposed": "system.status",
+      "request_text": "que trastos tengo colgando del equipo"
+    },
+    {
+      "case_id": "v2-cat-11",
+      "e5_rank_of_proposed": 1,
+      "e5_score_of_proposed": 0.841,
+      "e5_top1": "system.status",
+      "e5_top1_score": 0.841,
+      "e5_top5": [
+        [
+          "system.status",
+          0.841
+        ],
+        [
+          "task.search",
+          0.8402
+        ],
+        [
+          "filesystem.trash.commit",
+          0.8362
+        ],
+        [
+          "filesystem.trash.restore",
+          0.8304
+        ],
+        [
+          "task.restore",
+          0.8296
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "filesystem.known.trash.named",
+      "is_leak": false,
+      "population": "veto_reach_v2",
+      "proposed": "system.status",
+      "request_text": "que trastos tengo hanging del equipo"
+    },
+    {
+      "case_id": "v2-cat-13",
+      "e5_rank_of_proposed": 100,
+      "e5_score_of_proposed": 0.7846,
+      "e5_top1": "audio.status",
+      "e5_top1_score": 0.8243,
+      "e5_top5": [
+        [
+          "audio.status",
+          0.8243
+        ],
+        [
+          "media.seek.relative",
+          0.8219
+        ],
+        [
+          "reminder.delete",
+          0.8218
+        ],
+        [
+          "notification.list.due",
+          0.8196
+        ],
+        [
+          "backup.list",
+          0.8189
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "backup.list",
+      "is_leak": false,
+      "population": "veto_reach_v2",
+      "proposed": "system.identity",
+      "request_text": "which points of return are still kept for me"
+    },
+    {
+      "case_id": "v2-cat-16",
+      "e5_rank_of_proposed": 49,
+      "e5_score_of_proposed": 0.8183,
+      "e5_top1": "audio.mute",
+      "e5_top1_score": 0.8438,
+      "e5_top5": [
+        [
+          "audio.mute",
+          0.8438
+        ],
+        [
+          "audio.status",
+          0.8425
+        ],
+        [
+          "note.list",
+          0.8383
+        ],
+        [
+          "audio.volume",
+          0.8376
+        ],
+        [
+          "memory.forget",
+          0.8367
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": null,
+      "is_leak": false,
+      "population": "veto_reach_v2",
+      "proposed": "task.list",
+      "request_text": "que llevo cargado para soltar en otro lado"
+    },
+    {
+      "case_id": "v2-cat-21",
+      "e5_rank_of_proposed": 1,
+      "e5_score_of_proposed": 0.8575,
+      "e5_top1": "audio.status",
+      "e5_top1_score": 0.8575,
+      "e5_top5": [
+        [
+          "audio.status",
+          0.8575
+        ],
+        [
+          "audio.mute",
+          0.8379
+        ],
+        [
+          "audio.volume",
+          0.8306
+        ],
+        [
+          "audio.volume.adjust",
+          0.8241
+        ],
+        [
+          "media.play.query",
+          0.8144
+        ]
+      ],
+      "generative_agrees": true,
+      "generative_selected": "audio.status",
+      "is_leak": false,
+      "population": "veto_reach_v2",
+      "proposed": "audio.status",
+      "request_text": "where does the sound leave from and how loud"
+    },
+    {
+      "case_id": "v2-cat-30",
+      "e5_rank_of_proposed": 30,
+      "e5_score_of_proposed": 0.8206,
+      "e5_top1": "task.search",
+      "e5_top1_score": 0.8535,
+      "e5_top5": [
+        [
+          "task.search",
+          0.8535
+        ],
+        [
+          "memory.export",
+          0.8357
+        ],
+        [
+          "routine.read",
+          0.8356
+        ],
+        [
+          "filesystem.search",
+          0.8356
+        ],
+        [
+          "app.close",
+          0.8351
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "network.status",
+      "is_leak": false,
+      "population": "veto_reach_v2",
+      "proposed": "window.application.status",
+      "request_text": "que trabaja por debajo sin que se vea"
+    },
+    {
+      "case_id": "v2-cat-32",
+      "e5_rank_of_proposed": 3,
+      "e5_score_of_proposed": 0.8707,
+      "e5_top1": "reminder.restore",
+      "e5_top1_score": 0.8715,
+      "e5_top5": [
+        [
+          "reminder.restore",
+          0.8715
+        ],
+        [
+          "reminder.delete",
+          0.8708
+        ],
+        [
+          "reminder.list",
+          0.8707
+        ],
+        [
+          "notification.list.due",
+          0.8656
+        ],
+        [
+          "memory.session.clear",
+          0.8637
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "notification.list.due",
+      "is_leak": false,
+      "population": "veto_reach_v2",
+      "proposed": "reminder.list",
+      "request_text": "que recordatorios se me pasaron de fecha"
+    },
+    {
+      "case_id": "v2-cat-33",
+      "e5_rank_of_proposed": 2,
+      "e5_score_of_proposed": 0.8262,
+      "e5_top1": "reminder.delete",
+      "e5_top1_score": 0.8279,
+      "e5_top5": [
+        [
+          "reminder.delete",
+          0.8279
+        ],
+        [
+          "reminder.list",
+          0.8262
+        ],
+        [
+          "reminder.create",
+          0.8259
+        ],
+        [
+          "notification.list.due",
+          0.8238
+        ],
+        [
+          "reminder.restore",
+          0.8201
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "notification.cancel.at",
+      "is_leak": false,
+      "population": "veto_reach_v2",
+      "proposed": "reminder.list",
+      "request_text": "which reminders slipped past their date"
+    },
+    {
+      "case_id": "v3-cat-17",
+      "e5_rank_of_proposed": 54,
+      "e5_score_of_proposed": 0.7663,
+      "e5_top1": "memory.forget",
+      "e5_top1_score": 0.793,
+      "e5_top5": [
+        [
+          "memory.forget",
+          0.793
+        ],
+        [
+          "audio.status",
+          0.7914
+        ],
+        [
+          "routine.delete",
+          0.785
+        ],
+        [
+          "filesystem.trash.commit",
+          0.7842
+        ],
+        [
+          "memory.disable",
+          0.7822
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "note.search",
+      "is_leak": false,
+      "population": "veto_reach_v3",
+      "proposed": "note.read",
+      "request_text": "which loose jottings did i leave on this side"
+    },
+    {
+      "case_id": "v3-cat-18",
+      "e5_rank_of_proposed": 1,
+      "e5_score_of_proposed": 0.8512,
+      "e5_top1": "audio.status",
+      "e5_top1_score": 0.8512,
+      "e5_top5": [
+        [
+          "audio.status",
+          0.8512
+        ],
+        [
+          "audio.mute",
+          0.8433
+        ],
+        [
+          "audio.volume.adjust",
+          0.831
+        ],
+        [
+          "audio.volume",
+          0.8254
+        ],
+        [
+          "audio.microphone.mute",
+          0.8164
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": null,
+      "is_leak": false,
+      "population": "veto_reach_v3",
+      "proposed": "audio.status",
+      "request_text": "el sonido por donde escapa y con cuanta fuerza"
+    },
+    {
+      "case_id": "v3-cat-19",
+      "e5_rank_of_proposed": 1,
+      "e5_score_of_proposed": 0.8371,
+      "e5_top1": "audio.status",
+      "e5_top1_score": 0.8371,
+      "e5_top5": [
+        [
+          "audio.status",
+          0.8371
+        ],
+        [
+          "audio.mute",
+          0.8229
+        ],
+        [
+          "memory.save",
+          0.8076
+        ],
+        [
+          "audio.volume",
+          0.807
+        ],
+        [
+          "audio.volume.adjust",
+          0.8052
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": null,
+      "is_leak": false,
+      "population": "veto_reach_v3",
+      "proposed": "audio.status",
+      "request_text": "the sound escapes through where and how strongly"
+    },
+    {
+      "case_id": "v5-req-19",
+      "e5_rank_of_proposed": 103,
+      "e5_score_of_proposed": 0.7599,
+      "e5_top1": "routine.read",
+      "e5_top1_score": 0.8038,
+      "e5_top5": [
+        [
+          "routine.read",
+          0.8038
+        ],
+        [
+          "app.installed",
+          0.8029
+        ],
+        [
+          "game.purchase.prepare",
+          0.8008
+        ],
+        [
+          "memory.forget",
+          0.799
+        ],
+        [
+          "backup.list",
+          0.7969
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": "web.search",
+      "is_leak": true,
+      "population": "veto_reach_v5",
+      "proposed": "reminder.create",
+      "request_text": "Boil the artichokes for dinner."
+    },
+    {
+      "case_id": "v5-cat-01",
+      "e5_rank_of_proposed": 5,
+      "e5_score_of_proposed": 0.8432,
+      "e5_top1": "memory.session.clear",
+      "e5_top1_score": 0.8539,
+      "e5_top5": [
+        [
+          "memory.session.clear",
+          0.8539
+        ],
+        [
+          "browser.page.read",
+          0.8477
+        ],
+        [
+          "wifi.ensure.connected",
+          0.8473
+        ],
+        [
+          "audio.status",
+          0.8471
+        ],
+        [
+          "network.status",
+          0.8432
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": null,
+      "is_leak": false,
+      "population": "veto_reach_v5",
+      "proposed": "network.status",
+      "request_text": "sigue en pie el amarre a la red de casa"
+    },
+    {
+      "case_id": "v5-cat-03",
+      "e5_rank_of_proposed": 5,
+      "e5_score_of_proposed": 0.8332,
+      "e5_top1": "memory.session.clear",
+      "e5_top1_score": 0.8459,
+      "e5_top5": [
+        [
+          "memory.session.clear",
+          0.8459
+        ],
+        [
+          "streaming.play.named",
+          0.8382
+        ],
+        [
+          "wifi.ensure.connected",
+          0.8366
+        ],
+        [
+          "audio.status",
+          0.8363
+        ],
+        [
+          "network.status",
+          0.8332
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": null,
+      "is_leak": false,
+      "population": "veto_reach_v5",
+      "proposed": "network.status",
+      "request_text": "sigue en pie el amarre a la home network"
+    },
+    {
+      "case_id": "v5-cat-12",
+      "e5_rank_of_proposed": 2,
+      "e5_score_of_proposed": 0.8671,
+      "e5_top1": "audio.mute",
+      "e5_top1_score": 0.869,
+      "e5_top5": [
+        [
+          "audio.mute",
+          0.869
+        ],
+        [
+          "audio.status",
+          0.8671
+        ],
+        [
+          "audio.microphone.mute",
+          0.848
+        ],
+        [
+          "audio.volume",
+          0.8435
+        ],
+        [
+          "memory.disable",
+          0.8383
+        ]
+      ],
+      "generative_agrees": false,
+      "generative_selected": null,
+      "is_leak": false,
+      "population": "veto_reach_v5",
+      "proposed": "audio.status",
+      "request_text": "por donde brota el sonido y con que empuje"
+    },
+    {
+      "case_id": "v5-cat-13",
+      "e5_rank_of_proposed": 1,
+      "e5_score_of_proposed": 0.8347,
+      "e5_top1": "audio.status",
+      "e5_top1_score": 0.8347,
+      "e5_top5": [
+        [
+          "audio.status",
+          0.8347
+        ],
+        [
+          "audio.mute",
+          0.8216
+        ],
+        [
+          "media.play.query",
+          0.8055
+        ],
+        [
+          "audio.volume.adjust",
+          0.8014
+        ],
+        [
+          "audio.volume",
+          0.8013
+        ]
+      ],
+      "generative_agrees": true,
+      "generative_selected": "audio.status",
+      "is_leak": false,
+      "population": "veto_reach_v5",
+      "proposed": "audio.status",
+      "request_text": "where does the sound spring from and how hard"
+    }
+  ],
+  "schema": "baxy.e5-operation-ranking.v1",
+  "source": "D:\\BAXY\\source\\artifacts\\development\\comparative_selector_agreement_20260812.json",
+  "summary": {
+    "catalogue_operations": 169,
+    "encoder": {
+      "file_count": 10,
+      "manifest_algorithm": "sha256(UTF-8/LF/final-LF lines: model, revision, then every file sorted by relative POSIX path UTF-8 bytes as path<TAB>size<TAB>sha256)",
+      "manifest_sha256": "e1ab2f71784b5129f89096ef377e9f573fa06d0f11c64f897560486524fd4940",
+      "model": "intfloat/multilingual-e5-small",
+      "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+      "weights": {
+        "path": "model.safetensors",
+        "sha256": "1a55775f53449dac10a2bcbc312469fac40b96d53198c407081a831f81c98477"
+      }
+    },
+    "legitimate_single_effect": {
+      "e5_top1_correct": 5,
+      "e5_top3_correct": 8,
+      "e5_top5_correct": 10,
+      "generative_agreed": 2,
+      "total": 17,
+      "worst_ranks": [
+        {
+          "case_id": "v1-cat-08",
+          "proposed": "task.list",
+          "rank": 135,
+          "request_text": "dame el panorama de como esta running esto"
+        },
+        {
+          "case_id": "v1-cat-06",
+          "proposed": "task.list",
+          "rank": 106,
+          "request_text": "dame el panorama general de como esta funcionando esto"
+        },
+        {
+          "case_id": "v2-cat-13",
+          "proposed": "system.identity",
+          "rank": 100,
+          "request_text": "which points of return are still kept for me"
+        },
+        {
+          "case_id": "v3-cat-17",
+          "proposed": "note.read",
+          "rank": 54,
+          "request_text": "which loose jottings did i leave on this side"
+        }
+      ]
+    },
+    "similarity_threshold": {
+      "leaks": [
+        {
+          "case_id": "v1-req-03",
+          "e5_top1": "memory.forget",
+          "e5_top1_score": 0.8467,
+          "request_text": "Barre las hojas del sendero."
+        },
+        {
+          "case_id": "v5-req-19",
+          "e5_top1": "routine.read",
+          "e5_top1_score": 0.8038,
+          "request_text": "Boil the artichokes for dinner."
+        }
+      ],
+      "minimum_legitimate_score": 0.7663
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "baxy.wake-v17-combined-validation-supplement.v2",
+  "createdAtUtc": "2026-08-11T10:11:08.725901+00:00",
+  "measurementStatus": "unopened",
+  "preregisteredBeforePhysicalCapture": true,
+  "basePreregistration": {
+    "path": "artifacts\\development\\baxy_wake_routed_cascade_v25a_reserved_physical_v17_preregistration_v1.json",
+    "sha256": "73c561c0e9861958ecfa62779ec16ff79b74352e663ef501d0defb876c21c958"
+  },
+  "frozenWakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "measurementSourcesSha256": {
+    "experiments\\voice_latency\\capture_controlled_physical_wake_corpus_v1.py": "9f4dd64eaa610e45e25812457e2ed4fbe0af701b2433b073f831b4da17619f01",
+    "experiments\\voice_latency\\evaluate_baxy_wake_cascade_runtime_raw_v1.py": "9f84aba005806ff5b90c85924ba6d575bf7870354c729e1551e431e70c4a0637",
+    "experiments\\voice_latency\\evaluate_baxy_endpoint_voice_runtime_v1.py": "5b79a00034f130953308937310f6732079766a6efb0933bc0fc1ef3f4a7c3c52",
+    "experiments\\voice_latency\\fuse_baxy_cascade_endpoint_reports_v1.py": "53d018eebcf5807cf9a6357b0adad7f3e94da07b7cb8e9a9cad6290c4adf8ae3",
+    "experiments\\wake_validation\\validate_physical_wake_v17_program.py": "2c1f9aecd4207da62e8479b34a9c1ebaac792cc1a43ec18c3f94022a49863789"
+  },
+  "physicalPath": {
+    "inputDevice": 6,
+    "inputDeviceName": "Varios micrófonos (Realtek(R) Audio)",
+    "outputDevice": 9,
+    "outputDeviceName": "Altavoces (Realtek(R) Audio)",
+    "rawCaptureHelper": "D:\\BAXYRuntime\\experiments\\wakeword\\raw-wasapi-capture-helper-v2\\bin\\Release\\net9.0\\RawWasapiCapture.exe",
+    "rawCaptureHelperSha256": "0e00447efac6fbfab8cb144263527cca9119f5f5a1d6aa1d723828380a3922f8",
+    "captureTransport": "wasapi_raw_iaudioclient2"
+  },
+  "assetPaths": {
+    "cascadeManifest": "D:\\BAXYRuntime\\experiments\\wakeword\\baxy_wake_routed_cascade_v25a_endpoint_development\\baxy-wake-cascade-v2.json",
+    "cascadeManifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "sttDirectory": "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+    "sttFilesSha256": {
+      "encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    },
+    "positiveRoot": "D:\\BAXYRuntime\\experiments\\wakeword\\sapi_wake_physical_reserved_disjoint_source_v17\\positive",
+    "negativeRoot": "D:\\BAXYRuntime\\experiments\\wakeword\\sapi_wake_physical_reserved_disjoint_source_v17\\negative"
+  },
+  "sourceSelection": {
+    "seed": 20260811,
+    "positiveFiles": 48,
+    "negativeFiles": 96,
+    "positiveRootSha256": "6d1748e1fee85db98028bd7fa5c29e44af38d8cfea4e9c1809fa9115b00cb892",
+    "negativeRootSha256": "de8c15ce74fd87853577b8e17ec6e821ae9e5687a8a4937109cc5372758b6149"
+  },
+  "captureContract": {
+    "captureTransport": "wasapi_raw_iaudioclient2",
+    "rawCaptureHelperSha256": "0e00447efac6fbfab8cb144263527cca9119f5f5a1d6aa1d723828380a3922f8",
+    "playbackGain": 0.65,
+    "preRollSecondsNotRetained": 0.25,
+    "postRollSecondsNotRetained": 0.5,
+    "maximumSourceSeconds": 20.0,
+    "maximumCaptureAttempts": 6,
+    "minimumPathCorrelation": 0.1,
+    "minimumCapturedSnrDb": 3.0
+  },
+  "combinedPolicy": {
+    "name": "cascade_or_score_gated_endpoint",
+    "cascadeBranchPolicy": "cascade",
+    "positiveFiles": 48,
+    "requiredPositiveHits": 48,
+    "negativeFiles": 96,
+    "maximumNegativeHits": 0,
+    "maximumLatencyP50Seconds": 1.5,
+    "maximumLatencyP95Seconds": 2.0,
+    "latencyDefinition": "maximum_of_cascade_compute_and_endpoint_wall_group_percentiles",
+    "endpointDirectScoreGte": -1.0,
+    "endpointAliases": [
+      "backsy",
+      "bakse",
+      "baxi",
+      "baxy",
+      "boxy"
+    ],
+    "blockSamples": 512
+  },
+  "plannedOutputs": {
+    "captureDirectory": "D:\\BAXYRuntime\\experiments\\wakeword\\baxy_wake_routed_cascade_v25a_reserved_physical_v17",
+    "cascadeReport": "artifacts\\holdout\\baxy_wake_v25a_physical_v17_cascade_development_branch_v2.json",
+    "endpointReport": "artifacts\\holdout\\baxy_wake_v25a_physical_v17_endpoint_development_branch_v2.json",
+    "fusionReport": "artifacts\\holdout\\baxy_wake_v25a_physical_v17_fusion_development_branch_v2.json",
+    "combinedReceipt": "artifacts\\holdout\\baxy_wake_v25a_physical_v17_combined_receipt_v2.json"
+  },
+  "captureInvocation": {
+    "includeAllWavs": true,
+    "inputDevice": 6,
+    "outputDevice": 9
+  },
+  "effectsExecuted": 0,
+  "blindHumanPartitionAccessed": false
+}

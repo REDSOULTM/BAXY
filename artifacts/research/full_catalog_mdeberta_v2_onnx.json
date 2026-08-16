@@ -1,0 +1,15 @@
+{
+  "schema": "baxy.sequence-classifier-onnx-export.v1",
+  "scope": "development_only_not_promoted",
+  "authority": "offline_classification_only_no_core_plan_or_provider",
+  "checkpoint": "D:\\BAXYRuntime\\experiments\\full-catalog-operation-classifier-v2-mdeberta",
+  "checkpoint_config_sha256": "b9a24e7bab4a54b3059eface0f93651696a317bb055c475b8df363631c062d05",
+  "model": "D:\\BAXYRuntime\\experiments\\full-catalog-operation-classifier-v2-onnx\\model.fp32.onnx",
+  "model_bytes": 1116765019,
+  "model_sha256": "6fbe9e5e79da7f1bbc284f343fae3566c4fea9975a0f495033ca0708d862ea1a",
+  "opset": 17,
+  "export_seconds": 12.945477,
+  "onnx_version": "1.22.0",
+  "effects_executed": 0,
+  "blind_holdout_opened": false
+}

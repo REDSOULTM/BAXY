@@ -1,0 +1,40 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "operation": "system.settings.status",
+  "arguments": {
+    "setting": "brightness"
+  },
+  "confirmation_followed": false,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "a6a9ce59-ed3e-4c19-a06c-4d1fbcbdad04",
+      "missionId": "d8e479a5-f632-4214-9ed6-9f3c2e5b281c",
+      "invocationId": "cda4f382-1663-4d20-b8e5-415c18008f59",
+      "status": "completed",
+      "message": "Este es el brillo actual confirmado de los monitores compatibles.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "setting": "brightness",
+        "monitors": [
+          {
+            "instanceName": "DISPLAY\\CMN1521\\5&2ebcc94&0&UID512_0",
+            "value": 0
+          }
+        ],
+        "authority": "wmi_monitor_brightness_secondread"
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 1.0267468999954872,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

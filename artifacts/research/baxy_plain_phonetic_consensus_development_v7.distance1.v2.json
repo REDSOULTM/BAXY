@@ -1,0 +1,95 @@
+{
+  "schema": "baxy.plain-phonetic-consensus-development.v7",
+  "measuredAtUtc": "2026-08-06T22:26:38.780235+00:00",
+  "scope": "opened_human_development_plain_phonetic_consensus_selection",
+  "sources": {
+    "expandedCorpusManifestSha256": "8c505d4abbf092404f71aa9c313ff2b4054a8c15f68721bbb4ccdae076a9c2b2",
+    "stage1ModelSha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "ctcVerifierManifestSha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+    "priorContextualDevelopmentSha256": "2cdde35d554f088e6becbf76ea264deb4e7d66ca2453df4e1dd1a6704d32382c",
+    "failedNegativeRegressionSha256": "eaf6d578e8ce6e1ec8a1c3a039da4e808ca99fc2bade099922cb5223fff5a741",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "failedStrengthRegressionSha256": "e767016b307419235891e6423c34ef3767f3a63eba566db419efe3c7eacfa294"
+  },
+  "policy": {
+    "sentinelStage1Threshold": 0.01,
+    "fusionViewStartSamples": [
+      40000,
+      64000
+    ],
+    "contextualWakeTerms": [
+      "baxy",
+      "baxi",
+      "basi",
+      "bakse"
+    ],
+    "contextualHotwordScore": 5.0,
+    "failedRegressionUsedForAggregateSelection": true,
+    "plainDecoderEvidence": "known_exact_alias_or_minimum_span_phonetic_distance",
+    "plainDecoderTargets": [
+      "baxy",
+      "baxi",
+      "basi",
+      "bakse"
+    ],
+    "plainDecoderTargetPhoneticKey": "baksi",
+    "plainDecoderMaximumPhoneticDistance": 1,
+    "hotDecoderEvidence": "exact_measured_contextual_wake_term",
+    "selectionPerformedBeforeAnyNewLongNegativeRegression": true
+  },
+  "policySummaries": {
+    "currentFullHot": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "fullDualDecode": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "sameViewHot": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "fullAndSameViewHot": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "sameViewDualDecode": {
+      "positiveHits": 2,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "twoViewHotConsensus": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    }
+  },
+  "developmentEligiblePolicies": [
+    "currentFullHot"
+  ],
+  "runtimeSeconds": 64.23540050000884,
+  "expandedHumanDevelopmentAudioAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "audioTranscriptsOrFilenamesRetained": false,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "effectsExecuted": 0
+}

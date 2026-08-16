@@ -1,0 +1,66 @@
+{
+  "schema": "baxy.mvp-visual-review.v1",
+  "measuredAtLocal": "2026-08-11T10:16:44.4865863-04:00",
+  "launch": {
+    "command": "run_mvp.ps1 -NoWake",
+    "windowTitle": "BAXY",
+    "wakeEnabled": false,
+    "launcherStderrBytes": 0,
+    "ownedProcessesRemainingAfterClose": 0
+  },
+  "verified": {
+    "initialWindowInsideWorkArea": true,
+    "settingsReachable": true,
+    "managedSettingsTabsVisible": true,
+    "settingsAreReadOnlyDiagnostics": true,
+    "unsupportedHistoricalSettingsHidden": true,
+    "visibleBrand": "BAXY · desktop",
+    "activeModelFamily": "qwen 3",
+    "activeModelAlias": "Qwen3-4B-Q4_K_M",
+    "activitySource": "BAXY",
+    "historicalGemmaIdentityPresentedAsActive": false,
+    "externalNetworkEnabledByFieldUi": false
+  },
+  "sourceSha256": {
+    "src/Baxy.App/FieldUiBridge.cs": "9f5b8a3b4dede77bfde5380db26f3cef01c9607b3ed2dcc8fda4dc623c33d447",
+    "src/Baxy.App/MainWindow.xaml.cs": "7b4f32a3fe1d6e332318912615b7ce96a8e0cb823cb1d8113330bf04488e3687",
+    "src/Baxy.App/Assets/field-native-bridge.js": "ba03d0d33fa7f1e11dfd1cf5339b4356d8d0fe18090d88d25b9ddc03aa6b97e5",
+    "tests/Baxy.Integration.Tests/MainWindowShellContractTests.cs": "125cb436b356cbaad9862e4e37f095438121e48e95775bf043e67f11b9354bbb",
+    "src/Baxy.FieldUi/dist/index.html": "759dc2d1c68156a1a5d5dc20b6a6a03058d2a58b35376e5a835e6f3a391a2185"
+  },
+  "fieldUiTreeSealSha256": "0f6c38d1e3c377012bd7231372363334db7add51845578074e59efb1195e8122",
+  "visualEvidence": {
+    "main": {
+      "path": "artifacts/mvp/visual_review_20260811/after_native_overlay.jpg",
+      "sha256": "925215f34aa5da7342e57239655af93c2fd66f90aa0c972832004712ab8a26ef"
+    },
+    "settingsReadOnly": {
+      "path": "artifacts/mvp/visual_review_20260811/settings_readonly_final.jpg",
+      "sha256": "8201c0a9322dc6be4b52527716d076f08d0c516fe61d2fffc381fc688b1d1a1b"
+    },
+    "voiceDiagnostics": {
+      "path": "artifacts/mvp/visual_review_20260811/settings_transcript_final.jpg",
+      "sha256": "5cf60b4831fda00bb189e88c34ee3c86c5c79451c0aae7295370d41f52576988"
+    }
+  },
+  "validation": {
+    "focusedIntegrationTests": "33/33 passed",
+    "sourceQualityFastStages": "8/8 passed in 68.9 seconds",
+    "sourceQualityFullStages": "11/11 passed in 655.4 seconds",
+    "dotnetTests": "3784/3784 passed",
+    "pythonTests": "7859 passed with 443 subtests",
+    "fullLog": {
+      "path": "artifacts/mvp/visual_review_20260811/source_quality_full_final_v2.log",
+      "sha256": "c3fdb82429a721503029e94ba7b21dd229be3fba83ca0e883bdcd503225c61ba"
+    },
+    "releaseWarnings": 0,
+    "releaseErrors": 0
+  },
+  "wakeProgram": {
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0",
+    "plannedOutputsPresent": 0,
+    "audioPlayedOrCaptured": false
+  },
+  "effectsExecuted": 0
+}

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(BaxyWindowsTargetFramework)</TargetFramework>
+    <AssemblyName>Baxy.Security.Windows</AssemblyName>
+    <RootNamespace>Baxy.Security.Windows</RootNamespace>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+</Project>

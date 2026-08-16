@@ -1,0 +1,217 @@
+{
+  "protocol": "mind-router-spike-v2-coverage",
+  "model": "intfloat/multilingual-e5-small",
+  "frozen_tau": 0.9,
+  "frozen_margin": 0.005,
+  "corpus_exemplars": 336,
+  "total_cases": 675,
+  "per_set": {
+    "audio_mute": {
+      "total": 16,
+      "correct": 16,
+      "accuracy": 1.0
+    },
+    "audio_negative": {
+      "total": 128,
+      "correct": 128,
+      "accuracy": 1.0
+    },
+    "audio_status": {
+      "total": 16,
+      "correct": 16,
+      "accuracy": 1.0
+    },
+    "audio_volume": {
+      "total": 127,
+      "correct": 127,
+      "accuracy": 1.0
+    },
+    "audio_volume_alias": {
+      "total": 12,
+      "correct": 12,
+      "accuracy": 1.0
+    },
+    "gpu_composition": {
+      "total": 17,
+      "correct": 17,
+      "accuracy": 1.0
+    },
+    "gpu_negative": {
+      "total": 34,
+      "correct": 34,
+      "accuracy": 1.0
+    },
+    "gpu_status": {
+      "total": 26,
+      "correct": 26,
+      "accuracy": 1.0
+    },
+    "memory_negative": {
+      "total": 34,
+      "correct": 33,
+      "accuracy": 0.9706
+    },
+    "memory_positive": {
+      "total": 105,
+      "correct": 105,
+      "accuracy": 1.0
+    },
+    "note_create": {
+      "total": 40,
+      "correct": 40,
+      "accuracy": 1.0
+    },
+    "note_negative": {
+      "total": 7,
+      "correct": 7,
+      "accuracy": 1.0
+    },
+    "system_status": {
+      "total": 113,
+      "correct": 113,
+      "accuracy": 1.0
+    }
+  },
+  "overall_accuracy": 0.9985,
+  "regex_baseline": {
+    "coverage": "100% en sets congelados por construcción (tests .NET verdes)",
+    "generalization": "≈0% fuera de patrones literales; sin capacidad semántica"
+  },
+  "failure_modes": {
+    "dangerous_wrong_or_false_route": 1
+  },
+  "process_ram_mib": 822.1,
+  "weights_size_mib": 470.4,
+  "batch_seconds": 2.69,
+  "single_query_cpu_ms": 15.8,
+  "confusion": [
+    {
+      "expected": "ABSTAIN",
+      "predicted": "ABSTAIN",
+      "count": 186
+    },
+    {
+      "expected": "audio.volume",
+      "predicted": "audio.volume",
+      "count": 139
+    },
+    {
+      "expected": "memory.save",
+      "predicted": "memory.save",
+      "count": 59
+    },
+    {
+      "expected": "system.status:battery",
+      "predicted": "system.status:battery",
+      "count": 56
+    },
+    {
+      "expected": "note.create",
+      "predicted": "note.create",
+      "count": 40
+    },
+    {
+      "expected": "system.status:memory",
+      "predicted": "system.status:memory",
+      "count": 25
+    },
+    {
+      "expected": "memory.forget",
+      "predicted": "memory.forget",
+      "count": 22
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "ABSTAIN",
+      "count": 22
+    },
+    {
+      "expected": "system.status:gpu_usage",
+      "predicted": "system.status:gpu_usage",
+      "count": 19
+    },
+    {
+      "expected": "memory.recall",
+      "predicted": "memory.recall",
+      "count": 19
+    },
+    {
+      "expected": "audio.mute",
+      "predicted": "audio.mute",
+      "count": 16
+    },
+    {
+      "expected": "audio.status",
+      "predicted": "audio.status",
+      "count": 16
+    },
+    {
+      "expected": "system.status:cpu",
+      "predicted": "system.status:cpu",
+      "count": 12
+    },
+    {
+      "expected": "system.status:disk",
+      "predicted": "system.status:disk",
+      "count": 10
+    },
+    {
+      "expected": "system.status:cpu_memory",
+      "predicted": "system.status:cpu_memory",
+      "count": 9
+    },
+    {
+      "expected": "system.status:gpu_identity",
+      "predicted": "system.status:gpu_identity",
+      "count": 7
+    },
+    {
+      "expected": "memory.correct",
+      "predicted": "memory.correct",
+      "count": 5
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "memory.save",
+      "count": 5
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "memory.forget",
+      "count": 4
+    },
+    {
+      "expected": "system.status:os_memory",
+      "predicted": "system.status:os_memory",
+      "count": 1
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "system.status:memory",
+      "count": 1
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "memory.correct",
+      "count": 1
+    },
+    {
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "memory.recall",
+      "count": 1
+    }
+  ],
+  "failures": [
+    {
+      "set": "memory_negative",
+      "message_id": "msg_b7d59617a32e63aca567",
+      "text": "cuánta memoria me queda libre",
+      "expected": "ABSTAIN_POLICY",
+      "predicted": "system.status:memory",
+      "winner_pool": "system.status:memory",
+      "best_score": 0.9411,
+      "margin": 0.0338,
+      "category": "memory_word_homonym"
+    }
+  ]
+}

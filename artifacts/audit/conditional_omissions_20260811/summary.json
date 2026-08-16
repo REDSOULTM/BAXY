@@ -1,0 +1,58 @@
+{
+  "schema": "baxy.conditional-omission-audit.v1",
+  "measured_at_utc": "2026-08-11T11:39:13.3454343+00:00",
+  "scope": "Conditional skip/ignore branches that could hide source-gate coverage on the current Windows host",
+  "current_host_result": {
+    "tests_passed": 44,
+    "tests_skipped": 0,
+    "tests_failed": 0,
+    "effects_executed": 0
+  },
+  "dotnet": {
+    "sdk": "10.0.100",
+    "providers": {
+      "passed": 5,
+      "skipped": 0,
+      "receipt": "artifacts/audit/conditional_omissions_20260811/providers-v2.trx",
+      "receipt_sha256": "d4b39ab8bfbc9cfbca4ab1004ab8ed010bac7b654c6751c442146ff68fe797d5"
+    },
+    "setup": {
+      "passed": 4,
+      "skipped": 0,
+      "receipt": "artifacts/audit/conditional_omissions_20260811/setup-v2.trx",
+      "receipt_sha256": "a9e45e5f7f9339aeaa669baba0f978bf836b5fbca5e5515049ea1615bd17b936"
+    },
+    "visible_response_path": {
+      "passed": 1,
+      "skipped": 0,
+      "receipt": "artifacts/audit/conditional_omissions_20260811/visible-v2.trx",
+      "receipt_sha256": "1a24b00c9b8f93baf7a13f700699891dd88f4ef40910ee8f826ec0587b83f544"
+    }
+  },
+  "python": {
+    "runtime": "3.12.10",
+    "passed": 34,
+    "skipped": 0,
+    "receipt": "artifacts/audit/conditional_omissions_20260811/python.xml",
+    "receipt_sha256": "af32784e5197feef90bebfb5db922be87ee30571772bb82fc1b715664542a100"
+  },
+  "covered_conditions": [
+    "Windows-only paths",
+    "PowerShell and Git availability",
+    "DPAPI CurrentUser",
+    "NTFS alternate data streams",
+    "hard-link safety",
+    "unused-drive rejection",
+    "registered runtime resolver",
+    "local Core startup for the visible-response measurement"
+  ],
+  "failed_launcher_attempt": {
+    "classification": "pre-test environment error",
+    "cause": "VSTest inherited C:/Program Files/dotnet, which lacks Microsoft.NETCore.App 10.0.0",
+    "remediation": "Reran with DOTNET_ROOT, DOTNET_ROOT_X64 and PATH scoped to the repository-pinned user .NET 10.0.100 runtime",
+    "product_tests_executed": 0,
+    "receipt": "artifacts/audit/conditional_omissions_20260811/providers.trx",
+    "receipt_sha256": "8344b132a171221cdf20fd8f528a725c1a8cfa9889f19dbea615a0d85246012a"
+  },
+  "conclusion": "None of the audited conditional omissions is active on this host. They are executed coverage here, not accepted environmental limitations."
+}

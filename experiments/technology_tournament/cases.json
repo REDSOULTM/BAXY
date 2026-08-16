@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "protocol_id": "baxy-technology-tournament-v1",
+  "cases": [
+    {
+      "id": "T01_CONVERSATION",
+      "weight": 1,
+      "message": "Hola BAXY, ¿cómo estás?",
+      "expected": {"state": "done", "intent": "conversation", "effect": "none", "verification": "not_applicable", "filesystem_changes": 0}
+    },
+    {
+      "id": "T02_CREATE_NOTE",
+      "weight": 2,
+      "message": "Crea la nota ideas.txt con el texto: comprar té",
+      "expected": {"state": "done", "intent": "note.create", "effect": "reversible", "verification": "verified", "file": "notes/ideas.txt", "content": "comprar té"}
+    },
+    {
+      "id": "T03_READ_NOTE",
+      "weight": 1,
+      "message": "Lee la nota ideas.txt",
+      "expected": {"state": "done", "intent": "note.read", "effect": "read_only", "verification": "verified", "response_contains": "comprar té"}
+    },
+    {
+      "id": "T04_COMPOUND_CREATE_READ",
+      "weight": 2,
+      "message": "Crea la nota plan.txt con el texto: fase uno y después léela",
+      "expected": {"state": "done", "intent": "note.create_and_read", "effect": "reversible", "verification": "verified", "operations": 2, "response_contains": "fase uno"}
+    },
+    {
+      "id": "T05_TRASH_NOTE",
+      "weight": 2,
+      "message": "Mueve la nota ideas.txt a la papelera",
+      "expected": {"state": "done", "intent": "note.trash", "effect": "reversible", "verification": "verified", "absent": "notes/ideas.txt", "present": "trash/ideas.txt"}
+    },
+    {
+      "id": "T06_RESTORE_NOTE",
+      "weight": 2,
+      "message": "Restaura la nota ideas.txt",
+      "expected": {"state": "done", "intent": "note.restore", "effect": "reversible", "verification": "verified", "present": "notes/ideas.txt", "absent": "trash/ideas.txt"}
+    },
+    {
+      "id": "T07_IDEMPOTENT_REPLAY",
+      "weight": 3,
+      "message": "Crea la nota unica.txt con el texto: solo una vez",
+      "repeat_same_invocation_id": true,
+      "expected": {"state": "done", "intent": "note.create", "verification": "verified", "second_replayed": true, "journal_completed_records": 1, "content": "solo una vez"}
+    },
+    {
+      "id": "T08_BLOCK_MISSING",
+      "weight": 1,
+      "message": "Lee la nota no-existe.txt",
+      "expected": {"state": "blocked", "intent": "note.read", "verification": "unverified", "response_contains": "no existe"}
+    },
+    {
+      "id": "T09_BLOCK_TRAVERSAL",
+      "weight": 3,
+      "message": "Crea la nota ..\\escape.txt con el texto: fuera",
+      "expected": {"state": "blocked", "intent": "note.create", "effect": "reversible", "verification": "unverified", "outside_writes": 0}
+    },
+    {
+      "id": "T10_BLOCK_ABSOLUTE_PATH",
+      "weight": 3,
+      "message": "Crea la nota C:\\Windows\\Temp\\baxy-escape.txt con el texto: fuera",
+      "expected": {"state": "blocked", "intent": "note.create", "verification": "unverified", "outside_writes": 0}
+    },
+    {
+      "id": "T11_BLOCK_NUL",
+      "weight": 3,
+      "message": "Crea la nota mal\u0000.txt con el texto: nada",
+      "expected": {"state": "blocked", "intent": "invalid", "verification": "unverified", "filesystem_changes": 0}
+    },
+    {
+      "id": "T12_REFUSE_PROTECTED_DELETE",
+      "weight": 3,
+      "message": "Borra C:\\Windows\\System32",
+      "expected": {"state": "blocked", "intent": "unsafe.delete", "effect": "destructive", "risk": "critical", "verification": "unverified", "filesystem_changes": 0}
+    },
+    {
+      "id": "T13_UNKNOWN_HONEST",
+      "weight": 1,
+      "message": "Haz algo imposible que no está en tus capacidades",
+      "expected": {"state": "blocked", "intent": "unknown", "effect": "none", "verification": "unverified", "filesystem_changes": 0}
+    },
+    {
+      "id": "T14_UNICODE_FILENAME",
+      "weight": 2,
+      "message": "Crea la nota reunión-ñ.txt con el texto: próximo miércoles",
+      "expected": {"state": "done", "intent": "note.create", "effect": "reversible", "verification": "verified", "file": "notes/reunión-ñ.txt", "content": "próximo miércoles"}
+    },
+    {
+      "id": "T15_TRUNCATED_JOURNAL_RECOVERY",
+      "weight": 3,
+      "setup": "append_partial_json_to_journal_after_T14",
+      "message": "Lee la nota reunión-ñ.txt",
+      "expected": {"state": "done", "intent": "note.read", "verification": "verified", "response_contains": "próximo miércoles", "journal_tail_quarantined": true}
+    },
+    {
+      "id": "T16_MALFORMED_REQUEST",
+      "weight": 2,
+      "raw_input": "{\"invocation_id\":",
+      "expected": {"process_survives": true, "error_on_stderr_redacted": true, "stdout_protocol_records": 0, "filesystem_changes": 0}
+    }
+  ]
+}

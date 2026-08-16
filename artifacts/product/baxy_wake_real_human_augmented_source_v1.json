@@ -1,0 +1,48 @@
+{
+  "schema": "baxy.wake-real-human-augmented-source.v1",
+  "createdAtUtc": "2026-08-09T14:47:27.299921+00:00",
+  "role": "supplemental_opened_human_physical_validation",
+  "blindHoldout": false,
+  "candidateScoredBeforeFreeze": false,
+  "source": {
+    "manifest": "D:/BAXYRuntime/experiments/wakeword/ccby_wake_holdout_v1/corpus.manifest.v1.json",
+    "manifestSha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+    "humanPositiveClips": 18,
+    "speakerGroups": 8,
+    "languages": [
+      "en",
+      "es",
+      "ru"
+    ]
+  },
+  "augmentation": {
+    "output": "D:/BAXYRuntime/experiments/wakeword/ccby_wake_real_human_augmented_holdout_v1/positive",
+    "generatedClips": 54,
+    "uniqueClipHashes": 54,
+    "ffmpegSha256": "b2663834d9162f6ee431e7d864d8afd7ac385ec289de70463af67beab6f2257e",
+    "filters": [
+      "volume=0.92",
+      "atempo=0.94,volume=0.92",
+      "atempo=1.06,volume=0.92"
+    ],
+    "sampleRateHz": 16000,
+    "channels": 1,
+    "codec": "pcm_s16le"
+  },
+  "preregistration": {
+    "path": "artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json",
+    "sha256": "15b978a7ddede4797ce4c49de839f9a55081966847c168eb0b5ba3b0a997628b",
+    "seed": 20260809,
+    "selectedPositiveFiles": 48,
+    "selectedNegativeFiles": 96,
+    "positiveRootSha256": "d8ccf1c5b6eab48e2f89079595f51cdd9b9e3d14c1973723ab71bc3e29344e7d",
+    "negativeRootSha256": "8bf0165f695ac701a3a183718f00d9dd83149958170af12f48701392f1c7aeb0",
+    "candidateManifestSha256": "b6093679fd8e0140984b59dcbc035c1b9361321d2cc957efdef927bf31cbee3c",
+    "programTreeSha256": "4380884a6b5504957353852c9a4fd3efb7b9848fdc46e624ffccfeb239d43660"
+  },
+  "limitations": [
+    "The 54 clips are controlled variants of 18 recordings from eight real speakers, not 54 independent speakers.",
+    "The source recordings were opened in prior development; this gate supplements but does not replace the frozen diverse-voice product validation."
+  ],
+  "effectsExecuted": 0
+}

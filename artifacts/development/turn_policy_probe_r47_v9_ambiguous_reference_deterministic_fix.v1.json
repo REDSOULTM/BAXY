@@ -1,0 +1,43 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v9_ambiguous_reference_deterministic_fix.v1.raw.jsonl",
+    "sha256": "27f636ef58f5eb6368908cd25aeedbd163dbf3b26eabe5235179ff5feed3a9b8"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "critical:ambiguous_reference_es",
+      "expected_families": [],
+      "expected_modes": [
+        "clarify",
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-f1adb8d9764b05ee35d84235",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.5779,
+        "operation": null,
+        "question": "¿Qué te gustaría que hiciera con este mensaje?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T21:05:59.874141+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 1,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

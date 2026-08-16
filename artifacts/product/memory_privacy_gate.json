@@ -1,0 +1,54 @@
+{
+  "schema": "baxy-memory-privacy-gate-v1",
+  "observed_utc": "2026-07-16T02:08:19.5811043Z",
+  "source_head": "e5ab1957ed64f7de16bd7febfa275d17a5af9264",
+  "status": "passed",
+  "scope": "deterministic_v3_explicit_local_memory",
+  "catalog": {
+    "product_operations": 22,
+    "memory_operations": 11,
+    "new_operations_added": 0
+  },
+  "frozen_corpus": {
+    "path": "tests/data/historical_messages.jsonl",
+    "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+    "oracle_path": "tests/data/memory_corpus_oracle.json",
+    "oracle_sha256": "9f4107221115bcf36b2bbb3985e9cc856c4236554b380959dbe3ec7d78a63c99",
+    "positive_ids": 100,
+    "literal_ids": 60,
+    "corrections": 5,
+    "hard_negatives": 34
+  },
+  "focused_tests": {
+    "python_oracle": { "passed": 6, "failed": 0 },
+    "memory_integration": { "passed": 272, "failed": 0 },
+    "provider_dpapi_store_export_protection": { "passed": 73, "failed": 0 },
+    "journal_hmac_and_private_boundary": { "passed": 24, "failed": 0 },
+    "catalog_schema_confirmation_and_risk": { "passed": 30, "failed": 0 },
+    "total": { "passed": 405, "failed": 0 }
+  },
+  "security_contract": {
+    "disabled_by_default": true,
+    "explicit_save_only": true,
+    "dpapi_scope": "CurrentUser",
+    "private_payload_encryption": "AES-256-GCM",
+    "journal_authentication": "HMAC-SHA-256 chained records with DPAPI-wrapped dedicated key",
+    "tamper_and_truncation_fail_closed": true,
+    "sensitive_export_redacted_and_reverified": true,
+    "p0": 0,
+    "p1": 0
+  },
+  "source_sha256": {
+    "LocalMemoryStore.cs": "c766e5a8bb045e7c7d1b079e3d4fc1ac7530e10851b9090a1617d0505261d435",
+    "MemoryHandlers.cs": "12dc98f63e3ed69cc590027ddf8e4bdbdfe98f58135f1f0eb3670b9f6d91383d",
+    "NaturalMemoryRequestParser.cs": "44b3387e36460f9ac8fc314ce99de507f79eb2483c0cbee6ebc1684072d8aba9",
+    "FileInvocationJournal.cs": "c76221103733fe153b6f985e02aee3b832bd408b1b7018fbd6a637fb6c778ab4",
+    "JournalHmacAuthenticator.cs": "34cae0468362deca280ca4683d99f4f5092c98a851969c15a559c1baf918b000"
+  },
+  "v3_non_blockers": [
+    "Cross-operation personalization belongs to the Fable AI layer.",
+    "Plaintext notes and non-memory operation metadata are outside the explicit memory payload boundary.",
+    "Documents may be redirected or synchronized; export is explicit, confirmed, redacted, and visibly warned.",
+    "The documented theoretical case-sensitive NTFS P2 has no corpus requirement or reproduced regression."
+  ]
+}

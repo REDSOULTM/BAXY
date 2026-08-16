@@ -1,0 +1,35 @@
+{
+  "authority": "read_only_runtime_path_attribution_not_a_promotion",
+  "constraints": {
+    "effects_executed": 0,
+    "model_started": false,
+    "opened_v9": false,
+    "providers_enabled": false,
+    "registered_runtime_modified": false,
+    "voice_stt_wake_exercised": false
+  },
+  "correctsR277": {
+    "r276Model": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+    "r276UnsolicitedEffectsExplainedByForcedToolChoice": false,
+    "reason": "V8 ran on Qwen3-4B, where the gate is on, so R277's V8 counts hold. R276 ran on Gemma-4, where the gate is off, so its 24 unsolicited effects cannot be attributed to the forced contract.",
+    "v8Model": "active_qwen3_4b_instruct_awq_q4_k_m",
+    "v8ModelSha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+    "v8PricingStillValid": true
+  },
+  "gate": {
+    "filenameTokenRequired": "qwen3",
+    "nativeToolPolicyEnabled": false,
+    "source": "src/baxy_mind/llm.py:_native_tool_policy_enabled",
+    "toolChoiceSentByRegisteredRuntime": false
+  },
+  "next_requirement": "The tool_choice A/B proposed by R277 does not apply to the registered runtime while a Gemma-4 model is active. Either measure the JSON decision path that Gemma-4 actually takes, or preregister a model change first. Do not carry a Qwen3-era mechanism into a Gemma-4 measurement.",
+  "overall_goal_met": false,
+  "registeredRuntime": {
+    "ggufName": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+    "manifestIsVersioned": false,
+    "manifestPresent": true
+  },
+  "schema": "baxy.active-decision-path.r280.v1",
+  "section_7_met": false,
+  "verdict": "forced_tool_choice_path_not_reached_by_the_registered_model"
+}

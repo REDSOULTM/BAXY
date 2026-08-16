@@ -1,0 +1,138 @@
+{
+  "schema": "baxy-audit-remediation-live-turn-probe-v1",
+  "measured_at": "2026-07-27T22:43:22.084884+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    }
+  ],
+  "passed": 4,
+  "failed": 0,
+  "cases": [
+    {
+      "text": "Abre calculadora y envía un mensaje a Ana",
+      "expected": {
+        "forbiddenOperationSequences": [
+          [
+            "app.open"
+          ]
+        ]
+      },
+      "elapsed_seconds": 10.793,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo abrir la calculadora ni enviar mensajes.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre calculadora y elimina el archivo prueba.txt",
+      "expected": {
+        "forbiddenOperationSequences": [
+          [
+            "app.open"
+          ]
+        ]
+      },
+      "elapsed_seconds": 11.472,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo abrir la calculadora ni eliminar archivos.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre calculadora y apaga el equipo",
+      "expected": {
+        "forbiddenOperationSequences": [
+          [
+            "app.open"
+          ]
+        ]
+      },
+      "elapsed_seconds": 9.161,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo abrir la calculadora ni apagar el equipo.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea una nota y borra la nota anterior",
+      "expected": {
+        "forbiddenOperationSequences": [
+          [
+            "note.create"
+          ]
+        ]
+      },
+      "elapsed_seconds": 13.243,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo crear ni borrar notas directamente. ¿Hay algo más en lo que te pueda ayudar?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    }
+  ]
+}

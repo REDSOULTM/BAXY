@@ -1,0 +1,21 @@
+{
+    "schema":  "baxy.audit.memory-export-ui.v1",
+    "started_utc":  "2026-07-27T07:29:32.2325185+00:00",
+    "pending":  {
+                    "count":  1,
+                    "operation":  "memory.export"
+                },
+    "created_count":  1,
+    "checks":  [
+                   {
+                       "name":  "memory-export-03d4342dc66eacd36af0928a9cd95c8ad2fea1ae289861591e71eb86d57104f5.json",
+                       "length":  1524,
+                       "secret_present":  false,
+                       "corrected_preference_present":  true,
+                       "cleared_session_value_present":  false
+                   }
+               ],
+    "deleted":  [
+                    true
+                ]
+}

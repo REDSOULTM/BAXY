@@ -1,0 +1,102 @@
+{
+  "schema": "baxy.audit.protocol-recovery-stress.v1",
+  "core": "D:\\BAXY\\source\\artifacts\\product\\build\\audit-remediation-20260727-v109-dev\\app\\core\\baxy-core.exe",
+  "core_version": "1.0.9",
+  "catalog_count": 168,
+  "cases": [
+    {
+      "label": "empty",
+      "input_utf8_bytes": 1,
+      "protocol_error_code": "invalid_message_size",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "whitespace",
+      "input_utf8_bytes": 4,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "truncated_object",
+      "input_utf8_bytes": 2,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "json_null",
+      "input_utf8_bytes": 5,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "json_string",
+      "input_utf8_bytes": 8,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "json_array",
+      "input_utf8_bytes": 3,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "empty_object",
+      "input_utf8_bytes": 3,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "unknown_type",
+      "input_utf8_bytes": 25,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "missing_request_fields",
+      "input_utf8_bytes": 29,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "embedded_nul",
+      "input_utf8_bytes": 30,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    },
+    {
+      "label": "overlong_frame",
+      "input_utf8_bytes": 66001,
+      "protocol_error_code": "malformed_json",
+      "malformed_safe": true,
+      "recovered": true,
+      "recovery_error_code": null
+    }
+  ],
+  "safe_rejections": 11,
+  "successful_recoveries": 11,
+  "elapsed_seconds": 0.3822593000004417,
+  "errors": [],
+  "process_exit_code": 0,
+  "stderr": ""
+}

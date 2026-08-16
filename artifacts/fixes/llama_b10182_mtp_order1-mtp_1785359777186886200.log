@@ -1,0 +1,17 @@
+0.00.165.523 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.330.879 W srv  llama_server: -----------------
+0.00.330.889 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.330.890 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.330.893 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.330.893 W srv  llama_server: -----------------
+0.00.333.699 I srv    load_model: loading model 'D:\BAXYRuntime\assets\models\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'
+0.01.600.237 W srv    load_model: [spec] failed to measure MTP context memory: failed to create llama_context from model
+0.04.191.134 W load: control-looking token:     50 '<|tool_response>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.04.191.851 W load: control-looking token:    212 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.04.297.835 W load: special_eog_ids contains '<|tool_response>', removing '</s>' token from EOG list
+0.05.790.984 I common_speculative_init_result: creating MTP draft context against the target model 'D:\BAXYRuntime\assets\models\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'
+0.05.790.995 W llama_init_from_model: context type MTP requested but model doesn't contain MTP layers
+0.05.790.996 E common_speculative_init_result: failed to create MTP context
+0.05.791.001 E srv    load_model: failed to create MTP context
+0.05.791.014 I srv    operator(): operator(): cleaning up before exit...
+0.05.792.771 E srv  llama_server: exiting due to model loading error

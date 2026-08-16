@@ -1,0 +1,5001 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v20_all_evidence.batch4.v1.raw.jsonl",
+    "sha256": "44fe600024c9bd07ddd9bf240aa9a6b4f0c80184da1bb672ad741cd07203c6b5"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:a4ff170c6577ec66d673b7b5f9e1e7769823e060018a95c57a3e13ea45e294a7",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b71febd91ad6aeb0615a6faf",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9336,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar foods tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:a5c00abc894e421d17d3c6c0bc39d4bf44cea82f906f90005bd12cd8c48707db",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-410084904a2627dac0177579",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 3.0534,
+        "operation": null,
+        "question": "What is the action and source app for toggling the session?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:aa2dc4e18dd2fd553ecb73de611d9ca07f78441004f9646355571c8750fe44f4",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9a3f3f55b742a976f0432879",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0999,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I don't know the exact location of valet parking near Deerbrook. You might want to check local directories or ask for directions from a nearby resident.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:aa50939e8fa4b259900d934fda4f2301d64628b9bc2b854d7d92becb6b6b76d5",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2556627e435a2593a8f95ddd",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.8772,
+        "operation": null,
+        "question": "What is the due date and title for the reminder?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:ab3ff17dacbe17d7855db2f1d5e03ced522c9f8d021e29058de27d49ba04e9b1",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-560861c805aaad305158a52e",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.9072,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:ad07baededd97854f30d39d4fda3b80ed2d3d93b60763b26a6a2b529ff574da4",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b3efb52b65610479b142664b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.8902,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar madeleine tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b2d9d76a83af39d9e89a1057635751fd9992435d58d942f79cae9bcd4b4afda5",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7a2e2252af0904f9741518db",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6763,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete centre as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b427b5005176b7d7657e3158de093ed8abb281319f4b1116ba4c91237e5edc63",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0a2ecc8b217bbfa54ae625a1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7805,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar aldi tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b782e89432ac8f1073900ced3467fb77b756247923160914c1ea30cd2fce536d",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c88fec84ac29d0a0b9f1854b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.005,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b8b149dc8c011e2a575587718507cc40907e14c3ec80a4defb7901eddcea36c1",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dfb54e06a890a614b9c86288",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.7739,
+        "operation": null,
+        "question": "Create a memo for 'buy milk and eggs' with a future local durable reminder?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b8c57ddbb3c48debcecfae960ffab108aa58981eec90a38a1689017f948b9601",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b10b6efa3b31b95ce8fb66d0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1549,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete card as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b8fea4cb56a3468191c7868f33c1f6965eaeb10a16c769909c314e9ab702ec15",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0004b044f076e7319ebf3c1c",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0035,
+        "operation": "note.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b9be90b4ec312498cc5ba3dc7e09a4a7e37cf879b39526e3781a5b5a95806a0c",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-946ee48b092abc3e9396c17d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6068,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Sonic tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "action_grounding"
+        }
+      ],
+      "case_id": "holdout:presto-v1:en-US:bd2703d86951eb5552b29490d57887a47c379a755c1bf9ba465cfd74494b398b",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-154990bcf2648a5da598710e",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.3411,
+        "operation": null,
+        "question": "What is the due date, kind, and title of the reminder?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:bf337399df07abb773337082da02d9afa0d7430bc5954533bcf7210a32b09415",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-03430bcacfabe97446cacde2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1541,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete day as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:c1d03b02619ab111c9ff9f2a5ff491c9e83cc9e06858b0862611c2564a7ef49a",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b839aa52eea1a46f89f436dd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.8532,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar booking tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:c5a51c303fb72fd54913b04a3b1051adf4ff0b6d03226c684e82c4d41aede66b",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-07dee3f327b914ad0291d8c7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.7816,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I notice you're looking for valet parking near the theater.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:c6011958ca483537f1dfec92b7206cee4df7b3c62e0f06cb26113b9699b57f58",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-fc4d5b959af60cd04a8bfb95",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1504,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete studios as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:c91ec5a21717da7e465a1841ac6243e76330e61311a223b59541dfba539cee9e",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-009ccf4e9df3b3de0e37c87f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1574,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete the Google app as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:d1a9ac758dac898a5f0c6ed26574084c32f6eac674a4d235cac7a611a4c53eb8",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3af329dea532a24102acf409",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6821,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar gas tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:d905dd1ba306f28c578a616a39c266e286a3caa551ed309c73a06c96cd05ef8c",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a98e30d1b901d2c2d54de785",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0046,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:d9d3295d000aab008da9e8f5ded46a5479a00a4a617d232d4afd63dfec28eb97",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c6f4972ae2c5181c0062d140",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3183,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Wii tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:da9c049a6cb02a26d9a1472d26fd6773b5d2237ed686b5725c60fa157336789b",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b65f68934647642cf1469331",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2504,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete kart as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:dcc34864f4dc92136421844a5233e73864ad784fca3d79f039c1a00a66391501",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b8cd899ef23fa019b92109c0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1313,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete watch as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:dd39a184a5dfa184d5fa02c67c7a3061c233176acfb80255f59d51f2796ce8bf",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-45ea0dc9fbb52bc4d3cfde10",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1458,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar apps tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:e0be30943333119135d34c769b673747509a0ddce588026024dd1c3669df2156",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-528b79e5137925c7c27f4fb3",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.3162,
+        "operation": null,
+        "question": "Can I get Fischstäbchen with my credit card?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:e405682a73302e81be1dbe400ae45a3723da57bf56698148c4829d217f332767",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6d2a672d86585bfe7e04ec66",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4218,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que necesitas jugar Just Dance en la Wii.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:e710a114d5abb3c5535cb914d9afc5bf3b70e8005042b9990f1770c5356a6a88",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-973681ea7ec4813bf37ae671",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1512,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete Julie as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:e78ca0b95d876e27d15dc9bd0d29a1823562c1a7c46807f0b37a5499a531066d",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-eba1e51d1aa917d62084d533",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.8072,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete morgen as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:e7f9ed36f81ef233e7355ae08251358dc3e78918488843281000c791a55d84f6",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-88dd3a8deb4fdf8ac88a62b5",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2539,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar League of Legends tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:e97f0505b2a9bbf83d53e55da2b25a9728185130889a980ac73863af23ce1a72",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0768e667b059b868a9bccc30",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.142,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete now as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:ebed4458e51ae490adf5c0bc198fd4c19bf90fded79cb2565da8ea998dd9c4c9",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e128fdba39507a171fe5cb62",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5173,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete parking as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:ed83479514ff5081fabe611f6c48f2098fdf29bf61eb9c4e6ac4391e30f2e469",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a649bc698a02ee79b8a8b081",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1449,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete candy crush as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:efe89dbd7beae1c658331b77c5eb47004d32dbf8ad81cdb735d9b6dc5f9107d5",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3662c1cd06aab7201a684a95",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0438,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete app as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:f3134d296153a14cda44001f8f7942b5e44f1583d24520065880099de24a40f2",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-59f33281c1897daaf816df45",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3752,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar card tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:f4521ad6d85fad92d4124f7d051e4ff33ece60043736de90363c9a35557d5283",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-431d23636a379e16d17d283b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2037,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete Apple Maps app as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:f73ebc23eeb84825f52e03265a8b5faa85b53d5a6c3843886e25cd39c68dc63f",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7c8c7df02d1d6f292f2d8399",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0492,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete target as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:f7a1bc1709db9f07fb7fafb402d32d6e8cdedbbcc6fe2a8816128591f21bce61",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3aaafb2b4cf48f37a44f1398",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.9177,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Safeway tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:f9d47c3fa52f6fa8406179d3baae37dd66d14316cafc274c5c82e746b34e2f14",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-46e4cd7a4b26d61341f66f62",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.3479,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:fbc3481a594ef214e2d6ff9c2ee820bd5bd3ec9859ef029b73fca37f449f85c5",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ee744a0cc08fb9c8b9b022c1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1522,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete iPhone as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:fd0241953aca0afa33f26511ff5ff21bebdc5caf72df9c36f5ed15c334cf6f70",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e8d52d912124c87d7ac27a2d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3008,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar level tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:fd2f9ba16e9c52bec81fe3afa49c8945d7540af148b66741caf32f12b21d1ae9",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-12c4ce7469597b2430bce0d1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6501,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar level tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:fea050b65d8cce18fd6236e463cda9d2ecb50ee03b2ca25c0ca9cb9803e12e35",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b82de83cca3f373d77b19b6f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1521,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete netflix as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:01793349a00b7dc265702fd42e94c21755e5eeadf14cc9416510ef3e459b5b0d",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-87cd6af4e2a1e7225b4df067",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1799,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Facebook tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:0259a5d0c534d692a1f888abd4a891c3f4c43105e10d112d0c93541f2e262fc9",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bf0bd0f757c7e9060207aad2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1681,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar iphone tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:02a78471b4d9173661949ddb0a74c44d1a5352a2a006db4b59f97616e1000044",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6080c6a77f638b7a40501ceb",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2368,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar bizum tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:0419d24314ef520b9e0c1cf4768719a780f9daf9d1eb2053ebe9e1fef08dd42e",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-831f5c2c3c8572b82889b297",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1756,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar trivial tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:04702dc6fbd19f6e481b14878eb6dfd9c062d3c8038ad8c7771c0410b831c18a",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-119b7600f400a00fd45c3f50",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.5953,
+        "operation": null,
+        "question": "¿Qué contenido y título quieres que tenga la nota compartida que dure hasta las 6 de la tarde?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:060be6736534dab907e8fae1a99e921d43ce97f22f82958df41863a390e7b303",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c36e5e4f145e7ee40fb7b523",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2336,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar apalabrados mama tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:0a2a1025990081df1b69f00882a920883e4a70d1e2d2a66939fc3d414c3d74be",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-26eadda6f3d3e6b3d9911124",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.1524,
+        "operation": null,
+        "question": "¿Cuál es el nombre de la aplicación que deseas verificar?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:0b36d74317507696f7c504aa0f7c1ec24b7d2b9c41292713f952321b37e2ebe8",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dc4cd1978fb2dbe9fee10c47",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.6642,
+        "operation": null,
+        "question": "¿Cuál es el nombre del proveedor y el título del juego de construcción de imperios de Ubi que quieres probar?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:0c3500bc3c995fb574d8bc0a9c9d4fc171507b521ccbfb2b3f908ed8fc2e7975",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c20a388461ac834a1cc6d267",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1995,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar manana tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:0d362a6f5021fa7e26707a6111a74378fc78f2ea670b5244dbc43a203e0d56a5",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-99e30d2b790a49a69275695c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1727,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar facebook tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:109ad54b964f3457151d50995ef183353d22506443e5d8328038a360869dfb8d",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-85132914c371ab66cb59dc12",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6008,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar plataformas tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:12bc99cadf7712c5d33e7ac161b1bff33eb714cc86f1f7bba652083afc42b602",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-91a67fa09e805f8028a657a3",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0056,
+        "operation": "reminder.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1350afa7e376fe5159f90d97bf95bba6440b69ee01337d12edd218bfb1fdbbd3",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f7c4ce799dfc5c049c88bc23",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8535,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Puedes aparcar en el estacionamiento del zoo de Barcelona, que está a 100 metros de la entrada principal. También hay opciones de estacionamiento en las inmediaciones, como el parking de la plaza de la Constitución.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:147698595de7b302f9a0279bc555d546e79904fd494f06885611077395f3e1b6",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-38d8a459cf77d8a47062e7ad",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.1044,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "model_decision"
+        }
+      ],
+      "case_id": "holdout:presto-v1:es-ES:18168537700fb718290251499c4a61e416b1399bcfe6dab43fb3bab12939c746",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a5e7498e5f670fb03a3633bd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.5217,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar iniciar partida de juego de plataformas, no, mejor de acción.",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:18a28708d31b1713923fda2f041b28b73797f3187da7ad622fe2016c188dca0b",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c32f589559708e487bef617a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8362,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar aparcamientos gratis cerca del centro de Sevilla tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1aa13a579451dc3faa62cb979f407c0280e2ef8b8d3f2d0759d9c693fe1ce043",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1e64d13760542c6603943ea2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2177,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar jugar online con Luis pues tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1aae098faba503872c631f2baf7f0556d7092f5828a3125891357cf2d9f5627e",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d62edfc8ae516e969ae1d5a8",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.4784,
+        "operation": "app.installed",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1d096b575b240e08031009ed7f6e6c99c82b9451979b583e59ff8a60ba44579c",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5ff62d0f93c7a7a9f5152f90",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1937,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar wow multiplayer tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1dc5565b325ea88ef3ebde0f0a9b13f52fb11494bf81616cf51e7a3653d4774a",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d3a160049330bcc9b62c0edc",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1e41e7df5d6e858309313bdd189af2982a2be5e025cb404a1e488db020d9c11a",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-721b756c52a357e2868c7931",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0031,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1ec4979ab1483fd8bec154f83c7bba5931e7f365aabb26eeecf706a7bf35ba20",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0937d523d05e1a3f88b17d0b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3121,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar poesía tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:201809f8c9fbb815245b2256198eca912d3dd25a940f26db0905f315b933f575",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f15b67b4a00b83cd6d47b2d6",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.6883,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar madrid tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:20c904b3dbbfaef217824956f619d781bb90a87d53973cca1e3b00c4623a2fcc",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-488caeb640e0275d00079542",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1713,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Mango tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:20ea39f7580bad012e0e454d737f17575e82321519de45375d3469c8ef7b21e6",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e0f9101de424c703a2e69baa",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2739,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que buscas un parking adaptado.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:2194ff2a89e244c6470305ca0342218150a599749eb1fcc728e6a7cc4ec772a1",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e0d58b00447047b9d56145ca",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.7724,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar granada tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:21eeb579ce670bff90249ea1de06895a4deb0b3038e52a9051a9dd55064a8dc6",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-66cd550613e6e23992805a2b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0156,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar miedo tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:2644d75b8faf44a3d2c5435ff9bcc69690ab77e53df4055f0a828da980194c54",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1d420db5cdabe7311b5a73f8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3752,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Telegram tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:2872b709e76934c9e65dcecbe37db258c8f1221256cb9e4af170821a59603e6d",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c102e7b2a48dd9ab2c672eb5",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1198,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Claro, ¿podrías decirme en qué zona estás o a qué lugar te diriges? así podré ayudarte mejor.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:28bdc1a1aeb9460d6b207d5f609c8959bc7d2e03483cda0e24a4445255dd17ac",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2268d3d3150a21757ab0acf4",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5846,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que cerrar Word podía perder cambios no guardados.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:29034c466be3199bc17977ee4d741244c7571e0236552d50d0e78432f022c6bd",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-242bcd5631d573df90ebb0c6",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8498,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar DHL tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:29a89956474e86ab95ae69df8ea54f1c235e63ffce23821352380e968537a12b",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ab5ac9c24a0510b2c5f66589",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.5994,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar youtube tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:2aa71ef6cdc5839e1c5572e7ae3f9e4aee872c04dd336a2be7fe2f5c28f7d5b2",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b37b53f6c5c4ae3efd80fccd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3749,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoño completar instagram tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:2b9afc7781594ba53c0a5a0dc5303a0d3fc1fadf40260e6e7e757edc0ce5d0ae",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e2a0120041c97718eac890d0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.9803,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar ordenador tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:2f50bf15d75e249faa700a968c15fc890c9215fcbe8cba862d7f8c05c1a63e88",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b987471e5947667300326ffb",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7882,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar kart tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:304d3187bb36d856aae590b4faeb56b4c3360235953b637a6ee1a56c1e409ca2",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-31dc391c3af3f9f4a5004ef8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3698,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Madibs tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:32617307068ed70084079ed1fd26d927b1e783b2cc98282b51da00574b718bd7",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-86e451d2912d3f299e5ecd03",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0032,
+        "operation": "note.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:381c8bed72f1f8f1a8e8a93fb6a8ab880079e01c962d56d40cc5f9ebb4c12788",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e69960b355b0e5d528b53326",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.9684,
+        "operation": null,
+        "question": "¿En qué habitación te refieres al salón?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:3826ca259f77c2298e817bfb68ba6c7ccb34fd655b24ab799a54c45324d3a548",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-56df5dcc3775e4c7d8f752a0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6232,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Empiezas el juego en el nivel 2.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:3842dfb19626914582b3c18a38f15ac873da7773e25a3b755fce8958cddfdece",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5c202468fbd73f31dee623e8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2864,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar la nota para Luís en la tablet tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:39a4de09a600aa3a4b13b875db774d937c8d1a89c14921a3b2e60bae652c44c0",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-37d2dc84d047daf6b7ed0b37",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0031,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:3e3600fb6f8f3f900d340bdb9757a1c6f1338d92e11eb854145505b745dd917b",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-917adf4b82cef0757a390f9b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4838,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Entiendo que deseas obtener varios cuadernos y bolígrafos.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:423b6cc7cd8c03e7e00f613415812bb9395f23a1d1542a74c22b3d8c7efce2c8",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a26dbafaa2ab53d4b7930550",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:430d6e2fe504e0ecf62dcd32d219a8e733b63adc8394da9de8b133c55b251294",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2e7883c40e79207f27f94059",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1836,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar tele tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:4529c01c1b9031b0aeaaf4b6a27085711f8c1cf975418ba5c127b8638085516c",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b6c376309fd1545eb29932c7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7428,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoio completar grande tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:466ec15c0e511810c51e1a64d92bb2b9f04ac30416f358e6ba39ae0998af5a86",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-efd0a05af215d22b06d57e84",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1793,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar móvil tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:46f94d7b4dad5238f8c7af4b33f576a6a22d1765ba1e5d3bbcc24af7368ed5a5",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-31ef82e9d96a8c7d412c00a7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1707,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar domingo tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:49c50cd9de8d5c743b8391e289a8f419f33218d9be2b80f0b7e5d07c989eed27",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b10e49da5d8de20acfecedcd",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "model_decision"
+        }
+      ],
+      "case_id": "holdout:presto-v1:es-ES:4b0e394812b6710877556757cbaee84bf69d8a24f3700d787209f74324c4d249",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-906a7cc90b62122774769d63",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.928,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar madrid tal como fue pedido.",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:4bd70c374d5f96db97ca3afac48f4c6894920a26188f69a960c4204474f15617",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9c6ccae4147121bf00a90fac",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1088,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar idealista tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:4d04eb6122840fec801995f24e60538f2d5881f1d6076867545a19363bb7ea25",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-655cb6493b3899a249d6c2cd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1624,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que te interesa conocer las aplicaciones relacionadas con el deporte.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:4e42d743300a133ce8a7ba5bca756f3cbb4a22854604b33627ab8f81ada084cc",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-466b4cc61fdc00f727b805f9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.8117,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar baseball tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:5039de513081ab7dbd9b2a9ac843b609775ad3ef3a91d42a1eaedab50018b6a2",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dc4fb78f034d9f1f3209d8ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7404,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar las notas que fueron pedidas tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:54017227db1e7c17fa640574fd31dbf81806740cb2d7612ba6a2fe730c699a48",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2a1c557388521950d2e2584f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 4.1683,
+        "operation": "note.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:55bb8440d1509bc3e1825107e2ea6ef2f303b08482fa15eb4be686c349af74ef",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7d750c27400b36c344cc76a1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1989,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar telepizza tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:57ae38267f19622de4b281f080dbeeb02c8eb7ae925d08482564ef17585b12c1",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8d124f85f606ecb8d549579f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0123,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar creadas tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:59eccf3c03b9d73fd4af8b8771a0a62033320ea2d1cbd6319341c5c533f38fec",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5d315cd00154399fc57603af",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.468,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:5bb79857dbe96097adfa7ab996f4c5a55be1a35d192b27bb7838ce2b67cda0ee",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-91c04c15bf4b2483450bfb10",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2648,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo mostrar la aplicación instalada ayer tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:5fce41f0397a8cce778ad0a5706af3cd10f793ee694c22584c1a1793fa5fe113",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dd6402adadbe84d04a2bfbba",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9664,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar cerca tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:60d1aff3cf5163fd2ec5a1a7d22c40ff81f9a93bef8d5525997d24510f6e9438",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6593b293d7fadfce4cc1b658",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1494,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete mark as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:61887c6e258d946ea6a19dc81bf04e63eb9eca27beeb9d063161d50dc22051b7",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3ace29abf00f9ed90ab8348b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1419,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete game musica as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:635867f77972063517b22441c9ce9d75f0fdb5ddb21a349d58ce9d36324b9f00",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-da03be79f847cffa366dac51",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9789,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar oysho tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:66122e972039f130db38e4394e484e5a5d668bcfd42aa8eb583e6955b46dc81b",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5b8b5e5de880de7db05aa6ca",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.139,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Starbucks tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:672c0c778a851be92a57e09b910a5d03f29c7fd78e858f81c201395ed2e89981",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-37af878992140cc1ac78567c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5365,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar nivel tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:675c7160d7f86f9021c3b7b3480c067d97df77af4a91fa77ecdb54a0758a055f",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d35d086d5bb24a5c2d6f4501",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 2.2023,
+        "operation": "system.identity",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:676864d16124a7c8a39b906ebfd53fcf11dd40fc34f5839883c400bea8b5caef",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d5ad58fd9bb3819c4ea30e2f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.3398,
+        "operation": "app.installed",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:687a68db575766ad6fd82925c1df1a3c491935d5bde86569a2ab40a726ee6055",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-451fe84e2251f725eaa4681a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8327,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que hay un aparcamiento en Murcia con ascensor.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:68aa847bfab724a144fb8fd9c65bd7a4dd72dc6787c8d0b1b4aafb9b11e5d5d0",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-727e4cb6ee0d468c6a61a538",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7842,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedo.completar aparcamientos de camiones en barcelona tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:6cb05e9d389a49bd45b4c032057455b11df66b392a359a1bfe28f529c8e586e5",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-beb528d56db74fb9a6c69060",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1681,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar ipad tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:6e0c101929cdb67e1175eb2471c4425431733f333e156d828c6008fbf565aa29",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9f43a8ee084ab0aca0a19b89",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1063,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Instagram tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:6fa92d42a7e3bc90f09930bbb001b67caa704c1a625f3c96287c75f97c1b43d3",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e81e9646dd691ec9e024a2f0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.201,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo iniciar Snapchat en el móvil tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:7117928c16e0db23ecc24751afb37b01ad94fd34aaf5da2b90414404962c1dc1",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-47274673c54388a255718daa",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.9265,
+        "operation": "reminder.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:740d2a1eca4343c748021b140a8ffd8b949288ba067724b9bedc5460ffa0486d",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b86a66ac21280b9c528aef38",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1911,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar trivia crack tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:7dce8ec3c3c9c4354cdababc9844d8f99a3466b7c33d3a4e5488f69c7c1c7879",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4d54dda9bb895382e94418ad",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1785,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar impostor tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:7ef38407827d57d0055f02a1cb680ba324c44e1a450f4b8db90dda075e95467e",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d68f5152ad7ed49ed5a9be17",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3436,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar descargadas tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:80530d5c0044b334680fea4ff2b31ef0d0411040f26fe6bedb2f526c9361ba13",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6cd7dcc2aef205db67eb1f89",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0265,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar mezquita tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:8147c03fa1299b29e3d55c4ef45d72c556a4ca393f3d3126572db7cb425d8648",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6b62fc1086ad2c4800cbd684",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 3.2523,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:821768ff10e58693054084297d2923034940c027a1d082d2dc5324306e71ec55",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-72923c6c846b68c876f8a990",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "game.catalog.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:828190390f925db337305dda564097c2433cc8b4f796d6c062859bc8d59314f6",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7714428896f754ceb0b80ec1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2198,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar clash royale tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:8465f48a8cbb395d9ab09b2d45d27178eaa4c3a53b098707617e0a000bc5f3ba",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9305c2bafd3174746eea1165",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1412,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo buscar aparcamiento cubierto porque no tengo acceso a tu ubicación. ¿Puedes decirme en qué ciudad estás?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:8805215e37f2e3be149bb4757531efe378e1e43503a4c4df222505182d101bbd",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-cd9f0fadf9b1c93f650af015",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.8008,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:897eb3bf100b987caa777d94bde59833d4e66997b1cc2535728db0abab408f4a",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c31fd2c771099558a807a9b0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5706,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar family tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:8c6cb9f2eaf1058f0d9c1f3f36ac16e20c76d4d48061b49c034e8c0437ebaa7a",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f74ad92dfdc207c15d5cf1b9",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0023,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:8f9b63526def42520cb8a42a3283631992368b0d480066a5ddf552ddc5bdf562",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0eca7e6567ba34555b87686e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2348,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo abrir mis apps de nutrición, como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:9049759cf9671c604a936fadf08a8949bcac50085a44e3a140dc586aee549a71",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7b4dce8771fe1d1088179dc7",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 2.2132,
+        "operation": "app.installed",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:90c0c553a004c3c25d18c64f582197844db343b02c40e6f60c24a4eb0f08bf83",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1c49770340f05fbdcbadad9b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1924,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar play tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:92ad3f6cc27ebaaa34b4bf1b63de0ea49ab0b7c3737d79f8edb0af01ed6ee06e",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b9bcf5161c6080ee41604079",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8461,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar parking cerca de cuatro torres madrid tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:92ebbc1f0d7f523091f188f0377c4755e9f13314d5dfd963ea6879be6759c1b9",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-cbd31e7da758253174f10b1c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9905,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar marco tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:945be638744e471452d3343afba66b9377a50070d60d0fcdb0919c85b8a2d17d",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b4f57dc2735f46d7d82cd0f3",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.3254,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Puedes decirme donde hay parking gratis en Huesca?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:94cd94bcdbe682ccecf846c718d738270b182df1e707b5810b338ee142b995b3",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2efc8d53937e228c60bd8f82",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2493,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar la compra de 2 barras de pan y pagar con PayPal tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:96c692c0354aa2c31810cabdcbeabad7e536c1100fca68b352330aa6e7546f4c",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7d5b7781210e63eee001715a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1884,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar correo correo tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:96e104c983195c3ee64fff75d5c89a4ff59b022fb200dc52fcd5c7ccb2b73b06",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-af73704063267b1606af08a7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8404,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar guardada tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:97990a663deeb9167abd76727fe0b980fcac6ea5db6439328fa801bb4967126c",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ac0b0c9d62b42c8bc7e44ed1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.102,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completo television tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:97bfbdc033bdc05b2b90ff2589b0cbdf1c511e17dedfbd04c8c9afcb89c966e8",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-41ccffc5bb5f32478f5bf5ae",
+        "error": "",
+        "failure_code": "",
+        "kind": "plan",
+        "latency_seconds": 0.0044,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:993662af4333d2a2bb63083094e88f3abc242469bcb0ce90b5f019b0542d2b83",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9a283af909a23f854a582fbb",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1822,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar starcraft tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:994ca0b79e5b336b1e57b221c343d2938c256bbbcb14b87abc4c1436b532c48f",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e469ec5bf8ddb548c92e462d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8453,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar eliptica tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:9bf1bd8005ece14a42363494dd5298e19a38784244fd2764dda566a5e3ce1bf5",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a9cb218a677e4bbed49735de",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0034,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:9bfc231edb600a9f996cde1cb74dfaa6fd0cc7f75c457d42e167a98a060ac977",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7e613cb10a8d9cf07abd947b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1708,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar google tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:9e0c9549b944ca345339f89135c9c323e33d941059acbaea61490211d6b43bf0",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ab9e28ba5317694866c7ae72",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4771,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar sims tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:9f355fd5fdfd2801d19dfd11f1f675e541d1e64910ba002cda2b0203df8b1913",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e1d53d0190cc67c2f670ce1c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2239,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar starbucks tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:9fe45ec909d1dd4cfe2c5c663461154f4cef9c9f5b49acd834b2451a58fb6a2d",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-db09637fd1e9b37f6c6f43c7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.6149,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Instagram tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a038b516898dee5ea0462646174113a7dbb3e90d560ecee1476a805219510768",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-da27536e796d837d471e64eb",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2503,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar abrir una nota nueva tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a1a2e33fc5a14f193871b3d8db6149e1a4000c52ded11d59b115308bc017f359",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e66565c19bbbd6538fb909ad",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6687,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Dónde quieres comprar una caja de caramelos?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a1c8f274f3eb656d2eed1caa291cd2fed1bab5c9f5b5cd5dce2a8bf2227d2a1b",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a6698474c6290cdf630fc8c6",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1749,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Instagram tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a3a1e0b18c802d8ca9c2b03cc4ffcf8ebede9ccc57eebca529e0132e11fef82e",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-79d0d1eec7005ac68c240a4d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1903,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar tarde tarde tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a54364f595a7eaaec5128486cc07e96c54039395b5dd3dc9d1f2ec046ab867f6",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a3ddd489371af5c0624e9b71",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 3.2758,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a5a74bd6d81cd1e55760986c78c87e7a23d8f808eae3ad539bd4cd54aa4f3555",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c81121a5f8e4b1b4be5dc636",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.3307,
+        "operation": null,
+        "question": "¿En qué consiste la nota personal que quieres crear en Keep?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a5f1e4a0632ca21848cf38a88eac656506b9bf0a810b5f76a1a3cb907fe5292e",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1b68a489071345b387c98a57",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.8827,
+        "operation": null,
+        "question": "¿Qué quieres hacer contra Walter?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a6936db2bdd759f82ea6e1374beec76acc9687bb900535e7233977992829bf2d",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dda1faaebe2ec134a6a657da",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1519,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete Diablo as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a7ab6d388b6d1cc1909ff48743af7a002dfacd374999bee41132536ee22ea49a",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-920a8c138bde1193127c9130",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3407,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo mostrar dóci tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a7e647dadb1435c817df9f6e195e733e9dae846040bb3d51ef59cd48dc45bb10",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7a7796f338572a19db298355",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.4234,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Sí, hay parques gratuitos en la zona del Hospital Universitario de Córdoba, como el Parque de la Luz y el Parque de la Ciencia.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a951bf87b21741c235c18fac098361bcfcf2ce4f96c091c294590ab7692eed8a",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d06d58e1665316cf9ff086fd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0379,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar photos tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:aa4501c6396fe5e8fb1f5c04340e4c6514ebe2976f6327a208bedd195567d5db",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-cef57639129062cf580d6f6d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.645,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Cuál es el nombre del curso o la materia de las que buscas las notas antiguas?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:aafb1649533e73967e3b6db5c92b93a56958bde9250ecad663c89ef8837bbc97",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-9d670195d0c7b3cbdd80fd12",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3007,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar asturias tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ad5c13abe77da6361d371450fbc73624deb23db5aa7db607df1be6a3f6691a51",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4adb5eed3ac8f673743683f1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1933,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar goya tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:af139d3dfb075d7c64ca9263bb4bef5576591d4cef71786c1fde316d3c25ae16",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d9263349c9cd7da4da9070b8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.3289,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar nota en OneNote para Allison y escribe Recuerda la cena de esta noche.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:afad7bc3250b3b041c2417c153720c9152dd8ede56ae2166bc405f6c518a1c27",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bd2b60da5890caf67dd9fbad",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0414,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que quieres agregar esta información a las notas de Apple.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b08025fdd8d16c04b7c8750f2694368d7ef5d97452944d324f40b1d7c73ce28d",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dc44b670b5d276d005dc748c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7567,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar deportes tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b0fac396bc13b7e2f8e61842e601819aed3e0e0ac419d8859958388fb3375eeb",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b1b8f79ad9d3e7820a9a4967",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.3303,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo enseñar mis apps de vídeo, de música.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b1670f382d57bb860270c7014541bde49faeb712d4d2d5d718295c6e03cdf1c6",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-112371bdc8760a1f9b2ae400",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0025,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar madrid tal como fue pedido pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b1ced2be04f7f2520445a1b8ec7a628b210b2235cd655ac21cffa84742723eb2",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ed9fb2a65372ca6726bb58f0",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0039,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b5fc003a6709c0a443fca0d8c20218c4a5420bf8cf21ee42d0aba9103a563b4e",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-81b920bae0afc81dcb53369b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4932,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar parking tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b83833f87555b32c079094b566029b8c0d5b67412de861bf9baee6ab072b701f",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-06acc685532235a154191f74",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0774,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar nivel 4 tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b8d461b01e57b161966632cfb3a7c8cab1d58730774b32db86e6aa5dd17097de",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-de1fd2dba73d8f4b061b1479",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.995,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar parkapp tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b96f46e20b822bd95e669d622a89bf2bd78b3d76d45b1c799415471f87f9eb35",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-32f62b4eeb233a93ae457883",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0033,
+        "operation": "note.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:bd563d6840638b23fe22663ca2df7113dc08c69889837b28ca45b356eb4ceb4c",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6ab7a6cd4f80f49a7c0fc6bf",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1949,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar rebeca tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:bfb9077ac7d61da66e994348c834423b20ed19fa58b2b3dc4226982dfc2ba97f",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6d6d164c5bcfb2ee0eb7ce20",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0214,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar aguacates tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c02909a67753d543ff5099d5d6613f8d03b9ecfb6ae678449afa64aed3016592",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e23bbad1b82c5bbaac129360",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1843,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar urgencia tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c2b11445e73fdfae124c06979ec5ff03413568849c0ebd716c42c6167a60fa2c",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-be2a8a7ba47d5b25555f57b9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.9079,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar España tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c30ff80d4ba876d42bba23a0867fee1e9305d8185cd0e6df25ae895dc5a33d73",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ab191c28737c9904f8acebc0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1963,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar abrela tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c418cb5d7feb1075e90ebae28816f643f8c5d93e7d5fd54e3704a8d45cf71618",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-91782d87552e94f6af7a7672",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2134,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar conmigo partida tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c4aa21c4bb13b7caae2be46a9c85743d3d0d754023f734d6acc2086be1344b25",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4e8d09477c94e9784baa9da7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.768,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Tienes aparcamiento cerca de El Viajero para esta noche?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c881aea22727cf49ebe8f5e8393df9caf7695345f6609aff29ff5b9d572e7341",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-893df5cdd63484347ec3a344",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6526,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar aguacate tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c8d0ed59e47df202e8952788a4d885695ef489b96e80a13415231d2420b20657",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-21475150ac6d88b6a191e9ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.2788,
+        "operation": null,
+        "question": "¿Quieres detener el Fortnite?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "action_grounding"
+        }
+      ],
+      "case_id": "holdout:presto-v1:es-ES:c8d8827881678e91d036306a3db7a1fd6a727625376ab3a7bbfd83dc2ef7ee68",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2bb1fb794224b0ad219cc3d8",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 3.0077,
+        "operation": null,
+        "question": "Busca algún juego por equipos para la PS4, bueno, mejor para la Xbox?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c8e037983719c634286bafa188e4541eef67f5403e1c17b79d795fd87495cd2d",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8a8c0c60404e90f7d67ec535",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4905,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No, no puedo iniciar el juego Angry Birds. No tengo la capacidad de ejecutar aplicaciones externas o juegos. ¿Qué necesitas que te ayude a hacer?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:cab46a6d1f9d9ef2b221b33aeae95af6acb507f5d01ebccbdf003e52314a94a0",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-af679f9bdcf61c76eb712dca",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.0763,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar todas las apps instaladas tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:cce6da523ae32f881a0492b33c43bbc7922cb6deb75342a8e78d4831edd04295",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4467679ba089d6fc1a0ad838",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8964,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "En Ciutat Vella, puedes aparcar en las zonas designadas para estacionamiento en las calles, en los garajes subterráneos, o en las zonas de estacionamiento público. Si no hay estacionamiento disponible, es recomendable usar las zonas de estacionamiento temporal o buscar alternativas como el transporte público.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:cd760f02b68baaf22a4852a9ca3d35e35ff51b4b33f9efcc811d7d5a9221a764",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2944ce935e10906b6d0459dd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1997,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar inicias tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ce888fb2b040fbfa100075de2dfc9506822fff7d62762fd32f66dd469cf669e7",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6c2ff9a52484639f31201d3d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.5257,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Claro, no incluiré un recordatorio en la nota para tu hermano.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:d0bf23955a03a97ef26211d6bf7a1c5cdcbf591a7c939df51486c8915f947410",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-694dd8f14587d82f26d1ae0e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2276,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar el FIFA tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:d0c9924e2ac8e58c88d19c095a1b2b38e9672deaed11b17c93295bf7b750157c",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-385be82003dc6d2e795a5a1d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9157,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar apps tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:d5c2967a9ba876168647eca4aeee388c5722e11121c3d3407b981d2496e3f9ff",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ba612d51ab51892486da6a56",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1968,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar fall guys tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:d675cf5c8d46f45bf42885d5cc2848e608e054460690a2268d8ab5bfb5312ec0",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-51cb2c17679876a2bbeb9f61",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9171,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar minusvalidos tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:d7113e74b9d351986da0a4602af1255c7a791a80dd80be15cbd4286e05d252b6",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-01a27574300dd13cda24985a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8375,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Quieres jugar un juego de estrategia, sí.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:daf990b56cf51feaabbf0cea0bd54eb4ad4aad25d631e9e75733e7493b14b2ed",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-50f4c9a73e3da2fd8c4eff1e",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0036,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:dc2aa22c5fa2876d42e3abc83dca5bb644a2e7afd6807e44e08e7bafc0c79f84",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0c12f0360456e26744712013",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0026,
+        "operation": "note.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:dd409f26de9eb52fce931f3bcd415694a310c3ae490ebbd0aa3eff00e901dabf",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-6e45d921ca4c98a4b8e18d87",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6711,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar calle tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:de05442a249d755c276c593080c7aa833284b8e39dc4395f1aa0eaa621439225",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a2746c8456b095894f7591db",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9755,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo conseguirte un café del Starbucks, ya que soy un asistente virtual y no tengo la capacidad de realizar compras o acceder a servicios externos. ¿Qué te gustaría que haga en su lugar?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:dfa22aa052cf20160a08ac5d41de33555a1b316f6ef37a07fb3d66db2a08c781",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-185c7bd86aa82f1d742ceca2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2262,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar iphone tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e09b33cdebdb1578042e0abc4427a923e2ac14ba572b397e08d5f24d6ceeff0d",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bb85779da703b82a00b066b6",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1831,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar monica tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e0a2afe972c3f590160d6f89bb46302043f34478e5b0c17377483d03d98906dd",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-df75a6bf2b57110c780e990d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1694,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar gmail tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e18d74681ad00d5a6c8dd89cdfb247f8bc0cf52c4a046bb87aaa3b2048740d44",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-570ef7d42b420264075d5ef4",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0349,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo hacer la nota en Outlook para Papá con el contenido recoge la basura, no, mejor con el contenido pasear al perro.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e2d965db6c0b316319fb4a9c335fe1cd88a1305e0341270eadfd1b496c56d961",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-13e5ebdb8c351eb732d13c4e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.18,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar tablet tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "model_decision"
+        }
+      ],
+      "case_id": "holdout:presto-v1:es-ES:e3b5d8a0a27006a41c36ed010d8b06a11d49372c47ecf034f70b019c6ec00f29",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-98ba68b35a61081e0de8505c",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 4.7115,
+        "operation": null,
+        "question": "¿Estás buscando galletas de chocolate en lugar de bizcocho de chocolate de La Artesana?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e5b2327849d810ffa2477331e53af8da7288cf0ed1f4eea6ea431416a0924df1",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b9ce92bcb233aa93dda58153",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.3381,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar king tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e64cfe16533dd2f88ace37c59668890325aa28005c09dc42ca48ebb621acf4e3",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-49a8e4474eb3a64ff4b98e66",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2223,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar el juego de puzzle tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e65ca890d7bbe82248545430b473859c20b270debac256a1a74b4825b1419129",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-28e4c87fa327515338603e8d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2171,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoiones completar cuarto tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e7a4d38be3e9adc0f6b059fbb30261cf1e7b472ad2a81d1e44210ccef9a661a7",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-378ed2fd5be44b871581348c",
+        "error": "",
+        "failure_code": "",
+        "kind": "plan",
+        "latency_seconds": 1.5621,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ec9cd6c72e3283f5eb78d5ebfbefb5bda839ce48ec98d62a8725856bbbb55910",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a58218229529505e7e12e05b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2412,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No, no puedo mostrar las notas de Outlook porque no tengo acceso a esa función. Puedes abrir Outlook y buscar las notas directamente.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ee6326874b626ff3d21344fffa772ae5981aabee9db9f2dbcfe478a516059263",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3ce50014991b22279c7e716f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.5203,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ee790eb0b4df727e5b1b9eb3a496307b038e98986d85eb1fd9782cd0720b0daa",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8d37b2e574cdcf74d5733420",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.5892,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedo conseguir un viaje al Caribe en El Corte Inglés.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:efd04c744089830dabc8c7759d20b9c2787619f078094b1a8d085ef2ffb40b33",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-b2b69ce52d0d85f00d851380",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "note.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:f6f953373936e9553f1a88eed2d5b90cffe35709e0bd96f401e49f7bc6ad497e",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-62cf649e0e18e1de41398bc2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1852,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar madrid tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:f7c551876d66259f48a0353186c0e51f0c607015619f7843943d9f6ffa5bcb4d",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1829e43a378151d4647f075f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1423,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete Jose as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:f83afd21ad6c54ce1b3ec931f1e889cf67a8852e616fd6dfa9e60ca4312a44f3",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3cb7156b9932f56868c1caef",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 2.6911,
+        "operation": "task.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:fa3abd48696b39366707dd114b359bbc50cc804bb37e5ac21c5862a1ced0b84b",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bc207bea412e269d841fbb67",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0027,
+        "operation": "note.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:fae5906c0dad9eb02f0cff5669548bc99432dc3abf2bf80937f581ca38e13be5",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-781eb6f44e2130d015f00761",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4709,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar online tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:fc1913fd315f77b79c6ac6a948350c891eeea6dbe92ea535d6150299c5d2d416",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-4a7209eba70954e5c04a4980",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1974,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar esto among tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ff4d48c28a996be10400978d354a7d9b57ac87b92ae4028f1199569ef1418af3",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-5a9e92d472378e3382d9c1eb",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0026,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ff539bb8195354043d121d3e6a32499ddb7419434560bf6704ce122492f76ee1",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-412c437bea0c8dbe07aed3d2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8556,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Lo siento, pero no puedo conseguir regalos para tu mujer. ¿Qué tipo de pendientes estás buscando?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ff760fe33d0390aae2f94f703518522e71923e85dbf4eed9de04314fbb3a6685",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2f73be0a9cffe5c3f041df59",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2629,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo conseguirte un ramo de flores en Interflora en 1 hora. ¿Te gustaría que te ayude a encontrar un lugar cerca que lo entregue más rápido?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T00:38:12.172129+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 5,
+    "cases": 215,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

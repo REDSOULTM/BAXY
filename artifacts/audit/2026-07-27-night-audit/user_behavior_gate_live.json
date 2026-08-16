@@ -1,0 +1,211 @@
+{
+  "schema": "baxy-user-behavior-gate-v1",
+  "total": 25,
+  "passed": 24,
+  "failed": 1,
+  "maximumLatencySeconds": 0.437,
+  "results": [
+    {
+      "name": "saludo_es",
+      "mode": "chat",
+      "elapsedSeconds": 0.334,
+      "reply": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "saludo_en",
+      "mode": "chat",
+      "elapsedSeconds": 0.186,
+      "reply": "Hello! How can I help you today?",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "saludo_spanglish",
+      "mode": "chat",
+      "elapsedSeconds": 0.157,
+      "reply": "Hola. ¿En qué puedo ayudarte hoy?",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "gracias",
+      "mode": "chat",
+      "elapsedSeconds": 0.202,
+      "reply": "De nada. ¿En qué puedo ayudarte hoy?",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "identidad",
+      "mode": "chat",
+      "elapsedSeconds": 0.28,
+      "reply": "Soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué puedo ayudarte hoy?",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "conocimiento",
+      "mode": "chat",
+      "elapsedSeconds": 0.152,
+      "reply": "La capital de Japón es Tokio.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "explicacion",
+      "mode": "chat",
+      "elapsedSeconds": 0.437,
+      "reply": "La RAM es la memoria de acceso aleatorio de tu computadora, que almacena temporalmente los datos que el sistema está usando activamente para que sean accesibles rápidamente.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "aritmetica",
+      "mode": "chat",
+      "elapsedSeconds": 0.177,
+      "reply": "17 por 6 es 102.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "confusion",
+      "mode": "chat",
+      "elapsedSeconds": 0.127,
+      "reply": "¿Qué quieres saber?",
+      "passed": false,
+      "errors": [
+        "no contiene ninguna alternativa: ('dime', 'ayud')"
+      ]
+    },
+    {
+      "name": "status_enfocar",
+      "mode": "compose",
+      "elapsedSeconds": 0.173,
+      "reply": "Enfoqué Steam.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_abrir",
+      "mode": "compose",
+      "elapsedSeconds": 0.129,
+      "reply": "Abrí Steam.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_cerrar",
+      "mode": "compose",
+      "elapsedSeconds": 0.145,
+      "reply": "Cerré Steam.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_tecla",
+      "mode": "compose",
+      "elapsedSeconds": 0.15,
+      "reply": "Presioné Escape.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_texto",
+      "mode": "compose",
+      "elapsedSeconds": 0.123,
+      "reply": "Escribí hola.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_mouse",
+      "mode": "compose",
+      "elapsedSeconds": 0.122,
+      "reply": "Hice clic izquierdo.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_volumen",
+      "mode": "compose",
+      "elapsedSeconds": 0.172,
+      "reply": "Puse el volumen en 25 %.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_ram",
+      "mode": "compose",
+      "elapsedSeconds": 0.268,
+      "reply": "Tienes 2.9 GiB disponibles de 15.4 GiB.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_hora",
+      "mode": "compose",
+      "elapsedSeconds": 0.186,
+      "reply": "La hora local es 23:45.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "status_perifericos",
+      "mode": "compose",
+      "elapsedSeconds": 0.187,
+      "reply": "Mouse conectado: Logitech G305.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "error_accion",
+      "mode": "compose",
+      "elapsedSeconds": 0.132,
+      "reply": "No pude presionar Escape.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "error_app",
+      "mode": "compose",
+      "elapsedSeconds": 0.197,
+      "reply": "No pude abrir la aplicación porque no está instalada.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "aclarar_app",
+      "mode": "compose",
+      "elapsedSeconds": 0.119,
+      "reply": "Qué aplicación quieres abrir?",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "aclarar_archivo",
+      "mode": "compose",
+      "elapsedSeconds": 0.12,
+      "reply": "Qué archivo quieres abrir?",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "confirmacion",
+      "mode": "compose",
+      "elapsedSeconds": 0.335,
+      "reply": "Responde confirmar / confirm o cancelar / cancel.",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "bienvenida",
+      "mode": "compose",
+      "elapsedSeconds": 0.184,
+      "reply": "Hola. Estoy lista para ayudarte con este equipo.",
+      "passed": true,
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-07-22T00:08:47.5360250Z",
+  "operation": "clipboard.paste",
+  "status": "pass",
+  "environment": "current_windows_interactive_desktop",
+  "target": "controlled_windows_forms_textbox",
+  "clipboard_changed_by_gate": false,
+  "clipboard_text_length": 6,
+  "receipt": {
+    "ok": true,
+    "accepted_events": 4,
+    "expected_events": 4,
+    "foreground_identity_stable": true,
+    "clipboard_unchanged": true,
+    "authority": "win32_clipboard_nonempty_foreground_identity_sendinput_acceptance"
+  },
+  "postread": {
+    "content_observed_in_control": true,
+    "observed_text_length": 6,
+    "content_redacted": true
+  }
+}

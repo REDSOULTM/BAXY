@@ -1,0 +1,669 @@
+{
+  "schema": "baxy.servicenow-codeswitch-semantic-fusion-development.v3",
+  "measuredAtUtc": "2026-08-11T05:37:41.487853+00:00",
+  "partition": "development",
+  "status": "passed",
+  "metrics": {
+    "cases": 59,
+    "nonemptyRate": 1.0,
+    "decodeErrors": 0,
+    "referenceTokens": 1672,
+    "wordErrors": 86,
+    "corpusWer": 0.051435,
+    "criticalAnchors": 146,
+    "criticalAnchorsPreserved": 145,
+    "criticalAnchorRecall": 0.993151,
+    "ambiguities": 10,
+    "casesRequiringClarification": 4,
+    "secondaryTriggeredCases": 2,
+    "initialSignalLatencyP50Seconds": 0.894234,
+    "initialSignalLatencyP95Seconds": 1.835271,
+    "semanticFinalizationLatencyP50Seconds": 0.894234,
+    "semanticFinalizationLatencyP95Seconds": 1.835271,
+    "semanticRealTimeFactorP50": 0.0666319104177283,
+    "semanticRealTimeFactorP95": 0.08118597383489395,
+    "referenceLanguage": {
+      "EN": {
+        "referenceTokens": 692,
+        "errors": 48,
+        "referenceErrorRate": 0.069364
+      },
+      "ES": {
+        "referenceTokens": 980,
+        "errors": 8,
+        "referenceErrorRate": 0.008163
+      }
+    }
+  },
+  "checks": {
+    "expectedCases": true,
+    "nonemptyRate": true,
+    "decodeErrors": true,
+    "corpusWer": true,
+    "englishReferenceErrorRate": true,
+    "spanishReferenceErrorRate": true,
+    "criticalAnchorRecall": true,
+    "initialSignalLatencyP95": true,
+    "semanticFinalizationLatencyP95": true,
+    "semanticRealTimeFactorP95": true,
+    "effectsExecuted": true,
+    "blindRowsOpened": true
+  },
+  "thresholds": {
+    "expectedCases": 59,
+    "minimumNonemptyRate": 1.0,
+    "maximumCorpusWer": 0.2,
+    "maximumEnglishReferenceErrorRate": 0.2,
+    "maximumSpanishReferenceErrorRate": 0.2,
+    "minimumCriticalAnchorRecall": 0.99,
+    "maximumInitialSignalLatencyP95Seconds": 2.0,
+    "maximumSemanticFinalizationLatencyP95Seconds": 2.0,
+    "maximumSemanticRealTimeFactorP95": 0.5
+  },
+  "sources": {
+    "primary": {
+      "artifact": "artifacts/development/servicenow_codeswitch_parakeet_greedy_development_v1.json",
+      "artifactSha256": "3e858ea36165dd619fef1efc4956133a416cf80ac24b6b278938024f667fe14b",
+      "detail": "D:/BAXYRuntime/experiments/stt_results/servicenow_codeswitch_parakeet_greedy_development_v1.detail.json",
+      "detailSha256": "256b520ae2ae72ac82952eba5968c5e7d3332ac5a054183ea965c1a696c649ef",
+      "engineRuntime": {
+        "loadSeconds": 2.950232,
+        "status": {
+          "loaded": true,
+          "model": "parakeet-tdt-0.6b-v3-int8",
+          "provider": "cpu",
+          "decodingMethod": "greedy_search"
+        },
+        "peakRssBytesObserved": null
+      }
+    },
+    "secondary": {
+      "artifact": "artifacts/development/servicenow_codeswitch_nemotron_auto_development_v1.json",
+      "artifactSha256": "8ef803ba52a2ca098058ca729001244e154002465f7b555f2eeaf04c1d306388",
+      "detail": "D:/BAXYRuntime/experiments/stt_results/servicenow_codeswitch_nemotron_auto_development_v1.detail.json",
+      "detailSha256": "4ef74a76863dd726b3003b137d649b3171b73779c93474b9836c77356f2f11eb",
+      "engineRuntime": {
+        "loadSeconds": 3.161053,
+        "status": {
+          "loaded": true,
+          "model": "nemotron-3.5-asr-streaming-0.6b-560ms-int8",
+          "provider": "cpu",
+          "languageMode": "auto"
+        },
+        "peakRssBytesObserved": null
+      },
+      "selection": "postal_address_suffix_and_4_to_6_digit_field"
+    }
+  },
+  "lexicon": {
+    "type": "wordfreq-general-bilingual-frequency-and-phonetic-index",
+    "version": "3.1.1",
+    "languages": [
+      "en",
+      "es"
+    ],
+    "wordLimitPerLanguage": 150000,
+    "distributions": [
+      {
+        "name": "ftfy",
+        "version": "6.3.1"
+      },
+      {
+        "name": "langcodes",
+        "version": "3.5.1"
+      },
+      {
+        "name": "locate",
+        "version": "1.1.1"
+      },
+      {
+        "name": "msgpack",
+        "version": "1.2.1"
+      },
+      {
+        "name": "regex",
+        "version": "2026.7.19"
+      },
+      {
+        "name": "wcwidth",
+        "version": "0.8.2"
+      },
+      {
+        "name": "wordfreq",
+        "version": "3.1.1"
+      }
+    ],
+    "tree": {
+      "path": "D:/BAXYRuntime/experiments/stt_candidates/wordfreq-3.1.1",
+      "files": 206,
+      "bytes": 64690316,
+      "sha256": "cd85d43f291ae07e470456e6533862c324862a3499c056eec784a9e310dbab7e"
+    },
+    "benchmarkReferenceUsedToBuildLexicon": false,
+    "licenseReviewRequiredBeforePromotion": true
+  },
+  "detail": {
+    "path": "D:/BAXYRuntime/experiments/stt_results/servicenow_codeswitch_semantic_fusion_development_v3.detail.json",
+    "sha256": "08899f4c38e83cdecb2d4727fc30298319e0cf19f9ef34ced29d96e53cc29ba7"
+  },
+  "evaluator": {
+    "path": "experiments/stt_quality/evaluate_servicenow_semantic_fusion_development_v3.py",
+    "sha256": "c644cfd808e6805507551dcfd903cb5d37fc3ae2f754a4afab9fcc6b47e0e573"
+  },
+  "fusion": {
+    "path": "experiments/stt_quality/semantic_stt_fusion_v3.py",
+    "sha256": "3510729290f4e3ef6bec0d00182b6818dc5aa3e3a825201f07269a40fa9f467f"
+  },
+  "caseCommitments": [
+    {
+      "caseId": "servicenow-en-es-0200",
+      "referenceSha256": "2605469a1a2797a10e4a82ee73c92d3bb430a08fed328733114c4cf8e7511c4a",
+      "semanticTranscriptSha256": "3961ae4609a8d57ac5113bfcdb4fa496d80ef68b87d77d3623c5e70184d04603",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0201",
+      "referenceSha256": "98bcc9dc01c391e17c60f0c9e11a1e234af76e2169c507870dd2883b88253022",
+      "semanticTranscriptSha256": "94124fe5a4b9465af90bc523b93ab5dd6db0f7d12484c48cc838d7fb4548390a",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0202",
+      "referenceSha256": "3d04c8794b8b7f79230be924efebdaf1001667e8d2fd94af6582b9f12edcef78",
+      "semanticTranscriptSha256": "fd4e68a45dd43d7aebc28a2f6ef486743deac20666a1c5e7e8185a2966982496",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0203",
+      "referenceSha256": "ff36f61181dde425ca3a6c9091afcfc46612058613224eb31f7525f0dbeef494",
+      "semanticTranscriptSha256": "6973d5e35dbc389edea0058935614a479860274a20c7341c382057c0248c7024",
+      "wer": 0.028571,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0204",
+      "referenceSha256": "c515c071bece7183769203130bf943825c6a5e7613d44d97afeaf009056f86c3",
+      "semanticTranscriptSha256": "02a98c5884b35c5a6af3fd3eb1cada538f28c3393d1542553c4aa2000bc825a2",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0205",
+      "referenceSha256": "7d801f1b693916c24b50c84a98ac9cad56c3884371c3bc961813672103977dfd",
+      "semanticTranscriptSha256": "2b6449bea6829dd54f79022658231b60962cbdb6699be611c80cdf8a01c901a0",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0206",
+      "referenceSha256": "2fb41863621e21b06988e8b62790e241759592e17584f31c9c4d4ee4d1f7862c",
+      "semanticTranscriptSha256": "2fb41863621e21b06988e8b62790e241759592e17584f31c9c4d4ee4d1f7862c",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0207",
+      "referenceSha256": "9a9fc778b9a109fcda115b730ace2853b3397b47db86f513647e6e1acd6e6f82",
+      "semanticTranscriptSha256": "01e29137347f69799c777b8c5bb1ae6b30cc16e92af0a1daf57db3f3ba92b154",
+      "wer": 0.033333,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0208",
+      "referenceSha256": "afb317ebac1e05764110ba2e6d979eacaef4118ecdf131dffe8bf33930636511",
+      "semanticTranscriptSha256": "eb69eb6b2782c8b0dbd7810662da1f545e51b93bce85fb2ea154bc8fd1514928",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0209",
+      "referenceSha256": "a87b997d5a3edaaf13358ed2f3f718e3a4317a80a19df2b396ad5445b3d32aa2",
+      "semanticTranscriptSha256": "a87b997d5a3edaaf13358ed2f3f718e3a4317a80a19df2b396ad5445b3d32aa2",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0210",
+      "referenceSha256": "453c260ee4beb460094b3c84f07f850506dd3dab667dc4605ab07eb879891d4f",
+      "semanticTranscriptSha256": "edcfff31c4065116d3894ac614dd9e6d20da7cb778b72d4266848bc61c5f04d1",
+      "wer": 0.058824,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0211",
+      "referenceSha256": "9ffa144eb1f5dc38c6fbf272d2dc3dcd862b09f644622396ce92e27dbb373735",
+      "semanticTranscriptSha256": "bdfbd23b4f9a3b07617a58a7ba9b55a926e66fcb578ef54df98f66e0aeaa10b2",
+      "wer": 0.153846,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0212",
+      "referenceSha256": "253ffadbbafd5586c69b104c19d7dc536ba7fb23fecffeaa9b5d23c90cc001a4",
+      "semanticTranscriptSha256": "253ffadbbafd5586c69b104c19d7dc536ba7fb23fecffeaa9b5d23c90cc001a4",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0213",
+      "referenceSha256": "b197ff84a222bfaa87a4cc65a5503544b6c7167fbcdd98cfcb4023b745de1a0d",
+      "semanticTranscriptSha256": "8bc5ec7802ca454006c02d47247d5d47b03370ca865d56fb3db78d38d14c64e0",
+      "wer": 0.210526,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0214",
+      "referenceSha256": "1d08e96bfa7f6d462ce5760c35c3c0db03005c3b96732ac4d5024a417acacdf0",
+      "semanticTranscriptSha256": "4ac40fd0a561b37df77a4e5a4fb3603f32d00739ec17dbd137284087d5124e14",
+      "wer": 0.16129,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0215",
+      "referenceSha256": "c0285ed60eba3ca0b3ec1bae11e5e3e4ad5c8bef8018009dd447d5876a55a8af",
+      "semanticTranscriptSha256": "f24921eeb29f52d514a9d58711804307a6b395dcf9efc4c6986dd971c8bb1be5",
+      "wer": 0.076923,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0216",
+      "referenceSha256": "10376fe9e6e38c8c5fca8cb3ed3f130781bba053511ef429e92af51115524661",
+      "semanticTranscriptSha256": "30efb2871d39aa10e341cdfc52ff850cce48578c04fdceb91979dc9d402b93c5",
+      "wer": 0.066667,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0217",
+      "referenceSha256": "9ca4709d964bd7dbdc7974df1eb7e6cd907f6a8fd83d9261bda3b094fa7af0b2",
+      "semanticTranscriptSha256": "ddad7459734eaa37cca57e28fb583bf80d503519f922bf40a2cd68a684d96f89",
+      "wer": 0.142857,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0218",
+      "referenceSha256": "88db76221481585f83f632868ccd31370b9836c9836b7f1665d4c5f36c3d908e",
+      "semanticTranscriptSha256": "320607ee0f67e57423ad611314f2925c29a5970860ed2a60e30c0b750e34e090",
+      "wer": 0.046512,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0219",
+      "referenceSha256": "d871c0658c301a456990c3b6cbb05664987edce4a0fc8ac87b07945f6685d928",
+      "semanticTranscriptSha256": "2d5561fb762f949ce9b71a952bd4f620a63adf8c6916da4519f6c6461e086399",
+      "wer": 0.090909,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0220",
+      "referenceSha256": "a60c727f127fa5d1d82b5b6c03278efdd8cd9181996e4e695bf8076b7524bd60",
+      "semanticTranscriptSha256": "234b4706b3730fd497a7e6c92c582e5e58870076b12ee273da2dfbc2bf931b6c",
+      "wer": 0.125,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0221",
+      "referenceSha256": "7a5c0794a891f952c052795abf4e6d9e8906529bffa1e9893e0659c1b374ba47",
+      "semanticTranscriptSha256": "bf4ec96c1531f516ab38cc1e819c7c3f7e5e5ff147b5e439fd7223d5932fe9a1",
+      "wer": 0.037037,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0222",
+      "referenceSha256": "e909510ecfc24e5208f8dedaaca0985396b43c46af5dffd50e7c16ced9416112",
+      "semanticTranscriptSha256": "e909510ecfc24e5208f8dedaaca0985396b43c46af5dffd50e7c16ced9416112",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0223",
+      "referenceSha256": "0867ff1c918b745430e1c638af0940b854662da3515470ae3eb88c085f5e8f47",
+      "semanticTranscriptSha256": "443c807d95637e413b8dce264edc992983dd4572d6bdf33095f21393ed8c0f6e",
+      "wer": 0.025641,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0224",
+      "referenceSha256": "5a8f28ddf822e78343851b9985091ca70edcfbd2108c2f3b824023807371ed70",
+      "semanticTranscriptSha256": "83d15d5697fd2d8e2af7b1d5c87829350a34e017b55e0a6196a5c43cc31dd03b",
+      "wer": 0.065217,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0225",
+      "referenceSha256": "8c4e00f889496cfdc772b5cac491c4c31d4e3bea989504685764007cf95870a0",
+      "semanticTranscriptSha256": "d4acde6e1af52fe6c756e24af623f3a420c9e23bce7c3db8d15c9876b4d3a021",
+      "wer": 0.068966,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0226",
+      "referenceSha256": "b044a00ff1757f6409cdaaaa1d647202441ac0227d840de1686a36ed136496f2",
+      "semanticTranscriptSha256": "74f88877a9161ea26f8d2f03686a22f76d33d8f34d27d1cf0b8e92a7f7501ead",
+      "wer": 0.044444,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0227",
+      "referenceSha256": "4aa35c0a195b648f677c289e278f9c6bab6e175c767ef77020f0a2db59f464b3",
+      "semanticTranscriptSha256": "3fcc601270eed206f5826883cc907cea413a3b4a5658da8ebb3ea59a694212f9",
+      "wer": 0.025,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0228",
+      "referenceSha256": "ee6911fec8a6340c1773910455341709daf20bfcc9dbef9d7f08dd467eb7e6ce",
+      "semanticTranscriptSha256": "9cd5ddb14d8b43ef44b1b4e2a9106257d61a553a8a05ff54a1610324499c3b41",
+      "wer": 0.055556,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0229",
+      "referenceSha256": "e8b0de59b35755855cf410a97f421f9cf7d2abb3a926a5dcfe182f96de15f628",
+      "semanticTranscriptSha256": "05a447e7146888f90dfd307b418bb6046ffc57279f955ad02e19711872f1221c",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0230",
+      "referenceSha256": "f983c0585b0cb207a82630d7822c6f84fdf20a1a78be74792e4406552c381895",
+      "semanticTranscriptSha256": "bb4a9756ce3e4da2935d384648ee5fc14d4df1c55643c1b0bd30f22b47a0997a",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0231",
+      "referenceSha256": "10d502b06ea9f454a0099a1b2e4af929ac23a5d9279b5c67ea531362ed8948d6",
+      "semanticTranscriptSha256": "01f24ad906d7d48a95752c32bb4d35e8c9de3c9c4fc68befa06f5c9d26da8c10",
+      "wer": 0.137931,
+      "ambiguities": 3,
+      "secondaryTriggered": true
+    },
+    {
+      "caseId": "servicenow-en-es-0232",
+      "referenceSha256": "36ae21c5c6c989013e7b02bd9e17163f319c1028f8f3571575be5288ba656875",
+      "semanticTranscriptSha256": "bf3731ec2aacfdaf70042c16ea41e43a9e845381f322689845917c6e86c102a5",
+      "wer": 0.09375,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0233",
+      "referenceSha256": "ba359c613d33c1e072e610d3ec795231d996d3db4a12f50aa81179240306bea3",
+      "semanticTranscriptSha256": "ba359c613d33c1e072e610d3ec795231d996d3db4a12f50aa81179240306bea3",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0234",
+      "referenceSha256": "a8716c8b1163945f4fe9b7b89716768edacca75622628f231855d364a487ef2c",
+      "semanticTranscriptSha256": "b4785a8d6e8e87c88e89a89cc8bb6dae03c791870266f5745f87be8d72333476",
+      "wer": 0.171429,
+      "ambiguities": 1,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0235",
+      "referenceSha256": "61240b139551ac794d78370870007f62329a707ffe59d4a5d1a0557b86082d13",
+      "semanticTranscriptSha256": "36bb18a4aa518449a58bf2910a0d4c23cfbbb2b999b53d1b3ef64bc5e6015273",
+      "wer": 0.055556,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0236",
+      "referenceSha256": "6a3bf5cecfb4ba34506957a55ed3d315a99f78365fb93c603d826ffc85ad3f5b",
+      "semanticTranscriptSha256": "b6ada48d3ebfa8c54106b7b9a3099d502455fa244a245c6df333d1e7b5bb14a1",
+      "wer": 0.133333,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0237",
+      "referenceSha256": "506ba8fe3fbc74c25278c7bacd60f38d78335dac4fdb3e0e420f9328c1730bb3",
+      "semanticTranscriptSha256": "506ba8fe3fbc74c25278c7bacd60f38d78335dac4fdb3e0e420f9328c1730bb3",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0238",
+      "referenceSha256": "800aeb2da5ed211c6833273dbe9c9a81f5de1073d9001def1f50dcd7de48f2f1",
+      "semanticTranscriptSha256": "2549e9ca3defa7fe23659fa6fdc1b3d7022ac8d208413644b388bd59a1735929",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0239",
+      "referenceSha256": "e5746b81eafed375787c7376bacbad63f1ac3babb6818a1181a80cf9e9349c59",
+      "semanticTranscriptSha256": "9c07d2fc0ad411d5a59dcab250ca7441865019a4d24d642cdd3667deb0997f90",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0240",
+      "referenceSha256": "3a4a06803f5424331c123241c76068a77dee03a827d69356fe44ad8b122ca52b",
+      "semanticTranscriptSha256": "8943ea5fade4d041bfb35f9f2a3c65251f0508e88019c522657a06d1828dc63a",
+      "wer": 0.235294,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0241",
+      "referenceSha256": "155dfe0ef6c07d1d9b19ccca4fd5ed1b4639c317cb926e4b58d8a51420fdf5aa",
+      "semanticTranscriptSha256": "021ef38bf2d075a1386af44b6bbe6bedc98a2baca3d664f5f249e9ffcd6704cd",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0242",
+      "referenceSha256": "b55731de22ddea99a69f39ad3a46b474a2898f4a9eee8fc64c545cd81c858c12",
+      "semanticTranscriptSha256": "7ac5d8f78b7e7460dd4cf89691c2cd888ecd1dab9168ac6ec3b5c70de7494700",
+      "wer": 0.06,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0243",
+      "referenceSha256": "8046c82c7e7093efdca063dc235359963b323a6228b504f9f15450faae007ac4",
+      "semanticTranscriptSha256": "2c8fb76a06735607d9a48ce7085f609861baceb4dfd3bad695b27839dec09024",
+      "wer": 0.119048,
+      "ambiguities": 4,
+      "secondaryTriggered": true
+    },
+    {
+      "caseId": "servicenow-en-es-0244",
+      "referenceSha256": "eae05de8342ba2117d69bda921a7da9e7addb5c8ac3547d2085dbbb397a4b56a",
+      "semanticTranscriptSha256": "30d9d4b33349d044dbad69704dd8a46b4964d4e80791e62e77a2e88391f9cd3b",
+      "wer": 0.03125,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0245",
+      "referenceSha256": "279564dc1b05684f3580076035c12a30dee13bf8df1d0cfe70be2fa7bce6cf74",
+      "semanticTranscriptSha256": "cfdb88ca1f7276198a7d17d3146910f9979acef4ef8d927fe307de6b3130b21e",
+      "wer": 0.043478,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0246",
+      "referenceSha256": "d90c2eccfcf3cc982e0425e953f792794183313871477d913887e079a9d604c6",
+      "semanticTranscriptSha256": "db4ec95fa9c1e4ad584df5102042a794771dd8346ee99718364549486b1c4d9a",
+      "wer": 0.076923,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0247",
+      "referenceSha256": "11cb9b5302d7188c91a522963f12da54c75904e4d0aaccddceb9785232f4e153",
+      "semanticTranscriptSha256": "123b09943e9fb12f8a8af14f3d032b310c3150a05bb0dc531128a85d51717e3f",
+      "wer": 0.04878,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0248",
+      "referenceSha256": "b51dfa80192487a1ac2b54e59483e9908553bd5ef3552e2195b13f996f9cee10",
+      "semanticTranscriptSha256": "02d3f393f5b4ce61f0763eff62a8fe0ab848b33f57058da6bdfc84fd1101a25e",
+      "wer": 0.060606,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0249",
+      "referenceSha256": "2cd258cbbf589a5a55f989f4d17bcaac20f10b0fcfdab964a909f4f7fec2eff1",
+      "semanticTranscriptSha256": "139e7b44292d067944a4a97cbe957ca7fd0bda47f507756398bf287dd17ba3b4",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0250",
+      "referenceSha256": "a3286702fbe3c4cce0894e63a110b1582bbfa0c92c955b98791dba9c85bf87de",
+      "semanticTranscriptSha256": "3b9de547dcbe3c7d5c045c049c6f7566df8496ffbd53ede109eaca4a1573d67a",
+      "wer": 0.095238,
+      "ambiguities": 2,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0251",
+      "referenceSha256": "13fc137558537be33b916771e681a5e89a8501880b1670120683abe95b8f5ed5",
+      "semanticTranscriptSha256": "23c99a8b9a54a5aed1896b8f55a07b0fea87c613b12495c6e9af4e40aec349f6",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0252",
+      "referenceSha256": "63e337e23dde87074f42d9a25da8217e8fd206fabb807e955c7ccb52a43639fc",
+      "semanticTranscriptSha256": "63e337e23dde87074f42d9a25da8217e8fd206fabb807e955c7ccb52a43639fc",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0253",
+      "referenceSha256": "59d98717fe907976c8ddd91473a16609f07898c52bdd0dfaf8b99655fdbc9cd3",
+      "semanticTranscriptSha256": "0d8ca2e4def5fd5af21270cb31d48e7e4252974e784324f30bec9752974a97e9",
+      "wer": 0.083333,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0254",
+      "referenceSha256": "b42b46c85323a59bd1de55ab74bf06eec88ba9be9ac184c8f852562f9f616ceb",
+      "semanticTranscriptSha256": "3f3974182b36209a07207d56406aa2b7b29ae7a852e3b130913d25f8e2b9d489",
+      "wer": 0.030303,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0255",
+      "referenceSha256": "99e60d7f479191996824ae21d73e165966f13088f6ea344c6e3b42371106de94",
+      "semanticTranscriptSha256": "99f1ee16cc7773b28ef137d5578e54052eb5bf1c97d9f7c90bb0c19ab428177f",
+      "wer": 0.1,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0256",
+      "referenceSha256": "b3d191330351c5135b09f0fbeccb1b8894125bc045538fcf5e765da98859fe90",
+      "semanticTranscriptSha256": "b3d191330351c5135b09f0fbeccb1b8894125bc045538fcf5e765da98859fe90",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0257",
+      "referenceSha256": "43f9c1b1fe002734d23612b138a72f1335cc7dcaddfde816dd16a36f1a452636",
+      "semanticTranscriptSha256": "1a9ee7baf87a70adeae74e3b924a2ef21579d5fc7116b7b226e15307cfe52826",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    },
+    {
+      "caseId": "servicenow-en-es-0258",
+      "referenceSha256": "4af7f35de52a7d2782a4f269ea7aa0e86575bb3e75a197df9de9975b619cb393",
+      "semanticTranscriptSha256": "ddba19edc41cb61c847f88c40591956db1fd95c0116d3e3f604f421164255f05",
+      "wer": 0.0,
+      "ambiguities": 0,
+      "secondaryTriggered": false
+    }
+  ],
+  "developmentOnly": true,
+  "syntheticAudio": true,
+  "finalPhysicalCertificationEligible": false,
+  "blindRowGroupsOpened": [],
+  "candidatePromoted": false,
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0,
+  "latencyModel": {
+    "primary": "parakeet_offline_decode_after_end_of_speech",
+    "secondary": "nemotron_streaming_concurrent_with_capture",
+    "secondaryFinalizationField": "finalizationLatencySeconds",
+    "secondaryTotalCpuTimeExcludedFromEndpointClock": true,
+    "selectedCases": 2,
+    "secondaryEndpointFinalizationP95Seconds": 9e-05,
+    "secondaryMaximumChunkDecodeMaxSeconds": 0.206135,
+    "serialSecondaryDecodeUsed": false
+  },
+  "predecessor": {
+    "path": "artifacts/development/servicenow_codeswitch_semantic_fusion_development_v2.json",
+    "sha256": "d60f856f41e669aaf826092975f729d0370c5aeeccc5993c02bebd2d8a8508df",
+    "status": "passed_with_known_false_clarification_pressure",
+    "reason": "ordinary_lowercase_morphology_was_emitted_as_entity_ambiguity"
+  },
+  "precisionRevision": {
+    "policy": "lexical_compounds_require_named-entity_capitalization",
+    "qualityThresholdsChanged": false,
+    "latencyThresholdsChanged": false,
+    "blindRowsOpened": false
+  }
+}

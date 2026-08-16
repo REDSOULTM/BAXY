@@ -1,0 +1,673 @@
+{
+  "schema": "baxy.msner-spanish-contextual-hotword-oracle-matrix.v1",
+  "measuredAtUtc": "2026-08-11T09:27:42.828334+00:00",
+  "partition": "development",
+  "status": "failed",
+  "oracleTargetProvidedToAsr": true,
+  "candidatePromotable": false,
+  "matrix": {
+    "scores": [
+      0.75,
+      1.5,
+      3.0,
+      5.0
+    ],
+    "shortlists": [
+      "targets_only",
+      "maximum_4",
+      "maximum_8"
+    ],
+    "configurations": [
+      {
+        "configurationId": "score_0.75_targets_only",
+        "hotwordsScore": 0.75,
+        "shortlist": "targets_only",
+        "maximumTerms": null,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 3,
+          "targetRecoveryRate": 0.166667,
+          "previouslyCorrectEntityDamages": 0,
+          "distractorFalseInsertions": 0,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 113,
+          "semanticWordErrorDelta": -7,
+          "contextualSemanticWer": 0.161891,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.6701070999843068,
+          "latencyP95Seconds": 4.271006800001487,
+          "realTimeFactorP50": 0.10883933973762504,
+          "realTimeFactorP95": 0.12252880203041418,
+          "peakRssBytesObserved": 1130696704
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": true,
+          "distractorFalseInsertions": true,
+          "semanticWordErrorDelta": true,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_0.75_maximum_4",
+        "hotwordsScore": 0.75,
+        "shortlist": "maximum_4",
+        "maximumTerms": 4,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 3,
+          "targetRecoveryRate": 0.166667,
+          "previouslyCorrectEntityDamages": 0,
+          "distractorFalseInsertions": 0,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 113,
+          "semanticWordErrorDelta": -7,
+          "contextualSemanticWer": 0.161891,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.6497207000211347,
+          "latencyP95Seconds": 4.426473200001055,
+          "realTimeFactorP50": 0.10599942603554942,
+          "realTimeFactorP95": 0.12275300055466043,
+          "peakRssBytesObserved": 1383104512
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": true,
+          "distractorFalseInsertions": true,
+          "semanticWordErrorDelta": true,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_0.75_maximum_8",
+        "hotwordsScore": 0.75,
+        "shortlist": "maximum_8",
+        "maximumTerms": 8,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 3,
+          "targetRecoveryRate": 0.166667,
+          "previouslyCorrectEntityDamages": 0,
+          "distractorFalseInsertions": 0,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 115,
+          "semanticWordErrorDelta": -5,
+          "contextualSemanticWer": 0.164756,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.565677800012054,
+          "latencyP95Seconds": 4.010590999998385,
+          "realTimeFactorP50": 0.10826156627537692,
+          "realTimeFactorP95": 0.13835369721628515,
+          "peakRssBytesObserved": 1383104512
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": true,
+          "distractorFalseInsertions": true,
+          "semanticWordErrorDelta": true,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_1.5_targets_only",
+        "hotwordsScore": 1.5,
+        "shortlist": "targets_only",
+        "maximumTerms": null,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 4,
+          "targetRecoveryRate": 0.222222,
+          "previouslyCorrectEntityDamages": 0,
+          "distractorFalseInsertions": 0,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 112,
+          "semanticWordErrorDelta": -8,
+          "contextualSemanticWer": 0.160458,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.5790023000154179,
+          "latencyP95Seconds": 4.311950800009072,
+          "realTimeFactorP50": 0.10593503928740103,
+          "realTimeFactorP95": 0.12757545357580985,
+          "peakRssBytesObserved": 1383104512
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": true,
+          "distractorFalseInsertions": true,
+          "semanticWordErrorDelta": true,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_1.5_maximum_4",
+        "hotwordsScore": 1.5,
+        "shortlist": "maximum_4",
+        "maximumTerms": 4,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 4,
+          "targetRecoveryRate": 0.222222,
+          "previouslyCorrectEntityDamages": 0,
+          "distractorFalseInsertions": 0,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 112,
+          "semanticWordErrorDelta": -8,
+          "contextualSemanticWer": 0.160458,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.6447973999893293,
+          "latencyP95Seconds": 4.525217399990652,
+          "realTimeFactorP50": 0.1057743070072653,
+          "realTimeFactorP95": 0.13267415955057912,
+          "peakRssBytesObserved": 1406660608
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": true,
+          "distractorFalseInsertions": true,
+          "semanticWordErrorDelta": true,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_1.5_maximum_8",
+        "hotwordsScore": 1.5,
+        "shortlist": "maximum_8",
+        "maximumTerms": 8,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 4,
+          "targetRecoveryRate": 0.222222,
+          "previouslyCorrectEntityDamages": 0,
+          "distractorFalseInsertions": 1,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 115,
+          "semanticWordErrorDelta": -5,
+          "contextualSemanticWer": 0.164756,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.6616025000112131,
+          "latencyP95Seconds": 4.114659100014251,
+          "realTimeFactorP50": 0.10671446826696232,
+          "realTimeFactorP95": 0.12470066014701196,
+          "peakRssBytesObserved": 1406664704
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": true,
+          "distractorFalseInsertions": false,
+          "semanticWordErrorDelta": true,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_3_targets_only",
+        "hotwordsScore": 3.0,
+        "shortlist": "targets_only",
+        "maximumTerms": null,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 8,
+          "targetRecoveryRate": 0.444444,
+          "previouslyCorrectEntityDamages": 0,
+          "distractorFalseInsertions": 0,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 114,
+          "semanticWordErrorDelta": -6,
+          "contextualSemanticWer": 0.163324,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.79266429998097,
+          "latencyP95Seconds": 3.9922705000208225,
+          "realTimeFactorP50": 0.11071188297340051,
+          "realTimeFactorP95": 0.16375626059321174,
+          "peakRssBytesObserved": 1406664704
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": true,
+          "distractorFalseInsertions": true,
+          "semanticWordErrorDelta": true,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_3_maximum_4",
+        "hotwordsScore": 3.0,
+        "shortlist": "maximum_4",
+        "maximumTerms": 4,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 8,
+          "targetRecoveryRate": 0.444444,
+          "previouslyCorrectEntityDamages": 0,
+          "distractorFalseInsertions": 4,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 126,
+          "semanticWordErrorDelta": 6,
+          "contextualSemanticWer": 0.180516,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.5803080000041518,
+          "latencyP95Seconds": 4.060729499993613,
+          "realTimeFactorP50": 0.10760775202670676,
+          "realTimeFactorP95": 0.12050053789801236,
+          "peakRssBytesObserved": 1410269184
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": true,
+          "distractorFalseInsertions": false,
+          "semanticWordErrorDelta": false,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_3_maximum_8",
+        "hotwordsScore": 3.0,
+        "shortlist": "maximum_8",
+        "maximumTerms": 8,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 8,
+          "targetRecoveryRate": 0.444444,
+          "previouslyCorrectEntityDamages": 2,
+          "distractorFalseInsertions": 13,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 146,
+          "semanticWordErrorDelta": 26,
+          "contextualSemanticWer": 0.209169,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.7660270000051241,
+          "latencyP95Seconds": 4.008597699983511,
+          "realTimeFactorP50": 0.10786594439917399,
+          "realTimeFactorP95": 0.132633876993166,
+          "peakRssBytesObserved": 1410277376
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": false,
+          "distractorFalseInsertions": false,
+          "semanticWordErrorDelta": false,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_5_targets_only",
+        "hotwordsScore": 5.0,
+        "shortlist": "targets_only",
+        "maximumTerms": null,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 9,
+          "targetRecoveryRate": 0.5,
+          "previouslyCorrectEntityDamages": 3,
+          "distractorFalseInsertions": 0,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 208,
+          "semanticWordErrorDelta": 88,
+          "contextualSemanticWer": 0.297994,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.6425367000047117,
+          "latencyP95Seconds": 4.08115560002625,
+          "realTimeFactorP50": 0.10695590687775813,
+          "realTimeFactorP95": 0.1235413020253994,
+          "peakRssBytesObserved": 1410277376
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": false,
+          "distractorFalseInsertions": true,
+          "semanticWordErrorDelta": false,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_5_maximum_4",
+        "hotwordsScore": 5.0,
+        "shortlist": "maximum_4",
+        "maximumTerms": 4,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 9,
+          "targetRecoveryRate": 0.5,
+          "previouslyCorrectEntityDamages": 10,
+          "distractorFalseInsertions": 12,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 319,
+          "semanticWordErrorDelta": 199,
+          "contextualSemanticWer": 0.45702,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.6643046000099275,
+          "latencyP95Seconds": 4.025672699994175,
+          "realTimeFactorP50": 0.10779584014896022,
+          "realTimeFactorP95": 0.1233460779063649,
+          "peakRssBytesObserved": 1410871296
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": false,
+          "distractorFalseInsertions": false,
+          "semanticWordErrorDelta": false,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      },
+      {
+        "configurationId": "score_5_maximum_8",
+        "hotwordsScore": 5.0,
+        "shortlist": "maximum_8",
+        "maximumTerms": 8,
+        "metrics": {
+          "selectedCases": 15,
+          "targetEntities": 18,
+          "targetsRecovered": 9,
+          "targetRecoveryRate": 0.5,
+          "previouslyCorrectEntityDamages": 12,
+          "distractorFalseInsertions": 23,
+          "semanticReferenceTokens": 698,
+          "baselineSemanticWordErrors": 120,
+          "contextualSemanticWordErrors": 436,
+          "semanticWordErrorDelta": 316,
+          "contextualSemanticWer": 0.624642,
+          "decodeErrors": 0,
+          "nativeHotwordEncodingErrors": 0,
+          "latencyP50Seconds": 1.8356331999821123,
+          "latencyP95Seconds": 3.9648585000250023,
+          "realTimeFactorP50": 0.111841093392402,
+          "realTimeFactorP95": 0.12864926446435648,
+          "peakRssBytesObserved": 1411104768
+        },
+        "checks": {
+          "selectedCases": true,
+          "targetEntities": true,
+          "targetRecoveryRate": false,
+          "previouslyCorrectEntityDamages": false,
+          "distractorFalseInsertions": false,
+          "semanticWordErrorDelta": false,
+          "decodeErrors": true,
+          "nativeHotwordEncodingErrors": true,
+          "latencyP95": false,
+          "realTimeFactorP95": true,
+          "peakRss": true,
+          "effectsExecuted": true
+        },
+        "passed": false
+      }
+    ],
+    "passingConfigurations": [],
+    "bestObservedConfiguration": "score_5_targets_only",
+    "elapsedSeconds": 349.40854449998005
+  },
+  "thresholds": {
+    "expectedCases": 15,
+    "expectedTargets": 18,
+    "minimumTargetRecoveryRate": 0.8,
+    "maximumPreviouslyCorrectEntityDamages": 0,
+    "maximumDistractorFalseInsertions": 0,
+    "maximumSemanticWordErrorDelta": 0,
+    "maximumDecodeErrors": 0,
+    "maximumNativeHotwordEncodingErrors": 0,
+    "maximumLatencyP95Seconds": 2.0,
+    "maximumRealTimeFactorP95": 0.5,
+    "maximumPeakRssBytes": 4294967296
+  },
+  "decision": {
+    "candidatePromoted": false,
+    "contextualHotwordArchitectureRetained": false,
+    "validationBlindMayOpen": false,
+    "finalBlindMayOpen": false,
+    "nextStep": "reject_sherpa_contextual_hotwords_and_pivot"
+  },
+  "sources": {
+    "baselineArtifact": {
+      "path": "D:/BAXY/source/artifacts/development/msner_spanish_parakeet_greedy_development_v1.json",
+      "sha256": "e988aab17c350aa0c026673a3b4f00b0173b7e5b57de945dbb29d5974f258a12"
+    },
+    "baselineDetail": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_parakeet_greedy_development_v1.detail.json",
+      "sha256": "1d0b32a62b2ebe25854fe62e5bc9118eeea85b9389cb5ebe52a80ceefab8d9be"
+    },
+    "oracleV2Artifact": {
+      "path": "D:/BAXY/source/artifacts/development/msner_spanish_contextual_hotword_oracle_development_v2.json",
+      "sha256": "6100a75aba1ec69fc535bf48abc8f96592c645d195675d50e50ece4e11bd6d79"
+    },
+    "oracleV2Detail": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_contextual_hotword_oracle_development_v2.detail.json",
+      "sha256": "2838d74689636ac8cb60938bf56133f97198378f6be897d5e133cc54ab97252d"
+    },
+    "extraction": {
+      "path": "D:/BAXY/source/artifacts/development/msner_spanish_entity_development_extraction_v1.json",
+      "sha256": "e85fc53af410a753f23c6f790bc53bb41eac1c1b45902d34e2391e88b3194b54"
+    },
+    "derivedBpeVocab": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_parakeet_minpiece_v1.bpe.vocab",
+      "sha256": "a97e38c51a58af225e45571f2c032056240a7680ed7172e265839d7e63a4fead"
+    }
+  },
+  "detail": {
+    "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_contextual_hotword_oracle_matrix_development_v1.detail.json",
+    "sha256": "0e5d55bdfab37a1e3e44b4b78bbd4e7e3ef6f50478e661dca07208269246b41e"
+  },
+  "nativeStderr": {
+    "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_contextual_hotword_oracle_matrix_development_v1.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encodingErrors": 0
+  },
+  "runtime": {
+    "manifest": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json",
+    "manifestSha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe",
+    "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "modelRoot": "D:/BAXYRuntime/assets/stt/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+    "modelFiles": {
+      "encoder.int8.onnx": {
+        "bytes": 652184281,
+        "sha256": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247"
+      },
+      "decoder.int8.onnx": {
+        "bytes": 11845275,
+        "sha256": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e"
+      },
+      "joiner.int8.onnx": {
+        "bytes": 6355277,
+        "sha256": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3"
+      },
+      "tokens.txt": {
+        "bytes": 93939,
+        "sha256": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+      }
+    },
+    "recognizerLoadSecondsByScore": {
+      "0.75": 3.4579013000184204,
+      "1.5": 3.2749429999967106,
+      "3.0": 3.3360175999987405,
+      "5.0": 3.539435600017896
+    },
+    "peakRssBytesObserved": 1411104768
+  },
+  "evaluator": {
+    "path": "experiments/stt_quality/evaluate_msner_spanish_contextual_hotword_oracle_matrix.py",
+    "sha256": "9c84d2ab0cc6e72e619aef0d8c826633e3053982c6000cf08bba8d16d8d9605e"
+  },
+  "configurationCommitments": [
+    {
+      "configurationId": "score_0.75_targets_only",
+      "transcriptSetSha256": "4e1d76631235cc10d8dfd939107620d474be83bac2511f37cd635e36997be411"
+    },
+    {
+      "configurationId": "score_0.75_maximum_4",
+      "transcriptSetSha256": "4e1d76631235cc10d8dfd939107620d474be83bac2511f37cd635e36997be411"
+    },
+    {
+      "configurationId": "score_0.75_maximum_8",
+      "transcriptSetSha256": "daf92320f41e063493aa551a47cc51f8edcfe9c047165215666a19584ff617fc"
+    },
+    {
+      "configurationId": "score_1.5_targets_only",
+      "transcriptSetSha256": "f0633981f39091869183feea7b513e3cbfe1ae945c2661c210ea5884767d7558"
+    },
+    {
+      "configurationId": "score_1.5_maximum_4",
+      "transcriptSetSha256": "f0633981f39091869183feea7b513e3cbfe1ae945c2661c210ea5884767d7558"
+    },
+    {
+      "configurationId": "score_1.5_maximum_8",
+      "transcriptSetSha256": "295e35a56c4ae468d7526459dd48a9993964c8d13bc8ec2d3ead60da77c5ee5a"
+    },
+    {
+      "configurationId": "score_3_targets_only",
+      "transcriptSetSha256": "52a2c05597988d69da35333c0a63bae00e2f985d01e273a4b67bd0e8aa2c918d"
+    },
+    {
+      "configurationId": "score_3_maximum_4",
+      "transcriptSetSha256": "77317e3feb6da104bee0c35b1cfe213c859116ca392d15cfcbe33650183f31dd"
+    },
+    {
+      "configurationId": "score_3_maximum_8",
+      "transcriptSetSha256": "bc756d9aa42fbaad4d49a9977723f90163ddca962ec040a26a87576b5ba1a23c"
+    },
+    {
+      "configurationId": "score_5_targets_only",
+      "transcriptSetSha256": "1f6bc04cc92313508cd2e606a5cb78327b6eecb2a4829f3e54ee184da684df8c"
+    },
+    {
+      "configurationId": "score_5_maximum_4",
+      "transcriptSetSha256": "e650fbbd452e70041e20fb622f11820575725baea624150275f55bc838e703bf"
+    },
+    {
+      "configurationId": "score_5_maximum_8",
+      "transcriptSetSha256": "8326b2aa5ac673d0cc6e73f913d6f0c4a983544c1149d141eef53e2088eb21a1"
+    }
+  ],
+  "developmentRowsOpened": true,
+  "validationBlindOpened": false,
+  "finalBlindOpened": false,
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0
+}

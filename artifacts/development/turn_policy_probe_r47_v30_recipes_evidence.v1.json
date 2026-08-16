@@ -1,0 +1,44 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v30_recipes_evidence.v1.raw.jsonl",
+    "sha256": "0cdb373cebaee7701cf2a4de83f981897e2f330152efc73d7d44df73d79db29d"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13023",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-2c97e0611f68af86e3fce774",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.0338,
+        "operation": null,
+        "question": "¿Cuál es el tema de las recetas?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T06:00:04.382990+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 1,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

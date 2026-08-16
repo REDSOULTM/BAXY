@@ -1,0 +1,44 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "operation": "audio.mute",
+  "arguments": {
+    "state": true
+  },
+  "confirmation_followed": false,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "51a8fcdf-206f-468e-9e9f-105de99e8e16",
+      "missionId": "09cb55d9-c4ae-4c3e-9804-9b8abd8a609c",
+      "invocationId": "960999e1-9d10-411d-92fa-cd58e3821aa8",
+      "status": "completed",
+      "message": "Listo, silencié el audio del sistema.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "operation": "audio.mute",
+        "targetId": "default_output",
+        "endpointIdHash": "44e1f90e029a6991840dffe535820f5f85c97081bf9c4f680088270ba5fd046d",
+        "baseline": {
+          "volumePercent": 3,
+          "muted": false
+        },
+        "final": {
+          "volumePercent": 3,
+          "muted": true
+        },
+        "applied": true,
+        "reconciled": false
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 0.3803642000002583,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

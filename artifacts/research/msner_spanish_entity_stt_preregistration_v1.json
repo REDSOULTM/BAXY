@@ -1,0 +1,93 @@
+{
+  "schema": "baxy.msner-spanish-entity-stt-preregistration.v1",
+  "createdAtUtc": "2026-08-11T06:11:34.0912992Z",
+  "source": {
+    "dataset": "qmeeus/MSNER",
+    "commit": "304333fb5eba28fcc72a4ad543cb779a33dbc767",
+    "lastModifiedUtc": "2024-03-28T14:45:40Z",
+    "language": "es",
+    "expectedRowsAcrossShards": 1512,
+    "format": "parquet",
+    "origin": "MSNER human-annotated VoxPopuli Spanish test audio"
+  },
+  "partition": {
+    "development": "development",
+    "validationBlind": "validationBlind",
+    "finalBlind": "finalBlind",
+    "shards": {
+      "development": {
+        "path": "data/es-00000-of-00003-a42389ca171fa00e.parquet",
+        "bytes": 339378246,
+        "lfsSha256": "155e24b0719f52ef688e14a675b9b834b55a4e414b94c02946ab711316654d81",
+        "url": "https://huggingface.co/datasets/qmeeus/MSNER/resolve/304333fb5eba28fcc72a4ad543cb779a33dbc767/data/es-00000-of-00003-a42389ca171fa00e.parquet",
+        "rowValuesRead": false,
+        "audioDecoded": false
+      },
+      "validationBlind": {
+        "path": "data/es-00001-of-00003-c36065ba224609ab.parquet",
+        "bytes": 324010870,
+        "lfsSha256": "9051491a6c6420bc989954308cff4fb4bff2e4dd14e19d01e31a935fbf2e5e5a",
+        "url": "https://huggingface.co/datasets/qmeeus/MSNER/resolve/304333fb5eba28fcc72a4ad543cb779a33dbc767/data/es-00001-of-00003-c36065ba224609ab.parquet",
+        "rowValuesRead": false,
+        "audioDecoded": false
+      },
+      "finalBlind": {
+        "path": "data/es-00002-of-00003-c61be09c1b996f0a.parquet",
+        "bytes": 324064119,
+        "lfsSha256": "8e34fac51592bc989cb8bf67c22f41dfaf04e6d4574396f48f3ab4acbbc5fc73",
+        "url": "https://huggingface.co/datasets/qmeeus/MSNER/resolve/304333fb5eba28fcc72a4ad543cb779a33dbc767/data/es-00002-of-00003-c61be09c1b996f0a.parquet",
+        "rowValuesRead": false,
+        "audioDecoded": false
+      }
+    },
+    "noShardMayChangeRole": true
+  },
+  "oracle": {
+    "referenceColumn": "sentence",
+    "entityColumns": [
+      "unified_entities",
+      "raw_entities"
+    ],
+    "metrics": [
+      "corpus_wer",
+      "named_entity_exact_recall",
+      "named_entity_token_recall",
+      "latency_p50_p95",
+      "unbiased_word_error_rate"
+    ],
+    "referencesMayBeReadOnlyAfterCandidateOutput": true
+  },
+  "provenance": {
+    "paper": "https://aclanthology.org/2024.isa-1.2/",
+    "paperLicense": "CC BY-NC 4.0",
+    "datasetCardLicenseDeclared": false,
+    "usage": "external_research_evaluation_only",
+    "redistributeOrShipDataset": false
+  },
+  "contract": {
+    "remoteMetadataInspected": true,
+    "rowValuesRead": false,
+    "referencesOpened": false,
+    "audioDecoded": false,
+    "developmentMayTune": true,
+    "validationBlindMayTune": false,
+    "finalBlindMayTune": false,
+    "candidatePromoted": false,
+    "effectsExecuted": 0
+  },
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "generator": {
+    "path": "experiments/stt_quality/preregister_msner_spanish_entity_stt.py",
+    "sha256": "403c780cb67e73085b5cbe006fee6532e27376eed1f05cabe07541a510bf1dd8"
+  },
+  "effectsExecuted": 0
+}

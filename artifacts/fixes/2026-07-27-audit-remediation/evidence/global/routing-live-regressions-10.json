@@ -1,0 +1,434 @@
+{
+  "schema": "baxy-audit-remediation-live-turn-probe-v1",
+  "measured_at": "2026-07-27T22:23:06.861473+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    }
+  ],
+  "passed": 10,
+  "failed": 0,
+  "cases": [
+    {
+      "text": "Hola",
+      "expected": {
+        "expectedKind": "conversation"
+      },
+      "elapsed_seconds": 6.477,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¡Hola! ¿En qué puedo ayudarte hoy?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Gracias",
+      "expected": {
+        "expectedKind": "conversation"
+      },
+      "elapsed_seconds": 11.6,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "De nada. ¿En qué más te puedo ayudar hoy?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "No entendí",
+      "expected": {
+        "expectedKind": "conversation"
+      },
+      "elapsed_seconds": 5.449,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Quise decir que no entendí lo que dijiste anteriormente.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre el teclado en pantalla",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "input.keyboard.open"
+      },
+      "elapsed_seconds": 1.435,
+      "matches": true,
+      "observedOperations": [
+        "input.keyboard.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "action",
+        "operation": "input.keyboard.open",
+        "effectOperations": [
+          "input.keyboard.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "media.play.exact",
+          "media.control"
+        ]
+      },
+      "elapsed_seconds": 17.505,
+      "matches": true,
+      "observedOperations": [
+        "media.play.exact",
+        "media.control"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-5",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "media.play.exact",
+          "media.control"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-5",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "media.play.exact",
+            "purpose": "reproduce exactamente beat it",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "provider": "spotify",
+              "title": "Beat It"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "media.control",
+            "purpose": "pausa",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "action": "pause"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Crea una tarea llamada Alfa y un recordatorio llamado Beta para manana a las 9",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "task.create",
+          "reminder.create"
+        ]
+      },
+      "elapsed_seconds": 9.225,
+      "matches": true,
+      "observedOperations": [
+        "task.create",
+        "reminder.create"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-6",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "task.create",
+          "reminder.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-6",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "task.create",
+            "purpose": "crea una tarea llamada alfa y un",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "title": "alfa"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "reminder.create",
+            "purpose": "recordatorio llamado beta para manana a las 9",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "title": "beta",
+              "dueUtc": "2026-07-28T13:00:00Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Estan instalados Paint y Visual Studio Code?",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.installed",
+          "app.installed"
+        ]
+      },
+      "elapsed_seconds": 2.986,
+      "matches": true,
+      "observedOperations": [
+        "app.installed",
+        "app.installed"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-7",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.installed",
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-7",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.installed",
+            "purpose": "paint",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Paint"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.installed",
+            "purpose": "visual studio code",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Visual Studio Code"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Are Paint, Visual Studio Code, and Spotify installed?",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.installed",
+          "app.installed",
+          "app.installed"
+        ]
+      },
+      "elapsed_seconds": 3.022,
+      "matches": true,
+      "observedOperations": [
+        "app.installed",
+        "app.installed",
+        "app.installed"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-8",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.installed",
+          "app.installed",
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-8",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.installed",
+            "purpose": "paint",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Paint"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.installed",
+            "purpose": "visual studio code",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Visual Studio Code"
+            }
+          },
+          {
+            "id": "step_3",
+            "operation": "app.installed",
+            "purpose": "spotify",
+            "dependsOn": [
+              "step_2"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Spotify"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Abre Configuración",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 0.487,
+      "matches": true,
+      "observedOperations": [
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-9",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Asistencia rápida",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 0.255,
+      "matches": true,
+      "observedOperations": [
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-10",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    }
+  ]
+}

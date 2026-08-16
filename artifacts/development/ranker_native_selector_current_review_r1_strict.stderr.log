@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "D:\BAXY\source\experiments\mind_router_spike\probe_ranker_native_selector.py", line 232, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\BAXY\source\experiments\mind_router_spike\probe_ranker_native_selector.py", line 226, in main
+    result = run(args)
+             ^^^^^^^^^
+  File "D:\BAXY\source\experiments\mind_router_spike\probe_ranker_native_selector.py", line 127, in run
+    selected, no_match = _select(
+                         ^^^^^^^^
+  File "D:\BAXY\source\experiments\mind_router_spike\benchmark_native_no_match_tool.py", line 172, in _select
+    if not isinstance(arguments, str) or json.loads(arguments) != {}:
+                                         ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 354, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)

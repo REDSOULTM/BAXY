@@ -1,0 +1,363 @@
+﻿{
+    "schema":  "baxy.app-visible-path-harness.v3",
+    "run_id":  "c1969c8efd404abc90a210ff06eefbdd",
+    "measured_at_utc":  "2026-07-31T05:45:27.8844849Z",
+    "effects_executed":  0,
+    "rounds":  2,
+    "scenario_fixture":  {
+                             "sha256":  "284d87c6791f98accdbda15acf3eb9eb6ea04b0268ac611ab68d4d4116945711",
+                             "canonical":  "conv-greeting\tconversation\thola, todo bien\nconv-explain\tconversation\texplicame en dos oraciones que hace un ssd\nstatus-time\tstatus\tque hora es\nstatus-battery\tstatus\tcuanta bateria queda\nstatus-memory\tstatus\tcuanta ram tengo",
+                             "scenarios":  [
+                                               {
+                                                   "Id":  "conv-greeting",
+                                                   "Route":  "conversation",
+                                                   "Text":  "hola, todo bien"
+                                               },
+                                               {
+                                                   "Id":  "conv-explain",
+                                                   "Route":  "conversation",
+                                                   "Text":  "explicame en dos oraciones que hace un ssd"
+                                               },
+                                               {
+                                                   "Id":  "status-time",
+                                                   "Route":  "status",
+                                                   "Text":  "que hora es"
+                                               },
+                                               {
+                                                   "Id":  "status-battery",
+                                                   "Route":  "status",
+                                                   "Text":  "cuanta bateria queda"
+                                               },
+                                               {
+                                                   "Id":  "status-memory",
+                                                   "Route":  "status",
+                                                   "Text":  "cuanta ram tengo"
+                                               }
+                                           ]
+                         },
+    "design":  "cold and warm arms alternated in ABBA order (cold,warm,warm,cold and the mirrored order); one process per cold block; identical scenario set and order in every block",
+    "environment_before":  {
+                               "captured_at_utc":  "2026-07-31T05:21:26.1745362Z",
+                               "gpu":  "NVIDIA GeForce RTX 3060 Laptop GPU, 900 MHz, 2100 MHz, 59, 17.27 W, 0x0000000000000020, 721 MiB, 6144 MiB",
+                               "gpu_query":  "name,clocks.current.sm,clocks.max.sm,temperature.gpu,power.draw,clocks_throttle_reasons.active,memory.used,memory.total",
+                               "cpu":  "AMD Ryzen 7 5800H with Radeon Graphics         ",
+                               "cpu_max_mhz":  3201,
+                               "on_ac_power":  true,
+                               "app_sha256":  "767979cb4afa149e1be0e2bc782cdea36d7ab4d13249f0ef98d70fff91463848",
+                               "core_sha256":  "e591b5e74d72d763da2b82103b4ec4692dc3369192526632bd6d87369fc8ee80",
+                               "runtime":  {
+                                               "llama_server":  "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+                                               "llama_server_sha256":  "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+                                               "gguf":  "D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+                                               "gguf_sha256":  "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+                                               "ngl":  "99"
+                                           }
+                           },
+    "environment_after":  {
+                              "captured_at_utc":  "2026-07-31T05:45:27.8697971Z",
+                              "gpu":  "NVIDIA GeForce RTX 3060 Laptop GPU, 900 MHz, 2100 MHz, 58, 17.28 W, 0x0000000000000020, 763 MiB, 6144 MiB",
+                              "gpu_query":  "name,clocks.current.sm,clocks.max.sm,temperature.gpu,power.draw,clocks_throttle_reasons.active,memory.used,memory.total",
+                              "cpu":  "AMD Ryzen 7 5800H with Radeon Graphics         ",
+                              "cpu_max_mhz":  3201,
+                              "on_ac_power":  true,
+                              "app_sha256":  "767979cb4afa149e1be0e2bc782cdea36d7ab4d13249f0ef98d70fff91463848",
+                              "core_sha256":  "e591b5e74d72d763da2b82103b4ec4692dc3369192526632bd6d87369fc8ee80",
+                              "runtime":  {
+                                              "llama_server":  "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+                                              "llama_server_sha256":  "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+                                              "gguf":  "D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+                                              "gguf_sha256":  "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+                                              "ngl":  "99"
+                                          }
+                          },
+    "blocks":  [
+                   {
+                       "block_id":  "r0b0",
+                       "round":  0,
+                       "arm":  "cold",
+                       "trace_path":  "D:\\BAXY\\source\\artifacts\\fixes\\app_visible_path_v3\\trace-c1969c8efd404abc90a210ff06eefbdd-r0b0-cold.jsonl",
+                       "warmup_turns":  0,
+                       "started_utc":  "2026-07-31T05:21:44.5612041Z",
+                       "ended_utc":  "2026-07-31T05:24:18.2590666Z",
+                       "scenarios":  [
+                                         {
+                                             "scenario_id":  "conv-greeting",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:21:45.3824362Z"
+                                         },
+                                         {
+                                             "scenario_id":  "conv-explain",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:22:16.1022051Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-time",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:22:46.8235206Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-battery",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:23:17.5390565Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-memory",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:23:48.2584982Z"
+                                         }
+                                     ]
+                   },
+                   {
+                       "block_id":  "r0b1",
+                       "round":  0,
+                       "arm":  "warm",
+                       "trace_path":  "D:\\BAXY\\source\\artifacts\\fixes\\app_visible_path_v3\\trace-c1969c8efd404abc90a210ff06eefbdd-r0b0-cold.jsonl",
+                       "warmup_turns":  0,
+                       "started_utc":  "2026-07-31T05:24:18.2625866Z",
+                       "ended_utc":  "2026-07-31T05:26:51.8529731Z",
+                       "scenarios":  [
+                                         {
+                                             "scenario_id":  "conv-greeting",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:24:18.9791355Z"
+                                         },
+                                         {
+                                             "scenario_id":  "conv-explain",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:24:49.6964269Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-time",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:25:20.4141250Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-battery",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:25:51.1343205Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-memory",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:26:21.8525485Z"
+                                         }
+                                     ]
+                   },
+                   {
+                       "block_id":  "r0b2",
+                       "round":  0,
+                       "arm":  "warm",
+                       "trace_path":  "D:\\BAXY\\source\\artifacts\\fixes\\app_visible_path_v3\\trace-c1969c8efd404abc90a210ff06eefbdd-r0b0-cold.jsonl",
+                       "warmup_turns":  0,
+                       "started_utc":  "2026-07-31T05:26:51.8540974Z",
+                       "ended_utc":  "2026-07-31T05:29:25.4559782Z",
+                       "scenarios":  [
+                                         {
+                                             "scenario_id":  "conv-greeting",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:26:52.5676676Z"
+                                         },
+                                         {
+                                             "scenario_id":  "conv-explain",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:27:23.2887998Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-time",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:27:54.0045352Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-battery",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:28:24.7380113Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-memory",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:28:55.4560533Z"
+                                         }
+                                     ]
+                   },
+                   {
+                       "block_id":  "r0b3",
+                       "round":  0,
+                       "arm":  "cold",
+                       "trace_path":  "D:\\BAXY\\source\\artifacts\\fixes\\app_visible_path_v3\\trace-c1969c8efd404abc90a210ff06eefbdd-r0b3-cold.jsonl",
+                       "warmup_turns":  0,
+                       "started_utc":  "2026-07-31T05:29:48.7563865Z",
+                       "ended_utc":  "2026-07-31T05:32:22.4424679Z",
+                       "scenarios":  [
+                                         {
+                                             "scenario_id":  "conv-greeting",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:29:49.5190605Z"
+                                         },
+                                         {
+                                             "scenario_id":  "conv-explain",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:30:20.2368664Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-time",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:30:50.9589493Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-battery",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:31:21.7224440Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-memory",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:31:52.4415278Z"
+                                         }
+                                     ]
+                   },
+                   {
+                       "block_id":  "r1b0",
+                       "round":  1,
+                       "arm":  "warm",
+                       "trace_path":  "D:\\BAXY\\source\\artifacts\\fixes\\app_visible_path_v3\\trace-c1969c8efd404abc90a210ff06eefbdd-r1b0-warm.jsonl",
+                       "warmup_turns":  1,
+                       "started_utc":  "2026-07-31T05:34:18.7046940Z",
+                       "ended_utc":  "2026-07-31T05:36:52.2948904Z",
+                       "scenarios":  [
+                                         {
+                                             "scenario_id":  "conv-greeting",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:34:19.4227819Z"
+                                         },
+                                         {
+                                             "scenario_id":  "conv-explain",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:34:50.1408937Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-time",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:35:20.8584387Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-battery",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:35:51.5789561Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-memory",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:36:22.2952741Z"
+                                         }
+                                     ]
+                   },
+                   {
+                       "block_id":  "r1b1",
+                       "round":  1,
+                       "arm":  "cold",
+                       "trace_path":  "D:\\BAXY\\source\\artifacts\\fixes\\app_visible_path_v3\\trace-c1969c8efd404abc90a210ff06eefbdd-r1b1-cold.jsonl",
+                       "warmup_turns":  0,
+                       "started_utc":  "2026-07-31T05:37:15.2852900Z",
+                       "ended_utc":  "2026-07-31T05:39:48.8711778Z",
+                       "scenarios":  [
+                                         {
+                                             "scenario_id":  "conv-greeting",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:37:15.9969579Z"
+                                         },
+                                         {
+                                             "scenario_id":  "conv-explain",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:37:46.7136657Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-time",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:38:17.4334656Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-battery",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:38:48.1535280Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-memory",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:39:18.8715571Z"
+                                         }
+                                     ]
+                   },
+                   {
+                       "block_id":  "r1b2",
+                       "round":  1,
+                       "arm":  "cold",
+                       "trace_path":  "D:\\BAXY\\source\\artifacts\\fixes\\app_visible_path_v3\\trace-c1969c8efd404abc90a210ff06eefbdd-r1b2-cold.jsonl",
+                       "warmup_turns":  0,
+                       "started_utc":  "2026-07-31T05:40:14.4553792Z",
+                       "ended_utc":  "2026-07-31T05:42:48.1039301Z",
+                       "scenarios":  [
+                                         {
+                                             "scenario_id":  "conv-greeting",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:40:15.2299465Z"
+                                         },
+                                         {
+                                             "scenario_id":  "conv-explain",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:40:45.9500745Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-time",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:41:16.6664255Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-battery",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:41:47.3855751Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-memory",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:42:18.1038378Z"
+                                         }
+                                     ]
+                   },
+                   {
+                       "block_id":  "r1b3",
+                       "round":  1,
+                       "arm":  "warm",
+                       "trace_path":  "D:\\BAXY\\source\\artifacts\\fixes\\app_visible_path_v3\\trace-c1969c8efd404abc90a210ff06eefbdd-r1b2-cold.jsonl",
+                       "warmup_turns":  0,
+                       "started_utc":  "2026-07-31T05:42:48.1039301Z",
+                       "ended_utc":  "2026-07-31T05:45:21.6964247Z",
+                       "scenarios":  [
+                                         {
+                                             "scenario_id":  "conv-greeting",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:42:48.8213223Z"
+                                         },
+                                         {
+                                             "scenario_id":  "conv-explain",
+                                             "route":  "conversation",
+                                             "sent_at_utc":  "2026-07-31T05:43:19.5393529Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-time",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:43:50.2570065Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-battery",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:44:20.9756210Z"
+                                         },
+                                         {
+                                             "scenario_id":  "status-memory",
+                                             "route":  "status",
+                                             "sent_at_utc":  "2026-07-31T05:44:51.6960643Z"
+                                         }
+                                     ]
+                   }
+               ]
+}

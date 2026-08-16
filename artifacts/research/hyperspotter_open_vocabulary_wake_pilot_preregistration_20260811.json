@@ -1,0 +1,58 @@
+{
+  "schema": "baxy.hyperspotter-open-vocabulary-wake-pilot-preregistration.v1",
+  "createdAtUtc": "2026-08-11T17:52:55.3635103Z",
+  "purpose": "measure a current acoustic-text matched-filter KWS architecture after lexical ASR defenses failed to separate Baxy from Spanish confusables",
+  "role": "research_pilot_only",
+  "sources": {
+    "paper": "https://arxiv.org/abs/2508.04857",
+    "paperTitle": "Open-vocabulary Keyword Spotting with Hyper-Matched Filters for Small Footprint Devices",
+    "implementation": "https://github.com/YaelSegal/HyperSpotter",
+    "commit": "08d226c93563f997008ba510421a5ab7d6b65b25",
+    "repositoryLicense": "MIT",
+    "conformerCheckpoint": {
+      "url": "https://drive.usercontent.google.com/download?id=1ibNoWO2zdaOlRI1CZ4uuHm1Stc_wB_cK&export=download&confirm=t",
+      "declaredFilename": "hyper_spotter_conformer_4.ckpt",
+      "httpContentLength": 68660938
+    },
+    "whisperCheckpoint": {
+      "url": "https://drive.usercontent.google.com/download?id=1kx0PgFg3qFQ70hbPuHZhmpI4gtzBfkWT&export=download&confirm=t",
+      "declaredFilename": "hyper_spotter_whisper_5.ckpt",
+      "httpContentLength": 93669406
+    }
+  },
+  "externalDirectory": "D:/BAXYRuntime/research/hyperspotter_08d226c93563f997008ba510421a5ab7d6b65b25",
+  "candidateArchitectures": [
+    "conformer_hyper",
+    "whisper_hyper"
+  ],
+  "contract": {
+    "keyword": "baxy",
+    "initialThreshold": 0.5,
+    "device": "cpu",
+    "batchSizeMaximum": 32,
+    "openedDevelopmentCorporaOnly": true,
+    "physicalV17Read": false,
+    "retainTranscriptText": false,
+    "retainFilenames": false,
+    "modifyRuntime": false,
+    "retrain": false,
+    "promotionEligible": false,
+    "effectsExecuted": 0
+  },
+  "openedInputs": {
+    "endpointConfusableManifestSha256": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+    "openedPhysicalV20ManifestSha256": "a18e19dcf175994418f3f838c69032f17a1666fb61cfc2076075719ff3fdfbc6",
+    "openedHumanV14ManifestSha256": "d98078c60c0a13027c5c3c5d3e0bdd53bf787dc0db8245cc5abb53dde2735805"
+  },
+  "requiredPilotEvidence": {
+    "endpointConfusableNegativeFalseActivations": 0,
+    "noRegressionAgainstCurrentPositiveCoverage": true,
+    "reportRawProbabilitiesByHashOnly": true,
+    "publishRejectedResult": true
+  },
+  "interpretationRules": [
+    "The default threshold pilot may reject an architecture but cannot promote it.",
+    "Any threshold or Baxy-specific adaptation selected on opened data requires a separately frozen candidate and fresh disjoint holdout.",
+    "The consumed physical v17 corpus and its transcripts are forbidden inputs."
+  ]
+}

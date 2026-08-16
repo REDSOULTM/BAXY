@@ -1,0 +1,6662 @@
+{
+  "by_family": {
+    "app": {
+      "cases": 6,
+      "complete_action_cases": 6,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "ready": 6
+      },
+      "presentable_complete_action_cases": 6,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 6,
+      "ready_action_rate": 1.0,
+      "ready_actions": 6,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.03543,
+        "p50": 0.01011,
+        "p95": 0.03543
+      },
+      "turn_latency_seconds": {
+        "p50": 0.00466,
+        "p95": 0.028992
+      }
+    },
+    "audio": {
+      "cases": 6,
+      "complete_action_cases": 3,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "conversation": 3,
+        "ready": 3
+      },
+      "presentable_complete_action_cases": 3,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 3,
+      "ready_action_rate": 1.0,
+      "ready_actions": 3,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.935923,
+        "p50": 0.341014,
+        "p95": 0.935923
+      },
+      "turn_latency_seconds": {
+        "p50": 0.008319,
+        "p95": 0.376597
+      }
+    },
+    "backup": {
+      "cases": 5,
+      "complete_action_cases": 0,
+      "exact": 5,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 2,
+        "conversation": 3
+      },
+      "presentable_complete_action_cases": 0,
+      "presentable_exact": 5,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": null,
+      "presentable_ready_actions": 0,
+      "ready_action_rate": null,
+      "ready_actions": 0,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 1.809881,
+        "p50": 1.093779,
+        "p95": 1.809881
+      },
+      "turn_latency_seconds": {
+        "p50": 1.093745,
+        "p95": 1.809866
+      }
+    },
+    "bluetooth": {
+      "cases": 6,
+      "complete_action_cases": 4,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 1,
+        "conversation": 1,
+        "ready": 4
+      },
+      "presentable_complete_action_cases": 4,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 4,
+      "ready_action_rate": 1.0,
+      "ready_actions": 4,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 1.590483,
+        "p50": 0.004365,
+        "p95": 1.590483
+      },
+      "turn_latency_seconds": {
+        "p50": 0.003961,
+        "p95": 1.590458
+      }
+    },
+    "browser": {
+      "cases": 6,
+      "complete_action_cases": 4,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 1,
+        "conversation": 1,
+        "ready": 4
+      },
+      "presentable_complete_action_cases": 4,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 4,
+      "ready_action_rate": 1.0,
+      "ready_actions": 4,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.74336,
+        "p50": 0.499671,
+        "p95": 0.74336
+      },
+      "turn_latency_seconds": {
+        "p50": 0.004992,
+        "p95": 0.499652
+      }
+    },
+    "calendar": {
+      "cases": 6,
+      "complete_action_cases": 1,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 3,
+        "conversation": 2,
+        "ready": 1
+      },
+      "presentable_complete_action_cases": 1,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 1,
+      "ready_action_rate": 1.0,
+      "ready_actions": 1,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 2.608951,
+        "p50": 0.855842,
+        "p95": 2.608951
+      },
+      "turn_latency_seconds": {
+        "p50": 0.855791,
+        "p95": 2.608891
+      }
+    },
+    "capture": {
+      "cases": 6,
+      "complete_action_cases": 2,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "conversation": 4,
+        "ready": 2
+      },
+      "presentable_complete_action_cases": 2,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 2,
+      "ready_action_rate": 1.0,
+      "ready_actions": 2,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 1.694709,
+        "p50": 0.385121,
+        "p95": 1.694709
+      },
+      "turn_latency_seconds": {
+        "p50": 0.367101,
+        "p95": 1.694675
+      }
+    },
+    "clipboard": {
+      "cases": 6,
+      "complete_action_cases": 4,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 2,
+        "ready": 4
+      },
+      "presentable_complete_action_cases": 4,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 4,
+      "ready_action_rate": 1.0,
+      "ready_actions": 4,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.76985,
+        "p50": 0.508082,
+        "p95": 0.76985
+      },
+      "turn_latency_seconds": {
+        "p50": 0.00622,
+        "p95": 0.769778
+      }
+    },
+    "current_catalog_extension": {
+      "cases": 5,
+      "complete_action_cases": 5,
+      "exact": 5,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "ready": 5
+      },
+      "presentable_complete_action_cases": 5,
+      "presentable_exact": 5,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 5,
+      "ready_action_rate": 1.0,
+      "ready_actions": 5,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.703563,
+        "p50": 0.003963,
+        "p95": 0.703563
+      },
+      "turn_latency_seconds": {
+        "p50": 0.003122,
+        "p95": 0.003879
+      }
+    },
+    "filesystem": {
+      "cases": 6,
+      "complete_action_cases": 2,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "conversation": 4,
+        "ready": 2
+      },
+      "presentable_complete_action_cases": 2,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 2,
+      "ready_action_rate": 1.0,
+      "ready_actions": 2,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 1.960473,
+        "p50": 0.325627,
+        "p95": 1.960473
+      },
+      "turn_latency_seconds": {
+        "p50": 0.32561,
+        "p95": 1.960439
+      }
+    },
+    "game": {
+      "cases": 6,
+      "complete_action_cases": 3,
+      "exact": 5,
+      "exact_accuracy": 0.833333,
+      "observed_outcomes": {
+        "conversation": 4,
+        "ready": 2
+      },
+      "presentable_complete_action_cases": 2,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 2,
+      "ready_action_rate": 0.666667,
+      "ready_actions": 2,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 1.603528,
+        "p50": 0.41781,
+        "p95": 1.603528
+      },
+      "turn_latency_seconds": {
+        "p50": 0.350059,
+        "p95": 1.603511
+      }
+    },
+    "media": {
+      "cases": 6,
+      "complete_action_cases": 0,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 1,
+        "conversation": 5
+      },
+      "presentable_complete_action_cases": 0,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": null,
+      "presentable_ready_actions": 0,
+      "ready_action_rate": null,
+      "ready_actions": 0,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 1.249928,
+        "p50": 0.325925,
+        "p95": 1.249928
+      },
+      "turn_latency_seconds": {
+        "p50": 0.325895,
+        "p95": 1.249911
+      }
+    },
+    "message": {
+      "cases": 6,
+      "complete_action_cases": 6,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "ready": 6
+      },
+      "presentable_complete_action_cases": 6,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 6,
+      "ready_action_rate": 1.0,
+      "ready_actions": 6,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.007418,
+        "p50": 0.004681,
+        "p95": 0.007418
+      },
+      "turn_latency_seconds": {
+        "p50": 0.003126,
+        "p95": 0.004111
+      }
+    },
+    "note": {
+      "cases": 6,
+      "complete_action_cases": 2,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 1,
+        "conversation": 3,
+        "ready": 2
+      },
+      "presentable_complete_action_cases": 2,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 2,
+      "ready_action_rate": 1.0,
+      "ready_actions": 2,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.711748,
+        "p50": 0.28683,
+        "p95": 0.711748
+      },
+      "turn_latency_seconds": {
+        "p50": 0.286801,
+        "p95": 0.711714
+      }
+    },
+    "notification": {
+      "cases": 6,
+      "complete_action_cases": 6,
+      "exact": 5,
+      "exact_accuracy": 0.833333,
+      "observed_outcomes": {
+        "clarify": 1,
+        "ready": 5
+      },
+      "presentable_complete_action_cases": 5,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 5,
+      "ready_action_rate": 0.833333,
+      "ready_actions": 5,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.778751,
+        "p50": 0.004536,
+        "p95": 0.778751
+      },
+      "turn_latency_seconds": {
+        "p50": 0.003927,
+        "p95": 0.77873
+      }
+    },
+    "ocr": {
+      "cases": 1,
+      "complete_action_cases": 0,
+      "exact": 0,
+      "exact_accuracy": 0.0,
+      "observed_outcomes": {
+        "clarify": 1
+      },
+      "presentable_complete_action_cases": 0,
+      "presentable_exact": 1,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": null,
+      "presentable_ready_actions": 0,
+      "ready_action_rate": null,
+      "ready_actions": 0,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 3.412007,
+        "p50": 3.412007,
+        "p95": 3.412007
+      },
+      "turn_latency_seconds": {
+        "p50": 3.411959,
+        "p95": 3.411959
+      }
+    },
+    "office": {
+      "cases": 6,
+      "complete_action_cases": 0,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 1,
+        "conversation": 5
+      },
+      "presentable_complete_action_cases": 0,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": null,
+      "presentable_ready_actions": 0,
+      "ready_action_rate": null,
+      "ready_actions": 0,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 4.15092,
+        "p50": 1.603538,
+        "p95": 4.15092
+      },
+      "turn_latency_seconds": {
+        "p50": 1.60352,
+        "p95": 4.150881
+      }
+    },
+    "peripheral": {
+      "cases": 5,
+      "complete_action_cases": 2,
+      "exact": 5,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "conversation": 3,
+        "ready": 2
+      },
+      "presentable_complete_action_cases": 2,
+      "presentable_exact": 5,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 2,
+      "ready_action_rate": 1.0,
+      "ready_actions": 2,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 2.474138,
+        "p50": 1.401069,
+        "p95": 2.474138
+      },
+      "turn_latency_seconds": {
+        "p50": 1.401053,
+        "p95": 2.474114
+      }
+    },
+    "reminder": {
+      "cases": 6,
+      "complete_action_cases": 5,
+      "exact": 5,
+      "exact_accuracy": 0.833333,
+      "observed_outcomes": {
+        "clarify": 2,
+        "ready": 4
+      },
+      "presentable_complete_action_cases": 4,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 4,
+      "ready_action_rate": 0.8,
+      "ready_actions": 4,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.899048,
+        "p50": 0.755664,
+        "p95": 0.899048
+      },
+      "turn_latency_seconds": {
+        "p50": 0.003572,
+        "p95": 0.541689
+      }
+    },
+    "routine": {
+      "cases": 4,
+      "complete_action_cases": 0,
+      "exact": 4,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "conversation": 4
+      },
+      "presentable_complete_action_cases": 0,
+      "presentable_exact": 4,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": null,
+      "presentable_ready_actions": 0,
+      "ready_action_rate": null,
+      "ready_actions": 0,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 1.553807,
+        "p50": 0.420072,
+        "p95": 1.553807
+      },
+      "turn_latency_seconds": {
+        "p50": 0.420052,
+        "p95": 1.553789
+      }
+    },
+    "streaming": {
+      "cases": 6,
+      "complete_action_cases": 3,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 1,
+        "conversation": 2,
+        "ready": 3
+      },
+      "presentable_complete_action_cases": 3,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 3,
+      "ready_action_rate": 1.0,
+      "ready_actions": 3,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 1.407195,
+        "p50": 0.659668,
+        "p95": 1.407195
+      },
+      "turn_latency_seconds": {
+        "p50": 0.005076,
+        "p95": 1.407177
+      }
+    },
+    "system": {
+      "cases": 6,
+      "complete_action_cases": 0,
+      "exact": 5,
+      "exact_accuracy": 0.833333,
+      "observed_outcomes": {
+        "clarify": 1,
+        "conversation": 5
+      },
+      "presentable_complete_action_cases": 0,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": null,
+      "presentable_ready_actions": 0,
+      "ready_action_rate": null,
+      "ready_actions": 0,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 5.090625,
+        "p50": 2.196105,
+        "p95": 5.090625
+      },
+      "turn_latency_seconds": {
+        "p50": 2.196072,
+        "p95": 5.090608
+      }
+    },
+    "task": {
+      "cases": 6,
+      "complete_action_cases": 0,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "conversation": 6
+      },
+      "presentable_complete_action_cases": 0,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": null,
+      "presentable_ready_actions": 0,
+      "ready_action_rate": null,
+      "ready_actions": 0,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 2.728112,
+        "p50": 0.999815,
+        "p95": 2.728112
+      },
+      "turn_latency_seconds": {
+        "p50": 0.999796,
+        "p95": 2.728094
+      }
+    },
+    "vision": {
+      "cases": 6,
+      "complete_action_cases": 3,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "conversation": 3,
+        "ready": 3
+      },
+      "presentable_complete_action_cases": 3,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 3,
+      "ready_action_rate": 1.0,
+      "ready_actions": 3,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 2.161748,
+        "p50": 0.215222,
+        "p95": 2.161748
+      },
+      "turn_latency_seconds": {
+        "p50": 0.0046,
+        "p95": 2.161726
+      }
+    },
+    "web": {
+      "cases": 6,
+      "complete_action_cases": 6,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "ready": 6
+      },
+      "presentable_complete_action_cases": 6,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 6,
+      "ready_action_rate": 1.0,
+      "ready_actions": 6,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.727479,
+        "p50": 0.436899,
+        "p95": 0.727479
+      },
+      "turn_latency_seconds": {
+        "p50": 0.003593,
+        "p95": 0.004671
+      }
+    },
+    "wifi": {
+      "cases": 6,
+      "complete_action_cases": 5,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "conversation": 1,
+        "ready": 5
+      },
+      "presentable_complete_action_cases": 5,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 5,
+      "ready_action_rate": 1.0,
+      "ready_actions": 5,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.319096,
+        "p50": 0.005993,
+        "p95": 0.319096
+      },
+      "turn_latency_seconds": {
+        "p50": 0.003508,
+        "p95": 0.315049
+      }
+    },
+    "window": {
+      "cases": 6,
+      "complete_action_cases": 1,
+      "exact": 6,
+      "exact_accuracy": 1.0,
+      "observed_outcomes": {
+        "clarify": 2,
+        "conversation": 3,
+        "ready": 1
+      },
+      "presentable_complete_action_cases": 1,
+      "presentable_exact": 6,
+      "presentable_exact_accuracy": 1.0,
+      "presentable_ready_action_rate": 1.0,
+      "presentable_ready_actions": 1,
+      "ready_action_rate": 1.0,
+      "ready_actions": 1,
+      "ready_pipeline_latency_seconds": {
+        "maximum": 0.753976,
+        "p50": 0.258155,
+        "p95": 0.753976
+      },
+      "turn_latency_seconds": {
+        "p50": 0.258138,
+        "p95": 0.753958
+      }
+    }
+  },
+  "core_or_provider_requests_sent": 0,
+  "failure_groups": {
+    "game:conversation": 1,
+    "notification:clarify": 1,
+    "ocr:clarify": 1,
+    "reminder:clarify": 1,
+    "system:clarify": 1
+  },
+  "failures": [
+    {
+      "accepted_terminal_operations": [
+        [
+          "game.launch"
+        ]
+      ],
+      "case_id": "game-02",
+      "downstream": null,
+      "exact": false,
+      "expected_outcome": "ready",
+      "family": "game",
+      "observed_outcome": "conversation",
+      "operation_correct": false,
+      "presentable_adjustment": "the requested title is absent from the authenticated installed-game inventory",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre Portal desde Steam",
+      "total_seconds": 0.350099,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.350059
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.cancel.latest"
+        ]
+      ],
+      "case_id": "notification-03",
+      "downstream": null,
+      "exact": false,
+      "expected_outcome": "ready",
+      "family": "notification",
+      "observed_outcome": "clarify",
+      "operation_correct": false,
+      "presentable_adjustment": "an unnamed alarm cannot authorize cancellation of an arbitrary item",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "cancelá la alarma",
+      "total_seconds": 0.778751,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "notification.cancel.at"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.77873
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "ocr-00",
+      "downstream": null,
+      "exact": false,
+      "expected_outcome": "conversation",
+      "family": "ocr",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "a non-effect fragment may be acknowledged or clarified without authority",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify",
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "OCR limitado, mejor para detection",
+      "total_seconds": 3.412007,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "clarify"
+      },
+      "turn_seconds": 3.411959
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "reminder-03",
+      "downstream": {
+        "arguments": null,
+        "id": "current-ready-arguments-98",
+        "ok": false,
+        "operation": "reminder.create",
+        "question": "¿A qué hora y con qué título quieres crear el recordatorio?",
+        "type": "arguments.result"
+      },
+      "exact": false,
+      "expected_outcome": "ready",
+      "family": "reminder",
+      "observed_outcome": "clarify",
+      "operation_correct": false,
+      "presentable_adjustment": "a clock without reminder content is incomplete",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "ponme un recordatorio para las 3 de la tarde",
+      "total_seconds": 0.841604,
+      "turn": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003886
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "system-00",
+      "downstream": null,
+      "exact": false,
+      "expected_outcome": "conversation",
+      "family": "system",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "a non-effect parenthetical fragment may be acknowledged or clarified",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify",
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)",
+      "total_seconds": 3.44639,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "clarify"
+      },
+      "turn_seconds": 3.44637
+    }
+  ],
+  "measured_at": "2026-08-02T15:17:50.593288+00:00",
+  "presentable_failure_groups": {},
+  "presentable_failures": [],
+  "rows": [
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open"
+        ]
+      ],
+      "case_id": "app-00",
+      "downstream": {
+        "arguments": {
+          "appId": "Epic Games Launcher"
+        },
+        "id": "current-ready-arguments-0",
+        "ok": true,
+        "operation": "app.open",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "app",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.open"
+      ],
+      "text": "Abre Epic Games Launcher",
+      "total_seconds": 0.013088,
+      "turn": {
+        "effect_operations": [
+          "app.open"
+        ],
+        "intent_operations": [
+          "app.open"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.008509
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open",
+          "app.close"
+        ]
+      ],
+      "case_id": "app-01",
+      "downstream": {
+        "id": "current-ready-plan-1",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "appId": "windows.notepad"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "notepad"
+          },
+          {
+            "arguments": {},
+            "argumentsMode": "literal",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "window.active",
+            "purpose": "cierralo"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_2"
+            ],
+            "id": "step_3",
+            "operation": "app.close",
+            "purpose": "cierralo"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "app",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.open",
+        "app.close"
+      ],
+      "text": "Abre Notepad y luego cierralo",
+      "total_seconds": 0.03543,
+      "turn": {
+        "effect_operations": [
+          "app.open",
+          "app.close"
+        ],
+        "intent_operations": [
+          "app.open",
+          "app.close"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.028992
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open"
+        ]
+      ],
+      "case_id": "app-02",
+      "downstream": {
+        "arguments": {
+          "appId": "Steam"
+        },
+        "id": "current-ready-arguments-2",
+        "ok": true,
+        "operation": "app.open",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "app",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.open"
+      ],
+      "text": "Abre Steam con máximo 2 intentos",
+      "total_seconds": 0.01011,
+      "turn": {
+        "effect_operations": [
+          "app.open"
+        ],
+        "intent_operations": [
+          "app.open"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.00466
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open"
+        ]
+      ],
+      "case_id": "app-03",
+      "downstream": {
+        "arguments": {
+          "appId": "Steam"
+        },
+        "id": "current-ready-arguments-3",
+        "ok": true,
+        "operation": "app.open",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "app",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.open"
+      ],
+      "text": "Abre steam 0",
+      "total_seconds": 0.007186,
+      "turn": {
+        "effect_operations": [
+          "app.open"
+        ],
+        "intent_operations": [
+          "app.open"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003302
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open"
+        ]
+      ],
+      "case_id": "app-04",
+      "downstream": {
+        "arguments": {
+          "appId": "Steam"
+        },
+        "id": "current-ready-arguments-4",
+        "ok": true,
+        "operation": "app.open",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "app",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.open"
+      ],
+      "text": "Abre steam 1",
+      "total_seconds": 0.007191,
+      "turn": {
+        "effect_operations": [
+          "app.open"
+        ],
+        "intent_operations": [
+          "app.open"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003061
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open"
+        ]
+      ],
+      "case_id": "app-05",
+      "downstream": {
+        "arguments": {
+          "appId": "Steam"
+        },
+        "id": "current-ready-arguments-5",
+        "ok": true,
+        "operation": "app.open",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "app",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.open"
+      ],
+      "text": "Abre steam 2",
+      "total_seconds": 0.01528,
+      "turn": {
+        "effect_operations": [
+          "app.open"
+        ],
+        "intent_operations": [
+          "app.open"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.004894
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "audio-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "audio",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abaixa o volume pra 30 por cento",
+      "total_seconds": 0.376612,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.376597
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "audio-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "audio",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Augmente le volume de 10 pour cent",
+      "total_seconds": 0.286791,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.286769
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "audio.volume.adjust"
+        ]
+      ],
+      "case_id": "audio-02",
+      "downstream": {
+        "arguments": {
+          "amount": 1,
+          "direction": "down"
+        },
+        "id": "current-ready-arguments-8",
+        "ok": true,
+        "operation": "audio.volume.adjust",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "audio",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "audio.volume.adjust"
+      ],
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo",
+      "total_seconds": 0.935923,
+      "turn": {
+        "effect_operations": [
+          "audio.volume.adjust"
+        ],
+        "intent_operations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.008319
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "audio.volume.adjust"
+        ]
+      ],
+      "case_id": "audio-03",
+      "downstream": {
+        "arguments": {
+          "amount": 10,
+          "direction": "down"
+        },
+        "id": "current-ready-arguments-9",
+        "ok": true,
+        "operation": "audio.volume.adjust",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "audio",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "audio.volume.adjust"
+      ],
+      "text": "Baja el volumen 10%",
+      "total_seconds": 0.888566,
+      "turn": {
+        "effect_operations": [
+          "audio.volume.adjust"
+        ],
+        "intent_operations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.002951
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "audio-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "audio",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Bota o volume em 40 por cento",
+      "total_seconds": 0.341014,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.340997
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "audio.volume"
+        ]
+      ],
+      "case_id": "audio-05",
+      "downstream": {
+        "arguments": {
+          "level": 10
+        },
+        "id": "current-ready-arguments-11",
+        "ok": true,
+        "operation": "audio.volume",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "audio",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "audio.volume"
+      ],
+      "text": "Cambia el volumen a 10",
+      "total_seconds": 0.005369,
+      "turn": {
+        "effect_operations": [
+          "audio.volume"
+        ],
+        "intent_operations": [
+          "audio.volume"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.004355
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "backup.create",
+          "filesystem.write.text"
+        ]
+      ],
+      "case_id": "backup-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "backup",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Edita archivo y crea respaldo antes",
+      "total_seconds": 1.093779,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "backup.create",
+          "filesystem.write.text"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 1.093745
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "backup.create",
+          "filesystem.write.text"
+        ]
+      ],
+      "case_id": "backup-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "backup",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "cambia .env para usar ollama, pero solo con backup y confirmación",
+      "total_seconds": 1.047832,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "backup.create",
+          "filesystem.write.text"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 1.047798
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "backup-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "backup",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "faz um backup do registro antes de mexer em algo",
+      "total_seconds": 0.831304,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.831288
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "backup-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "backup",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "hace un backup de mis documentos a un pendrive",
+      "total_seconds": 1.696662,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.696637
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "backup-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "backup",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "show me the log of the backup job",
+      "total_seconds": 1.809881,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.809866
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "bluetooth-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "bluetooth",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "abre configuración y entra a Bluetooth",
+      "total_seconds": 1.590483,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.590458
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "case_id": "bluetooth-01",
+      "downstream": {
+        "arguments": {
+          "state": true
+        },
+        "id": "current-ready-arguments-18",
+        "ok": true,
+        "operation": "bluetooth.radio.set",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "bluetooth",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "bluetooth.radio.set"
+      ],
+      "text": "activa el bluetooth",
+      "total_seconds": 0.007065,
+      "turn": {
+        "effect_operations": [
+          "bluetooth.radio.set"
+        ],
+        "intent_operations": [
+          "bluetooth.radio.set"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.006471
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "case_id": "bluetooth-02",
+      "downstream": {
+        "arguments": {
+          "state": false
+        },
+        "id": "current-ready-arguments-19",
+        "ok": true,
+        "operation": "bluetooth.radio.set",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "bluetooth",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "bluetooth.radio.set"
+      ],
+      "text": "apagá el bluetooth",
+      "total_seconds": 0.003017,
+      "turn": {
+        "effect_operations": [
+          "bluetooth.radio.set"
+        ],
+        "intent_operations": [
+          "bluetooth.radio.set"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.002553
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "bluetooth.device.pair"
+        ]
+      ],
+      "case_id": "bluetooth-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "bluetooth",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "conecta el bluetooth",
+      "total_seconds": 0.586971,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "bluetooth.device.pair"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.586943
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "case_id": "bluetooth-04",
+      "downstream": {
+        "arguments": {
+          "state": false
+        },
+        "id": "current-ready-arguments-21",
+        "ok": true,
+        "operation": "bluetooth.radio.set",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "bluetooth",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "bluetooth.radio.set"
+      ],
+      "text": "desactivá el bluetooth",
+      "total_seconds": 0.004365,
+      "turn": {
+        "effect_operations": [
+          "bluetooth.radio.set"
+        ],
+        "intent_operations": [
+          "bluetooth.radio.set"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003961
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "case_id": "bluetooth-05",
+      "downstream": {
+        "arguments": {
+          "state": true
+        },
+        "id": "current-ready-arguments-22",
+        "ok": true,
+        "operation": "bluetooth.radio.set",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "bluetooth",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "bluetooth.radio.set"
+      ],
+      "text": "prendé el bluetooth",
+      "total_seconds": 0.002872,
+      "turn": {
+        "effect_operations": [
+          "bluetooth.radio.set"
+        ],
+        "intent_operations": [
+          "bluetooth.radio.set"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.002645
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open"
+        ]
+      ],
+      "case_id": "browser-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "browser",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre el navegador por defecto",
+      "total_seconds": 0.499671,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "app.open"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.499652
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "browser.navigate"
+        ]
+      ],
+      "case_id": "browser-01",
+      "downstream": {
+        "arguments": {
+          "url": "https://github.com"
+        },
+        "id": "current-ready-arguments-24",
+        "ok": true,
+        "operation": "browser.navigate",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "browser",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "browser.navigate"
+      ],
+      "text": "Abre github.com",
+      "total_seconds": 0.004741,
+      "turn": {
+        "effect_operations": [
+          "browser.navigate"
+        ],
+        "intent_operations": [
+          "browser.navigate"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003206
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search",
+          "browser.navigate"
+        ]
+      ],
+      "case_id": "browser-02",
+      "downstream": {
+        "id": "current-ready-plan-25",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "query": "Abre la página de Steam de Marvel Rivals"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "web.search",
+            "purpose": "abre la pagina de steam de marvel rivals"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "browser.navigate",
+            "purpose": "abre la pagina de steam de marvel rivals"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "browser",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "text": "Abre la página de Steam de Marvel Rivals",
+      "total_seconds": 0.593858,
+      "turn": {
+        "effect_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "intent_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.004992
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search",
+          "browser.navigate"
+        ]
+      ],
+      "case_id": "browser-03",
+      "downstream": {
+        "id": "current-ready-plan-26",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "query": "Abre la página de descargas de Python"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "web.search",
+            "purpose": "abre la pagina de descargas de python"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "browser.navigate",
+            "purpose": "abre la pagina de descargas de python"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "browser",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "text": "Abre la página de descargas de Python",
+      "total_seconds": 0.533161,
+      "turn": {
+        "effect_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "intent_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.004339
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search",
+          "browser.navigate"
+        ]
+      ],
+      "case_id": "browser-04",
+      "downstream": {
+        "id": "current-ready-plan-27",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "query": "Abre la página oficial de OpenAI"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "web.search",
+            "purpose": "abre la pagina oficial de openai"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "browser.navigate",
+            "purpose": "abre la pagina oficial de openai"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "browser",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "text": "Abre la página oficial de OpenAI",
+      "total_seconds": 0.74336,
+      "turn": {
+        "effect_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "intent_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.006146
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "browser-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "browser",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre o Google no navegador",
+      "total_seconds": 0.389637,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.389585
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "calendar-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "calendar",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Write me an email that I cant make it to the meeting",
+      "total_seconds": 1.320704,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.320667
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open",
+          "input.text.type"
+        ]
+      ],
+      "case_id": "calendar-01",
+      "downstream": {
+        "id": "current-ready-plan-30",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "appId": "windows.notepad"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "bloc de notas"
+          },
+          {
+            "arguments": {
+              "text": "escribi reunion manana"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "input.text.type",
+            "purpose": "escribi reunion manana"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "calendar",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.open",
+        "input.text.type"
+      ],
+      "text": "abrí el bloc de notas y escribí reunion manana",
+      "total_seconds": 0.64684,
+      "turn": {
+        "effect_operations": [
+          "app.open",
+          "input.text.type"
+        ],
+        "intent_operations": [
+          "app.open",
+          "input.text.type"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.007774
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "case_id": "calendar-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "calendar",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "agenda una reunion el viernes a las cinco",
+      "total_seconds": 0.855842,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "calendar.event.create"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.855791
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "case_id": "calendar-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "calendar",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "agendá una reunión el viernes a las 3",
+      "total_seconds": 0.748391,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "calendar.event.create"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.748356
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "case_id": "calendar-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "calendar",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "crea un evento el viernes a las 4",
+      "total_seconds": 1.343261,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "calendar.event.create"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 1.343223
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "calendar-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "calendar",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "escribile un email a juan con el asunto reunion diciendo nos vemos",
+      "total_seconds": 2.608951,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 2.608891
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "vision.describe"
+        ]
+      ],
+      "case_id": "capture-00",
+      "downstream": {
+        "id": "current-ready-plan-35",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {},
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "capture.screenshot",
+            "purpose": "foto de captura a mi pc"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "vision.describe",
+            "purpose": "que se ve?"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "capture",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "vision.describe"
+      ],
+      "text": "Sacale una foto de captura a mi pc, que se ve?",
+      "total_seconds": 0.011589,
+      "turn": {
+        "effect_operations": [
+          "capture.screenshot",
+          "vision.describe"
+        ],
+        "intent_operations": [
+          "capture.screenshot",
+          "vision.describe"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.008659
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "capture-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "capture",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "how do I take a screenshot in Windows?",
+      "total_seconds": 1.694709,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.694675
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "capture-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "capture",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "tira uma captura de tela",
+      "total_seconds": 0.385121,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.385083
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "capture.screenshot"
+        ]
+      ],
+      "case_id": "capture-03",
+      "downstream": {
+        "arguments": {},
+        "id": "current-ready-arguments-38",
+        "ok": true,
+        "operation": "capture.screenshot",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "capture",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "capture.screenshot"
+      ],
+      "text": "toma screenshot, guárdalo y dime el path",
+      "total_seconds": 0.425446,
+      "turn": {
+        "effect_operations": [
+          "capture.screenshot"
+        ],
+        "intent_operations": [
+          "capture.screenshot"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.006778
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "capture-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "capture",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "toma una captura y guardala en el escritorio",
+      "total_seconds": 0.36715,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.367101
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "capture-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "capture",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "toma una captura, guardala en el escritorio y abre el explorador ahi",
+      "total_seconds": 0.423231,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.423189
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "clipboard.paste"
+        ]
+      ],
+      "case_id": "clipboard-00",
+      "downstream": {
+        "arguments": {},
+        "id": "current-ready-arguments-41",
+        "ok": true,
+        "operation": "clipboard.paste",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "clipboard",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "clipboard.paste"
+      ],
+      "text": "Pega esto en el bloc de notas",
+      "total_seconds": 0.513949,
+      "turn": {
+        "effect_operations": [
+          "clipboard.paste"
+        ],
+        "intent_operations": [
+          "clipboard.paste"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.00622
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "clipboard.copy"
+        ]
+      ],
+      "case_id": "clipboard-01",
+      "downstream": {
+        "arguments": {},
+        "id": "current-ready-arguments-42",
+        "ok": true,
+        "operation": "clipboard.copy",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "clipboard",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "clipboard.copy"
+      ],
+      "text": "copia texto de Notepad al portapapeles",
+      "total_seconds": 0.435579,
+      "turn": {
+        "effect_operations": [
+          "clipboard.copy"
+        ],
+        "intent_operations": [
+          "clipboard.copy"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.008092
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "clipboard.write.text"
+        ]
+      ],
+      "case_id": "clipboard-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "clipboard",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "copiame este texto al portapapeles que lo necesito pegar",
+      "total_seconds": 0.76985,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "clipboard.write.text"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.769778
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "memory.recall",
+          "clipboard.write.text"
+        ]
+      ],
+      "case_id": "clipboard-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "clipboard",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "copy my email address to the clipboard so I can paste it",
+      "total_seconds": 0.640218,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "memory.recall",
+          "clipboard.write.text"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.640159
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open",
+          "clipboard.paste"
+        ]
+      ],
+      "case_id": "clipboard-04",
+      "downstream": {
+        "id": "current-ready-plan-45",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "appId": "windows.notepad"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "notepad"
+          },
+          {
+            "arguments": {},
+            "argumentsMode": "literal",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "clipboard.paste",
+            "purpose": "pega texto en un archivo nuevo de notepad"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "clipboard",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.open",
+        "clipboard.paste"
+      ],
+      "text": "pega texto en un archivo nuevo de Notepad",
+      "total_seconds": 0.009513,
+      "turn": {
+        "effect_operations": [
+          "app.open",
+          "clipboard.paste"
+        ],
+        "intent_operations": [
+          "app.open",
+          "clipboard.paste"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.004068
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "clipboard.read.text"
+        ]
+      ],
+      "case_id": "clipboard-05",
+      "downstream": {
+        "arguments": {},
+        "id": "current-ready-arguments-46",
+        "ok": true,
+        "operation": "clipboard.read.text",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "clipboard",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "clipboard.read.text"
+      ],
+      "text": "que hay en el portapapeles",
+      "total_seconds": 0.508082,
+      "turn": {
+        "effect_operations": [
+          "clipboard.read.text"
+        ],
+        "intent_operations": [
+          "clipboard.read.text"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.005421
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "filesystem-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "filesystem",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre el archivo hola.txt del escritorio",
+      "total_seconds": 0.325627,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.32561
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "filesystem.file.open.latest"
+        ]
+      ],
+      "case_id": "filesystem-01",
+      "downstream": {
+        "arguments": {
+          "folder": "downloads"
+        },
+        "id": "current-ready-arguments-48",
+        "ok": true,
+        "operation": "filesystem.file.open.latest",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "filesystem",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "text": "Abre el archivo más reciente de Descargas",
+      "total_seconds": 0.005627,
+      "turn": {
+        "effect_operations": [
+          "filesystem.file.open.latest"
+        ],
+        "intent_operations": [
+          "filesystem.file.open.latest"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.004769
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "filesystem.file.open.latest"
+        ]
+      ],
+      "case_id": "filesystem-02",
+      "downstream": {
+        "arguments": {
+          "folder": "downloads"
+        },
+        "id": "current-ready-arguments-49",
+        "ok": true,
+        "operation": "filesystem.file.open.latest",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "filesystem",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "text": "Abre el último archivo que descargué",
+      "total_seconds": 0.004383,
+      "turn": {
+        "effect_operations": [
+          "filesystem.file.open.latest"
+        ],
+        "intent_operations": [
+          "filesystem.file.open.latest"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.00389
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "filesystem-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "filesystem",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Borra la carpeta CarterTest del escritorio",
+      "total_seconds": 1.960473,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.960439
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "filesystem-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "filesystem",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Crea un archivo de texto en el escritorio que diga prueba Carter",
+      "total_seconds": 1.569895,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.569868
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "filesystem-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "filesystem",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Crea una carpeta en el escritorio llamada CarterTest",
+      "total_seconds": 1.562765,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.562746
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "game-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "game",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre Big Picture",
+      "total_seconds": 1.603528,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.603511
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "game.launch"
+        ]
+      ],
+      "case_id": "game-01",
+      "downstream": {
+        "arguments": {
+          "appId": "730"
+        },
+        "id": "current-ready-arguments-54",
+        "ok": true,
+        "operation": "game.launch",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "game",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "game.launch"
+      ],
+      "text": "Abre Counter Strike",
+      "total_seconds": 0.002178,
+      "turn": {
+        "effect_operations": [
+          "game.launch"
+        ],
+        "intent_operations": [
+          "game.launch"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.00195
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "game.launch"
+        ]
+      ],
+      "case_id": "game-02",
+      "downstream": null,
+      "exact": false,
+      "expected_outcome": "ready",
+      "family": "game",
+      "observed_outcome": "conversation",
+      "operation_correct": false,
+      "presentable_adjustment": "the requested title is absent from the authenticated installed-game inventory",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre Portal desde Steam",
+      "total_seconds": 0.350099,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.350059
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "game-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "game",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre a Loja do Steam",
+      "total_seconds": 0.41781,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.41779
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "game-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "game",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre capturas de Steam",
+      "total_seconds": 1.253973,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.253949
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "game.catalog.list"
+        ]
+      ],
+      "case_id": "game-05",
+      "downstream": {
+        "arguments": {
+          "query": "Abre mi biblioteca de Steam"
+        },
+        "id": "current-ready-arguments-58",
+        "ok": true,
+        "operation": "game.catalog.list",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "game",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "game.catalog.list"
+      ],
+      "text": "Abre mi biblioteca de Steam",
+      "total_seconds": 0.501575,
+      "turn": {
+        "effect_operations": [
+          "game.catalog.list"
+        ],
+        "intent_operations": [
+          "game.catalog.list"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003624
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "media-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "media",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Active la fenêtre de Spotify",
+      "total_seconds": 0.325925,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.325895
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "media-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "media",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Affiche la fenêtre de Spotify par-dessus les autres",
+      "total_seconds": 0.300383,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.300364
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "media-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "media",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Ahora estoy poniendo musica en  mi pc, lo quieres probar?",
+      "total_seconds": 1.249928,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.249911
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "media-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "media",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Apri Spotify e fai partire la musica",
+      "total_seconds": 0.326779,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.326762
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "media.play.query"
+        ]
+      ],
+      "case_id": "media-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "media",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Baxy, pon música”.",
+      "total_seconds": 0.697033,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "media.play.query"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.696985
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "media-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "media",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Can you play tic tac toe with me?",
+      "total_seconds": 0.247115,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.247098
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "message.send"
+        ]
+      ],
+      "case_id": "message-00",
+      "downstream": {
+        "id": "current-ready-plan-65",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "channel": "whatsapp",
+              "recipient": "amor"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "message.recipient.resolve",
+            "purpose": "Dile a amor en WhatsApp que la amo mucho."
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "message.send",
+            "purpose": "Dile a amor en WhatsApp que la amo mucho."
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "message",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "message.send"
+      ],
+      "text": "Dile a amor en WhatsApp que la amo mucho.",
+      "total_seconds": 0.007418,
+      "turn": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.004111
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "message.send"
+        ]
+      ],
+      "case_id": "message-01",
+      "downstream": {
+        "id": "current-ready-plan-66",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "channel": "whatsapp",
+              "recipient": "amor"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "message.recipient.resolve",
+            "purpose": "Dile a amor en wsp que la amo"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "message.send",
+            "purpose": "Dile a amor en wsp que la amo"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "message",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "message.send"
+      ],
+      "text": "Dile a amor en wsp que la amo",
+      "total_seconds": 0.005428,
+      "turn": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.003763
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "message.send"
+        ]
+      ],
+      "case_id": "message-02",
+      "downstream": {
+        "id": "current-ready-plan-67",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "channel": "whatsapp",
+              "recipient": "amor"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "message.recipient.resolve",
+            "purpose": "Dile a amor que la amo demasiado en wsp"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "message.send",
+            "purpose": "Dile a amor que la amo demasiado en wsp"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "message",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "message.send"
+      ],
+      "text": "Dile a amor que la amo demasiado en wsp",
+      "total_seconds": 0.00451,
+      "turn": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.002863
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "message.send"
+        ]
+      ],
+      "case_id": "message-03",
+      "downstream": {
+        "id": "current-ready-plan-68",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "channel": "whatsapp",
+              "recipient": "amor"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "message.recipient.resolve",
+            "purpose": "Dile a amor que la amo en wsp"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "message.send",
+            "purpose": "Dile a amor que la amo en wsp"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "message",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "message.send"
+      ],
+      "text": "Dile a amor que la amo en wsp",
+      "total_seconds": 0.004367,
+      "turn": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.003126
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "message.send"
+        ]
+      ],
+      "case_id": "message-04",
+      "downstream": {
+        "id": "current-ready-plan-69",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "channel": "whatsapp",
+              "recipient": "amor"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "message.recipient.resolve",
+            "purpose": "Dile a amor que la amo muchisimo en wsp"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "message.send",
+            "purpose": "Dile a amor que la amo muchisimo en wsp"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "message",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "message.send"
+      ],
+      "text": "Dile a amor que la amo muchisimo en wsp",
+      "total_seconds": 0.005459,
+      "turn": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.00352
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "message.send"
+        ]
+      ],
+      "case_id": "message-05",
+      "downstream": {
+        "id": "current-ready-plan-70",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "channel": "whatsapp",
+              "recipient": "enmanuel"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "message.recipient.resolve",
+            "purpose": "Dile a enmanuel que es una increible persona en wsp"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "message.send",
+            "purpose": "Dile a enmanuel que es una increible persona en wsp"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "message",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "message.send"
+      ],
+      "text": "Dile a enmanuel que es una increible persona en wsp",
+      "total_seconds": 0.004681,
+      "turn": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.002928
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "note.create"
+        ]
+      ],
+      "case_id": "note-00",
+      "downstream": {
+        "arguments": {
+          "content": "tengo que comprar pan",
+          "title": "comprar pan"
+        },
+        "id": "current-ready-arguments-71",
+        "ok": true,
+        "operation": "note.create",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "note",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "note.create"
+      ],
+      "text": "anota que tengo que comprar pan",
+      "total_seconds": 0.003525,
+      "turn": {
+        "effect_operations": [
+          "note.create"
+        ],
+        "intent_operations": [
+          "note.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.002626
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "note.create"
+        ]
+      ],
+      "case_id": "note-01",
+      "downstream": {
+        "arguments": {
+          "content": "tengo que llamar al medico manana",
+          "title": "llamar al medico manana"
+        },
+        "id": "current-ready-arguments-72",
+        "ok": true,
+        "operation": "note.create",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "note",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "note.create"
+      ],
+      "text": "anota que tengo que llamar al medico manana",
+      "total_seconds": 0.003959,
+      "turn": {
+        "effect_operations": [
+          "note.create"
+        ],
+        "intent_operations": [
+          "note.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003458
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "note-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "note",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "apri il blocco note e scrivi la lista della spesa",
+      "total_seconds": 0.309,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.308978
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "note-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "note",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "apri il blocco note, scrivi la lista e salvala",
+      "total_seconds": 0.28683,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.286801
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "note-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "note",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "apri la finestra Salva con nome nel Blocco note",
+      "total_seconds": 0.287169,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.287149
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "filesystem.known.search",
+          "filesystem.read.text",
+          "filesystem.write.text"
+        ]
+      ],
+      "case_id": "note-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "note",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "convierte nota.txt a mayúsculas en un archivo nuevo",
+      "total_seconds": 0.711748,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "filesystem.known.search",
+          "filesystem.read.text",
+          "filesystem.write.text"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.711714
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "notification-00",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-03T11:00:00Z",
+          "kind": "alarm",
+          "title": "alarma para las 7 de la maniana"
+        },
+        "id": "current-ready-arguments-77",
+        "ok": true,
+        "operation": "notification.schedule",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "notification",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.schedule"
+      ],
+      "text": "Pone una alarma para las 7 de la maniana",
+      "total_seconds": 0.008891,
+      "turn": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.004911
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "notification-01",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-03T12:00:00Z",
+          "kind": "alarm",
+          "title": "alarma para mañana 8am"
+        },
+        "id": "current-ready-arguments-78",
+        "ok": true,
+        "operation": "notification.schedule",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "notification",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.schedule"
+      ],
+      "text": "alarma para mañana 8am",
+      "total_seconds": 0.004244,
+      "turn": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.00353
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "notification-02",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-02T15:26:41Z",
+          "kind": "alarm",
+          "title": "temporizador de 10 minutos"
+        },
+        "id": "current-ready-arguments-79",
+        "ok": true,
+        "operation": "notification.schedule",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "notification",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.schedule"
+      ],
+      "text": "arranca un temporizador de 10 minutos",
+      "total_seconds": 0.004758,
+      "turn": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.004187
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.cancel.latest"
+        ]
+      ],
+      "case_id": "notification-03",
+      "downstream": null,
+      "exact": false,
+      "expected_outcome": "ready",
+      "family": "notification",
+      "observed_outcome": "clarify",
+      "operation_correct": false,
+      "presentable_adjustment": "an unnamed alarm cannot authorize cancellation of an arbitrary item",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "cancelá la alarma",
+      "total_seconds": 0.778751,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "notification.cancel.at"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.77873
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "notification-04",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-02T15:21:42Z",
+          "kind": "alarm",
+          "title": "timer de 5 minutos"
+        },
+        "id": "current-ready-arguments-81",
+        "ok": true,
+        "operation": "notification.schedule",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "notification",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.schedule"
+      ],
+      "text": "pone un timer de 5 minutos",
+      "total_seconds": 0.004536,
+      "turn": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003927
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "notification-05",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-02T15:26:42Z",
+          "kind": "alarm",
+          "title": "temporizador de diez minutos"
+        },
+        "id": "current-ready-arguments-82",
+        "ok": true,
+        "operation": "notification.schedule",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "notification",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.schedule"
+      ],
+      "text": "ponme un temporizador de diez minutos",
+      "total_seconds": 0.003181,
+      "turn": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.002757
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "ocr-00",
+      "downstream": null,
+      "exact": false,
+      "expected_outcome": "conversation",
+      "family": "ocr",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "a non-effect fragment may be acknowledged or clarified without authority",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify",
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "OCR limitado, mejor para detection",
+      "total_seconds": 3.412007,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "clarify"
+      },
+      "turn_seconds": 3.411959
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "office.document.create"
+        ]
+      ],
+      "case_id": "office-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "office",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Can you make me a PowerPoint?",
+      "total_seconds": 0.468374,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "office.document.create"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.468356
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "office-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "office",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Cierre de Word podía perder trabajo",
+      "total_seconds": 1.666342,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.666308
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "office-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "office",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Donde dejaste el Powerpoint? Que me hiciste",
+      "total_seconds": 2.17467,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 2.174654
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "office-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "office",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Fecha tudo que tá aberto do Word",
+      "total_seconds": 0.438915,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.438891
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "office-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "office",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Haz un powerpoint hablando de amor de 6 diapositivas",
+      "total_seconds": 4.15092,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 4.150881
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "office-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "office",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Hazme un PowerPoint de siete diapositivas que hable de los dinosaurios",
+      "total_seconds": 1.603538,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.60352
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "note.create"
+        ]
+      ],
+      "case_id": "peripheral-00",
+      "downstream": {
+        "arguments": {
+          "content": "terminé de configurar el micrófono",
+          "title": "configurar el micrófono"
+        },
+        "id": "current-ready-arguments-90",
+        "ok": true,
+        "operation": "note.create",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "peripheral",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "note.create"
+      ],
+      "text": "anotá que terminé de configurar el micrófono",
+      "total_seconds": 0.00318,
+      "turn": {
+        "effect_operations": [
+          "note.create"
+        ],
+        "intent_operations": [
+          "note.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.002703
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "peripheral-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "peripheral",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "cambia el microfono por defecto",
+      "total_seconds": 1.782602,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.782564
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "peripheral-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "peripheral",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "mutea el micrófono en discord",
+      "total_seconds": 2.474138,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 2.474114
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "peripheral-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "peripheral",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "set the HP LaserJet as my default printer",
+      "total_seconds": 1.401069,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.401053
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "audio.microphone.mute"
+        ]
+      ],
+      "case_id": "peripheral-04",
+      "downstream": {
+        "arguments": {
+          "state": true
+        },
+        "id": "current-ready-arguments-94",
+        "ok": true,
+        "operation": "audio.microphone.mute",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "peripheral",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "audio.microphone.mute"
+      ],
+      "text": "silenciame el micrófono",
+      "total_seconds": 0.003374,
+      "turn": {
+        "effect_operations": [
+          "audio.microphone.mute"
+        ],
+        "intent_operations": [
+          "audio.microphone.mute"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003053
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "reminder-00",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-02T15:37:03Z",
+          "title": "saque la comida"
+        },
+        "id": "current-ready-arguments-95",
+        "ok": true,
+        "operation": "reminder.create",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "reminder",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "reminder.create"
+      ],
+      "text": "avisame en 20 minutos que saque la comida",
+      "total_seconds": 0.899048,
+      "turn": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003526
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "reminder-01",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-02T16:17:03Z",
+          "title": "que salgo"
+        },
+        "id": "current-ready-arguments-96",
+        "ok": true,
+        "operation": "reminder.create",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "reminder",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "reminder.create"
+      ],
+      "text": "avisame en una hora que salgo",
+      "total_seconds": 0.804354,
+      "turn": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003572
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "reminder-02",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-02T15:19:04Z",
+          "title": "tomar agua"
+        },
+        "id": "current-ready-arguments-97",
+        "ok": true,
+        "operation": "reminder.create",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "reminder",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "reminder.create"
+      ],
+      "text": "ponme un recordatorio en 2 minutos para tomar agua",
+      "total_seconds": 0.733905,
+      "turn": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.004848
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "reminder-03",
+      "downstream": {
+        "arguments": null,
+        "id": "current-ready-arguments-98",
+        "ok": false,
+        "operation": "reminder.create",
+        "question": "¿A qué hora y con qué título quieres crear el recordatorio?",
+        "type": "arguments.result"
+      },
+      "exact": false,
+      "expected_outcome": "ready",
+      "family": "reminder",
+      "observed_outcome": "clarify",
+      "operation_correct": false,
+      "presentable_adjustment": "a clock without reminder content is incomplete",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "ponme un recordatorio para las 3 de la tarde",
+      "total_seconds": 0.841604,
+      "turn": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003886
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "reminder.create"
+        ]
+      ],
+      "case_id": "reminder-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "reminder",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "ponme un recordatorio para llamar al dentista",
+      "total_seconds": 0.54171,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.541689
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "case_id": "reminder-05",
+      "downstream": {
+        "arguments": {
+          "dueUtc": "2026-08-02T16:17:06Z",
+          "title": "tomar agua"
+        },
+        "id": "current-ready-arguments-100",
+        "ok": true,
+        "operation": "reminder.create",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "reminder",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "reminder.create"
+      ],
+      "text": "recordatorio de tomar agua en 1 hora",
+      "total_seconds": 0.755664,
+      "turn": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003012
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "routine-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "routine",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice",
+      "total_seconds": 0.420072,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.420052
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "routine-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "routine",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "crea una rutina que cada manana me de la hora",
+      "total_seconds": 1.553807,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.553789
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "routine-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "routine",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "creá el hábito de leer y registrá que lo hice hoy",
+      "total_seconds": 0.327666,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.327643
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "routine-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "routine",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "cria o hábito de ler e regista que já o fiz hoje",
+      "total_seconds": 0.330155,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.330125
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "browser.navigate"
+        ]
+      ],
+      "case_id": "streaming-00",
+      "downstream": {
+        "arguments": {
+          "url": "https://www.youtube.com/"
+        },
+        "id": "current-ready-arguments-105",
+        "ok": true,
+        "operation": "browser.navigate",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "streaming",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "browser.navigate"
+      ],
+      "text": "Abri YouTube en el navegador",
+      "total_seconds": 0.003684,
+      "turn": {
+        "effect_operations": [
+          "browser.navigate"
+        ],
+        "intent_operations": [
+          "browser.navigate"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003354
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "browser.navigate.named"
+        ]
+      ],
+      "case_id": "streaming-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "streaming",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Acabas de reanudar el video youtube , pero yo queria de opera gx",
+      "total_seconds": 0.856877,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "browser.navigate.named"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.856856
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "streaming-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "streaming",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Antes de seguir quiero ver como pones una serie en disney y en netflix",
+      "total_seconds": 0.279579,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.279543
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search"
+        ]
+      ],
+      "case_id": "streaming-03",
+      "downstream": {
+        "arguments": {
+          "query": "Donde puedo ver la pelicula de superman que salio el ano pasado??"
+        },
+        "id": "current-ready-arguments-108",
+        "ok": true,
+        "operation": "web.search",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "streaming",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search"
+      ],
+      "text": "Donde puedo ver la pelicula de superman que salio el ano pasado??",
+      "total_seconds": 0.953831,
+      "turn": {
+        "effect_operations": [
+          "web.search"
+        ],
+        "intent_operations": [
+          "web.search"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.005076
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "streaming-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "streaming",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Elige el primer resultado de YouTube",
+      "total_seconds": 1.407195,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.407177
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search"
+        ]
+      ],
+      "case_id": "streaming-05",
+      "downstream": {
+        "arguments": {
+          "query": "emilia perez la pelicula es buena?"
+        },
+        "id": "current-ready-arguments-110",
+        "ok": true,
+        "operation": "web.search",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "streaming",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search"
+      ],
+      "text": "Hablame de emilia perez la pelicula es buena?",
+      "total_seconds": 0.659668,
+      "turn": {
+        "effect_operations": [
+          "web.search"
+        ],
+        "intent_operations": [
+          "web.search"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003424
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "system-00",
+      "downstream": null,
+      "exact": false,
+      "expected_outcome": "conversation",
+      "family": "system",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "a non-effect parenthetical fragment may be acknowledged or clarified",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify",
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)",
+      "total_seconds": 3.44639,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "clarify"
+      },
+      "turn_seconds": 3.44637
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "system-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "system",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "1. No ya usamos mucha ram para baxy\n2. si intentalo",
+      "total_seconds": 2.979702,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 2.979685
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "system-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "system",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "En latencia quien gana}? en consumo de recursos quien? ram?",
+      "total_seconds": 1.95121,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.951194
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "system-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "system",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU",
+      "total_seconds": 5.090625,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 5.090608
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "system-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "system",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Hay algo mas que use gpu??",
+      "total_seconds": 2.196105,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 2.196072
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "system-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "system",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Listoo la gpu dejo de usarseee",
+      "total_seconds": 1.137232,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.137215
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "task-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "task",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede.",
+      "total_seconds": 1.879228,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.87919
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "task-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "task",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "And which of those would you personally use for the required task?",
+      "total_seconds": 0.252,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.251974
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "task-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "task",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Bien hay una nueva sesion, verifica todo , lo que salio mal y bien",
+      "total_seconds": 2.728112,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 2.728094
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "task-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "task",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Cuanto tiempo hasta que tengas todo listo? , como ha ido el progreso?",
+      "total_seconds": 0.299445,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.29943
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "task-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "task",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Deja todo lo que suma activado",
+      "total_seconds": 0.999815,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.999796
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "task-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "task",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Empieza de cero esta tarea",
+      "total_seconds": 1.62417,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.624152
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "vision-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "vision",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre configuración de pantalla",
+      "total_seconds": 0.215222,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.215205
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "vision-01",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "vision",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Activa cámara y mira qué hay",
+      "total_seconds": 1.555696,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 1.555678
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "input.text.type"
+        ]
+      ],
+      "case_id": "vision-02",
+      "downstream": {
+        "arguments": {
+          "text": "Batman"
+        },
+        "id": "current-ready-arguments-125",
+        "ok": true,
+        "operation": "input.text.type",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "vision",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "input.text.type"
+      ],
+      "text": "Escribe Batman en la búsqueda que ves",
+      "total_seconds": 0.679682,
+      "turn": {
+        "effect_operations": [
+          "input.text.type"
+        ],
+        "intent_operations": [
+          "input.text.type"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003544
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "vision-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "vision",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Graba la pantalla",
+      "total_seconds": 2.161748,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 2.161726
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "ocr.read"
+        ]
+      ],
+      "case_id": "vision-04",
+      "downstream": {
+        "id": "current-ready-plan-127",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {},
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "capture.screenshot",
+            "purpose": "lee el mensaje de error de la"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "ocr.read",
+            "purpose": "pantalla"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "vision",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "ocr.read"
+      ],
+      "text": "Lee el mensaje de error de la pantalla",
+      "total_seconds": 0.006256,
+      "turn": {
+        "effect_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "intent_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.0046
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "ocr.read"
+        ]
+      ],
+      "case_id": "vision-05",
+      "downstream": {
+        "id": "current-ready-plan-128",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {},
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "capture.screenshot",
+            "purpose": "lee lo que hay en"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "ocr.read",
+            "purpose": "pantalla"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "vision",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "ocr.read"
+      ],
+      "text": "Lee lo que hay en pantalla",
+      "total_seconds": 0.004236,
+      "turn": {
+        "effect_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "intent_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.00268
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search",
+          "browser.navigate.named"
+        ]
+      ],
+      "case_id": "web-00",
+      "downstream": {
+        "id": "current-ready-plan-129",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "query": "mejores teclados mecánicos 2026"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "web.search",
+            "purpose": "busca en google: mejores teclados mecanicos 2026"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "browser.navigate.named",
+            "purpose": "busca en google: mejores teclados mecanicos 2026"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "web",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search",
+        "browser.navigate.named"
+      ],
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+      "total_seconds": 0.612829,
+      "turn": {
+        "effect_operations": [
+          "web.search",
+          "browser.navigate.named"
+        ],
+        "intent_operations": [
+          "web.search",
+          "browser.navigate.named"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.004671
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search",
+          "browser.navigate"
+        ]
+      ],
+      "case_id": "web-01",
+      "downstream": {
+        "id": "current-ready-plan-130",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "query": "Alan Turing"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "web.search",
+            "purpose": "abre wikipedia y busca alan turing"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "browser.navigate",
+            "purpose": "abre wikipedia y busca alan turing"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "web",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "text": "Abre Wikipedia y busca Alan Turing",
+      "total_seconds": 0.436899,
+      "turn": {
+        "effect_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "intent_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.003027
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search",
+          "browser.navigate.named"
+        ]
+      ],
+      "case_id": "web-02",
+      "downstream": {
+        "id": "current-ready-plan-131",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {
+              "query": "flash"
+            },
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "web.search",
+            "purpose": "busca flash"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "browser.navigate.named",
+            "purpose": "busca flash"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "web",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search",
+        "browser.navigate.named"
+      ],
+      "text": "Abre opera gx y busca flash",
+      "total_seconds": 0.416804,
+      "turn": {
+        "effect_operations": [
+          "web.search",
+          "browser.navigate.named"
+        ],
+        "intent_operations": [
+          "web.search",
+          "browser.navigate.named"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.00379
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "filesystem.known.search"
+        ]
+      ],
+      "case_id": "web-03",
+      "downstream": {
+        "arguments": {
+          "folder": "all_known",
+          "query": "Batman"
+        },
+        "id": "current-ready-arguments-132",
+        "ok": true,
+        "operation": "filesystem.known.search",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "web",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "filesystem.known.search"
+      ],
+      "text": "Busca archivos que contengan la palabra “Batman",
+      "total_seconds": 0.004758,
+      "turn": {
+        "effect_operations": [
+          "filesystem.known.search"
+        ],
+        "intent_operations": [
+          "filesystem.known.search"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003767
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "web.search"
+        ]
+      ],
+      "case_id": "web-04",
+      "downstream": {
+        "arguments": {
+          "query": "App ID de Doom Eternal en Steam"
+        },
+        "id": "current-ready-arguments-133",
+        "ok": true,
+        "operation": "web.search",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "web",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "web.search"
+      ],
+      "text": "Busca el App ID de Doom Eternal en Steam usando la API publica",
+      "total_seconds": 0.696952,
+      "turn": {
+        "effect_operations": [
+          "web.search"
+        ],
+        "intent_operations": [
+          "web.search"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003593
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "input.visible.click"
+        ]
+      ],
+      "case_id": "web-05",
+      "downstream": {
+        "arguments": {
+          "label": "Guardar"
+        },
+        "id": "current-ready-arguments-134",
+        "ok": true,
+        "operation": "input.visible.click",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "web",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "input.visible.click"
+      ],
+      "text": "Busca el botón Guardar y presiónalo",
+      "total_seconds": 0.727479,
+      "turn": {
+        "effect_operations": [
+          "input.visible.click"
+        ],
+        "intent_operations": [
+          "input.visible.click"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.002529
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "wifi-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "wifi",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Conecta no Wi-Fi de novo",
+      "total_seconds": 0.315064,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.315049
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "wifi.status"
+        ]
+      ],
+      "case_id": "wifi-01",
+      "downstream": {
+        "arguments": {},
+        "id": "current-ready-arguments-136",
+        "ok": true,
+        "operation": "wifi.status",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "wifi",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "wifi.status"
+      ],
+      "text": "a qué wifi estoy conectado",
+      "total_seconds": 0.304793,
+      "turn": {
+        "effect_operations": [
+          "wifi.status"
+        ],
+        "intent_operations": [
+          "wifi.status"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003508
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "wifi.disconnect"
+        ]
+      ],
+      "case_id": "wifi-02",
+      "downstream": {
+        "arguments": {},
+        "id": "current-ready-arguments-137",
+        "ok": true,
+        "operation": "wifi.disconnect",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "wifi",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "wifi.disconnect"
+      ],
+      "text": "apagá el wifi",
+      "total_seconds": 0.319096,
+      "turn": {
+        "effect_operations": [
+          "wifi.disconnect"
+        ],
+        "intent_operations": [
+          "wifi.disconnect"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003751
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "wifi.connect.named"
+        ]
+      ],
+      "case_id": "wifi-03",
+      "downstream": {
+        "arguments": {
+          "profileName": "RV 2"
+        },
+        "id": "current-ready-arguments-138",
+        "ok": true,
+        "operation": "wifi.connect.named",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "wifi",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "wifi.connect.named"
+      ],
+      "text": "cambia el wifi a EV 2",
+      "total_seconds": 0.005993,
+      "turn": {
+        "effect_operations": [
+          "wifi.connect.named"
+        ],
+        "intent_operations": [
+          "wifi.connect.named"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.004475
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "wifi.ensure.connected",
+          "email.latest.read"
+        ]
+      ],
+      "case_id": "wifi-04",
+      "downstream": {
+        "id": "current-ready-plan-139",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {},
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "wifi.ensure.connected",
+            "purpose": "conecta el wifi, abre el correo y leeme el ultimo mensaje"
+          },
+          {
+            "arguments": {},
+            "argumentsMode": "literal",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "email.latest.read",
+            "purpose": "conecta el wifi, abre el correo y leeme el ultimo mensaje"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "wifi",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "wifi.ensure.connected",
+        "email.latest.read"
+      ],
+      "text": "conecta el wifi, abre el correo y leeme el ultimo mensaje",
+      "total_seconds": 0.003204,
+      "turn": {
+        "effect_operations": [
+          "wifi.ensure.connected",
+          "email.latest.read"
+        ],
+        "intent_operations": [
+          "wifi.ensure.connected",
+          "email.latest.read"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.002514
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "wifi.connect.named"
+        ]
+      ],
+      "case_id": "wifi-05",
+      "downstream": {
+        "arguments": {
+          "profileName": "la familia"
+        },
+        "id": "current-ready-arguments-140",
+        "ok": true,
+        "operation": "wifi.connect.named",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "wifi",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "wifi.connect.named"
+      ],
+      "text": "conectame a la red wifi de la familia",
+      "total_seconds": 0.003758,
+      "turn": {
+        "effect_operations": [
+          "wifi.connect.named"
+        ],
+        "intent_operations": [
+          "wifi.connect.named"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003319
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "window-00",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "window",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Abre una ventana incógnito",
+      "total_seconds": 0.251475,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.251459
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.close"
+        ]
+      ],
+      "case_id": "window-01",
+      "downstream": {
+        "id": "current-ready-plan-142",
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "arguments": {},
+            "argumentsMode": "literal",
+            "dependsOn": [],
+            "id": "step_1",
+            "operation": "window.active",
+            "purpose": "Cerra la ventana activa"
+          },
+          {
+            "arguments": null,
+            "argumentsMode": "after_dependencies",
+            "dependsOn": [
+              "step_1"
+            ],
+            "id": "step_2",
+            "operation": "app.close",
+            "purpose": "Cerra la ventana activa"
+          }
+        ],
+        "type": "plan.result",
+        "version": 1
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "window",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "app.close"
+      ],
+      "text": "Cerra la ventana activa",
+      "total_seconds": 0.005474,
+      "turn": {
+        "effect_operations": [
+          "app.close"
+        ],
+        "intent_operations": [
+          "app.close"
+        ],
+        "kind": "plan"
+      },
+      "turn_seconds": 0.004143
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "window-02",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "window",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "Minimiza tudo e mostra a área de trabalho",
+      "total_seconds": 0.323601,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.32356
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "app.open"
+        ]
+      ],
+      "case_id": "window-03",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "window",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "abre la ventana",
+      "total_seconds": 0.753976,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "app.open"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.753958
+    },
+    {
+      "accepted_terminal_operations": [],
+      "case_id": "window-04",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "conversation",
+      "family": "window",
+      "observed_outcome": "conversation",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "conversation"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "arrastra este archivo a esa ventana",
+      "total_seconds": 0.258155,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kind": "conversation"
+      },
+      "turn_seconds": 0.258138
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "window.move"
+        ]
+      ],
+      "case_id": "window-05",
+      "downstream": null,
+      "exact": true,
+      "expected_outcome": "clarify",
+      "family": "window",
+      "observed_outcome": "clarify",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "clarify"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [],
+      "text": "arrastra una ventana liviana a la derecha",
+      "total_seconds": 0.607547,
+      "turn": {
+        "effect_operations": [],
+        "intent_operations": [
+          "window.move"
+        ],
+        "kind": "clarify"
+      },
+      "turn_seconds": 0.607524
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "case_id": "notification-clock-00",
+      "downstream": {
+        "arguments": {
+          "hour": 5,
+          "kind": "alarm",
+          "period": "pm"
+        },
+        "id": "current-ready-arguments-147",
+        "ok": true,
+        "operation": "notification.cancel.at",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "current_catalog_extension",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.cancel.at"
+      ],
+      "text": "Get rid of the five p.m. alarm",
+      "total_seconds": 0.005075,
+      "turn": {
+        "effect_operations": [
+          "notification.cancel.at"
+        ],
+        "intent_operations": [
+          "notification.cancel.at"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003879
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "case_id": "notification-clock-01",
+      "downstream": {
+        "arguments": {
+          "hour": 5,
+          "kind": "alarm",
+          "period": "pm"
+        },
+        "id": "current-ready-arguments-148",
+        "ok": true,
+        "operation": "notification.cancel.at",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "current_catalog_extension",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.cancel.at"
+      ],
+      "text": "Quita la alarma de las cinco de la tarde",
+      "total_seconds": 0.003963,
+      "turn": {
+        "effect_operations": [
+          "notification.cancel.at"
+        ],
+        "intent_operations": [
+          "notification.cancel.at"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003374
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "case_id": "notification-clock-02",
+      "downstream": {
+        "arguments": {
+          "hour": 5,
+          "kind": "alarm",
+          "period": "pm"
+        },
+        "id": "current-ready-arguments-149",
+        "ok": true,
+        "operation": "notification.cancel.at",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "current_catalog_extension",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.cancel.at"
+      ],
+      "text": "Quita my five p.m. alarm",
+      "total_seconds": 0.003036,
+      "turn": {
+        "effect_operations": [
+          "notification.cancel.at"
+        ],
+        "intent_operations": [
+          "notification.cancel.at"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.002682
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "case_id": "notification-clock-03",
+      "downstream": {
+        "arguments": {
+          "hour": 17,
+          "kind": "alarm",
+          "minute": 30
+        },
+        "id": "current-ready-arguments-150",
+        "ok": true,
+        "operation": "notification.cancel.at",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "current_catalog_extension",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.cancel.at"
+      ],
+      "text": "Remove the 17:30 alarm",
+      "total_seconds": 0.003591,
+      "turn": {
+        "effect_operations": [
+          "notification.cancel.at"
+        ],
+        "intent_operations": [
+          "notification.cancel.at"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.003122
+    },
+    {
+      "accepted_terminal_operations": [
+        [
+          "notification.cancel.latest"
+        ]
+      ],
+      "case_id": "notification-clock-04",
+      "downstream": {
+        "arguments": {
+          "kind": "alarm"
+        },
+        "id": "current-ready-arguments-151",
+        "ok": true,
+        "operation": "notification.cancel.latest",
+        "question": "",
+        "type": "arguments.result"
+      },
+      "exact": true,
+      "expected_outcome": "ready",
+      "family": "current_catalog_extension",
+      "observed_outcome": "ready",
+      "operation_correct": true,
+      "presentable_adjustment": "",
+      "presentable_exact": true,
+      "presentable_expected_outcomes": [
+        "ready"
+      ],
+      "presentable_operation_correct": true,
+      "terminal_operations": [
+        "notification.cancel.latest"
+      ],
+      "text": "Cancel the latest alarm",
+      "total_seconds": 0.703563,
+      "turn": {
+        "effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "kind": "action"
+      },
+      "turn_seconds": 0.00202
+    }
+  ],
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "schema": "baxy.current-catalog-ready-pipeline.development.v1",
+  "scope": "reviewed_development_only_blind_holdout_remains_sealed",
+  "side_effect_free": true,
+  "source": {
+    "all_rows_explicitly_reviewed": true,
+    "corpus": "D:\\BAXY\\source\\artifacts\\development\\current_catalog_review_development.v1.jsonl",
+    "corpus_sha256": "090e4b41939a6d355b44791afad978fe78249abf8cc886125a4969caa30c933a",
+    "rows": 152
+  },
+  "summary": {
+    "cases": 152,
+    "complete_action_cases": 73,
+    "exact": 147,
+    "exact_accuracy": 0.967105,
+    "observed_outcomes": {
+      "clarify": 20,
+      "conversation": 62,
+      "ready": 70
+    },
+    "presentable_complete_action_cases": 70,
+    "presentable_exact": 152,
+    "presentable_exact_accuracy": 1.0,
+    "presentable_ready_action_rate": 1.0,
+    "presentable_ready_actions": 70,
+    "ready_action_rate": 0.958904,
+    "ready_actions": 70,
+    "ready_pipeline_latency_seconds": {
+      "maximum": 5.090625,
+      "p50": 0.435579,
+      "p95": 2.196105
+    },
+    "turn_latency_seconds": {
+      "p50": 0.279543,
+      "p95": 2.196072
+    }
+  }
+}

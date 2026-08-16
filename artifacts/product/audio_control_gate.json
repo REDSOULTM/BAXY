@@ -1,0 +1,125 @@
+{
+  "schema": "baxy-audio-control-gate-v1",
+  "observed_utc": "2026-07-15T09:12:36.6632876Z",
+  "scope": "nativeaot_core_jsonl_to_windows_core_audio",
+  "machine": {
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "os_architecture": "X64",
+    "process_architecture": "X64"
+  },
+  "native_aot": {
+    "temporary_relative_path_at_gate": ".agents/audio-physical-aot-v6-final/baxy-core.exe",
+    "bytes": 5199360,
+    "sha256": "7a45f1e8e49d169db401eca87bf95896e6a883db26f7cf2f8e977d570dd5a225",
+    "temporary_publish_removed_after_gate": true
+  },
+  "post_gate_product_build": {
+    "created_utc": "2026-07-15T09:22:12.6289488Z",
+    "configuration": "Release",
+    "runtime": "win-x64",
+    "file_count": 14,
+    "total_bytes": 54831324,
+    "manifest_sha256": "4c0378c01ffd67d6949f90f1c0f2f611300cea2450e32ef1ac5756d36fb3553a",
+    "app_sha256": "f017ba4babdf307f6dc5a3403089e9d14e59ed76c6c62526693bea907b80be80",
+    "core_sha256": "0f794ae353a22e2b6bdbc21da51513e4116c776d12e170c02616ce440d38cc94",
+    "manifest_entries_verified": 14,
+    "core_hello_protocol": "baxy.local.v1",
+    "core_hello_capabilities": 10,
+    "core_hello_audio_capabilities": true,
+    "core_smoke_exit_code": 0,
+    "core_smoke_stderr_bytes": 0,
+    "is_installer": false
+  },
+  "post_gate_gui_capture": {
+    "width": 980,
+    "height": 680,
+    "core_ready": true,
+    "mission_completed": true,
+    "note_files": 1,
+    "retry_outbox_entries": 0,
+    "owned_product_processes_after_capture": 0,
+    "sha256": "4eb2dd03bc0d1ba32c452d2b92c0d13124acb12e7651b4e59133abdb702ca6b6",
+    "bytes": 71521,
+    "audio_end_to_end_exercised": false
+  },
+  "target": {
+    "flow": "eRender",
+    "role": "eMultimedia",
+    "endpoint_id_exposed": false,
+    "endpoint_id_sha256": "7b631a2d2e08e0bbbb444624678a6fc32c73de439620737867515513f3e31218"
+  },
+  "termination_preflight": {
+    "completed_before_audio_access": true,
+    "job_kill_on_close": true,
+    "active_process_limit": 1
+  },
+  "baseline": {
+    "volume_scalar": 0.98,
+    "volume_percent": 98,
+    "muted": false
+  },
+  "volume_operation": {
+    "requested_percent": 88,
+    "final_percent": 88,
+    "physical_scalar": 0.88,
+    "physical_percent": 88,
+    "muted_after": false,
+    "mute_state_preserved": true,
+    "applied": true,
+    "verified": true
+  },
+  "mute_operation": {
+    "requested_muted": true,
+    "final_muted": true,
+    "physical_muted": true,
+    "volume_scalar_preserved": 0.88,
+    "volume_percent_preserved": 88,
+    "applied": true,
+    "verified": true
+  },
+  "same_invocation_replay": {
+    "volume_replayed": true,
+    "mute_replayed": true,
+    "another_effect_observed": false,
+    "unchanged_volume_scalar": 0.88,
+    "unchanged_volume_percent": 88,
+    "unchanged_muted": true
+  },
+  "restoration": {
+    "endpoint_hash_matches_baseline": true,
+    "volume_scalar": 0.98,
+    "volume_percent": 98,
+    "muted": false,
+    "exact_scalar_within_0_0001": true,
+    "verified": true
+  },
+  "recovered_harness_incident": {
+    "occurred": true,
+    "product_effects_were_verified": true,
+    "automatic_restoration_was_fail_closed": true,
+    "cause": "Zero-timeout exit corroboration raced asynchronous shutdown and reported termination as uncorroborated.",
+    "captured_baseline_was_restored_and_verified_before_rerun": true,
+    "retained_state_directory_sha256": "99e48e4269d46a27e4fe0bc5f012bc0226082226f96625e1de224690e6ea1a73",
+    "retained_state_removed_after_successful_restoration_and_rerun": true
+  },
+  "cleanup": {
+    "baxy_core_processes_after_gate": 0,
+    "physical_state_directories_after_gate": 0,
+    "preexisting_notepad_5472_preserved": true
+  },
+  "result": {
+    "status": "passed_after_recovery",
+    "attempts": 2,
+    "failed_attempts": 1,
+    "passed_attempts": 1,
+    "successful_rerun_test_count": 1,
+    "successful_rerun_failed": 0,
+    "successful_rerun_duration_milliseconds": 582
+  },
+  "limitations": [
+    "The gate verifies Windows endpoint-control state, not audible sound at speakers or headphones.",
+    "The gate covers one machine and its default eRender/eMultimedia endpoint, not every device, application session, microphone, or exclusive-mode path.",
+    "The gate drives the NativeAOT core over JSONL and does not exercise the WPF natural-language parser or UI process lifecycle.",
+    "A reconciled receipt is observational evidence and is not a causal or exactly-once claim."
+  ]
+}

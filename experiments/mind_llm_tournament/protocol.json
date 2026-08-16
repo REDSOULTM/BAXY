@@ -1,0 +1,91 @@
+{
+  "protocol_id": "baxy-mind-llm-tournament-v1",
+  "frozen_at": "2026-07-16",
+  "frozen_before_measurement": true,
+  "purpose": "Elegir el LLM de conversación + tool-calling de BAXY 1.0 (gates 8, 9, 12) sobre las 21 tools congeladas del core.",
+  "runtime": "llama.cpp llama-server (winget, Vulkan/CPU; CUDA b9980 de legacy como referencia) con --jinja, chat template del modelo, temperatura 0.2 para tools y 0.7 para conversación.",
+  "frozen_files": {
+    "router_cases": {
+      "role": "input",
+      "source_at_measurement": "experiments/mind_router_spike/data/cases.jsonl",
+      "canonical_location": "src/baxy_mind/tools/data/router_cases.jsonl",
+      "sha256": "619848aaab1725309b8831799ec395b51ddb628f9cc9a22f3e9675b957fde55d"
+    },
+    "core_hello": {
+      "role": "input",
+      "source_at_measurement": "experiments/mind_router_spike/data/core_hello.json",
+      "canonical_location": "experiments/mind_router_spike/data/core_hello.json",
+      "sha256": "a425ef4ab68eaa1fb9b36b2e7b96d874b7ade90c8f7ef9067bf081cfd82e65b5"
+    },
+    "historical_messages": {
+      "role": "input",
+      "source_at_measurement": "tests/data/historical_messages.jsonl",
+      "canonical_location": "tests/data/historical_messages.jsonl",
+      "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e"
+    },
+    "sampled_cases": {
+      "role": "generated_output",
+      "source_at_measurement": "experiments/mind_llm_tournament/data/sampled_cases.jsonl",
+      "canonical_location": "experiments/mind_llm_tournament/data/sampled_cases.jsonl",
+      "sha256": "9e050405ed9e4b09aeae0eab85c69a67149835c19e6dddca52058cb52c276780"
+    },
+    "conversation_probes": {
+      "role": "generated_output",
+      "source_at_measurement": "experiments/mind_llm_tournament/data/conversation_probes.jsonl",
+      "canonical_location": "experiments/mind_llm_tournament/data/conversation_probes.jsonl",
+      "sha256": "a2291776fcc135027bd9b134b58c6564c07f549dac008573c2e2ffeeb78024e7"
+    }
+  },
+  "candidates": [
+    {"id": "gemma4-e2b-qat", "gguf": "legacy/models/artifacts/gemma4-e2b/gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf", "origin": "local + evidencia interna (28/29, 2.3x)"},
+    {"id": "qwen3.5-4b", "gguf": "hf:unsloth/Qwen3.5-4B-GGUF:Q4_K_M", "origin": "investigación abierta 2026 (tool-calling estable, Apache 2.0)"},
+    {"id": "phi-4-mini", "gguf": "hf:unsloth/Phi-4-mini-instruct-GGUF:Q4_K_M", "origin": "investigación abierta (JSON/tools predecible, MIT)"},
+    {"id": "qwen3.5-0.8b", "gguf": "hf:unsloth/Qwen3.5-0.8B-GGUF:Q4_K_M", "origin": "margen de VRAM extremo; piso de calidad a medir"},
+    {"id": "lfm2.5-1.2b", "gguf": "hf:LiquidAI/LFM2.5-1.2B-Instruct-GGUF:Q4_K_M", "origin": "investigación abierta (edge eficiente 2026)"}
+  ],
+  "tasks": {
+    "A_toolcalling": {
+      "source": "frozen_files.router_cases + frozen_files.core_hello",
+      "setup": "El modelo recibe las 21 tools con su argumentsSchema exacto del hello del core y el texto del usuario. El router de embeddings NO participa: se mide la capacidad cruda del LLM.",
+      "scoring": [
+        "tool_name_accuracy: la tool elegida coincide con la etiqueta del oráculo (system.status incluye scope exacto en args).",
+        "args_accuracy: donde el oráculo fija argumentos deterministas (level de audio.volume, state de audio.mute, scope de system.status), deben coincidir.",
+        "abstention: en negativos duros y composiciones fuera de catálogo, el modelo NO debe emitir tool call de efecto; responder en texto o pedir aclaración cuenta como correcto.",
+        "ABSTAIN_POLICY (memoria): correcto si llama memory.*/memory.sensitive.save o responde pidiendo confirmación; incorrecto si llama otra tool de efecto."
+      ],
+      "sample": "Por presupuesto de cómputo se evalúa el subconjunto estratificado congelado sampled_cases.jsonl (semilla 20260716, 40 por set, completo si el set es menor). La lista exacta de IDs queda versionada antes de medir."
+    },
+    "B_conversation": {
+      "source": "frozen_files.conversation_probes — 30 prompts congelados: 24 muestreados del ledger (misiones conversation_question/knowledge, semilla 20260716) + 6 autorados de identidad/capacidades ES/EN/spanglish.",
+      "scoring_rubric": [
+        "no_tool_call: no emite tool call (es conversación).",
+        "language_match: responde en el idioma dominante del usuario (es/en; spanglish acepta ambos).",
+        "no_fabricated_effect: no afirma haber ejecutado efectos físicos ni tener capacidades fuera de las 21 tools.",
+        "coherent: responde la pregunta de forma entendible (juicio registrado por revisor, con transcripciones versionadas)."
+      ]
+    },
+    "C_resources": {
+      "budget": "4 GB VRAM objetivo del producto; en la 4060 Ti se mide el pico real del proceso (nvidia-smi) con contexto 4096; el perfil capped/CPU se difiere al gate 12 sobre el ganador.",
+      "metrics": ["vram_peak_mib", "ram_peak_mib", "latency_first_token_ms_p50", "latency_full_p50_s", "tokens_per_second", "gguf_size_mib", "stability: 0 crashes/timeouts en toda la corrida"]
+    }
+  },
+  "gates": {
+    "hard_gate_tools": "tool_name_accuracy >= 0.90 en positivos Y 0 llamadas de efecto en negativos duros de audio/gpu/notas",
+    "hard_gate_budget": "corre estable con pico <= 4096 MiB VRAM o en CPU puro con latencia full p50 <= 20 s",
+    "hard_gate_language": "language_match >= 90% en tarea B"
+  },
+  "pareto_axes": [
+    "tool_name_accuracy",
+    "abstention_negativos",
+    "conversation_pass_rate",
+    "vram_peak_mib (menor mejor)",
+    "latency_full_p50_s (menor mejor)",
+    "gguf_size_mib (menor mejor)"
+  ],
+  "decision_rule": "Entre los que pasan los hard gates y están en la frontera de Pareto, gana el de mayor (tool_name_accuracy*0.4 + abstention*0.3 + conversation_pass_rate*0.3); ante empate <2 puntos, el de menor VRAM pico (proporcionalidad).",
+  "notes": [
+    "SmolLM3-3B excluido: foco EN documentado, riesgo ES alto y sin ventaja esperada sobre Qwen3.5-4B (fuentes en el brief).",
+    "FunctionGemma-270M split excluido como candidato principal por decisión previa documentada (no retrain; catálogo creció 9→21 tools); queda como fallback documentado si ningún candidato pasa el hard gate de tools.",
+    "El router de embeddings delante del LLM en producción solo puede subir la precisión efectiva; aquí se mide el LLM desnudo."
+  ]
+}

@@ -1,0 +1,824 @@
+{
+  "authority": "preregistration_only_no_training_or_runtime_integration",
+  "candidate": {
+    "decision": {
+      "all_170_labels_scored": true,
+      "candidate_probability_threshold": 0.5,
+      "compatible_label": "compatible",
+      "threshold_calibrated_on_r186": false
+    },
+    "mechanism": "binary_query_operation_cross_encoder_scored_over_all_169_catalog_operations_and_explicit_no_action",
+    "source_checkpoint": "D:\\BAXYRuntime\\experiments\\mtop-operation-compatibility-verifier-v16",
+    "source_config_sha256": "e828143344aa76eea54488520c7b783bdb79449eb143512f7acc9accf3eea887",
+    "training": {
+      "batch_size": 4,
+      "epochs": 3,
+      "gradient_accumulation": 4,
+      "learning_rate": 2e-05,
+      "max_length": 160,
+      "positive_class_weight": 4.0,
+      "seed": 208
+    }
+  },
+  "constraints": {
+    "external_effects_executed": 0,
+    "no_lexical_gate": true,
+    "no_posthoc_threshold": true,
+    "no_retriever": true,
+    "opened_v9": false,
+    "providers_enabled": false,
+    "runtime_modified": false,
+    "v9_reserved": true
+  },
+  "data_contract": {
+    "all_catalog_operations_scored": true,
+    "no_action_scored": true,
+    "r186_evaluation_only": true,
+    "r207_pairs_training_only": true
+  },
+  "evaluation": {
+    "exact_rate_required": 0.95,
+    "model_owned_rows": 77,
+    "oos_controls": 9,
+    "oos_zero_candidates_required": 9,
+    "raw_compatibility_scores_retained": true,
+    "rows": [
+      {
+        "case_id": "independent-r146-app-en-01",
+        "expected_operations": [
+          "app.installed"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Does this computer list Notepad among its installed programs?"
+      },
+      {
+        "case_id": "independent-r146-app-es-01",
+        "expected_operations": [
+          "app.installed"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "¿Figura la Calculadora entre los programas presentes en esta máquina?"
+      },
+      {
+        "case_id": "independent-r146-app-spanglish-01",
+        "expected_operations": [
+          "app.installed"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "¿Puedes checkear si Notepad figura como installed program aquí?"
+      },
+      {
+        "case_id": "independent-r146-app-spanglish-02",
+        "expected_operations": [
+          "app.installed"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Necesito saber if Steam está present en esta máquina."
+      },
+      {
+        "case_id": "independent-r146-backup-en-02",
+        "expected_operations": [
+          "backup.list"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Show the inventory of restorable data copies."
+      },
+      {
+        "case_id": "independent-r146-backup-es-01",
+        "expected_operations": [
+          "backup.list"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "¿Qué resguardos de mis datos conserva BAXY?"
+      },
+      {
+        "case_id": "independent-r146-browser-en-01",
+        "expected_operations": [
+          "browser.tabs.list"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Which websites are still open in the browser?"
+      },
+      {
+        "case_id": "independent-r146-browser-en-02",
+        "expected_operations": [
+          "browser.tabs.list"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "I need to review every web page currently in use."
+      },
+      {
+        "case_id": "independent-r146-browser-es-02",
+        "expected_operations": [
+          "browser.tabs.list"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Necesito revisar todas las páginas web que están en uso."
+      },
+      {
+        "case_id": "independent-r146-browser-spanglish-01",
+        "expected_operations": [
+          "browser.tabs.list"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "¿Qué websites siguen open en el browser?"
+      },
+      {
+        "case_id": "independent-r146-browser-spanglish-02",
+        "expected_operations": [
+          "browser.tabs.list"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Necesito revisar las web pages que están active."
+      },
+      {
+        "case_id": "independent-r146-calendar-en-02",
+        "expected_operations": [
+          "calendar.event.list"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Review tomorrow's agenda and tell me the scheduled events."
+      },
+      {
+        "case_id": "independent-r146-calendar-spanglish-02",
+        "expected_operations": [
+          "calendar.event.list"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Revisa tomorrow's agenda y dime mis events."
+      },
+      {
+        "case_id": "independent-r146-capture-en-01",
+        "expected_operations": [
+          "capture.screenshot"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "I need an exact image of what the monitor shows now."
+      },
+      {
+        "case_id": "independent-r146-capture-es-01",
+        "expected_operations": [
+          "capture.screenshot"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Necesito una imagen exacta de lo que muestra el monitor ahora."
+      },
+      {
+        "case_id": "independent-r146-capture-spanglish-01",
+        "expected_operations": [
+          "capture.screenshot"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Necesito una exact image de lo que muestra el monitor."
+      },
+      {
+        "case_id": "independent-r146-clipboard-en-02",
+        "expected_operations": [
+          "clipboard.read.text"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Show me the words currently held for paste."
+      },
+      {
+        "case_id": "independent-r146-clipboard-es-02",
+        "expected_operations": [
+          "clipboard.read.text"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Muéstrame las palabras que están retenidas para pegar."
+      },
+      {
+        "case_id": "independent-r146-email-en-02",
+        "expected_operations": [
+          "email.latest.read"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "I want to read the email that arrived most recently."
+      },
+      {
+        "case_id": "independent-r146-email-es-01",
+        "expected_operations": [
+          "email.latest.read"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Cuéntame qué dice el mensaje más nuevo de mi bandeja."
+      },
+      {
+        "case_id": "independent-r146-email-es-02",
+        "expected_operations": [
+          "email.latest.read"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Quiero leer el correo que llegó al final de mi inbox."
+      },
+      {
+        "case_id": "independent-r146-email-spanglish-02",
+        "expected_operations": [
+          "email.latest.read"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Quiero read el email más recent que llegó."
+      },
+      {
+        "case_id": "independent-r146-input-en-02",
+        "expected_operations": [
+          "input.keyboard.status"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Tell me which input language is selected now."
+      },
+      {
+        "case_id": "independent-r146-input-es-01",
+        "expected_operations": [
+          "input.keyboard.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "¿Con qué distribución está escribiendo el teclado?"
+      },
+      {
+        "case_id": "independent-r146-input-es-02",
+        "expected_operations": [
+          "input.keyboard.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Dime qué idioma de entrada está seleccionado ahora."
+      },
+      {
+        "case_id": "independent-r146-input-spanglish-02",
+        "expected_operations": [
+          "input.keyboard.status"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Dime cuál input language está activo."
+      },
+      {
+        "case_id": "independent-r146-media-en-01",
+        "expected_operations": [
+          "media.status"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "What content is being heard or watched at this moment?"
+      },
+      {
+        "case_id": "independent-r146-media-es-01",
+        "expected_operations": [
+          "media.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "¿Qué contenido se está oyendo o viendo en este instante?"
+      },
+      {
+        "case_id": "independent-r146-memory-en-01",
+        "expected_operations": [
+          "memory.status"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Is BAXY's private memory on this PC available?"
+      },
+      {
+        "case_id": "independent-r146-memory-en-02",
+        "expected_operations": [
+          "memory.status"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Check the health of your local memory store."
+      },
+      {
+        "case_id": "independent-r146-memory-es-01",
+        "expected_operations": [
+          "memory.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "¿Está disponible el recuerdo privado que BAXY guarda en este PC?"
+      },
+      {
+        "case_id": "independent-r146-memory-es-02",
+        "expected_operations": [
+          "memory.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Comprueba la salud de tu almacén local de recuerdos."
+      },
+      {
+        "case_id": "independent-r146-memory-spanglish-01",
+        "expected_operations": [
+          "memory.status"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "¿Está available la private memory de BAXY en este PC?"
+      },
+      {
+        "case_id": "independent-r146-memory-spanglish-02",
+        "expected_operations": [
+          "memory.status"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Checkea la salud de tu local memory store."
+      },
+      {
+        "case_id": "independent-r146-message-en-01",
+        "expected_operations": [
+          "message.recipient.resolve"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Find which of my contacts corresponds to Ana Pérez."
+      },
+      {
+        "case_id": "independent-r146-message-en-02",
+        "expected_operations": [
+          "message.recipient.resolve"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Identify the saved contact named Carlos."
+      },
+      {
+        "case_id": "independent-r146-message-es-01",
+        "expected_operations": [
+          "message.recipient.resolve"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Busca cuál de mis contactos corresponde a Ana Pérez."
+      },
+      {
+        "case_id": "independent-r146-message-es-02",
+        "expected_operations": [
+          "message.recipient.resolve"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Identifica a qué contacto guardado pertenece el nombre Carlos."
+      },
+      {
+        "case_id": "independent-r146-message-spanglish-01",
+        "expected_operations": [
+          "message.recipient.resolve"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Busca cuál contact corresponde a Ana Pérez."
+      },
+      {
+        "case_id": "independent-r146-message-spanglish-02",
+        "expected_operations": [
+          "message.recipient.resolve"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Identifica el saved contact llamado Carlos."
+      },
+      {
+        "case_id": "independent-r146-network-en-01",
+        "expected_operations": [
+          "network.status"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Does the computer have network access at the moment?"
+      },
+      {
+        "case_id": "independent-r146-network-en-02",
+        "expected_operations": [
+          "network.status"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Give me the overall state of its connection."
+      },
+      {
+        "case_id": "independent-r146-network-es-01",
+        "expected_operations": [
+          "network.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "¿Tiene el equipo salida a la red en este momento?"
+      },
+      {
+        "case_id": "independent-r146-network-es-02",
+        "expected_operations": [
+          "network.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Dame el estado general de su conexión."
+      },
+      {
+        "case_id": "independent-r146-network-spanglish-01",
+        "expected_operations": [
+          "network.status"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "¿Tiene el PC network access ahora?"
+      },
+      {
+        "case_id": "independent-r146-network-spanglish-02",
+        "expected_operations": [
+          "network.status"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Dame el general status de su conexión."
+      },
+      {
+        "case_id": "independent-r146-ocr-en-01",
+        "expected_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Get an image of the screen and transcribe the letters it contains."
+      },
+      {
+        "case_id": "independent-r146-ocr-en-02",
+        "expected_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "I need every readable word extracted from the monitor."
+      },
+      {
+        "case_id": "independent-r146-ocr-es-01",
+        "expected_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Obtén una imagen de la pantalla y transcribe las letras que contiene."
+      },
+      {
+        "case_id": "independent-r146-ocr-es-02",
+        "expected_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Necesito extraer por escrito todo lo legible que aparece en el monitor."
+      },
+      {
+        "case_id": "independent-r146-ocr-spanglish-01",
+        "expected_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Obtén una image de la screen y transcribe las letters."
+      },
+      {
+        "case_id": "independent-r146-ocr-spanglish-02",
+        "expected_operations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Necesito extraer every readable word del monitor."
+      },
+      {
+        "case_id": "independent-r146-office-es-01",
+        "expected_operations": [
+          "office.document.create"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Genera un archivo de Word con el nombre Informe independiente."
+      },
+      {
+        "case_id": "independent-r146-package-en-02",
+        "expected_operations": [
+          "package.install.prepare"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Resolve Microsoft.PowerToys and prepare the step before installing it."
+      },
+      {
+        "case_id": "independent-r146-package-spanglish-02",
+        "expected_operations": [
+          "package.install.prepare"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Resolve Microsoft.PowerToys y prepara el step antes de install."
+      },
+      {
+        "case_id": "independent-r146-peripheral-es-02",
+        "expected_operations": [
+          "peripheral.list"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Enumera los aparatos USB que reconoce esta máquina."
+      },
+      {
+        "case_id": "independent-r146-routine-en-02",
+        "expected_operations": [
+          "routine.list"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Show the repeatable procedures created in BAXY."
+      },
+      {
+        "case_id": "independent-r146-routine-es-02",
+        "expected_operations": [
+          "routine.list"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Muéstrame los procedimientos repetibles creados en BAXY."
+      },
+      {
+        "case_id": "independent-r146-routine-spanglish-02",
+        "expected_operations": [
+          "routine.list"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Muéstrame los repeatable procedures creados en BAXY."
+      },
+      {
+        "case_id": "independent-r146-streaming-en-02",
+        "expected_operations": [
+          "streaming.play.named"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "I want Stranger Things to begin playing on Netflix."
+      },
+      {
+        "case_id": "independent-r146-streaming-es-02",
+        "expected_operations": [
+          "streaming.play.named"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Quiero que Stranger Things empiece a reproducirse en Netflix."
+      },
+      {
+        "case_id": "independent-r146-streaming-spanglish-02",
+        "expected_operations": [
+          "streaming.play.named"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Quiero que Stranger Things empiece playing en Netflix."
+      },
+      {
+        "case_id": "independent-r146-system-en-02",
+        "expected_operations": [
+          "system.status"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "How are the system resources and overall operation?"
+      },
+      {
+        "case_id": "independent-r146-system-spanglish-02",
+        "expected_operations": [
+          "system.status"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "¿Cómo están los system resources y el funcionamiento general?"
+      },
+      {
+        "case_id": "independent-r146-task-es-02",
+        "expected_operations": [
+          "task.list"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Enséñame mi lista de trabajos que siguen abiertos."
+      },
+      {
+        "case_id": "independent-r146-vision-en-01",
+        "expected_operations": [
+          "capture.screenshot",
+          "vision.describe"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Look at the monitor and explain what appears on it."
+      },
+      {
+        "case_id": "independent-r146-vision-en-02",
+        "expected_operations": [
+          "capture.screenshot",
+          "vision.describe"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "I need a visual description of the current desktop."
+      },
+      {
+        "case_id": "independent-r146-vision-es-01",
+        "expected_operations": [
+          "capture.screenshot",
+          "vision.describe"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Mira el monitor y explícame qué aparece en él."
+      },
+      {
+        "case_id": "independent-r146-vision-es-02",
+        "expected_operations": [
+          "capture.screenshot",
+          "vision.describe"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Necesito una descripción visual del escritorio actual."
+      },
+      {
+        "case_id": "independent-r146-vision-spanglish-01",
+        "expected_operations": [
+          "capture.screenshot",
+          "vision.describe"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Mira el monitor y explain qué aparece."
+      },
+      {
+        "case_id": "independent-r146-vision-spanglish-02",
+        "expected_operations": [
+          "capture.screenshot",
+          "vision.describe"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Necesito una visual description del current desktop."
+      },
+      {
+        "case_id": "independent-r146-web-en-02",
+        "expected_operations": [
+          "web.search"
+        ],
+        "language": "en",
+        "population": "r146_model_owned",
+        "text": "Research websites that discuss portable telescopes."
+      },
+      {
+        "case_id": "independent-r146-web-es-01",
+        "expected_operations": [
+          "web.search"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Averigua en la red información sobre auroras australes."
+      },
+      {
+        "case_id": "independent-r146-web-spanglish-02",
+        "expected_operations": [
+          "web.search"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Research websites que hablen de portable telescopes."
+      },
+      {
+        "case_id": "independent-r146-wifi-es-01",
+        "expected_operations": [
+          "wifi.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "¿La conexión inalámbrica del equipo está funcionando?"
+      },
+      {
+        "case_id": "independent-r146-wifi-es-02",
+        "expected_operations": [
+          "wifi.status"
+        ],
+        "language": "es",
+        "population": "r146_model_owned",
+        "text": "Comprueba si este PC sigue unido a la red Wi-Fi."
+      },
+      {
+        "case_id": "independent-r146-wifi-spanglish-02",
+        "expected_operations": [
+          "wifi.status"
+        ],
+        "language": "spanglish",
+        "population": "r146_model_owned",
+        "text": "Checkea si este PC sigue joined al Wi-Fi."
+      },
+      {
+        "case_id": "r159-oos-en-01",
+        "expected_operations": [],
+        "language": "en",
+        "population": "oos_control",
+        "text": "Book a plumber to fix the kitchen sink."
+      },
+      {
+        "case_id": "r159-oos-en-02",
+        "expected_operations": [],
+        "language": "en",
+        "population": "oos_control",
+        "text": "Buy train tickets to Boston for Saturday."
+      },
+      {
+        "case_id": "r159-oos-en-03",
+        "expected_operations": [],
+        "language": "en",
+        "population": "oos_control",
+        "text": "Find a therapist who accepts new patients."
+      },
+      {
+        "case_id": "r159-oos-es-01",
+        "expected_operations": [],
+        "language": "es",
+        "population": "oos_control",
+        "text": "Encuentra un jardinero para podar los Ã¡rboles."
+      },
+      {
+        "case_id": "r159-oos-es-02",
+        "expected_operations": [],
+        "language": "es",
+        "population": "oos_control",
+        "text": "Contrata un seguro para mi bicicleta."
+      },
+      {
+        "case_id": "r159-oos-es-03",
+        "expected_operations": [],
+        "language": "es",
+        "population": "oos_control",
+        "text": "Pide sushi para cenar hoy."
+      },
+      {
+        "case_id": "r159-oos-mix-01",
+        "expected_operations": [],
+        "language": "spanglish",
+        "population": "oos_control",
+        "text": "Order un taxi para las siete."
+      },
+      {
+        "case_id": "r159-oos-mix-02",
+        "expected_operations": [],
+        "language": "spanglish",
+        "population": "oos_control",
+        "text": "Compra groceries para la semana."
+      },
+      {
+        "case_id": "r159-oos-mix-03",
+        "expected_operations": [],
+        "language": "spanglish",
+        "population": "oos_control",
+        "text": "Schedule una clase de yoga tomorrow."
+      }
+    ]
+  },
+  "identities": {
+    "catalog_sha256": "2d5a257c9c2986b22a1f3159ffd30b4d658045d3cb7e15982abc42819651e376",
+    "pairs_sha256": "404a7cf3f2f5e3e4a1a027dd1ece5eebb5f6cf77e6e633cda52611250f81ed31",
+    "program_sha256": "eb5b3ec66056f763542f57af73a01ddf4af87ce2613b832f68d404b7a9ece54c",
+    "r186_sha256": "e03c8266cb4382ed9dac0a421fcbdc128bd2aaf14d2f71628c059facfbf9954d",
+    "runner_sha256": "456b26943b6e194e4ae6330af8be183c70f7247a2c93bae92d3e47bd69961007"
+  },
+  "schema": "baxy.cross-encoder-r208-preregistration.v1"
+}

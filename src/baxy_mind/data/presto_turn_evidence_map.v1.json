@@ -1,0 +1,47 @@
+{
+  "schema": "baxy.turn-evidence-source-map.v1",
+  "source": {
+    "name": "PRESTO v1",
+    "download_url": "https://storage.googleapis.com/gresearch/presto/presto_v1.zip",
+    "project_url": "https://github.com/google-research-datasets/presto",
+    "license": "CC-BY-4.0",
+    "citation": "Goel et al. (2023), PRESTO: A Multilingual Dataset for Parsing Realistic Task-Oriented Dialogs"
+  },
+  "selection": {
+    "locales": ["es-ES", "en-US"],
+    "require_empty_previous_turns": true,
+    "maximum_text_characters": 384
+  },
+  "labels": {
+    "Create_note": {
+      "mode": "action",
+      "families": ["note"],
+      "rationale": "BAXY ya expone operaciones locales de notas."
+    },
+    "Get_note": {
+      "mode": "action",
+      "families": ["note"],
+      "rationale": "BAXY ya expone lectura y búsqueda de notas locales."
+    },
+    "Open_app": {
+      "mode": "action",
+      "families": ["app"],
+      "rationale": "BAXY ya expone apertura verificada de aplicaciones."
+    },
+    "Get_product": {
+      "mode": "action",
+      "families": ["web"],
+      "rationale": "BAXY puede buscar información pública, no comprar productos."
+    },
+    "Find_parking": {
+      "mode": "action",
+      "families": ["web"],
+      "rationale": "BAXY puede buscar información pública de estacionamiento, no reservarlo."
+    },
+    "Play_game": {
+      "mode": "action",
+      "families": ["game"],
+      "rationale": "BAXY ya expone el catálogo, estado e inicio de juegos locales."
+    }
+  }
+}

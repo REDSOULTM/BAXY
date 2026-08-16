@@ -1,0 +1,57 @@
+{
+  "schema": "baxy.phoneme-teacher-cuda-product-parity.v1",
+  "measuredAtUtc": "2026-08-07T05:10:48.330639+00:00",
+  "scope": "human_development_cuda_acceleration_bound_against_cpu_product_onnx",
+  "sources": {
+    "teacherWeightsSha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "onnxBenchmarkReportSha256": "53ebb1f0d7b93f077699bb241383e65d601475d4e267f77c0165b3b5928ea9df",
+    "fusionManifestSha256": "87dd1534fdf9d513b5fc4ae58f4fc4dc8a4489452c554f362285e615a700b77d",
+    "ctcVerifierManifestSha256": "a0d699db419dc00ec5d7bf81090953081db3fdca6abaec8b22bce073af87710a",
+    "humanSourceManifestSha256": "982dc455fc1f75802397a221ba485b93cf2783a5716ef0e0acc058cdcf7dd037"
+  },
+  "contract": {
+    "maximumNormalizedFusionScoreDriftLte": 0.02,
+    "categoryGreedyFrameDisagreementsEq": 0,
+    "cudaPermittedForFreshProductGate": false,
+    "cudaPermittedForPreviouslyOpenedRegressionScreen": true
+  },
+  "equivalence": {
+    "maximumRawLogitAbsoluteDifference": 0.052847862243652344,
+    "maximumCategoryProbabilityAbsoluteDifference": 0.01411813497543335,
+    "categoryGreedyFrameDisagreements": 0,
+    "categoryFrames": 4470,
+    "maximumCtcMarginAbsoluteDifference": 0.0055861888765491585,
+    "maximumNormalizedFusionScoreDrift": 0.001852023889695456
+  },
+  "legacyDevelopment": {
+    "clips": 18,
+    "maximumCtcMarginAbsoluteDifference": 0.0055861888765491585,
+    "meanCtcMarginAbsoluteDifference": 0.0010360066171407488,
+    "maximumNormalizedFusionScoreDrift": 0.001852023889695456
+  },
+  "expandedIndependentDevelopment": {
+    "clips": 12,
+    "maximumCtcMarginAbsoluteDifference": 0.004949221894662514,
+    "meanCtcMarginAbsoluteDifference": 0.001084511033841551,
+    "maximumNormalizedFusionScoreDrift": 0.0016408462704864868
+  },
+  "runtime": {
+    "cudaDevice": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "torch": "2.10.0+cu130",
+    "onnxruntime": "1.28.0",
+    "batchSize": 16,
+    "onnxSessionLoadSeconds": 3.539846200030297,
+    "cudaModelLoadSeconds": 4.421586299897172,
+    "onnxInferenceSeconds": 39.02472610003315,
+    "cudaInferenceSeconds": 1.3561841000337154,
+    "cudaPeakAllocatedBytes": 2371011584
+  },
+  "parityPassed": true,
+  "candidateDevelopmentUse": true,
+  "candidateFrozen": true,
+  "productOperatingPoint": false,
+  "humanDevelopmentAudioAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "audioOrFilenamesRetained": false,
+  "effectsExecuted": 0
+}

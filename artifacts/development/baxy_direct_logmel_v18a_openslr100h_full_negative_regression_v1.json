@@ -1,0 +1,1158 @@
+{
+  "schema": "baxy.direct-logmel-openslr-negative-regression.v1",
+  "measuredAtUtc": "2026-08-10T18:29:53.409797+00:00",
+  "scope": "previously_opened_openslr100h_all_windows_direct_verifier_regression",
+  "sources": {
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "cascadeManifestSha256": "918484865bc170a80aaa396b362388e2d757abb175d4d52faa6dc2d5ef5f47c6",
+    "verifierCheckpointSha256": "e0465d379eeaf1864c9f058751c991143068ba61dca547c80dee6bc44bf51d90",
+    "onnxVerifierSha256": "53b0ccdf860e104988a1a4697ffdb79926193c1e8fb110e97cb5b984defdae40",
+    "melFiltersSha256": "94b385f1d7568735fa40099550f5d71e8210bef150a3c9d4d86f0d5f2eb86db8",
+    "evaluatorSourceSha256": "b609f90a57c946f4852f5d4e65f1f9683b91601bdbad853812c5b8d83be13bc6"
+  },
+  "contract": {
+    "utteranceCount": 28539,
+    "hopSamples": 4000,
+    "verifierIndex": 1,
+    "verifierScoreGte": 3.0,
+    "cudaScreenMargin": 0.5,
+    "lexicalConfirmationRequired": true
+  },
+  "metrics": {
+    "utterances": 28539,
+    "descriptiveExposureHours": null,
+    "windowsScored": 1348864,
+    "screenRecords": 186,
+    "directAcousticProposals": 128,
+    "maximumScreenScore": 6.400849342346191,
+    "maximumExactScore": 6.401507377624512
+  },
+  "exactRecords": [
+    {
+      "audioSha256": "b83427f0a3685ff29b28302d1abf27c49a69f9da8ef89b42d01ff61b50590b37",
+      "screenScore": 3.2016775608062744,
+      "exactScore": 3.198975086212158,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "5d77bee2ed29a38a6ae4c46d7eabe98c0203f677173bd3dfc3e4df860bcc05d3",
+      "screenScore": 3.1703689098358154,
+      "exactScore": 3.1712374687194824,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "cf25d64c83bb342085f7cbe7f0e1272def7e0965732921b0fba325725ea878ba",
+      "screenScore": 2.927354335784912,
+      "exactScore": 2.926743984222412,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "9f6a301e254c8c4f20f865789241ae7bc231df45b81371a89e9bb71a22f2d657",
+      "screenScore": 3.6702494621276855,
+      "exactScore": 3.6721887588500977,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "e76e4582dcfcbb1996b496781854667d459607ee381ac38f772307598de3f3c1",
+      "screenScore": 3.856640338897705,
+      "exactScore": 3.858822822570801,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a0461a4757c6db7a2bf32fe5f363d9a980b5072b845367f62657c88676c495f0",
+      "screenScore": 3.636711359024048,
+      "exactScore": 3.6329903602600098,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "bfdd944e787cfd85fd22946de74034bdb45781e550c21256d110a27358f61078",
+      "screenScore": 5.769637107849121,
+      "exactScore": 5.769953727722168,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "ab034db2dc3005be90794f1e9b118d9d65dd4918f1ef3b5e492e97ee6e7a6bc3",
+      "screenScore": 3.743990898132324,
+      "exactScore": 3.745011568069458,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "f14c5aaa2cc42b5a7d8fae4ede7611c378319bf45d66b74f58435fd2ada2a617",
+      "screenScore": 2.738461971282959,
+      "exactScore": 2.7362303733825684,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "47a3344a28e94c9b196cdcbd296202f9ae0aa5dfe87fbc21fabf057f5446270f",
+      "screenScore": 2.5678436756134033,
+      "exactScore": 2.5666394233703613,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "7571d93ba7d6b8bc275db7fe4f665896667c4dcc19a1f9ac02362b5b393721fe",
+      "screenScore": 2.5883564949035645,
+      "exactScore": 2.5887672901153564,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "2cd16000095d34f4807c05b7fe3c6b522923f709d4d2ea9f7f9e3366d52aebf0",
+      "screenScore": 3.4402008056640625,
+      "exactScore": 3.435798406600952,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d632bf64a2505ee475436b303acab6817d6923478a214c17f3b7c02c2472ffcd",
+      "screenScore": 4.182984828948975,
+      "exactScore": 4.180244445800781,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d29be4923990f063df8b4e54e1304c789bceeca5f2ed96c9de8e21dc9d734cb0",
+      "screenScore": 3.1385228633880615,
+      "exactScore": 3.137685537338257,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "6fe0c71444d2aa733cc0c0070b5d89d37d1e74e9bc37af3f636d9dcfbcf16d6f",
+      "screenScore": 3.7298827171325684,
+      "exactScore": 3.7251431941986084,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "9c2fc542668c080e18b7ff2f6dd22c03dfe15469611018f66fb3fa2265b4bd66",
+      "screenScore": 4.2540106773376465,
+      "exactScore": 4.252779006958008,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a451920cfcd149bc21483209d33453faa98e78fb1c49e6017a3ca414c5d1e86c",
+      "screenScore": 3.3575124740600586,
+      "exactScore": 3.3577425479888916,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "c21e1e841a8327e66dd2c8fb15491f66cf93236d701333dd3dc9cd4b3bc9e2c3",
+      "screenScore": 3.1298465728759766,
+      "exactScore": 3.1344516277313232,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "afc2bc2e787b538abbf9ac6604b66aadbf678b18a030dd0bff00324080ce419d",
+      "screenScore": 3.3741908073425293,
+      "exactScore": 3.3745193481445312,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "5b871455ef0a60ddc6a29a6979d4908e18225663b4916a9e743cef53169b318b",
+      "screenScore": 3.15083646774292,
+      "exactScore": 3.147386312484741,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "74d139142cca254b8184f574f32770eab72a7f0c5126cd6a320f60ecfc4b2b94",
+      "screenScore": 3.13727068901062,
+      "exactScore": 3.13867449760437,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "fe9a3baa89ef302b4891e6e5ed802a4b388b5d74d9042cae4a471b9e6693669a",
+      "screenScore": 5.590442180633545,
+      "exactScore": 5.590865135192871,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a6617a72b45b6cade5dae191dd3355e4d8ed26ec7fb44b516cc369546bac5c11",
+      "screenScore": 2.881944417953491,
+      "exactScore": 2.8834164142608643,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "ac844d3e205b889c00750d31507d072674a9cf20f73e5366cc0b6e38af49d7fd",
+      "screenScore": 3.0081088542938232,
+      "exactScore": 3.00622820854187,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "55d21c9af60a7716e848413f0405194385fac60bb9c3575d6886c83a063289c8",
+      "screenScore": 3.409632921218872,
+      "exactScore": 3.406083822250366,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "668507a1a92b9a0046983a65e3f9eeef080d5f16ab4f83ba8744bb9cb32f303a",
+      "screenScore": 3.891725778579712,
+      "exactScore": 3.893378496170044,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "252a3d6ec3f450de77d9c15b0150bb389f450224ff1ccf9cf760cebf9713aea6",
+      "screenScore": 5.4605183601379395,
+      "exactScore": 5.459896564483643,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "7f61e530fc1b80e4b5774815ac86b2516903c8eb5dccfac9f64efa6afd1c010e",
+      "screenScore": 3.434509754180908,
+      "exactScore": 3.4384279251098633,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "16bfd80e04f9271a9f138291b9eb3f3df77bad9384478e865f278083e1ae4ccc",
+      "screenScore": 2.6030187606811523,
+      "exactScore": 2.6017096042633057,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "a989eb100bbaf7c7b641a866d64be81e7cd8fdb1daa4758b2c9b4b9558ce67b3",
+      "screenScore": 4.528339385986328,
+      "exactScore": 4.5311503410339355,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "cdc4222037163f4a118ae8198a3d86a5a34dd8f227fb734b0144074078e5e261",
+      "screenScore": 3.270051956176758,
+      "exactScore": 3.268289804458618,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "48b6b383d3e5490e041352c29c5f645072b5bc8ede495e666fd46023b2f540da",
+      "screenScore": 3.272228956222534,
+      "exactScore": 3.271522045135498,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "cdf71f96a5b9225905df8e49251e82e2543dab87ca3cd8f9c4657d459195b26b",
+      "screenScore": 2.959129810333252,
+      "exactScore": 2.9535727500915527,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "69952a0f570982abc56f5bc37a5d693869a2b5e0ecb74fd2eaa980fad450aa25",
+      "screenScore": 4.011963844299316,
+      "exactScore": 4.009639263153076,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "223837fe084e68654302696ffd793181eda86223e12eb3a2f0aa98fec596b52c",
+      "screenScore": 2.61366868019104,
+      "exactScore": 2.6125760078430176,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "6fec3d774494423067aa8359e45f678152b8092a5a8bddd38051e4e618ad4ac1",
+      "screenScore": 2.8837127685546875,
+      "exactScore": 2.8842127323150635,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "4062363084df1cd2c25603c2914d509c336bc6bb23fce14e3a9d50eec6f69a42",
+      "screenScore": 5.0714111328125,
+      "exactScore": 5.070296287536621,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "6c83eefacbfe0cc5d7b4d0a9128644c222f8b215aad88e8f05d6aa0c03b9763b",
+      "screenScore": 2.5430288314819336,
+      "exactScore": 2.5449512004852295,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "8f2cb97ec9ee0db6efbb9e3e12cfe8c417fbbfd113f8a87d2179939e3d86ec72",
+      "screenScore": 3.551804780960083,
+      "exactScore": 3.5541024208068848,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d87cb2ce7d21ad4ba9192b9553e82dea8115db7b71dfb94d4a38818725c1b07e",
+      "screenScore": 2.815370798110962,
+      "exactScore": 2.811389684677124,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "9f50d3010307eaa496c912eab096810fcc8625dc021429ebe7204472fc894cc0",
+      "screenScore": 4.715246200561523,
+      "exactScore": 4.714404582977295,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "27ce8aa2b582241a07d5e2b886b1d16e9de6378932cf10b3a0a17946b21cca59",
+      "screenScore": 4.651805400848389,
+      "exactScore": 4.653792858123779,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "c674685d28d1684b962b2a43902ac2206859c71ec9400fb1398ed22e191c8ac8",
+      "screenScore": 3.264863967895508,
+      "exactScore": 3.2635719776153564,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "6ebaf01b515c3621c2a0ad4279e3ebbd5d3ed96a0adc41bd63084e848e68d85a",
+      "screenScore": 3.332624912261963,
+      "exactScore": 3.3329408168792725,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "3ed03edf2f2e979ff6af05888f159a9daec8d526bc74ff5af89c84f0000d2e1c",
+      "screenScore": 5.192607879638672,
+      "exactScore": 5.193694114685059,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "c530182aa661582b918eaf10e1b6548e10614df62a0ab4ace3079a43c6ed7ed7",
+      "screenScore": 2.6112730503082275,
+      "exactScore": 2.612912654876709,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "44c59540fe25bb5ee658f91ed94e1915b4d59be6d029b1bdbf06d4c4e76c2dda",
+      "screenScore": 3.4306983947753906,
+      "exactScore": 3.4277517795562744,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "b006520072fdd5c0dc9fcfc664dd21052d23c640e83514711d40dec5a9ac036e",
+      "screenScore": 3.0140645503997803,
+      "exactScore": 3.013404607772827,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "1a91943e3d41393e751126da38e34068b6e367ed9692a47f6caf1137a2cf6ca8",
+      "screenScore": 3.9783401489257812,
+      "exactScore": 3.9796462059020996,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "bd858a938bf510388135f2d4a71c1a66cc0a9246e65cc8fbe31df804c9e18aa2",
+      "screenScore": 3.615414619445801,
+      "exactScore": 3.616231679916382,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "6e6c8b6ade34bb180014a668b70ea3ac42280aeb6fd4bd755b6fc5f27b6d9290",
+      "screenScore": 3.977066993713379,
+      "exactScore": 3.9775338172912598,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d8e9b0e1c065d374eea1e5e9ccd9d975ba8a00a5df74ab3175f2c1a799f366b7",
+      "screenScore": 4.129112243652344,
+      "exactScore": 4.132705211639404,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "762498a7db078ef0f6a809c69bbb235444ada43ddd39b55939776667e1fdfc17",
+      "screenScore": 3.135833740234375,
+      "exactScore": 3.133867025375366,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "b1211621e8abce1a46569a8bf7ecd9a860441e169edaec779e9c01c2838f9d5d",
+      "screenScore": 4.5640974044799805,
+      "exactScore": 4.5642805099487305,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "000dcc8e51076cfc1d77940ba260dfe836898e19c6a09d42203984730dce300f",
+      "screenScore": 3.8129429817199707,
+      "exactScore": 3.815804958343506,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "0ec8de09527786987901d5aafc195cbb3123b80d561212fadb4b39292be6eb25",
+      "screenScore": 4.62777853012085,
+      "exactScore": 4.626340866088867,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "ac9c9700d4e92b59bd438d3755f8dbc72ce054b2a0c6b241641f9880307ef791",
+      "screenScore": 2.7914063930511475,
+      "exactScore": 2.7922914028167725,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "39d1e939d6990c3d2fb13739825d524b106c2ca1c0d209a42f2b7bdad56c1bf2",
+      "screenScore": 2.5737133026123047,
+      "exactScore": 2.5767693519592285,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "372be40f7c5b7d24adb1dab97442d0e81c3c040748ed36bceec283b6cbd138bd",
+      "screenScore": 2.8104701042175293,
+      "exactScore": 2.8117032051086426,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "4e3e42e95255c17897f9ebdd8fe1aadaa9766e529955d1d604254a55c29f3d0e",
+      "screenScore": 3.2832703590393066,
+      "exactScore": 3.287534475326538,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "29573342316fa2453abeb6ba0eb77a018ff6b23e095526ff435721fa676f31bb",
+      "screenScore": 4.866764068603516,
+      "exactScore": 4.867850303649902,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "f066d4d4919d41043f00f51cb197e9597f3518fec826a31e940e2b57349505a7",
+      "screenScore": 3.800673484802246,
+      "exactScore": 3.800149440765381,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "08e1726029036beafd3cc26af94549b07eb46ebdc645d1a63a7f6aef241155fd",
+      "screenScore": 4.28170919418335,
+      "exactScore": 4.280195236206055,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d15a9793e67f5e4160e7c5ea8b2cc8d3aae23d89894e656bd331ab1aa153ca3e",
+      "screenScore": 3.1143009662628174,
+      "exactScore": 3.1120898723602295,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "3690b84553952e6dbc831f1a50659c12306e2c6ca5ccc63d66d8c4c6da8bb4b9",
+      "screenScore": 2.6952004432678223,
+      "exactScore": 2.6960554122924805,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "11ca46a918ab6375e49233f0ade9cb5cdf67b9ef9856a7a72d39625f875ae3c6",
+      "screenScore": 2.7210235595703125,
+      "exactScore": 2.719855308532715,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "b463a5d7682d2fc1232ea86e350edda5a5b55d0e83f1cbd846b7eaee5c9e7735",
+      "screenScore": 2.5917134284973145,
+      "exactScore": 2.593475818634033,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "241a6045113905b5eb4a6269592f3b25be7f234fe5f5a6f147f91f9744518044",
+      "screenScore": 2.861240863800049,
+      "exactScore": 2.8593177795410156,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "907e09baded687b25682a62eac63f63226cc1838572ab3cf714917e7431ae4a1",
+      "screenScore": 3.6499271392822266,
+      "exactScore": 3.6476244926452637,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a1dc8362d38e74014b80a345c49ae4d433a4d8ba36f30381047e5e6864fa4f1e",
+      "screenScore": 4.017127513885498,
+      "exactScore": 4.014688968658447,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "be76083008930e960a32ec6111f418c1a4fab82460d08fc3dfa12994a5ff58b9",
+      "screenScore": 3.943586826324463,
+      "exactScore": 3.943283796310425,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d813802e92ac40d7b618713b399cbba8fbdbe8257c7bf2de3d971368e165012b",
+      "screenScore": 5.200204372406006,
+      "exactScore": 5.1962480545043945,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "b855a1fb9cc619a35c1c9e3070dcba6b0c525c519aca8725ffe9f362f9055c13",
+      "screenScore": 2.6089415550231934,
+      "exactScore": 2.6081948280334473,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "537bb38443a25b4b0acdbaf8ae292a8a43e7eb3e82db80a545da3aac5010448d",
+      "screenScore": 4.855681896209717,
+      "exactScore": 4.855987071990967,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "8bd265d78649e2a41ab6a4f4ce842073e8440b8d971ccb9f2009de2ae18391f4",
+      "screenScore": 2.6184520721435547,
+      "exactScore": 2.6184542179107666,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "7b9b578545dd4ee987be763b3492974a572a001e47be00dff7b2cc3c4b91dc78",
+      "screenScore": 4.876649379730225,
+      "exactScore": 4.878530979156494,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "112cd3cb7cd32b73d065bf89cd6cd077466189ae8675d10fd2fe9088fde3dea1",
+      "screenScore": 3.022296667098999,
+      "exactScore": 3.0212228298187256,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "18cd9799038f3c475600641fa3ef2246c9653b1a0667e4a0600f1eede8277e8f",
+      "screenScore": 3.6958789825439453,
+      "exactScore": 3.6950557231903076,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "0b998e5bae8fc7b446dc2e5bc412b37ad7f0e7017a97b1ead5c9b4af3ecbe3e2",
+      "screenScore": 2.6639530658721924,
+      "exactScore": 2.6615800857543945,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "fa9dc5de6098b3b2fcdfacacb3da876ac379fe300c9aa8609131a8a909ffcad8",
+      "screenScore": 2.938192367553711,
+      "exactScore": 2.939568042755127,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "2c555c95e0643e3e626d15c301ca5351d86d79f194f2de43f665ac757ade4cc6",
+      "screenScore": 2.822500228881836,
+      "exactScore": 2.818749189376831,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "e08ac1b108860719173956122e09672cd49b9b28f4a1a4dc4deaf7a18a91ab18",
+      "screenScore": 6.400849342346191,
+      "exactScore": 6.401507377624512,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "dfc68748cc9d997d34538d2ba433504bd9a29bafdffe3addec0b0eb8f2d274ab",
+      "screenScore": 2.769423246383667,
+      "exactScore": 2.7672133445739746,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "5e0ff50a049276e9f6c8bbfbf97cec42d4e4f21a27aadbc9dea3fc5e14088a6c",
+      "screenScore": 4.493350028991699,
+      "exactScore": 4.492318630218506,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "814b60fb50746dade3b63bbf13249290387ca93f57a82c87676ed2f13772915a",
+      "screenScore": 4.5774078369140625,
+      "exactScore": 4.579954624176025,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a5db43b0987d540bdbcf75f69ddf1bbb69a9c5ef691b71fe9845bcc4f46ff117",
+      "screenScore": 3.5048820972442627,
+      "exactScore": 3.5070688724517822,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a43cabc9c7dba04cd51ed8722eaec48f05bed49718a90ba390a5029660fcfed4",
+      "screenScore": 4.5729827880859375,
+      "exactScore": 4.573516368865967,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "3615ef2fc787e5131bb2e773f8ad05f2374c2f6d5ac61f6a13deb1e07735227c",
+      "screenScore": 3.191742420196533,
+      "exactScore": 3.1893866062164307,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "0427e1bcf85d3e879b8338bc05c71d4a0a15d309febcbf3e0d4eff4631f6b226",
+      "screenScore": 3.1559853553771973,
+      "exactScore": 3.156881809234619,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "6f5f1cd1d48e34cb7daef6ad068d6ac4ba04e1593d34ada7ee1c27061703d930",
+      "screenScore": 5.533016204833984,
+      "exactScore": 5.530343055725098,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "9cdc3f0ec16b036e6b0a07f9d552288e13f9a0c5501c2221d5d7e55e1b1842f0",
+      "screenScore": 3.8362386226654053,
+      "exactScore": 3.8365845680236816,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "ce95dc6f3f4c9a42de4701a9aba6b9b530dae86f6fc8b8f9d8826e269a6800fd",
+      "screenScore": 2.8229360580444336,
+      "exactScore": 2.8206026554107666,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "6075cb8f98a7cab88a0cfa3605091b63be89ed748565802313c688d8266117f4",
+      "screenScore": 3.6409120559692383,
+      "exactScore": 3.6378724575042725,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "8ea9927554768f4324b6ea5c58c09e78c1eb2590543d6b2eaa330df0c28c6752",
+      "screenScore": 2.8221259117126465,
+      "exactScore": 2.81996750831604,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "5eccd4501482fca562f2c235e8e401a84745d02164de6007836493d7f98d8ad7",
+      "screenScore": 2.8405237197875977,
+      "exactScore": 2.8447556495666504,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "a31cecca745ff3a2ed571fc6ebcb3ca001f4ea6d73cc77f4d66cb4fe8be7c6f1",
+      "screenScore": 3.267549514770508,
+      "exactScore": 3.2675230503082275,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "416776093ba201e42d8d4c42c4d1f33022c8dc6b0e21e17ab3c489a36d73d218",
+      "screenScore": 2.9915645122528076,
+      "exactScore": 2.991211175918579,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "1d5ae4d569e4204bcc8af8e20e62ff82b78df03e5472854a5aa55ab3166cecd5",
+      "screenScore": 2.85444974899292,
+      "exactScore": 2.8534114360809326,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "9d00db80fa75ab60e21bae366f00d5e58498794ae43fafd6fa45a3a8ed7b4971",
+      "screenScore": 2.6879982948303223,
+      "exactScore": 2.6864774227142334,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "e90bd0ee0977f165254fef126ad8faf029500f119f9a108fa1c1491c33df6fbd",
+      "screenScore": 3.6297521591186523,
+      "exactScore": 3.626818895339966,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "da130580e6e3ad1b823afddf3f353d899b7577646521211f805ab47e3a03c62d",
+      "screenScore": 4.4644670486450195,
+      "exactScore": 4.4663825035095215,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "dbb23fbdbf10592dd8e8d5081e8f822876c52a403285493a3ab5469d6e50a0dd",
+      "screenScore": 3.0687472820281982,
+      "exactScore": 3.0709969997406006,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "113be11b5a87a48f1ee97076caef75501c0ccad7524262c0870b0b6020f6ddcb",
+      "screenScore": 2.5144855976104736,
+      "exactScore": 2.5175037384033203,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "6cf2e3229bcc256318175223df1576f6b141d1ed817f1d6ddab8caa66920d681",
+      "screenScore": 3.469313621520996,
+      "exactScore": 3.471818685531616,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "039da5dc49dfe858712492dc4c77377f6a1b4e812b053f9e0835f223e9483245",
+      "screenScore": 3.196824073791504,
+      "exactScore": 3.1964340209960938,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "e9a9e0bf535d58f9d5bb38c05e19b1bcddcef052b6e01480ed87a12cf8bbb98c",
+      "screenScore": 4.592624664306641,
+      "exactScore": 4.594670295715332,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "651fdbbbe50b3cb35b0e8c119e4fc74cd17d6abb6878edb344baf95f2629d9b1",
+      "screenScore": 4.248449802398682,
+      "exactScore": 4.248284339904785,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d3fffb22431ecc3457eba97f28e8e0186f2cac212a4735369586fe04b1564bd4",
+      "screenScore": 3.9193637371063232,
+      "exactScore": 3.9187405109405518,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "7a3ac9aaa66ba99458688a019332177b6cf575de98b83656de55b38217d93d7b",
+      "screenScore": 3.6939260959625244,
+      "exactScore": 3.6933906078338623,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "8cd52287a02d068dd4e019d2cea90fa0bbd8b0720fd5d3750870c1fea0fe53cc",
+      "screenScore": 3.8057923316955566,
+      "exactScore": 3.808504581451416,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a48e82f6bc388b5b77a76b7fa8751b21b86a3a3b4678fdf1a2eb98c9c7bd7cda",
+      "screenScore": 2.919588565826416,
+      "exactScore": 2.9234566688537598,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "b78d9b3287509dd4655d34f3c9aebef09fb2c91deac3396f3856dc45c047784f",
+      "screenScore": 2.9928674697875977,
+      "exactScore": 2.9934446811676025,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "a92964ab8a45dc41c7dabe78bf3acca78bbf452d71ad42b2758f8b70693bdfb7",
+      "screenScore": 4.922983169555664,
+      "exactScore": 4.923783302307129,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "730ffe76e84553fae34463d9ff52f7b37a8163ecaf69d369931c0c9fb8b4ae45",
+      "screenScore": 2.845170497894287,
+      "exactScore": 2.8459627628326416,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "fc52fe25cf4f9c4cf349a70716e8ff4e361b60f1f71e4b026a6c98a1a98fe6b8",
+      "screenScore": 3.504394769668579,
+      "exactScore": 3.5044870376586914,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "e995ec26bdcef21709cfeedcc434a73ff61f6eb69668cf072319f6b3251d12c2",
+      "screenScore": 5.10700798034668,
+      "exactScore": 5.106594562530518,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a51190cb311f2db9df9dd7bb76dd56d48875c4c691c51d8d9dc9490549585a05",
+      "screenScore": 4.201246738433838,
+      "exactScore": 4.203092575073242,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "e9a735d0374e7b73a44ae3ccae51baa2853746e7db780a03e54e3605c9d8a210",
+      "screenScore": 3.797527313232422,
+      "exactScore": 3.7978508472442627,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d8309d7f9ce49ab021ccb12aa0febe0690f2655318e4af1633b5ec1200871d26",
+      "screenScore": 5.288384437561035,
+      "exactScore": 5.288425445556641,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "35c2aa582ec91eec7e75418641394a420f053334873d1fb42e4c5cd80f389017",
+      "screenScore": 2.815652847290039,
+      "exactScore": 2.813380241394043,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "342365fe2870b6a2372fa880e5e69b18353400258887a160f4119a4c567b8d39",
+      "screenScore": 3.208584785461426,
+      "exactScore": 3.2105095386505127,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "bbd1514faa1f5aea5d560a6eb3c91461065408605a292c469cfedf5108efc7e9",
+      "screenScore": 5.023686408996582,
+      "exactScore": 5.023254871368408,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "c7b4afa926b07e49dbcc94db264d34e9f2fb3653febb5a797b92c15324efd9aa",
+      "screenScore": 3.149294853210449,
+      "exactScore": 3.1500155925750732,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "1cb91f948032279520e464dd8577e1c3d8a3b9d1d7eed40cdae3388051209644",
+      "screenScore": 3.3404436111450195,
+      "exactScore": 3.344660758972168,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "277b7b2c992e3f532db617bca619d0b6a136a5864b72bb7bf087a634816034ba",
+      "screenScore": 3.804215908050537,
+      "exactScore": 3.8036580085754395,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "dac41ae99f24a6d7cf9415d0e193dbcdb70aa8ccfcbd473018be765b09c27e87",
+      "screenScore": 2.644918441772461,
+      "exactScore": 2.646897077560425,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "3a60fcecce9f60d19c2adf8721ebd7af2ee98d02d6b2d0bf77a3ce1e40ddf04e",
+      "screenScore": 3.244398593902588,
+      "exactScore": 3.2410318851470947,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "eec3bcfd61d7374e1da11a4f31aabe8609e24f7caaba1eca398786cdaf7cd7f2",
+      "screenScore": 2.735340118408203,
+      "exactScore": 2.7364282608032227,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "a119232b430ccaf41e0f165ffb8f654693e0419e5a9bdc867fc560e6dbc09827",
+      "screenScore": 3.222958564758301,
+      "exactScore": 3.224790573120117,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "444cf54c52fa598d5d7464026e90476ffa114a2e69a5f362f8f41362b6120829",
+      "screenScore": 4.707310676574707,
+      "exactScore": 4.704739093780518,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "ae8aac5861206a273468f3a768adece838b7b4a6832e544241b844e0004817e7",
+      "screenScore": 3.3571810722351074,
+      "exactScore": 3.3554375171661377,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "dd08f2c8936dd8c879494e561518a6d93bcde5f90d2e888dd86dd4f9af66eae9",
+      "screenScore": 3.5206246376037598,
+      "exactScore": 3.524883985519409,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "64317db80ba8d885bd962b64e9e586ecbbb7c25819f587063fb6bee082268d4a",
+      "screenScore": 2.554067373275757,
+      "exactScore": 2.553659200668335,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "3ec6c7d844266ccb2b243a738653a46f4d8a8348deab29b15b5b00619f82f858",
+      "screenScore": 4.628098487854004,
+      "exactScore": 4.626919269561768,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "cad64a8dc658de2d1035753b8d2da259ca909bfa365e311d4b68ff4c1690a592",
+      "screenScore": 3.5689451694488525,
+      "exactScore": 3.56666898727417,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "2090d8b6f61328d3ca8ab23f20fca3ac06c3c65733da8faffb4ca371c982538b",
+      "screenScore": 3.527378797531128,
+      "exactScore": 3.531466007232666,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "c760b78adb316f8e8a7da4d9886567031b704e1947f20e98577d5b0c7202c39a",
+      "screenScore": 3.16479754447937,
+      "exactScore": 3.1690585613250732,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "0cf0f50041904a7ccd07163001871ce72dbf7bf9ff67e4a5dc7e77c09d01a029",
+      "screenScore": 4.019590377807617,
+      "exactScore": 4.019003868103027,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "4918c3b89a336fee279ab3af166971e3861e14ddb4de778d07bffbfd96e5e1be",
+      "screenScore": 2.733058452606201,
+      "exactScore": 2.7339816093444824,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "3e5cf40a16c0cfc6e0a2dda3e7de496f30c010f02f92417f2b6e55c1c4f2f2fd",
+      "screenScore": 3.2058615684509277,
+      "exactScore": 3.2078375816345215,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "2ce77a143fd32384b03ad9209a2b4bfa58fa5befdcd8df58bd3e8c527569a5b6",
+      "screenScore": 4.5639328956604,
+      "exactScore": 4.5631794929504395,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "4336a4a50f4c8d5f2cd89bc906fa3330d29f54382f1844fe16a1edfa4e5bf1a6",
+      "screenScore": 5.5932488441467285,
+      "exactScore": 5.590897083282471,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a2f64c69170f7ee225f23e94b04588fef01a5e690abb89a8d55a4cc307ba8069",
+      "screenScore": 2.850799560546875,
+      "exactScore": 2.851888656616211,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "4c02722f9428587d9debd6dd8d6b615eadb09bf3b0397265b98e02a12b2babc2",
+      "screenScore": 3.8987441062927246,
+      "exactScore": 3.8952736854553223,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "aaceb97a601e5d709141a727b4231f7339db0953cc560a59d3a9a757f601c097",
+      "screenScore": 4.566847801208496,
+      "exactScore": 4.567868232727051,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "1d053d639558d1d2f39b7a4201cb4c9dca168fb8f8ec761e514dd3742db29970",
+      "screenScore": 2.9683966636657715,
+      "exactScore": 2.974365711212158,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "2c5f6f20cde6d52e3c6aa14c960a457931dd9f37b8e562ab09347695833b6b6f",
+      "screenScore": 3.450145721435547,
+      "exactScore": 3.45253586769104,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "b2c6665b59fc31a39e369b2e3a97bdf5e3b01160b50e630226f72a23fd4309a2",
+      "screenScore": 3.6342291831970215,
+      "exactScore": 3.634958028793335,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "a09f657fe429c00af4a94289867c0e032666c41bb512b4152ff62bd8719a8ab1",
+      "screenScore": 2.6187257766723633,
+      "exactScore": 2.6202709674835205,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "8172cf54f36a164427d6a0debac7bea343856cbea970a48aa944372b9875b416",
+      "screenScore": 2.7949461936950684,
+      "exactScore": 2.791736364364624,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "554788981c8858e49304e928fb45e84360c211bc86d4d692e868dbcf43a770d2",
+      "screenScore": 3.2808752059936523,
+      "exactScore": 3.27929949760437,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "3ff8001f8428f133eb907cbf80f673319572952e6c7734301117d8b3991022b5",
+      "screenScore": 4.371244430541992,
+      "exactScore": 4.369872093200684,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "5801bef0fc2170229282229bd6e086cb5c32f56ad075d8c09691eb143c9f9bfb",
+      "screenScore": 2.5714943408966064,
+      "exactScore": 2.571192741394043,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "8deef5defc5274cef701efa998ecf42b70b14d83bc6804bded43b042e4e2c291",
+      "screenScore": 3.931314468383789,
+      "exactScore": 3.9305496215820312,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "054bd16f56c77dc8e55a2cf20da81a7d93e0d1fd9d1cf5e9ab4de4165588c6f5",
+      "screenScore": 2.524135112762451,
+      "exactScore": 2.5207016468048096,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "a94021a1242153fa6070260f01404c9bcc8362b97288ca354af97b1666ba09c9",
+      "screenScore": 5.084530830383301,
+      "exactScore": 5.080558776855469,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "4fb8487722b7cc10b0a0646e7691303cc88718351f74aeab4f4a988e3eb39718",
+      "screenScore": 2.795727491378784,
+      "exactScore": 2.7979092597961426,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "5f47323b0a9bb90bbffbe6236cbc85a5530294c25fe0e4cfeebb4961784a2f34",
+      "screenScore": 2.8226006031036377,
+      "exactScore": 2.8257052898406982,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "00a56c3a69a697261cf3ae7057092183452bdcb5e35fb8fb9d2b79ad1374b004",
+      "screenScore": 2.636678695678711,
+      "exactScore": 2.6409542560577393,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "9558bfa91243aa718e5ed37241fc5c1e0cf1984a962d12bf192acf5a173ca035",
+      "screenScore": 4.65419864654541,
+      "exactScore": 4.653326988220215,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "1adf3a8c17f3ed8ceb3a5c8add6c587bb1935f41f52db65843b886028e06aca4",
+      "screenScore": 3.6352033615112305,
+      "exactScore": 3.637662887573242,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "84946f6be72ebc4299b6a6c8eb79d45973b330ebd135447c502aff5b0220e0ec",
+      "screenScore": 3.819467306137085,
+      "exactScore": 3.8200323581695557,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d2e9f0fc6b32acfc6c328b161dae75dedab12c8a02139426bb6588e6c56aeafc",
+      "screenScore": 3.1261749267578125,
+      "exactScore": 3.129129409790039,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "68ce1351ce9aaf20cf291e9f6f89795ec89f51ff16275502707756c593f2f25c",
+      "screenScore": 3.7368335723876953,
+      "exactScore": 3.738185405731201,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "7778764b0f303fb2d0bef3a325ab6b23347fa665b47f3ec209333d16dee8f338",
+      "screenScore": 2.940507650375366,
+      "exactScore": 2.936722755432129,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "89d1426cc10420e8d81aa5af79bad588f887d6779557b1883f164b1231bac20f",
+      "screenScore": 2.5054214000701904,
+      "exactScore": 2.5056209564208984,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "10534531127271dc9a47ae3837e492eca9043fba1eea679827f5a434aa3aad90",
+      "screenScore": 4.312432289123535,
+      "exactScore": 4.314960956573486,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "65a51b8fc1e2b74fbd159350eb76b3710b72e9d4d64f240e8894c49ee2b70290",
+      "screenScore": 3.812350273132324,
+      "exactScore": 3.8099000453948975,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "0db3d61b0424778645503e77ef836c82afd01815bb97d35f6d2071627db44e73",
+      "screenScore": 3.2513060569763184,
+      "exactScore": 3.252509117126465,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "62b169e6e732ce8decc499c10b39c5eb99a719f1337a2b2ae6327432f587d37f",
+      "screenScore": 2.708287000656128,
+      "exactScore": 2.705585479736328,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "edee452d5a6bc8a503443e8f7e2c4ca7e88ccf2f3bf712d49c898dceb7299978",
+      "screenScore": 2.5370049476623535,
+      "exactScore": 2.535275936126709,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "77f33cc9356e172c2b697a92ca92034635683be5d9566f25ebca1f6348fd6002",
+      "screenScore": 2.5032215118408203,
+      "exactScore": 2.5015032291412354,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "b0a3d780d7503afa2d9b5d4f21f4f4cc9c928b6c836eedba3de99f6b6ace523f",
+      "screenScore": 2.667625665664673,
+      "exactScore": 2.669719934463501,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "3711cb11156ebb526cea364ab9f0317185d4a1e3eab939e994344766dfc9e7ff",
+      "screenScore": 3.4658830165863037,
+      "exactScore": 3.467148542404175,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "9dff104ee965d31737a43ba479cbe2e6b0241a4472b36a65ec505b57692f6b7a",
+      "screenScore": 2.8248989582061768,
+      "exactScore": 2.826188325881958,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "1292500ca544e3b8213ca761ba7fea28b41a4ffd3148ebe5aef5e131a508d603",
+      "screenScore": 3.4418067932128906,
+      "exactScore": 3.4418411254882812,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "bb3e0c646f80a3c2d6c4f23239d690bc53dcca82bccf8a423dea3cfe0f9f1653",
+      "screenScore": 3.2514336109161377,
+      "exactScore": 3.2471792697906494,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "1254f5c05c8c964dfb107b2007a60bc377ce877f40f7d4a1048fa9414bae2f62",
+      "screenScore": 3.765275716781616,
+      "exactScore": 3.7658705711364746,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "efddc0471fd8600477ae0418a7d6293650a22a83cb01e3ec64bfd47f21870427",
+      "screenScore": 3.316561460494995,
+      "exactScore": 3.318676710128784,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "c8d3a43c1fde6ba9c3033a9a3c67dd5763bd06179d4aa77209bf7bb073bca985",
+      "screenScore": 3.1786375045776367,
+      "exactScore": 3.1761832237243652,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "cde14f1ee2c4b0dbe8b9b8f2fe62fb4e8f3346a7a876e536ef6387c6702ebfcc",
+      "screenScore": 3.356510877609253,
+      "exactScore": 3.354752540588379,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "e698c81d075796c56d2af70bfe32f6c6faf8a4fb9f6dff015d7b3ce0fcb9b304",
+      "screenScore": 4.079286098480225,
+      "exactScore": 4.0793776512146,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "e6a77507886d780094d0ce993f1a12863341eba87388dd93732e72255f2222c6",
+      "screenScore": 2.543177604675293,
+      "exactScore": 2.545395851135254,
+      "directProposal": false
+    },
+    {
+      "audioSha256": "c398875e02f66a47852256af148e249dd9efa55f387fc4323700a5bf9caf90a5",
+      "screenScore": 3.017395496368408,
+      "exactScore": 3.0178911685943604,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "75114e8b65f8c60e67718c970fe38a5a79857df5d28bb352a9705c51b967c755",
+      "screenScore": 3.4464452266693115,
+      "exactScore": 3.4458136558532715,
+      "directProposal": true
+    },
+    {
+      "audioSha256": "d5a312b985cb73226125945bc61c3ff345769d1bef165ea20b983d3a7b6f70f2",
+      "screenScore": 2.569650650024414,
+      "exactScore": 2.56935715675354,
+      "directProposal": false
+    }
+  ],
+  "runtimeSeconds": 915.8533925999945,
+  "directProposalIsWakeAuthority": false,
+  "lexicalGuardMeasured": false,
+  "candidateFrozen": false,
+  "promotable": false,
+  "negativeCorpusPreviouslyAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "transcriptsOrFilenamesRetained": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0
+}

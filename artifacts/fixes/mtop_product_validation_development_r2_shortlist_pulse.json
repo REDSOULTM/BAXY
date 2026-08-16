@@ -1,0 +1,5983 @@
+{
+  "by_disposition": {
+    "candidate": {
+      "cases": 41,
+      "effect_exact": 11,
+      "effect_exact_accuracy": 0.268293,
+      "exact": 11,
+      "exact_accuracy": 0.268293,
+      "intent_exact": 18,
+      "intent_exact_accuracy": 0.439024,
+      "kind_exact": 20,
+      "kind_exact_accuracy": 0.487805,
+      "latency_seconds": {
+        "maximum": 4.145622,
+        "mean": 1.642612,
+        "p50": 1.854554,
+        "p95": 3.372099
+      }
+    },
+    "candidate_missing_information": {
+      "cases": 15,
+      "effect_exact": 10,
+      "effect_exact_accuracy": 0.666667,
+      "exact": 4,
+      "exact_accuracy": 0.266667,
+      "intent_exact": 8,
+      "intent_exact_accuracy": 0.533333,
+      "kind_exact": 8,
+      "kind_exact_accuracy": 0.533333,
+      "latency_seconds": {
+        "maximum": 4.866964,
+        "mean": 2.035242,
+        "p50": 2.123628,
+        "p95": 4.259576
+      }
+    },
+    "ood_no_effect": {
+      "cases": 4,
+      "effect_exact": 3,
+      "effect_exact_accuracy": 0.75,
+      "exact": 0,
+      "exact_accuracy": 0.0,
+      "intent_exact": 0,
+      "intent_exact_accuracy": 0.0,
+      "kind_exact": 0,
+      "kind_exact_accuracy": 0.0,
+      "latency_seconds": {
+        "maximum": 2.85739,
+        "mean": 2.164501,
+        "p50": 2.000118,
+        "p95": 2.85739
+      }
+    }
+  },
+  "by_locale": {
+    "en": {
+      "cases": 34,
+      "effect_exact": 12,
+      "effect_exact_accuracy": 0.352941,
+      "exact": 8,
+      "exact_accuracy": 0.235294,
+      "intent_exact": 15,
+      "intent_exact_accuracy": 0.441176,
+      "kind_exact": 14,
+      "kind_exact_accuracy": 0.411765,
+      "latency_seconds": {
+        "maximum": 4.259576,
+        "mean": 1.770082,
+        "p50": 1.896132,
+        "p95": 3.007466
+      }
+    },
+    "es": {
+      "cases": 26,
+      "effect_exact": 12,
+      "effect_exact_accuracy": 0.461538,
+      "exact": 7,
+      "exact_accuracy": 0.269231,
+      "intent_exact": 11,
+      "intent_exact_accuracy": 0.423077,
+      "kind_exact": 14,
+      "kind_exact_accuracy": 0.538462,
+      "latency_seconds": {
+        "maximum": 4.866964,
+        "mean": 1.782728,
+        "p50": 1.903302,
+        "p95": 3.729373
+      }
+    }
+  },
+  "failures": [
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.play.query"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.play.query"
+        ],
+        "intent_operations": [
+          "media.play.query"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132353635313636",
+      "projection": {
+        "candidate_operations": [
+          "media.play.query"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "spotify_query_without_provider_constraint"
+      },
+      "seconds": 1.583163,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:PLAY_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_PLAYLIST_TITLE",
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3132353635313636",
+      "text": "can you play my country playlist"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.settings.set"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.control"
+        ],
+        "intent_operations": [
+          "media.control"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132353731363536",
+      "projection": {
+        "candidate_operations": [
+          "media.control"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "next_current_session"
+      },
+      "seconds": 2.784461,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:SKIP_TRACK_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3132353731363536",
+      "text": "Change the artist, please"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "vision.describe"
+        ],
+        "observed_intent_operations": [
+          "vision.describe"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.control"
+        ],
+        "intent_operations": [
+          "media.control"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3132353731363536",
+      "projection": {
+        "candidate_operations": [
+          "media.control"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "next_current_session"
+      },
+      "seconds": 1.981667,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:SKIP_TRACK_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3132353731363536",
+      "text": "Cambia el artista"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "web.search"
+        ],
+        "intent_operations": [
+          "web.search"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132363230393230",
+      "projection": {
+        "candidate_operations": [
+          "web.search"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "web"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "public_weather_search"
+      },
+      "seconds": 0.407477,
+      "semantic": {
+        "domain": "weather",
+        "intent": "IN:GET_WEATHER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3132363230393230",
+      "text": "What was the weather like on this day last year"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "web.search"
+        ],
+        "intent_operations": [
+          "web.search"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3133343439353837",
+      "projection": {
+        "candidate_operations": [
+          "web.search"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "web"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "public_recipe_information"
+      },
+      "seconds": 4.145622,
+      "semantic": {
+        "domain": "recipes",
+        "intent": "IN:GET_INFO_RECIPES",
+        "nested_intents": [],
+        "slots": [
+          "SL:RECIPES_ATTRIBUTE",
+          "SL:RECIPES_DISH"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3133343439353837",
+      "text": "what spices do i use on chicken"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "calendar.event.list"
+        ],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393832313134",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 2.004267,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3139393832313134",
+      "text": "Anything cool happening this weekend"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "calendar.event.list"
+        ],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393832313134",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 3.729373,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3139393832313134",
+      "text": "Cualquier cosa interesante que suceda este fin de semana"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "calendar.event.list"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "calendar.event.list"
+        ],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393837323835",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 3.372099,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3139393837323835",
+      "text": "Eventos de esta noche"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231313436383932",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 2.50241,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231313436383932",
+      "text": "Set a reminder to check the chicken cooking in the oven for 20 minutes from now."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "web.search"
+        ],
+        "observed_intent_operations": [
+          "web.search"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.resolve.exact"
+        ],
+        "intent_operations": [
+          "reminder.resolve.exact"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323233383637",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "resolve_exact_local_reminder"
+      },
+      "seconds": 1.709957,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:GET_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323233383637",
+      "text": "Reminders for birthdays."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "reminder.list"
+        ],
+        "observed_intent_operations": [
+          "reminder.list"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.resolve.exact"
+        ],
+        "intent_operations": [
+          "reminder.resolve.exact"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323233383637",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "resolve_exact_local_reminder"
+      },
+      "seconds": 0.666646,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:GET_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323233383637",
+      "text": "Recordatorios de cumpleaños."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "notification.schedule"
+        ],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323330343034",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:TODO"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 2.173976,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323330343034",
+      "text": "set a reminder for tomorrow at 5 pm"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323330343034",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:TODO"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 0.001898,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323330343034",
+      "text": "Crea un recordatorio para mañana a las 5 PM"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "reminder.delete"
+        ],
+        "observed_intent_operations": [
+          "reminder.delete"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323331353235",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:TODO"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 1.04869,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:3231323331353235",
+      "text": "Remove a reminder please."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "reminder.delete"
+        ],
+        "observed_intent_operations": [
+          "reminder.delete"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323331353235",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:TODO"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 1.040375,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:3231323331353235",
+      "text": "Quita un recordatorio, por favor."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "reminder.delete"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.delete"
+        ],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323334333230",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 2.27034,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323334333230",
+      "text": "Find the reminder about the bowling fundraiser and remove it"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "reminder.list"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.delete"
+        ],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323334333230",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 2.15409,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323334333230",
+      "text": "Encuentra el recordatorio sobre la colecta para el juego de bolos y elimínalo."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.resolve.exact"
+        ],
+        "intent_operations": [
+          "reminder.resolve.exact"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323335303038",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "resolve_exact_local_reminder"
+      },
+      "seconds": 2.251211,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:GET_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323335303038",
+      "text": "Can I see the reminder for Haley's birthday party again?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.resolve.exact"
+        ],
+        "intent_operations": [
+          "reminder.resolve.exact"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323335303038",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "resolve_exact_local_reminder"
+      },
+      "seconds": 2.302543,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:GET_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323335303038",
+      "text": "¿Puedo ver otra vez el recordatorio para la fiesta de cumpleaños de Haley?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323337333139",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 2.291412,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME",
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323337333139",
+      "text": "Programa un recordatorio para ver el partido de los Giants a las 17:00."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323736333038",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:RECIPIENT"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 2.230647,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323736333038",
+      "text": "Message lets meet at the restaurant then go the the movie."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323832333037",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 0.548708,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT",
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323832333037",
+      "text": "Send Brad a message that we will be at the Comfort Inn by 6PM."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323835353835",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 3.007466,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT",
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323835353835",
+      "text": "Warn Sarah I'm running late for Kevin's surprise party."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.play.exact"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kinds": [
+          "conversation"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231333131303830",
+      "projection": {
+        "candidate_operations": [],
+        "disposition": "ood_no_effect",
+        "execution_authority": false,
+        "expected_turn": "conversation",
+        "families": [],
+        "grounding_status": "not_applicable",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "mapped_unsupported_intent",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": null
+      },
+      "seconds": 2.85739,
+      "semantic": {
+        "domain": "calling",
+        "intent": "IN:CREATE_CALL",
+        "nested_intents": [
+          "IN:GET_CONTACT",
+          "IN:GET_CONTACT"
+        ],
+        "slots": [
+          "SL:CONTACT",
+          "SL:CONTACT_RELATED",
+          "SL:TYPE_RELATION"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231333131303830",
+      "text": "Start a video conferencing call with my daddies, and my sis."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "streaming.navigate"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kinds": [
+          "conversation"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231333131303830",
+      "projection": {
+        "candidate_operations": [],
+        "disposition": "ood_no_effect",
+        "execution_authority": false,
+        "expected_turn": "conversation",
+        "families": [],
+        "grounding_status": "not_applicable",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "mapped_unsupported_intent",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": null
+      },
+      "seconds": 2.000118,
+      "semantic": {
+        "domain": "calling",
+        "intent": "IN:CREATE_CALL",
+        "nested_intents": [
+          "IN:GET_CONTACT",
+          "IN:GET_CONTACT"
+        ],
+        "slots": [
+          "SL:CONTACT",
+          "SL:CONTACT_RELATED",
+          "SL:TYPE_RELATION"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231333131303830",
+      "text": "Haz una llamada por videoconferencia a mis padres y mi hermana."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353533313534",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 2.444368,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231353533313534",
+      "text": "Record alarms for 3 and 4 in the afternoon."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363333363135",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 4.259576,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": [
+          "SL:ALARM_NAME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231363333363135",
+      "text": "Make alarm called work"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363333363135",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 4.866964,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": [
+          "SL:ALARM_NAME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231363333363135",
+      "text": "Crea una alarma llamada trabajo"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.dismiss"
+        ],
+        "intent_operations": [
+          "notification.dismiss"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336353433",
+      "projection": {
+        "candidate_operations": [
+          "notification.list.due",
+          "notification.dismiss"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "unqualified_due_alarm"
+      },
+      "seconds": 2.322563,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:SILENCE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:3231363336353433",
+      "text": "Turn of alarm please"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.dismiss"
+        ],
+        "observed_intent_operations": [
+          "notification.dismiss"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336373731",
+      "projection": {
+        "candidate_operations": [
+          "notification.cancel.latest"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "latest_unqualified_alarm"
+      },
+      "seconds": 1.25984,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:DELETE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:3231363336373731",
+      "text": "Deactivate alarm"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232323232333534",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 2.297288,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:3232323232333534",
+      "text": "mostrarme más eventos por favor"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "message.recipient.resolve"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232353832383130",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:CONTENT_EXACT"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 1.760085,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3232353832383130",
+      "text": "can you send Laura and Lola"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "message.recipient.resolve"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232353832383130",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:CONTENT_EXACT"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 2.123628,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3232353832383130",
+      "text": "¿Puedes enviar a Laura y Lola?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "notification.diagnose"
+        ],
+        "observed_intent_operations": [
+          "notification.diagnose"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kinds": [
+          "conversation"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343930383530",
+      "projection": {
+        "candidate_operations": [],
+        "disposition": "ood_no_effect",
+        "execution_authority": false,
+        "expected_turn": "conversation",
+        "families": [],
+        "grounding_status": "not_applicable",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "mapped_unsupported_intent",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": null
+      },
+      "seconds": 1.887351,
+      "semantic": {
+        "domain": "timer",
+        "intent": "IN:GET_TIMER",
+        "nested_intents": [],
+        "slots": [
+          "SL:METHOD_TIMER"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39343930383530",
+      "text": "how many minutes remaining on timer"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.status"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kinds": [
+          "conversation"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343930383530",
+      "projection": {
+        "candidate_operations": [],
+        "disposition": "ood_no_effect",
+        "execution_authority": false,
+        "expected_turn": "conversation",
+        "families": [],
+        "grounding_status": "not_applicable",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "mapped_unsupported_intent",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": null
+      },
+      "seconds": 1.913145,
+      "semantic": {
+        "domain": "timer",
+        "intent": "IN:GET_TIMER",
+        "nested_intents": [],
+        "slots": [
+          "SL:METHOD_TIMER"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:39343930383530",
+      "text": "¿Cuántos minutos le quedan al temporizador?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.status"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.status"
+        ],
+        "intent_operations": [
+          "media.status"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353230313632",
+      "projection": {
+        "candidate_operations": [
+          "media.status"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "current_session_status"
+      },
+      "seconds": 1.423133,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:GET_TRACK_INFO_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39353230313632",
+      "text": "Who is the producer of this album?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "audio.volume"
+        ],
+        "observed_intent_operations": [
+          "audio.volume"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.play.query"
+        ],
+        "intent_operations": [
+          "media.play.query"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353230333237",
+      "projection": {
+        "candidate_operations": [
+          "media.play.query"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "spotify_query_without_provider_constraint"
+      },
+      "seconds": 0.001345,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:PLAY_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_GENRE",
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:39353230333237",
+      "text": "Pon música dance de los 80's"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.status"
+        ],
+        "intent_operations": [
+          "media.status"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353232323538",
+      "projection": {
+        "candidate_operations": [
+          "media.status"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "current_session_status"
+      },
+      "seconds": 0.413288,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:GET_TRACK_INFO_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39353232323538",
+      "text": "What album was this song on?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.status"
+        ],
+        "intent_operations": [
+          "media.status"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353232323538",
+      "projection": {
+        "candidate_operations": [
+          "media.status"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "current_session_status"
+      },
+      "seconds": 0.374802,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:GET_TRACK_INFO_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:39353232323538",
+      "text": "¿En qué álbum estaba esta canción?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.seek.relative"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.control"
+        ],
+        "intent_operations": [
+          "media.control"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353630373036",
+      "projection": {
+        "candidate_operations": [
+          "media.control"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "next_current_session"
+      },
+      "seconds": 1.937858,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:SKIP_TRACK_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39353630373036",
+      "text": "SKip this song."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "media.seek.relative"
+        ],
+        "observed_intent_operations": [
+          "media.seek.relative"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.control"
+        ],
+        "intent_operations": [
+          "media.control"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353630373036",
+      "projection": {
+        "candidate_operations": [
+          "media.control"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "next_current_session"
+      },
+      "seconds": 1.337851,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:SKIP_TRACK_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:39353630373036",
+      "text": "Saltea esta canción."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.dismiss"
+        ],
+        "intent_operations": [
+          "notification.dismiss"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353637313432",
+      "projection": {
+        "candidate_operations": [
+          "notification.list.due",
+          "notification.dismiss"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "unqualified_due_alarm"
+      },
+      "seconds": 1.935219,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:SILENCE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:39353637313432",
+      "text": "turn off the alarms"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.dismiss"
+        ],
+        "intent_operations": [
+          "notification.dismiss"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353637313432",
+      "projection": {
+        "candidate_operations": [
+          "notification.list.due",
+          "notification.dismiss"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "unqualified_due_alarm"
+      },
+      "seconds": 2.063284,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:SILENCE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:39353637313432",
+      "text": "apaga las alarmas"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353734343832",
+      "projection": {
+        "candidate_operations": [
+          "notification.cancel.latest"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "latest_unqualified_alarm"
+      },
+      "seconds": 1.649719,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:DELETE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:39353734343832",
+      "text": "Cancel alarms please."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353734343832",
+      "projection": {
+        "candidate_operations": [
+          "notification.cancel.latest"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "latest_unqualified_alarm"
+      },
+      "seconds": 1.854554,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:DELETE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:39353734343832",
+      "text": "Cancela las alarmas, por favor."
+    }
+  ],
+  "measured_at": "2026-08-02T00:27:07.578248+00:00",
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "samples": [
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.play.query"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.play.query"
+        ],
+        "intent_operations": [
+          "media.play.query"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132353635313636",
+      "projection": {
+        "candidate_operations": [
+          "media.play.query"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "spotify_query_without_provider_constraint"
+      },
+      "seconds": 1.583163,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:PLAY_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_PLAYLIST_TITLE",
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3132353635313636",
+      "text": "can you play my country playlist"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.settings.set"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.control"
+        ],
+        "intent_operations": [
+          "media.control"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132353731363536",
+      "projection": {
+        "candidate_operations": [
+          "media.control"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "next_current_session"
+      },
+      "seconds": 2.784461,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:SKIP_TRACK_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3132353731363536",
+      "text": "Change the artist, please"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "vision.describe"
+        ],
+        "observed_intent_operations": [
+          "vision.describe"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.control"
+        ],
+        "intent_operations": [
+          "media.control"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3132353731363536",
+      "projection": {
+        "candidate_operations": [
+          "media.control"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "next_current_session"
+      },
+      "seconds": 1.981667,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:SKIP_TRACK_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3132353731363536",
+      "text": "Cambia el artista"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "web.search"
+        ],
+        "intent_operations": [
+          "web.search"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132363230393230",
+      "projection": {
+        "candidate_operations": [
+          "web.search"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "web"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "public_weather_search"
+      },
+      "seconds": 0.407477,
+      "semantic": {
+        "domain": "weather",
+        "intent": "IN:GET_WEATHER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3132363230393230",
+      "text": "What was the weather like on this day last year"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "web.search"
+        ],
+        "intent_operations": [
+          "web.search"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3133343439353837",
+      "projection": {
+        "candidate_operations": [
+          "web.search"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "web"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "public_recipe_information"
+      },
+      "seconds": 4.145622,
+      "semantic": {
+        "domain": "recipes",
+        "intent": "IN:GET_INFO_RECIPES",
+        "nested_intents": [],
+        "slots": [
+          "SL:RECIPES_ATTRIBUTE",
+          "SL:RECIPES_DISH"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3133343439353837",
+      "text": "what spices do i use on chicken"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.schedule"
+        ],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3135333031303832",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 0.002889,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3135333031303832",
+      "text": "set an alarm 15 minutes before my meeting at 2 pm"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "calendar.event.list"
+        ],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393832313134",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 2.004267,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3139393832313134",
+      "text": "Anything cool happening this weekend"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "calendar.event.list"
+        ],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393832313134",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 3.729373,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3139393832313134",
+      "text": "Cualquier cosa interesante que suceda este fin de semana"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "calendar.event.list"
+        ],
+        "observed_intent_operations": [
+          "calendar.event.list"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "calendar.event.list"
+        ],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393837323835",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 2.477529,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3139393837323835",
+      "text": "Events this evening"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "calendar.event.list"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "calendar.event.list"
+        ],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393837323835",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 3.372099,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3139393837323835",
+      "text": "Eventos de esta noche"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231313436383932",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 2.50241,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231313436383932",
+      "text": "Set a reminder to check the chicken cooking in the oven for 20 minutes from now."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "web.search"
+        ],
+        "observed_intent_operations": [
+          "web.search"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.resolve.exact"
+        ],
+        "intent_operations": [
+          "reminder.resolve.exact"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323233383637",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "resolve_exact_local_reminder"
+      },
+      "seconds": 1.709957,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:GET_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323233383637",
+      "text": "Reminders for birthdays."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "reminder.list"
+        ],
+        "observed_intent_operations": [
+          "reminder.list"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.resolve.exact"
+        ],
+        "intent_operations": [
+          "reminder.resolve.exact"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323233383637",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "resolve_exact_local_reminder"
+      },
+      "seconds": 0.666646,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:GET_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323233383637",
+      "text": "Recordatorios de cumpleaños."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "reminder.delete"
+        ],
+        "observed_intent_operations": [
+          "reminder.delete"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.delete"
+        ],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323239383538",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 1.023138,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323239383538",
+      "text": "Reminder to take grandma shopping needs to be cancelled."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "reminder.delete"
+        ],
+        "observed_intent_operations": [
+          "reminder.delete"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.delete"
+        ],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323239383538",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 1.087774,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323239383538",
+      "text": "Recordatorio para llevar de compras a la abuela necesita cancelarse."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "notification.schedule"
+        ],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323330343034",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:TODO"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 2.173976,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323330343034",
+      "text": "set a reminder for tomorrow at 5 pm"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323330343034",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:TODO"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 0.001898,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323330343034",
+      "text": "Crea un recordatorio para mañana a las 5 PM"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "reminder.delete"
+        ],
+        "observed_intent_operations": [
+          "reminder.delete"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323331353235",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:TODO"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 1.04869,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:3231323331353235",
+      "text": "Remove a reminder please."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "reminder.delete"
+        ],
+        "observed_intent_operations": [
+          "reminder.delete"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323331353235",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:TODO"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 1.040375,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:3231323331353235",
+      "text": "Quita un recordatorio, por favor."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "reminder.delete"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.delete"
+        ],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323334333230",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 2.27034,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323334333230",
+      "text": "Find the reminder about the bowling fundraiser and remove it"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "reminder.list"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.delete"
+        ],
+        "intent_operations": [
+          "reminder.delete"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323334333230",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact",
+          "reminder.delete"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "exact_local_reminder"
+      },
+      "seconds": 2.15409,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:DELETE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323334333230",
+      "text": "Encuentra el recordatorio sobre la colecta para el juego de bolos y elimínalo."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.resolve.exact"
+        ],
+        "intent_operations": [
+          "reminder.resolve.exact"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323335303038",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "resolve_exact_local_reminder"
+      },
+      "seconds": 2.251211,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:GET_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323335303038",
+      "text": "Can I see the reminder for Haley's birthday party again?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.resolve.exact"
+        ],
+        "intent_operations": [
+          "reminder.resolve.exact"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323335303038",
+      "projection": {
+        "candidate_operations": [
+          "reminder.resolve.exact"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "resolve_exact_local_reminder"
+      },
+      "seconds": 2.302543,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:GET_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323335303038",
+      "text": "¿Puedo ver otra vez el recordatorio para la fiesta de cumpleaños de Haley?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323337333139",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 1.896132,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME",
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323337333139",
+      "text": "set a reminder to watch the giants game at 5pm"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323337333139",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 2.291412,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME",
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323337333139",
+      "text": "Programa un recordatorio para ver el partido de los Giants a las 17:00."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323337383431",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 0.00117,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME",
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323337383431",
+      "text": "create a reminder on the 30th at 3pm to mail rent"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "reminder.create"
+        ],
+        "intent_operations": [
+          "reminder.create"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323337383431",
+      "projection": {
+        "candidate_operations": [
+          "reminder.create"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "reminder"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "local_dated_reminder"
+      },
+      "seconds": 0.000977,
+      "semantic": {
+        "domain": "reminder",
+        "intent": "IN:CREATE_REMINDER",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME",
+          "SL:TODO"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323337383431",
+      "text": "Crea un recordatorio el día 30 a las 15:00 para enviar por correo la renta."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323736333038",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:RECIPIENT"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 2.230647,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323736333038",
+      "text": "Message lets meet at the restaurant then go the the movie."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323736333038",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:RECIPIENT"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 2.363532,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323736333038",
+      "text": "Envía este mensaje: quedamos en el restaurante y luego vamos al cine."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323832333037",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 0.548708,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT",
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323832333037",
+      "text": "Send Brad a message that we will be at the Comfort Inn by 6PM."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "message.send"
+        ],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323832333037",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 1.903302,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT",
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323832333037",
+      "text": "Envía un mensaje a Brad para decirle que estaremos en el Comfort Inn a las 18:00."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323835353835",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 3.007466,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT",
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231323835353835",
+      "text": "Warn Sarah I'm running late for Kevin's surprise party."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "message.send"
+        ],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "message.send"
+        ],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323835353835",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 1.030635,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:CONTENT_EXACT",
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231323835353835",
+      "text": "Avisar a Sarah que llegaré tarde a la fiesta sorpresa de Kevin."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.play.exact"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kinds": [
+          "conversation"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231333131303830",
+      "projection": {
+        "candidate_operations": [],
+        "disposition": "ood_no_effect",
+        "execution_authority": false,
+        "expected_turn": "conversation",
+        "families": [],
+        "grounding_status": "not_applicable",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "mapped_unsupported_intent",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": null
+      },
+      "seconds": 2.85739,
+      "semantic": {
+        "domain": "calling",
+        "intent": "IN:CREATE_CALL",
+        "nested_intents": [
+          "IN:GET_CONTACT",
+          "IN:GET_CONTACT"
+        ],
+        "slots": [
+          "SL:CONTACT",
+          "SL:CONTACT_RELATED",
+          "SL:TYPE_RELATION"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231333131303830",
+      "text": "Start a video conferencing call with my daddies, and my sis."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "streaming.navigate"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kinds": [
+          "conversation"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231333131303830",
+      "projection": {
+        "candidate_operations": [],
+        "disposition": "ood_no_effect",
+        "execution_authority": false,
+        "expected_turn": "conversation",
+        "families": [],
+        "grounding_status": "not_applicable",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "mapped_unsupported_intent",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": null
+      },
+      "seconds": 2.000118,
+      "semantic": {
+        "domain": "calling",
+        "intent": "IN:CREATE_CALL",
+        "nested_intents": [
+          "IN:GET_CONTACT",
+          "IN:GET_CONTACT"
+        ],
+        "slots": [
+          "SL:CONTACT",
+          "SL:CONTACT_RELATED",
+          "SL:TYPE_RELATION"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231333131303830",
+      "text": "Haz una llamada por videoconferencia a mis padres y mi hermana."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353533313534",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 2.444368,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231353533313534",
+      "text": "Record alarms for 3 and 4 in the afternoon."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.schedule"
+        ],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.schedule"
+        ],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231353533313534",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 1.692793,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": [
+          "SL:DATE_TIME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231353533313534",
+      "text": "Programa alarmas para las 15:00 y las 16:00."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363333363135",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 4.259576,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": [
+          "SL:ALARM_NAME"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3231363333363135",
+      "text": "Make alarm called work"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363333363135",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 4.866964,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": [
+          "SL:ALARM_NAME"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3231363333363135",
+      "text": "Crea una alarma llamada trabajo"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.dismiss"
+        ],
+        "intent_operations": [
+          "notification.dismiss"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336353433",
+      "projection": {
+        "candidate_operations": [
+          "notification.list.due",
+          "notification.dismiss"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "unqualified_due_alarm"
+      },
+      "seconds": 2.322563,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:SILENCE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:3231363336353433",
+      "text": "Turn of alarm please"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.dismiss"
+        ],
+        "observed_intent_operations": [
+          "notification.dismiss"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336373731",
+      "projection": {
+        "candidate_operations": [
+          "notification.cancel.latest"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "latest_unqualified_alarm"
+      },
+      "seconds": 1.25984,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:DELETE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:3231363336373731",
+      "text": "Deactivate alarm"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363337303139",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 1.959405,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:3231363337303139",
+      "text": "Make an alarm"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "notification.schedule"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363337303139",
+      "projection": {
+        "candidate_operations": [
+          "notification.schedule"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "dated_alarm"
+      },
+      "seconds": 1.898828,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:CREATE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:3231363337303139",
+      "text": "Pon una alarma."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "calendar.event.list"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232323232333534",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 0.001327,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:3232323232333534",
+      "text": "show me more events please"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "calendar.event.list"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232323232333534",
+      "projection": {
+        "candidate_operations": [
+          "calendar.event.list"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "calendar"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:DATE_TIME"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "bounded_calendar_window"
+      },
+      "seconds": 2.297288,
+      "semantic": {
+        "domain": "event",
+        "intent": "IN:GET_EVENT",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:3232323232333534",
+      "text": "mostrarme más eventos por favor"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "message.recipient.resolve"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232353832383130",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:CONTENT_EXACT"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 1.760085,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:3232353832383130",
+      "text": "can you send Laura and Lola"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "message.recipient.resolve"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [
+          "message.send"
+        ],
+        "kinds": [
+          "clarify"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232353832383130",
+      "projection": {
+        "candidate_operations": [
+          "message.recipient.resolve",
+          "message.send"
+        ],
+        "disposition": "candidate_missing_information",
+        "execution_authority": false,
+        "expected_turn": "clarify",
+        "families": [
+          "message"
+        ],
+        "grounding_status": "missing_required_information",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [
+          "SL:CONTENT_EXACT"
+        ],
+        "reason": "contract_supported_missing_information",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "explicit_recipient_and_content"
+      },
+      "seconds": 2.123628,
+      "semantic": {
+        "domain": "messaging",
+        "intent": "IN:SEND_MESSAGE",
+        "nested_intents": [],
+        "slots": [
+          "SL:RECIPIENT"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:3232353832383130",
+      "text": "¿Puedes enviar a Laura y Lola?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [
+          "notification.diagnose"
+        ],
+        "observed_intent_operations": [
+          "notification.diagnose"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kinds": [
+          "conversation"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343930383530",
+      "projection": {
+        "candidate_operations": [],
+        "disposition": "ood_no_effect",
+        "execution_authority": false,
+        "expected_turn": "conversation",
+        "families": [],
+        "grounding_status": "not_applicable",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "mapped_unsupported_intent",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": null
+      },
+      "seconds": 1.887351,
+      "semantic": {
+        "domain": "timer",
+        "intent": "IN:GET_TIMER",
+        "nested_intents": [],
+        "slots": [
+          "SL:METHOD_TIMER"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39343930383530",
+      "text": "how many minutes remaining on timer"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.status"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [],
+        "intent_operations": [],
+        "kinds": [
+          "conversation"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343930383530",
+      "projection": {
+        "candidate_operations": [],
+        "disposition": "ood_no_effect",
+        "execution_authority": false,
+        "expected_turn": "conversation",
+        "families": [],
+        "grounding_status": "not_applicable",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "mapped_unsupported_intent",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": null
+      },
+      "seconds": 1.913145,
+      "semantic": {
+        "domain": "timer",
+        "intent": "IN:GET_TIMER",
+        "nested_intents": [],
+        "slots": [
+          "SL:METHOD_TIMER"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:39343930383530",
+      "text": "¿Cuántos minutos le quedan al temporizador?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.status"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.status"
+        ],
+        "intent_operations": [
+          "media.status"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353230313632",
+      "projection": {
+        "candidate_operations": [
+          "media.status"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "current_session_status"
+      },
+      "seconds": 1.423133,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:GET_TRACK_INFO_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39353230313632",
+      "text": "Who is the producer of this album?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "media.play.query"
+        ],
+        "observed_intent_operations": [
+          "media.play.query"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.play.query"
+        ],
+        "intent_operations": [
+          "media.play.query"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353230333237",
+      "projection": {
+        "candidate_operations": [
+          "media.play.query"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "spotify_query_without_provider_constraint"
+      },
+      "seconds": 0.002414,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:PLAY_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_GENRE",
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39353230333237",
+      "text": "play dance music from the 80's"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "audio.volume"
+        ],
+        "observed_intent_operations": [
+          "audio.volume"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.play.query"
+        ],
+        "intent_operations": [
+          "media.play.query"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353230333237",
+      "projection": {
+        "candidate_operations": [
+          "media.play.query"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "spotify_query_without_provider_constraint"
+      },
+      "seconds": 0.001345,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:PLAY_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_GENRE",
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:39353230333237",
+      "text": "Pon música dance de los 80's"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.status"
+        ],
+        "intent_operations": [
+          "media.status"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353232323538",
+      "projection": {
+        "candidate_operations": [
+          "media.status"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "current_session_status"
+      },
+      "seconds": 0.413288,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:GET_TRACK_INFO_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39353232323538",
+      "text": "What album was this song on?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.status"
+        ],
+        "intent_operations": [
+          "media.status"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353232323538",
+      "projection": {
+        "candidate_operations": [
+          "media.status"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "current_session_status"
+      },
+      "seconds": 0.374802,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:GET_TRACK_INFO_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:39353232323538",
+      "text": "¿En qué álbum estaba esta canción?"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.seek.relative"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.control"
+        ],
+        "intent_operations": [
+          "media.control"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353630373036",
+      "projection": {
+        "candidate_operations": [
+          "media.control"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "next_current_session"
+      },
+      "seconds": 1.937858,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:SKIP_TRACK_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:en:39353630373036",
+      "text": "SKip this song."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "media.seek.relative"
+        ],
+        "observed_intent_operations": [
+          "media.seek.relative"
+        ],
+        "observed_kind": "plan"
+      },
+      "expected": {
+        "effect_operations": [
+          "media.control"
+        ],
+        "intent_operations": [
+          "media.control"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353630373036",
+      "projection": {
+        "candidate_operations": [
+          "media.control"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "media"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "next_current_session"
+      },
+      "seconds": 1.337851,
+      "semantic": {
+        "domain": "music",
+        "intent": "IN:SKIP_TRACK_MUSIC",
+        "nested_intents": [],
+        "slots": [
+          "SL:MUSIC_TYPE"
+        ]
+      },
+      "source_id": "mtop-official-v2:es:39353630373036",
+      "text": "Saltea esta canción."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.dismiss"
+        ],
+        "intent_operations": [
+          "notification.dismiss"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353637313432",
+      "projection": {
+        "candidate_operations": [
+          "notification.list.due",
+          "notification.dismiss"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "unqualified_due_alarm"
+      },
+      "seconds": 1.935219,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:SILENCE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:39353637313432",
+      "text": "turn off the alarms"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_exact": true,
+        "observed_effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "action"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.dismiss"
+        ],
+        "intent_operations": [
+          "notification.dismiss"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353637313432",
+      "projection": {
+        "candidate_operations": [
+          "notification.list.due",
+          "notification.dismiss"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "plan",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "unqualified_due_alarm"
+      },
+      "seconds": 2.063284,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:SILENCE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:39353637313432",
+      "text": "apaga las alarmas"
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353734343832",
+      "projection": {
+        "candidate_operations": [
+          "notification.cancel.latest"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "latest_unqualified_alarm"
+      },
+      "seconds": 1.649719,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:DELETE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:en:39353734343832",
+      "text": "Cancel alarms please."
+    },
+    {
+      "assessment": {
+        "contract_ok": true,
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_exact": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "observed_kind": "clarify"
+      },
+      "expected": {
+        "effect_operations": [
+          "notification.cancel.latest"
+        ],
+        "intent_operations": [
+          "notification.cancel.latest"
+        ],
+        "kinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353734343832",
+      "projection": {
+        "candidate_operations": [
+          "notification.cancel.latest"
+        ],
+        "disposition": "candidate",
+        "execution_authority": false,
+        "expected_turn": "action",
+        "families": [
+          "notification"
+        ],
+        "grounding_status": "complete",
+        "missing_any_slot_groups": [],
+        "missing_required_slots": [],
+        "reason": "contract_covered_structure",
+        "turn_label_source": "baxy_contract_projection",
+        "variant": "latest_unqualified_alarm"
+      },
+      "seconds": 1.854554,
+      "semantic": {
+        "domain": "alarm",
+        "intent": "IN:DELETE_ALARM",
+        "nested_intents": [],
+        "slots": []
+      },
+      "source_id": "mtop-official-v2:es:39353734343832",
+      "text": "Cancela las alarmas, por favor."
+    }
+  ],
+  "schema": "baxy.mtop-product-validation-development.v1",
+  "scope": "development_validation_only_mtop_test_remains_sealed",
+  "side_effect_free": true,
+  "source": {
+    "corpus_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "groups_per_stratum": 2,
+    "manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "selected_identity_sha256": "633a9432925a89e33667075335cb2defb73b1a102c806ac700225e2f29c32ea7",
+    "selected_missions": 34,
+    "selected_rows": 60,
+    "test_content_read": false
+  },
+  "status": "failed",
+  "summary": {
+    "cases": 60,
+    "effect_exact": 24,
+    "effect_exact_accuracy": 0.4,
+    "exact": 15,
+    "exact_accuracy": 0.25,
+    "intent_exact": 26,
+    "intent_exact_accuracy": 0.433333,
+    "kind_exact": 28,
+    "kind_exact_accuracy": 0.466667,
+    "latency_seconds": {
+      "maximum": 4.866964,
+      "mean": 1.775562,
+      "p50": 1.913145,
+      "p95": 3.729373
+    }
+  }
+}

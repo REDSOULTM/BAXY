@@ -1,0 +1,67 @@
+{
+  "authority": "offline_analysis_only_no_sidecar_no_plan_no_core_no_provider",
+  "created_at_utc": "2026-08-03T09:23:03.226463+00:00",
+  "development_output": {
+    "path": "artifacts\\development\\generalization_surface_r1_failures.v1.jsonl",
+    "rows": 120,
+    "sha256": "a9101c48f1d0fb45825bd461dc621ef11bd5eda711ad27dafd544e9ddb28231f"
+  },
+  "effects_executed": 0,
+  "holdout_reuse_policy": "failed texts are now development data and R1 is never blind again",
+  "metrics": {
+    "by_cause": {
+      "decision": 13,
+      "recovery": 11,
+      "retrieval": 55,
+      "veto:action_grounding": 6,
+      "veto:compound_conservation": 12,
+      "veto:domain_grounding": 23
+    },
+    "by_family": {
+      "app": 8,
+      "audio": 6,
+      "backup": 5,
+      "calendar": 2,
+      "capture": 4,
+      "email": 4,
+      "input": 1,
+      "media": 10,
+      "memory": 10,
+      "message": 3,
+      "network": 10,
+      "note": 1,
+      "notification": 4,
+      "ocr": 10,
+      "office": 2,
+      "package": 10,
+      "peripheral": 3,
+      "reminder": 1,
+      "routine": 1,
+      "streaming": 4,
+      "system": 3,
+      "vision": 10,
+      "web": 2,
+      "wifi": 4,
+      "window": 2
+    },
+    "by_first_loss_stage": {
+      "action_grounding": 6,
+      "compound_conservation": 12,
+      "domain_grounding": 23,
+      "total_recovery": 9
+    },
+    "failures": 120,
+    "unsafe_effects": 20
+  },
+  "schema": "baxy.generalization-surface-failure-analysis.v1",
+  "source": {
+    "analyzer": "experiments\\mind_router_spike\\analyze_generalization_surface_r1_failures.py",
+    "analyzer_sha256": "df36b9100237dba068f515b4f47d58367aeda3d410caa325d5a63de408e0e7c9",
+    "blind_result": "artifacts\\holdout\\generalization_surface_holdout_r1.json",
+    "blind_result_sha256": "335852815590b095303f8c3f55ee5567abe5993d1118af61d7aac6117d483af8",
+    "corpus": "artifacts\\holdout\\generalization_surface_holdout_v1.jsonl",
+    "corpus_sha256": "2f44271fc19d6a9bdccea3b0ef2f0e1a372517cf99acc012c6a833299d8435c5",
+    "raw_audit": "artifacts\\holdout\\generalization_surface_holdout_r1.raw.jsonl",
+    "raw_audit_sha256": "ccddbf76237b2dc9ef500c709f8bee3fde8fbe51b8024b0475edd90bd3640257"
+  }
+}

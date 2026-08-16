@@ -1,0 +1,333 @@
+{
+  "schema": "baxy.mvp-local-stateful-handler-matrix.v1",
+  "measuredAtUtc": "2026-08-11T20:38:59.4136034\u002B00:00",
+  "scope": "all_local_stateful_handlers_with_isolated_real_stores",
+  "actualUserEffectsExecuted": 0,
+  "isolatedStoreMutations": 45,
+  "coreAssemblySha256": "a6ffe8bbc5293bf8f480d029a7c3b91c7feb630ffbdda7d6e01dd91085c352f2",
+  "testAssemblySha256": "4e9a21825ff69245a5964d436cbea92bfe98c47cca8782639ec3676d7edd2e1b",
+  "metrics": {
+    "operations": 45,
+    "verified": 45,
+    "possibleEffects": 0,
+    "failed": 0
+  },
+  "rows": [
+    {
+      "Operation": "filesystem.create.directory",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.write.text",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.list",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.search",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.read.text",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.hash",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.copy",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.move",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "backup.create",
+      "Verifier": "local_filesystem_hash_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "backup.list",
+      "Verifier": "local_filesystem_hash_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "backup.verify",
+      "Verifier": "local_filesystem_hash_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "backup.restore",
+      "Verifier": "local_filesystem_hash_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.trash.prepare",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.trash.commit",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "filesystem.trash.restore",
+      "Verifier": "local_filesystem_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "note.create",
+      "Verifier": "note_store_verified_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "note.list",
+      "Verifier": "note_store_verified_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "note.read",
+      "Verifier": "note_store_verified_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "note.search",
+      "Verifier": "note_store_verified_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "note.update",
+      "Verifier": "note_store_verified_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "note.trash",
+      "Verifier": "note_store_verified_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "note.restore",
+      "Verifier": "note_store_verified_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.create",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.list",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.search",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.resolve.exact",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.update",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.complete",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.reopen",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.delete",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "task.restore",
+      "Verifier": "task_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "reminder.create",
+      "Verifier": "reminder_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "reminder.list",
+      "Verifier": "reminder_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "reminder.resolve.exact",
+      "Verifier": "reminder_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "notification.list.due",
+      "Verifier": "reminder_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "notification.dismiss",
+      "Verifier": "reminder_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "reminder.delete",
+      "Verifier": "reminder_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "reminder.restore",
+      "Verifier": "reminder_store_cas_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "routine.phrase.create",
+      "Verifier": "routine_store_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "routine.list",
+      "Verifier": "routine_store_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "routine.read",
+      "Verifier": "routine_store_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "routine.resolve.exact",
+      "Verifier": "routine_store_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "routine.set.enabled",
+      "Verifier": "routine_store_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "routine.delete",
+      "Verifier": "routine_store_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "routine.restore",
+      "Verifier": "routine_store_cas",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    }
+  ],
+  "gatePassed": true
+}

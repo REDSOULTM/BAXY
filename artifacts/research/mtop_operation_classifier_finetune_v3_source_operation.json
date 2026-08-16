@@ -1,0 +1,950 @@
+{
+  "best_validation_top_1_accuracy": 0.884911,
+  "checkpoint": {
+    "files": [
+      {
+        "bytes": 11473,
+        "name": "config.json",
+        "sha256": "062138efb3e557dd9b3e9de6988158e96211763f4917ac9331f3772cf1099f86"
+      },
+      {
+        "bytes": 470814144,
+        "name": "model.safetensors",
+        "sha256": "9e214940614592f294c8ff418af0588043220500911263e7e125e996cf0245bc"
+      },
+      {
+        "bytes": 5069051,
+        "name": "sentencepiece.bpe.model",
+        "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"
+      },
+      {
+        "bytes": 1016,
+        "name": "special_tokens_map.json",
+        "sha256": "edd71739099fe63dc2f70815facad5253c70ded0e0d4df49ef883ce4511af365"
+      },
+      {
+        "bytes": 17082897,
+        "name": "tokenizer.json",
+        "sha256": "1fd0f4ba71bab673c8c77f2ada16bbaed61f7bed515388ac3b6aa5ffa9b1a2f4"
+      },
+      {
+        "bytes": 1259,
+        "name": "tokenizer_config.json",
+        "sha256": "02570132bfda62bfdd0275e04e095ecd53a1b070bb9f1ac8bc08d760594bd9ab"
+      },
+      {
+        "bytes": 6646,
+        "name": "training_identity.json",
+        "sha256": "65836577755b1dce2b5920e7647718cff961adb59ad792f3d406b71d8052eb9d"
+      }
+    ],
+    "path": "D:\\BAXYRuntime\\experiments\\mtop-operation-classifier-v3-source-operation"
+  },
+  "configuration": {
+    "batch_size": 64,
+    "class_weight_power": 0.25,
+    "epochs": 6,
+    "eval_batch_size": 128,
+    "label_mode": "source-operation",
+    "label_smoothing": 0.0,
+    "learning_rate": 2e-05,
+    "max_grad_norm": 1.0,
+    "max_length": 96,
+    "mixed_precision": "fp16",
+    "seed": 20260801,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01
+  },
+  "cuda": {
+    "device": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "peak_allocated_mib": 2023.616,
+    "peak_reserved_mib": 2402.0
+  },
+  "data": {
+    "class_to_operation": {
+      "IN:ADD_TIME_TIMER␟__none__": "__none__",
+      "IN:ADD_TO_PLAYLIST_MUSIC␟__none__": "__none__",
+      "IN:ANSWER_CALL␟__none__": "__none__",
+      "IN:CANCEL_CALL␟__none__": "__none__",
+      "IN:CANCEL_MESSAGE␟__none__": "__none__",
+      "IN:CREATE_ALARM␟notification.schedule": "notification.schedule",
+      "IN:CREATE_CALL␟__none__": "__none__",
+      "IN:CREATE_PLAYLIST_MUSIC␟__none__": "__none__",
+      "IN:CREATE_REMINDER␟reminder.create": "reminder.create",
+      "IN:CREATE_TIMER␟__none__": "__none__",
+      "IN:DELETE_ALARM␟notification.cancel.latest": "notification.cancel.latest",
+      "IN:DELETE_PLAYLIST_MUSIC␟__none__": "__none__",
+      "IN:DELETE_REMINDER␟reminder.delete": "reminder.delete",
+      "IN:DELETE_TIMER␟__none__": "__none__",
+      "IN:DISLIKE_MUSIC␟__none__": "__none__",
+      "IN:DISPREFER␟__none__": "__none__",
+      "IN:END_CALL␟__none__": "__none__",
+      "IN:FAST_FORWARD_MUSIC␟media.seek.relative": "media.seek.relative",
+      "IN:FOLLOW_MUSIC␟__none__": "__none__",
+      "IN:GET_AGE␟__none__": "__none__",
+      "IN:GET_AIRQUALITY␟web.search": "web.search",
+      "IN:GET_ALARM␟__none__": "__none__",
+      "IN:GET_ATTENDEE_EVENT␟__none__": "__none__",
+      "IN:GET_AVAILABILITY␟__none__": "__none__",
+      "IN:GET_CALL_CONTACT␟__none__": "__none__",
+      "IN:GET_CALL_TIME␟__none__": "__none__",
+      "IN:GET_CALL␟__none__": "__none__",
+      "IN:GET_CATEGORY_EVENT␟__none__": "__none__",
+      "IN:GET_CONTACT_METHOD␟__none__": "__none__",
+      "IN:GET_CONTACT␟__none__": "__none__",
+      "IN:GET_DATE_TIME_EVENT␟__none__": "__none__",
+      "IN:GET_DETAILS_NEWS␟web.search": "web.search",
+      "IN:GET_EDUCATION_DEGREE␟__none__": "__none__",
+      "IN:GET_EDUCATION_TIME␟__none__": "__none__",
+      "IN:GET_EMPLOYER␟__none__": "__none__",
+      "IN:GET_EMPLOYMENT_TIME␟__none__": "__none__",
+      "IN:GET_EVENT␟calendar.event.list": "calendar.event.list",
+      "IN:GET_GENDER␟__none__": "__none__",
+      "IN:GET_GROUP␟__none__": "__none__",
+      "IN:GET_INFO_CONTACT␟__none__": "__none__",
+      "IN:GET_INFO_RECIPES␟web.search": "web.search",
+      "IN:GET_JOB␟__none__": "__none__",
+      "IN:GET_LANGUAGE␟__none__": "__none__",
+      "IN:GET_LIFE_EVENT_TIME␟__none__": "__none__",
+      "IN:GET_LIFE_EVENT␟__none__": "__none__",
+      "IN:GET_LOCATION␟__none__": "__none__",
+      "IN:GET_LYRICS_MUSIC␟web.search": "web.search",
+      "IN:GET_MAJOR␟__none__": "__none__",
+      "IN:GET_MESSAGE_CONTACT␟__none__": "__none__",
+      "IN:GET_MESSAGE␟__none__": "__none__",
+      "IN:GET_MUTUAL_FRIENDS␟__none__": "__none__",
+      "IN:GET_RECIPES␟web.search": "web.search",
+      "IN:GET_REMINDER_DATE_TIME␟reminder.resolve.exact": "reminder.resolve.exact",
+      "IN:GET_REMINDER_LOCATION␟__none__": "__none__",
+      "IN:GET_REMINDER␟reminder.list": "reminder.list",
+      "IN:GET_REMINDER␟reminder.resolve.exact": "reminder.resolve.exact",
+      "IN:GET_STORIES_NEWS␟web.search": "web.search",
+      "IN:GET_SUNRISE␟web.search": "web.search",
+      "IN:GET_SUNSET␟web.search": "web.search",
+      "IN:GET_TIMER␟__none__": "__none__",
+      "IN:GET_TRACK_INFO_MUSIC␟media.status": "media.status",
+      "IN:GET_TRACK_INFO_MUSIC␟web.search": "web.search",
+      "IN:GET_UNDERGRAD␟__none__": "__none__",
+      "IN:GET_WEATHER␟web.search": "web.search",
+      "IN:HELP_REMINDER␟__none__": "__none__",
+      "IN:HOLD_CALL␟__none__": "__none__",
+      "IN:IGNORE_CALL␟__none__": "__none__",
+      "IN:IS_TRUE_RECIPES␟web.search": "web.search",
+      "IN:LIKE_MUSIC␟__none__": "__none__",
+      "IN:LOOP_MUSIC␟__none__": "__none__",
+      "IN:MERGE_CALL␟__none__": "__none__",
+      "IN:PAUSE_MUSIC␟media.control": "media.control",
+      "IN:PAUSE_TIMER␟__none__": "__none__",
+      "IN:PLAY_MEDIA␟media.play.query": "media.play.query",
+      "IN:PLAY_MUSIC␟media.play.query": "media.play.query",
+      "IN:PREFER␟__none__": "__none__",
+      "IN:PREVIOUS_TRACK_MUSIC␟media.control": "media.control",
+      "IN:QUESTION_MUSIC␟web.search": "web.search",
+      "IN:QUESTION_NEWS␟web.search": "web.search",
+      "IN:REMOVE_FROM_PLAYLIST_MUSIC␟__none__": "__none__",
+      "IN:REPEAT_ALL_MUSIC␟__none__": "__none__",
+      "IN:REPEAT_ALL_OFF_MUSIC␟__none__": "__none__",
+      "IN:REPLAY_MUSIC␟__none__": "__none__",
+      "IN:RESTART_TIMER␟__none__": "__none__",
+      "IN:RESUME_CALL␟__none__": "__none__",
+      "IN:RESUME_MUSIC␟media.control": "media.control",
+      "IN:RESUME_TIMER␟__none__": "__none__",
+      "IN:REWIND_MUSIC␟media.seek.relative": "media.seek.relative",
+      "IN:SEND_MESSAGE␟message.send": "message.send",
+      "IN:SET_AVAILABLE␟__none__": "__none__",
+      "IN:SET_DEFAULT_PROVIDER_CALLING␟__none__": "__none__",
+      "IN:SET_DEFAULT_PROVIDER_MUSIC␟__none__": "__none__",
+      "IN:SET_RSVP_INTERESTED␟__none__": "__none__",
+      "IN:SET_RSVP_NO␟__none__": "__none__",
+      "IN:SET_RSVP_YES␟__none__": "__none__",
+      "IN:SET_UNAVAILABLE␟__none__": "__none__",
+      "IN:SHARE_EVENT␟__none__": "__none__",
+      "IN:SILENCE_ALARM␟notification.dismiss": "notification.dismiss",
+      "IN:SKIP_TRACK_MUSIC␟media.control": "media.control",
+      "IN:SNOOZE_ALARM␟__none__": "__none__",
+      "IN:START_SHUFFLE_MUSIC␟__none__": "__none__",
+      "IN:STOP_MUSIC␟media.control": "media.control",
+      "IN:STOP_SHUFFLE_MUSIC␟__none__": "__none__",
+      "IN:SUBTRACT_TIME_TIMER␟__none__": "__none__",
+      "IN:SWITCH_CALL␟__none__": "__none__",
+      "IN:UNLOOP_MUSIC␟__none__": "__none__",
+      "IN:UPDATE_ALARM␟__none__": "__none__",
+      "IN:UPDATE_CALL␟__none__": "__none__",
+      "IN:UPDATE_METHOD_CALL␟__none__": "__none__",
+      "IN:UPDATE_REMINDER_DATE_TIME␟__none__": "__none__",
+      "IN:UPDATE_REMINDER_LOCATION␟__none__": "__none__",
+      "IN:UPDATE_REMINDER_TODO␟__none__": "__none__",
+      "IN:UPDATE_REMINDER␟__none__": "__none__",
+      "IN:UPDATE_TIMER␟__none__": "__none__"
+    },
+    "class_weights": {
+      "IN:ADD_TIME_TIMER␟__none__": 0.977062,
+      "IN:ADD_TO_PLAYLIST_MUSIC␟__none__": 1.757708,
+      "IN:ANSWER_CALL␟__none__": 1.21581,
+      "IN:CANCEL_CALL␟__none__": 3.669739,
+      "IN:CANCEL_MESSAGE␟__none__": 1.971696,
+      "IN:CREATE_ALARM␟notification.schedule": 0.568933,
+      "IN:CREATE_CALL␟__none__": 0.563949,
+      "IN:CREATE_PLAYLIST_MUSIC␟__none__": 1.424859,
+      "IN:CREATE_REMINDER␟reminder.create": 0.835041,
+      "IN:CREATE_TIMER␟__none__": 0.706727,
+      "IN:DELETE_ALARM␟notification.cancel.latest": 1.581378,
+      "IN:DELETE_PLAYLIST_MUSIC␟__none__": 2.015055,
+      "IN:DELETE_REMINDER␟reminder.delete": 1.050361,
+      "IN:DELETE_TIMER␟__none__": 1.154742,
+      "IN:DISLIKE_MUSIC␟__none__": 1.932633,
+      "IN:DISPREFER␟__none__": 3.08587,
+      "IN:END_CALL␟__none__": 0.956137,
+      "IN:FAST_FORWARD_MUSIC␟media.seek.relative": 1.932633,
+      "IN:FOLLOW_MUSIC␟__none__": 3.08587,
+      "IN:GET_AGE␟__none__": 1.366578,
+      "IN:GET_AIRQUALITY␟web.search": 2.344754,
+      "IN:GET_ALARM␟__none__": 0.993704,
+      "IN:GET_ATTENDEE_EVENT␟__none__": 1.531111,
+      "IN:GET_AVAILABILITY␟__none__": 0.831717,
+      "IN:GET_CALL_CONTACT␟__none__": 1.568032,
+      "IN:GET_CALL_TIME␟__none__": 1.313115,
+      "IN:GET_CALL␟__none__": 1.154742,
+      "IN:GET_CATEGORY_EVENT␟__none__": 1.568032,
+      "IN:GET_CONTACT_METHOD␟__none__": 1.897156,
+      "IN:GET_CONTACT␟__none__": 0.650639,
+      "IN:GET_DATE_TIME_EVENT␟__none__": 1.542935,
+      "IN:GET_DETAILS_NEWS␟web.search": 1.694453,
+      "IN:GET_EDUCATION_DEGREE␟__none__": 1.897156,
+      "IN:GET_EDUCATION_TIME␟__none__": 1.387031,
+      "IN:GET_EMPLOYER␟__none__": 0.992373,
+      "IN:GET_EMPLOYMENT_TIME␟__none__": 1.307788,
+      "IN:GET_EVENT␟calendar.event.list": 0.935294,
+      "IN:GET_GENDER␟__none__": 3.669739,
+      "IN:GET_GROUP␟__none__": 3.669739,
+      "IN:GET_INFO_CONTACT␟__none__": 1.118203,
+      "IN:GET_INFO_RECIPES␟web.search": 0.671121,
+      "IN:GET_JOB␟__none__": 1.932633,
+      "IN:GET_LANGUAGE␟__none__": 3.669739,
+      "IN:GET_LIFE_EVENT_TIME␟__none__": 2.454102,
+      "IN:GET_LIFE_EVENT␟__none__": 2.256112,
+      "IN:GET_LOCATION␟__none__": 0.973413,
+      "IN:GET_LYRICS_MUSIC␟web.search": 0.0,
+      "IN:GET_MAJOR␟__none__": 2.18204,
+      "IN:GET_MESSAGE_CONTACT␟__none__": 1.581378,
+      "IN:GET_MESSAGE␟__none__": 0.848434,
+      "IN:GET_MUTUAL_FRIENDS␟__none__": 1.80727,
+      "IN:GET_RECIPES␟web.search": 0.684941,
+      "IN:GET_REMINDER_DATE_TIME␟reminder.resolve.exact": 1.735312,
+      "IN:GET_REMINDER_LOCATION␟__none__": 1.675727,
+      "IN:GET_REMINDER␟reminder.list": 3.08587,
+      "IN:GET_REMINDER␟reminder.resolve.exact": 1.897156,
+      "IN:GET_STORIES_NEWS␟web.search": 0.573544,
+      "IN:GET_SUNRISE␟web.search": 1.498165,
+      "IN:GET_SUNSET␟web.search": 1.487938,
+      "IN:GET_TIMER␟__none__": 0.857776,
+      "IN:GET_TRACK_INFO_MUSIC␟media.status": 1.101942,
+      "IN:GET_TRACK_INFO_MUSIC␟web.search": 1.897156,
+      "IN:GET_UNDERGRAD␟__none__": 1.864715,
+      "IN:GET_WEATHER␟web.search": 0.49986,
+      "IN:HELP_REMINDER␟__none__": 2.18204,
+      "IN:HOLD_CALL␟__none__": 1.781628,
+      "IN:IGNORE_CALL␟__none__": 1.198159,
+      "IN:IS_TRUE_RECIPES␟web.search": 1.097508,
+      "IN:LIKE_MUSIC␟__none__": 1.781628,
+      "IN:LOOP_MUSIC␟__none__": 1.714274,
+      "IN:MERGE_CALL␟__none__": 3.08587,
+      "IN:PAUSE_MUSIC␟media.control": 1.641157,
+      "IN:PAUSE_TIMER␟__none__": 1.063073,
+      "IN:PLAY_MEDIA␟media.play.query": 1.80727,
+      "IN:PLAY_MUSIC␟media.play.query": 0.644671,
+      "IN:PREFER␟__none__": 2.344754,
+      "IN:PREVIOUS_TRACK_MUSIC␟media.control": 2.594897,
+      "IN:QUESTION_MUSIC␟web.search": 1.424859,
+      "IN:QUESTION_NEWS␟web.search": 0.939282,
+      "IN:REMOVE_FROM_PLAYLIST_MUSIC␟__none__": 1.581378,
+      "IN:REPEAT_ALL_MUSIC␟__none__": 3.08587,
+      "IN:REPEAT_ALL_OFF_MUSIC␟__none__": 2.18204,
+      "IN:REPLAY_MUSIC␟__none__": 1.208594,
+      "IN:RESTART_TIMER␟__none__": 1.238832,
+      "IN:RESUME_CALL␟__none__": 2.256112,
+      "IN:RESUME_MUSIC␟media.control": 2.18204,
+      "IN:RESUME_TIMER␟__none__": 1.251201,
+      "IN:REWIND_MUSIC␟media.seek.relative": 1.897156,
+      "IN:SEND_MESSAGE␟message.send": 0.694849,
+      "IN:SET_AVAILABLE␟__none__": 1.208594,
+      "IN:SET_DEFAULT_PROVIDER_CALLING␟__none__": 1.971696,
+      "IN:SET_DEFAULT_PROVIDER_MUSIC␟__none__": 1.227051,
+      "IN:SET_RSVP_INTERESTED␟__none__": 1.223246,
+      "IN:SET_RSVP_NO␟__none__": 1.230916,
+      "IN:SET_RSVP_YES␟__none__": 1.297449,
+      "IN:SET_UNAVAILABLE␟__none__": 1.057531,
+      "IN:SHARE_EVENT␟__none__": 1.487938,
+      "IN:SILENCE_ALARM␟notification.dismiss": 1.163393,
+      "IN:SKIP_TRACK_MUSIC␟media.control": 1.424859,
+      "IN:SNOOZE_ALARM␟__none__": 1.048606,
+      "IN:START_SHUFFLE_MUSIC␟__none__": 1.313115,
+      "IN:STOP_MUSIC␟media.control": 1.864715,
+      "IN:STOP_SHUFFLE_MUSIC␟__none__": 3.08587,
+      "IN:SUBTRACT_TIME_TIMER␟__none__": 1.208594,
+      "IN:SWITCH_CALL␟__none__": 1.2195,
+      "IN:UNLOOP_MUSIC␟__none__": 1.971696,
+      "IN:UPDATE_ALARM␟__none__": 1.18172,
+      "IN:UPDATE_CALL␟__none__": 0.813061,
+      "IN:UPDATE_METHOD_CALL␟__none__": 1.264214,
+      "IN:UPDATE_REMINDER_DATE_TIME␟__none__": 0.946473,
+      "IN:UPDATE_REMINDER_LOCATION␟__none__": 2.594897,
+      "IN:UPDATE_REMINDER_TODO␟__none__": 1.424859,
+      "IN:UPDATE_REMINDER␟__none__": 1.641157,
+      "IN:UPDATE_TIMER␟__none__": 1.208594
+    },
+    "classes": 114,
+    "operations": 15,
+    "train_class_counts": {
+      "IN:ADD_TIME_TIMER␟__none__": 199,
+      "IN:ADD_TO_PLAYLIST_MUSIC␟__none__": 19,
+      "IN:ANSWER_CALL␟__none__": 83,
+      "IN:CANCEL_CALL␟__none__": 1,
+      "IN:CANCEL_MESSAGE␟__none__": 12,
+      "IN:CREATE_ALARM␟notification.schedule": 1731,
+      "IN:CREATE_CALL␟__none__": 1793,
+      "IN:CREATE_PLAYLIST_MUSIC␟__none__": 44,
+      "IN:CREATE_REMINDER␟reminder.create": 373,
+      "IN:CREATE_TIMER␟__none__": 727,
+      "IN:DELETE_ALARM␟notification.cancel.latest": 29,
+      "IN:DELETE_PLAYLIST_MUSIC␟__none__": 11,
+      "IN:DELETE_REMINDER␟reminder.delete": 149,
+      "IN:DELETE_TIMER␟__none__": 102,
+      "IN:DISLIKE_MUSIC␟__none__": 13,
+      "IN:DISPREFER␟__none__": 2,
+      "IN:END_CALL␟__none__": 217,
+      "IN:FAST_FORWARD_MUSIC␟media.seek.relative": 13,
+      "IN:FOLLOW_MUSIC␟__none__": 2,
+      "IN:GET_AGE␟__none__": 52,
+      "IN:GET_AIRQUALITY␟web.search": 6,
+      "IN:GET_ALARM␟__none__": 186,
+      "IN:GET_ATTENDEE_EVENT␟__none__": 33,
+      "IN:GET_AVAILABILITY␟__none__": 379,
+      "IN:GET_CALL_CONTACT␟__none__": 30,
+      "IN:GET_CALL_TIME␟__none__": 61,
+      "IN:GET_CALL␟__none__": 102,
+      "IN:GET_CATEGORY_EVENT␟__none__": 30,
+      "IN:GET_CONTACT_METHOD␟__none__": 14,
+      "IN:GET_CONTACT␟__none__": 1012,
+      "IN:GET_DATE_TIME_EVENT␟__none__": 32,
+      "IN:GET_DETAILS_NEWS␟web.search": 22,
+      "IN:GET_EDUCATION_DEGREE␟__none__": 14,
+      "IN:GET_EDUCATION_TIME␟__none__": 49,
+      "IN:GET_EMPLOYER␟__none__": 187,
+      "IN:GET_EMPLOYMENT_TIME␟__none__": 62,
+      "IN:GET_EVENT␟calendar.event.list": 237,
+      "IN:GET_GENDER␟__none__": 1,
+      "IN:GET_GROUP␟__none__": 1,
+      "IN:GET_INFO_CONTACT␟__none__": 116,
+      "IN:GET_INFO_RECIPES␟web.search": 894,
+      "IN:GET_JOB␟__none__": 13,
+      "IN:GET_LANGUAGE␟__none__": 1,
+      "IN:GET_LIFE_EVENT_TIME␟__none__": 5,
+      "IN:GET_LIFE_EVENT␟__none__": 7,
+      "IN:GET_LOCATION␟__none__": 202,
+      "IN:GET_MAJOR␟__none__": 8,
+      "IN:GET_MESSAGE_CONTACT␟__none__": 29,
+      "IN:GET_MESSAGE␟__none__": 350,
+      "IN:GET_MUTUAL_FRIENDS␟__none__": 17,
+      "IN:GET_RECIPES␟web.search": 824,
+      "IN:GET_REMINDER_DATE_TIME␟reminder.resolve.exact": 20,
+      "IN:GET_REMINDER_LOCATION␟__none__": 23,
+      "IN:GET_REMINDER␟reminder.list": 2,
+      "IN:GET_REMINDER␟reminder.resolve.exact": 14,
+      "IN:GET_STORIES_NEWS␟web.search": 1676,
+      "IN:GET_SUNRISE␟web.search": 36,
+      "IN:GET_SUNSET␟web.search": 37,
+      "IN:GET_TIMER␟__none__": 335,
+      "IN:GET_TRACK_INFO_MUSIC␟media.status": 123,
+      "IN:GET_TRACK_INFO_MUSIC␟web.search": 14,
+      "IN:GET_UNDERGRAD␟__none__": 15,
+      "IN:GET_WEATHER␟web.search": 2905,
+      "IN:HELP_REMINDER␟__none__": 8,
+      "IN:HOLD_CALL␟__none__": 18,
+      "IN:IGNORE_CALL␟__none__": 88,
+      "IN:IS_TRUE_RECIPES␟web.search": 125,
+      "IN:LIKE_MUSIC␟__none__": 18,
+      "IN:LOOP_MUSIC␟__none__": 21,
+      "IN:MERGE_CALL␟__none__": 2,
+      "IN:PAUSE_MUSIC␟media.control": 25,
+      "IN:PAUSE_TIMER␟__none__": 142,
+      "IN:PLAY_MEDIA␟media.play.query": 17,
+      "IN:PLAY_MUSIC␟media.play.query": 1050,
+      "IN:PREFER␟__none__": 6,
+      "IN:PREVIOUS_TRACK_MUSIC␟media.control": 4,
+      "IN:QUESTION_MUSIC␟web.search": 44,
+      "IN:QUESTION_NEWS␟web.search": 233,
+      "IN:REMOVE_FROM_PLAYLIST_MUSIC␟__none__": 29,
+      "IN:REPEAT_ALL_MUSIC␟__none__": 2,
+      "IN:REPEAT_ALL_OFF_MUSIC␟__none__": 8,
+      "IN:REPLAY_MUSIC␟__none__": 85,
+      "IN:RESTART_TIMER␟__none__": 77,
+      "IN:RESUME_CALL␟__none__": 7,
+      "IN:RESUME_MUSIC␟media.control": 8,
+      "IN:RESUME_TIMER␟__none__": 74,
+      "IN:REWIND_MUSIC␟media.seek.relative": 14,
+      "IN:SEND_MESSAGE␟message.send": 778,
+      "IN:SET_AVAILABLE␟__none__": 85,
+      "IN:SET_DEFAULT_PROVIDER_CALLING␟__none__": 12,
+      "IN:SET_DEFAULT_PROVIDER_MUSIC␟__none__": 80,
+      "IN:SET_RSVP_INTERESTED␟__none__": 81,
+      "IN:SET_RSVP_NO␟__none__": 79,
+      "IN:SET_RSVP_YES␟__none__": 64,
+      "IN:SET_UNAVAILABLE␟__none__": 145,
+      "IN:SHARE_EVENT␟__none__": 37,
+      "IN:SILENCE_ALARM␟notification.dismiss": 99,
+      "IN:SKIP_TRACK_MUSIC␟media.control": 44,
+      "IN:SNOOZE_ALARM␟__none__": 150,
+      "IN:START_SHUFFLE_MUSIC␟__none__": 61,
+      "IN:STOP_MUSIC␟media.control": 15,
+      "IN:STOP_SHUFFLE_MUSIC␟__none__": 2,
+      "IN:SUBTRACT_TIME_TIMER␟__none__": 85,
+      "IN:SWITCH_CALL␟__none__": 82,
+      "IN:UNLOOP_MUSIC␟__none__": 12,
+      "IN:UPDATE_ALARM␟__none__": 93,
+      "IN:UPDATE_CALL␟__none__": 415,
+      "IN:UPDATE_METHOD_CALL␟__none__": 71,
+      "IN:UPDATE_REMINDER_DATE_TIME␟__none__": 226,
+      "IN:UPDATE_REMINDER_LOCATION␟__none__": 4,
+      "IN:UPDATE_REMINDER_TODO␟__none__": 44,
+      "IN:UPDATE_REMINDER␟__none__": 25,
+      "IN:UPDATE_TIMER␟__none__": 85
+    },
+    "train_rows": 20675,
+    "validation_class_counts": {
+      "IN:ADD_TIME_TIMER␟__none__": 30,
+      "IN:ANSWER_CALL␟__none__": 13,
+      "IN:CANCEL_CALL␟__none__": 2,
+      "IN:CREATE_ALARM␟notification.schedule": 238,
+      "IN:CREATE_CALL␟__none__": 268,
+      "IN:CREATE_PLAYLIST_MUSIC␟__none__": 14,
+      "IN:CREATE_REMINDER␟reminder.create": 59,
+      "IN:CREATE_TIMER␟__none__": 117,
+      "IN:DELETE_ALARM␟notification.cancel.latest": 11,
+      "IN:DELETE_PLAYLIST_MUSIC␟__none__": 2,
+      "IN:DELETE_REMINDER␟reminder.delete": 17,
+      "IN:DELETE_TIMER␟__none__": 7,
+      "IN:DISLIKE_MUSIC␟__none__": 3,
+      "IN:DISPREFER␟__none__": 1,
+      "IN:END_CALL␟__none__": 27,
+      "IN:GET_AGE␟__none__": 12,
+      "IN:GET_ALARM␟__none__": 28,
+      "IN:GET_ATTENDEE_EVENT␟__none__": 4,
+      "IN:GET_AVAILABILITY␟__none__": 46,
+      "IN:GET_CALL_CONTACT␟__none__": 7,
+      "IN:GET_CALL_TIME␟__none__": 14,
+      "IN:GET_CALL␟__none__": 14,
+      "IN:GET_CATEGORY_EVENT␟__none__": 4,
+      "IN:GET_CONTACT_METHOD␟__none__": 3,
+      "IN:GET_CONTACT␟__none__": 156,
+      "IN:GET_DETAILS_NEWS␟web.search": 2,
+      "IN:GET_EDUCATION_TIME␟__none__": 6,
+      "IN:GET_EMPLOYER␟__none__": 32,
+      "IN:GET_EMPLOYMENT_TIME␟__none__": 9,
+      "IN:GET_EVENT␟calendar.event.list": 18,
+      "IN:GET_INFO_CONTACT␟__none__": 15,
+      "IN:GET_INFO_RECIPES␟web.search": 141,
+      "IN:GET_LOCATION␟__none__": 32,
+      "IN:GET_LYRICS_MUSIC␟web.search": 2,
+      "IN:GET_MESSAGE_CONTACT␟__none__": 7,
+      "IN:GET_MESSAGE␟__none__": 70,
+      "IN:GET_MUTUAL_FRIENDS␟__none__": 2,
+      "IN:GET_RECIPES␟web.search": 108,
+      "IN:GET_REMINDER_LOCATION␟__none__": 4,
+      "IN:GET_REMINDER␟reminder.resolve.exact": 4,
+      "IN:GET_STORIES_NEWS␟web.search": 249,
+      "IN:GET_SUNRISE␟web.search": 8,
+      "IN:GET_SUNSET␟web.search": 2,
+      "IN:GET_TIMER␟__none__": 41,
+      "IN:GET_TRACK_INFO_MUSIC␟media.status": 10,
+      "IN:GET_UNDERGRAD␟__none__": 2,
+      "IN:GET_WEATHER␟web.search": 408,
+      "IN:HOLD_CALL␟__none__": 2,
+      "IN:IGNORE_CALL␟__none__": 12,
+      "IN:IS_TRUE_RECIPES␟web.search": 23,
+      "IN:LIKE_MUSIC␟__none__": 2,
+      "IN:MERGE_CALL␟__none__": 4,
+      "IN:PAUSE_TIMER␟__none__": 16,
+      "IN:PLAY_MEDIA␟media.play.query": 1,
+      "IN:PLAY_MUSIC␟media.play.query": 187,
+      "IN:PREFER␟__none__": 1,
+      "IN:QUESTION_MUSIC␟web.search": 11,
+      "IN:QUESTION_NEWS␟web.search": 37,
+      "IN:REMOVE_FROM_PLAYLIST_MUSIC␟__none__": 3,
+      "IN:REPLAY_MUSIC␟__none__": 10,
+      "IN:RESTART_TIMER␟__none__": 2,
+      "IN:RESUME_CALL␟__none__": 6,
+      "IN:RESUME_TIMER␟__none__": 7,
+      "IN:SEND_MESSAGE␟message.send": 111,
+      "IN:SET_AVAILABLE␟__none__": 19,
+      "IN:SET_DEFAULT_PROVIDER_MUSIC␟__none__": 14,
+      "IN:SET_RSVP_INTERESTED␟__none__": 8,
+      "IN:SET_RSVP_NO␟__none__": 24,
+      "IN:SET_RSVP_YES␟__none__": 8,
+      "IN:SET_UNAVAILABLE␟__none__": 13,
+      "IN:SHARE_EVENT␟__none__": 4,
+      "IN:SILENCE_ALARM␟notification.dismiss": 11,
+      "IN:SKIP_TRACK_MUSIC␟media.control": 5,
+      "IN:SNOOZE_ALARM␟__none__": 15,
+      "IN:START_SHUFFLE_MUSIC␟__none__": 6,
+      "IN:SUBTRACT_TIME_TIMER␟__none__": 1,
+      "IN:SWITCH_CALL␟__none__": 11,
+      "IN:UPDATE_ALARM␟__none__": 20,
+      "IN:UPDATE_CALL␟__none__": 58,
+      "IN:UPDATE_METHOD_CALL␟__none__": 8,
+      "IN:UPDATE_REMINDER_DATE_TIME␟__none__": 35,
+      "IN:UPDATE_REMINDER_LOCATION␟__none__": 2,
+      "IN:UPDATE_REMINDER_TODO␟__none__": 4,
+      "IN:UPDATE_REMINDER␟__none__": 2,
+      "IN:UPDATE_TIMER␟__none__": 17
+    },
+    "validation_rows": 2989
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "learning_rate": 1.8524871355060037e-05,
+      "train_loss": 4.384822,
+      "train_seconds": 25.578,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.604072,
+        "label_top_1_accuracy": 0.40716,
+        "loss": 3.465771,
+        "no_action_accuracy": 0.395928,
+        "per_operation": {
+          "__none__": {
+            "accuracy": 0.395928,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.0,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.0,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.117021,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 0.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 0.018018,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.991597,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.016949,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.176471,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.996973,
+            "cases": 991
+          }
+        },
+        "seconds": 0.535,
+        "supported_accuracy": 0.752856,
+        "top_1_accuracy": 0.594513,
+        "top_2_accuracy": 0.827702,
+        "top_3_accuracy": 0.951823
+      }
+    },
+    {
+      "epoch": 2,
+      "learning_rate": 1.4819897084048029e-05,
+      "train_loss": 3.357415,
+      "train_seconds": 25.327,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.352941,
+        "label_top_1_accuracy": 0.625293,
+        "loss": 2.50357,
+        "no_action_accuracy": 0.647059,
+        "per_operation": {
+          "__none__": {
+            "accuracy": 0.647059,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.0,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.0,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.962766,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 0.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 0.918919,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.995798,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.016949,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.235294,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.979818,
+            "cases": 991
+          }
+        },
+        "seconds": 0.543,
+        "supported_accuracy": 0.899579,
+        "top_1_accuracy": 0.787554,
+        "top_2_accuracy": 0.928404,
+        "top_3_accuracy": 0.952158
+      }
+    },
+    {
+      "epoch": 3,
+      "learning_rate": 1.1114922813036022e-05,
+      "train_loss": 2.764478,
+      "train_seconds": 25.211,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.233786,
+        "label_top_1_accuracy": 0.677819,
+        "loss": 1.996894,
+        "no_action_accuracy": 0.766214,
+        "per_operation": {
+          "__none__": {
+            "accuracy": 0.766214,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.0,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.0,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.984043,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 0.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 1.0,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.995798,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.016949,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.176471,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.974773,
+            "cases": 991
+          }
+        },
+        "seconds": 0.535,
+        "supported_accuracy": 0.903788,
+        "top_1_accuracy": 0.842757,
+        "top_2_accuracy": 0.941787,
+        "top_3_accuracy": 0.96922
+      }
+    },
+    {
+      "epoch": 4,
+      "learning_rate": 7.409948542024014e-06,
+      "train_loss": 2.412556,
+      "train_seconds": 25.17,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.192308,
+        "label_top_1_accuracy": 0.702576,
+        "loss": 1.713888,
+        "no_action_accuracy": 0.807692,
+        "per_operation": {
+          "__none__": {
+            "accuracy": 0.807692,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.0,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.0,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.984043,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 0.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 0.990991,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.995798,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.898305,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.470588,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.980827,
+            "cases": 991
+          }
+        },
+        "seconds": 0.553,
+        "supported_accuracy": 0.94107,
+        "top_1_accuracy": 0.8819,
+        "top_2_accuracy": 0.960522,
+        "top_3_accuracy": 0.979926
+      }
+    },
+    {
+      "epoch": 5,
+      "learning_rate": 3.704974271012007e-06,
+      "train_loss": 2.206456,
+      "train_seconds": 25.308,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.187783,
+        "label_top_1_accuracy": 0.71094,
+        "loss": 1.570219,
+        "no_action_accuracy": 0.812217,
+        "per_operation": {
+          "__none__": {
+            "accuracy": 0.812217,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.0,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.0,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.973404,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 0.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 1.0,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.995798,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.949153,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.823529,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.975782,
+            "cases": 991
+          }
+        },
+        "seconds": 0.527,
+        "supported_accuracy": 0.942874,
+        "top_1_accuracy": 0.884911,
+        "top_2_accuracy": 0.968886,
+        "top_3_accuracy": 0.983607
+      }
+    },
+    {
+      "epoch": 6,
+      "learning_rate": 0.0,
+      "train_loss": 2.109243,
+      "train_seconds": 25.42,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.188537,
+        "label_top_1_accuracy": 0.713951,
+        "loss": 1.525645,
+        "no_action_accuracy": 0.811463,
+        "per_operation": {
+          "__none__": {
+            "accuracy": 0.811463,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.0,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.0,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.978723,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 0.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 1.0,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.995798,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.966102,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.470588,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.25,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.974773,
+            "cases": 991
+          }
+        },
+        "seconds": 0.54,
+        "supported_accuracy": 0.940469,
+        "top_1_accuracy": 0.883239,
+        "top_2_accuracy": 0.968217,
+        "top_3_accuracy": 0.983607
+      }
+    }
+  ],
+  "measured_at": "2026-08-02T00:49:45.299276+00:00",
+  "schema": "baxy.mtop-operation-classifier-finetune.v1",
+  "scope": "development_only_mtop_test_remains_sealed",
+  "source": {
+    "model": "intfloat/multilingual-e5-small",
+    "mtop_development_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "mtop_manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "mtop_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "mtop_test_content_read": false,
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  },
+  "status": "rejected_below_0_99",
+  "training_seconds": 157.635
+}

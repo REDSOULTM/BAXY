@@ -1,0 +1,35 @@
+{
+  "schema": "baxy.sherpa-open-vocab-kws-asset-research.v1",
+  "measuredAtUtc": "2026-08-10T23:04:41.5729713Z",
+  "source": {
+    "archiveUrl": "https://github.com/k2-fsa/sherpa-onnx/releases/download/kws-models/sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20.tar.bz2",
+    "documentationUrl": "https://k2-fsa.github.io/sherpa/onnx/kws/pretrained_models/index.html",
+    "architectureDocumentationUrl": "https://k2-fsa.github.io/sherpa/onnx/kws/index.html"
+  },
+  "asset": {
+    "externalDirectory": "D:\\BAXYRuntime\\assets\\wakeword\\sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20",
+    "archiveSha256": "68447f4fbc67e70eee3a93961f36e81e98f47aef73ce7e7ca00885c6cd3616a6",
+    "encoderSha256": "2ca84d6bfe73e1ea3c9c49f600f7cad1c9ddd423c53c906b8bfe802444dd78d5",
+    "decoderSha256": "63a22dd60f40fff082ac3e09afa507f6787da36df76ded2fbe145fa233e22c21",
+    "joinerSha256": "190d4067b4cc20b72a42a1916e69d92052000fb7051a427ebb1bc72a69207dc1",
+    "tokensSha256": "2d3f32311f9b692b964da3c90e830258d3e78e013cb0c992dbfb15cd5a1a71b0",
+    "englishPhoneLexiconSha256": "f7000ec3a90544c0c7c16090d8951779c2b322e14dad5006290f498567d439ea",
+    "keywordsSha256": "4d9186513a9e14d188ffe5f6e5c317d63a4e5bd3c14e60956b4cd68a6d5500f9",
+    "chunkMilliseconds": 160,
+    "parameterCountMillions": 3
+  },
+  "observedPilot": {
+    "positiveHits": 5,
+    "positiveFiles": 10,
+    "negativeFalseActivations": 2,
+    "negativeFiles": 20,
+    "keywordsScore": 1.0,
+    "keywordsThreshold": 0.25,
+    "interpretation": "Unsafe and insufficient as a standalone wake authority; retain only as an experimental proposal source."
+  },
+  "approved": false,
+  "developmentOnly": true,
+  "promotable": false,
+  "blindHumanPartitionAccessed": false,
+  "effectsExecuted": 0
+}

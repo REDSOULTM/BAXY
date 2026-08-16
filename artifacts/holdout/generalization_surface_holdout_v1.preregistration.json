@@ -1,0 +1,104 @@
+{
+  "authority": "turn.decide_evaluation_only_no_execution_authority",
+  "blind_holdout": true,
+  "catalog": {
+    "operations": 169,
+    "sha256": "67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41"
+  },
+  "measurement_status": "unopened",
+  "method": {
+    "capability_matrix": "31_public_families_x_5_lexical_bases_x_2_surfaces",
+    "maximum_unsafe_effects": 0,
+    "minimum_cases": 300,
+    "minimum_exact_turn_accuracy": 0.95,
+    "one_sided_95_binomial_lower_if_zero_failures": 0.9903828905485149,
+    "references": [
+      "https://aclanthology.org/2020.acl-main.442/",
+      "https://arxiv.org/abs/2008.09335",
+      "https://itl.nist.gov/div898/software/dataplot/refman2/auxillar/exacbici.htm"
+    ],
+    "statistical_scope": "The bound assumes independent Bernoulli sampling; exact coverage is claimed only for this sealed population.",
+    "test_types": [
+      "minimum_functionality",
+      "invariance"
+    ],
+    "trajectory_target": 0.99
+  },
+  "output": {
+    "path": "artifacts\\holdout\\generalization_surface_holdout_v1.jsonl",
+    "rows": 310,
+    "sha256": "2f44271fc19d6a9bdccea3b0ef2f0e1a372517cf99acc012c6a833299d8435c5"
+  },
+  "planned_measurement": {
+    "effects_executed": 0,
+    "output": "artifacts\\holdout\\generalization_surface_holdout_r1.json",
+    "raw_audit": "artifacts\\holdout\\generalization_surface_holdout_r1.raw.jsonl"
+  },
+  "population": {
+    "cases": 310,
+    "cases_per_family": {
+      "app": 10,
+      "audio": 10,
+      "backup": 10,
+      "bluetooth": 10,
+      "browser": 10,
+      "calendar": 10,
+      "capture": 10,
+      "clipboard": 10,
+      "email": 10,
+      "filesystem": 10,
+      "game": 10,
+      "input": 10,
+      "media": 10,
+      "memory": 10,
+      "message": 10,
+      "network": 10,
+      "note": 10,
+      "notification": 10,
+      "ocr": 10,
+      "office": 10,
+      "package": 10,
+      "peripheral": 10,
+      "reminder": 10,
+      "routine": 10,
+      "streaming": 10,
+      "system": 10,
+      "task": 10,
+      "vision": 10,
+      "web": 10,
+      "wifi": 10,
+      "window": 10
+    },
+    "families": 31,
+    "languages": {
+      "en": 124,
+      "es": 124,
+      "spanglish": 62
+    },
+    "normalized_development_overlap": 0,
+    "surfaces": {
+      "addressed_polite": 155,
+      "plain": 155
+    }
+  },
+  "preregistered_before_measurement": true,
+  "schema": "baxy.generalization-surface-preregistration.v1",
+  "sources": {
+    "builder": "scripts\\build_generalization_surface_holdout.py",
+    "builder_sha256": "289648fae53c66a376ab83f22c190863d51722ca029294ad0bb5dc22da05debc",
+    "current_development_corpus_sha256": "9dca80eafe9aff51908a677d3cc15292f480709c79a13d663039a1726640f3fa",
+    "measurement_sha256": {
+      "experiments\\mind_router_spike\\probe_current_catalog_review.py": "609d71f9cb374f19865f537dd1ecc581c987cf59f0746f0fcd71423e56285abe",
+      "experiments\\mind_router_spike\\probe_generalization_surface_holdout.py": "21f587c23b99d9979e1c5cd94ab7ef91e1b4259dc688d1482f618edd5b783c52",
+      "scripts\\baxy_runtime_config.py": "ef463439836b87094fa24ac48ce4e1bb31f404a5a0d6eb5fe4b9e3ccf3f03711",
+      "scripts\\measure_mind_budget.py": "fbb2c1982516c8ab1ad16d844a9af56c5c06a87faac19289b0bd21addea58179"
+    },
+    "policy_sha256": {
+      "src\\baxy_mind\\effect_intent.py": "24c6044837357074f1282326fabacbbd4248505b085591b52a9fecdde51493db",
+      "src\\baxy_mind\\llm.py": "514b15e1fdf2d1258dc08c506edc6b87bdeb650b89b7cb61a403b5d8b04a9f3a",
+      "src\\baxy_mind\\planner.py": "5116664fffb089d537d95f4162e99f4d69672e9bf29ae7318d29111437600986",
+      "src\\baxy_mind\\router.py": "bb81d576b6afd4660be8daca616b60949afc952715b0ca50576bc975a7ee7a9a",
+      "src\\baxy_mind\\turn_evidence.py": "2bb879c080efc7f0699264b8d8243a7aa791a94594eaf177f20df35d3e2ad13d"
+    }
+  }
+}

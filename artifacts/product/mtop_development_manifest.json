@@ -1,0 +1,141 @@
+{
+  "catalog": {
+    "public_operations": 168,
+    "repo_path": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+    "sha256": "6acba6d36e429bc542f43275371c271922ebe2faf4fe72496520015d588e278c"
+  },
+  "constraints": {
+    "candidate_is_advisory_only": true,
+    "candidate_operations_exist_in_public_catalog": true,
+    "development_files_only": true,
+    "execution_authority": false,
+    "mission_split_overlap": 0,
+    "normalized_text_split_overlap": 0,
+    "slot_projection_uses_reviewed_source_map": true,
+    "slot_to_argument_schema_not_automatically_derived": true,
+    "test_content_read": false,
+    "unlisted_test_intent_policy": "ood_no_effect"
+  },
+  "counts": {
+    "accepted_rows": 29976,
+    "candidate_operations": {
+      "calendar.event.list": 255,
+      "media.control": 101,
+      "media.play.query": 1255,
+      "media.seek.relative": 27,
+      "media.status": 138,
+      "message.recipient.resolve": 889,
+      "message.send": 889,
+      "notification.cancel.latest": 40,
+      "notification.dismiss": 110,
+      "notification.list.due": 110,
+      "notification.schedule": 1969,
+      "reminder.create": 432,
+      "reminder.delete": 166,
+      "reminder.list": 2,
+      "reminder.resolve.exact": 204,
+      "web.search": 7812
+    },
+    "decontamination": {
+      "ambiguous_exact_text_groups_removed": 4,
+      "ambiguous_exact_text_rows_removed": 13,
+      "cross_split_exact_text_groups": 63,
+      "cross_split_train_rows_removed": 81,
+      "same_split_exact_duplicates_removed": 293
+    },
+    "dispositions": {
+      "candidate": 12758,
+      "candidate_missing_information": 471,
+      "conversation_no_effect": 8,
+      "ood_no_effect": 16739
+    },
+    "locales": {
+      "en": 17777,
+      "es": 12199
+    },
+    "nested_semantic_rows": 2369,
+    "observed_intents": 113,
+    "reasons": {
+      "contract_covered_structure": 12766,
+      "contract_structure_mismatch": 6307,
+      "contract_supported_missing_information": 471,
+      "mapped_unsupported_intent": 10432
+    },
+    "source_rows": 30363,
+    "splits": {
+      "train": 26220,
+      "validation": 3756
+    }
+  },
+  "development_sources": [
+    {
+      "bytes": 7115388,
+      "repo_independent_path": "en/train.txt",
+      "rows": 15667,
+      "sha256": "1c1e137ca0f4d72279b3b4755f8202793b1d24a840e55b3c81e4db289656d692"
+    },
+    {
+      "bytes": 1019262,
+      "repo_independent_path": "en/eval.txt",
+      "rows": 2235,
+      "sha256": "950d49197df0ae660c27cf7a33a462b8c41c267ac579db788bd7812daf258a31"
+    },
+    {
+      "bytes": 5544383,
+      "repo_independent_path": "es/train.txt",
+      "rows": 10934,
+      "sha256": "de4743f1a1b1998a700d8a325c6bec281117b1477ab6faf34efd21b64a43d738"
+    },
+    {
+      "bytes": 783911,
+      "repo_independent_path": "es/eval.txt",
+      "rows": 1527,
+      "sha256": "db95e0dacd1d9f5177fe7c4e87d445ec0f9c1eb2143ad73bec2d36f73ab703ee"
+    }
+  ],
+  "output": {
+    "bytes": 24680426,
+    "file_name": "mtop_development.v1.jsonl",
+    "rows": 29976,
+    "sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802"
+  },
+  "schema": "baxy.mtop-development-manifest.v1",
+  "source": {
+    "adapter_version": "baxy-mtop-v1",
+    "archive_file_name": "mtop.zip",
+    "archive_sha256": "0c086500aed2ed48d3df383c91664b152e4a46e2adef6a635fa16d508ebaec0b",
+    "citation": "Li et al. (2021), MTOP: A Comprehensive Multilingual Task-Oriented Semantic Parsing Benchmark",
+    "development_members": {
+      "en/eval.txt": {
+        "bytes": 1019262,
+        "rows": 2235,
+        "sha256": "950d49197df0ae660c27cf7a33a462b8c41c267ac579db788bd7812daf258a31"
+      },
+      "en/train.txt": {
+        "bytes": 7115388,
+        "rows": 15667,
+        "sha256": "1c1e137ca0f4d72279b3b4755f8202793b1d24a840e55b3c81e4db289656d692"
+      },
+      "es/eval.txt": {
+        "bytes": 783911,
+        "rows": 1527,
+        "sha256": "db95e0dacd1d9f5177fe7c4e87d445ec0f9c1eb2143ad73bec2d36f73ab703ee"
+      },
+      "es/train.txt": {
+        "bytes": 5544383,
+        "rows": 10934,
+        "sha256": "de4743f1a1b1998a700d8a325c6bec281117b1477ab6faf34efd21b64a43d738"
+      }
+    },
+    "download_url": "https://dl.fbaipublicfiles.com/mtop/mtop.zip",
+    "license": "CC-BY-SA-4.0",
+    "map_repo_path": "src/baxy_mind/data/mtop_turn_evidence_map.v1.json",
+    "map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "name": "MTOP official release (README data format v2)",
+    "paper_url": "https://aclanthology.org/2021.eacl-main.257/"
+  },
+  "test_seal": {
+    "repo_path": "tests/data/mtop_test_seal.v1.json",
+    "sha256": "4a2c239f9097e67958d4a2a06cee051c1b666e65b8550ade7790af3e084bef90"
+  }
+}

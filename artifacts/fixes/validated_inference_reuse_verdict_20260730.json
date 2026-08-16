@@ -1,0 +1,149 @@
+{
+  "schema": "baxy.validated-inference-reuse-verdict.v1",
+  "measured_at_utc": "2026-07-30",
+  "candidate": "bounded exact cross-request reuse of validated G/L/V/C inferences",
+  "status": "promoted",
+  "effect_free": true,
+  "core_operations_dispatched": 0,
+  "runtime": {
+    "manifest_sha256": "35e3a73d2f6ef88dad7bd3b17d29d3113f132deb1f70c2cdc0b6065dc0a126d6",
+    "model": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+    "model_bytes": 2620370976,
+    "llama_server": "llama-server.exe",
+    "llama_server_bytes": 9216
+  },
+  "implementation_invariants": {
+    "owned_runtime_only": true,
+    "external_endpoint_reuse_disabled": true,
+    "exact_keys": true,
+    "capacity_per_verifier": 32,
+    "invalid_results_cached": false,
+    "model_process_change_clears_all_entries": true,
+    "empty_cache_miss_is_lock_free": true,
+    "history_or_authority_cached": false
+  },
+  "physical_ab": [
+    {
+      "artifact": "validated_inference_reuse_ab_order1_20260730.json",
+      "arm_order": [
+        "baseline",
+        "candidate"
+      ],
+      "cases": [
+        "turn-00",
+        "turn-28"
+      ],
+      "exact_outputs": true,
+      "validation_clean": true,
+      "candidate_minus_baseline_warm_p50_seconds": -3.2854,
+      "candidate_minus_baseline_warm_max_seconds": -5.8606,
+      "candidate_minus_baseline_warm_total_seconds": -14.8237
+    },
+    {
+      "artifact": "validated_inference_reuse_ab_order2_20260730.json",
+      "arm_order": [
+        "candidate",
+        "baseline"
+      ],
+      "cases": [
+        "turn-00",
+        "turn-28"
+      ],
+      "exact_outputs": true,
+      "validation_clean": true,
+      "candidate_minus_baseline_warm_p50_seconds": -1.2851,
+      "candidate_minus_baseline_warm_max_seconds": -6.6006,
+      "candidate_minus_baseline_warm_total_seconds": -9.7457
+    },
+    {
+      "artifact": "validated_inference_reuse_modes_order1_20260730.json",
+      "arm_order": [
+        "baseline",
+        "candidate"
+      ],
+      "cases": [
+        "turn-00",
+        "turn-18",
+        "turn-23",
+        "turn-28"
+      ],
+      "exact_outputs": true,
+      "validation_clean": true,
+      "candidate_minus_baseline_warm_p50_seconds": -1.1799,
+      "candidate_minus_baseline_warm_max_seconds": 0.0037,
+      "candidate_minus_baseline_warm_total_seconds": -4.6039
+    },
+    {
+      "artifact": "validated_inference_reuse_modes_order2_20260730.json",
+      "arm_order": [
+        "candidate",
+        "baseline"
+      ],
+      "cases": [
+        "turn-00",
+        "turn-18",
+        "turn-23",
+        "turn-28"
+      ],
+      "exact_warm_outputs": true,
+      "validation_clean": true,
+      "cold_difference": {
+        "case": "turn-18",
+        "candidate": "clarify",
+        "baseline": "plan",
+        "cache_entries_available": false,
+        "followup": "empty-cache miss changed to a lock-free read and turn-18 was repeated in both orders"
+      },
+      "candidate_minus_baseline_warm_p50_seconds": -1.861,
+      "candidate_minus_baseline_warm_max_seconds": -0.0111,
+      "candidate_minus_baseline_warm_total_seconds": -5.9048
+    },
+    {
+      "artifact": "validated_inference_reuse_turn18_order1_20260730.json",
+      "arm_order": [
+        "baseline",
+        "candidate"
+      ],
+      "cases": [
+        "turn-18"
+      ],
+      "exact_outputs": true,
+      "validation_clean": true,
+      "candidate_minus_baseline_warm_p50_seconds": -1.6363,
+      "candidate_minus_baseline_warm_max_seconds": -1.9925,
+      "candidate_minus_baseline_warm_total_seconds": -3.2724
+    },
+    {
+      "artifact": "validated_inference_reuse_turn18_order2_20260730.json",
+      "arm_order": [
+        "candidate",
+        "baseline"
+      ],
+      "cases": [
+        "turn-18"
+      ],
+      "exact_outputs": true,
+      "validation_clean": true,
+      "candidate_minus_baseline_warm_p50_seconds": -2.7123,
+      "candidate_minus_baseline_warm_max_seconds": -3.7528,
+      "candidate_minus_baseline_warm_total_seconds": -5.4245
+    }
+  ],
+  "unit_and_source_gates": {
+    "turn_policy_and_transport_tests": {
+      "passed": 241,
+      "failed": 0
+    },
+    "source_quality_fast": "passed",
+    "source_quality_full": {
+      "status": "passed",
+      "python_passed": 1388,
+      "python_subtests_passed": 382,
+      "dotnet_passed": 2237,
+      "dotnet_environmental_skips": 18,
+      "release_build_warnings": 0,
+      "release_build_errors": 0
+    }
+  },
+  "verdict": "Promote. The candidate preserves every warm repeated decision, effect projection, semantic reply and visible reply in both physical orders; the isolated cold turn-18 difference occurred before any reusable value existed and did not reproduce after the lock-free miss refinement."
+}

@@ -1,0 +1,2517 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v22_remaining_baseline.v1.raw.jsonl",
+    "sha256": "91d77bcde351dee0e06e588b9d9f40bce792f461ff830ec27438c9ff80ab566e"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:10049",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5fca5b6f43b596369b65e3b5",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 4.036,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete poor boy sandwich as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:10353",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b51232a8448c2c2a5cc09b30",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2978,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar saga tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:10357",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-02fc53a8799bcd9fc4e02b11",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.008,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:11839",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-d756b59be8681479f26ce44f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0031,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:11861",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-a5210a0ebd30600e0ed6087c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.7831,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The highest-rated movie currently is \"The Power of the Dog\" with a rating of 8.3/10. It is a drama film directed by Martin Scorsese. The movie received critical acclaim for its performances and direction. It is currently available on streaming platforms.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13166",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-783760613af387522358c61a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.7463,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Oscillate: to move back and forth repeatedly, often in a regular pattern.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13223",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-11bc8684ba335dac675ad158",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.834,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Sofia Vergara is known for her youthful appearance, which is partly due to her skincare routine and lifestyle choices. She has been open about her dedication to self-care and maintaining a healthy routine. Her age is often underestimated, and she has spoken about how she takes care of her skin and overall health to look her best.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13370",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-830ceb73339570a6f7a3d2e2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1505,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The sum of four and six is ten.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13521",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-063231bebac74fd002849bd9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.5089,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The Earth is round because it is a sphere. This shape is due to the balance of gravitational forces acting throughout the planet. The Earth's rotation and the distribution of mass contribute to its spherical form.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13694",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-fd429576253c14bc425de55c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.228,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete biography of person as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13762",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-84bfb506515e68959fcee119",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.7976,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The question is a classic riddle. It's a play on words and logic. The answer is \"a woodchuck could chuck as much wood as a woodchuck could chuck.\" It's a circular question with no real answer.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13766",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-716b5c499f9032e72d350e78",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.9034,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Two by two is a way of counting or grouping things in pairs.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:14419",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-cb4ada62935ae993444d918f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1098,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I understand that you're asking if Angeline has a new movie coming out this year.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:14684",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-f8ce4e34567d93483ef854ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.6464,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The Prime Minister of Russia is Mikhail Mishustin. He has been serving in this role since 2022.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:15062",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-1079e0fb4e90884373137ad8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7084,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Lisa Ann tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:1683",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-cfe19fe50eac76e00d533240",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7217,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mañana hará calor.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:2146",
+      "expected_families": [
+        "system"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-7422b958116d0c272b6281d8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.2819,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The winter solstice will occur on December 21 or 22, depending on the year. Two years from now, it will be on the same date as the solstice in the year following the current one. I cannot provide the exact date without knowing the current year.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:2165",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-cabe9a94e7f4327ccb462dbe",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0565,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I notice you're asking if dinner is ready yet.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:2531",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-8b8e0efd9110405d55619ce9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0928,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar play a mi song of rap and rock one after the other tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:2548",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-e056363af0c5ec42acd0f9f7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1116,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar news tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:2651",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-482bd5586d7950df39c6b10a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.7932,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete area as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:3161",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3627a4a82ce94fdc572ce187",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.4582,
+        "operation": null,
+        "question": "Do you have any alarms set for six am tomorrow?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:3513",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-9b29cd174d325297117d443e",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0032,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:412",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3718aa259278351eab12f4f0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2027,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Why don't scientists trust atoms? Because they make up everything.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6248",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-13146f0b79d1687f79752b88",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4356,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I am a language model developed by Alibaba Cloud, and I don't have a specific age. I was trained using a large amount of data and can provide assistance in multiple languages. My purpose is to help users with their questions and tasks.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6322",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-e2e4fbe1962c362d9b6fc1f5",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0031,
+        "operation": "game.catalog.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6405",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b3b1ee174190a241c7a794d5",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0021,
+        "operation": "audio.status",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6417",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5a4060984f26dc49b52dc71b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.3371,
+        "operation": "note.read",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7026",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-8125e8ebc5c7d2708d22304f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0037,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:7557",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-26f9486c68c4bdd7aa42628f",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0043,
+        "operation": "reminder.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8084",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-844f78f282a5c4dbbede9785",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.7834,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The event agenda is a document that outlines the schedule, topics, and objectives of an upcoming event or meeting. It typically includes details such as the date, time, location, and key points to be discussed. The agenda helps participants prepare and ensures that all important matters are covered during the event.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8579",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-ef3bdafa5e2d3e25c72606a4",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0026,
+        "operation": "calendar.event.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9149",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-a7ac87e186f39e10dd0ce1a4",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5392,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "The Black Tie Gala Dinner is scheduled to begin at 7:00 PM.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9402",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3b7caa10ad8953c4e5c4d4a5",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.004,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9460",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-f53ab7074044dadfa6f77e10",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0025,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:9669",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-770ae1979c5f2b7f09338a6b",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 3.7902,
+        "operation": null,
+        "question": "How much should I lower the volume to be more chill?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:10213",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5e6735923534be324cfc4ee8",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.763,
+        "operation": "task.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11270",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-7f229d4adcf8d73de4274e87",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3018,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar podcast tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11279",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b3cc942fe50b4600d15bce2a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3012,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar friends tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11782",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-e325d449cf622ae3f44ba6bc",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1208,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que hay un evento especial cerca de ti este fin de semana.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11798",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-087280e09df35fc74412cab1",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 0.5131,
+        "operation": null,
+        "question": "¿cuál es el próximo evento en la biblioteca durante el período especificado?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11802",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-15d01b9803a90e7117bbedd7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7827,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Entiendo que mencionas que hay buenas pizzerías por aquí.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11911",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-cbe3950b7ccc2a2ef5efb8d5",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6928,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que hay algo bueno sucediendo este fin de semana en la zona.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11954",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-fbb4eeffc5d04bd563b5af3d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.7988,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "¿Cuál es la ciudad o el barrio específico que te interesa? Por ahora, te puedo decir que en mi área hay varios teatros, pero necesito más información para ayudarte concretamente.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:12409",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-1ccb131db04034cbbe3b8f2a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8294,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No tengo información actualizada sobre la ubicación de la gasolinera más cercana. ¿Estás en un lugar específico?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13044",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-61d61093ea7d096ecce3bb78",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1878,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar noche tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13135",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-98716ce5612d91a16d721c89",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3787,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Taylor Lautner fue nacido el 21 de agosto de 1994.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13140",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-90128a94cf0d6b41e01b5f2e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.3527,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar huracan tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13359",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3edeee02847385c834e900ca",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3146,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Dieciséis.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13888",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-97ca5fef2765d0c2ccaa528d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2108,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "La temperatura en Barcelona, Cataluña, varía según la temporada. En invierno puede oscilar entre 5°C y 15°C, mientras que en verano suele estar entre 25°C y 35°C. ¿Te gustaría que te dé más información sobre la temperatura en una fecha específica?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14126",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-9812e6282b84211957d29153",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.5438,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Menciona que la biografía de La Mala Rodríguez es un proyecto que refleja su vida y obra, integrando elementos de su historia personal y su influencia en la cultura.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14544",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-aa94e86cb60598b73c0a02dd",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.1609,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar nasdaq tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14555",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-08597464e7da20339015bc10",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.1506,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar empresa tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14891",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-6da4cc949d4afe14ab4be19f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.137,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoňo completar persona tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:15563",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-58fc4f2c7aa52ba7a482ef3e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5309,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que hay dificultades para manejar el idioma en la aplicación.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:2496",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5b28cb16626d9508eb1f287c",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.002,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "model_decision"
+        }
+      ],
+      "case_id": "holdout:massive-v1.1:es-ES:2548",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b7f002f97f9d7653724b0569",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.69,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar interesante tal como fue pedido.",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:3037",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-2fc219b5d16ac7b693ad3124",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0019,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:334",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-a670c585dfeca0dda0a2351d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2209,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoňo completar barcelona tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:4502",
+      "expected_families": [
+        "system"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-fda66439cbbfc7ed81dc5d5a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.7052,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar ahora tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:4957",
+      "expected_families": [
+        "system"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-533cc37e05730e7a786e684f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6067,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El 23 de este mes es un jueves.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:5411",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-19c5b989ae20956079e2182e",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.0496,
+        "operation": "notification.diagnose",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:5650",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-0cfb1862cd1aff0a89f92591",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.3818,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar noche tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:5948",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b6fffec6e7695a4cfbca7d23",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6381,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que necesitas una buena canción para tu lista de reproducción.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:6024",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-250db951434d01c0faa20f20",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.9716,
+        "operation": null,
+        "question": "¿Prefieres irte a trabajar con una sudadera o con un abrigo?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:6127",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-e65746bd0865e97799bc8b35",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.504,
+        "operation": null,
+        "question": "me recomiendas un paraguas?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:6313",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-8b1ecb965eee4b961f5a2a4b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0966,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Entiendo que observas un bulldog.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:7140",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5406a163f4dd6f5af18ba7ec",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.5702,
+        "operation": null,
+        "question": "Cuándo quieres que se active el recordatorio y cuál es el título del recordatorio?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:7189",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-64527375c23f1e15bebab02f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.9867,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar planeado tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:768",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-a63f1dd81ddaefdf255e562b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4711,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar política tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:7851",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-87f5df2a5fa8ecbc9562d8e9",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2308,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar mediodía tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9062",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-eb40d6cebca6f15d148d12fc",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.6664,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar junio tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9202",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-0834f29cd7c5c421f3cc5863",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0036,
+        "operation": "media.play.query",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9855",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-bd70fef2996547c9132b7a0c",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2682,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que quieres escuchar de nuevo el audio del crepúsculo.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9977",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-0a9bb24e0ddfdf175f862f78",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1915,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar italianas tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:0a5f02e0b9714624028cf36b71f013d8c367ab2bf54131e25086591f0969460a",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-fed7e271260a21e50e734b04",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0038,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:138949ac00aec40faa629338d5e75e6f795444220e23157cc48f69f29e24a2d5",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3fc40d9fb57bf7ae18f0af43",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.2455,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que quieres crear una nota nueva, personal y no compartida.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:147ec1f8794ba5e1ed1dc58418ab3285043af8a8e3a28c844d1977ab7b668577",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-353303a15869778cc03b5864",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4563,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete started as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:26103e685b558e089e745051bfe880e68545bd3d577305a785389b45c35c7dec",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b90848bc20e5d60267a30ccb",
+        "error": "",
+        "failure_code": "",
+        "kind": "plan",
+        "latency_seconds": 1.2727,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:67e8afbfeb68edeea022bc81b4a254d3e6c9da4406ca43aec16a9304d02c9d67",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-507f61eb5e9152a71b077198",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.815,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete app as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:7777782bbe66e672a21e8a8f3e80eea88439669f6e5973d4660a5bfcd7b36ad2",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-db3bcd6c4ddcbebf24e1169d",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0034,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b8fea4cb56a3468191c7868f33c1f6965eaeb10a16c769909c314e9ab702ec15",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-0004b044f076e7319ebf3c1c",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0024,
+        "operation": "note.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b9be90b4ec312498cc5ba3dc7e09a4a7e37cf879b39526e3781a5b5a95806a0c",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-946ee48b092abc3e9396c17d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.499,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar Sonic tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "action_grounding"
+        }
+      ],
+      "case_id": "holdout:presto-v1:en-US:bd2703d86951eb5552b29490d57887a47c379a755c1bf9ba465cfd74494b398b",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-154990bcf2648a5da598710e",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.0432,
+        "operation": null,
+        "question": "What is the due date, kind, and title of the reminder?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:d1a9ac758dac898a5f0c6ed26574084c32f6eac674a4d235cac7a611a4c53eb8",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-3af329dea532a24102acf409",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7876,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete gas as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:d9d3295d000aab008da9e8f5ded46a5479a00a4a617d232d4afd63dfec28eb97",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-c6f4972ae2c5181c0062d140",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.2405,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar wii tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:dcc34864f4dc92136421844a5233e73864ad784fca3d79f039c1a00a66391501",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b8cd899ef23fa019b92109c0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1358,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete watch as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:f3134d296153a14cda44001f8f7942b5e44f1583d24520065880099de24a40f2",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-59f33281c1897daaf816df45",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.9305,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete card as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:fea050b65d8cce18fd6236e463cda9d2ecb50ee03b2ca25c0ca9cb9803e12e35",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b82de83cca3f373d77b19b6f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1405,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete netflix as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1aae098faba503872c631f2baf7f0556d7092f5828a3125891357cf2d9f5627e",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-d62edfc8ae516e969ae1d5a8",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.3634,
+        "operation": "app.installed",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1ec4979ab1483fd8bec154f83c7bba5931e7f365aabb26eeecf706a7bf35ba20",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-0937d523d05e1a3f88b17d0b",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1897,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar poesía tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:3842dfb19626914582b3c18a38f15ac873da7773e25a3b755fce8958cddfdece",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5c202468fbd73f31dee623e8",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2347,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar nota para Luís en la tablet tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:39a4de09a600aa3a4b13b875db774d937c8d1a89c14921a3b2e60bae652c44c0",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-37d2dc84d047daf6b7ed0b37",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0029,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:4529c01c1b9031b0aeaaf4b6a27085711f8c1cf975418ba5c127b8638085516c",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b6c376309fd1545eb29932c7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.5077,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoio completar grande tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:55bb8440d1509bc3e1825107e2ea6ef2f303b08482fa15eb4be686c349af74ef",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-7d750c27400b36c344cc76a1",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1873,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar telepizza tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:57ae38267f19622de4b281f080dbeeb02c8eb7ae925d08482564ef17585b12c1",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-8d124f85f606ecb8d549579f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.7152,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar creadas tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:60d1aff3cf5163fd2ec5a1a7d22c40ff81f9a93bef8d5525997d24510f6e9438",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-6593b293d7fadfce4cc1b658",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1423,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete mark as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:6fa92d42a7e3bc90f09930bbb001b67caa704c1a625f3c96287c75f97c1b43d3",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-e81e9646dd691ec9e024a2f0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2245,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar iniciar Snapchat en el móvil tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:96e104c983195c3ee64fff75d5c89a4ff59b022fb200dc52fcd5c7ccb2b73b06",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-af73704063267b1606af08a7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4846,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar guardada tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:97bfbdc033bdc05b2b90ff2589b0cbdf1c511e17dedfbd04c8c9afcb89c966e8",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-41ccffc5bb5f32478f5bf5ae",
+        "error": "",
+        "failure_code": "",
+        "kind": "plan",
+        "latency_seconds": 0.0041,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a038b516898dee5ea0462646174113a7dbb3e90d560ecee1476a805219510768",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-da27536e796d837d471e64eb",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1985,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar abrir una nota nueva tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a5a74bd6d81cd1e55760986c78c87e7a23d8f808eae3ad539bd4cd54aa4f3555",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-c81121a5f8e4b1b4be5dc636",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.0633,
+        "operation": null,
+        "question": "¿En qué consiste crear una nota personal en Keep?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:a7ab6d388b6d1cc1909ff48743af7a002dfacd374999bee41132536ee22ea49a",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-920a8c138bde1193127c9130",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.1182,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo mostrar dó esta información tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:aafb1649533e73967e3b6db5c92b93a56958bde9250ecad663c89ef8837bbc97",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-9d670195d0c7b3cbdd80fd12",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.4114,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar asturias tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:b0fac396bc13b7e2f8e61842e601819aed3e0e0ac419d8859958388fb3375eeb",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b1b8f79ad9d3e7820a9a4967",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.1956,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo enseñar mis apps de vídeo, de música.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c8d8827881678e91d036306a3db7a1fd6a727625376ab3a7bbfd83dc2ef7ee68",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-2bb1fb794224b0ad219cc3d8",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.6738,
+        "operation": null,
+        "question": "Busca algún juego por equipos para la PS4, bueno, mejor para la Xbox?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:d7113e74b9d351986da0a4602af1255c7a791a80dd80be15cbd4286e05d252b6",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-01a27574300dd13cda24985a",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7461,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Quieres jugar un juego de estrategia, sí.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:e65ca890d7bbe82248545430b473859c20b270debac256a1a74b4825b1419129",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-28e4c87fa327515338603e8d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.2371,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo puedoiones completar cuarto tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:ee790eb0b4df727e5b1b9eb3a496307b038e98986d85eb1fd9782cd0720b0daa",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-8d37b2e574cdcf74d5733420",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.3658,
+        "operation": null,
+        "question": "¿cuándo quieres que sea el viaje al Caribe en El Corte Inglés?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:f7c551876d66259f48a0353186c0e51f0c607015619f7843943d9f6ffa5bcb4d",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-1829e43a378151d4647f075f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.1505,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete Jose as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T01:29:50.799563+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 2,
+    "cases": 110,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

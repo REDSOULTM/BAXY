@@ -1,0 +1,3624 @@
+{
+  "by_category": {
+    "clarify": {
+      "cases": 4,
+      "effect_exact": 2,
+      "effect_exact_accuracy": 0.5,
+      "exact": 2,
+      "exact_accuracy": 0.5,
+      "intent_exact": 4,
+      "intent_exact_accuracy": 1.0,
+      "kind_accuracy": 0.5,
+      "kind_ok": 2,
+      "latency_seconds": {
+        "maximum": 1.52124,
+        "mean": 1.164869,
+        "p50": 1.478693,
+        "p95": 1.52124
+      }
+    },
+    "compound": {
+      "cases": 8,
+      "effect_exact": 5,
+      "effect_exact_accuracy": 0.625,
+      "exact": 5,
+      "exact_accuracy": 0.625,
+      "intent_exact": 7,
+      "intent_exact_accuracy": 0.875,
+      "kind_accuracy": 0.625,
+      "kind_ok": 5,
+      "latency_seconds": {
+        "maximum": 2.63613,
+        "mean": 1.325627,
+        "p50": 1.302875,
+        "p95": 2.63613
+      }
+    },
+    "no_call": {
+      "cases": 8,
+      "effect_exact": 8,
+      "effect_exact_accuracy": 1.0,
+      "exact": 1,
+      "exact_accuracy": 0.125,
+      "intent_exact": 4,
+      "intent_exact_accuracy": 0.5,
+      "kind_accuracy": 0.125,
+      "kind_ok": 1,
+      "latency_seconds": {
+        "maximum": 5.656906,
+        "mean": 3.601067,
+        "p50": 3.404562,
+        "p95": 5.656906
+      }
+    },
+    "single": {
+      "cases": 70,
+      "effect_exact": 53,
+      "effect_exact_accuracy": 0.757143,
+      "exact": 52,
+      "exact_accuracy": 0.742857,
+      "intent_exact": 59,
+      "intent_exact_accuracy": 0.842857,
+      "kind_accuracy": 0.785714,
+      "kind_ok": 55,
+      "latency_seconds": {
+        "maximum": 2.778227,
+        "mean": 0.768907,
+        "p50": 0.00539,
+        "p95": 2.490009
+      }
+    }
+  },
+  "by_language": {
+    "en": {
+      "cases": 45,
+      "effect_exact": 35,
+      "effect_exact_accuracy": 0.777778,
+      "exact": 31,
+      "exact_accuracy": 0.688889,
+      "intent_exact": 37,
+      "intent_exact_accuracy": 0.822222,
+      "kind_accuracy": 0.733333,
+      "kind_ok": 33,
+      "latency_seconds": {
+        "maximum": 5.248695,
+        "mean": 1.10511,
+        "p50": 0.916421,
+        "p95": 2.912622
+      }
+    },
+    "es": {
+      "cases": 45,
+      "effect_exact": 33,
+      "effect_exact_accuracy": 0.733333,
+      "exact": 29,
+      "exact_accuracy": 0.644444,
+      "intent_exact": 37,
+      "intent_exact_accuracy": 0.822222,
+      "kind_accuracy": 0.666667,
+      "kind_ok": 30,
+      "latency_seconds": {
+        "maximum": 5.656906,
+        "mean": 1.070368,
+        "p50": 0.83507,
+        "p95": 3.024886
+      }
+    }
+  },
+  "catalog": {
+    "count": 168,
+    "names_sha256": "b6533383425e2d4f00fa3046998eed99b94c88591689ac72aaa146063720c547"
+  },
+  "failures": [
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "audio.volume.adjust"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-adjust-up-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.volume.adjust"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.813332
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "audio.mute"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-mute-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.mute"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.411091
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "window.minimize"
+        ],
+        "observed_intent_operations": [
+          "window.minimize"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "app-close-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "app.close"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.41568
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "window.minimize"
+        ],
+        "observed_intent_operations": [
+          "window.minimize"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "app-close-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "app.close"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "app.close"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.047718
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "calendar.event.create"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "calendar-create-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "calendar.event.create"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.207726
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "calendar.event.create"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "calendar-create-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "calendar.event.create"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.490009
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "calendar-list-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "calendar.event.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.000564
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "calendar-list-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "calendar.event.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.000228
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "vision.describe"
+        ],
+        "observed_intent_operations": [
+          "vision.describe"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "capture-screen-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "capture.screenshot"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.015593
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "window.active"
+        ],
+        "observed_intent_operations": [
+          "window.active"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "capture-window-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "capture.active.window"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.867544
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "window.active"
+        ],
+        "observed_intent_operations": [
+          "window.active"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "capture-window-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "capture.active.window"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.67994
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "web.search"
+        ],
+        "observed_intent_operations": [
+          "web.search"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "notification-schedule-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "notification.schedule"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "notification.schedule"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.737939
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.play.query"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "media-play-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "media.play.query"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.654896
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.play.exact"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "media-play-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "media.play.query"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "media.play.query"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.778227
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.time"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "system-time-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "system.time"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.74524
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "vision.describe"
+        ],
+        "observed_intent_operations": [
+          "vision.describe"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "system-time-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "system.time"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "system.time"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.444236
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.status"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "message-send-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "message.send"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "message.send"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.150546
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "message.send"
+        ],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "message-send-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "message.send"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "message.send"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.91384
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-knowledge-es",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 5.656906
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-knowledge-en",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 5.248695
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-past-es",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 4.285307
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.status"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-past-en",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 3.404562
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "app.installed"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-negated-es",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.960147
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "streaming.navigate"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-other-device-es",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 3.024886
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "streaming.navigate"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-other-device-en",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.315409
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "message.send"
+        ],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "clarify-message-es",
+      "category": "clarify",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "clarify"
+      ],
+      "expected_operations": [
+        "message.send"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.83507
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "message.send"
+        ],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "clarify-message-en",
+      "category": "clarify",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "clarify"
+      ],
+      "expected_operations": [
+        "message.send"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.824474
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.status",
+          "system.process.list"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-status-process-es",
+      "category": "compound",
+      "expected_effect_operations": [
+        "system.status",
+        "system.process.list"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "system.status",
+        "system.process.list"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.981324
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.status",
+          "system.process.list"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-status-process-en",
+      "category": "compound",
+      "expected_effect_operations": [
+        "system.status",
+        "system.process.list"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "system.status",
+        "system.process.list"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.63613
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "note.create"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-note-reminder-es",
+      "category": "compound",
+      "expected_effect_operations": [
+        "note.create",
+        "reminder.create"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "note.create",
+        "reminder.create"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.959646
+    }
+  ],
+  "measured_at": "2026-08-01T19:32:57.473943+00:00",
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "samples": [
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.volume"
+        ],
+        "observed_intent_operations": [
+          "audio.volume"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-absolute-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.volume"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.012928
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.volume"
+        ],
+        "observed_intent_operations": [
+          "audio.volume"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-absolute-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.volume"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.00181
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "audio.volume.adjust"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-adjust-up-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.volume.adjust"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.813332
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.volume.adjust"
+        ],
+        "observed_intent_operations": [
+          "audio.volume.adjust"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-adjust-up-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.volume.adjust"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.959735
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.volume.adjust"
+        ],
+        "observed_intent_operations": [
+          "audio.volume.adjust"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-adjust-down-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.volume.adjust"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.001372
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.volume.adjust"
+        ],
+        "observed_intent_operations": [
+          "audio.volume.adjust"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-adjust-down-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.volume.adjust"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.963715
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.mute"
+        ],
+        "observed_intent_operations": [
+          "audio.mute"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-mute-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.mute"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.002953
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "audio.mute"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-mute-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.mute"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.411091
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.microphone.mute"
+        ],
+        "observed_intent_operations": [
+          "audio.microphone.mute"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "microphone-mute-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.microphone.mute"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.995362
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.microphone.mute"
+        ],
+        "observed_intent_operations": [
+          "audio.microphone.mute"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "microphone-mute-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.microphone.mute"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.850319
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.status"
+        ],
+        "observed_intent_operations": [
+          "audio.status"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-status-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.status"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.status"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.001863
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "audio.status"
+        ],
+        "observed_intent_operations": [
+          "audio.status"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "audio-status-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "audio.status"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "audio.status"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.00539
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "app.open"
+        ],
+        "observed_intent_operations": [
+          "app.open"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "app-open-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "app.open"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.002283
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "app.open"
+        ],
+        "observed_intent_operations": [
+          "app.open"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "app-open-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "app.open"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "app.open"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.000829
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "window.minimize"
+        ],
+        "observed_intent_operations": [
+          "window.minimize"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "app-close-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "app.close"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.41568
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "window.minimize"
+        ],
+        "observed_intent_operations": [
+          "window.minimize"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "app-close-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "app.close"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "app.close"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.047718
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "app.installed"
+        ],
+        "observed_intent_operations": [
+          "app.installed"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "app-installed-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "app.installed"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "app.installed"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.601392
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "app.installed"
+        ],
+        "observed_intent_operations": [
+          "app.installed"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "app-installed-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "app.installed"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "app.installed"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.807797
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.navigate"
+        ],
+        "observed_intent_operations": [
+          "browser.navigate"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-navigate-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.navigate"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.navigate"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.002013
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.navigate"
+        ],
+        "observed_intent_operations": [
+          "browser.navigate"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-navigate-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.navigate"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.navigate"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.001506
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.navigate.named"
+        ],
+        "observed_intent_operations": [
+          "browser.navigate.named"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-named-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.navigate.named"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.navigate.named"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.144115
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.navigate.named"
+        ],
+        "observed_intent_operations": [
+          "browser.navigate.named"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-named-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.navigate.named"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.navigate.named"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.938051
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.page.read"
+        ],
+        "observed_intent_operations": [
+          "browser.page.read"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-read-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.page.read"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.page.read"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.002882
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.page.read"
+        ],
+        "observed_intent_operations": [
+          "browser.page.read"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-read-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.page.read"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.page.read"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.001225
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.tabs.list"
+        ],
+        "observed_intent_operations": [
+          "browser.tabs.list"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-tabs-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.tabs.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.003131
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.tabs.list"
+        ],
+        "observed_intent_operations": [
+          "browser.tabs.list"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-tabs-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.tabs.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.000747
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.control"
+        ],
+        "observed_intent_operations": [
+          "browser.control"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-reload-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.control"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.control"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.00112
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.control"
+        ],
+        "observed_intent_operations": [
+          "browser.control"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "browser-reload-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "browser.control"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "browser.control"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.000683
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "calendar.event.create"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "calendar-create-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "calendar.event.create"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.207726
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "calendar.event.create"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "calendar-create-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "calendar.event.create"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.490009
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "calendar-list-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "calendar.event.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.000564
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "calendar-list-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "calendar.event.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.000228
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "vision.describe"
+        ],
+        "observed_intent_operations": [
+          "vision.describe"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "capture-screen-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "capture.screenshot"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.015593
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "capture.screenshot"
+        ],
+        "observed_intent_operations": [
+          "capture.screenshot"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "capture-screen-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "capture.screenshot"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.002455
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "window.active"
+        ],
+        "observed_intent_operations": [
+          "window.active"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "capture-window-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "capture.active.window"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.867544
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "window.active"
+        ],
+        "observed_intent_operations": [
+          "window.active"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "capture-window-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "capture.active.window"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.67994
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "clipboard.read.text"
+        ],
+        "observed_intent_operations": [
+          "clipboard.read.text"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "clipboard-read-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "clipboard.read.text"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.001427
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "clipboard.read.text"
+        ],
+        "observed_intent_operations": [
+          "clipboard.read.text"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "clipboard-read-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "clipboard.read.text"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.001005
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "clipboard.write.text"
+        ],
+        "observed_intent_operations": [
+          "clipboard.write.text"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "clipboard-write-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "clipboard.write.text"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "clipboard.write.text"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.277069
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "clipboard.write.text"
+        ],
+        "observed_intent_operations": [
+          "clipboard.write.text"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "clipboard-write-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "clipboard.write.text"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "clipboard.write.text"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.112391
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "note.create"
+        ],
+        "observed_intent_operations": [
+          "note.create"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "note-create-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "note.create"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.001125
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "note.create"
+        ],
+        "observed_intent_operations": [
+          "note.create"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "note-create-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "note.create"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "note.create"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.000711
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "note.list"
+        ],
+        "observed_intent_operations": [
+          "note.list"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "note-list-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "note.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "note.list"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.000555
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "note.list"
+        ],
+        "observed_intent_operations": [
+          "note.list"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "note-list-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "note.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "note.list"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.000711
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "note.search"
+        ],
+        "observed_intent_operations": [
+          "note.search"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "note-search-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "note.search"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "note.search"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.001187
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "note.search"
+        ],
+        "observed_intent_operations": [
+          "note.search"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "note-search-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "note.search"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "note.search"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.000697
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "notification.schedule"
+        ],
+        "observed_intent_operations": [
+          "notification.schedule"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "notification-schedule-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "notification.schedule"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.043922
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "web.search"
+        ],
+        "observed_intent_operations": [
+          "web.search"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "notification-schedule-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "notification.schedule"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "notification.schedule"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.737939
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "notification.list.due"
+        ],
+        "observed_intent_operations": [
+          "notification.list.due"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "notification-list-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "notification.list.due"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.647213
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "notification.list.due"
+        ],
+        "observed_intent_operations": [
+          "notification.list.due"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "notification-list-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "notification.list.due"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.594722
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "reminder-create-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "reminder.create"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.319579
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "reminder.create"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "reminder-create-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "reminder.create"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "reminder.create"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.170524
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "reminder.list"
+        ],
+        "observed_intent_operations": [
+          "reminder.list"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "reminder-list-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "reminder.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.00278
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "reminder.list"
+        ],
+        "observed_intent_operations": [
+          "reminder.list"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "reminder-list-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "reminder.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.002285
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.play.query"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "media-play-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "media.play.query"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.654896
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.play.exact"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "media-play-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "media.play.query"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "media.play.query"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.778227
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "media.control"
+        ],
+        "observed_intent_operations": [
+          "media.control"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "media-pause-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "media.control"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "media.control"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.002779
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "media.control"
+        ],
+        "observed_intent_operations": [
+          "media.control"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "media-pause-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "media.control"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "media.control"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.001611
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "media.status"
+        ],
+        "observed_intent_operations": [
+          "media.status"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "media-status-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "media.status"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "media.status"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.003589
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "media.status"
+        ],
+        "observed_intent_operations": [
+          "media.status"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "media-status-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "media.status"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "media.status"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.001652
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "system.status"
+        ],
+        "observed_intent_operations": [
+          "system.status"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "system-status-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "system.status"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.0114
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "system.status"
+        ],
+        "observed_intent_operations": [
+          "system.status"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "system-status-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "system.status"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "system.status"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.681869
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.time"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "system-time-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "system.time"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.74524
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "vision.describe"
+        ],
+        "observed_intent_operations": [
+          "vision.describe"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "system-time-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "system.time"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "system.time"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.444236
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "system.process.list"
+        ],
+        "observed_intent_operations": [
+          "system.process.list"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "process-list-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "system.process.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "system.process.list"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.003277
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "system.process.list"
+        ],
+        "observed_intent_operations": [
+          "system.process.list"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "process-list-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "system.process.list"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "system.process.list"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.001099
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "web.search"
+        ],
+        "observed_intent_operations": [
+          "web.search"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "web-search-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "web.search"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "web.search"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.001117
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "web.search"
+        ],
+        "observed_intent_operations": [
+          "web.search"
+        ],
+        "observed_kind": "action",
+        "reply_contract_ok": true
+      },
+      "case_id": "web-search-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "web.search"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "web.search"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.257167
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.status"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "message-send-es",
+      "category": "single",
+      "expected_effect_operations": [
+        "message.send"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "message.send"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 2.150546
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "message.send"
+        ],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "message-send-en",
+      "category": "single",
+      "expected_effect_operations": [
+        "message.send"
+      ],
+      "expected_kinds": [
+        "action"
+      ],
+      "expected_operations": [
+        "message.send"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.91384
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-knowledge-es",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 5.656906
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-knowledge-en",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 5.248695
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-past-es",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 4.285307
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "media.status"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-past-en",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 3.404562
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "app.installed"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-negated-es",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.960147
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [],
+        "observed_kind": "conversation",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-negated-en",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.912622
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "streaming.navigate"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-other-device-es",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 3.024886
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "streaming.navigate"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "negative-other-device-en",
+      "category": "no_call",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "conversation"
+      ],
+      "expected_operations": [],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.315409
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "app.open"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "clarify-app-es",
+      "category": "clarify",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "clarify"
+      ],
+      "expected_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.52124
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "app.open"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "clarify-app-en",
+      "category": "clarify",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "clarify"
+      ],
+      "expected_operations": [
+        "app.open"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.478693
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "message.send"
+        ],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "clarify-message-es",
+      "category": "clarify",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "clarify"
+      ],
+      "expected_operations": [
+        "message.send"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.83507
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [
+          "message.send"
+        ],
+        "observed_intent_operations": [
+          "message.send"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "clarify-message-en",
+      "category": "clarify",
+      "expected_effect_operations": [],
+      "expected_kinds": [
+        "clarify"
+      ],
+      "expected_operations": [
+        "message.send"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.824474
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "app.open",
+          "web.search"
+        ],
+        "observed_intent_operations": [
+          "app.open",
+          "web.search"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-open-search-es",
+      "category": "compound",
+      "expected_effect_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.001906
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "app.open",
+          "web.search"
+        ],
+        "observed_intent_operations": [
+          "app.open",
+          "web.search"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-open-search-en",
+      "category": "compound",
+      "expected_effect_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "app.open",
+        "web.search"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 1.302875
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.navigate",
+          "browser.page.read"
+        ],
+        "observed_intent_operations": [
+          "browser.navigate",
+          "browser.page.read"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-browser-read-es",
+      "category": "compound",
+      "expected_effect_operations": [
+        "browser.navigate",
+        "browser.page.read"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "browser.navigate",
+        "browser.page.read"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 0.980595
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "browser.navigate",
+          "browser.page.read"
+        ],
+        "observed_intent_operations": [
+          "browser.navigate",
+          "browser.page.read"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-browser-read-en",
+      "category": "compound",
+      "expected_effect_operations": [
+        "browser.navigate",
+        "browser.page.read"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "browser.navigate",
+        "browser.page.read"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.826118
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.status",
+          "system.process.list"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-status-process-es",
+      "category": "compound",
+      "expected_effect_operations": [
+        "system.status",
+        "system.process.list"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "system.status",
+        "system.process.list"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.981324
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": true,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "system.status",
+          "system.process.list"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-status-process-en",
+      "category": "compound",
+      "expected_effect_operations": [
+        "system.status",
+        "system.process.list"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "system.status",
+        "system.process.list"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 2.63613
+    },
+    {
+      "assessment": {
+        "effect_exact": false,
+        "exact": false,
+        "intent_exact": false,
+        "kind_ok": false,
+        "observed_effect_operations": [],
+        "observed_intent_operations": [
+          "note.create"
+        ],
+        "observed_kind": "clarify",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-note-reminder-es",
+      "category": "compound",
+      "expected_effect_operations": [
+        "note.create",
+        "reminder.create"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "note.create",
+        "reminder.create"
+      ],
+      "language": "es",
+      "repeat": 0,
+      "seconds": 1.959646
+    },
+    {
+      "assessment": {
+        "effect_exact": true,
+        "exact": true,
+        "intent_exact": true,
+        "kind_ok": true,
+        "observed_effect_operations": [
+          "note.create",
+          "reminder.create"
+        ],
+        "observed_intent_operations": [
+          "note.create",
+          "reminder.create"
+        ],
+        "observed_kind": "plan",
+        "reply_contract_ok": true
+      },
+      "case_id": "compound-note-reminder-en",
+      "category": "compound",
+      "expected_effect_operations": [
+        "note.create",
+        "reminder.create"
+      ],
+      "expected_kinds": [
+        "plan"
+      ],
+      "expected_operations": [
+        "note.create",
+        "reminder.create"
+      ],
+      "language": "en",
+      "repeat": 0,
+      "seconds": 0.916421
+    }
+  ],
+  "schema": "baxy.exact-operation-development-gate.v1",
+  "scope": "development_only_not_final_certification",
+  "side_effect_free": true,
+  "source": {
+    "measured_cases": 90,
+    "path": "D:\\BAXY\\source\\experiments\\mind_router_spike\\data\\exact_operation_development.v1.jsonl",
+    "population_cases": 90,
+    "repeats": 1,
+    "sha256": "d6162676ec59b5cf138de35ddce767f7239e3fe36f0755795321beca09df4909"
+  },
+  "status": "failed",
+  "summary": {
+    "cases": 90,
+    "effect_exact": 68,
+    "effect_exact_accuracy": 0.755556,
+    "exact": 60,
+    "exact_accuracy": 0.666667,
+    "intent_exact": 74,
+    "intent_exact_accuracy": 0.822222,
+    "kind_accuracy": 0.7,
+    "kind_ok": 63,
+    "latency_seconds": {
+      "maximum": 5.656906,
+      "mean": 1.087739,
+      "p50": 0.867544,
+      "p95": 3.024886
+    }
+  }
+}

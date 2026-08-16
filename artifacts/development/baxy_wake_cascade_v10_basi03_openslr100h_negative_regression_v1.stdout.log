@@ -1,0 +1,27 @@
+Loading similar tokens
+conformer_hyper_spotter - audio_encoder
+Total Trainable Params: 3722112
+conformer_hyper_spotter - text_encoder
+Total Trainable Params: 2025935
+conformer_hyper_spotter - embedding_2_ms
+Total Trainable Params: 656897
+conformer_hyper_spotter - perceiver_classifier
+Total Trainable Params: 1764777
+Loading similar tokens
+conformer_hyper_spotter - audio_encoder
+Total Trainable Params: 3722112
+conformer_hyper_spotter - text_encoder
+Total Trainable Params: 2025935
+conformer_hyper_spotter - embedding_2_ms
+Total Trainable Params: 656897
+conformer_hyper_spotter - perceiver_classifier
+Total Trainable Params: 1764777
+BAXY_WAKE_CASCADE_FAR|128/28539|windows=6360|screened=239
+BAXY_WAKE_CASCADE_FAR|256/28539|windows=11549|screened=316
+BAXY_WAKE_CASCADE_FAR|384/28539|windows=18024|screened=356
+BAXY_WAKE_CASCADE_FAR|512/28539|windows=23573|screened=471
+BAXY_WAKE_CASCADE_FAR|640/28539|windows=29956|screened=519
+BAXY_WAKE_CASCADE_FAR|768/28539|windows=35362|screened=565
+BAXY_WAKE_CASCADE_FAR|896/28539|windows=41176|screened=719
+BAXY_WAKE_CASCADE_FAR|1024/28539|windows=45746|screened=848
+BAXY_WAKE_CASCADE_FAR|1152/28539|windows=51268|screened=909

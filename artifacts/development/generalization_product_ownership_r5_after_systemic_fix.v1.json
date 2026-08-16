@@ -1,0 +1,315 @@
+{
+  "blind_holdout": false,
+  "certification_claim": false,
+  "effects_executed": 0,
+  "label_audit": [],
+  "measured_at_utc": "2026-08-03T14:49:34.307307+00:00",
+  "metrics": {
+    "app_private_memory_parser": {
+      "accuracy": 1.0,
+      "cases": 10,
+      "passed": 10,
+      "seconds_max": 0.184166,
+      "seconds_p50": 0.0011225,
+      "seconds_p95": 0.184166
+    },
+    "contract_audited_product_behavior": {
+      "accuracy": 1.0,
+      "cases": 400,
+      "correct": 400,
+      "failed": 0,
+      "label_corrections": 0,
+      "unsafe_effects": 0
+    },
+    "mind_sidecar": {
+      "by_case_type": {
+        "clarification": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "cases": 40,
+          "contract_correct": 40,
+          "original_exact": 40,
+          "unsafe_effects": 0
+        },
+        "conversation": {
+          "cases": 40,
+          "contract_correct": 40,
+          "original_exact": 40,
+          "unsafe_effects": 0
+        },
+        "single_action": {
+          "cases": 300,
+          "contract_correct": 300,
+          "original_exact": 300,
+          "unsafe_effects": 0
+        }
+      },
+      "by_family": {
+        "app": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "audio": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "backup": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "bluetooth": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "browser": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "calendar": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "capture": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "clipboard": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "cases": 40,
+          "contract_correct": 40,
+          "original_exact": 40,
+          "unsafe_effects": 0
+        },
+        "email": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "filesystem": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "game": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "input": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "media": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "message": {
+          "cases": 20,
+          "contract_correct": 20,
+          "original_exact": 20,
+          "unsafe_effects": 0
+        },
+        "network": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "note": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "notification": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "ocr": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "office": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "out_of_scope": {
+          "cases": 40,
+          "contract_correct": 40,
+          "original_exact": 40,
+          "unsafe_effects": 0
+        },
+        "package": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "peripheral": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "reminder": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "routine": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "streaming": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "system": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "task": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "vision": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "web": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "wifi": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        },
+        "window": {
+          "cases": 10,
+          "contract_correct": 10,
+          "original_exact": 10,
+          "unsafe_effects": 0
+        }
+      },
+      "by_language": {
+        "en": {
+          "cases": 154,
+          "contract_correct": 154,
+          "original_exact": 154,
+          "unsafe_effects": 0
+        },
+        "es": {
+          "cases": 152,
+          "contract_correct": 152,
+          "original_exact": 152,
+          "unsafe_effects": 0
+        },
+        "spanglish": {
+          "cases": 84,
+          "contract_correct": 84,
+          "original_exact": 84,
+          "unsafe_effects": 0
+        }
+      },
+      "by_surface": {
+        "addressed": {
+          "cases": 195,
+          "contract_correct": 195,
+          "original_exact": 195,
+          "unsafe_effects": 0
+        },
+        "plain": {
+          "cases": 195,
+          "contract_correct": 195,
+          "original_exact": 195,
+          "unsafe_effects": 0
+        }
+      },
+      "cases": 390,
+      "contract_accuracy": 1.0,
+      "contract_correct": 390,
+      "label_corrections": 0,
+      "original_accuracy": 1.0,
+      "original_exact": 390,
+      "total_seconds": 46.01,
+      "turn_decide_seconds_max": 2.090064,
+      "turn_decide_seconds_p50": 0.003916,
+      "turn_decide_seconds_p95": 0.793004,
+      "unsafe_effects": 0
+    },
+    "original_preregistered_oracle": {
+      "accuracy": 1.0,
+      "cases": 400,
+      "exact": 400,
+      "failed": 0,
+      "unsafe_effects": 0
+    }
+  },
+  "ownership_aware": true,
+  "schema": "baxy.generalization-product-ownership-r5-development.v1",
+  "scope": "opened_r5_population_post_holdout_development_only",
+  "sources": {
+    "analyzer": "experiments\\mind_router_spike\\analyze_generalization_product_r5_development.py",
+    "analyzer_sha256": "9745be971ae4114b1f7af0915d3b1eee55dcdf71087b21dcd25f947165158832",
+    "app_parser_sha256": "41a2cc5f56b26e1e3796813ee37344737adb6d5eff781d49c726d7aed9e33154",
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v5.jsonl",
+    "corpus_sha256": "3bf8a5e982c64aca8f6b827fae47b074e9d49587ad78db97fd9f3481f3bd3405",
+    "memory_trx": "artifacts\\development\\generalization_product_r5_memory_after_systemic_fix.v1.trx",
+    "memory_trx_sha256": "b54afe706258cea809c71ca2925a8770539c0008b4b8e5ac9b8413c419ba55a1",
+    "mind_entrypoint_sha256": "1c6ea06d8c44d7a617663324eaf7e8ada390a087cb89b3e5408ddc31ec3ca9ac",
+    "mind_policy_sha256": "43b6ce770f579e8fc3f3a2e57298d0e95de9d51fdc5d176d06a658d478b7a196",
+    "sidecar_report": "artifacts\\development\\generalization_product_r5_replay_after_systemic_fix.v3.json",
+    "sidecar_report_sha256": "658810f671f6e7cd14561c983aeb08885a648a1a71e4ba008d8ec4adbcf6e858"
+  }
+}

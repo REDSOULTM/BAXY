@@ -1,0 +1,62 @@
+[
+  {
+    "text": "Abre calculadora y abre Spotify",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["app.open", "app.open"]
+  },
+  {
+    "text": "Maximiza y luego minimiza la ventana activa",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["window.active", "window.maximize", "window.minimize"]
+  },
+  {
+    "text": "Navega a https://example.com y luego navega a https://example.org",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["browser.navigate", "browser.navigate"]
+  },
+  {
+    "text": "Crea una nota A con contenido uno y luego crea una nota B con contenido dos",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["note.create", "note.create"]
+  },
+  {
+    "text": "Busca BAXY en mis notas y luego busca clima en la web",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["note.search", "web.search"]
+  },
+  {
+    "text": "Abre Spotify y busca clima en la web",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["app.open", "web.search"]
+  },
+  {
+    "text": "Pon el volumen al 8 por ciento y luego sube el volumen en 2 puntos",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["audio.volume", "audio.volume.adjust"]
+  },
+  {
+    "text": "Mute audio and then unmute audio",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["audio.mute", "audio.mute"]
+  },
+  {
+    "text": "Abre calculadora y Spotify",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["app.open", "app.open"]
+  },
+  {
+    "text": "Abre calculadora, Spotify y Bloc de notas",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["app.open", "app.open", "app.open"]
+  },
+  {
+    "text": "Crea una nota A y otra B",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["note.create", "note.create"]
+  },
+  {
+    "text": "Pon el volumen al 8% y luego al 12%",
+    "expectedKind": "plan",
+    "expectedPlanOperations": ["audio.volume", "audio.volume"]
+  }
+]

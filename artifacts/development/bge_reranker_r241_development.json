@@ -1,0 +1,58 @@
+{
+  "schema": "baxy.bge-reranker.r241-development-result.v1",
+  "authority": "gpu_development_probe_not_runtime_or_r228_measurement",
+  "verdict": "rejected_development_oos_separation",
+  "candidate": {
+    "model": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "device": "cuda",
+    "family_documents": 31,
+    "catalog_operations": 174,
+    "pair_count": 15872,
+    "threshold": 2.105887324432842e-05,
+    "threshold_rule": "nextafter_below_minimum_selected_inside_score"
+  },
+  "development_population": {
+    "inside_rows": 256,
+    "outside_rows": 256,
+    "sources": [
+      "PRESTO v1",
+      "MASSIVE v1.1"
+    ],
+    "texts_retained": false,
+    "source_ids_retained": false
+  },
+  "observed": {
+    "inside_rows_lost": 0,
+    "outside_zero_candidates": 2,
+    "outside_zero_candidate_rate": 0.0078125,
+    "inside_score_quantiles": {
+      "min": 2.1058873244328424e-05,
+      "p50": 0.0006167833635117859,
+      "p95": 0.015762836672365665,
+      "max": 0.8696997165679932
+    },
+    "outside_score_quantiles": {
+      "min": 1.9043442080146633e-05,
+      "p50": 0.000266121031017974,
+      "p95": 0.007025760249234736,
+      "max": 0.03786981850862503
+    },
+    "elapsed_seconds": 277.53199999999924
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not tune this threshold or open R228; any candidate needs a separately sealed fresh OOS runner.",
+  "identities": {
+    "preregistration_sha256": "3e5bd831ca713360404fa2741c7fa65bcfb8f8901748d3a399ceef4d3304ec72",
+    "runtime_corpus_sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "05017c401ad36e0ee746e32fbdf19097c3522822f106ded30cfcbe03989ecb61"
+  }
+}

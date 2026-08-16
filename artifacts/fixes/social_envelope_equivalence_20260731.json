@@ -1,0 +1,7520 @@
+{
+ "baseline": {
+  "authority_manufactured_by_the_envelope": 0,
+  "equivalent": 289,
+  "operation_degraded_by_the_envelope": 0,
+  "request_hidden_by_the_envelope": 660
+ },
+ "candidate": {
+  "authority_manufactured_by_the_envelope": 0,
+  "equivalent": 949,
+  "operation_degraded_by_the_envelope": 0,
+  "request_hidden_by_the_envelope": 0
+ },
+ "corpus": {
+  "comparisons_per_arm": 949,
+  "envelopes": [
+   "Hola, ",
+   "hola baxy, ",
+   "Baxy, ",
+   "Buenos días, ",
+   "Buenas tardes, ",
+   "Buenas noches, ",
+   "Buenas, ",
+   "Hola baxy: ",
+   "Hi, ",
+   "Hello, ",
+   "Hey, ",
+   "Good morning, ",
+   "Hello Baxy, "
+  ],
+  "frozen_cases": 73,
+  "source": "tests/test_effect_intent.py CASES (already frozen)"
+ },
+ "degradation_that_predates_this_change": {
+  "cases": [],
+  "count": 0,
+  "new_in_this_change": 0,
+  "note": "`Hola baxy: Navega Opera a https://example.com/` resolves to browser.navigate instead of browser.navigate.named, which would navigate in the default browser rather than the one the person named. BOTH arms produce exactly this one case, so it is a finding of this audit and not an effect of the change. It shares the colon cause described above. Recorded, not fixed."
+ },
+ "detail": {
+  "baseline": {
+   "authority_manufactured_by_the_envelope": [],
+   "comparisons": 949,
+   "content_not_greeting": [
+    {
+     "resolution": null,
+     "text": "Escribe hola"
+    },
+    {
+     "resolution": null,
+     "text": "escribe hola mundo en el bloc de notas"
+    },
+    {
+     "resolution": null,
+     "text": "Copia a mi portapapeles hola"
+    },
+    {
+     "resolution": null,
+     "text": "type hello"
+    },
+    {
+     "resolution": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "input.text.type"
+      ]
+     },
+     "text": "open notepad and type hello there"
+    },
+    {
+     "resolution": null,
+     "text": "mandale hola a Lucas por whatsapp"
+    },
+    {
+     "resolution": null,
+     "text": "manda un mensaje a Musica en whatsapp que diga hola"
+    },
+    {
+     "resolution": null,
+     "text": "run 'echo hello'"
+    },
+    {
+     "resolution": null,
+     "text": "no consultes pantalla para responder esto: hola"
+    }
+   ],
+   "equivalent": 289,
+   "operation_degraded_by_the_envelope": [],
+   "request_hidden_by_the_envelope": [
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué hora es?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Qué hora es?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Qué fecha es hoy?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.time"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Qué fecha es hoy?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "¿Cómo está el equipo?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Cómo está el equipo?"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Muéstrame el uso de memoria",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Muéstrame el uso de memoria"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "Lista los procesos que más memoria usan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "system.process.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista los procesos que más memoria usan"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Cómo está la red?"
+    },
+    {
+     "bare": "¿Cómo está la red?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Cómo está la red?"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "Haz ping a 127.0.0.1",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "network.ping"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Haz ping a 127.0.0.1"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "¿En qué volumen está el computador?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿En qué volumen está el computador?"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Pon el volumen al 8 por ciento"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Sube el volumen en 2 puntos",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.volume.adjust"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Sube el volumen en 2 puntos"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Silencia el audio"
+    },
+    {
+     "bare": "Silencia el audio",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Silencia el audio"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Mute everything please"
+    },
+    {
+     "bare": "Mute everything please",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Mute everything please"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Silencia todo"
+    },
+    {
+     "bare": "Silencia todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "audio.mute"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Silencia todo"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre la calculadora"
+    },
+    {
+     "bare": "Abre la calculadora",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre la calculadora"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre el Bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre el Bloc de notas"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre Opera"
+    },
+    {
+     "bare": "Abre Opera",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre Opera"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre Spotify"
+    },
+    {
+     "bare": "Abre Spotify",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre Spotify"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Está instalada la calculadora?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "app.installed"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Está instalada la calculadora?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "¿Qué ventana está activa?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "window.active"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Qué ventana está activa?"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Maximiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.maximize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Maximiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Minimiza la ventana activa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "window.active",
+       "window.minimize"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Minimiza la ventana activa"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Escribe literalmente prueba BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.text.type"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Escribe literalmente prueba BAXY"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Selecciona todo"
+    },
+    {
+     "bare": "Selecciona todo",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.select.all"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Selecciona todo"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Abre el teclado en pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "input.keyboard.open"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre el teclado en pantalla"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lee el portapapeles"
+    },
+    {
+     "bare": "Lee el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lee el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, qué hay en el portapapeles"
+    },
+    {
+     "bare": "qué hay en el portapapeles",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.read.text"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, qué hay en el portapapeles"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "Pega esto en el bloc de notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Pega esto en el bloc de notas"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "anota que tengo que comprar pan",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, anota que tengo que comprar pan"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Sácale una foto de captura a mi pc, ¿qué se ve?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Sácale una foto de captura a mi pc, ¿qué se ve?"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Copia la selección"
+    },
+    {
+     "bare": "Copia la selección",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "clipboard.copy"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Copia la selección"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Haz una captura de pantalla",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "capture.screenshot"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Haz una captura de pantalla"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría con el contenido prueba",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Crea una nota llamada Auditoría con el contenido prueba"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista mis notas"
+    },
+    {
+     "bare": "Lista mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Busca prueba en mis notas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "note.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Busca prueba en mis notas"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Crea una tarea llamada Auditoría",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Crea una tarea llamada Auditoría"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Lista mis tareas pendientes",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista mis tareas pendientes"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Busca Auditoría en mis tareas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "task.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Busca Auditoría en mis tareas"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.create"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Crea un recordatorio llamado Auditoría para mañana a las 9"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis recordatorios",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "reminder.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista mis recordatorios"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista mis rutinas"
+    },
+    {
+     "bare": "Lista mis rutinas",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "routine.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista mis rutinas"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Busca OpenAI en la web",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Busca OpenAI en la web"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Navega a https://example.com/"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Navega mi sesión de YouTube exactamente a https://www.youtube.com/results?search_query=BAXY"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navigate to https://www.netflix.com/browse in my streaming session",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "streaming.navigate"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Navigate to https://www.netflix.com/browse in my streaming session"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "streaming.navigate",
+       "web.search"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Navega mi sesión de YouTube a https://www.youtube.com/results?search_query=BAXY y después busca exactamente OpenAI Codex en la web"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "web.search",
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Abre calculadora y pega el portapapeles",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "clipboard.paste"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre calculadora y pega el portapapeles"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Navega Opera a https://example.com/",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.navigate.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Navega Opera a https://example.com/"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lee la página actual"
+    },
+    {
+     "bare": "Lee la página actual",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lee la página actual"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Lista las pestañas del navegador",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.tabs.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista las pestañas del navegador"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Recarga la página"
+    },
+    {
+     "bare": "Recarga la página",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "browser.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Recarga la página"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Busca Beat It en Spotify y reprodúcela",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.play.query"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Busca Beat It en Spotify y reprodúcela"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Pausa la música"
+    },
+    {
+     "bare": "Pausa la música",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Pausa la música"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "¿Qué música está sonando?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "media.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Qué música está sonando?"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "Lista mis juegos de Steam",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.catalog.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista mis juegos de Steam"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "¿Está instalado el juego Half-Life 2 en Steam?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "game.installed.named"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Está instalado el juego Half-Life 2 en Steam?"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los dispositivos Bluetooth",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "bluetooth.device.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista los dispositivos Bluetooth"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista los periféricos conectados"
+    },
+    {
+     "bare": "Lista los periféricos conectados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "peripheral.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista los periféricos conectados"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "¿Cómo está el Wi-Fi?",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, ¿Cómo está el Wi-Fi?"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lista los perfiles Wi-Fi guardados",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "wifi.profile.list"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lista los perfiles Wi-Fi guardados"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Lee el correo más reciente"
+    },
+    {
+     "bare": "Lee el correo más reciente",
+     "expected": {
+      "kind": "action",
+      "operations": [
+       "email.latest.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Lee el correo más reciente"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Abre Opera, navega a https://example.com/ y lee la página",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "browser.navigate.named",
+       "browser.page.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre Opera, navega a https://example.com/ y lee la página"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Haz una captura de pantalla y luego léela con OCR",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "capture.screenshot",
+       "ocr.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Haz una captura de pantalla y luego léela con OCR"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Crea una nota llamada Auditoría encadenada y después léela",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "note.create",
+       "note.read"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Crea una nota llamada Auditoría encadenada y después léela"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "audio.volume",
+       "audio.status"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Pon el volumen al 8 por ciento y luego dime en cuánto quedó"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hola, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenos días, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas tardes, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas noches, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Buenas, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hi, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hey, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Good morning, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    },
+    {
+     "bare": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+     "expected": {
+      "kind": "plan",
+      "operations": [
+       "media.play.exact",
+       "media.control"
+      ]
+     },
+     "observed": null,
+     "wrapped": "Hello Baxy, Abre Spotify, reproduce exactamente Beat It y después pausa"
+    }
+   ]
+  },
+  "candidate": {
+   "authority_manufactured_by_the_envelope": [],
+   "comparisons": 949,
+   "content_not_greeting": [
+    {
+     "resolution": null,
+     "text": "Escribe hola"
+    },
+    {
+     "resolution": null,
+     "text": "escribe hola mundo en el bloc de notas"
+    },
+    {
+     "resolution": null,
+     "text": "Copia a mi portapapeles hola"
+    },
+    {
+     "resolution": null,
+     "text": "type hello"
+    },
+    {
+     "resolution": {
+      "kind": "plan",
+      "operations": [
+       "app.open",
+       "input.text.type"
+      ]
+     },
+     "text": "open notepad and type hello there"
+    },
+    {
+     "resolution": null,
+     "text": "mandale hola a Lucas por whatsapp"
+    },
+    {
+     "resolution": null,
+     "text": "manda un mensaje a Musica en whatsapp que diga hola"
+    },
+    {
+     "resolution": null,
+     "text": "run 'echo hello'"
+    },
+    {
+     "resolution": null,
+     "text": "no consultes pantalla para responder esto: hola"
+    }
+   ],
+   "equivalent": 949,
+   "operation_degraded_by_the_envelope": [],
+   "request_hidden_by_the_envelope": []
+  }
+ },
+ "effects_executed": 0,
+ "gate": "for every frozen case and every envelope, the wrapped form must resolve exactly as the bare form -- same kind, same operations -- and a bare form that abstains must keep abstaining. Authority manufactured by an envelope is the one failure that is never acceptable, and it is reported separately from a request the envelope merely hides.",
+ "measured_at_utc": "2026-08-02T06:38:01.897996+00:00",
+ "model_invocations": 0,
+ "passed": true,
+ "question": "does wrapping a request in a social envelope change which effect the deterministic recognizer says it names?",
+ "regressions_against_the_previous_recognizer": [],
+ "residual_not_yet_envelope_invariant": {
+  "cases": [],
+  "count": 0,
+  "note": "these are abstentions the previous recognizer also had, not answers this change loses. Their cause is that a few matchers -- app.open, app.installed, capture.screenshot, browser.navigate.named and the compound plans that contain them -- anchor on the start of the string instead of reusing _REQUEST_PREFIX, so an envelope survives only when clause splitting happens to remove it. A comma splits; a colon does not. Widening those matchers is a separate claim with its own blast radius and is deliberately not made here."
+ },
+ "schema": "baxy.social-envelope-equivalence.v1",
+ "social_vocabulary_overlapping_an_effect": [],
+ "why_not_exact_equality_against_the_model": "an exact-equality gate against a P baseline can only be passed by a variant where P was already right, so it structurally rejects every case in which widening the recognizer fixes an answer. social_envelope_20260731.json records two such cases: `buenos dias, cuanta bateria queda`, which the baseline answered with a clarification 4 times out of 4 while resolving the bare form to system.status, and `hola, pon el volumen al 30 por ciento`, which the baseline turned into a plan over audio.volume.adjust while resolving the bare form to audio.volume. This corpus is the gate R3 and R10 used: an oracle, not the model."
+}

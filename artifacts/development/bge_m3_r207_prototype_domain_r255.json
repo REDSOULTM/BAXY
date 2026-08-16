@@ -1,0 +1,66 @@
+{
+  "schema": "baxy.bge-m3-r207-prototype-domain.r255-result.v1",
+  "authority": "isolated_cuda_development_probe_not_runtime_or_blind_holdout_measurement",
+  "verdict": "rejected_development_family_or_oos_separation",
+  "candidate": {
+    "base": "BAAI/bge-m3@5617a9f61b028005a4858fdac845db406aefb181",
+    "device": "cuda_bf16",
+    "family_centroids": 31,
+    "domain_boundary": "class-balanced_logistic_head_over_frozen_BGE-M3_query_embeddings",
+    "threshold": 0.43405851721763605,
+    "threshold_rule": "nextafter_below_minimum_inside_domain_probability"
+  },
+  "training": {
+    "known_rows": 4443,
+    "outside_rows": 250,
+    "epochs": 20,
+    "learning_rate": 0.01,
+    "final_domain_loss": 0.04773096740245819,
+    "peak_allocated_mib": 2221.28955078125
+  },
+  "development_population": {
+    "inside_rows": 256,
+    "outside_rows": 100,
+    "texts_retained": false,
+    "source_ids_retained": false,
+    "inside_partition": "R207 query-disjoint SHA-256 split",
+    "outside_partition": "CLINC oos_val"
+  },
+  "observed": {
+    "inside_rows_lost": 0,
+    "inside_family_mismatches": 27,
+    "inside_family_exact_rate": 0.89453125,
+    "outside_zero_candidates": 84,
+    "outside_zero_candidate_rate": 0.84,
+    "inside_domain_probability_quantiles": {
+      "min": 0.4340585172176361,
+      "p50": 0.6595480144023895,
+      "p95": 0.7443298697471619,
+      "max": 0.7851731777191162
+    },
+    "outside_domain_probability_quantiles": {
+      "min": 0.22552667558193207,
+      "p50": 0.3583044558763504,
+      "p95": 0.49965057224035264,
+      "max": 0.5446121096611023
+    },
+    "elapsed_seconds": 8.656000000002678
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not tune or rerun R255. A passing result remains development-only and needs a separately sealed blind full-path and visible-text measurement; a failure rejects this architecture.",
+  "identities": {
+    "preregistration_sha256": "c5478938e8fe6e56ee623e78c070554746f68008bcfce16bba6a33e6733fa3c7",
+    "r207_sha256": "6be518643a188bc5402c4ced73e4da3049d43ed0dbd3a0d8114f6130784fa8b0",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "clinc_source_sha256": "bfcca9ae515623541dc1983c94c4ed7cae9d26b42ae47d74b972e51bb6f7a21f",
+    "program_sha256": "674ddd78c904a3ca8a356babbeb29563aa486e311b6663345eda375b59f2e243"
+  }
+}

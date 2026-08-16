@@ -1,0 +1,47 @@
+{
+  "authority": "temporary_private_note_namespace_and_read_only_machine_status_only",
+  "blind_holdout": true,
+  "effects": {
+    "applications_opened": 0,
+    "external_messages": 0,
+    "persistent_user_files": 0,
+    "temporary_notes_cleaned_by_gate": true
+  },
+  "measurement_status": "unopened",
+  "method": {
+    "maximum_ambiguous_effects": 0,
+    "maximum_failed_cases": 0,
+    "minimum_exact_case_accuracy": 1.0,
+    "required_real_llm_cases": 6
+  },
+  "planned_output": "artifacts\\holdout\\compound_execution_holdout_r1.json",
+  "population": {
+    "case_contract_sha256": "d3103bd6048b23197d5ce9e293e8b91bbb40e540bca450e4b6385c0a24bb3424",
+    "cases": 6,
+    "languages": [
+      "en",
+      "es",
+      "spanglish"
+    ],
+    "steps": 27
+  },
+  "preregistered_before_measurement": true,
+  "schema": "baxy.compound-execution-holdout-r1.preregistration.v1",
+  "sources": {
+    "builder": "scripts\\build_compound_execution_holdout_r1.py",
+    "builder_sha256": "ba8de4e06fd792941ff115f5f815c5f64c70a9a64640e721ed4ad96fd2ad75a7",
+    "core_sha256": "e591b5e74d72d763da2b82103b4ec4692dc3369192526632bd6d87369fc8ee80",
+    "measurement_sha256": {
+      "experiments\\mind_router_spike\\run_compound_execution_holdout_r1.py": "b133e6e0c2dfa46828243dda5daef94837cff3801f5939a9d120722a620f9815",
+      "scripts\\run_llm_plan_execution_gate.py": "1ee39112f9af81d82ebaf26080c75990552a1f5a7495ea0b558169237822248a"
+    },
+    "policy_sha256": {
+      "src\\baxy_mind\\__main__.py": "bd97578fdbafd54356b7f132e5b7b40d52d611f20a50e15365f170cef78a6e72",
+      "src\\baxy_mind\\catalog_operation_aliases.py": "f23ba6913311ef0e0b3fd6e7786dd0521b29ef2b3b47e344e3673646b780a928",
+      "src\\baxy_mind\\data\\catalog_operation_aliases.v1.json": "bd1a50e071de746b2536e21234306b159a2329e805b91e8261e5c6cdf4e9cc73",
+      "src\\baxy_mind\\effect_intent.py": "9643ff3c19bf4615f8f440047f65f727850f706d889f7e6b625c18c7a327ebaf",
+      "src\\baxy_mind\\planner.py": "5116664fffb089d537d95f4162e99f4d69672e9bf29ae7318d29111437600986"
+    },
+    "runtime_manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4"
+  }
+}

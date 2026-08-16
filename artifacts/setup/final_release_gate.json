@@ -1,0 +1,192 @@
+{
+  "schema": "baxy-final-release-gate-v1",
+  "observed_utc": "2026-07-16T03:11:09.0664065Z",
+  "status": "passed",
+  "scope": "clean-source same-host reproducible product, package, and Setup build without installation",
+  "source": {
+    "head": "455243c7c14fc915c9c70f7d356012dc5303e457",
+    "dirty": false,
+    "provenance": "git_head_snapshot",
+    "source_date_epoch": 1784170130,
+    "dotnet_sdk": "10.0.100",
+    "powershell": "5.1.26100.8737"
+  },
+  "catalog": {
+    "product_operations": 22,
+    "public_tools": 21,
+    "internal_operations": ["app.status"],
+    "new_operations_added": 0
+  },
+  "tree_ledger_contract": "files sorted by ordinal relative path; for each file append path, LF, decimal bytes, LF, lowercase SHA-256, LF; hash strict UTF-8 without BOM",
+  "tests": {
+    "dotnet_release": {
+      "contracts": 46,
+      "kernel": 75,
+      "providers_windows": 241,
+      "integration": 953,
+      "setup": 472,
+      "passed": 1787,
+      "failed": 0,
+      "explicit_not_selected": 3
+    },
+    "python": {
+      "passed": 118,
+      "subtests_passed": 176,
+      "failed": 0
+    },
+    "ruff": {
+      "scope": ["scripts", "tests"],
+      "status": "passed"
+    },
+    "p0": 0,
+    "p1": 0
+  },
+  "predecessor": {
+    "version": "1.0.0",
+    "product": {
+      "root": "artifacts/product/build/final-predecessor-product",
+      "schema": "baxy-product-build-v4",
+      "files": 8,
+      "tree_bytes": 83119594,
+      "ledger_sha256": "89d80e98ea3945ea702f3be5d9aa51dcee0e4ebb983e35b120b9c54bd415d5a9",
+      "payload_files": 7,
+      "payload_bytes": 83118100,
+      "app": {
+        "bytes": 67161060,
+        "sha256": "d490a0ed345b4c5a1f296e4ebe631045a9954c518681b2722fb00c530e34f4fd"
+      },
+      "core": {
+        "bytes": 7570432,
+        "sha256": "0e746d776b24c46fddb62297d1f0d7e638ab648ac0155f9307f39477869d3b16"
+      },
+      "manifest": {
+        "bytes": 1494,
+        "sha256": "7a35cdb33c77bc996d6e473ceccdf8cb84fa3dd16a630909a28cda486105c028"
+      }
+    },
+    "package": {
+      "root": "artifacts/product/build/final-predecessor-package",
+      "files": 2,
+      "tree_bytes": 83121540,
+      "ledger_sha256": "949e3e54657eb71d22ea241acea35afc35c154554894b7c402f07090377629ac",
+      "zip": "BAXY-1.0.0-455243c7c14f-win-x64.zip",
+      "zip_bytes": 83121438,
+      "zip_sha256": "df09fe9c406c6b31222637d67f2755b9264b9f58e9b3f99099dfecf526a209b7",
+      "digest_file_bytes": 102,
+      "digest_file_sha256": "2c71e6480dc2c71df0d4b3b879850d341c8e3324210a48e5850f2e502ace3d8e"
+    },
+    "setup": {
+      "root": "artifacts/setup/build/final-predecessor-setup",
+      "schema": "baxy-setup-build-v2",
+      "files": 3,
+      "tree_bytes": 87041251,
+      "ledger_sha256": "b687f1520a81b89d8b3a92e6f9da6c0d1e596c971b435a88fcd519e7f86f0bc5",
+      "exe_bytes": 87040000,
+      "exe_sha256": "22face7dc817f51fba6beebd3922d0b87e2cdd8b3a695cdf5ecfd8a8363553da",
+      "manifest_sha256": "1ea67fe2f53d285dd5cee5eff5ecb64e2c1e3566521ba350f0b4a8ea6edf1636",
+      "checksums_sha256": "e9642c90d629ff61e2431fadc164c90c19f761ff89355cd7f4763cd05410cd83",
+      "embedded_package_sha256": "df09fe9c406c6b31222637d67f2755b9264b9f58e9b3f99099dfecf526a209b7",
+      "content_id": "1d5aab159d0e2caa503ed693e919df4e37fbb4fe4c70025e8993554c4a990b4a",
+      "authenticode": "NotSigned",
+      "verify_embedded_exit_code": 0
+    }
+  },
+  "candidate": {
+    "version": "1.0.1",
+    "replica_a": {
+      "product_root": "artifacts/product/build/final-candidate-a-product",
+      "package_root": "artifacts/product/build/final-candidate-a-package",
+      "setup_root": "artifacts/setup/build/final-candidate-a-setup"
+    },
+    "replica_b": {
+      "product_root": "artifacts/product/build/final-candidate-b-product",
+      "package_root": "artifacts/product/build/final-candidate-b-package",
+      "setup_root": "artifacts/setup/build/final-candidate-b-setup"
+    },
+    "product": {
+      "schema": "baxy-product-build-v4",
+      "files": 8,
+      "tree_bytes": 83119611,
+      "ledger_sha256": "82409ae40c6b5c81178f916d89fa75238fc5e89ef765b3776f8670bf779667d5",
+      "payload_files": 7,
+      "payload_bytes": 83118117,
+      "app": {
+        "bytes": 67161077,
+        "sha256": "2d9111876e4d8d0b61d7f0a59e755a71564383250738a20c592628fbfd010b00"
+      },
+      "core": {
+        "bytes": 7570432,
+        "sha256": "97a3f426caa924584e63f48a88cae8dd4771e059572e1f6116d503b266aa7119"
+      },
+      "manifest": {
+        "bytes": 1494,
+        "sha256": "f3f0126b57008ca2e2178a980831bb1f1dc14df04b3e45a389beaae6e71b604b"
+      }
+    },
+    "package": {
+      "files": 2,
+      "tree_bytes": 83121557,
+      "ledger_sha256": "f4fc02afa20fa7e38700d3f10cb1032c24a872fe3d4c1472f17024a6d7e2c902",
+      "zip": "BAXY-1.0.1-455243c7c14f-win-x64.zip",
+      "zip_bytes": 83121455,
+      "zip_sha256": "fdded6df99c9353a1c752855d5279e0f88642fa940f911b1982951e15a866978",
+      "digest_file_bytes": 102,
+      "digest_file_sha256": "ac7a9d98fd567a005f4e75a0ae3ec4f17bb79aa9536eef1c8991d2c8c60f9d63"
+    },
+    "setup": {
+      "schema": "baxy-setup-build-v2",
+      "files": 3,
+      "tree_bytes": 87041251,
+      "ledger_sha256": "16a0432ebe8142d3924195969628ae11ea363e3bbc2e9bd904e2c9b13bdb6147",
+      "exe_bytes": 87040000,
+      "exe_sha256": "68cfc30172b5b15e72e4085fcfb243107b54931d050f111d87cfb1991930cd83",
+      "manifest_sha256": "54e671340491b8fee5f48e272930faf307fcccce0450f704a071ffe24e61c59a",
+      "checksums_sha256": "c3a91a50c9cbff667e2ce5046d1f0197f8440cc8534ebb4914afb7769683c4af",
+      "embedded_package_sha256": "fdded6df99c9353a1c752855d5279e0f88642fa940f911b1982951e15a866978",
+      "content_id": "2ee8bde8f125d7d280dfb559fe84d9f828c724139764a79d4d18945fcd663f7b",
+      "authenticode": "NotSigned",
+      "verify_embedded_exit_code": 0
+    },
+    "replica_a_b_byte_identical": {
+      "product_tree": true,
+      "package_tree": true,
+      "setup_tree": true
+    }
+  },
+  "native_aot_core_smoke": {
+    "status": "passed",
+    "hello_type": "hello",
+    "protocol": "baxy.local.v1",
+    "public_tools": 21,
+    "internal_app_status_exported": false,
+    "all_tool_schemas_closed": true,
+    "stderr_empty": true,
+    "exit_code": 0,
+    "isolated_owned_data_leaf_removed": true
+  },
+  "deferred_by_environment": [
+    {
+      "gate": "13/app.open",
+      "status": "pending-by-environment",
+      "runner": "scripts/test_app_open.ps1"
+    },
+    {
+      "gate": "14/clean-install-first-launch-purge",
+      "status": "pending-by-environment",
+      "runner": "scripts/test_gate14_clean_environment.ps1"
+    }
+  ],
+  "preservation": {
+    "preexisting_notepad_pid_5472_present_after_gate": true,
+    "preexisting_notepad_pid_5472_modified_or_closed": false,
+    "preexisting_baxy_data_entries_inspected_or_modified": false,
+    "residual_baxy_processes": 0
+  },
+  "limitations": [
+    "Reproducibility is demonstrated on the same host with shared SDK, linker, and caches; no cross-host or clean-room claim is made.",
+    "First-party executables are NotSigned; SHA-256 proves consistency with the recorded manifests, not publisher identity.",
+    "This gate builds and verifies embedded bytes only. It does not claim a clean installation, first installed launch, purge-data, or app.open in a quiescent session.",
+    "The build directories are intentionally ignored outputs; this tracked evidence binds their exact paths, sizes, hashes, and source commit.",
+    "A later evidence-only commit cannot be the embedded source commit without self-reference; the artifacts remain bound to the clean source HEAD recorded above."
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "baxy.servicenow-codeswitch-stt-preregistration.v1",
+  "createdAtUtc": "2026-08-11T04:52:40.1379849Z",
+  "source": {
+    "dataset": "ServiceNow-AI/asr_codeswitched",
+    "commit": "82bf4b49499bcaa6f4cf6a67bebfab3ee2affcbb",
+    "config": "en_es",
+    "split": "test",
+    "path": "D:/BAXYRuntime/experiments/stt_holdout_sources/servicenow_asr_codeswitched_82bf4b4/en_es-test-00000-of-00001.parquet",
+    "bytes": 134596508,
+    "sha256": "808e373099ae16c80f2bf5434fbb70afd06487ffd3a9c2f88495638dc7e035d8",
+    "huggingFaceLfsSha256": "808e373099ae16c80f2bf5434fbb70afd06487ffd3a9c2f88495638dc7e035d8",
+    "lastContentCommitAtUtc": "2026-06-09T05:21:55Z",
+    "lastRepositoryUpdateAtUtc": "2026-07-21T21:37:30Z"
+  },
+  "footer": {
+    "rows": 259,
+    "rowGroups": 3,
+    "rowGroupRows": [
+      100,
+      100,
+      59
+    ],
+    "columns": 12,
+    "schemaNames": [
+      "ID",
+      "es_utterance",
+      "en_utterance",
+      "utterance",
+      "voice",
+      "audio",
+      "words",
+      "word_languages",
+      "questions",
+      "expected_answers",
+      "welodata_utter_id"
+    ],
+    "createdBy": "parquet-cpp-arrow version 20.0.0"
+  },
+  "selection": {
+    "development": {
+      "rowGroups": [
+        2
+      ],
+      "firstRowIndex": 200,
+      "lastRowIndexInclusive": 258,
+      "rows": 59
+    },
+    "blind": {
+      "rowGroups": [
+        0,
+        1
+      ],
+      "firstRowIndex": 0,
+      "lastRowIndexInclusive": 199,
+      "rows": 200
+    }
+  },
+  "partitionContract": {
+    "developmentMayReadOnlyRowGroups": [
+      2
+    ],
+    "blindMayReadOnlyRowGroups": [
+      0,
+      1
+    ],
+    "blindRequiresNewFrozenEvaluatorAndCandidateContract": true,
+    "blindRowsOpened": false,
+    "developmentRowsOpened": false
+  },
+  "provenance": {
+    "audio": "ElevenLabs Multilingual V2 synthetic speech",
+    "text": "GPT-5 generated code-switch from parallel enterprise utterances",
+    "review": "AI/NLP linguist native in the matrix language",
+    "synthetic": true,
+    "naturalHumanSpeech": false,
+    "licenseDeclaredInDatasetCard": false
+  },
+  "eligibility": {
+    "supplementalCodeSwitchEvaluation": true,
+    "finalPhysicalCertification": false,
+    "reason": "synthetic_audio_and_no_declared_dataset_license"
+  },
+  "preopenContract": {
+    "parquetFooterInspected": true,
+    "rowValuesRead": false,
+    "referenceTranscriptsOpened": false,
+    "audioDecoded": false,
+    "candidatePromoted": false,
+    "effectsExecuted": 0
+  },
+  "generator": {
+    "path": "experiments/stt_quality/preregister_servicenow_codeswitch_stt.py",
+    "sha256": "9b8cc3f850b1c45b90658d6ddbf6dbc634e492a398fb310a15867a901fdaa917"
+  },
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0
+}

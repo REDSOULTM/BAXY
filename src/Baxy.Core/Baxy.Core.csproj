@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(BaxyWindowsTargetFramework)</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>baxy-core</AssemblyName>
+    <RootNamespace>Baxy.Core</RootNamespace>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Baxy.Contracts\Baxy.Contracts.csproj" />
+    <ProjectReference Include="..\Baxy.Kernel\Baxy.Kernel.csproj" />
+    <ProjectReference Include="..\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj" />
+    <ProjectReference Include="..\Baxy.Security.Windows\Baxy.Security.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(PublishAot)' == 'true'">
+    <LinkerArg Include="/Brepro" />
+  </ItemGroup>
+</Project>

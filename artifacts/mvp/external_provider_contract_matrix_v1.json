@@ -1,0 +1,786 @@
+{
+  "schema": "baxy.mvp-external-provider-contract-matrix.v1",
+  "measuredAtUtc": "2026-08-11T20:21:24.8450435\u002B00:00",
+  "scope": "all_external_handlers_inert_provider_and_verifier_simulation",
+  "actualEffectsExecuted": 0,
+  "simulatedEffectReceipts": 61,
+  "coreAssembly": "D:\\BAXY\\source\\tests\\Baxy.Integration.Tests\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.dll",
+  "coreAssemblySha256": "a6ffe8bbc5293bf8f480d029a7c3b91c7feb630ffbdda7d6e01dd91085c352f2",
+  "testAssembly": "D:\\BAXY\\source\\tests\\Baxy.Integration.Tests\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.Integration.Tests.dll",
+  "testAssemblySha256": "eba6d5b82e6ef02b49dae53eb642378f0a59846dd8eb3f6ff09d406e2b4c1ceb",
+  "metrics": {
+    "operations": 85,
+    "exactProviderForwards": 85,
+    "verifiedReceiptsAccepted": 85,
+    "unverifiedReceiptsRejected": 85,
+    "failed": 0
+  },
+  "rows": [
+    {
+      "operation": "audio.microphone.mute",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "audio.volume.adjust",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "backup.known.create",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "backup.known.list",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "backup.known.restore.latest",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "backup.known.verify.latest",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "bluetooth.device.list",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "bluetooth.device.pair",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "bluetooth.radio.set",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "browser.control",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "browser.navigate",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "browser.navigate.named",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "browser.page.read",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "browser.tabs.list",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "calendar.event.create",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "calendar.event.list",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "clipboard.copy",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "clipboard.paste",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "email.latest.read",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "email.latest.reply",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.file.open.latest",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.folder.open",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.known.duplicates",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.known.search",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.known.trash.named",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.path.ensure.absent",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.sandbox.append.named",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.sandbox.diff.named",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "filesystem.sandbox.move.named",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.catalog.list",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.install.cancel",
+      "risk": "irreversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.install.cancel.active",
+      "risk": "irreversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.install.commit",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.install.named",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.install.prepare",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.install.status",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.installed.named",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.launch",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.purchase.commit",
+      "risk": "irreversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "game.purchase.prepare",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "input.key.press",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "input.keyboard.layout",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "input.keyboard.open",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "input.keyboard.status",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "input.pointer.control",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "input.select.all",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "input.text.type",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "input.visible.click",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "media.control",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "media.play.exact",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "media.play.query",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "media.play.youtube",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "media.seek.relative",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "media.status",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "message.recipient.resolve",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "message.send",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "notification.cancel.at",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "notification.cancel.latest",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "notification.diagnose",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "notification.schedule",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "ocr.read",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "office.document.create",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "office.document.read",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "package.install.commit",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "package.install.prepare",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "peripheral.list",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "peripheral.print",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "peripheral.scan",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "streaming.navigate",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "streaming.play.named",
+      "risk": "external_communication",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "system.application.crash.diagnose",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "system.power",
+      "risk": "irreversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "system.process.terminate.named",
+      "risk": "irreversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "system.recyclebin.empty",
+      "risk": "irreversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "system.settings.adjust",
+      "risk": "low_reversible",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "system.settings.set",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "system.settings.status",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "vision.describe",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "web.search",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "wifi.connect",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "wifi.connect.named",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "wifi.disconnect",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "wifi.ensure.connected",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "wifi.profile.list",
+      "risk": "read_only",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    },
+    {
+      "operation": "wifi.status",
+      "risk": "privacy_sensitive",
+      "provider": "IExternalCapabilityProvider",
+      "exactOperationForwarded": true,
+      "verifiedReceiptAccepted": true,
+      "unverifiedReceiptRejected": true,
+      "actualEffectsExecuted": 0
+    }
+  ],
+  "gatePassed": true
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "baxy.supervised-reranker-domain.r243-result.v1",
+  "authority": "isolated_cuda_development_probe_not_runtime_or_r228_measurement",
+  "verdict": "candidate_not_promoted_requires_fresh_oos",
+  "candidate": {
+    "base": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "trained_candidate": "D:\\BAXYRuntime\\candidates\\bge-reranker-r243-supervised",
+    "trained_candidate_merkle_sha256": "77d296fee6043921f6d8600ac0db384d49cf52b788c5b6a084d602ea232dd5fa",
+    "device": "cuda",
+    "family_documents": 31,
+    "pair_count_evaluated": 15872,
+    "threshold": NaN
+  },
+  "training": {
+    "pairs": 17334,
+    "epochs": 1,
+    "batch_size": 4,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 1e-05,
+    "mean_loss": NaN,
+    "peak_allocated_mib": 5430.9365234375
+  },
+  "development_population": {
+    "inside_rows": 256,
+    "outside_rows": 256,
+    "training_oos_rows": 256,
+    "texts_retained": false,
+    "source_ids_retained": false
+  },
+  "observed": {
+    "inside_rows_lost": 256,
+    "outside_zero_candidates": 256,
+    "outside_zero_candidate_rate": 1.0,
+    "inside_score_quantiles": {
+      "min": NaN,
+      "p50": NaN,
+      "p95": NaN,
+      "max": NaN
+    },
+    "outside_score_quantiles": {
+      "min": NaN,
+      "p50": NaN,
+      "p95": NaN,
+      "max": NaN
+    },
+    "elapsed_seconds": 730.7969999999987
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not tune this threshold or open R228. Any candidate needs a separately sealed fresh OOS runner and visible-text audit.",
+  "identities": {
+    "preregistration_sha256": "e2306a7e33e0b3656549208b2ddc0ede41f26cb084f62e7a66b60ad1534bfca7",
+    "runtime_corpus_sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "r207_sha256": "6be518643a188bc5402c4ced73e4da3049d43ed0dbd3a0d8114f6130784fa8b0",
+    "program_sha256": "e694c90f9871c6d415c9c244d3a6908da83c4c706295d5b7333882ab548edf55"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "protocol_id": "baxy-mind-encoder-tournament-v1",
+  "frozen_at": "2026-07-15",
+  "frozen_before_measurement": true,
+  "instrument": "experiments/mind_router_spike/run_spike.py",
+  "frozen_files": {
+    "router_cases": {
+      "role": "input",
+      "source_at_measurement": "experiments/mind_router_spike/data/cases.jsonl",
+      "canonical_location": "src/baxy_mind/tools/data/router_cases.jsonl",
+      "sha256": "619848aaab1725309b8831799ec395b51ddb628f9cc9a22f3e9675b957fde55d"
+    },
+    "router_bank_sources": {
+      "role": "input",
+      "source_at_measurement": "experiments/mind_router_spike/pools.py",
+      "canonical_location": "src/baxy_mind/tools/router_bank_sources.py",
+      "sha256": "a2fe3679dfe46a6de9c9f1721d255c2b78804d48fba0aadfb32934d29240c868"
+    },
+    "development_probes": {
+      "role": "input",
+      "source_at_measurement": "experiments/mind_router_spike/dev_probes.py",
+      "canonical_location": "experiments/mind_router_spike/dev_probes.py",
+      "sha256": "e91e43a9c2318752777a61eaa8b2c980675c257a64af20ac3f566aadcaf895fd"
+    }
+  },
+  "candidates": [
+    {"id": "intfloat/multilingual-e5-small", "params_m": 118, "prefix": "query: "},
+    {"id": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", "params_m": 118, "prefix": ""},
+    {"id": "Qwen/Qwen3-Embedding-0.6B", "params_m": 595, "prefix": ""},
+    {"id": "unsloth/embeddinggemma-300m", "params_m": 300, "prefix": "task: sentence similarity | query: "}
+  ],
+  "procedure": [
+    "1. Por candidato: congelar (tau, margen) SOLO con dev_probes.py (--dev).",
+    "2. Corrida única --eval-coverage y --eval-loo con esos umbrales.",
+    "3. Medir latencia CPU por consulta individual (misma muestra del harness), RAM del proceso tras cargar el modelo, y tamaño en disco de los pesos usados.",
+    "4. Ningún ajuste posterior a haber visto resultados de oráculo."
+  ],
+  "gates": {
+    "hard_gate_coverage": "0 contratos de oráculo violados en modo cobertura (paridad regex)",
+    "hard_gate_runtime": "carga y ejecuta en CPU puro (el router no puede depender de la GPU del usuario)"
+  },
+  "pareto_axes": [
+    "loo_overall_accuracy (calidad primaria)",
+    "loo_dangerous_failure_rate (menor es mejor)",
+    "single_query_cpu_ms (menor es mejor)",
+    "process_ram_mib (menor es mejor)",
+    "weights_size_mib (menor es mejor)"
+  ],
+  "decision_rule": "Entre los que pasan los hard gates y quedan en la frontera de Pareto, gana el de mayor loo_overall_accuracy; ante diferencia < 1 punto porcentual, gana el más liviano (proporcionalidad).",
+  "notes": [
+    "google/embeddinggemma-300m oficial está gated en HF y no hay token en esta máquina; se usa el mirror unsloth con los mismos pesos. Si el mirror no carga en sentence-transformers, el candidato queda excluido y se documenta.",
+    "Los umbrales por candidato son parte de su configuración y se congelan en dev; no se reutilizan entre modelos."
+  ]
+}

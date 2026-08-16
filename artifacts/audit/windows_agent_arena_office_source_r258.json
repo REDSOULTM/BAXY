@@ -1,0 +1,47 @@
+{
+  "schema": "baxy.windows-agent-arena-office-source.r258.v1",
+  "authority": "external_source_identity_and_semantic_admission_audit_not_model_training",
+  "verdict": "rejected_preexecution_application_and_operation_semantic_mismatch",
+  "source": {
+    "repository": "https://github.com/microsoft/WindowsAgentArena.git",
+    "commit": "6d39ed88c545a0d40a7a02e39b928e278df7332b",
+    "license": "MIT",
+    "license_sha256": "9906940f61b1f0b533fa7d99baf55178b2808fbe113ea51dfbfad8572ccd5f2b",
+    "task_directory": "src/win-arena-container/client/evaluation_examples_windows/examples_noctxt/libreoffice_writer",
+    "task_files": 19,
+    "source_files_merkle_sha256": "ec9c7128cd4aab952d80d3b5e40488ffa4b3caf4889058ed1f89a34b26e41556",
+    "task_instructions_decoded": true,
+    "task_instruction_texts_retained": false
+  },
+  "admission": {
+    "required_baxy_operations": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "required_application_and_verification": "Microsoft Word operations verified through COM, including Saved/Dirty state and confirmation-bound discard",
+    "observed_task_snapshot": "libreoffice_writer",
+    "observed_baxy_operation_labels": false,
+    "admitted_baxy_operations": [],
+    "reason": "WAA instructions are public LibreOffice Writer tasks and carry no BAXY operation label. Mapping them to Microsoft Word COM-verified operations would be an unaudited semantic invention, so this source cannot fill R207's six missing typed operations."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not derive labels from generic Writer tasks. A successor source must natively identify Microsoft Word requests that can be audited against all six typed COM-verified operations before it is used with R207.",
+  "identities": {
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "1d671a4a3cf8da4a2bda2a10ba1bd133add2304041f7840d9f6c1766e94842df"
+  }
+}

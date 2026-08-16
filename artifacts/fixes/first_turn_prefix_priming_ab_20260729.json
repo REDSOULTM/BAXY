@@ -1,0 +1,2885 @@
+{
+  "schema": "baxy.first-turn-prefix-priming-ab.v1",
+  "arm_order": [
+    "baseline",
+    "primed"
+  ],
+  "server": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+  "model": "D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+  "profile": {
+    "parallel": 3,
+    "context_per_slot": 4096,
+    "cache_prompt": "llama.cpp b9980 default true",
+    "fresh_server_per_case_and_arm": true,
+    "one_real_turn_per_server": true,
+    "prime_slots": {
+      "P": 0,
+      "G": 1,
+      "L": 2
+    },
+    "real_requests_use_automatic_slot_selection": true
+  },
+  "safety": {
+    "production_code_changed": false,
+    "core_started": false,
+    "external_effects_executed": false,
+    "real_case_text_in_priming_requests": false
+  },
+  "exact_turn_outputs": true,
+  "actual_request_identity": true,
+  "actual_prompt_token_identity": true,
+  "aggregate_delta_primed_minus_baseline_seconds": {
+    "first_turn_e2e": {
+      "median": -0.3669591500001843,
+      "total": -2.2433453000048758,
+      "wins": 6,
+      "pairs": 6,
+      "minimum": -0.6398296999977902,
+      "maximum": -0.12378909999824828
+    },
+    "ready_to_first_turn_complete_including_priming": {
+      "median": 0.4384572000053595,
+      "total": 2.652548200007004,
+      "wins": 0,
+      "pairs": 6,
+      "minimum": 0.20024650000414113,
+      "maximum": 0.6877555000028224
+    },
+    "startup_to_first_turn_complete": {
+      "median": 0.4374707999995735,
+      "total": 2.7437449999997625,
+      "wins": 0,
+      "pairs": 6,
+      "minimum": 0.15489769999840064,
+      "maximum": 0.7276153999919188
+    }
+  },
+  "pairs": [
+    {
+      "case": "task_create_a",
+      "expected_mode": "action",
+      "arm_order": [
+        "baseline",
+        "primed"
+      ],
+      "exact_turn_output": true,
+      "actual_request_identity": true,
+      "actual_prompt_token_identity": true,
+      "delta_primed_minus_baseline_seconds": {
+        "first_turn_e2e": -0.48905729999387404,
+        "ready_to_first_turn_complete_including_priming": 0.33752780000213534,
+        "startup_to_first_turn_complete": 0.2739129000037792
+      },
+      "arms": [
+        {
+          "arm": "baseline",
+          "case": "task_create_a",
+          "startup_to_ready_seconds": 4.377561799999967,
+          "priming": null,
+          "priming_seconds": 0.0,
+          "first_turn_e2e_seconds": 5.675984599998628,
+          "ready_to_first_turn_complete_seconds": 5.675986499998544,
+          "startup_to_first_turn_complete_seconds": 10.05354829999851,
+          "turn": {
+            "case": "task_create_a",
+            "expected_mode": "action",
+            "elapsed_seconds": 5.675955900005647,
+            "decision": {
+              "mode": "action",
+              "operation": "task.create",
+              "question": "",
+              "conversation_kind": "",
+              "effect_count": "one",
+              "effect_operations": [
+                "task.create"
+              ],
+              "effect_verification": "agreed",
+              "response_language": "es"
+            },
+            "extraction": {
+              "arguments": {
+                "title": "preparar el informe trimestral"
+              },
+              "evidence": [
+                [
+                  "title",
+                  "preparar el informe trimestral"
+                ]
+              ],
+              "fallback_question": "title?"
+            },
+            "response_language": null,
+            "reply": null
+          },
+          "posts": [
+            {
+              "case": "task_create_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "d2b082d746a9e71509e1831216aae1e4c48db4b5ef10f5808c637a2e1823fab5",
+              "elapsed_seconds": 1.2850785999980872,
+              "cache_n": 0,
+              "prompt_n": 231,
+              "prompt_ms": 957.843,
+              "predicted_n": 6,
+              "predicted_ms": 300.463,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "ecd4683b71b501404784b5092bcef6b46f3b46546ecb2c33416231e12614079a",
+              "elapsed_seconds": 1.7966407999992953,
+              "cache_n": 0,
+              "prompt_n": 171,
+              "prompt_ms": 598.262,
+              "predicted_n": 19,
+              "predicted_ms": 1192.25,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "V",
+              "id_slot": null,
+              "payload_sha256": "e7ea2814f588c7d87fe9ad5d4858886648e77ca5c01974f01ad9b61b970abe6d",
+              "elapsed_seconds": 1.2307015000042156,
+              "cache_n": 0,
+              "prompt_n": 83,
+              "prompt_ms": 267.391,
+              "predicted_n": 21,
+              "predicted_ms": 928.792,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "038ed94c3cd4e389cf402346585025ad50e4867fa641182fa844c0d6630f2962",
+              "elapsed_seconds": 3.851500400000077,
+              "cache_n": 0,
+              "prompt_n": 648,
+              "prompt_ms": 903.421,
+              "predicted_n": 80,
+              "predicted_ms": 2920.546,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "C",
+              "id_slot": null,
+              "payload_sha256": "773daa4c3caf7dab90fb854878a3eb6650e3f322bcc7dd5b553330ed2fbc6054",
+              "elapsed_seconds": 0.7823138000021572,
+              "cache_n": 0,
+              "prompt_n": 190,
+              "prompt_ms": 214.883,
+              "predicted_n": 18,
+              "predicted_ms": 550.35,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "E",
+              "id_slot": null,
+              "payload_sha256": "ef8d2f01ed12dafc0b6bf6042ac922bdd84968ad5fcffb4ed290870f96330b4a",
+              "elapsed_seconds": 1.0351031999962288,
+              "cache_n": 0,
+              "prompt_n": 174,
+              "prompt_ms": 137.768,
+              "predicted_n": 52,
+              "predicted_ms": 885.475,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"preparar el informe trimestral\"\n  },\n  \"fallback_question\": \"title?\"\n}"
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "d2b082d746a9e71509e1831216aae1e4c48db4b5ef10f5808c637a2e1823fab5",
+              "prompt_tokens_total": 231,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "ecd4683b71b501404784b5092bcef6b46f3b46546ecb2c33416231e12614079a",
+              "prompt_tokens_total": 171,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "V",
+              "payload_sha256": "e7ea2814f588c7d87fe9ad5d4858886648e77ca5c01974f01ad9b61b970abe6d",
+              "prompt_tokens_total": 83,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "038ed94c3cd4e389cf402346585025ad50e4867fa641182fa844c0d6630f2962",
+              "prompt_tokens_total": 648,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "C",
+              "payload_sha256": "773daa4c3caf7dab90fb854878a3eb6650e3f322bcc7dd5b553330ed2fbc6054",
+              "prompt_tokens_total": 190,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "stage": "E",
+              "payload_sha256": "ef8d2f01ed12dafc0b6bf6042ac922bdd84968ad5fcffb4ed290870f96330b4a",
+              "prompt_tokens_total": 174,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"preparar el informe trimestral\"\n  },\n  \"fallback_question\": \"title?\"\n}"
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 648.0,
+              "prompt_ms_median": 903.421,
+              "elapsed_median_seconds": 3.851500400000077
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 171.0,
+              "prompt_ms_median": 598.262,
+              "elapsed_median_seconds": 1.7966407999992953
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 231.0,
+              "prompt_ms_median": 957.843,
+              "elapsed_median_seconds": 1.2850785999980872
+            },
+            "V": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 83.0,
+              "prompt_ms_median": 267.391,
+              "elapsed_median_seconds": 1.2307015000042156
+            },
+            "C": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 190.0,
+              "prompt_ms_median": 214.883,
+              "elapsed_median_seconds": 0.7823138000021572
+            },
+            "E": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 174.0,
+              "prompt_ms_median": 137.768,
+              "elapsed_median_seconds": 1.0351031999962288
+            }
+          }
+        },
+        {
+          "arm": "primed",
+          "case": "task_create_a",
+          "startup_to_ready_seconds": 4.313946900001611,
+          "priming": {
+            "derive_seconds": 0.3172076999981073,
+            "inference_seconds": 0.5092972999991616,
+            "total_seconds": 0.8265049999972689,
+            "prefixes": {
+              "P": {
+                "stage": "P",
+                "lcp_tokens_before_margin": 563,
+                "safe_prefix_tokens": 562,
+                "synthetic_prompt_token_lengths": [
+                  582,
+                  582,
+                  584,
+                  582,
+                  582
+                ],
+                "synthetic_prompt_character_lengths": [
+                  2904,
+                  2903,
+                  2904,
+                  2900,
+                  2902
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "G": {
+                "stage": "G",
+                "lcp_tokens_before_margin": 155,
+                "safe_prefix_tokens": 154,
+                "synthetic_prompt_token_lengths": [
+                  161,
+                  161,
+                  163,
+                  161,
+                  161
+                ],
+                "synthetic_prompt_character_lengths": [
+                  798,
+                  797,
+                  798,
+                  794,
+                  796
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "L": {
+                "stage": "L",
+                "lcp_tokens_before_margin": 215,
+                "safe_prefix_tokens": 214,
+                "synthetic_prompt_token_lengths": [
+                  221,
+                  221,
+                  223,
+                  221,
+                  221
+                ],
+                "synthetic_prompt_character_lengths": [
+                  970,
+                  969,
+                  970,
+                  966,
+                  968
+                ],
+                "conservative_margin_tokens": 1
+              }
+            },
+            "requests": [
+              {
+                "stage": "G",
+                "id_slot": 1,
+                "elapsed_seconds": 0.45160279999981867,
+                "safe_prefix_tokens": 154,
+                "tokens_cached": 154,
+                "tokens_evaluated": 154,
+                "cache_n": 0,
+                "prompt_n": 154,
+                "prompt_ms": 449.119,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "L",
+                "id_slot": 2,
+                "elapsed_seconds": 0.5079960000002757,
+                "safe_prefix_tokens": 214,
+                "tokens_cached": 214,
+                "tokens_evaluated": 214,
+                "cache_n": 0,
+                "prompt_n": 214,
+                "prompt_ms": 375.552,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "P",
+                "id_slot": 0,
+                "elapsed_seconds": 0.5080361999935121,
+                "safe_prefix_tokens": 562,
+                "tokens_cached": 562,
+                "tokens_evaluated": 562,
+                "cache_n": 0,
+                "prompt_n": 562,
+                "prompt_ms": 505.206,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              }
+            ]
+          },
+          "priming_seconds": 0.8265049999972689,
+          "first_turn_e2e_seconds": 5.186927300004754,
+          "ready_to_first_turn_complete_seconds": 6.013514300000679,
+          "startup_to_first_turn_complete_seconds": 10.32746120000229,
+          "turn": {
+            "case": "task_create_a",
+            "expected_mode": "action",
+            "elapsed_seconds": 5.1868953999946825,
+            "decision": {
+              "mode": "action",
+              "operation": "task.create",
+              "question": "",
+              "conversation_kind": "",
+              "effect_count": "one",
+              "effect_operations": [
+                "task.create"
+              ],
+              "effect_verification": "agreed",
+              "response_language": "es"
+            },
+            "extraction": {
+              "arguments": {
+                "title": "preparar el informe trimestral"
+              },
+              "evidence": [
+                [
+                  "title",
+                  "preparar el informe trimestral"
+                ]
+              ],
+              "fallback_question": "title?"
+            },
+            "response_language": null,
+            "reply": null
+          },
+          "posts": [
+            {
+              "case": "task_create_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "d2b082d746a9e71509e1831216aae1e4c48db4b5ef10f5808c637a2e1823fab5",
+              "elapsed_seconds": 0.6069361999980174,
+              "cache_n": 209,
+              "prompt_n": 22,
+              "prompt_ms": 266.481,
+              "predicted_n": 6,
+              "predicted_ms": 218.665,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "ecd4683b71b501404784b5092bcef6b46f3b46546ecb2c33416231e12614079a",
+              "elapsed_seconds": 1.0787869000050705,
+              "cache_n": 149,
+              "prompt_n": 22,
+              "prompt_ms": 306.647,
+              "predicted_n": 19,
+              "predicted_ms": 747.029,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "V",
+              "id_slot": null,
+              "payload_sha256": "e7ea2814f588c7d87fe9ad5d4858886648e77ca5c01974f01ad9b61b970abe6d",
+              "elapsed_seconds": 1.5897521000006236,
+              "cache_n": 0,
+              "prompt_n": 83,
+              "prompt_ms": 241.672,
+              "predicted_n": 21,
+              "predicted_ms": 1317.369,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "038ed94c3cd4e389cf402346585025ad50e4867fa641182fa844c0d6630f2962",
+              "elapsed_seconds": 3.3613962000017636,
+              "cache_n": 562,
+              "prompt_n": 86,
+              "prompt_ms": 246.901,
+              "predicted_n": 80,
+              "predicted_ms": 3093.95,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "C",
+              "id_slot": null,
+              "payload_sha256": "773daa4c3caf7dab90fb854878a3eb6650e3f322bcc7dd5b553330ed2fbc6054",
+              "elapsed_seconds": 0.8132907999970485,
+              "cache_n": 0,
+              "prompt_n": 190,
+              "prompt_ms": 208.925,
+              "predicted_n": 18,
+              "predicted_ms": 585.781,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "case": "task_create_a",
+              "stage": "E",
+              "id_slot": null,
+              "payload_sha256": "ef8d2f01ed12dafc0b6bf6042ac922bdd84968ad5fcffb4ed290870f96330b4a",
+              "elapsed_seconds": 1.0102020999984234,
+              "cache_n": 0,
+              "prompt_n": 174,
+              "prompt_ms": 138.062,
+              "predicted_n": 52,
+              "predicted_ms": 861.765,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"preparar el informe trimestral\"\n  },\n  \"fallback_question\": \"title?\"\n}"
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "d2b082d746a9e71509e1831216aae1e4c48db4b5ef10f5808c637a2e1823fab5",
+              "prompt_tokens_total": 231,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "ecd4683b71b501404784b5092bcef6b46f3b46546ecb2c33416231e12614079a",
+              "prompt_tokens_total": 171,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "V",
+              "payload_sha256": "e7ea2814f588c7d87fe9ad5d4858886648e77ca5c01974f01ad9b61b970abe6d",
+              "prompt_tokens_total": 83,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "038ed94c3cd4e389cf402346585025ad50e4867fa641182fa844c0d6630f2962",
+              "prompt_tokens_total": 648,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "C",
+              "payload_sha256": "773daa4c3caf7dab90fb854878a3eb6650e3f322bcc7dd5b553330ed2fbc6054",
+              "prompt_tokens_total": 190,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "stage": "E",
+              "payload_sha256": "ef8d2f01ed12dafc0b6bf6042ac922bdd84968ad5fcffb4ed290870f96330b4a",
+              "prompt_tokens_total": 174,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"preparar el informe trimestral\"\n  },\n  \"fallback_question\": \"title?\"\n}"
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 562.0,
+              "prompt_n_median": 86.0,
+              "prompt_ms_median": 246.901,
+              "elapsed_median_seconds": 3.3613962000017636
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 149.0,
+              "prompt_n_median": 22.0,
+              "prompt_ms_median": 306.647,
+              "elapsed_median_seconds": 1.0787869000050705
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 209.0,
+              "prompt_n_median": 22.0,
+              "prompt_ms_median": 266.481,
+              "elapsed_median_seconds": 0.6069361999980174
+            },
+            "V": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 83.0,
+              "prompt_ms_median": 241.672,
+              "elapsed_median_seconds": 1.5897521000006236
+            },
+            "C": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 190.0,
+              "prompt_ms_median": 208.925,
+              "elapsed_median_seconds": 0.8132907999970485
+            },
+            "E": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 174.0,
+              "prompt_ms_median": 138.062,
+              "elapsed_median_seconds": 1.0102020999984234
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "knowledge_a",
+      "expected_mode": "conversation",
+      "arm_order": [
+        "baseline",
+        "primed"
+      ],
+      "exact_turn_output": true,
+      "actual_request_identity": true,
+      "actual_prompt_token_identity": true,
+      "delta_primed_minus_baseline_seconds": {
+        "first_turn_e2e": -0.24486100000649458,
+        "ready_to_first_turn_complete_including_priming": 0.6049726999990526,
+        "startup_to_first_turn_complete": 0.7276153999919188
+      },
+      "arms": [
+        {
+          "arm": "baseline",
+          "case": "knowledge_a",
+          "startup_to_ready_seconds": 4.0809501000039745,
+          "priming": null,
+          "priming_seconds": 0.0,
+          "first_turn_e2e_seconds": 4.71702550000191,
+          "ready_to_first_turn_complete_seconds": 4.717027099999541,
+          "startup_to_first_turn_complete_seconds": 8.797977200003515,
+          "turn": {
+            "case": "knowledge_a",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 4.716976600000635,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+          },
+          "posts": [
+            {
+              "case": "knowledge_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "elapsed_seconds": 1.197370599998976,
+              "cache_n": 0,
+              "prompt_n": 228,
+              "prompt_ms": 849.644,
+              "predicted_n": 6,
+              "predicted_ms": 206.621,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "elapsed_seconds": 1.640854199999012,
+              "cache_n": 0,
+              "prompt_n": 168,
+              "prompt_ms": 511.854,
+              "predicted_n": 20,
+              "predicted_ms": 1123.933,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "elapsed_seconds": 2.794250099999772,
+              "cache_n": 0,
+              "prompt_n": 645,
+              "prompt_ms": 860.938,
+              "predicted_n": 71,
+              "predicted_ms": 1907.513,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"conversation\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "elapsed_seconds": 1.9212444000004325,
+              "cache_n": 0,
+              "prompt_n": 202,
+              "prompt_ms": 147.476,
+              "predicted_n": 118,
+              "predicted_ms": 1746.106,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "prompt_tokens_total": 228,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "prompt_tokens_total": 168,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "prompt_tokens_total": 645,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"conversation\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "prompt_tokens_total": 202,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 645.0,
+              "prompt_ms_median": 860.938,
+              "elapsed_median_seconds": 2.794250099999772
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 168.0,
+              "prompt_ms_median": 511.854,
+              "elapsed_median_seconds": 1.640854199999012
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 228.0,
+              "prompt_ms_median": 849.644,
+              "elapsed_median_seconds": 1.197370599998976
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 202.0,
+              "prompt_ms_median": 147.476,
+              "elapsed_median_seconds": 1.9212444000004325
+            }
+          }
+        },
+        {
+          "arm": "primed",
+          "case": "knowledge_a",
+          "startup_to_ready_seconds": 4.203592799996841,
+          "priming": {
+            "derive_seconds": 0.33999760000006063,
+            "inference_seconds": 0.5097272000057274,
+            "total_seconds": 0.849724800005788,
+            "prefixes": {
+              "P": {
+                "stage": "P",
+                "lcp_tokens_before_margin": 563,
+                "safe_prefix_tokens": 562,
+                "synthetic_prompt_token_lengths": [
+                  582,
+                  582,
+                  584,
+                  582,
+                  582
+                ],
+                "synthetic_prompt_character_lengths": [
+                  2904,
+                  2903,
+                  2904,
+                  2900,
+                  2902
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "G": {
+                "stage": "G",
+                "lcp_tokens_before_margin": 155,
+                "safe_prefix_tokens": 154,
+                "synthetic_prompt_token_lengths": [
+                  161,
+                  161,
+                  163,
+                  161,
+                  161
+                ],
+                "synthetic_prompt_character_lengths": [
+                  798,
+                  797,
+                  798,
+                  794,
+                  796
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "L": {
+                "stage": "L",
+                "lcp_tokens_before_margin": 215,
+                "safe_prefix_tokens": 214,
+                "synthetic_prompt_token_lengths": [
+                  221,
+                  221,
+                  223,
+                  221,
+                  221
+                ],
+                "synthetic_prompt_character_lengths": [
+                  970,
+                  969,
+                  970,
+                  966,
+                  968
+                ],
+                "conservative_margin_tokens": 1
+              }
+            },
+            "requests": [
+              {
+                "stage": "G",
+                "id_slot": 1,
+                "elapsed_seconds": 0.4517485999967903,
+                "safe_prefix_tokens": 154,
+                "tokens_cached": 154,
+                "tokens_evaluated": 154,
+                "cache_n": 0,
+                "prompt_n": 154,
+                "prompt_ms": 449.772,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "L",
+                "id_slot": 2,
+                "elapsed_seconds": 0.5085034000003361,
+                "safe_prefix_tokens": 214,
+                "tokens_cached": 214,
+                "tokens_evaluated": 214,
+                "cache_n": 0,
+                "prompt_n": 214,
+                "prompt_ms": 381.251,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "P",
+                "id_slot": 0,
+                "elapsed_seconds": 0.508286299998872,
+                "safe_prefix_tokens": 562,
+                "tokens_cached": 562,
+                "tokens_evaluated": 562,
+                "cache_n": 0,
+                "prompt_n": 562,
+                "prompt_ms": 505.863,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              }
+            ]
+          },
+          "priming_seconds": 0.849724800005788,
+          "first_turn_e2e_seconds": 4.472164499995415,
+          "ready_to_first_turn_complete_seconds": 5.3219997999985935,
+          "startup_to_first_turn_complete_seconds": 9.525592599995434,
+          "turn": {
+            "case": "knowledge_a",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 4.472134700001334,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+          },
+          "posts": [
+            {
+              "case": "knowledge_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "elapsed_seconds": 0.6721522000007099,
+              "cache_n": 209,
+              "prompt_n": 19,
+              "prompt_ms": 330.753,
+              "predicted_n": 6,
+              "predicted_ms": 218.456,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "elapsed_seconds": 1.228431499999715,
+              "cache_n": 149,
+              "prompt_n": 19,
+              "prompt_ms": 310.424,
+              "predicted_n": 20,
+              "predicted_ms": 891.457,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "elapsed_seconds": 2.535718799997994,
+              "cache_n": 562,
+              "prompt_n": 83,
+              "prompt_ms": 245.574,
+              "predicted_n": 72,
+              "predicted_ms": 2268.647,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "elapsed_seconds": 1.9349471999958041,
+              "cache_n": 0,
+              "prompt_n": 202,
+              "prompt_ms": 147.416,
+              "predicted_n": 118,
+              "predicted_ms": 1760.148,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "prompt_tokens_total": 228,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "prompt_tokens_total": 168,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "prompt_tokens_total": 645,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "prompt_tokens_total": 202,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 562.0,
+              "prompt_n_median": 83.0,
+              "prompt_ms_median": 245.574,
+              "elapsed_median_seconds": 2.535718799997994
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 149.0,
+              "prompt_n_median": 19.0,
+              "prompt_ms_median": 310.424,
+              "elapsed_median_seconds": 1.228431499999715
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 209.0,
+              "prompt_n_median": 19.0,
+              "prompt_ms_median": 330.753,
+              "elapsed_median_seconds": 0.6721522000007099
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 202.0,
+              "prompt_ms_median": 147.416,
+              "elapsed_median_seconds": 1.9349471999958041
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "note_create_a",
+      "expected_mode": "action",
+      "arm_order": [
+        "baseline",
+        "primed"
+      ],
+      "exact_turn_output": true,
+      "actual_request_identity": true,
+      "actual_prompt_token_identity": true,
+      "delta_primed_minus_baseline_seconds": {
+        "first_turn_e2e": -0.12378909999824828,
+        "ready_to_first_turn_complete_including_priming": 0.6877555000028224,
+        "startup_to_first_turn_complete": 0.7123774000065168
+      },
+      "arms": [
+        {
+          "arm": "baseline",
+          "case": "note_create_a",
+          "startup_to_ready_seconds": 4.175877699999546,
+          "priming": null,
+          "priming_seconds": 0.0,
+          "first_turn_e2e_seconds": 5.805445199999667,
+          "ready_to_first_turn_complete_seconds": 5.805446499995014,
+          "startup_to_first_turn_complete_seconds": 9.98132419999456,
+          "turn": {
+            "case": "note_create_a",
+            "expected_mode": "action",
+            "elapsed_seconds": 5.8054153000048245,
+            "decision": {
+              "mode": "action",
+              "operation": "note.create",
+              "question": "",
+              "conversation_kind": "",
+              "effect_count": "one",
+              "effect_operations": [
+                "note.create"
+              ],
+              "effect_verification": "agreed",
+              "response_language": "es"
+            },
+            "extraction": {
+              "arguments": {
+                "content": "revisar el presupuesto",
+                "title": "Aurora"
+              },
+              "evidence": [
+                [
+                  "content",
+                  "revisar el presupuesto"
+                ],
+                [
+                  "title",
+                  "Aurora"
+                ]
+              ],
+              "fallback_question": "¿Cuál es el contenido y el título de la nota?"
+            },
+            "response_language": null,
+            "reply": null
+          },
+          "posts": [
+            {
+              "case": "note_create_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "376ffb31f8e0c8df8876d1ec023d69c6f7ee51694de6918f6089f05750abde20",
+              "elapsed_seconds": 1.1219514000040363,
+              "cache_n": 0,
+              "prompt_n": 231,
+              "prompt_ms": 874.079,
+              "predicted_n": 6,
+              "predicted_ms": 223.014,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0c170c4dbecacf54b4fd14365ff999d2d79643694ca682ba43ad3f760ed687e8",
+              "elapsed_seconds": 1.580388900001708,
+              "cache_n": 0,
+              "prompt_n": 171,
+              "prompt_ms": 553.966,
+              "predicted_n": 19,
+              "predicted_ms": 1020.816,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "V",
+              "id_slot": null,
+              "payload_sha256": "b147d545f0e21224d350f0687d343e42e6b58efc67b540085b9f1759f731d4b5",
+              "elapsed_seconds": 1.2850311000001966,
+              "cache_n": 0,
+              "prompt_n": 83,
+              "prompt_ms": 239.053,
+              "predicted_n": 21,
+              "predicted_ms": 1015.9,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "4001a0098577e30cda9436c61124dfc2145d3aba2e38a5869fb22959c7bc5462",
+              "elapsed_seconds": 3.874068000004627,
+              "cache_n": 0,
+              "prompt_n": 648,
+              "prompt_ms": 823.006,
+              "predicted_n": 80,
+              "predicted_ms": 3025.368,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"note.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"note.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "C",
+              "id_slot": null,
+              "payload_sha256": "9faff2f87933deaa63ed2ecf6e3470b2aa2eb77c7a554b1a5893dd3c4db819e8",
+              "elapsed_seconds": 0.7202202999978908,
+              "cache_n": 0,
+              "prompt_n": 169,
+              "prompt_ms": 217.484,
+              "predicted_n": 18,
+              "predicted_ms": 485.867,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "E",
+              "id_slot": null,
+              "payload_sha256": "21b7a011e785ff31919ac19b7cb24578af29654798cc6376b894cb76237afc2b",
+              "elapsed_seconds": 1.2095928999988246,
+              "cache_n": 0,
+              "prompt_n": 180,
+              "prompt_ms": 142.516,
+              "predicted_n": 66,
+              "predicted_ms": 1057.727,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"content\": \"revisar el presupuesto\",\n    \"title\": \"Aurora\"\n  },\n  \"fallback_question\": \"¿Cuál es el contenido y el título de la nota?\"\n}"
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "376ffb31f8e0c8df8876d1ec023d69c6f7ee51694de6918f6089f05750abde20",
+              "prompt_tokens_total": 231,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0c170c4dbecacf54b4fd14365ff999d2d79643694ca682ba43ad3f760ed687e8",
+              "prompt_tokens_total": 171,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "V",
+              "payload_sha256": "b147d545f0e21224d350f0687d343e42e6b58efc67b540085b9f1759f731d4b5",
+              "prompt_tokens_total": 83,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "4001a0098577e30cda9436c61124dfc2145d3aba2e38a5869fb22959c7bc5462",
+              "prompt_tokens_total": 648,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"note.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"note.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "C",
+              "payload_sha256": "9faff2f87933deaa63ed2ecf6e3470b2aa2eb77c7a554b1a5893dd3c4db819e8",
+              "prompt_tokens_total": 169,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "stage": "E",
+              "payload_sha256": "21b7a011e785ff31919ac19b7cb24578af29654798cc6376b894cb76237afc2b",
+              "prompt_tokens_total": 180,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"content\": \"revisar el presupuesto\",\n    \"title\": \"Aurora\"\n  },\n  \"fallback_question\": \"¿Cuál es el contenido y el título de la nota?\"\n}"
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 648.0,
+              "prompt_ms_median": 823.006,
+              "elapsed_median_seconds": 3.874068000004627
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 171.0,
+              "prompt_ms_median": 553.966,
+              "elapsed_median_seconds": 1.580388900001708
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 231.0,
+              "prompt_ms_median": 874.079,
+              "elapsed_median_seconds": 1.1219514000040363
+            },
+            "V": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 83.0,
+              "prompt_ms_median": 239.053,
+              "elapsed_median_seconds": 1.2850311000001966
+            },
+            "C": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 169.0,
+              "prompt_ms_median": 217.484,
+              "elapsed_median_seconds": 0.7202202999978908
+            },
+            "E": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 180.0,
+              "prompt_ms_median": 142.516,
+              "elapsed_median_seconds": 1.2095928999988246
+            }
+          }
+        },
+        {
+          "arm": "primed",
+          "case": "note_create_a",
+          "startup_to_ready_seconds": 4.200499600003241,
+          "priming": {
+            "derive_seconds": 0.2962162000039825,
+            "inference_seconds": 0.5152643000037642,
+            "total_seconds": 0.8114805000077467,
+            "prefixes": {
+              "P": {
+                "stage": "P",
+                "lcp_tokens_before_margin": 563,
+                "safe_prefix_tokens": 562,
+                "synthetic_prompt_token_lengths": [
+                  582,
+                  582,
+                  584,
+                  582,
+                  582
+                ],
+                "synthetic_prompt_character_lengths": [
+                  2904,
+                  2903,
+                  2904,
+                  2900,
+                  2902
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "G": {
+                "stage": "G",
+                "lcp_tokens_before_margin": 155,
+                "safe_prefix_tokens": 154,
+                "synthetic_prompt_token_lengths": [
+                  161,
+                  161,
+                  163,
+                  161,
+                  161
+                ],
+                "synthetic_prompt_character_lengths": [
+                  798,
+                  797,
+                  798,
+                  794,
+                  796
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "L": {
+                "stage": "L",
+                "lcp_tokens_before_margin": 215,
+                "safe_prefix_tokens": 214,
+                "synthetic_prompt_token_lengths": [
+                  221,
+                  221,
+                  223,
+                  221,
+                  221
+                ],
+                "synthetic_prompt_character_lengths": [
+                  970,
+                  969,
+                  970,
+                  966,
+                  968
+                ],
+                "conservative_margin_tokens": 1
+              }
+            },
+            "requests": [
+              {
+                "stage": "G",
+                "id_slot": 1,
+                "elapsed_seconds": 0.2543234999975539,
+                "safe_prefix_tokens": 154,
+                "tokens_cached": 154,
+                "tokens_evaluated": 154,
+                "cache_n": 0,
+                "prompt_n": 154,
+                "prompt_ms": 252.252,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "L",
+                "id_slot": 2,
+                "elapsed_seconds": 0.48260420000588056,
+                "safe_prefix_tokens": 214,
+                "tokens_cached": 214,
+                "tokens_evaluated": 214,
+                "cache_n": 0,
+                "prompt_n": 214,
+                "prompt_ms": 391.591,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "P",
+                "id_slot": 0,
+                "elapsed_seconds": 0.5146414000046207,
+                "safe_prefix_tokens": 562,
+                "tokens_cached": 562,
+                "tokens_evaluated": 562,
+                "cache_n": 0,
+                "prompt_n": 562,
+                "prompt_ms": 490.456,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              }
+            ]
+          },
+          "priming_seconds": 0.8114805000077467,
+          "first_turn_e2e_seconds": 5.681656100001419,
+          "ready_to_first_turn_complete_seconds": 6.4932019999978365,
+          "startup_to_first_turn_complete_seconds": 10.693701600001077,
+          "turn": {
+            "case": "note_create_a",
+            "expected_mode": "action",
+            "elapsed_seconds": 5.681631799998286,
+            "decision": {
+              "mode": "action",
+              "operation": "note.create",
+              "question": "",
+              "conversation_kind": "",
+              "effect_count": "one",
+              "effect_operations": [
+                "note.create"
+              ],
+              "effect_verification": "agreed",
+              "response_language": "es"
+            },
+            "extraction": {
+              "arguments": {
+                "content": "revisar el presupuesto",
+                "title": "Aurora"
+              },
+              "evidence": [
+                [
+                  "content",
+                  "revisar el presupuesto"
+                ],
+                [
+                  "title",
+                  "Aurora"
+                ]
+              ],
+              "fallback_question": "¿Cuál es el contenido y el título de la nota?"
+            },
+            "response_language": null,
+            "reply": null
+          },
+          "posts": [
+            {
+              "case": "note_create_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "376ffb31f8e0c8df8876d1ec023d69c6f7ee51694de6918f6089f05750abde20",
+              "elapsed_seconds": 0.6024502999935066,
+              "cache_n": 209,
+              "prompt_n": 22,
+              "prompt_ms": 261.438,
+              "predicted_n": 6,
+              "predicted_ms": 221.621,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0c170c4dbecacf54b4fd14365ff999d2d79643694ca682ba43ad3f760ed687e8",
+              "elapsed_seconds": 1.152867899996636,
+              "cache_n": 149,
+              "prompt_n": 22,
+              "prompt_ms": 301.849,
+              "predicted_n": 19,
+              "predicted_ms": 828.833,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "V",
+              "id_slot": null,
+              "payload_sha256": "b147d545f0e21224d350f0687d343e42e6b58efc67b540085b9f1759f731d4b5",
+              "elapsed_seconds": 1.7311823999989429,
+              "cache_n": 0,
+              "prompt_n": 83,
+              "prompt_ms": 262.058,
+              "predicted_n": 21,
+              "predicted_ms": 1438.3,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "4001a0098577e30cda9436c61124dfc2145d3aba2e38a5869fb22959c7bc5462",
+              "elapsed_seconds": 3.8075190000017756,
+              "cache_n": 562,
+              "prompt_n": 86,
+              "prompt_ms": 241.646,
+              "predicted_n": 80,
+              "predicted_ms": 3548.039,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"note.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"note.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "C",
+              "id_slot": null,
+              "payload_sha256": "9faff2f87933deaa63ed2ecf6e3470b2aa2eb77c7a554b1a5893dd3c4db819e8",
+              "elapsed_seconds": 0.6674874000018463,
+              "cache_n": 0,
+              "prompt_n": 169,
+              "prompt_ms": 199.43,
+              "predicted_n": 18,
+              "predicted_ms": 450.657,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "case": "note_create_a",
+              "stage": "E",
+              "id_slot": null,
+              "payload_sha256": "21b7a011e785ff31919ac19b7cb24578af29654798cc6376b894cb76237afc2b",
+              "elapsed_seconds": 1.205324999995355,
+              "cache_n": 0,
+              "prompt_n": 180,
+              "prompt_ms": 141.295,
+              "predicted_n": 66,
+              "predicted_ms": 1052.972,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"content\": \"revisar el presupuesto\",\n    \"title\": \"Aurora\"\n  },\n  \"fallback_question\": \"¿Cuál es el contenido y el título de la nota?\"\n}"
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "376ffb31f8e0c8df8876d1ec023d69c6f7ee51694de6918f6089f05750abde20",
+              "prompt_tokens_total": 231,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0c170c4dbecacf54b4fd14365ff999d2d79643694ca682ba43ad3f760ed687e8",
+              "prompt_tokens_total": 171,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "V",
+              "payload_sha256": "b147d545f0e21224d350f0687d343e42e6b58efc67b540085b9f1759f731d4b5",
+              "prompt_tokens_total": 83,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "4001a0098577e30cda9436c61124dfc2145d3aba2e38a5869fb22959c7bc5462",
+              "prompt_tokens_total": 648,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"note.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"note.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "C",
+              "payload_sha256": "9faff2f87933deaa63ed2ecf6e3470b2aa2eb77c7a554b1a5893dd3c4db819e8",
+              "prompt_tokens_total": 169,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "stage": "E",
+              "payload_sha256": "21b7a011e785ff31919ac19b7cb24578af29654798cc6376b894cb76237afc2b",
+              "prompt_tokens_total": 180,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"content\": \"revisar el presupuesto\",\n    \"title\": \"Aurora\"\n  },\n  \"fallback_question\": \"¿Cuál es el contenido y el título de la nota?\"\n}"
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 562.0,
+              "prompt_n_median": 86.0,
+              "prompt_ms_median": 241.646,
+              "elapsed_median_seconds": 3.8075190000017756
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 149.0,
+              "prompt_n_median": 22.0,
+              "prompt_ms_median": 301.849,
+              "elapsed_median_seconds": 1.152867899996636
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 209.0,
+              "prompt_n_median": 22.0,
+              "prompt_ms_median": 261.438,
+              "elapsed_median_seconds": 0.6024502999935066
+            },
+            "V": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 83.0,
+              "prompt_ms_median": 262.058,
+              "elapsed_median_seconds": 1.7311823999989429
+            },
+            "C": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 169.0,
+              "prompt_ms_median": 199.43,
+              "elapsed_median_seconds": 0.6674874000018463
+            },
+            "E": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 180.0,
+              "prompt_ms_median": 141.295,
+              "elapsed_median_seconds": 1.205324999995355
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "knowledge_b",
+      "expected_mode": "conversation",
+      "arm_order": [
+        "baseline",
+        "primed"
+      ],
+      "exact_turn_output": true,
+      "actual_request_identity": true,
+      "actual_prompt_token_identity": true,
+      "delta_primed_minus_baseline_seconds": {
+        "first_turn_e2e": -0.6398296999977902,
+        "ready_to_first_turn_complete_including_priming": 0.20024650000414113,
+        "startup_to_first_turn_complete": 0.15489769999840064
+      },
+      "arms": [
+        {
+          "arm": "baseline",
+          "case": "knowledge_b",
+          "startup_to_ready_seconds": 4.094505600005505,
+          "priming": null,
+          "priming_seconds": 0.0,
+          "first_turn_e2e_seconds": 5.145004099998914,
+          "ready_to_first_turn_complete_seconds": 5.14500599999883,
+          "startup_to_first_turn_complete_seconds": 9.239511600004334,
+          "turn": {
+            "case": "knowledge_b",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 5.144944700004999,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "El cielo se ve azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz viaja a través de la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible a los colores azules, vemos el cielo de ese color."
+          },
+          "posts": [
+            {
+              "case": "knowledge_b",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "c588b52c37509ef4f934382dac7a529744a4134a60df461cb429aa1eaa052932",
+              "elapsed_seconds": 1.213102000001527,
+              "cache_n": 0,
+              "prompt_n": 229,
+              "prompt_ms": 943.817,
+              "predicted_n": 6,
+              "predicted_ms": 238.154,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "knowledge_b",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0ee7fc155d9221eb688cd6ea33d344f4b55730403aedf2fe3221d8856a8216f8",
+              "elapsed_seconds": 1.7015411000029417,
+              "cache_n": 0,
+              "prompt_n": 169,
+              "prompt_ms": 553.158,
+              "predicted_n": 20,
+              "predicted_ms": 1141.386,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+            },
+            {
+              "case": "knowledge_b",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "03571ab70d3fd19e5f7856b771c47028e88b61bd2e61587ed097f18c67b2b200",
+              "elapsed_seconds": 3.158708100003423,
+              "cache_n": 0,
+              "prompt_n": 646,
+              "prompt_ms": 889.865,
+              "predicted_n": 87,
+              "predicted_ms": 2237.231,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Es una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente externa.\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "knowledge_b",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "6ec54257d1f446913563b40f6bd9e293fa5e0add55750f37f136abb972df66a9",
+              "elapsed_seconds": 1.984769899994717,
+              "cache_n": 0,
+              "prompt_n": 203,
+              "prompt_ms": 145.373,
+              "predicted_n": 124,
+              "predicted_ms": 1814.537,
+              "content": "El cielo se ve azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz viaja a través de la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible a los colores azules, vemos el cielo de ese color."
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "c588b52c37509ef4f934382dac7a529744a4134a60df461cb429aa1eaa052932",
+              "prompt_tokens_total": 229,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0ee7fc155d9221eb688cd6ea33d344f4b55730403aedf2fe3221d8856a8216f8",
+              "prompt_tokens_total": 169,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "03571ab70d3fd19e5f7856b771c47028e88b61bd2e61587ed097f18c67b2b200",
+              "prompt_tokens_total": 646,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Es una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente externa.\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "6ec54257d1f446913563b40f6bd9e293fa5e0add55750f37f136abb972df66a9",
+              "prompt_tokens_total": 203,
+              "content": "El cielo se ve azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz viaja a través de la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible a los colores azules, vemos el cielo de ese color."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 646.0,
+              "prompt_ms_median": 889.865,
+              "elapsed_median_seconds": 3.158708100003423
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 169.0,
+              "prompt_ms_median": 553.158,
+              "elapsed_median_seconds": 1.7015411000029417
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 229.0,
+              "prompt_ms_median": 943.817,
+              "elapsed_median_seconds": 1.213102000001527
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 203.0,
+              "prompt_ms_median": 145.373,
+              "elapsed_median_seconds": 1.984769899994717
+            }
+          }
+        },
+        {
+          "arm": "primed",
+          "case": "knowledge_b",
+          "startup_to_ready_seconds": 4.049156799999764,
+          "priming": {
+            "derive_seconds": 0.331537500002014,
+            "inference_seconds": 0.5084390999982134,
+            "total_seconds": 0.8399766000002273,
+            "prefixes": {
+              "P": {
+                "stage": "P",
+                "lcp_tokens_before_margin": 563,
+                "safe_prefix_tokens": 562,
+                "synthetic_prompt_token_lengths": [
+                  582,
+                  582,
+                  584,
+                  582,
+                  582
+                ],
+                "synthetic_prompt_character_lengths": [
+                  2904,
+                  2903,
+                  2904,
+                  2900,
+                  2902
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "G": {
+                "stage": "G",
+                "lcp_tokens_before_margin": 155,
+                "safe_prefix_tokens": 154,
+                "synthetic_prompt_token_lengths": [
+                  161,
+                  161,
+                  163,
+                  161,
+                  161
+                ],
+                "synthetic_prompt_character_lengths": [
+                  798,
+                  797,
+                  798,
+                  794,
+                  796
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "L": {
+                "stage": "L",
+                "lcp_tokens_before_margin": 215,
+                "safe_prefix_tokens": 214,
+                "synthetic_prompt_token_lengths": [
+                  221,
+                  221,
+                  223,
+                  221,
+                  221
+                ],
+                "synthetic_prompt_character_lengths": [
+                  970,
+                  969,
+                  970,
+                  966,
+                  968
+                ],
+                "conservative_margin_tokens": 1
+              }
+            },
+            "requests": [
+              {
+                "stage": "G",
+                "id_slot": 1,
+                "elapsed_seconds": 0.4502405000021099,
+                "safe_prefix_tokens": 154,
+                "tokens_cached": 154,
+                "tokens_evaluated": 154,
+                "cache_n": 0,
+                "prompt_n": 154,
+                "prompt_ms": 448.133,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "L",
+                "id_slot": 2,
+                "elapsed_seconds": 0.5071717000028002,
+                "safe_prefix_tokens": 214,
+                "tokens_cached": 214,
+                "tokens_evaluated": 214,
+                "cache_n": 0,
+                "prompt_n": 214,
+                "prompt_ms": 377.928,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "P",
+                "id_slot": 0,
+                "elapsed_seconds": 0.5067904999959865,
+                "safe_prefix_tokens": 562,
+                "tokens_cached": 562,
+                "tokens_evaluated": 562,
+                "cache_n": 0,
+                "prompt_n": 562,
+                "prompt_ms": 504.009,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              }
+            ]
+          },
+          "priming_seconds": 0.8399766000002273,
+          "first_turn_e2e_seconds": 4.505174400001124,
+          "ready_to_first_turn_complete_seconds": 5.345252500002971,
+          "startup_to_first_turn_complete_seconds": 9.394409300002735,
+          "turn": {
+            "case": "knowledge_b",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 4.505125000003318,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "El cielo se ve azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz viaja a través de la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible a los colores azules, vemos el cielo de ese color."
+          },
+          "posts": [
+            {
+              "case": "knowledge_b",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "c588b52c37509ef4f934382dac7a529744a4134a60df461cb429aa1eaa052932",
+              "elapsed_seconds": 0.6611466999966069,
+              "cache_n": 209,
+              "prompt_n": 20,
+              "prompt_ms": 334.753,
+              "predicted_n": 6,
+              "predicted_ms": 206.115,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "knowledge_b",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0ee7fc155d9221eb688cd6ea33d344f4b55730403aedf2fe3221d8856a8216f8",
+              "elapsed_seconds": 1.1538292999975965,
+              "cache_n": 149,
+              "prompt_n": 20,
+              "prompt_ms": 306.184,
+              "predicted_n": 20,
+              "predicted_ms": 822.505,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "knowledge_b",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "03571ab70d3fd19e5f7856b771c47028e88b61bd2e61587ed097f18c67b2b200",
+              "elapsed_seconds": 2.4858080000049085,
+              "cache_n": 562,
+              "prompt_n": 84,
+              "prompt_ms": 247.942,
+              "predicted_n": 87,
+              "predicted_ms": 2217.039,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Es una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente externa.\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "knowledge_b",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "6ec54257d1f446913563b40f6bd9e293fa5e0add55750f37f136abb972df66a9",
+              "elapsed_seconds": 2.0179596000016318,
+              "cache_n": 0,
+              "prompt_n": 203,
+              "prompt_ms": 145.431,
+              "predicted_n": 124,
+              "predicted_ms": 1848.122,
+              "content": "El cielo se ve azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz viaja a través de la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible a los colores azules, vemos el cielo de ese color."
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "c588b52c37509ef4f934382dac7a529744a4134a60df461cb429aa1eaa052932",
+              "prompt_tokens_total": 229,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0ee7fc155d9221eb688cd6ea33d344f4b55730403aedf2fe3221d8856a8216f8",
+              "prompt_tokens_total": 169,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "03571ab70d3fd19e5f7856b771c47028e88b61bd2e61587ed097f18c67b2b200",
+              "prompt_tokens_total": 646,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Es una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente externa.\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "6ec54257d1f446913563b40f6bd9e293fa5e0add55750f37f136abb972df66a9",
+              "prompt_tokens_total": 203,
+              "content": "El cielo se ve azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz viaja a través de la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible a los colores azules, vemos el cielo de ese color."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 562.0,
+              "prompt_n_median": 84.0,
+              "prompt_ms_median": 247.942,
+              "elapsed_median_seconds": 2.4858080000049085
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 149.0,
+              "prompt_n_median": 20.0,
+              "prompt_ms_median": 306.184,
+              "elapsed_median_seconds": 1.1538292999975965
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 209.0,
+              "prompt_n_median": 20.0,
+              "prompt_ms_median": 334.753,
+              "elapsed_median_seconds": 0.6611466999966069
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 203.0,
+              "prompt_ms_median": 145.431,
+              "elapsed_median_seconds": 2.0179596000016318
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "task_create_b",
+      "expected_mode": "action",
+      "arm_order": [
+        "baseline",
+        "primed"
+      ],
+      "exact_turn_output": true,
+      "actual_request_identity": true,
+      "actual_prompt_token_identity": true,
+      "delta_primed_minus_baseline_seconds": {
+        "first_turn_e2e": -0.24088479999772971,
+        "ready_to_first_turn_complete_including_priming": 0.5393866000085836,
+        "startup_to_first_turn_complete": 0.584578900008637
+      },
+      "arms": [
+        {
+          "arm": "baseline",
+          "case": "task_create_b",
+          "startup_to_ready_seconds": 4.13835239999753,
+          "priming": null,
+          "priming_seconds": 0.0,
+          "first_turn_e2e_seconds": 5.546968299997388,
+          "ready_to_first_turn_complete_seconds": 5.5469691999969655,
+          "startup_to_first_turn_complete_seconds": 9.685321599994495,
+          "turn": {
+            "case": "task_create_b",
+            "expected_mode": "action",
+            "elapsed_seconds": 5.5469464999987395,
+            "decision": {
+              "mode": "action",
+              "operation": "task.create",
+              "question": "",
+              "conversation_kind": "",
+              "effect_count": "one",
+              "effect_operations": [
+                "task.create"
+              ],
+              "effect_verification": "agreed",
+              "response_language": "es"
+            },
+            "extraction": {
+              "arguments": {
+                "title": "revisar el presupuesto anual"
+              },
+              "evidence": [
+                [
+                  "title",
+                  "revisar el presupuesto anual"
+                ]
+              ],
+              "fallback_question": "Cuál es el título de la tarea?"
+            },
+            "response_language": null,
+            "reply": null
+          },
+          "posts": [
+            {
+              "case": "task_create_b",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "b582929189a22e4732df530c0b8509df629db329c57a25ee8ce06b38f2ffe554",
+              "elapsed_seconds": 1.120099100000516,
+              "cache_n": 0,
+              "prompt_n": 229,
+              "prompt_ms": 879.19,
+              "predicted_n": 6,
+              "predicted_ms": 215.905,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "2b0978253b98aca34e3643d6c7fa7e658ec18439115f7cf41a70e7fde6dc37c7",
+              "elapsed_seconds": 1.5916010000000824,
+              "cache_n": 0,
+              "prompt_n": 169,
+              "prompt_ms": 547.767,
+              "predicted_n": 19,
+              "predicted_ms": 1037.88,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "V",
+              "id_slot": null,
+              "payload_sha256": "0a3526d3bf34bd0fb2e5378fa2b3d5521a48011920d7c1e918f27dfa5cb920ec",
+              "elapsed_seconds": 1.1308616999958758,
+              "cache_n": 0,
+              "prompt_n": 81,
+              "prompt_ms": 229.668,
+              "predicted_n": 21,
+              "predicted_ms": 869.267,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "61f626db45163ef206a96aea19f2561a4c7e9b36accd94cd92511c70d8b8aaf3",
+              "elapsed_seconds": 3.662156500002311,
+              "cache_n": 0,
+              "prompt_n": 646,
+              "prompt_ms": 824.03,
+              "predicted_n": 80,
+              "predicted_ms": 2812.658,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "C",
+              "id_slot": null,
+              "payload_sha256": "157a9ff48f738c0b1b9c62b40eca7587f46778b192b689b4be817d2060181ec6",
+              "elapsed_seconds": 0.8178623999992851,
+              "cache_n": 0,
+              "prompt_n": 188,
+              "prompt_ms": 208.652,
+              "predicted_n": 18,
+              "predicted_ms": 594.467,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "E",
+              "id_slot": null,
+              "payload_sha256": "7d22e2b6b1f50fe7f3df36a2face5bf9b4b3a2214a09351f41c2e3c2f95d5ea8",
+              "elapsed_seconds": 1.065626900002826,
+              "cache_n": 0,
+              "prompt_n": 172,
+              "prompt_ms": 137.869,
+              "predicted_n": 56,
+              "predicted_ms": 918.456,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"revisar el presupuesto anual\"\n  },\n  \"fallback_question\": \"Cuál es el título de la tarea?\"\n}"
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "b582929189a22e4732df530c0b8509df629db329c57a25ee8ce06b38f2ffe554",
+              "prompt_tokens_total": 229,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "2b0978253b98aca34e3643d6c7fa7e658ec18439115f7cf41a70e7fde6dc37c7",
+              "prompt_tokens_total": 169,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "V",
+              "payload_sha256": "0a3526d3bf34bd0fb2e5378fa2b3d5521a48011920d7c1e918f27dfa5cb920ec",
+              "prompt_tokens_total": 81,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "61f626db45163ef206a96aea19f2561a4c7e9b36accd94cd92511c70d8b8aaf3",
+              "prompt_tokens_total": 646,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "C",
+              "payload_sha256": "157a9ff48f738c0b1b9c62b40eca7587f46778b192b689b4be817d2060181ec6",
+              "prompt_tokens_total": 188,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "stage": "E",
+              "payload_sha256": "7d22e2b6b1f50fe7f3df36a2face5bf9b4b3a2214a09351f41c2e3c2f95d5ea8",
+              "prompt_tokens_total": 172,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"revisar el presupuesto anual\"\n  },\n  \"fallback_question\": \"Cuál es el título de la tarea?\"\n}"
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 646.0,
+              "prompt_ms_median": 824.03,
+              "elapsed_median_seconds": 3.662156500002311
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 169.0,
+              "prompt_ms_median": 547.767,
+              "elapsed_median_seconds": 1.5916010000000824
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 229.0,
+              "prompt_ms_median": 879.19,
+              "elapsed_median_seconds": 1.120099100000516
+            },
+            "V": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 81.0,
+              "prompt_ms_median": 229.668,
+              "elapsed_median_seconds": 1.1308616999958758
+            },
+            "C": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 188.0,
+              "prompt_ms_median": 208.652,
+              "elapsed_median_seconds": 0.8178623999992851
+            },
+            "E": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 172.0,
+              "prompt_ms_median": 137.869,
+              "elapsed_median_seconds": 1.065626900002826
+            }
+          }
+        },
+        {
+          "arm": "primed",
+          "case": "task_create_b",
+          "startup_to_ready_seconds": 4.183544699997583,
+          "priming": {
+            "derive_seconds": 0.2714309000002686,
+            "inference_seconds": 0.5086672999968869,
+            "total_seconds": 0.7800981999971555,
+            "prefixes": {
+              "P": {
+                "stage": "P",
+                "lcp_tokens_before_margin": 563,
+                "safe_prefix_tokens": 562,
+                "synthetic_prompt_token_lengths": [
+                  582,
+                  582,
+                  584,
+                  582,
+                  582
+                ],
+                "synthetic_prompt_character_lengths": [
+                  2904,
+                  2903,
+                  2904,
+                  2900,
+                  2902
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "G": {
+                "stage": "G",
+                "lcp_tokens_before_margin": 155,
+                "safe_prefix_tokens": 154,
+                "synthetic_prompt_token_lengths": [
+                  161,
+                  161,
+                  163,
+                  161,
+                  161
+                ],
+                "synthetic_prompt_character_lengths": [
+                  798,
+                  797,
+                  798,
+                  794,
+                  796
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "L": {
+                "stage": "L",
+                "lcp_tokens_before_margin": 215,
+                "safe_prefix_tokens": 214,
+                "synthetic_prompt_token_lengths": [
+                  221,
+                  221,
+                  223,
+                  221,
+                  221
+                ],
+                "synthetic_prompt_character_lengths": [
+                  970,
+                  969,
+                  970,
+                  966,
+                  968
+                ],
+                "conservative_margin_tokens": 1
+              }
+            },
+            "requests": [
+              {
+                "stage": "G",
+                "id_slot": 1,
+                "elapsed_seconds": 0.4515375999981188,
+                "safe_prefix_tokens": 154,
+                "tokens_cached": 154,
+                "tokens_evaluated": 154,
+                "cache_n": 0,
+                "prompt_n": 154,
+                "prompt_ms": 449.147,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "L",
+                "id_slot": 2,
+                "elapsed_seconds": 0.5073986999996123,
+                "safe_prefix_tokens": 214,
+                "tokens_cached": 214,
+                "tokens_evaluated": 214,
+                "cache_n": 0,
+                "prompt_n": 214,
+                "prompt_ms": 378.104,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "P",
+                "id_slot": 0,
+                "elapsed_seconds": 0.5073687999974936,
+                "safe_prefix_tokens": 562,
+                "tokens_cached": 562,
+                "tokens_evaluated": 562,
+                "cache_n": 0,
+                "prompt_n": 562,
+                "prompt_ms": 504.571,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              }
+            ]
+          },
+          "priming_seconds": 0.7800981999971555,
+          "first_turn_e2e_seconds": 5.306083499999659,
+          "ready_to_first_turn_complete_seconds": 6.086355800005549,
+          "startup_to_first_turn_complete_seconds": 10.269900500003132,
+          "turn": {
+            "case": "task_create_b",
+            "expected_mode": "action",
+            "elapsed_seconds": 5.306053700005577,
+            "decision": {
+              "mode": "action",
+              "operation": "task.create",
+              "question": "",
+              "conversation_kind": "",
+              "effect_count": "one",
+              "effect_operations": [
+                "task.create"
+              ],
+              "effect_verification": "agreed",
+              "response_language": "es"
+            },
+            "extraction": {
+              "arguments": {
+                "title": "revisar el presupuesto anual"
+              },
+              "evidence": [
+                [
+                  "title",
+                  "revisar el presupuesto anual"
+                ]
+              ],
+              "fallback_question": "Cuál es el título de la tarea?"
+            },
+            "response_language": null,
+            "reply": null
+          },
+          "posts": [
+            {
+              "case": "task_create_b",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "b582929189a22e4732df530c0b8509df629db329c57a25ee8ce06b38f2ffe554",
+              "elapsed_seconds": 0.5903363000034005,
+              "cache_n": 209,
+              "prompt_n": 20,
+              "prompt_ms": 251.2,
+              "predicted_n": 6,
+              "predicted_ms": 215.131,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "2b0978253b98aca34e3643d6c7fa7e658ec18439115f7cf41a70e7fde6dc37c7",
+              "elapsed_seconds": 1.0895701999979792,
+              "cache_n": 149,
+              "prompt_n": 20,
+              "prompt_ms": 296.386,
+              "predicted_n": 19,
+              "predicted_ms": 767.778,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "V",
+              "id_slot": null,
+              "payload_sha256": "0a3526d3bf34bd0fb2e5378fa2b3d5521a48011920d7c1e918f27dfa5cb920ec",
+              "elapsed_seconds": 1.6515053000039188,
+              "cache_n": 0,
+              "prompt_n": 81,
+              "prompt_ms": 228.509,
+              "predicted_n": 21,
+              "predicted_ms": 1392.028,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "61f626db45163ef206a96aea19f2561a4c7e9b36accd94cd92511c70d8b8aaf3",
+              "elapsed_seconds": 3.4492112000007182,
+              "cache_n": 562,
+              "prompt_n": 84,
+              "prompt_ms": 241.487,
+              "predicted_n": 80,
+              "predicted_ms": 3187.707,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "C",
+              "id_slot": null,
+              "payload_sha256": "157a9ff48f738c0b1b9c62b40eca7587f46778b192b689b4be817d2060181ec6",
+              "elapsed_seconds": 0.7880268000008073,
+              "cache_n": 0,
+              "prompt_n": 188,
+              "prompt_ms": 209.694,
+              "predicted_n": 18,
+              "predicted_ms": 558.896,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "case": "task_create_b",
+              "stage": "E",
+              "id_slot": null,
+              "payload_sha256": "7d22e2b6b1f50fe7f3df36a2face5bf9b4b3a2214a09351f41c2e3c2f95d5ea8",
+              "elapsed_seconds": 1.06730900000548,
+              "cache_n": 0,
+              "prompt_n": 172,
+              "prompt_ms": 136.011,
+              "predicted_n": 56,
+              "predicted_ms": 921.505,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"revisar el presupuesto anual\"\n  },\n  \"fallback_question\": \"Cuál es el título de la tarea?\"\n}"
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "b582929189a22e4732df530c0b8509df629db329c57a25ee8ce06b38f2ffe554",
+              "prompt_tokens_total": 229,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "2b0978253b98aca34e3643d6c7fa7e658ec18439115f7cf41a70e7fde6dc37c7",
+              "prompt_tokens_total": 169,
+              "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "V",
+              "payload_sha256": "0a3526d3bf34bd0fb2e5378fa2b3d5521a48011920d7c1e918f27dfa5cb920ec",
+              "prompt_tokens_total": 81,
+              "content": "{\n  \"effect_count\": \"zero\"\n}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "61f626db45163ef206a96aea19f2561a4c7e9b36accd94cd92511c70d8b8aaf3",
+              "prompt_tokens_total": 646,
+              "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "C",
+              "payload_sha256": "157a9ff48f738c0b1b9c62b40eca7587f46778b192b689b4be817d2060181ec6",
+              "prompt_tokens_total": 188,
+              "content": "{\n  \"compatible\": true\n}"
+            },
+            {
+              "stage": "E",
+              "payload_sha256": "7d22e2b6b1f50fe7f3df36a2face5bf9b4b3a2214a09351f41c2e3c2f95d5ea8",
+              "prompt_tokens_total": 172,
+              "content": "{\n  \"grounded\": true,\n  \"arguments\": {\n    \"title\": \"revisar el presupuesto anual\"\n  },\n  \"fallback_question\": \"Cuál es el título de la tarea?\"\n}"
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 562.0,
+              "prompt_n_median": 84.0,
+              "prompt_ms_median": 241.487,
+              "elapsed_median_seconds": 3.4492112000007182
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 149.0,
+              "prompt_n_median": 20.0,
+              "prompt_ms_median": 296.386,
+              "elapsed_median_seconds": 1.0895701999979792
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 209.0,
+              "prompt_n_median": 20.0,
+              "prompt_ms_median": 251.2,
+              "elapsed_median_seconds": 0.5903363000034005
+            },
+            "V": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 81.0,
+              "prompt_ms_median": 228.509,
+              "elapsed_median_seconds": 1.6515053000039188
+            },
+            "C": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 188.0,
+              "prompt_ms_median": 209.694,
+              "elapsed_median_seconds": 0.7880268000008073
+            },
+            "E": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 172.0,
+              "prompt_ms_median": 136.011,
+              "elapsed_median_seconds": 1.06730900000548
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "knowledge_c",
+      "expected_mode": "conversation",
+      "arm_order": [
+        "baseline",
+        "primed"
+      ],
+      "exact_turn_output": true,
+      "actual_request_identity": true,
+      "actual_prompt_token_identity": true,
+      "delta_primed_minus_baseline_seconds": {
+        "first_turn_e2e": -0.504923400010739,
+        "ready_to_first_turn_complete_including_priming": 0.28265909999026917,
+        "startup_to_first_turn_complete": 0.29036269999051
+      },
+      "arms": [
+        {
+          "arm": "baseline",
+          "case": "knowledge_c",
+          "startup_to_ready_seconds": 4.038235200001509,
+          "priming": null,
+          "priming_seconds": 0.0,
+          "first_turn_e2e_seconds": 3.92984570000408,
+          "ready_to_first_turn_complete_seconds": 3.929847700004757,
+          "startup_to_first_turn_complete_seconds": 7.968082900006266,
+          "turn": {
+            "case": "knowledge_c",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 3.9298090000011143,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "Las mareas son causadas principalmente por la **atracción gravitatoria** de la Luna y, en menor medida, del Sol, sobre la Tierra.\n\nLa fuerza de gravedad de estos cuerpos celestes tira del agua de los océanos, provocando que el agua se eleve y baje, creando los ciclos de marea que observamos."
+          },
+          "posts": [
+            {
+              "case": "knowledge_c",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "a49fa4083e633ac738053e78cca8e24b210a4b11d34418ec69f57acb98614722",
+              "elapsed_seconds": 1.1397870000000694,
+              "cache_n": 0,
+              "prompt_n": 230,
+              "prompt_ms": 886.663,
+              "predicted_n": 6,
+              "predicted_ms": 228.702,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "knowledge_c",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0877745b6325ca5dc2218fac49b69d6a7888fed28a19220c383a225364120158",
+              "elapsed_seconds": 1.5857405999995535,
+              "cache_n": 0,
+              "prompt_n": 170,
+              "prompt_ms": 552.564,
+              "predicted_n": 19,
+              "predicted_ms": 1027.488,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "knowledge_c",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "c702f832dab8acbb41fe402a9d21503ef4e61fd45b314ee025c7fb75db3f947a",
+              "elapsed_seconds": 2.7052137999999104,
+              "cache_n": 0,
+              "prompt_n": 647,
+              "prompt_ms": 835.863,
+              "predicted_n": 69,
+              "predicted_ms": 1844.273,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "knowledge_c",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "7da636372e3fc4bb1f2c1f2fb117db6a9df882375eca2ee9ae2ab42621e944fd",
+              "elapsed_seconds": 1.2231861999971443,
+              "cache_n": 0,
+              "prompt_n": 204,
+              "prompt_ms": 146.402,
+              "predicted_n": 72,
+              "predicted_ms": 1052.587,
+              "content": "Las mareas son causadas principalmente por la **atracción gravitatoria** de la Luna y, en menor medida, del Sol, sobre la Tierra.\n\nLa fuerza de gravedad de estos cuerpos celestes tira del agua de los océanos, provocando que el agua se eleve y baje, creando los ciclos de marea que observamos."
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "a49fa4083e633ac738053e78cca8e24b210a4b11d34418ec69f57acb98614722",
+              "prompt_tokens_total": 230,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0877745b6325ca5dc2218fac49b69d6a7888fed28a19220c383a225364120158",
+              "prompt_tokens_total": 170,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "c702f832dab8acbb41fe402a9d21503ef4e61fd45b314ee025c7fb75db3f947a",
+              "prompt_tokens_total": 647,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "7da636372e3fc4bb1f2c1f2fb117db6a9df882375eca2ee9ae2ab42621e944fd",
+              "prompt_tokens_total": 204,
+              "content": "Las mareas son causadas principalmente por la **atracción gravitatoria** de la Luna y, en menor medida, del Sol, sobre la Tierra.\n\nLa fuerza de gravedad de estos cuerpos celestes tira del agua de los océanos, provocando que el agua se eleve y baje, creando los ciclos de marea que observamos."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 647.0,
+              "prompt_ms_median": 835.863,
+              "elapsed_median_seconds": 2.7052137999999104
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 170.0,
+              "prompt_ms_median": 552.564,
+              "elapsed_median_seconds": 1.5857405999995535
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 230.0,
+              "prompt_ms_median": 886.663,
+              "elapsed_median_seconds": 1.1397870000000694
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 204.0,
+              "prompt_ms_median": 146.402,
+              "elapsed_median_seconds": 1.2231861999971443
+            }
+          }
+        },
+        {
+          "arm": "primed",
+          "case": "knowledge_c",
+          "startup_to_ready_seconds": 4.04593880000175,
+          "priming": {
+            "derive_seconds": 0.28381010000157403,
+            "inference_seconds": 0.5036444999932428,
+            "total_seconds": 0.7874545999948168,
+            "prefixes": {
+              "P": {
+                "stage": "P",
+                "lcp_tokens_before_margin": 563,
+                "safe_prefix_tokens": 562,
+                "synthetic_prompt_token_lengths": [
+                  582,
+                  582,
+                  584,
+                  582,
+                  582
+                ],
+                "synthetic_prompt_character_lengths": [
+                  2904,
+                  2903,
+                  2904,
+                  2900,
+                  2902
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "G": {
+                "stage": "G",
+                "lcp_tokens_before_margin": 155,
+                "safe_prefix_tokens": 154,
+                "synthetic_prompt_token_lengths": [
+                  161,
+                  161,
+                  163,
+                  161,
+                  161
+                ],
+                "synthetic_prompt_character_lengths": [
+                  798,
+                  797,
+                  798,
+                  794,
+                  796
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "L": {
+                "stage": "L",
+                "lcp_tokens_before_margin": 215,
+                "safe_prefix_tokens": 214,
+                "synthetic_prompt_token_lengths": [
+                  221,
+                  221,
+                  223,
+                  221,
+                  221
+                ],
+                "synthetic_prompt_character_lengths": [
+                  970,
+                  969,
+                  970,
+                  966,
+                  968
+                ],
+                "conservative_margin_tokens": 1
+              }
+            },
+            "requests": [
+              {
+                "stage": "G",
+                "id_slot": 1,
+                "elapsed_seconds": 0.44655230000353185,
+                "safe_prefix_tokens": 154,
+                "tokens_cached": 154,
+                "tokens_evaluated": 154,
+                "cache_n": 0,
+                "prompt_n": 154,
+                "prompt_ms": 444.424,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "L",
+                "id_slot": 2,
+                "elapsed_seconds": 0.5022888999956194,
+                "safe_prefix_tokens": 214,
+                "tokens_cached": 214,
+                "tokens_evaluated": 214,
+                "cache_n": 0,
+                "prompt_n": 214,
+                "prompt_ms": 375.11,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "P",
+                "id_slot": 0,
+                "elapsed_seconds": 0.5021507000055863,
+                "safe_prefix_tokens": 562,
+                "tokens_cached": 562,
+                "tokens_evaluated": 562,
+                "cache_n": 0,
+                "prompt_n": 562,
+                "prompt_ms": 499.734,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              }
+            ]
+          },
+          "priming_seconds": 0.7874545999948168,
+          "first_turn_e2e_seconds": 3.424922299993341,
+          "ready_to_first_turn_complete_seconds": 4.212506799995026,
+          "startup_to_first_turn_complete_seconds": 8.258445599996776,
+          "turn": {
+            "case": "knowledge_c",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 3.424891299997398,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "Las mareas son causadas principalmente por la **atracción gravitatoria** de la Luna y, en menor medida, del Sol, sobre la Tierra.\n\nLa fuerza de gravedad de estos cuerpos celestes tira del agua de los océanos, provocando que el agua se eleve y baje, creando los ciclos de marea que observamos."
+          },
+          "posts": [
+            {
+              "case": "knowledge_c",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "a49fa4083e633ac738053e78cca8e24b210a4b11d34418ec69f57acb98614722",
+              "elapsed_seconds": 0.593884199995955,
+              "cache_n": 209,
+              "prompt_n": 21,
+              "prompt_ms": 264.357,
+              "predicted_n": 6,
+              "predicted_ms": 214.828,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "knowledge_c",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0877745b6325ca5dc2218fac49b69d6a7888fed28a19220c383a225364120158",
+              "elapsed_seconds": 1.07067719999759,
+              "cache_n": 149,
+              "prompt_n": 21,
+              "prompt_ms": 303.768,
+              "predicted_n": 19,
+              "predicted_ms": 746.904,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "knowledge_c",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "c702f832dab8acbb41fe402a9d21503ef4e61fd45b314ee025c7fb75db3f947a",
+              "elapsed_seconds": 2.2262878000037745,
+              "cache_n": 562,
+              "prompt_n": 85,
+              "prompt_ms": 240.278,
+              "predicted_n": 69,
+              "predicted_ms": 1968.603,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "knowledge_c",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "7da636372e3fc4bb1f2c1f2fb117db6a9df882375eca2ee9ae2ab42621e944fd",
+              "elapsed_seconds": 1.19741090000025,
+              "cache_n": 0,
+              "prompt_n": 204,
+              "prompt_ms": 142.094,
+              "predicted_n": 72,
+              "predicted_ms": 1029.214,
+              "content": "Las mareas son causadas principalmente por la **atracción gravitatoria** de la Luna y, en menor medida, del Sol, sobre la Tierra.\n\nLa fuerza de gravedad de estos cuerpos celestes tira del agua de los océanos, provocando que el agua se eleve y baje, creando los ciclos de marea que observamos."
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "a49fa4083e633ac738053e78cca8e24b210a4b11d34418ec69f57acb98614722",
+              "prompt_tokens_total": 230,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0877745b6325ca5dc2218fac49b69d6a7888fed28a19220c383a225364120158",
+              "prompt_tokens_total": 170,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "c702f832dab8acbb41fe402a9d21503ef4e61fd45b314ee025c7fb75db3f947a",
+              "prompt_tokens_total": 647,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "7da636372e3fc4bb1f2c1f2fb117db6a9df882375eca2ee9ae2ab42621e944fd",
+              "prompt_tokens_total": 204,
+              "content": "Las mareas son causadas principalmente por la **atracción gravitatoria** de la Luna y, en menor medida, del Sol, sobre la Tierra.\n\nLa fuerza de gravedad de estos cuerpos celestes tira del agua de los océanos, provocando que el agua se eleve y baje, creando los ciclos de marea que observamos."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 562.0,
+              "prompt_n_median": 85.0,
+              "prompt_ms_median": 240.278,
+              "elapsed_median_seconds": 2.2262878000037745
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 149.0,
+              "prompt_n_median": 21.0,
+              "prompt_ms_median": 303.768,
+              "elapsed_median_seconds": 1.07067719999759
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 209.0,
+              "prompt_n_median": 21.0,
+              "prompt_ms_median": 264.357,
+              "elapsed_median_seconds": 0.593884199995955
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 204.0,
+              "prompt_ms_median": 142.094,
+              "elapsed_median_seconds": 1.19741090000025
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "candidate_status": "research_only",
+  "promotion_rule": "Require exact projected outputs, identical real request payloads and prompt-token totals, increased real P/G/L cache_n, and a repeatable opposite-order first-turn gain. Report priming and startup-to-complete separately; do not promote as a cold-start optimization if priming merely moves equal or greater latency ahead of the real turn."
+}

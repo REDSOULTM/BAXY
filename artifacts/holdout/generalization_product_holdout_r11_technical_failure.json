@@ -1,0 +1,59 @@
+{
+  "schema": "baxy.generalization-product-holdout-r11-technical-failure.v1",
+  "recorded_at_utc": "2026-08-03T23:18:12.4066568Z",
+  "campaign": "r11",
+  "status": "incomplete_failed",
+  "blind_holdout": true,
+  "effects_executed": 0,
+  "reason": "mind_probe_external_timeout_before_atomic_result",
+  "timeout_seconds": 1204.025,
+  "sealed_population": {
+    "cases": 700,
+    "mind_sidecar": 688,
+    "app_private_memory_parser": 12,
+    "normalized_prior_overlap": 0
+  },
+  "memory_opening": {
+    "cases": 12,
+    "passed": 0,
+    "failed": 12,
+    "conclusion": "all new stacked discourse envelopes were rejected before the parser repair"
+  },
+  "mind_opening": {
+    "atomic_result_written": false,
+    "unique_blind_requests_audited": 684,
+    "missing_requests": 4,
+    "audit_lines": 1524,
+    "last_audited_request": "blind-product-r11-r11-out-of-scope-52-addressed",
+    "posthoc_incomplete_projection": {
+      "scope": "audit_final_contract_only_not_an_official_holdout_result",
+      "cases": 684,
+      "exact": 182,
+      "accuracy": 0.26608187134502925,
+      "unsafe_effects": 38
+    }
+  },
+  "cleanup": {
+    "orphaned_sidecar_tree_terminated": true,
+    "evidence_deleted": false,
+    "campaign_reopened": false
+  },
+  "sources": {
+    "corpus": {
+      "path": "artifacts/holdout/generalization_product_holdout_v11.jsonl",
+      "sha256": "d1a83b25ed258f939531543bdd89809cdfa305b308e93ada14f9a7cbc846efa7"
+    },
+    "preregistration": {
+      "path": "artifacts/holdout/generalization_product_holdout_v11.preregistration.json",
+      "sha256": "068ce961d0d961afe5f9a45ac1a3e647002edbac89b7cee1d74795265f4357c8"
+    },
+    "partial_mind_audit": {
+      "path": "artifacts/holdout/generalization_product_holdout_r11_mind.raw.jsonl",
+      "sha256": "595d2e4c840371f12a53b331eb74ac54e0deb390e07c569a543a9d87ac835f89"
+    },
+    "memory_trx": {
+      "path": "artifacts/holdout/generalization_product_holdout_r11_memory.trx",
+      "sha256": "ab1b8d70371146758ac40090587eba79accda8d6b18c0a355d4d4f9a7adda1c8"
+    }
+  }
+}

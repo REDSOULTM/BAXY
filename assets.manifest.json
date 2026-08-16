@@ -1,0 +1,184 @@
+{
+  "schema": "baxy-assets-v1",
+  "version": 1,
+  "local_override": {
+    "environment": "BAXY_ASSETS_OVERRIDE",
+    "default": "${LOCALAPPDATA}\\BAXYRuntime\\assets.local.json",
+    "schema": "baxy-assets-local-v1"
+  },
+  "assets": {
+    "conversation_model": {
+      "kind": "file",
+      "required": true,
+      "environment": "BAXY_MIND_LLM_GGUF",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\models\\Qwen3-4B-Q4_K_M.gguf",
+        "D:\\BAXYRuntime\\assets\\models\\Qwen3-4B-Q4_K_M.gguf",
+        "${BAXY_ASSETS_ROOT}\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+        "D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+        "${REPOSITORY_ROOT}\\legacy\\models\\artifacts\\gemma4-e2b\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+        "${USERPROFILE}\\.gemma4\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+      ],
+      "repair": "Restaura el GGUF conversacional atestado o declara su ruta en el override local; BAXY no descarga modelos automáticamente."
+    },
+    "llama_server": {
+      "kind": "file",
+      "required": true,
+      "environment": "BAXY_MIND_LLAMA_SERVER",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\llama-b9980-cuda12.4\\llama-server.exe",
+        "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+        "${REPOSITORY_ROOT}\\legacy\\models\\artifacts\\llama-b9980\\llama-server.exe",
+        "${USERPROFILE}\\.gemma4\\tools\\llama-b9980\\llama-server.exe"
+      ],
+      "repair": "Restaura el runtime llama.cpp b9980 atestado desde legacy/models/artifacts/llama-b9980 o declara su ruta en el override local."
+    },
+    "stt_parakeet": {
+      "kind": "directory",
+      "required": true,
+      "environment": "BAXY_MIND_STT_DIR",
+      "required_files": [
+        "encoder.int8.onnx",
+        "decoder.int8.onnx",
+        "joiner.int8.onnx",
+        "tokens.txt"
+      ],
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\stt\\sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+        "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+        "${USERPROFILE}\\.gemma4\\models\\sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
+      ],
+      "repair": "Obtén el bundle sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8 aprobado y declara su directorio en el override local."
+    },
+    "stt_nemotron_streaming": {
+      "kind": "directory",
+      "required": false,
+      "environment": "BAXY_VOICE_STREAMING_STT_DIR",
+      "required_files": [
+        "encoder.int8.onnx",
+        "decoder.int8.onnx",
+        "joiner.int8.onnx",
+        "tokens.txt"
+      ],
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\stt\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11",
+        "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11",
+        "${USERPROFILE}\\.gemma4\\models\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11"
+      ],
+      "repair": "Ejecuta scripts/install_nemotron_streaming_stt.ps1 solo si autorizas esa descarga opcional, o declara un bundle ya existente."
+    },
+    "wake_manifest": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_VOICE_WAKE_MANIFEST",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\wake\\baxy-wakeword-v1.json",
+        "D:\\BAXYRuntime\\assets\\wake\\baxy-wakeword-v1.json",
+        "${USERPROFILE}\\.gemma4\\models\\wake\\baxy-wakeword-v1.json"
+      ],
+      "repair": "Instala un modelo wake calibrado con scripts/install_baxy_wake_model.ps1 o continúa con micrófono directo."
+    },
+    "wake_cascade_manifest": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_VOICE_WAKE_CASCADE_MANIFEST",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\wake\\baxy-wake-cascade-v1.json",
+        "D:\\BAXYRuntime\\assets\\wake\\baxy-wake-cascade-v1.json",
+        "${USERPROFILE}\\.gemma4\\models\\wake\\baxy-wake-cascade-v1.json"
+      ],
+      "repair": "Instala el cascado wake ONNX atestado; BAXY no concede autoridad a pesos de desarrollo."
+    },
+    "wake_verifier_manifest": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_VOICE_WAKE_VERIFIER_MANIFEST",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\wake\\baxy-wake-verifier-v1.json",
+        "D:\\BAXYRuntime\\assets\\wake\\baxy-wake-verifier-v1.json",
+        "${USERPROFILE}\\.gemma4\\models\\wake\\baxy-wake-verifier-v1.json"
+      ],
+      "repair": "Declara un verificador CTC ONNX atestado; BAXY no descarga ni habilita pesos sin su compuerta combinada."
+    },
+    "neural_tts_voice": {
+      "kind": "directory",
+      "required": false,
+      "environment": "BAXY_NEURAL_TTS_DIR",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\voice\\baxy-es",
+        "D:\\BAXYRuntime\\assets\\voice\\baxy-es",
+        "${USERPROFILE}\\.gemma4\\models\\voice\\baxy-es"
+      ],
+      "repair": "Declara una voz neural local compatible; la voz SAPI del sistema sigue siendo la degradación soportada."
+    },
+    "vision_model": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_VISION_MODEL_PATH",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\vision\\baxy-vision.gguf",
+        "D:\\BAXYRuntime\\assets\\vision\\baxy-vision.gguf",
+        "${USERPROFILE}\\.gemma4\\models\\vision\\baxy-vision.gguf"
+      ],
+      "repair": "Declara un modelo de visión local compatible; la captura y OCR deterministas permanecen disponibles sin él."
+    },
+    "tesseract_ocr": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_TESSERACT_EXE",
+      "candidates": [
+        "${LOCALAPPDATA}\\BAXYRuntime\\ocr\\tesseract\\tesseract.exe",
+        "${BAXY_ASSETS_ROOT}\\tools\\tesseract\\tesseract.exe",
+        "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+      ],
+      "repair": "Instala Tesseract 5 atestado o declara BAXY_TESSERACT_EXE; Windows.Media.Ocr sigue siendo la primera opción."
+    },
+    "tesseract_languages": {
+      "kind": "directory",
+      "required": false,
+      "environment": "BAXY_TESSDATA_DIR",
+      "required_files": [
+        "eng.traineddata",
+        "spa.traineddata"
+      ],
+      "candidates": [
+        "${LOCALAPPDATA}\\BAXYRuntime\\ocr\\tessdata-fast",
+        "${BAXY_ASSETS_ROOT}\\ocr\\tessdata-fast"
+      ],
+      "repair": "Declara un tessdata atestado con español e inglés mediante BAXY_TESSDATA_DIR."
+    },
+    "mpv": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_MPV_PATH",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\tools\\mpv\\mpv.exe",
+        "D:\\BAXY\\tools\\mpv\\mpv.exe",
+        "${USERPROFILE}\\.gemma4\\tools\\mpv.exe"
+      ],
+      "repair": "Declara mpv.exe en el override local o mediante BAXY_MPV_PATH."
+    },
+    "mpv_vulkan": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_MPV_VULKAN_PATH",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\tools\\mpv\\vulkan-1.dll",
+        "D:\\BAXY\\tools\\mpv\\vulkan-1.dll",
+        "${USERPROFILE}\\.gemma4\\tools\\vulkan-1.dll"
+      ],
+      "repair": "Declara vulkan-1.dll en el override local o mediante BAXY_MPV_VULKAN_PATH."
+    },
+    "yt_dlp": {
+      "kind": "file",
+      "required": false,
+      "environment": "BAXY_YTDLP_PATH",
+      "candidates": [
+        "${BAXY_ASSETS_ROOT}\\tools\\yt-dlp\\yt-dlp.exe",
+        "D:\\BAXY\\tools\\yt-dlp\\yt-dlp.exe",
+        "${USERPROFILE}\\.gemma4\\tools\\yt-dlp.exe"
+      ],
+      "repair": "Declara yt-dlp.exe en el override local o mediante BAXY_YTDLP_PATH."
+    }
+  }
+}

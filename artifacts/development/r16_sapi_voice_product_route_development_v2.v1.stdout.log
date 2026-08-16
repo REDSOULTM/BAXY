@@ -1,0 +1,261 @@
+{
+  "cases": 337,
+  "original_exact": 233,
+  "original_accuracy": 0.6913946587537092,
+  "contract_correct": 233,
+  "contract_accuracy": 0.6913946587537092,
+  "label_corrections": 0,
+  "unsafe_effects": 35,
+  "turn_decide_seconds_p50": 0.009122,
+  "turn_decide_seconds_p95": 5.648728,
+  "turn_decide_seconds_max": 10.068469,
+  "total_seconds": 395.638,
+  "by_family": {
+    "app": {
+      "cases": 6,
+      "original_exact": 5,
+      "contract_correct": 5,
+      "unsafe_effects": 0
+    },
+    "audio": {
+      "cases": 6,
+      "original_exact": 6,
+      "contract_correct": 6,
+      "unsafe_effects": 0
+    },
+    "backup": {
+      "cases": 6,
+      "original_exact": 5,
+      "contract_correct": 5,
+      "unsafe_effects": 0
+    },
+    "bluetooth": {
+      "cases": 6,
+      "original_exact": 5,
+      "contract_correct": 5,
+      "unsafe_effects": 0
+    },
+    "browser": {
+      "cases": 6,
+      "original_exact": 6,
+      "contract_correct": 6,
+      "unsafe_effects": 0
+    },
+    "calendar": {
+      "cases": 3,
+      "original_exact": 2,
+      "contract_correct": 2,
+      "unsafe_effects": 0
+    },
+    "capture": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 1
+    },
+    "clipboard": {
+      "cases": 6,
+      "original_exact": 5,
+      "contract_correct": 5,
+      "unsafe_effects": 0
+    },
+    "composition": {
+      "cases": 100,
+      "original_exact": 41,
+      "contract_correct": 41,
+      "unsafe_effects": 26
+    },
+    "email": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 0
+    },
+    "filesystem": {
+      "cases": 6,
+      "original_exact": 5,
+      "contract_correct": 5,
+      "unsafe_effects": 0
+    },
+    "game": {
+      "cases": 6,
+      "original_exact": 6,
+      "contract_correct": 6,
+      "unsafe_effects": 0
+    },
+    "input": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 0
+    },
+    "media": {
+      "cases": 5,
+      "original_exact": 2,
+      "contract_correct": 2,
+      "unsafe_effects": 0
+    },
+    "message": {
+      "cases": 16,
+      "original_exact": 12,
+      "contract_correct": 12,
+      "unsafe_effects": 4
+    },
+    "network": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 0
+    },
+    "note": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 0
+    },
+    "notification": {
+      "cases": 6,
+      "original_exact": 5,
+      "contract_correct": 5,
+      "unsafe_effects": 0
+    },
+    "ocr": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 1
+    },
+    "office": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 0
+    },
+    "out_of_scope": {
+      "cases": 54,
+      "original_exact": 50,
+      "contract_correct": 50,
+      "unsafe_effects": 2
+    },
+    "package": {
+      "cases": 6,
+      "original_exact": 2,
+      "contract_correct": 2,
+      "unsafe_effects": 1
+    },
+    "peripheral": {
+      "cases": 6,
+      "original_exact": 6,
+      "contract_correct": 6,
+      "unsafe_effects": 0
+    },
+    "reminder": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 0
+    },
+    "routine": {
+      "cases": 6,
+      "original_exact": 3,
+      "contract_correct": 3,
+      "unsafe_effects": 0
+    },
+    "streaming": {
+      "cases": 6,
+      "original_exact": 5,
+      "contract_correct": 5,
+      "unsafe_effects": 0
+    },
+    "system": {
+      "cases": 6,
+      "original_exact": 6,
+      "contract_correct": 6,
+      "unsafe_effects": 0
+    },
+    "task": {
+      "cases": 6,
+      "original_exact": 4,
+      "contract_correct": 4,
+      "unsafe_effects": 0
+    },
+    "vision": {
+      "cases": 3,
+      "original_exact": 3,
+      "contract_correct": 3,
+      "unsafe_effects": 0
+    },
+    "web": {
+      "cases": 6,
+      "original_exact": 6,
+      "contract_correct": 6,
+      "unsafe_effects": 0
+    },
+    "wifi": {
+      "cases": 6,
+      "original_exact": 6,
+      "contract_correct": 6,
+      "unsafe_effects": 0
+    },
+    "window": {
+      "cases": 6,
+      "original_exact": 5,
+      "contract_correct": 5,
+      "unsafe_effects": 0
+    }
+  },
+  "by_case_type": {
+    "clarification": {
+      "cases": 10,
+      "original_exact": 8,
+      "contract_correct": 8,
+      "unsafe_effects": 2
+    },
+    "composition": {
+      "cases": 100,
+      "original_exact": 41,
+      "contract_correct": 41,
+      "unsafe_effects": 26
+    },
+    "conversation": {
+      "cases": 54,
+      "original_exact": 50,
+      "contract_correct": 50,
+      "unsafe_effects": 2
+    },
+    "single_action": {
+      "cases": 173,
+      "original_exact": 134,
+      "contract_correct": 134,
+      "unsafe_effects": 5
+    }
+  },
+  "by_language": {
+    "en": {
+      "cases": 111,
+      "original_exact": 94,
+      "contract_correct": 94,
+      "unsafe_effects": 4
+    },
+    "es": {
+      "cases": 115,
+      "original_exact": 87,
+      "contract_correct": 87,
+      "unsafe_effects": 16
+    },
+    "spanglish": {
+      "cases": 111,
+      "original_exact": 52,
+      "contract_correct": 52,
+      "unsafe_effects": 15
+    }
+  },
+  "by_surface": {
+    "plain": {
+      "cases": 337,
+      "original_exact": 233,
+      "contract_correct": 233,
+      "unsafe_effects": 35
+    }
+  }
+}

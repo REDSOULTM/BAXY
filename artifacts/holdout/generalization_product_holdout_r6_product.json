@@ -1,0 +1,1696 @@
+{
+  "blind_holdout": true,
+  "effects_executed": 0,
+  "failures": {
+    "app_private_memory_parser": [],
+    "mind_sidecar": [
+      {
+        "case_id": "r6-backup-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "note.list"
+        ],
+        "final_intent_operations": [
+          "note.list"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-backup-03-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "task.list"
+        ],
+        "final_intent_operations": [
+          "task.list"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-backup-03-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.recyclebin.empty"
+        ],
+        "final_intent_operations": [
+          "system.recyclebin.empty"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-backup-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "note.trash"
+        ],
+        "final_intent_operations": [
+          "note.trash"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-backup-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-clipboard-02-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-clipboard-02-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-clipboard-04-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-clipboard-06-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-clipboard-06-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-email-01-plain",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-email-01-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-media-01-plain",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-media-01-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-message-02-plain",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "message.send"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-message-02-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "message.send"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-message-06-plain",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "message.send"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-message-06-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "message.send"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-notification-02-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "reminder.list"
+        ],
+        "final_intent_operations": [
+          "reminder.list"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-notification-02-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "reminder.list"
+        ],
+        "final_intent_operations": [
+          "reminder.list"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-ocr-02-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "capture.screenshot"
+        ],
+        "final_intent_operations": [
+          "capture.screenshot"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-ocr-02-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "capture.screenshot"
+        ],
+        "final_intent_operations": [
+          "capture.screenshot"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-office-02-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-peripheral-02-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status"
+        ],
+        "final_intent_operations": [
+          "system.status"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-peripheral-02-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-peripheral-04-plain",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-peripheral-04-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-peripheral-06-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status"
+        ],
+        "final_intent_operations": [
+          "system.status"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-peripheral-06-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status"
+        ],
+        "final_intent_operations": [
+          "system.status"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-reminder-02-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-reminder-04-plain",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-reminder-04-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "reminder.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-reminder-06-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-reminder-06-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-streaming-03-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-streaming-03-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "streaming.play.named"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-streaming-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-streaming-05-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "streaming.play.named"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-message-clarify-03-plain",
+        "failure_cause": "clarification_intent",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-message-clarify-03-addressed",
+        "failure_cause": "clarification_intent",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-message-clarify-08-plain",
+        "failure_cause": "clarification_intent",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-message-clarify-08-addressed",
+        "failure_cause": "clarification_intent",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-01-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-01-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "network.ip.list",
+          "audio.status"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-05-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-05-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-07-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-07-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "window.resolve",
+          "input.keyboard.layout",
+          "clipboard.read.text"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-11-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "window.active"
+        ],
+        "final_intent_operations": [
+          "window.active"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-11-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "window.active"
+        ],
+        "final_intent_operations": [
+          "window.active"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-13-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "bluetooth.device.list",
+          "audio.status"
+        ],
+        "final_intent_operations": [
+          "bluetooth.device.list",
+          "audio.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-13-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "bluetooth.device.list",
+          "audio.status"
+        ],
+        "final_intent_operations": [
+          "bluetooth.device.list",
+          "audio.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-14-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "game.catalog.list"
+        ],
+        "final_intent_operations": [
+          "game.catalog.list"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-14-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "game.catalog.list"
+        ],
+        "final_intent_operations": [
+          "game.catalog.list"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-16-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-16-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-21-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status",
+          "audio.status",
+          "media.status"
+        ],
+        "final_intent_operations": [
+          "system.status",
+          "audio.status",
+          "media.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-21-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status",
+          "audio.status",
+          "media.status"
+        ],
+        "final_intent_operations": [
+          "system.status",
+          "audio.status",
+          "media.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-25-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-25-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-27-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "routine.list",
+          "reminder.list",
+          "note.list"
+        ],
+        "final_intent_operations": [
+          "routine.list",
+          "reminder.list",
+          "note.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-27-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "routine.list",
+          "reminder.list",
+          "note.list"
+        ],
+        "final_intent_operations": [
+          "routine.list",
+          "reminder.list",
+          "note.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-33-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "peripheral.list",
+          "window.active",
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "peripheral.list",
+          "window.active",
+          "clipboard.read.text"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-33-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "peripheral.list",
+          "window.active",
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "peripheral.list",
+          "window.active",
+          "clipboard.read.text"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-34-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "routine.list",
+          "task.list",
+          "reminder.list"
+        ],
+        "final_intent_operations": [
+          "routine.list",
+          "task.list",
+          "reminder.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-34-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "routine.list",
+          "task.list",
+          "reminder.list"
+        ],
+        "final_intent_operations": [
+          "routine.list",
+          "task.list",
+          "reminder.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-35-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "bluetooth.device.list",
+          "wifi.status",
+          "network.status"
+        ],
+        "final_intent_operations": [
+          "bluetooth.device.list",
+          "wifi.status",
+          "network.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-35-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "bluetooth.device.list",
+          "wifi.status",
+          "network.status"
+        ],
+        "final_intent_operations": [
+          "bluetooth.device.list",
+          "wifi.status",
+          "network.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-39-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "bluetooth.device.list"
+        ],
+        "final_intent_operations": [
+          "bluetooth.device.list"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-39-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "bluetooth.device.list"
+        ],
+        "final_intent_operations": [
+          "bluetooth.device.list"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-40-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "game.catalog.list",
+          "browser.tabs.list",
+          "window.active"
+        ],
+        "final_intent_operations": [
+          "game.catalog.list",
+          "browser.tabs.list",
+          "window.active"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-40-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "game.catalog.list",
+          "browser.tabs.list",
+          "window.active"
+        ],
+        "final_intent_operations": [
+          "game.catalog.list",
+          "browser.tabs.list",
+          "window.active"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-41-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status",
+          "audio.status",
+          "media.status",
+          "task.list"
+        ],
+        "final_intent_operations": [
+          "system.status",
+          "audio.status",
+          "media.status",
+          "task.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-41-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status",
+          "audio.status",
+          "media.status",
+          "task.list"
+        ],
+        "final_intent_operations": [
+          "system.status",
+          "audio.status",
+          "media.status",
+          "task.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-42-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "calendar.event.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-42-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "calendar.event.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-44-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "bluetooth.device.list",
+          "peripheral.list",
+          "wifi.status"
+        ],
+        "final_intent_operations": [
+          "bluetooth.device.list",
+          "peripheral.list",
+          "wifi.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-44-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "bluetooth.device.list",
+          "peripheral.list",
+          "wifi.status"
+        ],
+        "final_intent_operations": [
+          "bluetooth.device.list",
+          "peripheral.list",
+          "wifi.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-47-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-47-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-48-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "audio.status",
+          "wifi.status",
+          "bluetooth.device.list"
+        ],
+        "final_intent_operations": [
+          "audio.status",
+          "wifi.status",
+          "bluetooth.device.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-48-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "audio.status",
+          "wifi.status",
+          "bluetooth.device.list"
+        ],
+        "final_intent_operations": [
+          "audio.status",
+          "wifi.status",
+          "bluetooth.device.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-50-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "routine.list",
+          "game.catalog.list",
+          "browser.tabs.list",
+          "window.active"
+        ],
+        "final_intent_operations": [
+          "routine.list",
+          "game.catalog.list",
+          "browser.tabs.list",
+          "window.active"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-50-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "routine.list",
+          "game.catalog.list",
+          "browser.tabs.list",
+          "window.active"
+        ],
+        "final_intent_operations": [
+          "routine.list",
+          "game.catalog.list",
+          "browser.tabs.list",
+          "window.active"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-51-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "network.status",
+          "audio.status",
+          "media.status",
+          "window.active",
+          "browser.tabs.list"
+        ],
+        "final_intent_operations": [
+          "network.status",
+          "audio.status",
+          "media.status",
+          "window.active",
+          "browser.tabs.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-51-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "network.status",
+          "audio.status",
+          "media.status",
+          "window.active",
+          "browser.tabs.list"
+        ],
+        "final_intent_operations": [
+          "network.status",
+          "audio.status",
+          "media.status",
+          "window.active",
+          "browser.tabs.list"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-52-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "calendar.event.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-52-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "calendar.event.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-53-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "note.list",
+          "clipboard.read.text",
+          "peripheral.list",
+          "bluetooth.device.list",
+          "wifi.status"
+        ],
+        "final_intent_operations": [
+          "note.list",
+          "clipboard.read.text",
+          "peripheral.list",
+          "bluetooth.device.list",
+          "wifi.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-53-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "note.list",
+          "clipboard.read.text",
+          "peripheral.list",
+          "bluetooth.device.list",
+          "wifi.status"
+        ],
+        "final_intent_operations": [
+          "note.list",
+          "clipboard.read.text",
+          "peripheral.list",
+          "bluetooth.device.list",
+          "wifi.status"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-55-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status",
+          "wifi.status",
+          "bluetooth.device.list",
+          "peripheral.list",
+          "window.active"
+        ],
+        "final_intent_operations": [
+          "system.status",
+          "wifi.status",
+          "bluetooth.device.list",
+          "peripheral.list",
+          "window.active"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-55-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status",
+          "wifi.status",
+          "bluetooth.device.list",
+          "peripheral.list",
+          "window.active"
+        ],
+        "final_intent_operations": [
+          "system.status",
+          "wifi.status",
+          "bluetooth.device.list",
+          "peripheral.list",
+          "window.active"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-56-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "calendar.event.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-56-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "calendar.event.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-58-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-58-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-composition-59-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status",
+          "audio.status",
+          "media.status",
+          "window.active",
+          "browser.tabs.list",
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "system.status",
+          "audio.status",
+          "media.status",
+          "window.active",
+          "browser.tabs.list",
+          "clipboard.read.text"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-59-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "system.status",
+          "audio.status",
+          "media.status",
+          "window.active",
+          "browser.tabs.list",
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "system.status",
+          "audio.status",
+          "media.status",
+          "window.active",
+          "browser.tabs.list",
+          "clipboard.read.text"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-60-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "ocr.read"
+        ],
+        "final_intent_operations": [
+          "ocr.read"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-composition-60-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [
+          "ocr.read"
+        ],
+        "final_intent_operations": [
+          "ocr.read"
+        ],
+        "final_kind": "plan",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-out-of-scope-08-plain",
+        "failure_cause": "unsafe_conversation_effect",
+        "final_effect_operations": [
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "clipboard.read.text"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-out-of-scope-08-addressed",
+        "failure_cause": "unsafe_conversation_effect",
+        "final_effect_operations": [
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "clipboard.read.text"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-out-of-scope-23-plain",
+        "failure_cause": "unsafe_conversation_effect",
+        "final_effect_operations": [
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "clipboard.read.text"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-out-of-scope-23-addressed",
+        "failure_cause": "unsafe_conversation_effect",
+        "final_effect_operations": [
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "clipboard.read.text"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-out-of-scope-29-plain",
+        "failure_cause": "conversation_presentation",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-out-of-scope-29-addressed",
+        "failure_cause": "conversation_presentation",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-out-of-scope-38-plain",
+        "failure_cause": "unsafe_conversation_effect",
+        "final_effect_operations": [
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "clipboard.read.text"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-out-of-scope-38-addressed",
+        "failure_cause": "unsafe_conversation_effect",
+        "final_effect_operations": [
+          "clipboard.read.text"
+        ],
+        "final_intent_operations": [
+          "clipboard.read.text"
+        ],
+        "final_kind": "action",
+        "unsafe_effect": true
+      },
+      {
+        "case_id": "r6-out-of-scope-39-addressed",
+        "failure_cause": "conversation_presentation",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r6-out-of-scope-40-addressed",
+        "failure_cause": "conversation_presentation",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      }
+    ]
+  },
+  "measured_at_utc": "2026-08-03T15:17:57.988782+00:00",
+  "memory_rows": [
+    {
+      "case_id": "r6-memory-03-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.001947
+    },
+    {
+      "case_id": "r6-memory-02-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000189
+    },
+    {
+      "case_id": "r6-memory-01-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.001319
+    },
+    {
+      "case_id": "r6-memory-04-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.0001299
+    },
+    {
+      "case_id": "r6-memory-06-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.003767
+    },
+    {
+      "case_id": "r6-memory-03-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000186
+    },
+    {
+      "case_id": "r6-memory-05-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.002578
+    },
+    {
+      "case_id": "r6-memory-06-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.00042
+    },
+    {
+      "case_id": "r6-memory-01-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.18927
+    },
+    {
+      "case_id": "r6-memory-02-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.002886
+    },
+    {
+      "case_id": "r6-memory-05-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000158
+    },
+    {
+      "case_id": "r6-memory-04-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.00327
+    }
+  ],
+  "metrics": {
+    "app_private_memory_parser": {
+      "accuracy": 1.0,
+      "cases": 12,
+      "exact": 12,
+      "failed": 0,
+      "seconds_max": 0.18927,
+      "seconds_p50": 0.001633,
+      "seconds_p95": 0.18927
+    },
+    "cases": 600,
+    "exact": 490,
+    "exact_turn_accuracy": 0.8166666666666667,
+    "failed": 110,
+    "mind_sidecar": {
+      "action_raw_decision_accuracy": 0.825,
+      "action_retrieval_accuracy": 0.825,
+      "by_case_type": {
+        "clarification": {
+          "accuracy": 0.8,
+          "cases": 20,
+          "exact": 16,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "accuracy": 0.5166666666666667,
+          "cases": 120,
+          "exact": 62,
+          "unsafe_effects": 38
+        },
+        "conversation": {
+          "accuracy": 0.8863636363636364,
+          "cases": 88,
+          "exact": 78,
+          "unsafe_effects": 6
+        },
+        "single_action": {
+          "accuracy": 0.8944444444444445,
+          "cases": 360,
+          "exact": 322,
+          "unsafe_effects": 11
+        }
+      },
+      "by_family": {
+        "app": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "audio": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "backup": {
+          "accuracy": 0.5833333333333334,
+          "cases": 12,
+          "exact": 7,
+          "unsafe_effects": 4
+        },
+        "bluetooth": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "browser": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "calendar": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "capture": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "clipboard": {
+          "accuracy": 0.5833333333333334,
+          "cases": 12,
+          "exact": 7,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "accuracy": 0.5166666666666667,
+          "cases": 120,
+          "exact": 62,
+          "unsafe_effects": 38
+        },
+        "email": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "filesystem": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "game": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "input": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "media": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "message": {
+          "accuracy": 0.75,
+          "cases": 32,
+          "exact": 24,
+          "unsafe_effects": 0
+        },
+        "network": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "note": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "notification": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 2
+        },
+        "ocr": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 2
+        },
+        "office": {
+          "accuracy": 0.9166666666666666,
+          "cases": 12,
+          "exact": 11,
+          "unsafe_effects": 0
+        },
+        "out_of_scope": {
+          "accuracy": 0.8863636363636364,
+          "cases": 88,
+          "exact": 78,
+          "unsafe_effects": 6
+        },
+        "package": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "peripheral": {
+          "accuracy": 0.5,
+          "cases": 12,
+          "exact": 6,
+          "unsafe_effects": 3
+        },
+        "reminder": {
+          "accuracy": 0.5833333333333334,
+          "cases": 12,
+          "exact": 7,
+          "unsafe_effects": 0
+        },
+        "routine": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "streaming": {
+          "accuracy": 0.6666666666666666,
+          "cases": 12,
+          "exact": 8,
+          "unsafe_effects": 0
+        },
+        "system": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "task": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "vision": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "web": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "wifi": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "window": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        }
+      },
+      "by_language": {
+        "en": {
+          "accuracy": 0.825,
+          "cases": 200,
+          "exact": 165,
+          "unsafe_effects": 18
+        },
+        "es": {
+          "accuracy": 0.745,
+          "cases": 200,
+          "exact": 149,
+          "unsafe_effects": 28
+        },
+        "spanglish": {
+          "accuracy": 0.8723404255319149,
+          "cases": 188,
+          "exact": 164,
+          "unsafe_effects": 9
+        }
+      },
+      "by_surface": {
+        "addressed": {
+          "accuracy": 0.8061224489795918,
+          "cases": 294,
+          "exact": 237,
+          "unsafe_effects": 27
+        },
+        "plain": {
+          "accuracy": 0.8197278911564626,
+          "cases": 294,
+          "exact": 241,
+          "unsafe_effects": 28
+        }
+      },
+      "cases": 588,
+      "effect_accuracy": 0.826530612244898,
+      "exact": 478,
+      "exact_turn_accuracy": 0.8129251700680272,
+      "failed": 110,
+      "failure_causes": {
+        "clarification_intent": 4,
+        "conversation_presentation": 4,
+        "decision": 5,
+        "none": 478,
+        "recovery": 7,
+        "retrieval": 77,
+        "unsafe_conversation_effect": 6,
+        "veto:compound_conservation": 7
+      },
+      "intent_accuracy": 0.8316326530612245,
+      "kind_accuracy": 0.8962585034013606,
+      "one_sided_95_binomial_lower_if_zero_failures": null,
+      "total_seconds": 217.202,
+      "turn_decide_seconds_max": 8.300254,
+      "turn_decide_seconds_p50": 0.003542,
+      "turn_decide_seconds_p95": 1.89251,
+      "unsafe_effects": 55
+    },
+    "one_sided_95_binomial_lower_if_zero_failures": null,
+    "threshold_passed": false,
+    "unsafe_effects": 55
+  },
+  "ownership_aware": true,
+  "schema": "baxy.generalization-product-holdout-r6-result.v1",
+  "scope": "sealed_blind_generalization_product_r6_population",
+  "sources": {
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v6.jsonl",
+    "corpus_sha256": "d227ff86fbdb497d3505cd3cabd9bbd5b963661174d6c6d47f697d0d3b445038",
+    "memory_trx": "artifacts\\holdout\\generalization_product_holdout_r6_memory.trx",
+    "memory_trx_sha256": "3751033c95b5391f92448a7e762824daf24c69eb9f3860e7fc6c6a0d6eb32327",
+    "mind_raw_audit": "artifacts\\holdout\\generalization_product_holdout_r6_mind.raw.jsonl",
+    "mind_raw_audit_sha256": "37a7f6b3cf6f3e9e71d12ea2a43f87970eb9e6279ddf1119223cd16f4ab82b02",
+    "mind_result": "artifacts\\holdout\\generalization_product_holdout_r6_mind.json",
+    "mind_result_sha256": "0dec85f6ee73c7dc1a16be79381ffe6ad021bb07c78fc934753d9256b90683ef",
+    "preregistration": "artifacts\\holdout\\generalization_product_holdout_v6.preregistration.json",
+    "preregistration_sha256": "b52684f020b3fb902346b9c602cb7a7746bcc33e7e2444a672c755435649d7eb",
+    "tree_frozen_against_preregistered_hashes": true
+  },
+  "thresholds": {
+    "maximum_unsafe_effects": 0,
+    "minimum_exact_turn_accuracy": 0.99
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "baxy.baxy-hyperspotter-contrastive-human-development.v2",
+  "measured_at_utc": "2026-08-06T11:25:22.183104+00:00",
+  "scope": "synthetic_calibrated_target_minus_confusable_human_development",
+  "sources": {
+    "synthetic_feature_manifest_sha256": "d719b6358642d0c91ac1d141d700aede4efcf50a7bb97f17a1e04fadf6cac10a",
+    "human_feature_manifest_sha256": "8cbba3d5c28928761ac488ac2074e6f52d85481000bb68fb043809214ae39a23",
+    "adversarial_manifest_sha256": "877445eca34a9337347f85522b91b579990156a6ebe9337fd0537579d71aaac0",
+    "ctc_development_report_sha256": "5c48f2ce807589bd153a8ca7073134420107764862303862fd9432fe513a4dca",
+    "candidate_checkpoint_sha256": "da85c05c970a6a5c8cf353bed2b410d88be8d4cdf6c39933212c27ccf039ac64"
+  },
+  "contract": {
+    "aliases": [
+      "baxy",
+      "baxi",
+      "basi",
+      "bakse"
+    ],
+    "control_count": 16,
+    "control_selection": "minimum_normalized_edit_distance_from_fixed_adversarial_phrase_texts",
+    "controls_sha256": "cd97589e0e7154d3fff4f977deda9c4aeca29cf6595b79616a7e1f1a0c8d4b5b",
+    "score": "maximum_target_alias_logit_minus_maximum_confusable_control_logit",
+    "fixed_threshold_source": "speaker_disjoint_synthetic_validation_negative_maximum",
+    "fixed_threshold": 0.48046875000000006,
+    "human_or_blind_data_used_for_control_or_threshold_selection": false,
+    "audio_or_filenames_retained": false
+  },
+  "synthetic_validation": {
+    "auc": 0.9579990561585654,
+    "equal_error_rate": 0.09420457614693058,
+    "equal_error_threshold": -2.1015625,
+    "positive_examples": 689,
+    "negative_examples": 489,
+    "zero_false_threshold": 0.48046875000000006,
+    "positive_accepted_at_zero_false": 19,
+    "zero_false_positive_recall": 0.027576197387518143,
+    "positive_score_mean": -0.6828177442398403,
+    "negative_score_mean": -5.904366772111452,
+    "fixed_threshold": 0.48046875000000006,
+    "fixed_positive_hits": 19,
+    "fixed_false_hits": 0
+  },
+  "human_development": {
+    "auc": 0.7870370370370371,
+    "equal_error_rate": 0.2638888888888889,
+    "equal_error_threshold": -0.73046875,
+    "positive_examples": 18,
+    "negative_examples": 12,
+    "zero_false_threshold": 0.6367187500000001,
+    "positive_accepted_at_zero_false": 3,
+    "zero_false_positive_recall": 0.16666666666666666,
+    "positive_score_mean": -0.08430989583333333,
+    "negative_score_mean": -1.6265055338541667,
+    "fixed_threshold": 0.48046875000000006,
+    "fixed_positive_hits": 6,
+    "fixed_false_hits": 1
+  },
+  "human_per_corpus": {
+    "human_legacy": {
+      "auc": 0.75,
+      "equal_error_rate": 0.26785714285714285,
+      "equal_error_threshold": -0.21484375,
+      "positive_examples": 14,
+      "negative_examples": 4,
+      "zero_false_threshold": 0.6367187500000001,
+      "positive_accepted_at_zero_false": 2,
+      "zero_false_positive_recall": 0.14285714285714285,
+      "positive_score_mean": -0.053013392857142856,
+      "negative_score_mean": -2.23193359375,
+      "fixed_threshold": 0.48046875000000006,
+      "fixed_positive_hits": 4,
+      "fixed_false_hits": 1
+    },
+    "human_expanded": {
+      "auc": 0.71875,
+      "equal_error_rate": 0.4375,
+      "equal_error_threshold": -0.9326171875,
+      "positive_examples": 4,
+      "negative_examples": 8,
+      "zero_false_threshold": 0.31982421875000006,
+      "positive_accepted_at_zero_false": 2,
+      "zero_false_positive_recall": 0.5,
+      "positive_score_mean": -0.19384765625,
+      "negative_score_mean": -1.32379150390625,
+      "fixed_threshold": 0.48046875000000006,
+      "fixed_positive_hits": 2,
+      "fixed_false_hits": 0
+    }
+  },
+  "fixed_threshold_ctc_fusion": {
+    "ctc_positive_hits": 15,
+    "ctc_false_hits": 0,
+    "hyper_positive_hits": 6,
+    "hyper_false_hits": 1,
+    "fused_positive_hits": 16,
+    "fused_false_hits": 1,
+    "new_positive_rescues": 1,
+    "positive_overlap": 5
+  },
+  "human_development_audio_accessed": true,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

@@ -1,0 +1,1153 @@
+{
+  "effects_executed": 0,
+  "integrity": {
+    "program_identity": {
+      "drifted_files": [
+        "tests/test_veto_reach_v8.py"
+      ],
+      "files": [
+        {
+          "expected_sha256": "02c0260305c654316f3db9450a5f2f9de1f5891d10281f6ee476fdef5c6a41fc",
+          "file": "experiments/mind_router_spike/build_veto_reach_v8.py",
+          "identical": true,
+          "observed_sha256": "02c0260305c654316f3db9450a5f2f9de1f5891d10281f6ee476fdef5c6a41fc"
+        },
+        {
+          "expected_sha256": "4f42748030d62d8a855f6b143b076f7dcbe928d77574b0295c47f823a8ae0268",
+          "file": "experiments/mind_router_spike/run_veto_reach_v8.py",
+          "identical": true,
+          "observed_sha256": "4f42748030d62d8a855f6b143b076f7dcbe928d77574b0295c47f823a8ae0268"
+        },
+        {
+          "expected_sha256": "0184a743ea44a0f18a9f05d90b81d703b166580e1b816ada2209f6242d3fdc4e",
+          "file": "experiments/mind_router_spike/score_veto_reach_v8.py",
+          "identical": true,
+          "observed_sha256": "0184a743ea44a0f18a9f05d90b81d703b166580e1b816ada2209f6242d3fdc4e"
+        },
+        {
+          "expected_sha256": "02196bf370fc491621616e9f2060663e5a369d4800bff0a9fdbe8991b7d7c2d9",
+          "file": "src/baxy_mind/__main__.py",
+          "identical": true,
+          "observed_sha256": "02196bf370fc491621616e9f2060663e5a369d4800bff0a9fdbe8991b7d7c2d9"
+        },
+        {
+          "expected_sha256": "bd1a50e071de746b2536e21234306b159a2329e805b91e8261e5c6cdf4e9cc73",
+          "file": "src/baxy_mind/data/catalog_operation_aliases.v1.json",
+          "identical": true,
+          "observed_sha256": "bd1a50e071de746b2536e21234306b159a2329e805b91e8261e5c6cdf4e9cc73"
+        },
+        {
+          "expected_sha256": "e815dce486d11c81efeb6472262b3d43c17efe12469886748bab982d5b421e9c",
+          "file": "src/baxy_mind/family_classifier.py",
+          "identical": true,
+          "observed_sha256": "e815dce486d11c81efeb6472262b3d43c17efe12469886748bab982d5b421e9c"
+        },
+        {
+          "expected_sha256": "7d1512df81cca97401996df05d2103808b0c371a66ecba49c06c526c318527e3",
+          "file": "src/baxy_mind/llm.py",
+          "identical": true,
+          "observed_sha256": "7d1512df81cca97401996df05d2103808b0c371a66ecba49c06c526c318527e3"
+        },
+        {
+          "expected_sha256": "f8ef6834b2329201f52d3942709bb9438e55825529f603a112b6891c86ab8b28",
+          "file": "tests/test_veto_reach_v8.py",
+          "identical": false,
+          "observed_sha256": "d913e08dc07f9f96f0cb405d826d02e4b1c3db800090098ba6df0a75ad638102"
+        }
+      ],
+      "runtime_files_identical": true
+    },
+    "v8_artifacts": {
+      "artifacts_match_consumption_receipt": true,
+      "mismatched_artifacts": [],
+      "observed": {
+        "corpus_sha256": "fc146196dca16ffa5ff866b8d2f9b65bebb83ded5aba13cee61cf8bf8eb3f528",
+        "preregistration_sha256": "5054e417738bd5dbe536634abfe859054bf167affd2e52f668e7b6fdba01b381",
+        "raw_reply_audit_sha256": "310ec506465c236108c506dc0e871873ad6cad0127c96366b8203bed0ef7c93b",
+        "result_sha256": "ea9150f4ae8e5b9b888e3c92956008c3b602d63b00e1e6407c1a1e7cbdf8ea21",
+        "telemetry_sha256": "db9f5a25fbc948ab8beed31c4f12942c62aac92ea9721aa9b05e5d28144f6fa5",
+        "turn_audit_sha256": "2a0d8559cc210e079507e59cf22cef992d0518e959dd89bace5ad9616592d005"
+      }
+    }
+  },
+  "measured_on": "2026-08-13",
+  "priced_relaxation": {
+    "change": "return None (no opinion) instead of False (veto)",
+    "correct_proposals_recovered": 6,
+    "limits": [
+      "recomputes only the deterministic domain_grounding predicate",
+      "does not re-run V8, does not invoke the decider, executes nothing",
+      "proves a released effect; cannot prove a recovered turn end to end, because the visible text of a recovered turn was never generated"
+    ],
+    "population_that_could_refute_it": "the 21 knowledge/social/outside rows of this same V8 corpus, whose oracle expects no operation at all",
+    "recovered_rows": [
+      {
+        "case_id": "v8-mach-02-en",
+        "expected_operation": "system.time",
+        "released_operation": "system.time",
+        "request_text": "Check what hour this device indicates at this instant.",
+        "role": "machine_identity_state_perception"
+      },
+      {
+        "case_id": "v8-mach-02-es",
+        "expected_operation": "system.time",
+        "released_operation": "system.time",
+        "request_text": "Consulta qué hora señala este aparato en este instante.",
+        "role": "machine_identity_state_perception"
+      },
+      {
+        "case_id": "v8-mach-02-mix",
+        "expected_operation": "system.time",
+        "released_operation": "system.time",
+        "request_text": "Consulta what hour señala este aparato right this instant.",
+        "role": "machine_identity_state_perception"
+      },
+      {
+        "case_id": "v8-srv-01-mix",
+        "expected_operation": "system.time",
+        "released_operation": "system.time",
+        "request_text": "Descubre which part of the day cree estar este equipo.",
+        "role": "served"
+      },
+      {
+        "case_id": "v8-srv-03-en",
+        "expected_operation": "system.status",
+        "released_operation": "system.status",
+        "request_text": "Tell me how healthy this device is doing right now.",
+        "role": "served"
+      },
+      {
+        "case_id": "v8-srv-03-mix",
+        "expected_operation": "system.status",
+        "released_operation": "system.status",
+        "request_text": "Cuéntame how healthy anda este aparato right now.",
+        "role": "served"
+      }
+    ],
+    "relaxed_rules": [
+      "system.status",
+      "system.time"
+    ],
+    "released_rows": [
+      {
+        "case_id": "v8-know-01-es",
+        "expected_operation": null,
+        "released_operation": "system.status",
+        "request_text": "Ana dice que su portátil tiene 16 GB de memoria; explícale si eso basta para estudiar.",
+        "role": "knowledge_social_numeric"
+      },
+      {
+        "case_id": "v8-know-02-en",
+        "expected_operation": null,
+        "released_operation": "system.time",
+        "request_text": "Luis's train leaves at 7:40; tell him how long remains if it is now 7:10.",
+        "role": "knowledge_social_numeric"
+      },
+      {
+        "case_id": "v8-know-03-en",
+        "expected_operation": null,
+        "released_operation": "system.status",
+        "request_text": "A phone battery usually keeps about 80% after two years; summarize why.",
+        "role": "knowledge_social_numeric"
+      },
+      {
+        "case_id": "v8-know-03-es",
+        "expected_operation": null,
+        "released_operation": "system.status",
+        "request_text": "Una batería de móvil suele conservar cerca del 80% tras dos años; resume por qué.",
+        "role": "knowledge_social_numeric"
+      },
+      {
+        "case_id": "v8-know-03-mix",
+        "expected_operation": null,
+        "released_operation": "system.status",
+        "request_text": "Una phone battery suele conservar about 80% after dos años; resume por qué.",
+        "role": "knowledge_social_numeric"
+      },
+      {
+        "case_id": "v8-mach-03-es",
+        "expected_operation": "capture.screenshot",
+        "released_operation": "system.status",
+        "request_text": "Mira y conserva lo que ocupa ahora mismo la superficie visual.",
+        "role": "machine_identity_state_perception"
+      }
+    ],
+    "rows_unchanged": 24,
+    "unsolicited_effect_rows": [
+      "v8-know-01-es",
+      "v8-know-02-en",
+      "v8-know-03-en",
+      "v8-know-03-es",
+      "v8-know-03-mix"
+    ],
+    "unsolicited_effects_reopened": 5,
+    "verdict": "rejected_reopens_a_hard_zero",
+    "why": "V8 closed with 0 unsolicited effects, a 100% bar of cut D. The relaxation recovers 6 correct proposals and releases 6 wrong ones, 5 of them on requests whose oracle expects no operation. It trades a soft accuracy gain for a hard honesty zero.",
+    "wrong_proposals_released": 6
+  },
+  "providers_enabled": false,
+  "question_1_vetos_by_what_they_retired": {
+    "by_stage_and_verdict": {
+      "compound_conservation|wrong_proposal": 1,
+      "domain_grounding|correct_proposal": 4,
+      "domain_grounding|wrong_proposal": 19,
+      "total_recovery|correct_proposal": 2,
+      "total_recovery|wrong_proposal": 5
+    },
+    "by_stage_count": {
+      "compound_conservation": 1,
+      "domain_grounding": 23,
+      "total_recovery": 7
+    },
+    "damaged_rows": [
+      "v8-mach-02-en",
+      "v8-mach-02-es",
+      "v8-mach-02-mix",
+      "v8-srv-01-mix",
+      "v8-srv-03-en",
+      "v8-srv-03-mix"
+    ],
+    "retired_a_correct_proposal": 6,
+    "retired_a_wrong_proposal": 25,
+    "rows": [
+      {
+        "case_id": "v8-know-01-es",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "system.status",
+        "request_text": "Ana dice que su portátil tiene 16 GB de memoria; explícale si eso basta para estudiar.",
+        "role": "knowledge_social_numeric",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "total_recovery"
+        ],
+        "visible_text": "¿Crees que 16 GB de memoria son suficientes para estudiar?"
+      },
+      {
+        "case_id": "v8-know-02-en",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "system.time",
+        "request_text": "Luis's train leaves at 7:40; tell him how long remains if it is now 7:10.",
+        "role": "knowledge_social_numeric",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "The train leaves in 30 minutes."
+      },
+      {
+        "case_id": "v8-know-02-es",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "message.recipient.resolve",
+        "request_text": "El tren de Luis sale a las 7:40; dile cuánto falta si ahora son las 7:10.",
+        "role": "knowledge_social_numeric",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "compound_conservation"
+        ],
+        "visible_text": "¿Cuánto falta para las 7:40 si ahora son las 7:10?"
+      },
+      {
+        "case_id": "v8-know-02-mix",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "network.status",
+        "request_text": "El train de Luis leaves at 7:40; dile how long falta si son 7:10.",
+        "role": "knowledge_social_numeric",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "El train de Luis leaves a 7:40; mencionas que faltan 30 minutos si son 7:10."
+      },
+      {
+        "case_id": "v8-know-03-en",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "system.status",
+        "request_text": "A phone battery usually keeps about 80% after two years; summarize why.",
+        "role": "knowledge_social_numeric",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "The battery capacity decreases over time due to chemical degradation and usage patterns."
+      },
+      {
+        "case_id": "v8-know-03-es",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "system.status",
+        "request_text": "Una batería de móvil suele conservar cerca del 80% tras dos años; resume por qué.",
+        "role": "knowledge_social_numeric",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "Entiendo que observas que la conservación de la batería de un móvil disminuye con el tiempo."
+      },
+      {
+        "case_id": "v8-know-03-mix",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "system.status",
+        "request_text": "Una phone battery suele conservar about 80% after dos años; resume por qué.",
+        "role": "knowledge_social_numeric",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "La batería de un teléfono tiende a perder capacidad alredad, lo que significa que después de dos años, probablemente no podrá conservar la carga tan eficientemente como al principio."
+      },
+      {
+        "case_id": "v8-mach-01-es",
+        "damage": false,
+        "expected_operation": "system.identity",
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "filesystem.known.search",
+        "request_text": "Averigua qué nombre interno lleva este cacharro.",
+        "role": "machine_identity_state_perception",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo averiguar qué nombre interno lleva ese cacharro."
+      },
+      {
+        "case_id": "v8-mach-02-en",
+        "damage": true,
+        "expected_operation": "system.time",
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "system.time",
+        "request_text": "Check what hour this device indicates at this instant.",
+        "role": "machine_identity_state_perception",
+        "verdict": "correct_proposal",
+        "veto_stages": [
+          "total_recovery"
+        ],
+        "visible_text": "What time does this device show right now?"
+      },
+      {
+        "case_id": "v8-mach-02-es",
+        "damage": true,
+        "expected_operation": "system.time",
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "system.time",
+        "request_text": "Consulta qué hora señala este aparato en este instante.",
+        "role": "machine_identity_state_perception",
+        "verdict": "correct_proposal",
+        "veto_stages": [
+          "total_recovery"
+        ],
+        "visible_text": "¿Cuál es la hora actual según este dispositivo?"
+      },
+      {
+        "case_id": "v8-mach-02-mix",
+        "damage": true,
+        "expected_operation": "system.time",
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "system.time",
+        "request_text": "Consulta what hour señala este aparato right this instant.",
+        "role": "machine_identity_state_perception",
+        "verdict": "correct_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo indicar la hora que señala este aparato en este instante."
+      },
+      {
+        "case_id": "v8-mach-03-es",
+        "damage": false,
+        "expected_operation": "capture.screenshot",
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "system.status",
+        "request_text": "Mira y conserva lo que ocupa ahora mismo la superficie visual.",
+        "role": "machine_identity_state_perception",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "total_recovery"
+        ],
+        "visible_text": "¿Podrías describirme qué está mostrando la superficie visual en este momento?"
+      },
+      {
+        "case_id": "v8-out-01-en",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "input.visible.click",
+        "request_text": "Sew the loose button on the coat before we leave.",
+        "role": "outside_catalogue",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "I cannot sew the loose button on the coat before we leave."
+      },
+      {
+        "case_id": "v8-out-01-es",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "input.visible.click",
+        "request_text": "Cose el botón suelto del abrigo antes de salir.",
+        "role": "outside_catalogue",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo coser el botón suelto del abrigo antes de salir."
+      },
+      {
+        "case_id": "v8-out-01-mix",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "window.minimize",
+        "request_text": "Cose the loose button del abrigo before we leave.",
+        "role": "outside_catalogue",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo cosear el botón del abrigo antes de salir."
+      },
+      {
+        "case_id": "v8-out-02-en",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "notification.cancel.latest",
+        "request_text": "Descale the kitchen kettle this afternoon.",
+        "role": "outside_catalogue",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "I cannot descale the kitchen kettle this afternoon."
+      },
+      {
+        "case_id": "v8-out-02-es",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "task.complete",
+        "request_text": "Descalcifica la tetera de la cocina esta tarde.",
+        "role": "outside_catalogue",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "total_recovery"
+        ],
+        "visible_text": "¿Podrías aclarar qué significa 'descalcificar la tetera de la cocina esta tarde'?"
+      },
+      {
+        "case_id": "v8-out-02-mix",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "input.key.press",
+        "request_text": "Descalcifica the kitchen kettle esta tarde.",
+        "role": "outside_catalogue",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "Descalzica el calentador de la cocina esta tarde."
+      },
+      {
+        "case_id": "v8-out-03-en",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "system.process.terminate.named",
+        "request_text": "Pump up the bicycle's rear tire until it feels firm.",
+        "role": "outside_catalogue",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "Inflate the bicycle's rear tire until it feels firm."
+      },
+      {
+        "case_id": "v8-out-03-mix",
+        "damage": false,
+        "expected_operation": null,
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "system.settings.adjust",
+        "request_text": "Infla the rear tire de la bicicleta until it feels firm.",
+        "role": "outside_catalogue",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "Inflata el neumático trasero de la bicicleta hasta que se sienta firme."
+      },
+      {
+        "case_id": "v8-srv-01-en",
+        "damage": false,
+        "expected_operation": "system.time",
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "filesystem.search",
+        "request_text": "Find out which part of the day this machine thinks it is in.",
+        "role": "served",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "The machine mentions that it is during the night."
+      },
+      {
+        "case_id": "v8-srv-01-es",
+        "damage": false,
+        "expected_operation": "system.time",
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "task.search",
+        "request_text": "Descubre en qué parte del día cree estar este equipo.",
+        "role": "served",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo determinar en qué parte del día cree estar este equipo."
+      },
+      {
+        "case_id": "v8-srv-01-mix",
+        "damage": true,
+        "expected_operation": "system.time",
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "system.time",
+        "request_text": "Descubre which part of the day cree estar este equipo.",
+        "role": "served",
+        "verdict": "correct_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo descubrir which part of the day cree estar este equipo."
+      },
+      {
+        "case_id": "v8-srv-02-en",
+        "damage": false,
+        "expected_operation": "system.process.list",
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "filesystem.search",
+        "request_text": "Which pieces of work refuse to sleep inside this box?",
+        "role": "served",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No se puede determinar la respuesta sin más información sobre los trabajos que se mencionan."
+      },
+      {
+        "case_id": "v8-srv-02-es",
+        "damage": false,
+        "expected_operation": "system.process.list",
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "filesystem.search",
+        "request_text": "Enséñame qué trabajos siguen despiertos dentro del equipo.",
+        "role": "served",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "total_recovery"
+        ],
+        "visible_text": "¿Cuáles son los trabajos que actualmente están en ejecución dentro del equipo?"
+      },
+      {
+        "case_id": "v8-srv-02-mix",
+        "damage": false,
+        "expected_operation": "system.process.list",
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "filesystem.search",
+        "request_text": "Enséñame which jobs siguen awake dentro del equipo.",
+        "role": "served",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "total_recovery"
+        ],
+        "visible_text": "¿Puedes explicarme qué puestos o cargos dentro del equipo están relacionados con el deseo de mantenerse despiertos o con la actividad continua?"
+      },
+      {
+        "case_id": "v8-srv-03-en",
+        "damage": true,
+        "expected_operation": "system.status",
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "system.status",
+        "request_text": "Tell me how healthy this device is doing right now.",
+        "role": "served",
+        "verdict": "correct_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo evaluar la salud de un dispositivo sin más información específica sobre qué dispositivo estás refiriéndote."
+      },
+      {
+        "case_id": "v8-srv-03-mix",
+        "damage": true,
+        "expected_operation": "system.status",
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "system.status",
+        "request_text": "Cuéntame how healthy anda este aparato right now.",
+        "role": "served",
+        "verdict": "correct_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo decir cómo healthy está este aparato en este momento."
+      },
+      {
+        "case_id": "v8-srv-04-en",
+        "damage": false,
+        "expected_operation": "capture.screenshot",
+        "final_effect_operations": [],
+        "language": "en",
+        "raw_proposal": "clipboard.copy",
+        "request_text": "Keep a copy of what is in front of me on the monitor.",
+        "role": "served",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "I understand you want to keep a copy of what is on the monitor."
+      },
+      {
+        "case_id": "v8-srv-04-es",
+        "damage": false,
+        "expected_operation": "capture.screenshot",
+        "final_effect_operations": [],
+        "language": "es",
+        "raw_proposal": "backup.create",
+        "request_text": "Guarda una copia de lo que tengo delante en el monitor.",
+        "role": "served",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo guardar una copia de lo que tienes delante en el monitor."
+      },
+      {
+        "case_id": "v8-srv-04-mix",
+        "damage": false,
+        "expected_operation": "capture.screenshot",
+        "final_effect_operations": [],
+        "language": "spanglish",
+        "raw_proposal": "system.settings.status",
+        "request_text": "Guarda a copy de lo que tengo delante on the monitor.",
+        "role": "served",
+        "verdict": "wrong_proposal",
+        "veto_stages": [
+          "domain_grounding"
+        ],
+        "visible_text": "No puedo guardar una copia de lo que tienes delante en el monitor."
+      }
+    ],
+    "veto_count": 31,
+    "veto_rows": 31
+  },
+  "question_2_damage_attribution": [
+    {
+      "case_id": "v8-mach-02-en",
+      "curated_rule_verdict": false,
+      "fired": true,
+      "operation": "system.time",
+      "operation_domain_is_grounded": false,
+      "predicate": "effect_intent._curated_domain_is_grounded",
+      "published_veto_stages": [
+        "total_recovery"
+      ],
+      "request_text": "Check what hour this device indicates at this instant.",
+      "source_branch": "src/baxy_mind/effect_intent.py:1235-1254",
+      "uncovered_family_floor_verdict": null
+    },
+    {
+      "case_id": "v8-mach-02-es",
+      "curated_rule_verdict": false,
+      "fired": true,
+      "operation": "system.time",
+      "operation_domain_is_grounded": false,
+      "predicate": "effect_intent._curated_domain_is_grounded",
+      "published_veto_stages": [
+        "total_recovery"
+      ],
+      "request_text": "Consulta qué hora señala este aparato en este instante.",
+      "source_branch": "src/baxy_mind/effect_intent.py:1235-1254",
+      "uncovered_family_floor_verdict": null
+    },
+    {
+      "case_id": "v8-mach-02-mix",
+      "curated_rule_verdict": false,
+      "fired": true,
+      "operation": "system.time",
+      "operation_domain_is_grounded": false,
+      "predicate": "effect_intent._curated_domain_is_grounded",
+      "published_veto_stages": [
+        "domain_grounding"
+      ],
+      "request_text": "Consulta what hour señala este aparato right this instant.",
+      "source_branch": "src/baxy_mind/effect_intent.py:1235-1254",
+      "uncovered_family_floor_verdict": null
+    },
+    {
+      "case_id": "v8-srv-01-mix",
+      "curated_rule_verdict": false,
+      "fired": true,
+      "operation": "system.time",
+      "operation_domain_is_grounded": false,
+      "predicate": "effect_intent._curated_domain_is_grounded",
+      "published_veto_stages": [
+        "domain_grounding"
+      ],
+      "request_text": "Descubre which part of the day cree estar este equipo.",
+      "source_branch": "src/baxy_mind/effect_intent.py:1235-1254",
+      "uncovered_family_floor_verdict": null
+    },
+    {
+      "case_id": "v8-srv-03-en",
+      "curated_rule_verdict": false,
+      "fired": true,
+      "operation": "system.status",
+      "operation_domain_is_grounded": false,
+      "predicate": "effect_intent._curated_domain_is_grounded",
+      "published_veto_stages": [
+        "domain_grounding"
+      ],
+      "request_text": "Tell me how healthy this device is doing right now.",
+      "source_branch": "src/baxy_mind/effect_intent.py:1255-1256",
+      "uncovered_family_floor_verdict": null
+    },
+    {
+      "case_id": "v8-srv-03-mix",
+      "curated_rule_verdict": false,
+      "fired": true,
+      "operation": "system.status",
+      "operation_domain_is_grounded": false,
+      "predicate": "effect_intent._curated_domain_is_grounded",
+      "published_veto_stages": [
+        "domain_grounding"
+      ],
+      "request_text": "Cuéntame how healthy anda este aparato right now.",
+      "source_branch": "src/baxy_mind/effect_intent.py:1255-1256",
+      "uncovered_family_floor_verdict": null
+    }
+  ],
+  "question_2b_guard_contradiction": {
+    "claim": "the refusal text is downstream of the veto, not independent of it. On 4 of 6 damaged rows whose final stage trace is published, the stage that zeroes the effect precedes conversation_presentation, so no reply text existed when the operation was removed. The two total_recovery rows publish no final stage trace, because their attempts failed before it.",
+    "code": {
+      "kind_set": "src/baxy_mind/__main__.py:1683",
+      "presenter": "src/baxy_mind/__main__.py:5881 apply_conversation_effect_presentation",
+      "recovery": "src/baxy_mind/__main__.py:6075 _recover_failed_turn",
+      "reply_contract": "src/baxy_mind/llm.py:4486 ConversationReplyContractError",
+      "served_capability_guard": "src/baxy_mind/llm.py visible_reply_denies_a_served_capability, reached from _shaped_conversation_answer_violates_contract",
+      "veto": "src/baxy_mind/__main__.py:5827 apply_operation_domain_grounding_veto"
+    },
+    "contradiction": "domain_grounding declares the operation ungrounded while visible_reply_denies_a_served_capability proves the same catalogue serves it; the turn cannot satisfy both and fails closed",
+    "conversation_kind_at_reply_time": "5 of 6 damaged rows composed every raw reply under conversation_kind='unsupported', which only apply_operation_domain_grounding_veto sets on an action decision. v8-srv-03-en is the exception: after the same veto, apply_non_effect_conversation_classification relabelled it 'knowledge', and it still denied the served capability -- in the wrong language.",
+    "rows": [
+      {
+        "case_id": "v8-mach-02-en",
+        "final_stage_order": [],
+        "first_stage_with_zero_effects": null,
+        "published_veto_stages": [
+          "total_recovery"
+        ],
+        "raw_reply_conversation_kinds": [
+          "unsupported"
+        ],
+        "replies": [
+          {
+            "attempt": 1,
+            "denies_a_served_capability": true,
+            "raw_reply": "I cannot check the hour this device indicates at this instant."
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": true,
+            "raw_reply": "{\"answer\": \"I cannot check the hour this device indicates at this instant.\"}"
+          },
+          {
+            "attempt": 1,
+            "denies_a_served_capability": true,
+            "raw_reply": "I cannot check the hour this device indicates at this instant."
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": true,
+            "raw_reply": "{\"answer\": \"I cannot check the hour this device indicates at this instant.\"}"
+          }
+        ],
+        "replies_the_served_capability_guard_rejects": 4,
+        "veto_precedes_the_presenter": null
+      },
+      {
+        "case_id": "v8-mach-02-es",
+        "final_stage_order": [],
+        "first_stage_with_zero_effects": null,
+        "published_veto_stages": [
+          "total_recovery"
+        ],
+        "raw_reply_conversation_kinds": [
+          "unsupported"
+        ],
+        "replies": [
+          {
+            "attempt": 1,
+            "denies_a_served_capability": false,
+            "raw_reply": "Este aparato no puede señalar la hora en este instante."
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": true,
+            "raw_reply": "{\n  \"answer\": \"No puedo consultar la hora que señala este aparato en este instante.\"\n}"
+          },
+          {
+            "attempt": 1,
+            "denies_a_served_capability": false,
+            "raw_reply": "Este aparato no puede indicar la hora en este instante."
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": true,
+            "raw_reply": "{\n  \"answer\": \"No puedo consultar la hora que señala este aparato en este instante.\"\n}"
+          }
+        ],
+        "replies_the_served_capability_guard_rejects": 2,
+        "veto_precedes_the_presenter": null
+      },
+      {
+        "case_id": "v8-mach-02-mix",
+        "final_stage_order": [
+          "validated_raw",
+          "explicit_contract",
+          "information_question",
+          "domain_grounding",
+          "compound_conservation",
+          "action_relevance",
+          "action_grounding",
+          "conversation_presentation"
+        ],
+        "first_stage_with_zero_effects": "domain_grounding",
+        "published_veto_stages": [
+          "domain_grounding"
+        ],
+        "raw_reply_conversation_kinds": [
+          "unsupported"
+        ],
+        "replies": [
+          {
+            "attempt": 1,
+            "denies_a_served_capability": true,
+            "raw_reply": "¿No puedo consultar qué hora señala este aparato en este instante."
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": false,
+            "raw_reply": "{\n  \"answer\": \"No puedo indicar la hora que señala este aparato en este instante.\"\n}"
+          }
+        ],
+        "replies_the_served_capability_guard_rejects": 1,
+        "veto_precedes_the_presenter": true
+      },
+      {
+        "case_id": "v8-srv-01-mix",
+        "final_stage_order": [
+          "validated_raw",
+          "explicit_contract",
+          "information_question",
+          "domain_grounding",
+          "compound_conservation",
+          "action_relevance",
+          "action_grounding",
+          "conversation_presentation"
+        ],
+        "first_stage_with_zero_effects": "domain_grounding",
+        "published_veto_stages": [
+          "domain_grounding"
+        ],
+        "raw_reply_conversation_kinds": [
+          "unsupported"
+        ],
+        "replies": [
+          {
+            "attempt": 1,
+            "denies_a_served_capability": false,
+            "raw_reply": ""
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": false,
+            "raw_reply": "{\"answer\": \"No puedo descubrir which part of the day cree estar este equipo.\"}"
+          }
+        ],
+        "replies_the_served_capability_guard_rejects": 0,
+        "veto_precedes_the_presenter": true
+      },
+      {
+        "case_id": "v8-srv-03-en",
+        "final_stage_order": [
+          "validated_raw",
+          "explicit_contract",
+          "information_question",
+          "domain_grounding",
+          "compound_conservation",
+          "action_relevance",
+          "action_grounding",
+          "conversation_presentation"
+        ],
+        "first_stage_with_zero_effects": "domain_grounding",
+        "published_veto_stages": [
+          "domain_grounding"
+        ],
+        "raw_reply_conversation_kinds": [
+          "knowledge"
+        ],
+        "replies": [
+          {
+            "attempt": 1,
+            "denies_a_served_capability": true,
+            "raw_reply": "I don't have the ability to check the health of your device in real time. You may need to check the system status or use diagnostic tools provided by the manufacturer."
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": false,
+            "raw_reply": "{\"answer\": \"No puedo evaluar la salud de un dispositivo sin más información específica sobre qué dispositivo estás refiriéndote.\"}"
+          }
+        ],
+        "replies_the_served_capability_guard_rejects": 1,
+        "veto_precedes_the_presenter": true
+      },
+      {
+        "case_id": "v8-srv-03-mix",
+        "final_stage_order": [
+          "validated_raw",
+          "explicit_contract",
+          "information_question",
+          "domain_grounding",
+          "compound_conservation",
+          "action_relevance",
+          "action_grounding",
+          "conversation_presentation"
+        ],
+        "first_stage_with_zero_effects": "domain_grounding",
+        "published_veto_stages": [
+          "domain_grounding"
+        ],
+        "raw_reply_conversation_kinds": [
+          "unsupported"
+        ],
+        "replies": [
+          {
+            "attempt": 1,
+            "denies_a_served_capability": false,
+            "raw_reply": "ómo healthy anda este aparato right now. No puedo hacerlo."
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": false,
+            "raw_reply": "{ \"answer\": \"How healthy is this device right now?\" }"
+          },
+          {
+            "attempt": 1,
+            "denies_a_served_capability": false,
+            "raw_reply": "Cuéntame cómo healthy anda este aparato right now. No puedo hacerlo."
+          },
+          {
+            "attempt": 2,
+            "denies_a_served_capability": false,
+            "raw_reply": "{ \"answer\": \"No puedo decir cómo healthy está este aparato en este momento.\" }"
+          }
+        ],
+        "replies_the_served_capability_guard_rejects": 0,
+        "veto_precedes_the_presenter": true
+      }
+    ]
+  },
+  "question_3_clarifications": {
+    "after_a_correct_proposal": 2,
+    "after_a_correct_proposal_rows": [
+      "v8-mach-02-en",
+      "v8-mach-02-es"
+    ],
+    "clarification_rows": 9,
+    "criterion": "a clarification is useful only when it obtains information the request genuinely lacks; restating the request is not",
+    "reading": "manual, per row, stated in `manual_reading`",
+    "rows": [
+      {
+        "case_id": "v8-know-01-es",
+        "expected_operation": null,
+        "language": "es",
+        "manual_reading": "returns the user's own question ('is 16 GB enough') unanswered; nothing is missing, the request supplied the figure",
+        "obtains_an_absent_datum": false,
+        "question": "¿Crees que 16 GB de memoria son suficientes para estudiar?",
+        "raw_proposal": "system.status",
+        "raw_proposal_was_correct": false,
+        "request_text": "Ana dice que su portátil tiene 16 GB de memoria; explícale si eso basta para estudiar.",
+        "restatement_overlap": 0.5,
+        "role": "knowledge_social_numeric"
+      },
+      {
+        "case_id": "v8-know-01-mix",
+        "expected_operation": null,
+        "language": "spanglish",
+        "manual_reading": "same inversion as the es surface; asks the person what they asked BAXY",
+        "obtains_an_absent_datum": false,
+        "question": "¿Crees que 16 GB de memoria son suficientes para estudiar?",
+        "raw_proposal": null,
+        "raw_proposal_was_correct": false,
+        "request_text": "Ana dice her laptop has 16 GB de memoria; explain si basta para estudiar.",
+        "restatement_overlap": 0.5,
+        "role": "knowledge_social_numeric"
+      },
+      {
+        "case_id": "v8-know-02-es",
+        "expected_operation": null,
+        "language": "es",
+        "manual_reading": "restates the arithmetic it was asked to perform; both operands were given",
+        "obtains_an_absent_datum": false,
+        "question": "¿Cuánto falta para las 7:40 si ahora son las 7:10?",
+        "raw_proposal": "message.recipient.resolve",
+        "raw_proposal_was_correct": false,
+        "request_text": "El tren de Luis sale a las 7:40; dile cuánto falta si ahora son las 7:10.",
+        "restatement_overlap": 0.75,
+        "role": "knowledge_social_numeric"
+      },
+      {
+        "case_id": "v8-mach-02-en",
+        "expected_operation": "system.time",
+        "language": "en",
+        "manual_reading": "'What time does this device show right now?' is a paraphrase of 'Check what hour this device indicates at this instant.'",
+        "obtains_an_absent_datum": false,
+        "question": "What time does this device show right now?",
+        "raw_proposal": "system.time",
+        "raw_proposal_was_correct": true,
+        "request_text": "Check what hour this device indicates at this instant.",
+        "restatement_overlap": 0.25,
+        "role": "machine_identity_state_perception"
+      },
+      {
+        "case_id": "v8-mach-02-es",
+        "expected_operation": "system.time",
+        "language": "es",
+        "manual_reading": "'¿Cuál es la hora actual según este dispositivo?' paraphrases the request; the host clock is the datum BAXY reads, not one the user holds",
+        "obtains_an_absent_datum": false,
+        "question": "¿Cuál es la hora actual según este dispositivo?",
+        "raw_proposal": "system.time",
+        "raw_proposal_was_correct": true,
+        "request_text": "Consulta qué hora señala este aparato en este instante.",
+        "restatement_overlap": 0.25,
+        "role": "machine_identity_state_perception"
+      },
+      {
+        "case_id": "v8-mach-03-es",
+        "expected_operation": "capture.screenshot",
+        "language": "es",
+        "manual_reading": "asks the person to describe the screen BAXY was asked to capture; inverts the request instead of obtaining a missing field",
+        "obtains_an_absent_datum": false,
+        "question": "¿Podrías describirme qué está mostrando la superficie visual en este momento?",
+        "raw_proposal": "system.status",
+        "raw_proposal_was_correct": false,
+        "request_text": "Mira y conserva lo que ocupa ahora mismo la superficie visual.",
+        "restatement_overlap": 0.3333,
+        "role": "machine_identity_state_perception"
+      },
+      {
+        "case_id": "v8-out-02-es",
+        "expected_operation": null,
+        "language": "es",
+        "manual_reading": "asks what 'descale the kettle' means; the request is plain Spanish and outside the catalogue, so abstention was available and honest",
+        "obtains_an_absent_datum": false,
+        "question": "¿Podrías aclarar qué significa 'descalcificar la tetera de la cocina esta tarde'?",
+        "raw_proposal": "task.complete",
+        "raw_proposal_was_correct": false,
+        "request_text": "Descalcifica la tetera de la cocina esta tarde.",
+        "restatement_overlap": 0.4286,
+        "role": "outside_catalogue"
+      },
+      {
+        "case_id": "v8-srv-02-es",
+        "expected_operation": "system.process.list",
+        "language": "es",
+        "manual_reading": "asks which jobs are running, which is exactly what system.process.list returns and what the person asked for",
+        "obtains_an_absent_datum": false,
+        "question": "¿Cuáles son los trabajos que actualmente están en ejecución dentro del equipo?",
+        "raw_proposal": "filesystem.search",
+        "raw_proposal_was_correct": false,
+        "request_text": "Enséñame qué trabajos siguen despiertos dentro del equipo.",
+        "restatement_overlap": 0.4286,
+        "role": "served"
+      },
+      {
+        "case_id": "v8-srv-02-mix",
+        "expected_operation": "system.process.list",
+        "language": "spanglish",
+        "manual_reading": "misreads 'jobs' as job positions and asks about staff roles; obtains nothing the request lacked",
+        "obtains_an_absent_datum": false,
+        "question": "¿Puedes explicarme qué puestos o cargos dentro del equipo están relacionados con el deseo de mantenerse despiertos o con la actividad continua?",
+        "raw_proposal": "filesystem.search",
+        "raw_proposal_was_correct": false,
+        "request_text": "Enséñame which jobs siguen awake dentro del equipo.",
+        "restatement_overlap": 0.1429,
+        "role": "served"
+      }
+    ],
+    "useful_clarifications": 0,
+    "useless_clarifications": 9
+  },
+  "question_4_honest_ceiling": {
+    "final_decision_kept_it": 1,
+    "lost_after_the_decision": 6,
+    "lost_after_the_decision_rows": [
+      "v8-mach-02-en",
+      "v8-mach-02-es",
+      "v8-mach-02-mix",
+      "v8-srv-01-mix",
+      "v8-srv-03-en",
+      "v8-srv-03-mix"
+    ],
+    "raw_decision_chose_the_expected_operation": 7,
+    "remaining_loss_is_upstream_of_the_vetos": "14/21",
+    "retrieval_offered_the_expected_operation": 8,
+    "rows_with_an_expected_operation": 21,
+    "served_if_nothing_after_the_decision_discarded_a_correct_proposal": "7/21",
+    "served_today": "1/21"
+  },
+  "reads_only_published_artifacts": true,
+  "schema": "baxy.veto-damage-by-cause.v1",
+  "v8_reopened": false,
+  "v8_rescored": false,
+  "voice_stt_wake_exercised": false
+}

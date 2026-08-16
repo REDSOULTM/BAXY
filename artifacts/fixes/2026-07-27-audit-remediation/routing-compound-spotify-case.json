@@ -1,0 +1,10 @@
+[
+  {
+    "text": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+    "expectedKind": "plan",
+    "expectedPlanOperations": [
+      "media.play.exact",
+      "media.control"
+    ]
+  }
+]

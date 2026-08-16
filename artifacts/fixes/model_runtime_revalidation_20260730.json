@@ -1,0 +1,22 @@
+{
+  "schema": "baxy.model-runtime-revalidation.v1",
+  "measured_at_utc": "2026-07-30",
+  "question": "did anything published in the last five months change the conditions under which BAXY previously rejected an asset or runtime candidate?",
+  "method": "primary sources only: the upstream issue that blocks MTP and the llama.cpp release feed. No asset was downloaded, no manifest was touched and no hash changed.",
+  "findings": [
+    {
+      "subject": "Gemma 4 E2B MTP assistant (previously rejected: acceptance 28.3%, chat +33%, outputs changed; and blocked on builds >= b9702)",
+      "primary_source": "https://github.com/ggml-org/llama.cpp/issues/24795",
+      "state": "the issue is STILL OPEN. The regression that crashes the MTP draft during tensor loading between b9553 and b9702 has no linked fix or PR.",
+      "verdict": "rejection stands unchanged; no physical phase justified"
+    },
+    {
+      "subject": "llama.cpp runtime build",
+      "primary_source": "https://github.com/ggml-org/llama.cpp/releases",
+      "state": "upstream is at b10199 (2026-07-30); BAXY runs the registered b9980. The visible release notes cover server embeddings, Vulkan quantized concat, Metal memory and CUDA tuning. None of them mentions Gemma, speculative decoding, MTP, grammar/GBNF or prompt/KV cache reuse.",
+      "verdict": "no concrete hypothesis with expected value. Moving the registered runtime would change a productive asset and its hashes, which requires the full eight-gate promotion and explicit authorization; being N builds newer is not by itself a reason to open a physical phase."
+    }
+  ],
+  "conclusion": "no candidate met the bar to open a physical measurement phase. The previous rejections (MTP, Ministral, Qwen3.5) remain valid and Gemma 4 E2B QAT remains canonical.",
+  "honesty_note": "this revalidation checked the specific upstream blocker and the release feed. It is not an exhaustive survey of every quantized checkpoint published in the window."
+}

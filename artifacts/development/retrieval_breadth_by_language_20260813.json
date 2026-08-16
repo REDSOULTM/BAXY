@@ -1,0 +1,497 @@
+{
+  "authority": "development diagnostic; the sidecar runs unmodified behind a recording proxy. It decides turns and dispatches no operation, and it authorises no change to the shortlist.",
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-13T00:51:49.379415+00:00",
+  "rows": [
+    {
+      "candidates": 28,
+      "effect_operations": [],
+      "group": "knowledge-photosynthesis",
+      "kind": "knowledge",
+      "language": "es",
+      "model_calls": 4,
+      "policy_prompt_bytes": 9152,
+      "policy_seconds": 2.5337,
+      "seconds_total": 4.7249,
+      "text": "Explicame en dos frases que es la fotosintesis.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 4,
+      "effect_operations": [],
+      "group": "knowledge-photosynthesis",
+      "kind": "knowledge",
+      "language": "en",
+      "model_calls": 4,
+      "policy_prompt_bytes": 2430,
+      "policy_seconds": 1.3673,
+      "seconds_total": 2.6776,
+      "text": "Explain in two sentences what photosynthesis is.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 28,
+      "effect_operations": [],
+      "group": "knowledge-photosynthesis",
+      "kind": "knowledge",
+      "language": "spanglish",
+      "model_calls": 4,
+      "policy_prompt_bytes": 9118,
+      "policy_seconds": 2.0409,
+      "seconds_total": 3.39,
+      "text": "Explicame in two sentences que es la photosynthesis.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 9,
+      "effect_operations": [],
+      "group": "knowledge-taskbar",
+      "kind": "knowledge",
+      "language": "es",
+      "model_calls": 4,
+      "policy_prompt_bytes": 3485,
+      "policy_seconds": 1.7048,
+      "seconds_total": 3.2644,
+      "text": "Explicame en dos frases que es una barra de tareas.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 2,
+      "effect_operations": [],
+      "group": "knowledge-taskbar",
+      "kind": "knowledge",
+      "language": "en",
+      "model_calls": 4,
+      "policy_prompt_bytes": 1793,
+      "policy_seconds": 1.2711,
+      "seconds_total": 2.6835,
+      "text": "Tell me in two sentences what a taskbar is.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [],
+      "group": "knowledge-thunder",
+      "kind": "knowledge",
+      "language": "es",
+      "model_calls": 1,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 1.179,
+      "text": "Por que suena el trueno despues del relampago?",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [],
+      "group": "knowledge-thunder",
+      "kind": "knowledge",
+      "language": "en",
+      "model_calls": 1,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 0.6825,
+      "text": "Why does thunder sound after the lightning?",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 11,
+      "effect_operations": [],
+      "group": "social-tired",
+      "kind": "social",
+      "language": "es",
+      "model_calls": 4,
+      "policy_prompt_bytes": 4567,
+      "policy_seconds": 2.0384,
+      "seconds_total": 3.0016,
+      "text": "Estoy bastante cansado hoy.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 28,
+      "effect_operations": [],
+      "group": "social-tired",
+      "kind": "social",
+      "language": "en",
+      "model_calls": 4,
+      "policy_prompt_bytes": 8523,
+      "policy_seconds": 1.8033,
+      "seconds_total": 2.7353,
+      "text": "I am pretty tired today.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [],
+      "group": "social-opinion",
+      "kind": "social",
+      "language": "es",
+      "model_calls": 2,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 1.7028,
+      "text": "Que opinas del pan recien hecho?",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [],
+      "group": "social-opinion",
+      "kind": "social",
+      "language": "en",
+      "model_calls": 1,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 0.6656,
+      "text": "What do you think about freshly baked bread?",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 2,
+      "effect_operations": [],
+      "group": "outside-water-plants",
+      "kind": "outside_catalogue",
+      "language": "es",
+      "model_calls": 5,
+      "policy_prompt_bytes": 1731,
+      "policy_seconds": 1.8591,
+      "seconds_total": 3.3092,
+      "text": "Riega las plantas del balcon.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 1,
+      "effect_operations": [],
+      "group": "outside-water-plants",
+      "kind": "outside_catalogue",
+      "language": "en",
+      "model_calls": 5,
+      "policy_prompt_bytes": 1560,
+      "policy_seconds": 0.4318,
+      "seconds_total": 1.7941,
+      "text": "Water the plants on the balcony.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 2,
+      "effect_operations": [],
+      "group": "outside-water-plants",
+      "kind": "outside_catalogue",
+      "language": "spanglish",
+      "model_calls": 5,
+      "policy_prompt_bytes": 1730,
+      "policy_seconds": 0.8824,
+      "seconds_total": 2.2087,
+      "text": "Riega las plants del balcon.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 28,
+      "effect_operations": [],
+      "group": "outside-taxi",
+      "kind": "outside_catalogue",
+      "language": "es",
+      "model_calls": 4,
+      "policy_prompt_bytes": 9148,
+      "policy_seconds": 1.2632,
+      "seconds_total": 3.0384,
+      "text": "Pide un taxi para las ocho.",
+      "turn_kind": "clarify"
+    },
+    {
+      "candidates": 28,
+      "effect_operations": [],
+      "group": "outside-taxi",
+      "kind": "outside_catalogue",
+      "language": "en",
+      "model_calls": 5,
+      "policy_prompt_bytes": 8529,
+      "policy_seconds": 1.2602,
+      "seconds_total": 2.7328,
+      "text": "Book a taxi for eight o'clock.",
+      "turn_kind": "conversation"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [],
+      "group": "served-volume-down",
+      "kind": "served",
+      "language": "es",
+      "model_calls": 1,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 1.1807,
+      "text": "Baja el volumen a la mitad.",
+      "turn_kind": "clarify"
+    },
+    {
+      "candidates": 5,
+      "effect_operations": [],
+      "group": "served-volume-down",
+      "kind": "served",
+      "language": "en",
+      "model_calls": 4,
+      "policy_prompt_bytes": 2759,
+      "policy_seconds": 0.7684,
+      "seconds_total": 3.2224,
+      "text": "Turn the volume down to half.",
+      "turn_kind": "clarify"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [],
+      "group": "served-volume-down",
+      "kind": "served",
+      "language": "spanglish",
+      "model_calls": 1,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 1.2161,
+      "text": "Baja el volume a la mitad.",
+      "turn_kind": "clarify"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [
+        "system.status"
+      ],
+      "group": "served-battery",
+      "kind": "served",
+      "language": "es",
+      "model_calls": 0,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 0.0174,
+      "text": "Cuanta bateria le queda al equipo?",
+      "turn_kind": "action"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [
+        "system.status"
+      ],
+      "group": "served-battery",
+      "kind": "served",
+      "language": "en",
+      "model_calls": 0,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 0.0243,
+      "text": "How much battery is left on the computer?",
+      "turn_kind": "action"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [
+        "note.list"
+      ],
+      "group": "served-notes",
+      "kind": "served",
+      "language": "es",
+      "model_calls": 0,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 0.005,
+      "text": "Que notas tengo guardadas?",
+      "turn_kind": "action"
+    },
+    {
+      "candidates": 0,
+      "effect_operations": [
+        "note.list"
+      ],
+      "group": "served-notes",
+      "kind": "served",
+      "language": "en",
+      "model_calls": 0,
+      "policy_prompt_bytes": 0,
+      "policy_seconds": 0.0,
+      "seconds_total": 0.005,
+      "text": "What notes do I have saved?",
+      "turn_kind": "action"
+    }
+  ],
+  "schema": "baxy.retrieval-breadth-by-language.v1",
+  "summary": {
+    "by_kind": {
+      "knowledge": {
+        "max": 28,
+        "median": 4,
+        "n": 7,
+        "zero": 2
+      },
+      "outside_catalogue": {
+        "max": 28,
+        "median": 2,
+        "n": 5,
+        "zero": 0
+      },
+      "served": {
+        "max": 5,
+        "median": 0,
+        "n": 7,
+        "zero": 6
+      },
+      "social": {
+        "max": 28,
+        "median": 5.5,
+        "n": 4,
+        "zero": 2
+      }
+    },
+    "by_language": {
+      "en": {
+        "max": 28,
+        "median": 1.5,
+        "n": 10,
+        "zero": 4
+      },
+      "es": {
+        "max": 28,
+        "median": 1.0,
+        "n": 10,
+        "zero": 5
+      },
+      "spanglish": {
+        "max": 28,
+        "median": 2,
+        "n": 3,
+        "zero": 1
+      }
+    },
+    "knowledge_and_social_should_be_zero": "A photosynthesis question and 'I am pretty tired today' cannot be served by any catalogue operation. Every candidate handed to the decision there is pure cost: latency on the call that blocks the first signal, and one more chance to choose wrong.",
+    "matched_gaps": [
+      {
+        "gap": 24,
+        "group": "knowledge-photosynthesis",
+        "kind": "knowledge",
+        "narrowest": {
+          "candidates": 4,
+          "language": "en"
+        },
+        "widest": {
+          "candidates": 28,
+          "language": "es"
+        }
+      },
+      {
+        "gap": 17,
+        "group": "social-tired",
+        "kind": "social",
+        "narrowest": {
+          "candidates": 11,
+          "language": "es"
+        },
+        "widest": {
+          "candidates": 28,
+          "language": "en"
+        }
+      },
+      {
+        "gap": 7,
+        "group": "knowledge-taskbar",
+        "kind": "knowledge",
+        "narrowest": {
+          "candidates": 2,
+          "language": "en"
+        },
+        "widest": {
+          "candidates": 9,
+          "language": "es"
+        }
+      },
+      {
+        "gap": 5,
+        "group": "served-volume-down",
+        "kind": "served",
+        "narrowest": {
+          "candidates": 0,
+          "language": "es"
+        },
+        "widest": {
+          "candidates": 5,
+          "language": "en"
+        }
+      },
+      {
+        "gap": 1,
+        "group": "outside-water-plants",
+        "kind": "outside_catalogue",
+        "narrowest": {
+          "candidates": 1,
+          "language": "en"
+        },
+        "widest": {
+          "candidates": 2,
+          "language": "es"
+        }
+      },
+      {
+        "gap": 0,
+        "group": "served-notes",
+        "kind": "served",
+        "narrowest": {
+          "candidates": 0,
+          "language": "es"
+        },
+        "widest": {
+          "candidates": 0,
+          "language": "es"
+        }
+      },
+      {
+        "gap": 0,
+        "group": "served-battery",
+        "kind": "served",
+        "narrowest": {
+          "candidates": 0,
+          "language": "es"
+        },
+        "widest": {
+          "candidates": 0,
+          "language": "es"
+        }
+      },
+      {
+        "gap": 0,
+        "group": "knowledge-thunder",
+        "kind": "knowledge",
+        "narrowest": {
+          "candidates": 0,
+          "language": "es"
+        },
+        "widest": {
+          "candidates": 0,
+          "language": "es"
+        }
+      },
+      {
+        "gap": 0,
+        "group": "outside-taxi",
+        "kind": "outside_catalogue",
+        "narrowest": {
+          "candidates": 28,
+          "language": "es"
+        },
+        "widest": {
+          "candidates": 28,
+          "language": "es"
+        }
+      },
+      {
+        "gap": 0,
+        "group": "social-opinion",
+        "kind": "social",
+        "narrowest": {
+          "candidates": 0,
+          "language": "es"
+        },
+        "widest": {
+          "candidates": 0,
+          "language": "es"
+        }
+      }
+    ],
+    "turns": 23
+  }
+}

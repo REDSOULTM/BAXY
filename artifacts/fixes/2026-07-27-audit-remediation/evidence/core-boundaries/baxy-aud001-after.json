@@ -1,0 +1,148 @@
+{
+  "schema": "baxy-night-audit-steam-appid-crash-repro-v1",
+  "measured_at": "2026-07-27T18:39:50.633332+00:00",
+  "core": "D:\\BAXY\\source\\src\\Baxy.Core\\bin\\Release\\net10.0-windows10.0.19041.0\\win-x64\\publish\\baxy-core.exe",
+  "reproduced": false,
+  "runs": [
+    {
+      "operation": "game.install.prepare",
+      "attempt": 1,
+      "argument": "audit-missing-id",
+      "argument_length": 16,
+      "advertised_risk": "read_only",
+      "advertised_schema": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string",
+            "maxLength": 16,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "appId"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "49de9cec-71a7-4211-b512-11f91a2233aa",
+        "missionId": "e7f44241-4d6e-4686-adff-f5a6634b43de",
+        "invocationId": "3f47d314-84b3-4fef-8eb9-d7815cb62877",
+        "status": "failed",
+        "message": "No pude completar la operación.",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "steam_app_id_invalid"
+      },
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "game.install.prepare",
+      "attempt": 2,
+      "argument": "audit-missing-id",
+      "argument_length": 16,
+      "advertised_risk": "read_only",
+      "advertised_schema": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string",
+            "maxLength": 16,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "appId"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "298c3689-41e6-42d6-8cbe-d7dc3dd669da",
+        "missionId": "692b74d7-7654-4b93-9f9d-426be0675ac3",
+        "invocationId": "06cdb503-335e-453f-b748-08ef501cd33e",
+        "status": "failed",
+        "message": "No pude completar la operación.",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "steam_app_id_invalid"
+      },
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "game.install.status",
+      "attempt": 1,
+      "argument": "audit-missing-id",
+      "argument_length": 16,
+      "advertised_risk": "read_only",
+      "advertised_schema": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string",
+            "maxLength": 16,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "appId"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "7e4e139e-534f-48d4-b0eb-a05af551dbfc",
+        "missionId": "faed3056-a73f-4761-9885-a3633bdcf6e7",
+        "invocationId": "23e2ae15-47ce-4520-aea4-1d5ed87f9b96",
+        "status": "failed",
+        "message": "No pude completar la operación.",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "steam_app_id_invalid"
+      },
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "game.install.status",
+      "attempt": 2,
+      "argument": "audit-missing-id",
+      "argument_length": 16,
+      "advertised_risk": "read_only",
+      "advertised_schema": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string",
+            "maxLength": 16,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "appId"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "2b49b026-3f7f-459d-8b5f-cc283e337ca5",
+        "missionId": "bc5b382e-d311-4875-a30a-619a9ecd3135",
+        "invocationId": "ec5bf5bb-a27d-445c-961b-1a09006e08f9",
+        "status": "failed",
+        "message": "No pude completar la operación.",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "steam_app_id_invalid"
+      },
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ]
+}

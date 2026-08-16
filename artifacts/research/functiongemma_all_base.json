@@ -1,0 +1,1539 @@
+{
+  "adapter": null,
+  "adapter_report": null,
+  "base_model": {
+    "path": "D:\\BAXYRuntime\\assets\\models\\functiongemma-270m-it-hf",
+    "sha256": "af4f8a7c4c5eb82291759fd828720c7bcfcb92a5274556d13dde3caccf5f427b"
+  },
+  "by_family": {
+    "app": {
+      "accuracy": 1.0,
+      "exact": 8,
+      "samples": 8
+    },
+    "audio": {
+      "accuracy": 0.416667,
+      "exact": 5,
+      "samples": 12
+    },
+    "browser": {
+      "accuracy": 0.6,
+      "exact": 6,
+      "samples": 10
+    },
+    "calendar": {
+      "accuracy": 1.0,
+      "exact": 4,
+      "samples": 4
+    },
+    "capture": {
+      "accuracy": 1.0,
+      "exact": 4,
+      "samples": 4
+    },
+    "clipboard": {
+      "accuracy": 1.0,
+      "exact": 4,
+      "samples": 4
+    },
+    "media": {
+      "accuracy": 0.0,
+      "exact": 0,
+      "samples": 6
+    },
+    "message": {
+      "accuracy": 1.0,
+      "exact": 4,
+      "samples": 4
+    },
+    "note": {
+      "accuracy": 0.833333,
+      "exact": 5,
+      "samples": 6
+    },
+    "notification": {
+      "accuracy": 1.0,
+      "exact": 4,
+      "samples": 4
+    },
+    "reminder": {
+      "accuracy": 0.75,
+      "exact": 3,
+      "samples": 4
+    },
+    "system": {
+      "accuracy": 0.5,
+      "exact": 3,
+      "samples": 6
+    },
+    "web": {
+      "accuracy": 1.0,
+      "exact": 2,
+      "samples": 2
+    }
+  },
+  "by_language": {
+    "en": {
+      "accuracy": 0.72973,
+      "exact": 27,
+      "samples": 37
+    },
+    "es": {
+      "accuracy": 0.675676,
+      "exact": 25,
+      "samples": 37
+    }
+  },
+  "candidate_operations": {
+    "app": [
+      "app.close",
+      "app.installed",
+      "app.open"
+    ],
+    "audio": [
+      "audio.microphone.mute",
+      "audio.mute",
+      "audio.status",
+      "audio.volume",
+      "audio.volume.adjust"
+    ],
+    "backup": [
+      "backup.create",
+      "backup.known.create",
+      "backup.known.list",
+      "backup.known.restore.latest",
+      "backup.known.verify.latest",
+      "backup.list",
+      "backup.restore",
+      "backup.verify"
+    ],
+    "bluetooth": [
+      "bluetooth.device.list",
+      "bluetooth.device.pair",
+      "bluetooth.radio.set"
+    ],
+    "browser": [
+      "browser.control",
+      "browser.navigate",
+      "browser.navigate.named",
+      "browser.page.read",
+      "browser.tabs.list"
+    ],
+    "calendar": [
+      "calendar.event.create",
+      "calendar.event.list"
+    ],
+    "capture": [
+      "capture.active.window",
+      "capture.screenshot"
+    ],
+    "clipboard": [
+      "clipboard.copy",
+      "clipboard.paste",
+      "clipboard.read.text",
+      "clipboard.write.text"
+    ],
+    "email": [
+      "email.latest.read",
+      "email.latest.reply"
+    ],
+    "filesystem": [
+      "filesystem.copy",
+      "filesystem.create.directory",
+      "filesystem.file.open.latest",
+      "filesystem.folder.open",
+      "filesystem.hash",
+      "filesystem.known.duplicates",
+      "filesystem.known.search",
+      "filesystem.known.trash.named",
+      "filesystem.list",
+      "filesystem.move",
+      "filesystem.path.ensure.absent",
+      "filesystem.read.text",
+      "filesystem.sandbox.append.named",
+      "filesystem.sandbox.diff.named",
+      "filesystem.sandbox.move.named",
+      "filesystem.search",
+      "filesystem.trash.commit",
+      "filesystem.trash.prepare",
+      "filesystem.trash.restore",
+      "filesystem.write.text"
+    ],
+    "game": [
+      "game.catalog.list",
+      "game.install.cancel",
+      "game.install.cancel.active",
+      "game.install.commit",
+      "game.install.named",
+      "game.install.prepare",
+      "game.install.status",
+      "game.installed.named",
+      "game.launch",
+      "game.purchase.commit",
+      "game.purchase.prepare"
+    ],
+    "input": [
+      "input.key.press",
+      "input.keyboard.layout",
+      "input.keyboard.open",
+      "input.keyboard.status",
+      "input.pointer.control",
+      "input.select.all",
+      "input.text.type",
+      "input.visible.click"
+    ],
+    "media": [
+      "media.control",
+      "media.play.exact",
+      "media.play.query",
+      "media.play.youtube",
+      "media.seek.relative",
+      "media.status"
+    ],
+    "memory": [
+      "memory.correct",
+      "memory.disable",
+      "memory.enable",
+      "memory.export",
+      "memory.forget",
+      "memory.list",
+      "memory.recall",
+      "memory.save",
+      "memory.sensitive.save",
+      "memory.session.clear",
+      "memory.status"
+    ],
+    "message": [
+      "message.recipient.resolve",
+      "message.send"
+    ],
+    "network": [
+      "network.dns.status",
+      "network.ip.list",
+      "network.ping",
+      "network.port.list",
+      "network.status"
+    ],
+    "note": [
+      "note.create",
+      "note.list",
+      "note.read",
+      "note.restore",
+      "note.search",
+      "note.trash",
+      "note.update"
+    ],
+    "notification": [
+      "notification.cancel.latest",
+      "notification.diagnose",
+      "notification.dismiss",
+      "notification.list.due",
+      "notification.schedule"
+    ],
+    "ocr": [
+      "ocr.read"
+    ],
+    "office": [
+      "office.document.create",
+      "office.document.read"
+    ],
+    "package": [
+      "package.install.commit",
+      "package.install.prepare"
+    ],
+    "peripheral": [
+      "peripheral.list",
+      "peripheral.print",
+      "peripheral.scan"
+    ],
+    "reminder": [
+      "reminder.create",
+      "reminder.delete",
+      "reminder.list",
+      "reminder.resolve.exact",
+      "reminder.restore"
+    ],
+    "routine": [
+      "routine.delete",
+      "routine.list",
+      "routine.phrase.create",
+      "routine.read",
+      "routine.resolve.exact",
+      "routine.restore",
+      "routine.set.enabled"
+    ],
+    "streaming": [
+      "streaming.navigate",
+      "streaming.play.named"
+    ],
+    "system": [
+      "system.application.crash.diagnose",
+      "system.identity",
+      "system.power",
+      "system.process.list",
+      "system.process.terminate.named",
+      "system.recyclebin.empty",
+      "system.settings.adjust",
+      "system.settings.set",
+      "system.settings.status",
+      "system.status",
+      "system.time"
+    ],
+    "task": [
+      "task.complete",
+      "task.create",
+      "task.delete",
+      "task.list",
+      "task.reopen",
+      "task.resolve.exact",
+      "task.restore",
+      "task.search",
+      "task.update"
+    ],
+    "vision": [
+      "vision.describe"
+    ],
+    "web": [
+      "web.search"
+    ],
+    "wifi": [
+      "wifi.connect",
+      "wifi.connect.named",
+      "wifi.disconnect",
+      "wifi.ensure.connected",
+      "wifi.profile.list",
+      "wifi.status"
+    ],
+    "window": [
+      "window.active",
+      "window.application.status",
+      "window.focus",
+      "window.maximize",
+      "window.minimize",
+      "window.move",
+      "window.resize",
+      "window.resolve",
+      "window.restore"
+    ]
+  },
+  "cases_per_repeat": 74,
+  "confusions": {
+    "audio.microphone.mute->audio.mute": 2,
+    "audio.status->audio.volume": 2,
+    "audio.volume.adjust->audio.volume": 3,
+    "browser.control->browser.page.read": 2,
+    "browser.navigate->NONE": 1,
+    "browser.tabs.list->browser.page.read": 1,
+    "media.control->NONE": 1,
+    "media.control->media.seek.relative": 1,
+    "media.play.query->media.play.exact": 1,
+    "media.play.query->media.play.play_exact": 1,
+    "media.status->media.play.exact": 1,
+    "media.status->media.play.search": 1,
+    "note.list->NONE": 1,
+    "reminder.create->reminder.restore": 1,
+    "system.status->system.memory.usage": 2,
+    "system.time->time": 1
+  },
+  "effects_executed": 0,
+  "exact": 52,
+  "exact_accuracy": 0.702703,
+  "family": "all",
+  "latency_seconds": {
+    "maximum": 1.202757,
+    "mean": 0.519596,
+    "p50": 0.48553,
+    "p95": 0.666516
+  },
+  "load_seconds": 1.098376,
+  "measured_at_utc": "2026-08-01T20:59:19.320698+00:00",
+  "oracle": "D:\\BAXY\\source\\experiments\\mind_router_spike\\data\\exact_operation_development.v1.jsonl",
+  "oracle_sha256": "d6162676ec59b5cf138de35ddce767f7239e3fe36f0755795321beca09df4909",
+  "peak_allocated_mib": 564.3,
+  "peak_reserved_mib": 574.0,
+  "repeats": 1,
+  "rows": [
+    {
+      "case_id": "audio-absolute-es",
+      "exact": true,
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>SET<escape>}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.660605,
+      "text": "Pon el volumen del computador al 35 por ciento."
+    },
+    {
+      "case_id": "audio-absolute-en",
+      "exact": true,
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>OBJECT<escape>}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.664533,
+      "text": "Set the computer volume to 35 percent."
+    },
+    {
+      "case_id": "audio-adjust-up-es",
+      "exact": true,
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__volume__adjust{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.volume.adjust"
+      ],
+      "repeat": 0,
+      "seconds": 0.516633,
+      "text": "Sube el volumen 10 puntos."
+    },
+    {
+      "case_id": "audio-adjust-up-en",
+      "exact": false,
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>INCREASE<escape>}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.709197,
+      "text": "Increase the volume by 10 points."
+    },
+    {
+      "case_id": "audio-adjust-down-es",
+      "exact": false,
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>OBJECT<escape>}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.666516,
+      "text": "Baja el volumen en 15 puntos."
+    },
+    {
+      "case_id": "audio-adjust-down-en",
+      "exact": false,
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>Reduce<escape>}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.683595,
+      "text": "Lower the volume by 15 points."
+    },
+    {
+      "case_id": "audio-mute-es",
+      "exact": true,
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__mute{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.mute"
+      ],
+      "repeat": 0,
+      "seconds": 0.450362,
+      "text": "Silencia el audio del computador."
+    },
+    {
+      "case_id": "audio-mute-en",
+      "exact": true,
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__mute{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.mute"
+      ],
+      "repeat": 0,
+      "seconds": 0.461783,
+      "text": "Mute the computer speakers."
+    },
+    {
+      "case_id": "microphone-mute-es",
+      "exact": false,
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__mute{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.mute"
+      ],
+      "repeat": 0,
+      "seconds": 0.438106,
+      "text": "Silencia el micrófono."
+    },
+    {
+      "case_id": "microphone-mute-en",
+      "exact": false,
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__mute{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.mute"
+      ],
+      "repeat": 0,
+      "seconds": 0.482072,
+      "text": "Mute my microphone."
+    },
+    {
+      "case_id": "audio-status-es",
+      "exact": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__volume{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.452053,
+      "text": "¿En qué nivel está el volumen ahora?"
+    },
+    {
+      "case_id": "audio-status-en",
+      "exact": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "family": "audio",
+      "generated": "<start_function_call>call:baxy_audio__volume{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.468812,
+      "text": "What is the current speaker volume?"
+    },
+    {
+      "case_id": "app-open-es",
+      "exact": true,
+      "expected_operations": [
+        "app.open"
+      ],
+      "family": "app",
+      "generated": "<start_function_call>call:baxy_app__open{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "app.open"
+      ],
+      "repeat": 0,
+      "seconds": 0.464623,
+      "text": "Abre Spotify."
+    },
+    {
+      "case_id": "app-open-en",
+      "exact": true,
+      "expected_operations": [
+        "app.open"
+      ],
+      "family": "app",
+      "generated": "<start_function_call>call:baxy_app__open{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "app.open"
+      ],
+      "repeat": 0,
+      "seconds": 0.438566,
+      "text": "Open Spotify."
+    },
+    {
+      "case_id": "app-close-es",
+      "exact": true,
+      "expected_operations": [
+        "app.close"
+      ],
+      "family": "app",
+      "generated": "<start_function_call>call:baxy_app__close{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "app.close"
+      ],
+      "repeat": 0,
+      "seconds": 0.436523,
+      "text": "Cierra la ventana de Spotify."
+    },
+    {
+      "case_id": "app-close-en",
+      "exact": true,
+      "expected_operations": [
+        "app.close"
+      ],
+      "family": "app",
+      "generated": "<start_function_call>call:baxy_app__close{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "app.close"
+      ],
+      "repeat": 0,
+      "seconds": 0.443317,
+      "text": "Close the Spotify window."
+    },
+    {
+      "case_id": "app-installed-es",
+      "exact": true,
+      "expected_operations": [
+        "app.installed"
+      ],
+      "family": "app",
+      "generated": "<start_function_call>call:baxy_app__installed{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "app.installed"
+      ],
+      "repeat": 0,
+      "seconds": 0.428878,
+      "text": "Comprueba si Discord está instalado."
+    },
+    {
+      "case_id": "app-installed-en",
+      "exact": true,
+      "expected_operations": [
+        "app.installed"
+      ],
+      "family": "app",
+      "generated": "<start_function_call>call:baxy_app__installed{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "app.installed"
+      ],
+      "repeat": 0,
+      "seconds": 0.475044,
+      "text": "Check whether Discord is installed."
+    },
+    {
+      "case_id": "browser-navigate-es",
+      "exact": true,
+      "expected_operations": [
+        "browser.navigate"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__navigate{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "browser.navigate"
+      ],
+      "repeat": 0,
+      "seconds": 0.444069,
+      "text": "Navega a https://example.com en el navegador controlado."
+    },
+    {
+      "case_id": "browser-navigate-en",
+      "exact": false,
+      "expected_operations": [
+        "browser.navigate"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__navigate{description:<escape>Navega una sesión CDP autenticada a una URL exacta y verifica la URL final.",
+      "language": "en",
+      "observed_operations": [],
+      "repeat": 0,
+      "seconds": 1.202757,
+      "text": "Navigate the controlled browser to https://example.com."
+    },
+    {
+      "case_id": "browser-named-es",
+      "exact": true,
+      "expected_operations": [
+        "browser.navigate.named"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__navigate__named{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "browser.navigate.named"
+      ],
+      "repeat": 0,
+      "seconds": 0.537839,
+      "text": "Abre https://example.com específicamente en Opera."
+    },
+    {
+      "case_id": "browser-named-en",
+      "exact": true,
+      "expected_operations": [
+        "browser.navigate.named"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__navigate__named{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "browser.navigate.named"
+      ],
+      "repeat": 0,
+      "seconds": 0.550455,
+      "text": "Open https://example.com specifically in Opera."
+    },
+    {
+      "case_id": "browser-read-es",
+      "exact": true,
+      "expected_operations": [
+        "browser.page.read"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__page__read{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "browser.page.read"
+      ],
+      "repeat": 0,
+      "seconds": 0.515512,
+      "text": "Lee el texto visible de la página actual."
+    },
+    {
+      "case_id": "browser-read-en",
+      "exact": true,
+      "expected_operations": [
+        "browser.page.read"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__page__read{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "browser.page.read"
+      ],
+      "repeat": 0,
+      "seconds": 0.522135,
+      "text": "Read the visible text on the current web page."
+    },
+    {
+      "case_id": "browser-tabs-es",
+      "exact": false,
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__page__read{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "browser.page.read"
+      ],
+      "repeat": 0,
+      "seconds": 0.539543,
+      "text": "Muéstrame las pestañas abiertas del navegador controlado."
+    },
+    {
+      "case_id": "browser-tabs-en",
+      "exact": true,
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__tabs__list{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "browser.tabs.list"
+      ],
+      "repeat": 0,
+      "seconds": 0.537379,
+      "text": "List the open tabs in the controlled browser."
+    },
+    {
+      "case_id": "browser-reload-es",
+      "exact": false,
+      "expected_operations": [
+        "browser.control"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__page__read{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "browser.page.read"
+      ],
+      "repeat": 0,
+      "seconds": 0.563449,
+      "text": "Recarga la página web actual."
+    },
+    {
+      "case_id": "browser-reload-en",
+      "exact": false,
+      "expected_operations": [
+        "browser.control"
+      ],
+      "family": "browser",
+      "generated": "<start_function_call>call:baxy_browser__page__read{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "browser.page.read"
+      ],
+      "repeat": 0,
+      "seconds": 0.529579,
+      "text": "Reload the current web page."
+    },
+    {
+      "case_id": "calendar-create-es",
+      "exact": true,
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "family": "calendar",
+      "generated": "<start_function_call>call:baxy_calendar__event__create{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "calendar.event.create"
+      ],
+      "repeat": 0,
+      "seconds": 0.558663,
+      "text": "Crea en el calendario un evento llamado Demo mañana de nueve a diez de la mañana."
+    },
+    {
+      "case_id": "calendar-create-en",
+      "exact": true,
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "family": "calendar",
+      "generated": "<start_function_call>call:baxy_calendar__event__create{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "calendar.event.create"
+      ],
+      "repeat": 0,
+      "seconds": 0.518935,
+      "text": "Create a calendar event called Demo tomorrow from nine to ten in the morning."
+    },
+    {
+      "case_id": "calendar-list-es",
+      "exact": true,
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "family": "calendar",
+      "generated": "<start_function_call>call:baxy_calendar__event__list{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "calendar.event.list"
+      ],
+      "repeat": 0,
+      "seconds": 0.54723,
+      "text": "Lista mis eventos del calendario de mañana."
+    },
+    {
+      "case_id": "calendar-list-en",
+      "exact": true,
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "family": "calendar",
+      "generated": "<start_function_call>call:baxy_calendar__event__list{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "calendar.event.list"
+      ],
+      "repeat": 0,
+      "seconds": 0.538163,
+      "text": "List my calendar events for tomorrow."
+    },
+    {
+      "case_id": "capture-screen-es",
+      "exact": true,
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "family": "capture",
+      "generated": "<start_function_call>call:baxy_capture__screenshot{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "capture.screenshot"
+      ],
+      "repeat": 0,
+      "seconds": 0.456764,
+      "text": "Toma una captura de toda la pantalla."
+    },
+    {
+      "case_id": "capture-screen-en",
+      "exact": true,
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "family": "capture",
+      "generated": "<start_function_call>call:baxy_capture__screenshot{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "capture.screenshot"
+      ],
+      "repeat": 0,
+      "seconds": 0.458754,
+      "text": "Take a screenshot of the whole screen."
+    },
+    {
+      "case_id": "capture-window-es",
+      "exact": true,
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "family": "capture",
+      "generated": "<start_function_call>call:baxy_capture__active__window{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "capture.active.window"
+      ],
+      "repeat": 0,
+      "seconds": 0.508287,
+      "text": "Captura solamente la ventana activa."
+    },
+    {
+      "case_id": "capture-window-en",
+      "exact": true,
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "family": "capture",
+      "generated": "<start_function_call>call:baxy_capture__active__window{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "capture.active.window"
+      ],
+      "repeat": 0,
+      "seconds": 0.543592,
+      "text": "Capture only the active window."
+    },
+    {
+      "case_id": "clipboard-read-es",
+      "exact": true,
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "family": "clipboard",
+      "generated": "<start_function_call>call:baxy_clipboard__read__text{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "clipboard.read.text"
+      ],
+      "repeat": 0,
+      "seconds": 0.5203,
+      "text": "Lee el texto que tengo en el portapapeles."
+    },
+    {
+      "case_id": "clipboard-read-en",
+      "exact": true,
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "family": "clipboard",
+      "generated": "<start_function_call>call:baxy_clipboard__read__text{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "clipboard.read.text"
+      ],
+      "repeat": 0,
+      "seconds": 0.545395,
+      "text": "Read the text currently in my clipboard."
+    },
+    {
+      "case_id": "clipboard-write-es",
+      "exact": true,
+      "expected_operations": [
+        "clipboard.write.text"
+      ],
+      "family": "clipboard",
+      "generated": "<start_function_call>call:baxy_clipboard__write__text{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "clipboard.write.text"
+      ],
+      "repeat": 0,
+      "seconds": 0.515085,
+      "text": "Escribe «informe listo» en el portapapeles."
+    },
+    {
+      "case_id": "clipboard-write-en",
+      "exact": true,
+      "expected_operations": [
+        "clipboard.write.text"
+      ],
+      "family": "clipboard",
+      "generated": "<start_function_call>call:baxy_clipboard__write__text{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "clipboard.write.text"
+      ],
+      "repeat": 0,
+      "seconds": 0.537843,
+      "text": "Put the text ‘report ready’ in the clipboard."
+    },
+    {
+      "case_id": "note-create-es",
+      "exact": true,
+      "expected_operations": [
+        "note.create"
+      ],
+      "family": "note",
+      "generated": "<start_function_call>call:baxy_note__create{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "note.create"
+      ],
+      "repeat": 0,
+      "seconds": 0.456137,
+      "text": "Crea una nota que diga comprar pan."
+    },
+    {
+      "case_id": "note-create-en",
+      "exact": true,
+      "expected_operations": [
+        "note.create"
+      ],
+      "family": "note",
+      "generated": "<start_function_call>call:baxy_note__create{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "note.create"
+      ],
+      "repeat": 0,
+      "seconds": 0.442415,
+      "text": "Create a note that says buy bread."
+    },
+    {
+      "case_id": "note-list-es",
+      "exact": false,
+      "expected_operations": [
+        "note.list"
+      ],
+      "family": "note",
+      "generated": "I can certainly assist with managing your notes. To help you, could you please specify the specific notes you would like to retrieve?<end_of_turn>",
+      "language": "es",
+      "observed_operations": [],
+      "repeat": 0,
+      "seconds": 0.99613,
+      "text": "Lista mis notas guardadas."
+    },
+    {
+      "case_id": "note-list-en",
+      "exact": true,
+      "expected_operations": [
+        "note.list"
+      ],
+      "family": "note",
+      "generated": "<start_function_call>call:baxy_note__list{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "note.list"
+      ],
+      "repeat": 0,
+      "seconds": 0.453876,
+      "text": "List my saved notes."
+    },
+    {
+      "case_id": "note-search-es",
+      "exact": true,
+      "expected_operations": [
+        "note.search"
+      ],
+      "family": "note",
+      "generated": "<start_function_call>call:baxy_note__search{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "note.search"
+      ],
+      "repeat": 0,
+      "seconds": 0.44445,
+      "text": "Busca entre mis notas las que mencionen presupuesto."
+    },
+    {
+      "case_id": "note-search-en",
+      "exact": true,
+      "expected_operations": [
+        "note.search"
+      ],
+      "family": "note",
+      "generated": "<start_function_call>call:baxy_note__search{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "note.search"
+      ],
+      "repeat": 0,
+      "seconds": 0.455263,
+      "text": "Search my notes for ones that mention budget."
+    },
+    {
+      "case_id": "notification-schedule-es",
+      "exact": true,
+      "expected_operations": [
+        "notification.schedule"
+      ],
+      "family": "notification",
+      "generated": "<start_function_call>call:baxy_notification__schedule{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "notification.schedule"
+      ],
+      "repeat": 0,
+      "seconds": 0.471882,
+      "text": "Programa una alarma para mañana a las siete."
+    },
+    {
+      "case_id": "notification-schedule-en",
+      "exact": true,
+      "expected_operations": [
+        "notification.schedule"
+      ],
+      "family": "notification",
+      "generated": "<start_function_call>call:baxy_notification__schedule{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "notification.schedule"
+      ],
+      "repeat": 0,
+      "seconds": 0.437529,
+      "text": "Schedule an alarm for seven tomorrow morning."
+    },
+    {
+      "case_id": "notification-list-es",
+      "exact": true,
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "family": "notification",
+      "generated": "<start_function_call>call:baxy_notification__list__due{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "notification.list.due"
+      ],
+      "repeat": 0,
+      "seconds": 0.564209,
+      "text": "Lista las notificaciones que ya deberían haber vencido."
+    },
+    {
+      "case_id": "notification-list-en",
+      "exact": true,
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "family": "notification",
+      "generated": "<start_function_call>call:baxy_notification__list__due{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "notification.list.due"
+      ],
+      "repeat": 0,
+      "seconds": 0.532449,
+      "text": "List notifications that are already due."
+    },
+    {
+      "case_id": "reminder-create-es",
+      "exact": false,
+      "expected_operations": [
+        "reminder.create"
+      ],
+      "family": "reminder",
+      "generated": "<start_function_call>call:baxy_reminder__restore{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "reminder.restore"
+      ],
+      "repeat": 0,
+      "seconds": 0.449051,
+      "text": "Recuérdame comprar pilas mañana a las seis."
+    },
+    {
+      "case_id": "reminder-create-en",
+      "exact": true,
+      "expected_operations": [
+        "reminder.create"
+      ],
+      "family": "reminder",
+      "generated": "<start_function_call>call:baxy_reminder__create{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "reminder.create"
+      ],
+      "repeat": 0,
+      "seconds": 0.42429,
+      "text": "Remind me to buy batteries tomorrow at six."
+    },
+    {
+      "case_id": "reminder-list-es",
+      "exact": true,
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "family": "reminder",
+      "generated": "<start_function_call>call:baxy_reminder__list{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "reminder.list"
+      ],
+      "repeat": 0,
+      "seconds": 0.433934,
+      "text": "Muéstrame mis recordatorios pendientes."
+    },
+    {
+      "case_id": "reminder-list-en",
+      "exact": true,
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "family": "reminder",
+      "generated": "<start_function_call>call:baxy_reminder__list{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "reminder.list"
+      ],
+      "repeat": 0,
+      "seconds": 0.459045,
+      "text": "Show my pending reminders."
+    },
+    {
+      "case_id": "media-play-es",
+      "exact": false,
+      "expected_operations": [
+        "media.play.query"
+      ],
+      "family": "media",
+      "generated": "<start_function_call>call:baxy_media__play__exact{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "media.play.exact"
+      ],
+      "repeat": 0,
+      "seconds": 0.530874,
+      "text": "Reproduce Bohemian Rhapsody de Queen."
+    },
+    {
+      "case_id": "media-play-en",
+      "exact": false,
+      "expected_operations": [
+        "media.play.query"
+      ],
+      "family": "media",
+      "generated": "<start_function_call>call:baxy_media__play__play_exact{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "media.play.play_exact"
+      ],
+      "repeat": 0,
+      "seconds": 0.590401,
+      "text": "Play Bohemian Rhapsody by Queen."
+    },
+    {
+      "case_id": "media-pause-es",
+      "exact": false,
+      "expected_operations": [
+        "media.control"
+      ],
+      "family": "media",
+      "generated": "<start_function_call>call:baxy_media__seek__relative{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "media.seek.relative"
+      ],
+      "repeat": 0,
+      "seconds": 0.538214,
+      "text": "Pausa la reproducción multimedia actual."
+    },
+    {
+      "case_id": "media-pause-en",
+      "exact": false,
+      "expected_operations": [
+        "media.control"
+      ],
+      "family": "media",
+      "generated": "<start_function_call>call:baxy_media__play__pause<escape><start_function_response>",
+      "language": "en",
+      "observed_operations": [],
+      "repeat": 0,
+      "seconds": 0.48553,
+      "text": "Pause the current media playback."
+    },
+    {
+      "case_id": "media-status-es",
+      "exact": false,
+      "expected_operations": [
+        "media.status"
+      ],
+      "family": "media",
+      "generated": "<start_function_call>call:baxy_media__play__search{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "media.play.search"
+      ],
+      "repeat": 0,
+      "seconds": 0.549537,
+      "text": "¿Qué canción está sonando ahora?"
+    },
+    {
+      "case_id": "media-status-en",
+      "exact": false,
+      "expected_operations": [
+        "media.status"
+      ],
+      "family": "media",
+      "generated": "<start_function_call>call:baxy_media__play__exact{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "media.play.exact"
+      ],
+      "repeat": 0,
+      "seconds": 0.537237,
+      "text": "What song is playing right now?"
+    },
+    {
+      "case_id": "system-status-es",
+      "exact": false,
+      "expected_operations": [
+        "system.status"
+      ],
+      "family": "system",
+      "generated": "<start_function_call>call:baxy_system__memory__usage{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "system.memory.usage"
+      ],
+      "repeat": 0,
+      "seconds": 0.598783,
+      "text": "Dime cuánta memoria RAM está usando este computador."
+    },
+    {
+      "case_id": "system-status-en",
+      "exact": false,
+      "expected_operations": [
+        "system.status"
+      ],
+      "family": "system",
+      "generated": "<start_function_call>call:baxy_system__memory__usage{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "system.memory.usage"
+      ],
+      "repeat": 0,
+      "seconds": 0.549257,
+      "text": "Tell me how much RAM this computer is using."
+    },
+    {
+      "case_id": "system-time-es",
+      "exact": false,
+      "expected_operations": [
+        "system.time"
+      ],
+      "family": "system",
+      "generated": "<start_function_call>call:baxy_time{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "time"
+      ],
+      "repeat": 0,
+      "seconds": 0.411957,
+      "text": "¿Qué hora marca este computador?"
+    },
+    {
+      "case_id": "system-time-en",
+      "exact": true,
+      "expected_operations": [
+        "system.time"
+      ],
+      "family": "system",
+      "generated": "<start_function_call>call:baxy_system__time{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "system.time"
+      ],
+      "repeat": 0,
+      "seconds": 0.463903,
+      "text": "What time does this computer show?"
+    },
+    {
+      "case_id": "process-list-es",
+      "exact": true,
+      "expected_operations": [
+        "system.process.list"
+      ],
+      "family": "system",
+      "generated": "<start_function_call>call:baxy_system__process__list{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "system.process.list"
+      ],
+      "repeat": 0,
+      "seconds": 0.533819,
+      "text": "Lista los procesos que están ejecutándose en este computador."
+    },
+    {
+      "case_id": "process-list-en",
+      "exact": true,
+      "expected_operations": [
+        "system.process.list"
+      ],
+      "family": "system",
+      "generated": "<start_function_call>call:baxy_system__process__list{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "system.process.list"
+      ],
+      "repeat": 0,
+      "seconds": 0.532639,
+      "text": "List the processes running on this computer."
+    },
+    {
+      "case_id": "web-search-es",
+      "exact": true,
+      "expected_operations": [
+        "web.search"
+      ],
+      "family": "web",
+      "generated": "<start_function_call>call:baxy_web__search{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "web.search"
+      ],
+      "repeat": 0,
+      "seconds": 0.45546,
+      "text": "Busca en internet noticias sobre energía solar."
+    },
+    {
+      "case_id": "web-search-en",
+      "exact": true,
+      "expected_operations": [
+        "web.search"
+      ],
+      "family": "web",
+      "generated": "<start_function_call>call:baxy_web__search{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "web.search"
+      ],
+      "repeat": 0,
+      "seconds": 0.421573,
+      "text": "Search the web for news about solar energy."
+    },
+    {
+      "case_id": "message-send-es",
+      "exact": true,
+      "expected_operations": [
+        "message.send"
+      ],
+      "family": "message",
+      "generated": "<start_function_call>call:baxy_message__send{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "message.send"
+      ],
+      "repeat": 0,
+      "seconds": 0.443427,
+      "text": "Envía por WhatsApp a Música el mensaje «llego en diez minutos»."
+    },
+    {
+      "case_id": "message-send-en",
+      "exact": true,
+      "expected_operations": [
+        "message.send"
+      ],
+      "family": "message",
+      "generated": "<start_function_call>call:baxy_message__send{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "message.send"
+      ],
+      "repeat": 0,
+      "seconds": 0.450716,
+      "text": "Send Music the WhatsApp message ‘I will arrive in ten minutes’."
+    },
+    {
+      "case_id": "clarify-app-es",
+      "exact": true,
+      "expected_operations": [
+        "app.open"
+      ],
+      "family": "app",
+      "generated": "<start_function_call>call:baxy_app__open{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "app.open"
+      ],
+      "repeat": 0,
+      "seconds": 0.429908,
+      "text": "Abre una aplicación."
+    },
+    {
+      "case_id": "clarify-app-en",
+      "exact": true,
+      "expected_operations": [
+        "app.open"
+      ],
+      "family": "app",
+      "generated": "<start_function_call>call:baxy_app__open{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "app.open"
+      ],
+      "repeat": 0,
+      "seconds": 0.477555,
+      "text": "Open an application."
+    },
+    {
+      "case_id": "clarify-message-es",
+      "exact": true,
+      "expected_operations": [
+        "message.send"
+      ],
+      "family": "message",
+      "generated": "<start_function_call>call:baxy_message__send{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "message.send"
+      ],
+      "repeat": 0,
+      "seconds": 0.443714,
+      "text": "Mándales ese mensaje."
+    },
+    {
+      "case_id": "clarify-message-en",
+      "exact": true,
+      "expected_operations": [
+        "message.send"
+      ],
+      "family": "message",
+      "generated": "<start_function_call>call:baxy_message__send{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "message.send"
+      ],
+      "repeat": 0,
+      "seconds": 0.451985,
+      "text": "Send them that message."
+    }
+  ],
+  "runtime_manifest_changed": false,
+  "samples": 74,
+  "schema": "baxy.functiongemma-selector-evaluation.v1",
+  "scope": "oracle-family ceiling; expected family supplies the candidate set"
+}

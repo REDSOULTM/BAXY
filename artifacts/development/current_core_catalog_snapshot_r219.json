@@ -1,0 +1,4064 @@
+{
+  "schema": "baxy.current-core-catalog-snapshot.r219.v1",
+  "authority": "read_only_authenticated_Core_catalogue_not_model_or_dispatch",
+  "constraints": {
+    "model_started": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "catalogue": {
+    "operations": 174,
+    "operation_names_sha256": "23784c0d5e223c368be9e7665067378ad369aa5e934d9c27de5bd5a8dac518ae",
+    "capabilities_sha256": "fd859ccc3258731846600be714066bfe99b99e74c6052ea1178176f6cd56de71",
+    "applications": 0,
+    "games": 0,
+    "capabilities": [
+      {
+        "name": "app.close",
+        "description": "Solicita el cierre de una ventana resuelta y verifica su ausencia sin forzar la terminacion del proceso.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "windowId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "windowId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "work_loss"
+      },
+      {
+        "name": "app.installed",
+        "description": "Comprueba en el catalogo Inicio de Windows si una aplicacion concreta esta instalada sin abrirla.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "app.open",
+        "description": "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso, ventana visible y foco; también acepta windows.notepad y windows.calculator.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "appId": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "appId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "audio.microphone.mute",
+        "description": "Silencia o reactiva el micrófono predeterminado de Windows y corrobora la postlectura del endpoint de captura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "state"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "audio.mute",
+        "description": "Silencia o reactiva la salida predeterminada y corrobora la postlectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "state"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "audio.status",
+        "description": "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "audio.volume",
+        "description": "Fija el volumen absoluto de la salida predeterminada y corrobora la postlectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "level": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "level"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "audio.volume.adjust",
+        "description": "Sube o baja el volumen de salida una cantidad acotada desde su valor observado y verifica la postlectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "down",
+                "up"
+              ]
+            }
+          },
+          "required": [
+            "amount",
+            "direction"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "backup.create",
+        "description": "Crea una copia privada inmutable de un archivo identificado y verifica su SHA-256.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedSha256": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            },
+            "resourceId": {
+              "type": "string",
+              "maxLength": 35,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedSha256",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "backup.known.create",
+        "description": "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "enum": [
+                "all_known",
+                "desktop",
+                "documents",
+                "pictures",
+                "projects"
+              ]
+            }
+          },
+          "required": [
+            "folder"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "backup.known.list",
+        "description": "Lista los backups ZIP de carpetas conocidas y vuelve a verificar sus hashes.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "backup.known.restore.latest",
+        "description": "Restaura el backup ZIP más reciente en un directorio privado nuevo y verifica archivos y bytes extraídos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "enum": [
+                "all_known",
+                "desktop",
+                "documents",
+                "pictures",
+                "projects"
+              ]
+            }
+          },
+          "required": [
+            "folder"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "backup.known.verify.latest",
+        "description": "Verifica el SHA-256 del backup ZIP más reciente de la carpeta indicada.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "enum": [
+                "all_known",
+                "desktop",
+                "documents",
+                "pictures",
+                "projects"
+              ]
+            }
+          },
+          "required": [
+            "folder"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "backup.list",
+        "description": "Lista copias privadas verificadas, ordenadas desde la mas reciente, sin exponer rutas internas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "backup.restore",
+        "description": "Restaura un backup verificado únicamente en un destino libre del sandbox.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "backupId": {
+              "type": "string",
+              "maxLength": 39,
+              "x-nonWhitespace": true
+            },
+            "destinationRelativePath": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "backupId",
+            "destinationRelativePath"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "backup.verify",
+        "description": "Reabre un backup privado y verifica tamaño y SHA-256.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "backupId": {
+              "type": "string",
+              "maxLength": 39,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "backupId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "bluetooth.device.list",
+        "description": "Enumera dispositivos Bluetooth mediante un adapter oficial y un gate físico de hardware.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "bluetooth.device.pair",
+        "description": "Empareja un dispositivo resuelto mediante el diálogo y permisos oficiales del sistema.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "deviceId": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "deviceId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "bluetooth.radio.set",
+        "description": "Enciende o apaga las radios Bluetooth mediante la API oficial de Windows y verifica su estado final.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "state"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "browser.control",
+        "description": "Controla la pagina CDP actual y verifica historial, desplazamiento o cierre mediante postlectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "back",
+                "close",
+                "fullscreen_video",
+                "reload",
+                "scroll_down",
+                "scroll_up"
+              ]
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "browser.navigate",
+        "description": "Navega una sesión CDP autenticada a una URL exacta y verifica la URL final.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "x-maxUtf8Bytes": 2048,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "browser.navigate.named",
+        "description": "Navega Opera mediante un perfil CDP privado y verifica la URL final observada.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "browser": {
+              "type": "string",
+              "enum": [
+                "opera"
+              ]
+            },
+            "url": {
+              "type": "string",
+              "x-maxUtf8Bytes": 2048,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "browser",
+            "url"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "browser.page.read",
+        "description": "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "maximumCharacters": {
+              "type": "integer",
+              "minimum": 256,
+              "maximum": 32768
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "browser.tabs.list",
+        "description": "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "calendar.event.create",
+        "description": "Crea un evento en una cuenta de calendario autenticada y verifica su identidad remota.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "endUtc": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            },
+            "startUtc": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "endUtc",
+            "startUtc",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "calendar.event.list",
+        "description": "Lista eventos acotados desde una cuenta autenticada sin modificarlos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "endUtc": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            },
+            "startUtc": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "endUtc",
+            "startUtc"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "capture.active.window",
+        "description": "Captura solo los límites visibles de la ventana activa en un BMP privado y devuelve metadatos verificados.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "capture.screenshot",
+        "description": "Captura el escritorio virtual en un BMP privado y devuelve solo identidad, dimensiones y hash.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "clipboard.copy",
+        "description": "Copia la selección del control enfocado y verifica foco estable, aceptación completa de Ctrl+C y un cambio real del portapapeles.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "clipboard.paste",
+        "description": "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "clipboard.read.text",
+        "description": "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "maxCharacters": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65536
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "clipboard.write.text",
+        "description": "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "maxLength": 65536
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "email.latest.read",
+        "description": "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "email.latest.reply",
+        "description": "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "x-maxUtf8Bytes": 16384,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "filesystem.copy",
+        "description": "Copia un archivo identificado dentro del sandbox y verifica su hash en destino.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "destinationRelativePath": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            },
+            "expectedSha256": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            },
+            "resourceId": {
+              "type": "string",
+              "maxLength": 35,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "destinationRelativePath",
+            "expectedSha256",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "filesystem.create.directory",
+        "description": "Crea un directorio relativo confinado y verifica su identidad sin aceptar rutas absolutas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "relativePath": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "relativePath"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "filesystem.file.open.latest",
+        "description": "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y verifica el proceso observado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "enum": [
+                "desktop",
+                "documents",
+                "downloads",
+                "pictures"
+              ]
+            }
+          },
+          "required": [
+            "folder"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "filesystem.folder.open",
+        "description": "Abre una carpeta conocida de Windows y verifica la ventana de Explorer observada.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "enum": [
+                "desktop",
+                "documents",
+                "downloads",
+                "pictures"
+              ]
+            }
+          },
+          "required": [
+            "folder"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "filesystem.hash",
+        "description": "Calcula SHA-256 después de revalidar la identidad opaca del archivo.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "resourceId": {
+              "type": "string",
+              "maxLength": 35,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "filesystem.known.duplicates",
+        "description": "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "enum": [
+                "downloads"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "folder"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "filesystem.known.search",
+        "description": "Busca archivos por nombre en carpetas conocidas de Windows sin seguir puntos de reanálisis ni revelar rutas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "enum": [
+                "all_known",
+                "desktop",
+                "documents",
+                "downloads"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "query": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "subdirectory": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "folder",
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "filesystem.known.trash.named",
+        "description": "Resuelve un archivo nombrado de forma única y lo mueve a una papelera privada después de confirmar.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "fileName": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "folder": {
+              "type": "string",
+              "enum": [
+                "all_known",
+                "desktop",
+                "documents",
+                "downloads"
+              ]
+            }
+          },
+          "required": [
+            "fileName",
+            "folder"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "recoverable_delete"
+      },
+      {
+        "name": "filesystem.list",
+        "description": "Lista entradas acotadas del sandbox y emite identificadores opacos de corta vida.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "relativeDirectory": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "filesystem.move",
+        "description": "Mueve un archivo identificado y verifica hash de destino y ausencia de origen.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "destinationRelativePath": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            },
+            "expectedSha256": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            },
+            "resourceId": {
+              "type": "string",
+              "maxLength": 35,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "destinationRelativePath",
+            "expectedSha256",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "filesystem.path.ensure.absent",
+        "description": "Verifica la ausencia de una ruta absoluta; si existe, solo mueve archivos del perfil o TEMP a una papelera privada recuperable.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "x-maxUtf8Bytes": 2048,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "recoverable_delete"
+      },
+      {
+        "name": "filesystem.read.text",
+        "description": "Lee UTF-8 acotado desde una identidad revalidada y devuelve su hash.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "maximumBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1048576
+            },
+            "resourceId": {
+              "type": "string",
+              "maxLength": 35,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "filesystem.sandbox.append.named",
+        "description": "Añade texto a un archivo de nombre único del sandbox y verifica bytes y hashes.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "fileName": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "text": {
+              "type": "string",
+              "x-maxUtf8Bytes": 65536
+            }
+          },
+          "required": [
+            "fileName",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "filesystem.sandbox.diff.named",
+        "description": "Compara dos archivos de texto resueltos de forma única y devuelve hashes y líneas diferentes.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "leftQuery": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "rightQuery": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "leftQuery",
+            "rightQuery"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "filesystem.sandbox.move.named",
+        "description": "Mueve un archivo de nombre único dentro del sandbox y verifica hash y ausencia del origen.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "destinationRelativePath": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            },
+            "sourceFileName": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "destinationRelativePath",
+            "sourceFileName"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "filesystem.search",
+        "description": "Busca nombres dentro del sandbox sin seguir puntos de reanálisis.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "query": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "filesystem.trash.commit",
+        "description": "Confirma una selección preparada y mueve el recurso a una papelera privada recuperable.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "reviewLabel": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "trashId": {
+              "type": "string",
+              "maxLength": 38,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "reviewLabel",
+            "trashId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "recoverable_delete"
+      },
+      {
+        "name": "filesystem.trash.prepare",
+        "description": "Prepara una selección de papelera de un solo uso con etiqueta revisable.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "resourceId": {
+              "type": "string",
+              "maxLength": 35,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "filesystem.trash.restore",
+        "description": "Restaura un recurso de la papelera privada si su destino original sigue libre.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "restoreId": {
+              "type": "string",
+              "maxLength": 40,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "restoreId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "filesystem.write.text",
+        "description": "Escribe UTF-8 atómicamente; reemplazar exige el SHA-256 exacto observado antes.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedSha256": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 64
+            },
+            "relativePath": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            },
+            "text": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1048576
+            }
+          },
+          "required": [
+            "relativePath",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "game.catalog.list",
+        "description": "Lista el catálogo local de Steam mediante una sesión resuelta y acotada.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "query": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "game.install.cancel",
+        "description": "Cancela una descarga parcial exacta desde el administrador autenticado de Steam y verifica que dejó de progresar.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "appId": {
+              "type": "string",
+              "maxLength": 16,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "appId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "work_loss"
+      },
+      {
+        "name": "game.install.cancel.active",
+        "description": "Cancela todas las descargas activas observadas en Steam y verifica que ninguna siga progresando.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "work_loss"
+      },
+      {
+        "name": "game.install.commit",
+        "description": "Confirma una instalación preparada en una sesión Steam autenticada y verifica su job.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "confirmationId": {
+              "type": "string",
+              "maxLength": 96,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "confirmationId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "installation"
+      },
+      {
+        "name": "game.install.named",
+        "description": "Resuelve un título cerrado de Steam a su AppID, exige entitlement autenticado, inicia la instalación confirmada y verifica la transición del manifest.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "installation"
+      },
+      {
+        "name": "game.install.prepare",
+        "description": "Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "appId": {
+              "type": "string",
+              "maxLength": 16,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "appId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "game.install.status",
+        "description": "Mide el estado y progreso local de una instalación Steam por AppID exacto.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "appId": {
+              "type": "string",
+              "maxLength": 16,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "appId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "game.installed.named",
+        "description": "Comprueba por nombre si un juego esta instalado mediante manifiestos de Steam y Epic y verifica que exista su directorio local.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "enum": [
+                "any",
+                "epic",
+                "steam"
+              ]
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "provider",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "game.launch",
+        "description": "Inicia un AppID poseído y verifica la identidad del proceso lanzado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "appId": {
+              "type": "string",
+              "maxLength": 16,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "appId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "game.purchase.commit",
+        "description": "Confirma una compra preparada con precio exacto; nunca se prueba contra dinero real.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "confirmationId": {
+              "type": "string",
+              "maxLength": 96,
+              "x-nonWhitespace": true
+            },
+            "expectedPriceCents": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "confirmationId",
+            "expectedPriceCents"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "monetary"
+      },
+      {
+        "name": "game.purchase.prepare",
+        "description": "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "appId": {
+              "type": "string",
+              "maxLength": 16,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "appId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "input.key.press",
+        "description": "Presiona una tecla o la combinación segura Ctrl+Shift+Escape en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "alt_tab",
+                "arrow_down",
+                "arrow_left",
+                "arrow_right",
+                "arrow_up",
+                "backspace",
+                "context_menu",
+                "control",
+                "ctrl_shift_escape",
+                "ctrl_v",
+                "delete",
+                "end",
+                "enter",
+                "escape",
+                "home",
+                "page_down",
+                "page_up",
+                "shift",
+                "space",
+                "tab",
+                "win"
+              ]
+            }
+          },
+          "required": [
+            "key"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "input.keyboard.layout",
+        "description": "Activa el teclado español en la ventana enfocada y verifica el idioma de entrada de su hilo mediante Win32.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "language": {
+              "type": "string",
+              "enum": [
+                "spanish"
+              ]
+            }
+          },
+          "required": [
+            "language"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "input.keyboard.open",
+        "description": "Abre el teclado en pantalla de Windows y verifica su proceso y ventana visible sin quitar el foco al control de destino.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "input.keyboard.status",
+        "description": "Lee y verifica el idioma de entrada del hilo de la ventana enfocada mediante Win32.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "input.pointer.control",
+        "description": "Mueve el puntero al centro, hace clic en su posición actual o desplaza hacia abajo y verifica el recibo Win32.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "click",
+                "move_center",
+                "scroll_down"
+              ]
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "input.select.all",
+        "description": "Selecciona todo en el control enfocado de la ventana activa y verifica la seleccion mediante UI Automation.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "input.text.type",
+        "description": "Escribe texto Unicode literal en el control enfocado y verifica que Windows aceptó cada evento SendInput.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "x-maxUtf8Bytes": 8192,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "input.visible.click",
+        "description": "Invoca un único botón visible por etiqueta mediante UI Automation y exige que desaparezca o quede deshabilitado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "media.control",
+        "description": "Controla una sesión SMTC seleccionada y verifica su estado posterior.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "next",
+                "pause",
+                "play",
+                "previous",
+                "stop",
+                "toggle"
+              ]
+            },
+            "sourceApp": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 256
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "media.play.exact",
+        "description": "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "enum": [
+                "spotify"
+              ]
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "provider",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "media.play.query",
+        "description": "Busca y reproduce el primer resultado musical pertinente en Spotify y verifica now-playing.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "enum": [
+                "spotify"
+              ]
+            },
+            "query": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "provider",
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "media.play.youtube",
+        "description": "Busca en YouTube, reproduce un resultado de video y verifica el elemento multimedia y su estado posterior.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "media.seek.relative",
+        "description": "Adelanta o retrocede la sesión SMTC actual y verifica la posición final en su timeline.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "seconds": {
+              "type": "integer",
+              "minimum": -3600,
+              "maximum": 3600
+            }
+          },
+          "required": [
+            "seconds"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "media.status",
+        "description": "Lee la sesión multimedia actual de Windows y devuelve título, artista y estado sin modificarla.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "memory.correct",
+        "description": "Corrige una memoria local mediante comparación y sustitución.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedValue": {
+              "type": [
+                "null",
+                "boolean",
+                "number",
+                "string"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "context",
+                "fact",
+                "preference",
+                "rule"
+              ]
+            },
+            "retention": {
+              "type": "string",
+              "enum": [
+                "persistent",
+                "session",
+                "temporary"
+              ]
+            },
+            "selector": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            },
+            "value": {
+              "type": [
+                "null",
+                "boolean",
+                "number",
+                "string"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "retention",
+            "selector",
+            "value",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "memory.disable",
+        "description": "Deshabilita nuevas lecturas y escrituras de memoria local.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "const": false
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "enabled",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "memory.enable",
+        "description": "Habilita la memoria privada local con confirmación explícita.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "const": true
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "enabled",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "memory.export",
+        "description": "Prepara una exportación privada local sin secretos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "destination": {
+              "type": "string",
+              "enum": [
+                "documents"
+              ]
+            },
+            "includeSecrets": {
+              "type": "boolean",
+              "const": false
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "destination",
+            "includeSecrets",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "memory.forget",
+        "description": "Elimina memorias locales del alcance confirmado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "confirmationRequired": {
+              "type": "boolean",
+              "const": true
+            },
+            "scope": {
+              "type": "string",
+              "enum": [
+                "all",
+                "exact",
+                "kind",
+                "topic"
+              ]
+            },
+            "selector": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 256
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "confirmationRequired",
+            "scope",
+            "selector",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "work_loss"
+      },
+      {
+        "name": "memory.list",
+        "description": "Lista memoria local visible de forma acotada.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 512
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "limit",
+            "offset",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "memory.recall",
+        "description": "Recupera memorias locales visibles para la sesión actual.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "scope": {
+              "type": "string",
+              "enum": [
+                "all",
+                "exact",
+                "kind"
+              ]
+            },
+            "selector": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 256
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "scope",
+            "selector",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "memory.save",
+        "description": "Guarda una memoria explícita local no secreta.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expiryPolicy": {
+              "type": "string",
+              "enum": [
+                "after_relevance_window",
+                "session_end"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "context",
+                "fact",
+                "preference",
+                "rule"
+              ]
+            },
+            "retention": {
+              "type": "string",
+              "enum": [
+                "persistent",
+                "session",
+                "temporary"
+              ]
+            },
+            "selector": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            },
+            "sensitivity": {
+              "type": "string",
+              "enum": [
+                "normal",
+                "personal"
+              ]
+            },
+            "tags": {
+              "type": "array",
+              "maxItems": 16,
+              "items": {
+                "type": "string",
+                "x-maxUtf8Bytes": 64,
+                "x-nonWhitespace": true
+              }
+            },
+            "value": {
+              "type": [
+                "null",
+                "boolean",
+                "number",
+                "string"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "kind",
+            "retention",
+            "selector",
+            "sensitivity",
+            "tags",
+            "value",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "memory.sensitive.save",
+        "description": "Guarda una memoria sensible local después de confirmación.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expiryPolicy": {
+              "type": "string",
+              "enum": [
+                "after_relevance_window",
+                "session_end"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "context",
+                "fact",
+                "preference",
+                "rule"
+              ]
+            },
+            "retention": {
+              "type": "string",
+              "enum": [
+                "persistent",
+                "session",
+                "temporary"
+              ]
+            },
+            "selector": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            },
+            "sensitivity": {
+              "type": "string",
+              "enum": [
+                "secret",
+                "sensitive"
+              ]
+            },
+            "tags": {
+              "type": "array",
+              "maxItems": 16,
+              "items": {
+                "type": "string",
+                "x-maxUtf8Bytes": 64,
+                "x-nonWhitespace": true
+              }
+            },
+            "value": {
+              "type": [
+                "null",
+                "boolean",
+                "number",
+                "string"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "kind",
+            "retention",
+            "selector",
+            "sensitivity",
+            "tags",
+            "value",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "memory.session.clear",
+        "description": "Elimina únicamente la memoria temporal de la sesión actual.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "confirmationRequired": {
+              "type": "boolean",
+              "const": false
+            },
+            "mustNotDeletePersistent": {
+              "type": "boolean",
+              "const": true
+            },
+            "scope": {
+              "type": "string",
+              "enum": [
+                "session"
+              ]
+            },
+            "selector": {
+              "type": "null"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "confirmationRequired",
+            "mustNotDeletePersistent",
+            "scope",
+            "selector",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "memory.status",
+        "description": "Informa el estado y los límites de la memoria local.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "message.recipient.resolve",
+        "description": "Resuelve un único destinatario autenticado y emite un identificador revisable.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "channel": {
+              "type": "string",
+              "enum": [
+                "discord",
+                "whatsapp"
+              ]
+            },
+            "recipient": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "channel",
+            "recipient"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "message.send",
+        "description": "Envía un mensaje a un destinatario resuelto y exige recibo del provider oficial.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "recipientId": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            },
+            "text": {
+              "type": "string",
+              "x-maxUtf8Bytes": 16384
+            }
+          },
+          "required": [
+            "recipientId",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "network.dns.status",
+        "description": "Lee los servidores DNS de las interfaces activas de Windows y exige dos observaciones coherentes.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "network.ip.list",
+        "description": "Enumera direcciones IP unicast activas del equipo y solo devuelve valores presentes en dos observaciones consecutivas, sin exponer nombres de interfaz.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "network.ping",
+        "description": "Envía un único eco ICMP acotado a un host explícito e informa su recibo, latencia o fallo de resolución.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "host": {
+              "type": "string",
+              "x-maxUtf8Bytes": 253,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "host"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "network.port.list",
+        "description": "Enumera puertos TCP y UDP locales en escucha y solo devuelve endpoints presentes en dos observaciones consecutivas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "network.status",
+        "description": "Lee conectividad e interfaces activas sin exponer direcciones, SSID ni nombres locales.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "note.create",
+        "description": "Crea una nota privada local y verifica su relectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string",
+              "x-maxUtf8Bytes": 65536
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "content",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "note.list",
+        "description": "Enumera notas privadas locales activas o enviadas a la papelera.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": [
+                "null",
+                "integer"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            },
+            "offset": {
+              "type": [
+                "null",
+                "integer"
+              ],
+              "minimum": 0
+            },
+            "scope": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "enum": [
+                null,
+                "active",
+                "all",
+                "trashed"
+              ]
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "note.read",
+        "description": "Lee una nota privada local por su identificador o título exacto.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedIsTrashed": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "expectedRevision": {
+              "type": [
+                "null",
+                "integer"
+              ],
+              "minimum": 1
+            },
+            "expectedTitle": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "noteId": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 36
+            },
+            "title": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "note.restore",
+        "description": "Restaura una nota privada local, seleccionada por identificador o título exacto, desde la papelera.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedIsTrashed": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "expectedRevision": {
+              "type": [
+                "null",
+                "integer"
+              ],
+              "minimum": 1
+            },
+            "expectedTitle": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "noteId": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 36
+            },
+            "title": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "note.search",
+        "description": "Busca texto en notas locales y verifica por relectura cada resultado acotado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "includeTrashed": {
+              "type": "boolean"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "query": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "note.trash",
+        "description": "Mueve una nota privada local, seleccionada por identificador o título exacto, a una papelera reversible.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedIsTrashed": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "expectedRevision": {
+              "type": [
+                "null",
+                "integer"
+              ],
+              "minimum": 1
+            },
+            "expectedTitle": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "noteId": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 36
+            },
+            "title": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "recoverable_delete"
+      },
+      {
+        "name": "note.update",
+        "description": "Reemplaza titulo y contenido de una nota seleccionada por identidad y revision, y verifica su relectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string",
+              "x-maxUtf8Bytes": 65536
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "expectedTitle": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            },
+            "noteId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "content",
+            "expectedRevision",
+            "expectedTitle",
+            "noteId",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "notification.cancel.latest",
+        "description": "Cancela la alarma o recordatorio de BAXY más reciente y verifica que su tarea ya no exista.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "alarm",
+                "reminder"
+              ]
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "notification.diagnose",
+        "description": "Diagnostica el servicio, las tareas y los recibos de alarmas de BAXY sin modificar el sistema.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "notification.dismiss",
+        "description": "Descarta una notificación vencida seleccionada mediante identidad y versión exactas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "reminderId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedVersion",
+            "reminderId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "notification.list.due",
+        "description": "Enumera recordatorios vencidos no descartados para que la superficie de usuario los presente.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "notification.schedule",
+        "description": "Programa una alarma o recordatorio audible, único o recurrente, y verifica la tarea futura en Windows.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "dueUtc": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "alarm",
+                "reminder"
+              ]
+            },
+            "recurrence": {
+              "type": "string",
+              "enum": [
+                "daily",
+                "hourly"
+              ]
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "dueUtc",
+            "kind",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "ocr.read",
+        "description": "Ejecuta OCR local sobre una captura identificada y un language pack disponible.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "captureId": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            },
+            "language": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 32
+            }
+          },
+          "required": [
+            "captureId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "office.document.create",
+        "description": "Crea un documento mediante un adapter Office autenticado y devuelve su identidad.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": [
+                "docx",
+                "xlsx"
+              ]
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "format",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "office.document.read",
+        "description": "Lee una proyección estructurada de un documento identificado mediante el adapter oficial.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "documentId": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "documentId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "office.word.append",
+        "description": "Añade texto literal al documento Word activo, lo deja sin guardar y verifica por COM la postlectura del contenido.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "x-maxUtf8Bytes": 32768,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "office.word.close",
+        "description": "Cierra el documento Word activo únicamente si COM confirma que no contiene cambios sin guardar.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "office.word.discard",
+        "description": "Descarta cambios del documento Word activo tras confirmación y verifica que el documento dejó de estar abierto.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "work_loss"
+      },
+      {
+        "name": "office.word.save",
+        "description": "Guarda el documento Word activo y confirma mediante COM que su estado final es Saved.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "office.word.start",
+        "description": "Abre Word visible con un documento nuevo guardado bajo identidad BAXY y verifica ventana, documento y estado Saved.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 512
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "office.word.status",
+        "description": "Consulta por COM el documento Word activo, incluyendo identidad, longitud y estado Saved o Dirty.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "package.install.commit",
+        "description": "Confirma una instalación preparada mediante winget y verifica su recibo.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "confirmationId": {
+              "type": "string",
+              "maxLength": 96,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "confirmationId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "installation"
+      },
+      {
+        "name": "package.install.prepare",
+        "description": "Resuelve un paquete winget exacto y prepara una confirmación sin instalar.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "packageId": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            },
+            "version": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "packageId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "peripheral.list",
+        "description": "Enumera periféricos conectados, incluidos mouse y teclado, mediante APIs de Windows; puede filtrar por tipo.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "all",
+                "keyboard",
+                "mouse",
+                "printer",
+                "scanner",
+                "usb"
+              ]
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "peripheral.print",
+        "description": "Envía un documento identificado a una impresora resuelta y verifica el job.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "deviceId": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            },
+            "documentId": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "deviceId",
+            "documentId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "peripheral.scan",
+        "description": "Captura desde un escáner resuelto y devuelve una identidad privada verificable.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "deviceId": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "deviceId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "reminder.create",
+        "description": "Crea un recordatorio local futuro durable sin confundirlo con una tarea.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "details": {
+              "type": "string",
+              "x-maxUtf8Bytes": 65536
+            },
+            "dueUtc": {
+              "type": "string",
+              "maxLength": 64,
+              "x-nonWhitespace": true
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "dueUtc",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "reminder.delete",
+        "description": "Envía un recordatorio exacto a papelera recuperable después de revisar su etiqueta.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "reminderId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            },
+            "reviewLabel": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedVersion",
+            "reminderId",
+            "reviewLabel"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "recoverable_delete"
+      },
+      {
+        "name": "reminder.list",
+        "description": "Lista recordatorios programados locales de forma acotada.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "reminder.resolve.exact",
+        "description": "Resuelve un recordatorio por título literal y devuelve autoridad CAS.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "includeDeleted": {
+              "type": "boolean"
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "reminder.restore",
+        "description": "Restaura un recordatorio eliminado mediante identidad y versión exactas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "reminderId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedVersion",
+            "reminderId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "routine.delete",
+        "description": "Elimina de forma recuperable una rutina ya seleccionada; nunca ejecuta sus pasos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "reviewLabel": {
+              "type": "string",
+              "x-maxUtf8Bytes": 640,
+              "x-nonWhitespace": true
+            },
+            "routineId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedRevision",
+            "reviewLabel",
+            "routineId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "recoverable_delete"
+      },
+      {
+        "name": "routine.list",
+        "description": "Lista definiciones de rutina creadas por el controlador confiable.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "includeDeleted": {
+              "type": "boolean"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "routine.phrase.create",
+        "description": "Crea una rutina local acotada de reproducción o captura al oir una frase exacta.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "capture.screenshot",
+                "media.control"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "x-maxUtf8Bytes": 640,
+              "x-nonWhitespace": true
+            },
+            "phrase": {
+              "type": "string",
+              "x-maxUtf8Bytes": 640,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "name",
+            "phrase"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "routine.read",
+        "description": "Lee metadatos de una rutina exacta sin ejecutarla.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "includeDeleted": {
+              "type": "boolean"
+            },
+            "routineId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "routineId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "routine.resolve.exact",
+        "description": "Resuelve por nombre literal una rutina y emite autoridad CAS sin exponer inputs.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "includeDeleted": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string",
+              "x-maxUtf8Bytes": 640,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "routine.restore",
+        "description": "Restaura deshabilitada una rutina eliminada; no la ejecuta.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "routineId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedRevision",
+            "routineId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "routine.set.enabled",
+        "description": "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "routineId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "enabled",
+            "expectedRevision",
+            "routineId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "streaming.navigate",
+        "description": "Navega una sesión autenticada de streaming a un recurso exacto y verifica su URI.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "resourceUri": {
+              "type": "string",
+              "x-maxUtf8Bytes": 2048,
+              "x-nonWhitespace": true
+            },
+            "service": {
+              "type": "string",
+              "enum": [
+                "netflix",
+                "prime_video",
+                "youtube"
+              ]
+            }
+          },
+          "required": [
+            "resourceUri",
+            "service"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "streaming.play.named",
+        "description": "Busca y reproduce un título en una sesión Netflix autenticada y verifica que el video avanza.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "service": {
+              "type": "string",
+              "enum": [
+                "netflix"
+              ]
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 512,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "service",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "external_communication"
+      },
+      {
+        "name": "system.application.crash.diagnose",
+        "description": "Consulta fallos y bloqueos recientes de aplicaciones en el registro Application de Windows y solo devuelve eventos con RecordId presentes en dos observaciones.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "hours": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 168
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "system.identity",
+        "description": "Lee el dominio y usuario efectivos del proceso BAXY mediante dos observaciones coherentes.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "system.power",
+        "description": "Solicita una transición confirmada de bloqueo, cierre de sesión o energía mediante la API oficial de Windows y exige su recibo de aceptación.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "lock",
+                "restart",
+                "shutdown",
+                "signout",
+                "sleep"
+              ]
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "work_loss"
+      },
+      {
+        "name": "system.process.list",
+        "description": "Enumera procesos locales acotados por CPU, memoria o nombre y verifica PID, nombre y tiempo de creacion con dos observaciones; no expone rutas ni argumentos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "sort": {
+              "type": "string",
+              "enum": [
+                "cpu",
+                "memory",
+                "name"
+              ]
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "system.process.terminate.named",
+        "description": "Fuerza el cierre de un proceso por nombre ejecutable exacto, conserva sus identidades observadas y verifica que las identidades originales desaparecieron; acepta identidades nuevas creadas por reinicio automatico y requiere confirmacion por posible perdida de trabajo.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "work_loss"
+      },
+      {
+        "name": "system.recyclebin.empty",
+        "description": "Vacia la Papelera de reciclaje de Windows y verifica mediante postlectura que no queden elementos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "work_loss"
+      },
+      {
+        "name": "system.settings.adjust",
+        "description": "Sube o baja el brillo una cantidad acotada desde su valor observado y verifica cada monitor mediante WMI.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "down",
+                "up"
+              ]
+            },
+            "setting": {
+              "type": "string",
+              "enum": [
+                "brightness"
+              ]
+            }
+          },
+          "required": [
+            "amount",
+            "direction",
+            "setting"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "system.settings.set",
+        "description": "Cambia un ajuste permitido mediante API oficial y verifica su postlectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "setting": {
+              "type": "string",
+              "enum": [
+                "brightness",
+                "do_not_disturb",
+                "night_light"
+              ]
+            },
+            "value": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "setting",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "system.settings.status",
+        "description": "Lee el brillo actual de cada monitor compatible mediante WMI y exige dos observaciones coherentes sin modificarlo.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "setting": {
+              "type": "string",
+              "enum": [
+                "brightness"
+              ]
+            }
+          },
+          "required": [
+            "setting"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "system.status",
+        "description": "Mide CPU, memoria, disco, batería, GPU y Windows sin modificar el equipo.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "scope": {
+              "type": "string",
+              "enum": [
+                "battery",
+                "cpu",
+                "cpu_memory",
+                "disk",
+                "gpu_identity",
+                "gpu_usage",
+                "memory",
+                "os",
+                "os_memory",
+                "summary"
+              ]
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "system.time",
+        "description": "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "task.complete",
+        "description": "Marca completa una tarea local seleccionada por identidad y versión exactas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "taskId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedVersion",
+            "taskId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "task.create",
+        "description": "Crea una tarea local privada; la fecha opcional es metadato y no programa recordatorios.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "details": {
+              "type": "string",
+              "x-maxUtf8Bytes": 65536
+            },
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 64
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "task.delete",
+        "description": "Envía una tarea exacta a la papelera reversible después de revisar su etiqueta.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "reviewLabel": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            },
+            "taskId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedVersion",
+            "reviewLabel",
+            "taskId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "recoverable_delete"
+      },
+      {
+        "name": "task.list",
+        "description": "Lista de forma acotada tareas locales abiertas, completadas o eliminadas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "includeDeleted": {
+              "type": "boolean"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "all",
+                "completed",
+                "open"
+              ]
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "task.reopen",
+        "description": "Reabre una tarea completada usando identidad y versión exactas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "taskId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedVersion",
+            "taskId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "task.resolve.exact",
+        "description": "Resuelve un único título literal y emite autoridad CAS sin exponer detalles.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "includeDeleted": {
+              "type": "boolean"
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "task.restore",
+        "description": "Restaura una tarea eliminada usando identidad y versión exactas.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "taskId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "expectedVersion",
+            "taskId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "task.search",
+        "description": "Busca en título y detalles de tareas locales sin crear índices de texto plano.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "query": {
+              "type": "string",
+              "x-maxUtf8Bytes": 2000,
+              "x-nonWhitespace": true
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "all",
+                "completed",
+                "open"
+              ]
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "task.update",
+        "description": "Reemplaza los campos editables de una tarea bajo control de versión y postlectura.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "details": {
+              "type": "string",
+              "x-maxUtf8Bytes": 65536
+            },
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 64
+            },
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "taskId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            },
+            "title": {
+              "type": "string",
+              "x-maxUtf8Bytes": 1024,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "details",
+            "due",
+            "expectedVersion",
+            "taskId",
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "vision.describe",
+        "description": "Describe una captura identificada mediante un VLM configurado sin aceptar rutas arbitrarias.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "captureId": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            },
+            "prompt": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "x-maxUtf8Bytes": 2000
+            }
+          },
+          "required": [
+            "captureId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "web.search",
+        "description": "Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            },
+            "query": {
+              "type": "string",
+              "x-maxUtf8Bytes": 2000,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "wifi.connect",
+        "description": "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "profileId": {
+              "type": "string",
+              "maxLength": 128,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "profileId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "wifi.connect.named",
+        "description": "Resuelve de forma única un perfil WLAN guardado por el nombre indicado, lo conecta y verifica el estado sin exponer credenciales.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "profileName": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "profileName"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "wifi.disconnect",
+        "description": "Desconecta WLAN mediante API oficial y verifica ausencia de conexión.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "wifi.ensure.connected",
+        "description": "Comprueba que Wi-Fi ya está conectado y devuelve la identidad opaca del perfil observado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "wifi.profile.list",
+        "description": "Enumera perfiles WLAN guardados mediante identidades opacas sin exponer credenciales.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "wifi.status",
+        "description": "Lee dos veces el estado WLAN actual y devuelve conexión e identidad opaca del perfil sin exponer SSID ni credenciales.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "privacy_sensitive"
+      },
+      {
+        "name": "window.active",
+        "description": "Lee la ventana visible en primer plano y verifica su proceso, estado, geometría e identidad efímera.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "window.application.status",
+        "description": "Comprueba por nombre cualquier aplicación del catálogo Inicio y verifica si tiene una ventana visible sin abrirla ni modificarla.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "x-maxUtf8Bytes": 256,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "window.focus",
+        "description": "Enfoca una ventana resuelta previamente y verifica su identidad y foco.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "windowId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "windowId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "window.maximize",
+        "description": "Maximiza una ventana resuelta previamente y verifica su identidad y estado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "windowId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "windowId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "window.minimize",
+        "description": "Minimiza una ventana resuelta previamente y verifica su identidad y estado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "windowId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "windowId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "window.move",
+        "description": "Mueve una ventana resuelta a coordenadas de escritorio y verifica sus límites exactos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "windowId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            },
+            "x": {
+              "type": "integer",
+              "minimum": -32768,
+              "maximum": 32767
+            },
+            "y": {
+              "type": "integer",
+              "minimum": -32768,
+              "maximum": 32767
+            }
+          },
+          "required": [
+            "windowId",
+            "x",
+            "y"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "window.resize",
+        "description": "Redimensiona una ventana resuelta y verifica ancho y alto exactos.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "height": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 32768
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 32768
+            },
+            "windowId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "windowId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      },
+      {
+        "name": "window.resolve",
+        "description": "Resuelve ventanas visibles por nombre de proceso y emite identificadores efimeros estables.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "process": {
+              "type": "string",
+              "maxLength": 260,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "process"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "read_only"
+      },
+      {
+        "name": "window.restore",
+        "description": "Restaura una ventana resuelta previamente y verifica su identidad y estado.",
+        "argumentsSchema": {
+          "type": "object",
+          "properties": {
+            "windowId": {
+              "type": "string",
+              "maxLength": 36,
+              "x-nonWhitespace": true
+            }
+          },
+          "required": [
+            "windowId"
+          ],
+          "additionalProperties": false
+        },
+        "risk": "low_reversible"
+      }
+    ]
+  },
+  "identities": {
+    "program_sha256": "f302947e59ea2f91e473ea8dbc9c9f2911c44dbc71586d1d51038977e7c4ac6b"
+  }
+}

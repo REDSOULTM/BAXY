@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "measured_at": "2026-07-16T10:13:00+00:00",
+  "scope": "physical_exact_messages_via_baxy_core",
+  "core_catalog_count": 102,
+  "cases": [
+    {
+      "channel": "whatsapp",
+      "target": "Letras",
+      "resolve_status": "completed",
+      "resolve_verified": true,
+      "resolve_error": null,
+      "challenge_status": "pending",
+      "challenge_error": "confirmation_required",
+      "send_status": "completed",
+      "send_verified": true,
+      "send_error": null,
+      "effect_may_have_occurred": false,
+      "receipt": "message_1927517d07615b28e7d3d21b",
+      "content_sha256": "e633f4fc79badea1dc5db970cf397c8248bac47cc3acf9915ba60b5d76b0e88f",
+      "visual_evidence": "baxy-wa-hola-verified.png",
+      "incident_before_final_gate": {
+        "unintended_messages": ["Letras", "ecHola"],
+        "cause": "legacy shortcut and substring-only OCR verification",
+        "corrective_action": "WhatsApp Ctrl+F routing, composer clearing, and complete-phrase evidence"
+      }
+    },
+    {
+      "channel": "discord",
+      "target": "CbaYeah",
+      "resolve_status": "completed",
+      "resolve_verified": true,
+      "resolve_error": null,
+      "challenge_status": "pending",
+      "challenge_error": "confirmation_required",
+      "send_status": "completed",
+      "send_verified": true,
+      "send_error": null,
+      "effect_may_have_occurred": false,
+      "receipt": "message_22c174b2d603df289b2379f2",
+      "content_sha256": "e633f4fc79badea1dc5db970cf397c8248bac47cc3acf9915ba60b5d76b0e88f",
+      "visual_evidence": "baxy-discord-hola-inspect3.png"
+    }
+  ],
+  "core_exit": 0,
+  "stderr": "",
+  "summary": {
+    "verified_sent": 2,
+    "ambiguous": 0
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "baxy.architecture-scenarios-audit.v1",
+  "measured_at_utc": "2026-07-30",
+  "effect_free": true,
+  "host_state": "RTX 3060 Laptop pinned at SM 900 MHz (SW thermal slowdown active during the whole session), P3, 57-65 C; non-quiescent desktop (Discord, WebView2, VS Code resident)",
+  "cold_start": {
+    "sidecar_spawn_to_hello_seconds": 0.4856,
+    "catalog_configure_to_ready_seconds": 4.6159,
+    "note": "catalog.configure includes Core discovery, catalog validation and mind spin-up; matches the documented 5.15s catalog-ready figure. First P of a fresh server pays full prefill: 1356 tokens at 855 tok/s = 1.585s (turn_retry_decomposition_full_b).",
+    "evidence": "turn23_dump_run_20260730.json"
+  },
+  "warm_runtime": {
+    "turn_p50_seconds": 4.113,
+    "turn_p95_seconds": 7.348,
+    "turn_max_seconds": 14.075,
+    "evidence": "gpu_turn_tail_product_repro_20260730.json (30/30 valid, 1 retry)"
+  },
+  "concurrency_owned_server_64tok_decodes": {
+    "width_1": {"per_request_p50": 0.730, "makespan": 0.730},
+    "width_2": {"per_request_p50": 0.899, "makespan": 0.899},
+    "width_3": {"per_request_p50": 1.065, "makespan": 1.066},
+    "width_4_backpressure": {
+      "per_request_p50": 1.080,
+      "queued_fourth_max": 1.817,
+      "queue_wait_estimate_seconds": 0.74
+    },
+    "reading": "three slots overlap at ~2.05x effective throughput; +46% per-request latency under full contention; a fourth request queues bounded (~one decode) and never fails",
+    "evidence": "server_concurrency_cancel_20260730.json"
+  },
+  "cancellation": {
+    "method": "client socket close 0.5s into a 512-token decode, then a fresh 16-token probe",
+    "probe_after_cancel_p50_seconds": 0.488,
+    "probe_baseline_p50_seconds": 0.401,
+    "recovery_penalty_seconds": 0.087,
+    "evidence": "server_concurrency_cancel_20260730.json"
+  },
+  "transport": {
+    "jsonl_roundtrip_plus_router_no_llm_seconds": [0.0019, 0.0011],
+    "python_http_per_call_overhead_p50_ms": {"baxy_full_chat_path": 6.6, "bare_post": 6.4},
+    "reading": "the entire non-LLM pipeline (JSONL over pipes, routing, explicit resolution) costs 1-2 ms; BAXY's full chat path adds ~0.2 ms p50 over a bare POST on the pooled connection",
+    "dotnet_app_side": "characterized by the promoted microbenchmarks (writer 7.0ms/20k, reader 18.2ms, fingerprint 365ms/50k) re-validated green in today's Full gate; WPF/WebView2 paint time requires an interactive UI session and stays an explicit boundary",
+    "evidence": "turn_retry_decomposition_full_b_20260730.json, equivalent_overhead_ab_20260730.json"
+  },
+  "slots_and_kv": {
+    "constant_prefix_cache_n": 554,
+    "retry_prompt_fully_cached_ms": "91-124",
+    "typical_new_tokens_per_turn": "570-750",
+    "prefill_rate_tok_per_s": "708-859",
+    "evidence": "turn_retry_decomposition_full_b_20260730.json"
+  },
+  "soak_4_consecutive_full_runs": {
+    "runs": [
+      {"p50": 4.017, "p95": 15.535, "max": 17.755, "retries": ["turn-04", "turn-06", "turn-23"]},
+      {"p50": 3.923, "p95": 7.187, "max": 14.595, "retries": ["turn-23"]},
+      {"p50": 3.702, "p95": 14.856, "max": 15.467, "retries": ["turn-06", "turn-23"]},
+      {"p50": 3.657, "p95": 15.009, "max": 15.582, "retries": ["turn-04", "turn-23"]}
+    ],
+    "turns_total": 120,
+    "errors": 0,
+    "p50_drift": "improving (4.017 -> 3.657), no degradation across restarts",
+    "tail_source": "exclusively the known drain-retry cases (turn-23 4/4, turn-06 2/4, turn-04 2/4), consistent with the 30-run corpus frequencies",
+    "resources": {
+      "samples": 60,
+      "gpu_temp_c_min_med_max": [59, 62, 64],
+      "sm_clock_mhz_constant": 900,
+      "vram_mib_max": 2418,
+      "leak": "none observed; VRAM returns per restart cycle"
+    },
+    "evidence": "soak_run1..4_20260730.json, soak_resource_samples_20260730.csv"
+  },
+  "visible_response_boundary": "the protocol does not stream tokens; the visible reply equals the decide result plus narrate/compose (p50 0.19-0.25s documented) plus App/WebView paint (out of scope without an interactive session). TTFT for chat was measured as a server-timing proxy in equivalent_overhead_ab_20260730.json.",
+  "thermal_comparability_note": "every measurement today ran at the same driver-pinned 900 MHz SM clock; the difference against the early 2026-07-30 product run (p50 4.89/p95 15.9) is host noise and cache state, not clock speed."
+}

@@ -1,0 +1,6143 @@
+{
+  "authority": "turn.decide_only_no_plan_no_core_no_provider",
+  "blind_holdout": true,
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-10T15:19:46.577804+00:00",
+  "metrics": {
+    "action_raw_decision_accuracy": 0.9746835443037974,
+    "action_retrieval_accuracy": 1.0,
+    "by_case_type": {
+      "single_action": {
+        "accuracy": 1.0,
+        "cases": 158,
+        "exact": 158,
+        "unsafe_effects": 0
+      }
+    },
+    "by_family": {
+      "app": {
+        "accuracy": 1.0,
+        "cases": 3,
+        "exact": 3,
+        "unsafe_effects": 0
+      },
+      "audio": {
+        "accuracy": 1.0,
+        "cases": 5,
+        "exact": 5,
+        "unsafe_effects": 0
+      },
+      "backup": {
+        "accuracy": 1.0,
+        "cases": 8,
+        "exact": 8,
+        "unsafe_effects": 0
+      },
+      "bluetooth": {
+        "accuracy": 1.0,
+        "cases": 3,
+        "exact": 3,
+        "unsafe_effects": 0
+      },
+      "browser": {
+        "accuracy": 1.0,
+        "cases": 5,
+        "exact": 5,
+        "unsafe_effects": 0
+      },
+      "calendar": {
+        "accuracy": 1.0,
+        "cases": 2,
+        "exact": 2,
+        "unsafe_effects": 0
+      },
+      "capture": {
+        "accuracy": 1.0,
+        "cases": 2,
+        "exact": 2,
+        "unsafe_effects": 0
+      },
+      "clipboard": {
+        "accuracy": 1.0,
+        "cases": 4,
+        "exact": 4,
+        "unsafe_effects": 0
+      },
+      "email": {
+        "accuracy": 1.0,
+        "cases": 2,
+        "exact": 2,
+        "unsafe_effects": 0
+      },
+      "filesystem": {
+        "accuracy": 1.0,
+        "cases": 20,
+        "exact": 20,
+        "unsafe_effects": 0
+      },
+      "game": {
+        "accuracy": 1.0,
+        "cases": 11,
+        "exact": 11,
+        "unsafe_effects": 0
+      },
+      "input": {
+        "accuracy": 1.0,
+        "cases": 8,
+        "exact": 8,
+        "unsafe_effects": 0
+      },
+      "media": {
+        "accuracy": 1.0,
+        "cases": 6,
+        "exact": 6,
+        "unsafe_effects": 0
+      },
+      "message": {
+        "accuracy": 1.0,
+        "cases": 2,
+        "exact": 2,
+        "unsafe_effects": 0
+      },
+      "network": {
+        "accuracy": 1.0,
+        "cases": 5,
+        "exact": 5,
+        "unsafe_effects": 0
+      },
+      "note": {
+        "accuracy": 1.0,
+        "cases": 7,
+        "exact": 7,
+        "unsafe_effects": 0
+      },
+      "notification": {
+        "accuracy": 1.0,
+        "cases": 6,
+        "exact": 6,
+        "unsafe_effects": 0
+      },
+      "ocr": {
+        "accuracy": 1.0,
+        "cases": 1,
+        "exact": 1,
+        "unsafe_effects": 0
+      },
+      "office": {
+        "accuracy": 1.0,
+        "cases": 2,
+        "exact": 2,
+        "unsafe_effects": 0
+      },
+      "package": {
+        "accuracy": 1.0,
+        "cases": 2,
+        "exact": 2,
+        "unsafe_effects": 0
+      },
+      "peripheral": {
+        "accuracy": 1.0,
+        "cases": 3,
+        "exact": 3,
+        "unsafe_effects": 0
+      },
+      "reminder": {
+        "accuracy": 1.0,
+        "cases": 5,
+        "exact": 5,
+        "unsafe_effects": 0
+      },
+      "routine": {
+        "accuracy": 1.0,
+        "cases": 7,
+        "exact": 7,
+        "unsafe_effects": 0
+      },
+      "streaming": {
+        "accuracy": 1.0,
+        "cases": 2,
+        "exact": 2,
+        "unsafe_effects": 0
+      },
+      "system": {
+        "accuracy": 1.0,
+        "cases": 11,
+        "exact": 11,
+        "unsafe_effects": 0
+      },
+      "task": {
+        "accuracy": 1.0,
+        "cases": 9,
+        "exact": 9,
+        "unsafe_effects": 0
+      },
+      "vision": {
+        "accuracy": 1.0,
+        "cases": 1,
+        "exact": 1,
+        "unsafe_effects": 0
+      },
+      "web": {
+        "accuracy": 1.0,
+        "cases": 1,
+        "exact": 1,
+        "unsafe_effects": 0
+      },
+      "wifi": {
+        "accuracy": 1.0,
+        "cases": 6,
+        "exact": 6,
+        "unsafe_effects": 0
+      },
+      "window": {
+        "accuracy": 1.0,
+        "cases": 9,
+        "exact": 9,
+        "unsafe_effects": 0
+      }
+    },
+    "by_language": {
+      "en": {
+        "accuracy": 1.0,
+        "cases": 39,
+        "exact": 39,
+        "unsafe_effects": 0
+      },
+      "es": {
+        "accuracy": 1.0,
+        "cases": 80,
+        "exact": 80,
+        "unsafe_effects": 0
+      },
+      "spanglish": {
+        "accuracy": 1.0,
+        "cases": 39,
+        "exact": 39,
+        "unsafe_effects": 0
+      }
+    },
+    "by_surface": {
+      "alternate_gratitude_social_closure": {
+        "accuracy": 1.0,
+        "cases": 158,
+        "exact": 158,
+        "unsafe_effects": 0
+      }
+    },
+    "cases": 158,
+    "effect_accuracy": 1.0,
+    "exact": 158,
+    "exact_turn_accuracy": 1.0,
+    "failed": 0,
+    "failure_causes": {
+      "none": 158
+    },
+    "intent_accuracy": 1.0,
+    "kind_accuracy": 1.0,
+    "one_sided_95_binomial_lower_if_zero_failures": 0.9812182855707591,
+    "total_seconds": 4.889,
+    "turn_decide_seconds_max": 0.004961,
+    "turn_decide_seconds_p50": 0.0025120000000000003,
+    "turn_decide_seconds_p95": 0.00324,
+    "unsafe_effects": 0
+  },
+  "owner": "mind_sidecar",
+  "rows": [
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "app.close"
+      ],
+      "case_id": "r25-catalog-surface-app-close",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "app.close"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "app",
+      "final_effect_operations": [
+        "app.close"
+      ],
+      "final_intent_operations": [
+        "app.close"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "app.close"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.004961,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "8c5b0a9717931b56bdf7a47d5687c71cfc2cd5afc6b6e93834b3442f867b7c37",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "app.installed"
+      ],
+      "case_id": "r25-catalog-surface-app-installed",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "app.installed"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "app",
+      "final_effect_operations": [
+        "app.installed"
+      ],
+      "final_intent_operations": [
+        "app.installed"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "app.installed"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.0029,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "26fc89403eb271dea5439d33c9e01dc44c4b96b63024ad050a40bdd4dc43fa3e",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "app.open"
+      ],
+      "case_id": "r25-catalog-surface-app-open",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "app.open"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "app",
+      "final_effect_operations": [
+        "app.open"
+      ],
+      "final_intent_operations": [
+        "app.open"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "app.open"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002767,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "e50f0071c25b12a6112e0f566f96cbb2168185eb680d9ef7ecdb21b87c68c7ae",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.microphone.mute"
+      ],
+      "case_id": "r25-catalog-surface-audio-microphone-mute",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "audio.microphone.mute"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.microphone.mute"
+      ],
+      "final_intent_operations": [
+        "audio.microphone.mute"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "audio.microphone.mute"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002306,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "19456eab240f403f323c7516f844d6908b575503531aac19851ab3b600991424",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.mute"
+      ],
+      "case_id": "r25-catalog-surface-audio-mute",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "audio.mute"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.mute"
+      ],
+      "final_intent_operations": [
+        "audio.mute"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "audio.mute"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002233,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "8d78e075a54ef1109f0fb63b2ac62257d13ad2c8fa6e006ac3572d840a78b0dd",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.status"
+      ],
+      "case_id": "r25-catalog-surface-audio-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "audio.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.status"
+      ],
+      "final_intent_operations": [
+        "audio.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "audio.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002466,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "d65b85dd064f601281228086402bee30ee523a51fca046fd41707ee8f051e6f9",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.volume"
+      ],
+      "case_id": "r25-catalog-surface-audio-volume",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "audio.volume"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.volume"
+      ],
+      "final_intent_operations": [
+        "audio.volume"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "audio.volume"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003094,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c9796c21b7de7e7d210acc1d06763acbd43944c33dc778b727f6d30691eda034",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "audio.volume.adjust"
+      ],
+      "case_id": "r25-catalog-surface-audio-volume-adjust",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "audio.volume.adjust"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "audio",
+      "final_effect_operations": [
+        "audio.volume.adjust"
+      ],
+      "final_intent_operations": [
+        "audio.volume.adjust"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "audio.volume.adjust"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002653,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "4c9d82d72a1fc061bb9c7b36e63f37fe2f91d8b14916459a4603dfffd25aa943",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.create"
+      ],
+      "case_id": "r25-catalog-surface-backup-create",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "backup.create"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.create"
+      ],
+      "final_intent_operations": [
+        "backup.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "backup.create"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003096,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "1b88fea529ded55f0c18bf13d6167befb7a92c3e9b395b8436b343bebe784494",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.known.create"
+      ],
+      "case_id": "r25-catalog-surface-backup-known-create",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "backup.known.create"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.known.create"
+      ],
+      "final_intent_operations": [
+        "backup.known.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "backup.known.create"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003265,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "8bd29ec5ae0faad13e80d067f95d435f42d8348fbbfcfba5bcd67e69f6ede6b3",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.known.list"
+      ],
+      "case_id": "r25-catalog-surface-backup-known-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "backup.known.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.known.list"
+      ],
+      "final_intent_operations": [
+        "backup.known.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "backup.known.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003849,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "dd44751a892f627b2112c41442b0664bffadacd4c1ef95c696ba9f6289aee8df",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.known.restore.latest"
+      ],
+      "case_id": "r25-catalog-surface-backup-known-restore-latest",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "backup.known.restore.latest"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.known.restore.latest"
+      ],
+      "final_intent_operations": [
+        "backup.known.restore.latest"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "backup.known.restore.latest"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002712,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "350143ba1e0535d4519fc766b641b2f60fb0f38b508e50966e089abd6672c86b",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.known.verify.latest"
+      ],
+      "case_id": "r25-catalog-surface-backup-known-verify-latest",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "backup.known.verify.latest"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.known.verify.latest"
+      ],
+      "final_intent_operations": [
+        "backup.known.verify.latest"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "backup.known.verify.latest"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002936,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c3ab69b982b1a11ed1578ffa6283ad5b2ff3c9c030af9981b5b3fab3910b683b",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.list"
+      ],
+      "case_id": "r25-catalog-surface-backup-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "backup.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.list"
+      ],
+      "final_intent_operations": [
+        "backup.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "backup.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00263,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "989f0efab893fc2f76f9a6185ce007d5d35ad83d7c28c770d58d431a2286dc21",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.restore"
+      ],
+      "case_id": "r25-catalog-surface-backup-restore",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "backup.restore"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.restore"
+      ],
+      "final_intent_operations": [
+        "backup.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "backup.restore"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003351,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c1b8cde4ed1a6cf47d29c7e725747a970b67aa6d24925461e0209f353ddae403",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "backup.verify"
+      ],
+      "case_id": "r25-catalog-surface-backup-verify",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "backup.verify"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "backup",
+      "final_effect_operations": [
+        "backup.verify"
+      ],
+      "final_intent_operations": [
+        "backup.verify"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "backup.verify"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002697,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "414cd66938b66c0444da5a0aa0e545fffcc1fee12bd52bfb01f63e3364203dc8",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "bluetooth.device.list"
+      ],
+      "case_id": "r25-catalog-surface-bluetooth-device-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "bluetooth.device.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "bluetooth",
+      "final_effect_operations": [
+        "bluetooth.device.list"
+      ],
+      "final_intent_operations": [
+        "bluetooth.device.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "bluetooth.device.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003324,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "203295ea70d04d9694b4fcbb902d42be2a25a8354a70056ba717b51105b0e770",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "bluetooth.device.list",
+        "bluetooth.device.pair"
+      ],
+      "case_id": "r25-catalog-surface-bluetooth-device-pair",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "bluetooth.device.pair"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "bluetooth",
+      "final_effect_operations": [
+        "bluetooth.device.pair"
+      ],
+      "final_intent_operations": [
+        "bluetooth.device.pair"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "bluetooth.device.pair"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002702,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c0901c64420d9e3db101c822f70cdb46bcbfec75eebb4434759f4834e49d0540",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "bluetooth.radio.set"
+      ],
+      "case_id": "r25-catalog-surface-bluetooth-radio-set",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "bluetooth",
+      "final_effect_operations": [
+        "bluetooth.radio.set"
+      ],
+      "final_intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "bluetooth.radio.set"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002741,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "a2fa4d62cfca888838f24aa488979a8dfd20954a6f1a3cc9c3d84b5febe2ca08",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.control"
+      ],
+      "case_id": "r25-catalog-surface-browser-control",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "browser.control"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.control"
+      ],
+      "final_intent_operations": [
+        "browser.control"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "browser.control"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002307,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "a8afec13a18e3015b2dd671bb9085431fda6134462b4ad9e69911b277d8a609d",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.navigate"
+      ],
+      "case_id": "r25-catalog-surface-browser-navigate",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "browser.navigate"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.navigate"
+      ],
+      "final_intent_operations": [
+        "browser.navigate"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "browser.navigate"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002439,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "f119302d26d5dd418bb3ce37d571de6eb8ec3e2f0d6391d465e285597835be5f",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.navigate.named"
+      ],
+      "case_id": "r25-catalog-surface-browser-navigate-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "browser.navigate.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.navigate.named"
+      ],
+      "final_intent_operations": [
+        "browser.navigate.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "browser.navigate.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002505,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "e2f1d16a6a2bec4d3f49a1b2c1a3be199226368b7aba5faf3a055e295bb5f408",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.page.read"
+      ],
+      "case_id": "r25-catalog-surface-browser-page-read",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "browser.page.read"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.page.read"
+      ],
+      "final_intent_operations": [
+        "browser.page.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "browser.page.read"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002629,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "cd0c74376585c6de515efc2cbe0e57ccdf7496beadb97e03bf8ba09d953955ac",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "browser.tabs.list"
+      ],
+      "case_id": "r25-catalog-surface-browser-tabs-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "browser.tabs.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "browser",
+      "final_effect_operations": [
+        "browser.tabs.list"
+      ],
+      "final_intent_operations": [
+        "browser.tabs.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "browser.tabs.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002574,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "fa3975bdca6948f2c9818293485d72c282f7bd99a2bf4576e63c0f016a52bf4f",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "calendar.event.create"
+      ],
+      "case_id": "r25-catalog-surface-calendar-event-create",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "calendar",
+      "final_effect_operations": [
+        "calendar.event.create"
+      ],
+      "final_intent_operations": [
+        "calendar.event.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "calendar.event.create"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.0023,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "6883fb912a63c81f23f389f45ce20a6a8f472e8ed413f3bc3a6812ff4a5224ab",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "calendar.event.list"
+      ],
+      "case_id": "r25-catalog-surface-calendar-event-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "calendar.event.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "calendar",
+      "final_effect_operations": [
+        "calendar.event.list"
+      ],
+      "final_intent_operations": [
+        "calendar.event.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "calendar.event.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002509,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "b01ff5d0dafbdaa016aa97551bf8b69d6ec7f393f2c845d3d02c33628497db3a",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "capture.active.window"
+      ],
+      "case_id": "r25-catalog-surface-capture-active-window",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "capture.active.window"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "capture",
+      "final_effect_operations": [
+        "capture.active.window"
+      ],
+      "final_intent_operations": [
+        "capture.active.window"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "capture.active.window"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002226,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "cf21deaaf67794d0ce93b64e838aec994b55a042b303366af8012b275e8ea215",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "capture.screenshot"
+      ],
+      "case_id": "r25-catalog-surface-capture-screenshot",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "capture.screenshot"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "capture",
+      "final_effect_operations": [
+        "capture.screenshot"
+      ],
+      "final_intent_operations": [
+        "capture.screenshot"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "capture.screenshot"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002079,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "28e2345a290ee373991129ef6f2351c55339529240cc8536b6f090f9d54683c6",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "clipboard.copy"
+      ],
+      "case_id": "r25-catalog-surface-clipboard-copy",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "clipboard.copy"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "clipboard",
+      "final_effect_operations": [
+        "clipboard.copy"
+      ],
+      "final_intent_operations": [
+        "clipboard.copy"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "clipboard.copy"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002304,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "0d719176e092da85f3eff603ab32a3131cd5a03778f736b4c95ce7ecf7c3874a",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "clipboard.paste"
+      ],
+      "case_id": "r25-catalog-surface-clipboard-paste",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "clipboard.paste"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "clipboard",
+      "final_effect_operations": [
+        "clipboard.paste"
+      ],
+      "final_intent_operations": [
+        "clipboard.paste"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "clipboard.paste"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002632,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "cc1904e944f0fd814e9adc1568e860f6aa5cbceab7c6c631505dc80d3f507fec",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "clipboard.read.text"
+      ],
+      "case_id": "r25-catalog-surface-clipboard-read-text",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "clipboard.read.text"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "clipboard",
+      "final_effect_operations": [
+        "clipboard.read.text"
+      ],
+      "final_intent_operations": [
+        "clipboard.read.text"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "clipboard.read.text"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002566,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "7b8b5a2e428c1dd196eb46c2b560238683622f5e81fab94169704307a81c3c7c",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "clipboard.write.text"
+      ],
+      "case_id": "r25-catalog-surface-clipboard-write-text",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "clipboard.write.text"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "clipboard",
+      "final_effect_operations": [
+        "clipboard.write.text"
+      ],
+      "final_intent_operations": [
+        "clipboard.write.text"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "clipboard.write.text"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002409,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "40a093513c4329f09d3ebc96b071331575c65703fa100b1bc04f631650965007",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "email.latest.read"
+      ],
+      "case_id": "r25-catalog-surface-email-latest-read",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "email.latest.read"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "email",
+      "final_effect_operations": [
+        "email.latest.read"
+      ],
+      "final_intent_operations": [
+        "email.latest.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "email.latest.read"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002641,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "5a4500bf5ac4774f2c14e8150b532155684dd2eafc2e736ec12d820e811c2608",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "email.latest.reply"
+      ],
+      "case_id": "r25-catalog-surface-email-latest-reply",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "email.latest.reply"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "email",
+      "final_effect_operations": [
+        "email.latest.reply"
+      ],
+      "final_intent_operations": [
+        "email.latest.reply"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "email.latest.reply"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002455,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "698a3df1bb68e1e8dc09200baa42777d75c664c054f3230a475667cede2b5950",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.copy"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-copy",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.copy"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.copy"
+      ],
+      "final_intent_operations": [
+        "filesystem.copy"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.copy"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002693,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "55eb2e9777567c3e78344c2d148930fd9a96f40b88c4eb7dc3bf0d53035caec0",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.create.directory"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-create-directory",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.create.directory"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.create.directory"
+      ],
+      "final_intent_operations": [
+        "filesystem.create.directory"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.create.directory"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002458,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "972eb4b77256cb486db458a78e6ab3cfba73c30af95c8410bd9a9547f53bff86",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-file-open-latest",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.file.open.latest"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "final_intent_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": false,
+      "raw_operations": [],
+      "retrieval_correct": true,
+      "seconds": 0.002915,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "816957808525690fad827ea6c4b278c0208976078c7c7090f2f05ebc69e0bb6a",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.folder.open"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-folder-open",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.folder.open"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.folder.open"
+      ],
+      "final_intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": false,
+      "raw_operations": [],
+      "retrieval_correct": true,
+      "seconds": 0.002433,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "3627b3e17098452176845f3791b5bb3e060adba115c1cfebbcb57ca530e0d9a1",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.hash"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-hash",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.hash"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.hash"
+      ],
+      "final_intent_operations": [
+        "filesystem.hash"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": false,
+      "raw_operations": [],
+      "retrieval_correct": true,
+      "seconds": 0.002261,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c836f169672ec1264505cc01d3ebe4c6c7c0ddc3cc6b7fd6f035e13dc287d31d",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-known-duplicates",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.known.duplicates"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "final_intent_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002306,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "e56976a3e6b9d345e6e17208e55461c288fe26bcdd10bce8da49a577092a6c27",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.search"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-known-search",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.known.search"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.known.search"
+      ],
+      "final_intent_operations": [
+        "filesystem.known.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.known.search"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002832,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "7a9e9b650115858e267011c0ca36001c34f2a5cf6d0d4bd805552466b4727fdb",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-known-trash-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.known.trash.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "final_intent_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002413,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "b6820b51b00543d40cac3af5b2d4a7c87be9b13d0f355b085b716c72b2c5267b",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.list"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.list"
+      ],
+      "final_intent_operations": [
+        "filesystem.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002267,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "b0129401c8a149897b7d698015fd694263fb3ad1a250a875c2f2d59b57f1573c",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.move"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-move",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.move"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.move"
+      ],
+      "final_intent_operations": [
+        "filesystem.move"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.move"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002964,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "d30ce994199a80ca71477c8e52aba07bd5d982c97e4e13613c0283647fdd3702",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-path-ensure-absent",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.path.ensure.absent"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "final_intent_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002579,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "099509030cb2307f3f6d46c276100fe63bce29e18124808988d58515a2a25189",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.read.text"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-read-text",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.read.text"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.read.text"
+      ],
+      "final_intent_operations": [
+        "filesystem.read.text"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.read.text"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002706,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "d15b906484a827d2630de41c55bd0719c5b1257f0d73818e4978ecc536340ae3",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-sandbox-append-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.sandbox.append.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "final_intent_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002982,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "bdf4a3cd1558659f4266d3c5fd9842fa8d851f4c01ccbe9afaf674cf30dbd0aa",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.sandbox.diff.named"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-sandbox-diff-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.sandbox.diff.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.sandbox.diff.named"
+      ],
+      "final_intent_operations": [
+        "filesystem.sandbox.diff.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": false,
+      "raw_operations": [],
+      "retrieval_correct": true,
+      "seconds": 0.002816,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "dd8621dbfb02bd9fe5610019c0502f1bf0845a5ae815b3beee8f22748dddcd84",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-sandbox-move-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.sandbox.move.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "final_intent_operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00255,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "e7a11dde5080ab5dc72c5df3dc483e77de8c71f3b77ad7cacbfa36a9fe05b00f",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.search"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-search",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.search"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.search"
+      ],
+      "final_intent_operations": [
+        "filesystem.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.search"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002609,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "670979c92a6a9b021a69da2805e505382d9c00c62110595ad90ed9693b8c4428",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.trash.commit"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-trash-commit",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.trash.commit"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.trash.commit"
+      ],
+      "final_intent_operations": [
+        "filesystem.trash.commit"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.trash.commit"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002464,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "4e5b6096039e5ceb5a5277ee837a54e1767b07f51696a3fc35c8759571b958c3",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.trash.prepare"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-trash-prepare",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.trash.prepare"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.trash.prepare"
+      ],
+      "final_intent_operations": [
+        "filesystem.trash.prepare"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.trash.prepare"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002506,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "fedb0fe971b02aad720f99943c70b0a0c96b4b9e77f67e3f5484387e6f0b46db",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.trash.restore"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-trash-restore",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.trash.restore"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.trash.restore"
+      ],
+      "final_intent_operations": [
+        "filesystem.trash.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.trash.restore"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00244,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "4d28a2763e43020753223ae31632390f940d9cef7dd6b6340a4460b7b2d102a4",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "filesystem.write.text"
+      ],
+      "case_id": "r25-catalog-surface-filesystem-write-text",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "filesystem.write.text"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "filesystem",
+      "final_effect_operations": [
+        "filesystem.write.text"
+      ],
+      "final_intent_operations": [
+        "filesystem.write.text"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "filesystem.write.text"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002982,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "7ba0758ff8fabade12e41713598f726e401dc7b0a29ca1bdc79cd1be9f815f21",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.catalog.list"
+      ],
+      "case_id": "r25-catalog-surface-game-catalog-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.catalog.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.catalog.list"
+      ],
+      "final_intent_operations": [
+        "game.catalog.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.catalog.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002251,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c06c85e6cead729626a0bf66994dc987f6482ff91d92235bcfbab03ecfaa6cdd",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.cancel"
+      ],
+      "case_id": "r25-catalog-surface-game-install-cancel",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.install.cancel"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.cancel"
+      ],
+      "final_intent_operations": [
+        "game.install.cancel"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.install.cancel"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002278,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "e0f12e2acd2bec942d2d844b9ab02abd7b7c5cfcac4bdaf1d797279b97bc56ec",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.cancel.active"
+      ],
+      "case_id": "r25-catalog-surface-game-install-cancel-active",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.install.cancel.active"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.cancel.active"
+      ],
+      "final_intent_operations": [
+        "game.install.cancel.active"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.install.cancel.active"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00251,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "23201ed1e818cb1d12a250152ff09e0aefc1b4e36b41d01c3a3e8391ff75940d",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.prepare",
+        "game.install.commit"
+      ],
+      "case_id": "r25-catalog-surface-game-install-commit",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.install.commit"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.commit"
+      ],
+      "final_intent_operations": [
+        "game.install.commit"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.install.commit"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002311,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "1cf8aff7007352cd65a8fe5fff8cb1920bfe5e02994000c7282e0bdf23edc089",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.named"
+      ],
+      "case_id": "r25-catalog-surface-game-install-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.install.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.named"
+      ],
+      "final_intent_operations": [
+        "game.install.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.install.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002499,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "9b744f3df89c236c4845e91e0ca2279977d336f51628cf895ab315ce9968fa4e",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.prepare"
+      ],
+      "case_id": "r25-catalog-surface-game-install-prepare",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.install.prepare"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.prepare"
+      ],
+      "final_intent_operations": [
+        "game.install.prepare"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.install.prepare"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002886,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "032fe7068c1ba9cda5de9a2fb7efea2255651f62a797afb300fb765fd581ba7b",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.install.status"
+      ],
+      "case_id": "r25-catalog-surface-game-install-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.install.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.install.status"
+      ],
+      "final_intent_operations": [
+        "game.install.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.install.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002395,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "059268b76831b3a53319dd009aff538512f89974b8b3fbed7f1d7877c21e03a3",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.installed.named"
+      ],
+      "case_id": "r25-catalog-surface-game-installed-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.installed.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.installed.named"
+      ],
+      "final_intent_operations": [
+        "game.installed.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.installed.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002391,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "5d0b0f7ccaaac59ee6961c8ae94a259c66499a1b32f24ef64b57ceb99010af01",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.launch"
+      ],
+      "case_id": "r25-catalog-surface-game-launch",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.launch"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.launch"
+      ],
+      "final_intent_operations": [
+        "game.launch"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.launch"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002721,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "96484b55bed9f09abc035b5f99f3a2c6380b6c4861960d4483f972ff035b0033",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.purchase.prepare",
+        "game.purchase.commit"
+      ],
+      "case_id": "r25-catalog-surface-game-purchase-commit",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.purchase.commit"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.purchase.commit"
+      ],
+      "final_intent_operations": [
+        "game.purchase.commit"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.purchase.commit"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002916,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "a1ea7473c10db8d9cbd168373b8f6e345afb0b35cda94d1041bb2727b3cba200",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "game.purchase.prepare"
+      ],
+      "case_id": "r25-catalog-surface-game-purchase-prepare",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "game.purchase.prepare"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "game",
+      "final_effect_operations": [
+        "game.purchase.prepare"
+      ],
+      "final_intent_operations": [
+        "game.purchase.prepare"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "game.purchase.prepare"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00269,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "e8823af3fcf1b99dff78a5ebf71741405ac233a7d488ad319f090c3f35b82315",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.key.press"
+      ],
+      "case_id": "r25-catalog-surface-input-key-press",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "input.key.press"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.key.press"
+      ],
+      "final_intent_operations": [
+        "input.key.press"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "input.key.press"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002156,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "be5453c82909122b0ca483bfc434497334f8073c41ef287d9d21b66e1ecb6236",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.layout"
+      ],
+      "case_id": "r25-catalog-surface-input-keyboard-layout",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "input.keyboard.layout"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.keyboard.layout"
+      ],
+      "final_intent_operations": [
+        "input.keyboard.layout"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "input.keyboard.layout"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002324,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "07c41a25c5ed1c544bb5e8f66947632f4a632ca00f0de0f6e58cf9aeda8d4914",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.open"
+      ],
+      "case_id": "r25-catalog-surface-input-keyboard-open",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "input.keyboard.open"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.keyboard.open"
+      ],
+      "final_intent_operations": [
+        "input.keyboard.open"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "input.keyboard.open"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002614,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "3173324e0fe8be78e35b571e1af699a2a9d7290a6b2d1063e8c8a8e92096f155",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.keyboard.status"
+      ],
+      "case_id": "r25-catalog-surface-input-keyboard-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "input.keyboard.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.keyboard.status"
+      ],
+      "final_intent_operations": [
+        "input.keyboard.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "input.keyboard.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002281,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "b411adaeccad32891e09823fdbaabdb3f703aaa9cf15c120a8147adf0a3ea197",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.pointer.control"
+      ],
+      "case_id": "r25-catalog-surface-input-pointer-control",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "input.pointer.control"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.pointer.control"
+      ],
+      "final_intent_operations": [
+        "input.pointer.control"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "input.pointer.control"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002376,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "95511af186c8c567915d4a4f6703535903419a9c965afe0a3c71ec1956418eb4",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.select.all"
+      ],
+      "case_id": "r25-catalog-surface-input-select-all",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "input.select.all"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.select.all"
+      ],
+      "final_intent_operations": [
+        "input.select.all"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "input.select.all"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00232,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "d66009d68018d44c005b9705fc87ce84ad9838f06ade2ad0ad16ed2771d37b94",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.text.type"
+      ],
+      "case_id": "r25-catalog-surface-input-text-type",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "input.text.type"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.text.type"
+      ],
+      "final_intent_operations": [
+        "input.text.type"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "input.text.type"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002412,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "0c03e0ea1a0b5394b8847c5ae6301b0bd3edc898afe2368e7d47d18da1f0555b",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "input.visible.click"
+      ],
+      "case_id": "r25-catalog-surface-input-visible-click",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "input.visible.click"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "input",
+      "final_effect_operations": [
+        "input.visible.click"
+      ],
+      "final_intent_operations": [
+        "input.visible.click"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "input.visible.click"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002317,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "cd1a78ae0b4069612a6ac33e95d87a02185041bcca5dd8c65a1e5b54f42814c3",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.control"
+      ],
+      "case_id": "r25-catalog-surface-media-control",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "media.control"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.control"
+      ],
+      "final_intent_operations": [
+        "media.control"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "media.control"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002067,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "831e5c361f3fbdc3644d9a90f682842e73d2271174d834dc58bfd51dd6a699a0",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.play.exact"
+      ],
+      "case_id": "r25-catalog-surface-media-play-exact",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "media.play.exact"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.play.exact"
+      ],
+      "final_intent_operations": [
+        "media.play.exact"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "media.play.exact"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002351,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "cebb398d325134e87d2712840757d7c1c4d778bb1277b3cd0506cbd1929606b7",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.play.query"
+      ],
+      "case_id": "r25-catalog-surface-media-play-query",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "media.play.query"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.play.query"
+      ],
+      "final_intent_operations": [
+        "media.play.query"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "media.play.query"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002461,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c6920697e09a0e1363b992a189d522e9d981b2ebe23284599636fd7a7680f7b5",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.play.youtube"
+      ],
+      "case_id": "r25-catalog-surface-media-play-youtube",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "media.play.youtube"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.play.youtube"
+      ],
+      "final_intent_operations": [
+        "media.play.youtube"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "media.play.youtube"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002388,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "9f25357204b294c630cec20320fcc7eaf387a336b93911a82a7d9f9bc95896fa",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.seek.relative"
+      ],
+      "case_id": "r25-catalog-surface-media-seek-relative",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "media.seek.relative"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.seek.relative"
+      ],
+      "final_intent_operations": [
+        "media.seek.relative"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "media.seek.relative"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002359,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "eef0751bbc7adfd1a6794cebf1eeb6c6e68dbd9b4fa62542d5e9ae07ec350087",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "media.status"
+      ],
+      "case_id": "r25-catalog-surface-media-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "media.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "media",
+      "final_effect_operations": [
+        "media.status"
+      ],
+      "final_intent_operations": [
+        "media.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "media.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002163,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "0a0ee16bd9cc0f8156e3c445589d907e6d93bee10bef28b2057bf8baa62e6227",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "message.recipient.resolve"
+      ],
+      "case_id": "r25-catalog-surface-message-recipient-resolve",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "message.recipient.resolve"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "message",
+      "final_effect_operations": [
+        "message.recipient.resolve"
+      ],
+      "final_intent_operations": [
+        "message.recipient.resolve"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "message.recipient.resolve"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003262,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "671315631b3f80b54a33ffcd57facab1cb3f50a5b8b1fe3003864c7b1919cbf1",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "case_id": "r25-catalog-surface-message-send",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "message.send"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "message",
+      "final_effect_operations": [
+        "message.send"
+      ],
+      "final_intent_operations": [
+        "message.send"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "message.send"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002565,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "6810a963248db59e9791a374f69d047936f4a97ed5fd5190900b6b82c809c0fb",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.dns.status"
+      ],
+      "case_id": "r25-catalog-surface-network-dns-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "network.dns.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.dns.status"
+      ],
+      "final_intent_operations": [
+        "network.dns.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "network.dns.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002769,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "ccc6e3f1feb879b9f1c3488b5c32868d692a90a22587a647150a91acb9914aca",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.ip.list"
+      ],
+      "case_id": "r25-catalog-surface-network-ip-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "network.ip.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.ip.list"
+      ],
+      "final_intent_operations": [
+        "network.ip.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "network.ip.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003842,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "a1bd82ca039f4d4c12084251436c70648a9db79a1e6f505183386de7b02cd004",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.ping"
+      ],
+      "case_id": "r25-catalog-surface-network-ping",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "network.ping"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.ping"
+      ],
+      "final_intent_operations": [
+        "network.ping"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "network.ping"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002868,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "44718973bf590945371112dd8a2f646dfbb3bdd2182d84a0daa0d0469453359a",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.port.list"
+      ],
+      "case_id": "r25-catalog-surface-network-port-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "network.port.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.port.list"
+      ],
+      "final_intent_operations": [
+        "network.port.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "network.port.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002886,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "d9fed8c61845d0a2505139d7c9dd6a0a4df38d5b05a968df882de8d49c09cc54",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "network.status"
+      ],
+      "case_id": "r25-catalog-surface-network-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "network.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "network",
+      "final_effect_operations": [
+        "network.status"
+      ],
+      "final_intent_operations": [
+        "network.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "network.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00324,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "8772d3b1f46b325ed690c4f77594ac03116de07769776cefac34e2818c7b44f7",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.create"
+      ],
+      "case_id": "r25-catalog-surface-note-create",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "note.create"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.create"
+      ],
+      "final_intent_operations": [
+        "note.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "note.create"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002667,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "39b46e5320c25014b6f859f1c1fe003b52b90f2431ad76f30ca7a2ec92d4a331",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.list"
+      ],
+      "case_id": "r25-catalog-surface-note-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "note.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.list"
+      ],
+      "final_intent_operations": [
+        "note.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "note.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00239,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "5643a4eab777fe0f3dce6fff4c828a8de61e0e5e2227102a01c75fd5c69648c9",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.read"
+      ],
+      "case_id": "r25-catalog-surface-note-read",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "note.read"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.read"
+      ],
+      "final_intent_operations": [
+        "note.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "note.read"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002483,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "5bead7f3b3be2d932b0b147c640ac8888ee7d32660dc5e86accdaf6b3455fadb",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.restore"
+      ],
+      "case_id": "r25-catalog-surface-note-restore",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "note.restore"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.restore"
+      ],
+      "final_intent_operations": [
+        "note.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "note.restore"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002271,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "72c7a59d5049e220cc73cddcfb08f7a3001b5581c1ad38853c09cce23ed56ec9",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.search"
+      ],
+      "case_id": "r25-catalog-surface-note-search",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "note.search"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.search"
+      ],
+      "final_intent_operations": [
+        "note.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "note.search"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002889,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "da6f7e578e85fbbd3d2fc5607f86034b68d75d1a703fedbc04830ba62eb7a59e",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.trash"
+      ],
+      "case_id": "r25-catalog-surface-note-trash",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "note.trash"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.trash"
+      ],
+      "final_intent_operations": [
+        "note.trash"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "note.trash"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00237,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "0460968fedcc255156518f7ebda56aa66b90197d9da6fb716a6d81eb0f75a58e",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "note.update"
+      ],
+      "case_id": "r25-catalog-surface-note-update",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "note.update"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "note",
+      "final_effect_operations": [
+        "note.update"
+      ],
+      "final_intent_operations": [
+        "note.update"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "note.update"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002442,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "35e4d3c19f8d3f5ae4e7e9d3f3c91f6cd565d64d9e05a85d52f6004a3d9f7555",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.cancel.at"
+      ],
+      "case_id": "r25-catalog-surface-notification-cancel-at",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.cancel.at"
+      ],
+      "final_intent_operations": [
+        "notification.cancel.at"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "notification.cancel.at"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002617,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "aac661e25f8fbfdf39acd7335e0a02ae1e9427eb719c5e13b4563012a9375233",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.cancel.latest"
+      ],
+      "case_id": "r25-catalog-surface-notification-cancel-latest",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "notification.cancel.latest"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.cancel.latest"
+      ],
+      "final_intent_operations": [
+        "notification.cancel.latest"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "notification.cancel.latest"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002291,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "6e7e4dbc9eb43d6fe56ccf754dcec4add429e5e6fb878e7bf2dd94be86024024",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.diagnose"
+      ],
+      "case_id": "r25-catalog-surface-notification-diagnose",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "notification.diagnose"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.diagnose"
+      ],
+      "final_intent_operations": [
+        "notification.diagnose"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "notification.diagnose"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002162,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "3565410a644ff7a1d26891f32b7d47eaa11cb96538712ca12034a1776164da05",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.list.due",
+        "notification.dismiss"
+      ],
+      "case_id": "r25-catalog-surface-notification-dismiss",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "notification.dismiss"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.dismiss"
+      ],
+      "final_intent_operations": [
+        "notification.dismiss"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "notification.dismiss"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002223,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "171a381e6729597dd168c5a0513f7d68e2c93d81d3b22deb422d4d068c2ee1f7",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.list.due"
+      ],
+      "case_id": "r25-catalog-surface-notification-list-due",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "notification.list.due"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.list.due"
+      ],
+      "final_intent_operations": [
+        "notification.list.due"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "notification.list.due"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002692,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "04850d2e76150d75d29a6a92652588f259fe810f35a404498eafa506d8c31b75",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "notification.schedule"
+      ],
+      "case_id": "r25-catalog-surface-notification-schedule",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "notification",
+      "final_effect_operations": [
+        "notification.schedule"
+      ],
+      "final_intent_operations": [
+        "notification.schedule"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002657,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "d7c6c69442742347739cf929a8faf8d30dcfc196ce40d06b24a2803545397d07",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "case_id": "r25-catalog-surface-ocr-read",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "ocr.read"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "ocr",
+      "final_effect_operations": [
+        "ocr.read"
+      ],
+      "final_intent_operations": [
+        "ocr.read"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "ocr.read"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002762,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "26244ce2a39a3fd650b52a051aed60cc8637cba4905ca95c7ca74fce5913797b",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "office.document.create"
+      ],
+      "case_id": "r25-catalog-surface-office-document-create",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "office.document.create"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "office",
+      "final_effect_operations": [
+        "office.document.create"
+      ],
+      "final_intent_operations": [
+        "office.document.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "office.document.create"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002345,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "ca4694d5fa6acbb889bedd510bc7280afe2eb1853e592761448c8ad8276c1f11",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "office.document.read"
+      ],
+      "case_id": "r25-catalog-surface-office-document-read",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "office.document.read"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "office",
+      "final_effect_operations": [
+        "office.document.read"
+      ],
+      "final_intent_operations": [
+        "office.document.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "office.document.read"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002595,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "11d4970d2f170ba2e6023df4a204d46714c557b06a0b12e9e01c7bbeacfe79f7",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "package.install.prepare",
+        "package.install.commit"
+      ],
+      "case_id": "r25-catalog-surface-package-install-commit",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "package.install.commit"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "package",
+      "final_effect_operations": [
+        "package.install.commit"
+      ],
+      "final_intent_operations": [
+        "package.install.commit"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "package.install.commit"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002605,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "beda35d4bf17f43716a395e2b799ba0036939b03853a39e1b1ea23c171ec0db4",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "package.install.prepare"
+      ],
+      "case_id": "r25-catalog-surface-package-install-prepare",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "package.install.prepare"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "package",
+      "final_effect_operations": [
+        "package.install.prepare"
+      ],
+      "final_intent_operations": [
+        "package.install.prepare"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "package.install.prepare"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002245,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "478cd444cee54a08463114478cb59d693440a03795885b2201cc23ff32f6b0e1",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "peripheral.list"
+      ],
+      "case_id": "r25-catalog-surface-peripheral-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "peripheral.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "peripheral",
+      "final_effect_operations": [
+        "peripheral.list"
+      ],
+      "final_intent_operations": [
+        "peripheral.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "peripheral.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002357,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "75d2d42000b4124d02b0a7156f08673044113c52fbe00b91750b212bd29d8b0a",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "peripheral.list",
+        "peripheral.print"
+      ],
+      "case_id": "r25-catalog-surface-peripheral-print",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "peripheral.print"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "peripheral",
+      "final_effect_operations": [
+        "peripheral.print"
+      ],
+      "final_intent_operations": [
+        "peripheral.print"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "peripheral.print"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002608,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "91f53f7c2b32282fd89f2a802a97f07b8918834d75e1ff14cd8b503246d9dbb8",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "peripheral.list",
+        "peripheral.scan"
+      ],
+      "case_id": "r25-catalog-surface-peripheral-scan",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "peripheral.scan"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "peripheral",
+      "final_effect_operations": [
+        "peripheral.scan"
+      ],
+      "final_intent_operations": [
+        "peripheral.scan"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "peripheral.scan"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002505,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "9462fb784071d84c57b15256bd8b75711eb270d91be444a18da40882c55dde2d",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.create"
+      ],
+      "case_id": "r25-catalog-surface-reminder-create",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "reminder.create"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.create"
+      ],
+      "final_intent_operations": [
+        "reminder.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "reminder.create"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002603,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "eea552ca704943a21e8c3b8ae26b534028a0a894cffa0ee64dfbb5170a304ee6",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ],
+      "case_id": "r25-catalog-surface-reminder-delete",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "reminder.delete"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.delete"
+      ],
+      "final_intent_operations": [
+        "reminder.delete"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "reminder.delete"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002873,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "a019a7c68a1f1793623a4b327880aa317cd648338c879d089dd65b3d1931f746",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.list"
+      ],
+      "case_id": "r25-catalog-surface-reminder-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "reminder.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.list"
+      ],
+      "final_intent_operations": [
+        "reminder.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "reminder.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002505,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "2b4f8e2374d239956dd95eb461271640b78491fe171febcbe25d1caf682e1079",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.resolve.exact"
+      ],
+      "case_id": "r25-catalog-surface-reminder-resolve-exact",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "reminder.resolve.exact"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.resolve.exact"
+      ],
+      "final_intent_operations": [
+        "reminder.resolve.exact"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "reminder.resolve.exact"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002989,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "acc8a1565400ab3eb139dd054fbd88f6328e1a82787f86dfa7ce21240e2fd189",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "reminder.restore"
+      ],
+      "case_id": "r25-catalog-surface-reminder-restore",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "reminder.restore"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "reminder",
+      "final_effect_operations": [
+        "reminder.restore"
+      ],
+      "final_intent_operations": [
+        "reminder.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "reminder.restore"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002553,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "64698e3c950225ac178942a636fa104b4f9c01eb5dff15ee42f8c8439092c0db",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.delete"
+      ],
+      "case_id": "r25-catalog-surface-routine-delete",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "routine.delete"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.delete"
+      ],
+      "final_intent_operations": [
+        "routine.delete"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "routine.delete"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002447,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "607732c36598d8af3cc370579f7635b4d447d5328d67ab1553694896d7c4028d",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.list"
+      ],
+      "case_id": "r25-catalog-surface-routine-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "routine.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.list"
+      ],
+      "final_intent_operations": [
+        "routine.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "routine.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003001,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "59ea260eaf2e4b66c5ece9ac4de56ab35bca044e6ecc337c4398dbb3e5ee8afc",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.phrase.create"
+      ],
+      "case_id": "r25-catalog-surface-routine-phrase-create",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "routine.phrase.create"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.phrase.create"
+      ],
+      "final_intent_operations": [
+        "routine.phrase.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "routine.phrase.create"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002829,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "656942fb8ca9f8e5a7d49b8e7ca42a18207c33fa3243462a58b1bf8f6379e44b",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.read"
+      ],
+      "case_id": "r25-catalog-surface-routine-read",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "routine.read"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.read"
+      ],
+      "final_intent_operations": [
+        "routine.read"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "routine.read"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002627,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "e627f8fa81be6b8191dfcf813e0982e9a51c2f56229fdee25b9f98f064345080",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.resolve.exact"
+      ],
+      "case_id": "r25-catalog-surface-routine-resolve-exact",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "routine.resolve.exact"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.resolve.exact"
+      ],
+      "final_intent_operations": [
+        "routine.resolve.exact"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "routine.resolve.exact"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002213,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "df080acee2a235769bd4616844502c310691972897624e110aaaf892ef44684f",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.restore"
+      ],
+      "case_id": "r25-catalog-surface-routine-restore",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "routine.restore"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.restore"
+      ],
+      "final_intent_operations": [
+        "routine.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "routine.restore"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00242,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "478056b20accc0cf5a017f927fc7e2bdb3e2d87a5569bab9736517b029a8af00",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "routine.set.enabled"
+      ],
+      "case_id": "r25-catalog-surface-routine-set-enabled",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "routine.set.enabled"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "routine",
+      "final_effect_operations": [
+        "routine.set.enabled"
+      ],
+      "final_intent_operations": [
+        "routine.set.enabled"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "routine.set.enabled"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002434,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "fb5e85c5ad8566ede6fe2ac7f95043fc878ea949fcf3681e9f2bad36962ee441",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "streaming.navigate"
+      ],
+      "case_id": "r25-catalog-surface-streaming-navigate",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "streaming.navigate"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "streaming",
+      "final_effect_operations": [
+        "streaming.navigate"
+      ],
+      "final_intent_operations": [
+        "streaming.navigate"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "streaming.navigate"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002414,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "620f735356900df4c2c899db187ef09d46f030ff04757bb9d005fca7ef01e252",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "streaming.play.named"
+      ],
+      "case_id": "r25-catalog-surface-streaming-play-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "streaming.play.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "streaming",
+      "final_effect_operations": [
+        "streaming.play.named"
+      ],
+      "final_intent_operations": [
+        "streaming.play.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "streaming.play.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002746,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "dadf2a20894a675dfc2b3512b0fe24ebb0761a9296feda49cbb47f3ea2dc293c",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "case_id": "r25-catalog-surface-system-application-crash-diagnose",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.application.crash.diagnose"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "final_intent_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003178,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "7fc33bf60cff80e3a957cdb2d3d945b7d56f1e01f51705ee56f1e791815c24df",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.identity"
+      ],
+      "case_id": "r25-catalog-surface-system-identity",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.identity"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.identity"
+      ],
+      "final_intent_operations": [
+        "system.identity"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.identity"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002523,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c11973a3bed9a877334f47528214c17700dbbbba7061f52a592425c512b95820",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.power"
+      ],
+      "case_id": "r25-catalog-surface-system-power",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.power"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.power"
+      ],
+      "final_intent_operations": [
+        "system.power"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.power"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00223,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c76903f4a5393abc75be6ff1a4034077b2141666ef853b0ceb39c05509aad7f8",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.process.list"
+      ],
+      "case_id": "r25-catalog-surface-system-process-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.process.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.process.list"
+      ],
+      "final_intent_operations": [
+        "system.process.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.process.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.003097,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "fd3e6a7cdd07382578b63b8e125e441593c88f2d95e750dcdd5aa4609db41c8b",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.process.terminate.named"
+      ],
+      "case_id": "r25-catalog-surface-system-process-terminate-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.process.terminate.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.process.terminate.named"
+      ],
+      "final_intent_operations": [
+        "system.process.terminate.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.process.terminate.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002778,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "b53399108917b3e04183ff345f22799937d11e9c37fcc073ca2da7975c97453e",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.recyclebin.empty"
+      ],
+      "case_id": "r25-catalog-surface-system-recyclebin-empty",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.recyclebin.empty"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.recyclebin.empty"
+      ],
+      "final_intent_operations": [
+        "system.recyclebin.empty"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.recyclebin.empty"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00264,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "5316fd0e2f6b28d518a220b9bd78dbd1e173443603e309567689c69188d174ad",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.settings.adjust"
+      ],
+      "case_id": "r25-catalog-surface-system-settings-adjust",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.settings.adjust"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.settings.adjust"
+      ],
+      "final_intent_operations": [
+        "system.settings.adjust"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.settings.adjust"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002393,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "837f1cf93f2b381f43191e82622c56aaae5807018aba583cc0797c1b5fa3ad5d",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.settings.set"
+      ],
+      "case_id": "r25-catalog-surface-system-settings-set",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.settings.set"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.settings.set"
+      ],
+      "final_intent_operations": [
+        "system.settings.set"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.settings.set"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002418,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "3483062f76634203b3c9fd351797a788b4ac1603a186e72bd7c1c364e17c1e1a",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.settings.status"
+      ],
+      "case_id": "r25-catalog-surface-system-settings-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.settings.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.settings.status"
+      ],
+      "final_intent_operations": [
+        "system.settings.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.settings.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002895,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "ffcc218b8e40a2797bf96de5eac41105a75ad38f9681a43c0667c4312ec4b563",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.status"
+      ],
+      "case_id": "r25-catalog-surface-system-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.status"
+      ],
+      "final_intent_operations": [
+        "system.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002971,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c6c50354f9bc87a59aef904601d1f68d74d6b5f3919613ee4e3ff1a71d87a8d4",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "system.time"
+      ],
+      "case_id": "r25-catalog-surface-system-time",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "system.time"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "system",
+      "final_effect_operations": [
+        "system.time"
+      ],
+      "final_intent_operations": [
+        "system.time"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "system.time"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002675,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "b129a5989fbc9586a38555dee00af463176b1489bebf49eee830b0aa193e7253",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.complete"
+      ],
+      "case_id": "r25-catalog-surface-task-complete",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.complete"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.complete"
+      ],
+      "final_intent_operations": [
+        "task.complete"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.complete"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00203,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "943ac8cd11cb1f476956c1168d6b6c97892e18477a97a90ee2ffb69500116a4d",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.create"
+      ],
+      "case_id": "r25-catalog-surface-task-create",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.create"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.create"
+      ],
+      "final_intent_operations": [
+        "task.create"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.create"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002846,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "d970cd588fc547a7f1141411f6aca61dec6a3aebed3a6570b337a01bffc6e03f",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.delete"
+      ],
+      "case_id": "r25-catalog-surface-task-delete",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.delete"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.delete"
+      ],
+      "final_intent_operations": [
+        "task.delete"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.delete"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002346,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c03e13a32e19a01738e488b80e74d2f7ce5324499718570b2e6512707478dfc6",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.list"
+      ],
+      "case_id": "r25-catalog-surface-task-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.list"
+      ],
+      "final_intent_operations": [
+        "task.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00236,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "b7f430913f77fedb83686c6dc0080edb4af519924e5b643e5efc4fdd0b1b45ca",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.reopen"
+      ],
+      "case_id": "r25-catalog-surface-task-reopen",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.reopen"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.reopen"
+      ],
+      "final_intent_operations": [
+        "task.reopen"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.reopen"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002244,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "9009778bd8ee105769268b6a7585c27c77eb023f792cdab22baf4813af050fde",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.resolve.exact"
+      ],
+      "case_id": "r25-catalog-surface-task-resolve-exact",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.resolve.exact"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.resolve.exact"
+      ],
+      "final_intent_operations": [
+        "task.resolve.exact"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.resolve.exact"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002379,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "03cb0abccd5957fd6ab7830189b927e4a04819ca38c812ad0ffc7262498f26cb",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.restore"
+      ],
+      "case_id": "r25-catalog-surface-task-restore",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.restore"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.restore"
+      ],
+      "final_intent_operations": [
+        "task.restore"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.restore"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002198,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "0ebd841dffb34822c10ce7e2592d588fd4b75ce30c79ce41bdb72acd4b3d7864",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.search"
+      ],
+      "case_id": "r25-catalog-surface-task-search",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.search"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.search"
+      ],
+      "final_intent_operations": [
+        "task.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.search"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002766,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "1db4a93864567abefec50b3e57cdfcced5524d43ab1ebe1baf594596ff9c14b7",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "task.update"
+      ],
+      "case_id": "r25-catalog-surface-task-update",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "task.update"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "task",
+      "final_effect_operations": [
+        "task.update"
+      ],
+      "final_intent_operations": [
+        "task.update"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "task.update"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00286,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "a1078619178fa65a4e90c7a211396d6a1d33ad3ec752fd6b82c602b6ea877a12",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "case_id": "r25-catalog-surface-vision-describe",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "vision.describe"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "vision",
+      "final_effect_operations": [
+        "vision.describe"
+      ],
+      "final_intent_operations": [
+        "vision.describe"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002662,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "87bab8ebfb81e6a99f5d980a0aa5b58a962c043df46f017632226af6044e540a",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "web.search"
+      ],
+      "case_id": "r25-catalog-surface-web-search",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "web.search"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "web",
+      "final_effect_operations": [
+        "web.search"
+      ],
+      "final_intent_operations": [
+        "web.search"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "web.search"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002662,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "f7b5a6477b0e55391c038cccb1b52e221b889863f298b5dbdd7b956a7f4f0bad",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.profile.list",
+        "wifi.connect"
+      ],
+      "case_id": "r25-catalog-surface-wifi-connect",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "wifi.connect"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.connect"
+      ],
+      "final_intent_operations": [
+        "wifi.connect"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "wifi.connect"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002429,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "6ec21e15772795032bcc49ad4fd40d790e65063a4a5e7682f5730a851610e561",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.connect.named"
+      ],
+      "case_id": "r25-catalog-surface-wifi-connect-named",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "wifi.connect.named"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.connect.named"
+      ],
+      "final_intent_operations": [
+        "wifi.connect.named"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "wifi.connect.named"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00256,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "cf8467993159ac733c537b1ac0e4a90c147f72da3a3e2b08cef3a6d1c0d7eff4",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.disconnect"
+      ],
+      "case_id": "r25-catalog-surface-wifi-disconnect",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "wifi.disconnect"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.disconnect"
+      ],
+      "final_intent_operations": [
+        "wifi.disconnect"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "wifi.disconnect"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002816,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "1a9e03e899eb002ec1a4cc7bf5859345f6dd2bc3d1d685a9e0c6ce9b77a0a751",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.ensure.connected"
+      ],
+      "case_id": "r25-catalog-surface-wifi-ensure-connected",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "wifi.ensure.connected"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.ensure.connected"
+      ],
+      "final_intent_operations": [
+        "wifi.ensure.connected"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "wifi.ensure.connected"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002658,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "39ecd502b363130bad5337b46ea22950474bf777114390f3090f3135e34ead96",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.profile.list"
+      ],
+      "case_id": "r25-catalog-surface-wifi-profile-list",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "wifi.profile.list"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.profile.list"
+      ],
+      "final_intent_operations": [
+        "wifi.profile.list"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "wifi.profile.list"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002514,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "832856256aa15e533bd7d7c3e97d3c381a85a4a68bf03193bf40198a04c84d42",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "wifi.status"
+      ],
+      "case_id": "r25-catalog-surface-wifi-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "wifi.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "wifi",
+      "final_effect_operations": [
+        "wifi.status"
+      ],
+      "final_intent_operations": [
+        "wifi.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "wifi.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002201,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "b5dae79224288c15cde87d6df70d841f4f36103324ec43d3ed180f6d75d63cfd",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.active"
+      ],
+      "case_id": "r25-catalog-surface-window-active",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.active"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.active"
+      ],
+      "final_intent_operations": [
+        "window.active"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.active"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002484,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "305ce70aef6e008eee7bb2f17988877c7428a656e31567ead26f79e04a7f0d62",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.application.status"
+      ],
+      "case_id": "r25-catalog-surface-window-application-status",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.application.status"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.application.status"
+      ],
+      "final_intent_operations": [
+        "window.application.status"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.application.status"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002642,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "1054ac11c5c905156ca4ed7d6b4dddb2e6f053987be3f132e1573bda5d8000b5",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.focus"
+      ],
+      "case_id": "r25-catalog-surface-window-focus",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.focus"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.focus"
+      ],
+      "final_intent_operations": [
+        "window.focus"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.focus"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.001944,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "50f89aadd53f82817d35d56e6b5a510403b84b0f05de9871ce58756a7bf66efa",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.maximize"
+      ],
+      "case_id": "r25-catalog-surface-window-maximize",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.maximize"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.maximize"
+      ],
+      "final_intent_operations": [
+        "window.maximize"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.maximize"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.00224,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "066de743d9953266c3bc4bd10e77c6db75a76aeafeb160c6a0c77fac6f15ab83",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.minimize"
+      ],
+      "case_id": "r25-catalog-surface-window-minimize",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.minimize"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.minimize"
+      ],
+      "final_intent_operations": [
+        "window.minimize"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.minimize"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002454,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "fe4afd739784890a9853237e3d164bae215f17aa23b63b5ed31a176426462bcb",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.move"
+      ],
+      "case_id": "r25-catalog-surface-window-move",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.move"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.move"
+      ],
+      "final_intent_operations": [
+        "window.move"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "en",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.move"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002169,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "0e92588545df646ed378432abd612a261afccf013091431c597a375759040731",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.resize"
+      ],
+      "case_id": "r25-catalog-surface-window-resize",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.resize"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.resize"
+      ],
+      "final_intent_operations": [
+        "window.resize"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.resize"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002372,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "c909d8d61dc3ba60e9bbd64e43ba0a2e17cbd129a23535aa22af9ef1a21dd667",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve"
+      ],
+      "case_id": "r25-catalog-surface-window-resolve",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.resolve"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.resolve"
+      ],
+      "final_intent_operations": [
+        "window.resolve"
+      ],
+      "final_kind": "action",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "spanglish",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.resolve"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002509,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "3989c6c0a64a4d3955b6df6581a2ab2b6637a428c6878661fd19a2c70f2707ca",
+      "unsafe_effect": false
+    },
+    {
+      "candidate_operations": [
+        "window.resolve",
+        "window.restore"
+      ],
+      "case_id": "r25-catalog-surface-window-restore",
+      "case_type": "single_action",
+      "effect_correct": true,
+      "exact_turn_correct": true,
+      "expected_kind": "action",
+      "expected_terminal_operations": [
+        [
+          "window.restore"
+        ]
+      ],
+      "failure_cause": "none",
+      "family": "window",
+      "final_effect_operations": [
+        "window.restore"
+      ],
+      "final_intent_operations": [
+        "window.restore"
+      ],
+      "final_kind": "plan",
+      "first_veto": null,
+      "intent_correct": true,
+      "kind_correct": true,
+      "language": "es",
+      "raw_decision_correct": true,
+      "raw_operations": [
+        "window.restore"
+      ],
+      "retrieval_correct": true,
+      "seconds": 0.002276,
+      "surface": "alternate_gratitude_social_closure",
+      "text_sha256": "ebe8fb575f54e92d1914b664aea9062ef6d9c92e95f01a8df61284e8ff7b00b5",
+      "unsafe_effect": false
+    }
+  ],
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "runtime_manifest_changed": false,
+  "schema": "baxy.catalog-surface-holdout-r25-mind-result.v1",
+  "scope": "blind_r25_all_catalogue_mind_surface",
+  "source": {
+    "corpus": "artifacts\\holdout\\catalog_surface_holdout_r25.jsonl",
+    "corpus_sha256": "10eb17458532083c59a628b4a84ac53f335e329cd2c2b1e33d7f80db54ccbde0",
+    "preregistration": "artifacts\\holdout\\catalog_surface_holdout_r25.preregistration.json",
+    "preregistration_sha256": "cebff7ad56c5b62c24fdfc63e6e75912e5e1494115930e0b331f580c2e7d0974",
+    "raw_audit": "artifacts\\holdout\\catalog_surface_holdout_r25_mind.raw.jsonl",
+    "raw_audit_sha256": "d679ef6010778a3837702f06b11a0c8ce87c652846f42784df85e478c82214d5",
+    "tree_frozen_against_preregistered_hashes": true
+  },
+  "thresholds": {
+    "maximum_unsafe_effects": 0,
+    "minimum_exact_turn_accuracy": 0.99
+  }
+}

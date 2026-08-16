@@ -1,0 +1,79 @@
+{
+ "schema": "baxy.policy-tool-quality-verdict.v1",
+ "measured_at_utc": "2026-07-31",
+ "state": "MEDICION, sin cambio de producto",
+ "why": "deterministic recognisers cannot cover every phrasing a person will use, so the model has to carry the long tail. Before improving the model's tool calling, it was worth knowing whether the model is actually the weak link. It is not the main one.",
+ "method": "the recogniser is suspended inside the probe's own sidecar so each frozen text is decided by the primary policy, exactly as an unrecognised paraphrase of it would be. Oracle: the frozen text -> operations pairing of tests/test_effect_intent.py CASES, abstentions excluded. 57 cases, 2 repeats, 114 turns, one arm, product code.",
+ "headline": {
+  "final_accuracy_exact": 0.4649,
+  "reading": "this is the FINAL envelope, which is what the person experiences. It decomposes into three very different causes, and reporting it as one number would send the next change at the wrong target."
+ },
+ "decomposition": {
+  "the_model_never_had_a_chance": {
+   "turns": 45,
+   "share": 0.395,
+   "cause": "E5 never put the expected operation in the shortlist. The policy schema's enum only admits shortlisted operations, so P could not have named it even if it had understood the request perfectly.",
+   "verdict": "RETRIEVAL defect, not a model defect. No prompt, schema or example change would fix a single one of these turns."
+  },
+  "the_model_had_a_fair_chance_and_failed": {
+   "turns": 23,
+   "share": 0.202,
+   "cause": "the expected operation was in the shortlist and P named something else, or declined to act.",
+   "verdict": "genuine model defect. This is the part a prompt, schema or example change can address."
+  },
+  "the_model_was_right": {"turns": 46, "share": 0.404}
+ },
+ "model_accuracy_given_a_fair_shortlist": {
+  "value": 0.667,
+  "detail": "46 of the 69 turns whose expected operation was offered. The model is markedly better than the 0.465 headline suggests once it is shown the right candidate."
+ },
+ "post_policy_machinery_is_not_the_problem": {
+  "model_right_but_overridden_after_P": 0,
+  "model_wrong_but_repaired_after_P": 7,
+  "note": "an earlier hypothesis was that BAXY's vetoes were rejecting correct proposals and suppressing tool calling. The attribution refutes it: across 114 turns the machinery after P overrode a correct proposal 0 times in this run (1 time in the previous run) and repaired a wrong one 7 times. It is net positive and is not where the loss is."
+ },
+ "retrieval_evidence": {
+  "wifi": {
+   "text": "¿Cómo está el Wi-Fi?",
+   "expected": "wifi.status",
+   "shortlist_had": "wifi.ensure.connected, bluetooth.device.list, system.settings.status, system.status, media.status, filesystem.copy and 14 more",
+   "reading": "the right family was retrieved and the right sibling was not"
+  },
+  "screenshot": {
+   "text": "Haz una captura de pantalla",
+   "expected": "capture.screenshot",
+   "shortlist_had": "audio.microphone.mute, audio.volume.adjust, app.open, game.install.commit, note.create, window.move, office.document.read and 14 more",
+   "reading": "not one candidate of the capture family was offered. P answered audio.microphone.mute, which looked like an absurd model failure and is in fact the least bad option it was given."
+  },
+  "tasks": {
+   "text": "Lista mis tareas pendientes",
+   "expected": "task.list",
+   "shortlist_had": "note.list, note.read, note.search, calendar.event.list, browser.tabs.list and 18 more",
+   "reading": "the whole task family is missing while the note family is offered three times over, which also explains `Crea una tarea llamada Auditoría` resolving to note.create"
+  }
+ },
+ "failure_taxonomy_of_the_final_envelope": {
+  "exact": 53,
+  "answered_instead_of_acting": 49,
+  "asked_to_clarify_a_clear_request": 4,
+  "right_family_wrong_operation": 4,
+  "wrong_family": 4
+ },
+ "systematic_model_defect_confirmed": "`Pon el volumen al 8 por ciento` resolves to audio.volume.adjust, a RELATIVE adjustment, where the person named an ABSOLUTE level and audio.volume exists. The same defect appeared independently in social_envelope_20260731.json on `hola, pon el volumen al 30 por ciento`, so it is systematic rather than incidental. This one is in the fair-chance bucket: both operations were offered.",
+ "retry_cost": {
+  "policy_calls": 121,
+  "turns": 114,
+  "calls_per_turn": 1.061,
+  "note": "a retry is a whole extra decode, so hesitation is both a quality and a latency cost. At 1.06 calls per turn the retry tax here is modest; the earlier social-prefix family reached 2 calls per turn, so the tax is concentrated on the turns P finds hardest."
+ },
+ "honesty": [
+  "these 57 texts are the CANONICAL phrasings the recogniser owns, so in production they never take the E5 path. Suspending the recogniser measures the E5 path on them, which is the best available proxy for an unrecognised paraphrase but is not itself an out-of-distribution sample. A real paraphrase could retrieve differently, better or worse.",
+  "one arm and 2 repeats. Two runs of the same probe gave 0.4474 and 0.4649 accuracy, so the headline is stable to about +-2 points at this sample size, and small differences between runs are not read as signal.",
+  "`model_right` is judged on P's raw effect_operations against the oracle, which does not check argument grounding. A turn counted right here could still ground its arguments wrongly."
+ ],
+ "what_this_changes_about_the_plan": "the largest single lever for making the LLM do good tool calling is RETRIEVAL, not the model: 45 of 114 turns were lost before the model was consulted. Fixing the shortlist would also raise the ceiling of every later prompt or schema improvement, because those only act on the 69 turns where the candidate was present.",
+ "probe": "experiments/mind_router_spike/probe_policy_tool_quality.py",
+ "artifact": "policy_tool_quality_20260731.json",
+ "effects_executed": 0,
+ "installation_touched": false
+}

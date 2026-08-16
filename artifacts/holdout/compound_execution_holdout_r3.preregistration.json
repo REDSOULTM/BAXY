@@ -1,0 +1,52 @@
+{
+  "authority": "temporary_private_note_namespace_and_read_only_machine_status_only",
+  "blind_holdout": true,
+  "effects": {
+    "applications_opened": 0,
+    "external_messages": 0,
+    "persistent_user_files": 0,
+    "temporary_notes_cleaned_by_gate": true
+  },
+  "measurement_status": "unopened",
+  "method": {
+    "maximum_ambiguous_effects": 0,
+    "maximum_failed_cases": 0,
+    "minimum_exact_case_accuracy": 1.0,
+    "required_real_llm_cases": 6
+  },
+  "planned_output": "artifacts\\holdout\\compound_execution_holdout_r3.json",
+  "population": {
+    "case_contract_sha256": "5b29d2b3f7459eb8d74cfcab8783f06316d5fd8490f570520a138b5081fb71a7",
+    "cases": 6,
+    "exact_prior_objective_overlap": 0,
+    "languages": [
+      "en",
+      "es",
+      "spanglish"
+    ],
+    "steps": 27
+  },
+  "preregistered_before_measurement": true,
+  "schema": "baxy.compound-execution-holdout-r3.preregistration.v1",
+  "sources": {
+    "builder": "scripts\\build_compound_execution_holdout_r3.py",
+    "builder_dependencies_sha256": {
+      "scripts\\build_compound_execution_holdout_r1.py": "ba8de4e06fd792941ff115f5f815c5f64c70a9a64640e721ed4ad96fd2ad75a7",
+      "scripts\\build_compound_execution_holdout_r2.py": "b9db754a7bd1ae6e152dcf1dbd1d00948aad2d30f4966a873af5b05532df9c21"
+    },
+    "builder_sha256": "dd82ba7f3c8e622aecddb202a56b6f917212c3ddebbd4d3fe6959112e130e19b",
+    "core_sha256": "e591b5e74d72d763da2b82103b4ec4692dc3369192526632bd6d87369fc8ee80",
+    "measurement_sha256": {
+      "experiments\\mind_router_spike\\run_compound_execution_holdout_r3.py": "e2ff94522fd8e3688eece13dfebc3c1cdd256c147e34ef98e6d82b76570632c3",
+      "scripts\\run_llm_plan_execution_gate.py": "1ee39112f9af81d82ebaf26080c75990552a1f5a7495ea0b558169237822248a"
+    },
+    "policy_sha256": {
+      "src\\baxy_mind\\__main__.py": "aa82f5358b6da3a6413158d040ebf4c78f614516ffbce8124e01a1751abe703a",
+      "src\\baxy_mind\\catalog_operation_aliases.py": "f23ba6913311ef0e0b3fd6e7786dd0521b29ef2b3b47e344e3673646b780a928",
+      "src\\baxy_mind\\data\\catalog_operation_aliases.v1.json": "bd1a50e071de746b2536e21234306b159a2329e805b91e8261e5c6cdf4e9cc73",
+      "src\\baxy_mind\\effect_intent.py": "26b1ffd4681883e1788901c3e022fe3b7242acf017ec638ad51a3c68861fa462",
+      "src\\baxy_mind\\planner.py": "5116664fffb089d537d95f4162e99f4d69672e9bf29ae7318d29111437600986"
+    },
+    "runtime_manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4"
+  }
+}

@@ -1,0 +1,49 @@
+{
+ "schema": "baxy.farewell-reply-verdict.v1",
+ "measured_at_utc": "2026-07-31",
+ "state": "PROMOVIDO",
+ "component": "baxy_mind/llm.LlmRuntime.chat, anti-echo guard",
+ "principle": "the model answers every message. A visible reply produced by a constant is a defect, not a fallback.",
+ "defect": "BAXY could not say goodbye. `chat` replaced any reply whose normalised text equalled the person's own with the fixed string `No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?`. That guard exists to catch a model parroting the question, but for a farewell the mirror IS the answer, so it discarded the model's correct reply. Someone typing `chau` was told BAXY could not produce a reliable answer.",
+ "blocked_before_the_fix": {
+  "nos vemos": "¡Nos vemos!",
+  "chau": "¡Chau!",
+  "hasta luego": "¡Hasta luego!",
+  "bye": "Bye!",
+  "good night": "Good night!",
+  "adios": "survived only by the accident of its accent: `adios` and `adiós` do not normalise equal, so the guard missed it. Nothing about the design protected it."
+ },
+ "discovery": "found while reading the reply texts of the R16 social-envelope A/B. The decision gate of that probe compared kind, operation, effectOperations and question; the visible text was recorded but not gated, so the defect was in the artifact all along and only surfaced on inspection. Worth remembering: a gate on the contractual decision does not see a broken visible answer.",
+ "not_introduced_by_r16": "the failure appears 4 of 4 times in BOTH arms of social_envelope_20260731.json. R16 made it faster to fail, not the cause of it.",
+ "change": "a turn classified as a social act may answer with a mirror. `mirror_is_a_valid_answer = conversation_kind == \"social\"` suppresses the echo check both before the corrective retry and at the final substitution. Every other conversation kind keeps the guard exactly as it was, which is what the knowledge/followup/unsupported regressions pin.",
+ "physical_ab": {
+  "artifact": "farewell_reply_20260731.json",
+  "probe": "experiments/mind_router_spike/probe_farewell_reply.py",
+  "method": "the real sidecar per variant, whole sessions alternated in ABBA order, the same 13-case corpus twice per session. The baseline arm restores the unconditional guard inside the same product code.",
+  "gate": "no visible reply may be produced by a constant, and the greeting, gratitude and knowledge controls must keep answering as they did.",
+  "result": "PASSED. Replies produced by a constant: baseline 20 of 48 turns, candidate 0 of 48.",
+  "visible_replies_now_written_by_the_model": [
+   "¡Nos vemos!", "Nos vemos.", "¡Chau! ¡Que tengas un buen día!",
+   "Hasta luego.", "Adiós.", "Bye!", "Good night!", "See you later!"
+  ],
+  "controls_unchanged_p50_s": {
+   "greeting": {"baseline": 0.1678, "candidate": 0.173},
+   "gratitude": {"baseline": 0.2018, "candidate": 0.2094},
+   "knowledge": {"baseline": 1.9314, "candidate": 1.9803}
+  }
+ },
+ "latency_side_effect": {
+  "claim": "removing the false failure also removed a doomed second decode",
+  "evidence": "`nos vemos` measured 2.4897, 2.3829, 2.5244 and 2.3261 s in the R16 candidate arm, which carried the old guard, and 0.0780, 0.1572, 0.0887 and 0.1474 s here. The guard forced a corrective retry with a JSON-schema constrained decode that was then rejected again by the same check.",
+  "honesty": "these two figures come from DIFFERENT physical sessions, so this is not an ABBA delta and is not presented as one. It is reported because the mechanism is discrete and known -- one entire extra model call, removed -- not because the seconds were paired. The paired measurement in this probe shows the fix costs nothing on the three control families."
+ },
+ "remaining_constant": {
+  "case": "genuinely empty content after the corrective retry",
+  "status": "still answered by the same fixed string",
+  "honesty": "this is the one visible constant left on the conversational path. It was never reached in the 96 turns of this probe. It is not defended as correct: it is a last resort that should be replaced by a model-written apology, and it is recorded here rather than presented as fixed."
+ },
+ "regression": "tests/test_turn_policy.py: 6 mirror cases across both languages asserting the model's reply survives AND that only one decode is issued, plus 3 non-social kinds asserting the guard still refuses to parrot the person.",
+ "effects_executed": 0,
+ "installation_touched": false,
+ "rollback": "revert the mirror_is_a_valid_answer branch in src/baxy_mind/llm.py chat()"
+}

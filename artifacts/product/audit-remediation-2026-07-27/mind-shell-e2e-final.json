@@ -1,0 +1,70 @@
+{
+    "schema":  "baxy-mind-shell-e2e-gate-v1",
+    "status":  "failed",
+    "started_utc":  "2026-07-27T22:43:32.9719980+00:00",
+    "completed_utc":  "2026-07-27T22:45:55.5652170+00:00",
+    "duration_seconds":  142.351,
+    "source":  {
+                   "commit":  "f23b23f064211154e954d82883ba6bee5c2c466c",
+                   "dirty":  true
+               },
+    "runtime":  {
+                    "manifest_sha256":  "d8b3aa5ff903266aa8a786b18bea0c30f7fd4b21cd2791c6e27c6a7f6344614b",
+                    "python_sha256":  "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+                    "gguf_name":  "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+                    "gguf_sha256":  "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+                    "llama_server_sha256":  "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+                    "dotnet_sdk":  "10.0.100",
+                    "gpu_layers":  99,
+                    "corpus_sha256":  "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680"
+                },
+    "boundary":  {
+                     "path":  "MainWindowViewModel -\u003e MindSidecarClient -\u003e baxy_mind turn.decide/plan -\u003e CoreProcessClient -\u003e core",
+                     "observed_operations":  [
+                                                 "memory.status"
+                                             ],
+                     "operation_counts":  {
+                                              "memory.status":  1,
+                                              "system.time":  0,
+                                              "system.status":  0
+                                          },
+                     "external_effects":  false,
+                     "installed_application_launched":  false
+                 },
+    "evidence":  {
+                     "attestation_schema":  "baxy-mind-shell-core-attestation-v1",
+                     "journal_integrity_validated":  true,
+                     "journal_authentication":  "hmac-sha256",
+                     "journal_sha256":  "526ca7ddfdc93d778e1c82d165a094b67482527b8348659afd1c5eb233d16e95",
+                     "anchor_sha256":  "822432c7310315966273388ee1ddbb3a3cb2833d1ffb98219ff879f3e570733f",
+                     "attestation_sha256":  "210d1d762f3ad84f0f94ee81c7a3899c6d101698417c70c0d1056dfc7badbfd2",
+                     "failure":  null
+                 },
+    "test":  {
+                 "filter":  "FullyQualifiedName~Baxy.Integration.Tests.MindShellEndToEndTests",
+                 "exit_code":  1,
+                 "counters":  {
+                                  "total":  7,
+                                  "executed":  7,
+                                  "passed":  6,
+                                  "failed":  1,
+                                  "error":  0,
+                                  "timeout":  0,
+                                  "aborted":  0,
+                                  "inconclusive":  0,
+                                  "not_executed":  0
+                              },
+                 "failure":  null
+             },
+    "checks":  {
+                   "dotnet_exit_zero":  false,
+                   "trx_exists":  true,
+                   "exactly_four_tests_executed":  false,
+                   "exactly_four_tests_passed":  false,
+                   "no_test_failed":  false,
+                   "authenticated_journal_attestation_valid":  false,
+                   "exact_read_only_core_operations":  false,
+                   "all_core_results_completed_and_verified":  true,
+                   "no_core_effect_may_have_occurred":  true
+               }
+}

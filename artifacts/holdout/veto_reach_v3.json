@@ -1,0 +1,637 @@
+{
+  "records": [
+    {
+      "case_id": "v3-req-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer la lija de la baranda de la escalera.",
+      "request_text": "Lija la baranda de la escalera.",
+      "role": "request",
+      "seconds": 3.743
+    },
+    {
+      "case_id": "v3-req-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo rellenar las grietas de la pared tal como se pidió.",
+      "request_text": "Rellena las grietas de la pared.",
+      "role": "request",
+      "seconds": 2.01
+    },
+    {
+      "case_id": "v3-req-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo trasplantar el helecho a una maceta mayoror.",
+      "request_text": "Trasplanta el helecho a una maceta mayor.",
+      "role": "request",
+      "seconds": 4.48
+    },
+    {
+      "case_id": "v3-req-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot grease the hinges on the back door.",
+      "request_text": "Grease the hinges on the back door.",
+      "role": "request",
+      "seconds": 1.925
+    },
+    {
+      "case_id": "v3-req-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot repot the fern into a bigger pot.",
+      "request_text": "Repot the fern into a bigger pot.",
+      "role": "request",
+      "seconds": 2.184
+    },
+    {
+      "case_id": "v3-req-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo limpiar la baranda de las stairs.",
+      "request_text": "Lija la baranda de la stairs.",
+      "role": "request",
+      "seconds": 2.718
+    },
+    {
+      "case_id": "v3-req-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo rellenar las cracks de la pared.",
+      "request_text": "Rellena las cracks de la pared.",
+      "role": "request",
+      "seconds": 3.134
+    },
+    {
+      "case_id": "v3-req-08",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo engrasar las bisagras de la puerta trasera.",
+      "request_text": "Engrasa las bisagras de la puerta trasera.",
+      "role": "request",
+      "seconds": 3.46
+    },
+    {
+      "case_id": "v3-ctl-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Las barandas de madera maciza son una excelente opción por su durabilidad y estética. son resistentes y ofrecen un toque natural a cualquier espacio. depende de la aplicación y el estilo que se quiera lograr. si se busca un elemento duradero y elegante, son una buena elección.",
+      "request_text": "Que opinas de las barandas de madera maciza?",
+      "role": "control",
+      "seconds": 1.273
+    },
+    {
+      "case_id": "v3-ctl-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Door hinges are often designed to be quiet, but some older hinges were actually made to make a loud noise to warn people that the door was closing.",
+      "request_text": "Tell me something odd about door hinges.",
+      "role": "control",
+      "seconds": 2.513
+    },
+    {
+      "case_id": "v3-ctl-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Entiendo que mencionas que la baranda se lió durante dos tardes.",
+      "request_text": "Lijar la baranda nos llevo dos tardes.",
+      "role": "control",
+      "seconds": 1.587
+    },
+    {
+      "case_id": "v3-ctl-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I notice that repotting the fern took longer than expected.",
+      "request_text": "Repotting that fern took longer than expected.",
+      "role": "control",
+      "seconds": 2.696
+    },
+    {
+      "case_id": "v3-cat-01",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Estás diciendo que el enganche inalámbrico se ha desprendido o te preocupa si puede soltarse?",
+      "reply_text": "",
+      "request_text": "el enganche inalambrico aguanta o se solto",
+      "role": "catalogue_control",
+      "seconds": 5.392
+    },
+    {
+      "case_id": "v3-cat-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The wireless grip is still holding.",
+      "request_text": "is the wireless grip holding or has it let go",
+      "role": "catalogue_control",
+      "seconds": 2.378
+    },
+    {
+      "case_id": "v3-cat-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "El wireless grip se soltó.",
+      "request_text": "el wireless grip aguanta o se solto",
+      "role": "catalogue_control",
+      "seconds": 2.047
+    },
+    {
+      "case_id": "v3-cat-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The box is not alive and does not breathe.",
+      "request_text": "tell me how the box is breathing at this hour",
+      "role": "catalogue_control",
+      "seconds": 3.113
+    },
+    {
+      "case_id": "v3-cat-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer que la caja respires en este rato.",
+      "request_text": "dime how the box respira en este rato",
+      "role": "catalogue_control",
+      "seconds": 5.521
+    },
+    {
+      "case_id": "v3-cat-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Puedes alcanzar el mundo desde aquí, pero depende de cómo te dirijas y qué quieras lograr. Si necesitas ayuda para hacerlo, dime cómo te sientes o qué deseas lograr.",
+      "request_text": "puedo alcanzar el mundo o estoy encerrado",
+      "role": "catalogue_control",
+      "seconds": 3.927
+    },
+    {
+      "case_id": "v3-cat-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "You can reach the world, but it depends on your perspective and actions.",
+      "request_text": "can i reach the world or am i shut in",
+      "role": "catalogue_control",
+      "seconds": 3.076
+    },
+    {
+      "case_id": "v3-cat-08",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo determinar qué cacharros van pegados a este aparato sin conocer el modelo específico del dispositivo en cuestión.",
+      "request_text": "que cacharros van pegados a este aparato",
+      "role": "catalogue_control",
+      "seconds": 3.098
+    },
+    {
+      "case_id": "v3-cat-09",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The contraptions that ride along with this box are the wheels.",
+      "request_text": "which contraptions ride along with this box",
+      "role": "catalogue_control",
+      "seconds": 4.897
+    },
+    {
+      "case_id": "v3-cat-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo determinar qué cacharros están asociados a este dispositivo sin más información específica sobre el modelo o la marca del dispositivo en cuestión.",
+      "request_text": "que cacharros van pegados a este device",
+      "role": "catalogue_control",
+      "seconds": 3.576
+    },
+    {
+      "case_id": "v3-cat-11",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "A que momentos anteriores puedo regresar?",
+      "reply_text": "",
+      "request_text": "a que momentos anteriores puedo regresar",
+      "role": "catalogue_control",
+      "seconds": 1.914
+    },
+    {
+      "case_id": "v3-cat-12",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "You can return to earlier moments by using the \"Go Back\" feature in the timeline. Simply click on the previous event or moment to navigate back. If you're referring to a specific application or system, let me know so I can provide more detailed instructions.",
+      "request_text": "which earlier moments can i return to",
+      "role": "catalogue_control",
+      "seconds": 1.95
+    },
+    {
+      "case_id": "v3-cat-13",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo congelar lo que se asoma en este instante.",
+      "request_text": "congelame lo que se asoma en este instante",
+      "role": "catalogue_control",
+      "seconds": 2.035
+    },
+    {
+      "case_id": "v3-cat-14",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I understand you're observing that the screen is freezing at this moment.",
+      "request_text": "freeze whatever is showing at this instant",
+      "role": "catalogue_control",
+      "seconds": 2.192
+    },
+    {
+      "case_id": "v3-cat-15",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Cuál es el texto que deseas dejar caer?",
+      "reply_text": "",
+      "request_text": "que texto traigo guardado para dejar caer",
+      "role": "catalogue_control",
+      "seconds": 5.821
+    },
+    {
+      "case_id": "v3-cat-16",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "You are carrying the text 'which text am i carrying to let fall' to let fall.",
+      "request_text": "which text am i carrying to let fall",
+      "role": "catalogue_control",
+      "seconds": 2.294
+    },
+    {
+      "case_id": "v3-cat-17",
+      "effect_operations": [
+        "note.read"
+      ],
+      "kind": "action",
+      "language": "en",
+      "operation": "note.read",
+      "question": "",
+      "reply_text": "",
+      "request_text": "which loose jottings did i leave on this side",
+      "role": "catalogue_control",
+      "seconds": 1.758
+    },
+    {
+      "case_id": "v3-cat-18",
+      "effect_operations": [
+        "audio.status"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "audio.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "el sonido por donde escapa y con cuanta fuerza",
+      "role": "catalogue_control",
+      "seconds": 0.91
+    },
+    {
+      "case_id": "v3-cat-19",
+      "effect_operations": [
+        "audio.status"
+      ],
+      "kind": "action",
+      "language": "en",
+      "operation": "audio.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "the sound escapes through where and how strongly",
+      "role": "catalogue_control",
+      "seconds": 1.945
+    },
+    {
+      "case_id": "v3-cat-20",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Estás preguntando sobre algo que tienes delante, pero no hay una descripción específica o contexto que indique qué exactamente es lo que tienes delante. ¿Puedes aclarar qué es lo que estás viendo o sientes en este momento?",
+      "request_text": "cual es la cosa que tengo delante ahora mismo",
+      "role": "catalogue_control",
+      "seconds": 1.93
+    },
+    {
+      "case_id": "v3-cat-21",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't know what is in front of you right now. Could you please describe it or tell me what it is?",
+      "request_text": "which thing sits in front of me right now",
+      "role": "catalogue_control",
+      "seconds": 1.368
+    },
+    {
+      "case_id": "v3-cat-22",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "El enlace de corta distancia es un tipo de conexión que permite la comunicación entre dispositivos cercanos, como entre un teléfono y un computador. Se utiliza para transferir datos de manera rápida y segura. Un ejemplo de este tipo de enlace es el uso de Bluetooth.",
+      "request_text": "quien asoma por el enlace de corta distancia",
+      "role": "catalogue_control",
+      "seconds": 2.737
+    },
+    {
+      "case_id": "v3-cat-23",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "In a short-range link, devices that are in close proximity to each other, typically within a few meters, can communicate directly with each other. The specific devices that show up depend on the technology and setup being used, such as Bluetooth, Wi-Fi, or other similar protocols.",
+      "request_text": "who shows up over the short range link",
+      "role": "catalogue_control",
+      "seconds": 1.69
+    },
+    {
+      "case_id": "v3-cat-24",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer el guardado solicitado.",
+      "request_text": "con que partidas cuento entre lo guardado",
+      "role": "catalogue_control",
+      "seconds": 2.988
+    },
+    {
+      "case_id": "v3-cat-25",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot determine which matches you are referring to or what is being kept without more context or information.",
+      "request_text": "which matches do i count on among what is kept",
+      "role": "catalogue_control",
+      "seconds": 2.272
+    },
+    {
+      "case_id": "v3-cat-26",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Quién está trabajando allá abajo sin ser visto?",
+      "request_text": "quien anda faenando ahi abajo sin verse",
+      "role": "catalogue_control",
+      "seconds": 1.472
+    },
+    {
+      "case_id": "v3-cat-27",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't know who is toiling down there out of sight.",
+      "request_text": "who is toiling down there out of sight",
+      "role": "catalogue_control",
+      "seconds": 3.098
+    },
+    {
+      "case_id": "v3-cat-28",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No entiendo la pregunta. ¿Te refieres a algo específico que estás comentando?",
+      "request_text": "que avisos se quedaron atras en el tiempo",
+      "role": "catalogue_control",
+      "seconds": 1.452
+    },
+    {
+      "case_id": "v3-cat-29",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "What happened to the person who fell in time?",
+      "request_text": "which notices fell behind in time",
+      "role": "catalogue_control",
+      "seconds": 1.952
+    }
+  ],
+  "schema": "baxy.veto-reach-result.v3",
+  "scope": "sealed_blind_population_that_reaches_the_domain_veto",
+  "status": "failed",
+  "summary": {
+    "all_replies_distinct": true,
+    "catalogue_control_regressions": [
+      {
+        "case_id": "v3-cat-02",
+        "kind": "conversation",
+        "reply": "The wireless grip is still holding."
+      },
+      {
+        "case_id": "v3-cat-03",
+        "kind": "conversation",
+        "reply": "El wireless grip se soltó."
+      },
+      {
+        "case_id": "v3-cat-04",
+        "kind": "conversation",
+        "reply": "The box is not alive and does not breathe."
+      },
+      {
+        "case_id": "v3-cat-05",
+        "kind": "conversation",
+        "reply": "No puedo hacer que la caja respires en este rato."
+      },
+      {
+        "case_id": "v3-cat-06",
+        "kind": "conversation",
+        "reply": "Puedes alcanzar el mundo desde aquí, pero depende de cómo te dirijas y qué quieras lograr. Si necesitas ayuda para hacer"
+      },
+      {
+        "case_id": "v3-cat-07",
+        "kind": "conversation",
+        "reply": "You can reach the world, but it depends on your perspective and actions."
+      },
+      {
+        "case_id": "v3-cat-08",
+        "kind": "conversation",
+        "reply": "No puedo determinar qué cacharros van pegados a este aparato sin conocer el modelo específico del dispositivo en cuestió"
+      },
+      {
+        "case_id": "v3-cat-09",
+        "kind": "conversation",
+        "reply": "The contraptions that ride along with this box are the wheels."
+      },
+      {
+        "case_id": "v3-cat-10",
+        "kind": "conversation",
+        "reply": "No puedo determinar qué cacharros están asociados a este dispositivo sin más información específica sobre el modelo o la"
+      },
+      {
+        "case_id": "v3-cat-12",
+        "kind": "conversation",
+        "reply": "You can return to earlier moments by using the \"Go Back\" feature in the timeline. Simply click on the previous event or "
+      },
+      {
+        "case_id": "v3-cat-13",
+        "kind": "conversation",
+        "reply": "No puedo congelar lo que se asoma en este instante."
+      },
+      {
+        "case_id": "v3-cat-14",
+        "kind": "conversation",
+        "reply": "I understand you're observing that the screen is freezing at this moment."
+      },
+      {
+        "case_id": "v3-cat-16",
+        "kind": "conversation",
+        "reply": "You are carrying the text 'which text am i carrying to let fall' to let fall."
+      },
+      {
+        "case_id": "v3-cat-20",
+        "kind": "conversation",
+        "reply": "Estás preguntando sobre algo que tienes delante, pero no hay una descripción específica o contexto que indique qué exact"
+      },
+      {
+        "case_id": "v3-cat-21",
+        "kind": "conversation",
+        "reply": "I don't know what is in front of you right now. Could you please describe it or tell me what it is?"
+      },
+      {
+        "case_id": "v3-cat-22",
+        "kind": "conversation",
+        "reply": "El enlace de corta distancia es un tipo de conexión que permite la comunicación entre dispositivos cercanos, como entre "
+      },
+      {
+        "case_id": "v3-cat-23",
+        "kind": "conversation",
+        "reply": "In a short-range link, devices that are in close proximity to each other, typically within a few meters, can communicate"
+      },
+      {
+        "case_id": "v3-cat-24",
+        "kind": "conversation",
+        "reply": "No puedo hacer el guardado solicitado."
+      },
+      {
+        "case_id": "v3-cat-25",
+        "kind": "conversation",
+        "reply": "I cannot determine which matches you are referring to or what is being kept without more context or information."
+      },
+      {
+        "case_id": "v3-cat-26",
+        "kind": "conversation",
+        "reply": "¿Quién está trabajando allá abajo sin ser visto?"
+      },
+      {
+        "case_id": "v3-cat-27",
+        "kind": "conversation",
+        "reply": "I don't know who is toiling down there out of sight."
+      },
+      {
+        "case_id": "v3-cat-28",
+        "kind": "conversation",
+        "reply": "No entiendo la pregunta. ¿Te refieres a algo específico que estás comentando?"
+      },
+      {
+        "case_id": "v3-cat-29",
+        "kind": "conversation",
+        "reply": "What happened to the person who fell in time?"
+      }
+    ],
+    "catalogue_controls": 29,
+    "catalogue_controls_asking": 3,
+    "catalogue_controls_reaching_an_operation": 3,
+    "contract_failures": [],
+    "control_regressions": [],
+    "controls": 4,
+    "distinct_openings": 8,
+    "distinct_replies": 8,
+    "fixed_constant_detected": false,
+    "requests": 8,
+    "spoken_replies": 8,
+    "unsolicited_effects": 0
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "exact_turn_accuracy": 0.5886075949367089,
+  "retrieval_accuracy": 0.7784810126582279,
+  "raw_decision_accuracy": 0.7151898734177216,
+  "intent_accuracy": 0.6645569620253164,
+  "effect_accuracy": 0.5886075949367089,
+  "kind_accuracy": 0.7088607594936709,
+  "unsafe_effects": 19,
+  "total_recoveries": 1,
+  "failure_causes": {
+    "decision": 17,
+    "none": 93,
+    "recovery": 1,
+    "retrieval": 35,
+    "veto:action_grounding": 7,
+    "veto:compound_conservation": 3,
+    "veto:unattributed": 2
+  },
+  "turn_decide_seconds_p50": 0.2621605,
+  "turn_decide_seconds_p95": 2.825143,
+  "by_outcome": {
+    "action": {
+      "cases": 158,
+      "exact_turn_accuracy": 0.5886075949367089,
+      "unsafe_effects": 19
+    }
+  }
+}

@@ -1,0 +1,316 @@
+{
+  "schema": "baxy.veto-reach-serviceability-manual-audit.v1",
+  "audited_at_local": "2026-08-13T13:30:00-04:00",
+  "scope": "Manual reading of the 21 V8 rows labelled serviceable; separate from sealed scoring.",
+  "measurement_status": "consumed_unchanged",
+  "v8_verdict": "fail_unchanged",
+  "sources": {
+    "artifacts/holdout/veto_reach_v8.raw-replies.jsonl": "310ec506465c236108c506dc0e871873ad6cad0127c96366b8203bed0ef7c93b",
+    "artifacts/holdout/veto_reach_v8.json": "ea9150f4ae8e5b9b888e3c92956008c3b602d63b00e1e6407c1a1e7cbdf8ea21",
+    "artifacts/holdout/veto_reach_v8.telemetry.jsonl": "db9f5a25fbc948ab8beed31c4f12942c62aac92ea9721aa9b05e5d28144f6fa5",
+    "artifacts/holdout/veto_reach_v8.turn-audit.jsonl": "2a0d8559cc210e079507e59cf22cef992d0518e959dd89bace5ad9616592d005",
+    "artifacts/holdout/veto_reach_v8.corpus.jsonl": "fc146196dca16ffa5ff866b8d2f9b65bebb83ded5aba13cee61cf8bf8eb3f528"
+  },
+  "criteria": {
+    "strict_full_service": "The final operation must satisfy the complete request, or BAXY must ask a useful question that obtains missing information needed to do so.",
+    "useful_clarification": "A question must request genuinely missing information; repeating or paraphrasing an already complete request is not useful.",
+    "defensible_partial_alternative": "An operation may address a real clause of the request yet remain a strict false negative when it omits another requested clause."
+  },
+  "summary": {
+    "rows": 21,
+    "strict_full_service_correct": 1,
+    "strict_full_service_accuracy": 0.047619047619047616,
+    "strict_serviceable_false_negatives": 20,
+    "useful_clarifications": 0,
+    "defensible_partial_alternatives": 2,
+    "corpus_serviceability_mislabels": 0,
+    "sealed_scorer_binary_agreement_rows": 21,
+    "sealed_scorer_binary_disagreements": 0,
+    "conclusion": "The manual reading confirms the sealed 20/21 serviceable false-negative headline. Two rows chose vision.describe, a defensible partial response to 'look', but neither preserved the view as requested; they remain strict false negatives. V8 stays consumed and FAIL."
+  },
+  "rows": [
+    {
+      "case_id": "v8-srv-01-es",
+      "request": "Descubre en qué parte del día cree estar este equipo.",
+      "expected_operation": "system.time",
+      "expected_retrieved": false,
+      "raw_operation": "task.search",
+      "final_operations": [],
+      "visible_text": "No puedo determinar en qué parte del día cree estar este equipo.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The catalogue can read local time; BAXY denied capability and did not ask for missing information."
+    },
+    {
+      "case_id": "v8-srv-01-en",
+      "request": "Find out which part of the day this machine thinks it is in.",
+      "expected_operation": "system.time",
+      "expected_retrieved": false,
+      "raw_operation": "filesystem.search",
+      "final_operations": [],
+      "visible_text": "The machine mentions that it is during the night.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "No time read occurred; the reply fabricated that it was night."
+    },
+    {
+      "case_id": "v8-srv-01-mix",
+      "request": "Descubre which part of the day cree estar este equipo.",
+      "expected_operation": "system.time",
+      "expected_retrieved": true,
+      "raw_operation": "system.time",
+      "final_operations": [],
+      "visible_text": "No puedo descubrir which part of the day cree estar este equipo.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The correct operation was proposed and then removed; the visible result falsely denied capability."
+    },
+    {
+      "case_id": "v8-srv-02-es",
+      "request": "Enséñame qué trabajos siguen despiertos dentro del equipo.",
+      "expected_operation": "system.process.list",
+      "expected_retrieved": false,
+      "raw_operation": "filesystem.search",
+      "final_operations": [],
+      "visible_text": "¿Cuáles son los trabajos que actualmente están en ejecución dentro del equipo?",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The question merely restated the complete process-list request and obtained no missing information."
+    },
+    {
+      "case_id": "v8-srv-02-en",
+      "request": "Which pieces of work refuse to sleep inside this box?",
+      "expected_operation": "system.process.list",
+      "expected_retrieved": false,
+      "raw_operation": "filesystem.search",
+      "final_operations": [],
+      "visible_text": "No se puede determinar la respuesta sin más información sobre los trabajos que se mencionan.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The metaphor resolves to running processes; the catalogue can list them and the reply neither did so nor asked a concrete question."
+    },
+    {
+      "case_id": "v8-srv-02-mix",
+      "request": "Enséñame which jobs siguen awake dentro del equipo.",
+      "expected_operation": "system.process.list",
+      "expected_retrieved": false,
+      "raw_operation": "filesystem.search",
+      "final_operations": [],
+      "visible_text": "¿Puedes explicarme qué puestos o cargos dentro del equipo están relacionados con el deseo de mantenerse despiertos o con la actividad continua?",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The question corrupted processes into jobs or positions instead of resolving the serviceable request."
+    },
+    {
+      "case_id": "v8-srv-03-es",
+      "request": "Cuéntame cómo anda de salud este aparato ahora.",
+      "expected_operation": "system.status",
+      "expected_retrieved": false,
+      "raw_operation": "reminder.list",
+      "final_operations": [
+        "reminder.list"
+      ],
+      "visible_text": "",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "Listing reminders is unrelated to machine health and no useful text or question accompanied it."
+    },
+    {
+      "case_id": "v8-srv-03-en",
+      "request": "Tell me how healthy this device is doing right now.",
+      "expected_operation": "system.status",
+      "expected_retrieved": true,
+      "raw_operation": "system.status",
+      "final_operations": [],
+      "visible_text": "No puedo evaluar la salud de un dispositivo sin más información específica sobre qué dispositivo estás refiriéndote.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "In this local-assistant context 'this device' identifies the host; the correct proposal was vetoed and the reply asked for information already supplied."
+    },
+    {
+      "case_id": "v8-srv-03-mix",
+      "request": "Cuéntame how healthy anda este aparato right now.",
+      "expected_operation": "system.status",
+      "expected_retrieved": true,
+      "raw_operation": "system.status",
+      "final_operations": [],
+      "visible_text": "No puedo decir cómo healthy está este aparato en este momento.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The correct proposal was vetoed and replaced by a false denial."
+    },
+    {
+      "case_id": "v8-srv-04-es",
+      "request": "Guarda una copia de lo que tengo delante en el monitor.",
+      "expected_operation": "capture.screenshot",
+      "expected_retrieved": false,
+      "raw_operation": "backup.create",
+      "final_operations": [],
+      "visible_text": "No puedo guardar una copia de lo que tienes delante en el monitor.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "capture.screenshot directly preserves the displayed desktop; BAXY denied the capability."
+    },
+    {
+      "case_id": "v8-srv-04-en",
+      "request": "Keep a copy of what is in front of me on the monitor.",
+      "expected_operation": "capture.screenshot",
+      "expected_retrieved": false,
+      "raw_operation": "clipboard.copy",
+      "final_operations": [],
+      "visible_text": "I understand you want to keep a copy of what is on the monitor.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "An acknowledgement did not preserve anything; clipboard.copy is not a screen capture."
+    },
+    {
+      "case_id": "v8-srv-04-mix",
+      "request": "Guarda a copy de lo que tengo delante on the monitor.",
+      "expected_operation": "capture.screenshot",
+      "expected_retrieved": false,
+      "raw_operation": "system.settings.status",
+      "final_operations": [],
+      "visible_text": "No puedo guardar una copia de lo que tienes delante en el monitor.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The requested capture was serviceable and BAXY denied it."
+    },
+    {
+      "case_id": "v8-mach-01-es",
+      "request": "Averigua qué nombre interno lleva este cacharro.",
+      "expected_operation": "system.identity",
+      "expected_retrieved": true,
+      "raw_operation": "filesystem.known.search",
+      "final_operations": [],
+      "visible_text": "No puedo averiguar qué nombre interno lleva ese cacharro.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "system.identity was available in the shortlist, but another operation was proposed and capability was denied."
+    },
+    {
+      "case_id": "v8-mach-01-en",
+      "request": "Find out which internal name this contraption carries.",
+      "expected_operation": "system.identity",
+      "expected_retrieved": true,
+      "raw_operation": "system.identity",
+      "final_operations": [
+        "system.identity"
+      ],
+      "visible_text": "",
+      "manual_classification": "correct_final_operation",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The final decision retained the catalogue operation that reads the host identity; provider execution was intentionally disabled by the holdout."
+    },
+    {
+      "case_id": "v8-mach-01-mix",
+      "request": "Averigua which internal name lleva este cacharro.",
+      "expected_operation": "system.identity",
+      "expected_retrieved": false,
+      "raw_operation": "app.installed",
+      "final_operations": [
+        "app.installed"
+      ],
+      "visible_text": "",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "Checking an installed application is not a defensible reading of the host's internal identity."
+    },
+    {
+      "case_id": "v8-mach-02-es",
+      "request": "Consulta qué hora señala este aparato en este instante.",
+      "expected_operation": "system.time",
+      "expected_retrieved": true,
+      "raw_operation": "system.time",
+      "final_operations": [],
+      "visible_text": "¿Cuál es la hora actual según este dispositivo?",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The question restated the complete request after the correct proposal was removed."
+    },
+    {
+      "case_id": "v8-mach-02-en",
+      "request": "Check what hour this device indicates at this instant.",
+      "expected_operation": "system.time",
+      "expected_retrieved": true,
+      "raw_operation": "system.time",
+      "final_operations": [],
+      "visible_text": "What time does this device show right now?",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The question is a paraphrase, not a request for missing information."
+    },
+    {
+      "case_id": "v8-mach-02-mix",
+      "request": "Consulta what hour señala este aparato right this instant.",
+      "expected_operation": "system.time",
+      "expected_retrieved": true,
+      "raw_operation": "system.time",
+      "final_operations": [],
+      "visible_text": "No puedo indicar la hora que señala este aparato en este instante.",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The correct proposal was vetoed and replaced by a false denial."
+    },
+    {
+      "case_id": "v8-mach-03-es",
+      "request": "Mira y conserva lo que ocupa ahora mismo la superficie visual.",
+      "expected_operation": "capture.screenshot",
+      "expected_retrieved": false,
+      "raw_operation": "system.status",
+      "final_operations": [],
+      "visible_text": "¿Podrías describirme qué está mostrando la superficie visual en este momento?",
+      "manual_classification": "true_serviceable_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The question asks the user to supply what BAXY was asked to inspect and drops the preservation clause."
+    },
+    {
+      "case_id": "v8-mach-03-en",
+      "request": "Look and preserve what currently occupies the visual surface.",
+      "expected_operation": "capture.screenshot",
+      "expected_retrieved": false,
+      "raw_operation": "vision.describe",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "visible_text": "",
+      "manual_classification": "defensible_partial_alternative_but_strict_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "vision.describe defensibly addresses 'look', but its contract only describes an existing capture and does not preserve the current view; the full request remains unserved."
+    },
+    {
+      "case_id": "v8-mach-03-mix",
+      "request": "Mira and preserve lo que currently ocupa la visual surface.",
+      "expected_operation": "capture.screenshot",
+      "expected_retrieved": false,
+      "raw_operation": "vision.describe",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "visible_text": "",
+      "manual_classification": "defensible_partial_alternative_but_strict_false_negative",
+      "useful_clarification": false,
+      "corpus_label_correct": true,
+      "rationale": "The chosen operation addresses visual understanding but cannot satisfy the explicit preservation clause."
+    }
+  ]
+}

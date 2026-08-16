@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-07-22T07:38:54.0675893Z",
+  "gate": "clipboard_copy_physical",
+  "passed": true,
+  "receipt_ok": true,
+  "copied_selection_consumed": true,
+  "accepted_events": 4,
+  "expected_events": 4,
+  "clipboard_sequence_changed": true,
+  "foreground_stable": true,
+  "authority": "win32_foreground_identity_sendinput_clipboard_sequence_postread",
+  "content_redacted": true,
+  "original_clipboard_restored": true,
+  "target": "controlled_winforms_textbox"
+}

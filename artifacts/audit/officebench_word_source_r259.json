@@ -1,0 +1,83 @@
+{
+  "schema": "baxy.officebench-word-source.r259.v1",
+  "authority": "external_source_identity_and_semantic_admission_audit_not_model_training",
+  "verdict": "rejected_preexecution_file_backend_and_state_verification_mismatch",
+  "source": {
+    "repository": "https://github.com/zlwang-cs/OfficeBench.git",
+    "commit": "b978b808667c32b52ce19a67ce1def1de9ae02b7",
+    "license": "Apache-2.0",
+    "license_sha256": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "task_directory": "tasks",
+    "task_files": 300,
+    "document_related_task_files": 84,
+    "semantic_source_files": 308,
+    "source_files_merkle_sha256": "dbc814e7a66fbfc7acf3c9e522709f2d574a5bf947dd4f830e8b8690373bd482",
+    "task_instructions_decoded": true,
+    "task_instruction_texts_retained": false,
+    "task_instruction_identifiers_retained": false
+  },
+  "observed_surface": {
+    "application_label": "OfficeBench word_app",
+    "word_action_modules": [
+      "word_convert_to_pdf.py",
+      "word_create_new_file.py",
+      "word_read_file.py",
+      "word_write_to_file.py"
+    ],
+    "document_backend": "python-docx Document file manipulation",
+    "linux_container_installs_libreoffice": true,
+    "microsoft_word_com_identifiers_present": false,
+    "evaluation_functions": [
+      "evaluate_calendar_no_overlap",
+      "evaluate_contain",
+      "evaluate_diff_contain_text",
+      "evaluate_exact_match",
+      "evaluate_excel_cell_comparator",
+      "evaluate_excel_cell_value",
+      "evaluate_file_exist",
+      "evaluate_file_not_exist",
+      "evaluate_not_contain"
+    ],
+    "evaluation_observes_active_document_state": false,
+    "evaluation_observes_saved_dirty_state": false,
+    "evaluation_binds_discard_to_confirmation": false
+  },
+  "admission": {
+    "required_baxy_operations": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "required_application_and_verification": "Microsoft Word operations verified through COM, including an active document, Saved/Dirty state and confirmation-bound discard",
+    "source_native_baxy_operation_labels": false,
+    "instruction_keyword_candidates_not_labels": {
+      "office.word.append": 8,
+      "office.word.close": 0,
+      "office.word.discard": 0,
+      "office.word.save": 29,
+      "office.word.start": 10,
+      "office.word.status": 4
+    },
+    "admitted_baxy_operations": [],
+    "reason": "OfficeBench has file-oriented python-docx actions and file-content evaluators, not an interactive Microsoft Word COM surface. Its task wording cannot establish BAXY's active-document, Saved/Dirty or confirmation semantics; mapping even its append-like instructions would invent labels."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not derive labels from OfficeBench file tasks. A successor source must natively identify Microsoft Word COM requests and verifiers for all six missing typed operations before it is used with R207.",
+  "identities": {
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "559678a423b686fcb9c3a9b61dab9ea1d3d84036a85458eb059278b856cd3279"
+  }
+}

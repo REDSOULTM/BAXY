@@ -1,0 +1,682 @@
+{
+  "acceptance": {
+    "all_exact": true,
+    "runtime_manifest_unchanged": true,
+    "zero_effects": true
+  },
+  "authority": "no_plan_no_core_request_no_provider_no_effect",
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-03T05:17:49.547470+00:00",
+  "metrics": {
+    "exact": 19,
+    "exact_accuracy": 1.0,
+    "seconds_p50": 0.647732,
+    "seconds_p95": 1.249044,
+    "total": 19
+  },
+  "rows": [
+    {
+      "arguments": {
+        "windowId": "window_0123456789abcdef0123456789ab"
+      },
+      "case_id": "window-close",
+      "exact": true,
+      "expected": {
+        "windowId": "window_0123456789abcdef0123456789ab"
+      },
+      "objective": "Cierra la ventana de Notepad que acabas de resolver.",
+      "observations": [
+        {
+          "operation": "window.resolve",
+          "result": {
+            "windows": [
+              {
+                "windowId": "window_0123456789abcdef0123456789ab"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "app.close",
+      "producer": "window.resolve",
+      "purpose": "Cerrar la ventana verificada.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.674588
+    },
+    {
+      "arguments": {
+        "deviceId": "bt_keyboard"
+      },
+      "case_id": "bluetooth-pair",
+      "exact": true,
+      "expected": {
+        "deviceId": "bt_keyboard"
+      },
+      "objective": "Empareja el dispositivo Bluetooth llamado BAXY Keyboard.",
+      "observations": [
+        {
+          "operation": "bluetooth.device.list",
+          "result": {
+            "devices": [
+              {
+                "canPair": true,
+                "deviceId": "bt_keyboard",
+                "name": "BAXY Keyboard"
+              },
+              {
+                "canPair": true,
+                "deviceId": "bt_speaker",
+                "name": "BAXY Speaker"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "bluetooth.device.pair",
+      "producer": "bluetooth.device.list",
+      "purpose": "Emparejar el teclado verificado.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.605436
+    },
+    {
+      "arguments": {
+        "url": "https://example.com/verified"
+      },
+      "case_id": "browser-search-result",
+      "exact": true,
+      "expected": {
+        "url": "https://example.com/verified"
+      },
+      "objective": "Navega al resultado verificado de la búsqueda.",
+      "observations": [
+        {
+          "operation": "web.search",
+          "result": {
+            "results": [
+              {
+                "url": "https://example.com/verified"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "browser.navigate",
+      "producer": "web.search",
+      "purpose": "Abrir el resultado verificado.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.484393
+    },
+    {
+      "arguments": {
+        "browser": "opera",
+        "url": "https://example.com/opera"
+      },
+      "case_id": "browser-named-search-result",
+      "exact": true,
+      "expected": {
+        "browser": "opera",
+        "url": "https://example.com/opera"
+      },
+      "objective": "Navega Opera al resultado verificado de la búsqueda.",
+      "observations": [
+        {
+          "operation": "web.search",
+          "result": {
+            "results": [
+              {
+                "url": "https://example.com/opera"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "browser.navigate.named",
+      "producer": "web.search",
+      "purpose": "Abrir el resultado verificado en Opera.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.714528
+    },
+    {
+      "arguments": {
+        "confirmationId": "game_install_confirmation_01"
+      },
+      "case_id": "game-install-commit",
+      "exact": true,
+      "expected": {
+        "confirmationId": "game_install_confirmation_01"
+      },
+      "objective": "Confirma la instalación de juego que acaba de prepararse.",
+      "observations": [
+        {
+          "operation": "game.install.prepare",
+          "result": {
+            "confirmationId": "game_install_confirmation_01"
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "game.install.commit",
+      "producer": "game.install.prepare",
+      "purpose": "Consumir la confirmación verificada.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.442602
+    },
+    {
+      "arguments": {
+        "confirmationId": "game_purchase_confirmation_01",
+        "expectedPriceCents": 1299
+      },
+      "case_id": "game-purchase-commit",
+      "exact": true,
+      "expected": {
+        "confirmationId": "game_purchase_confirmation_01",
+        "expectedPriceCents": 1299
+      },
+      "objective": "Confirma la compra preparada exactamente por 1299 centavos.",
+      "observations": [
+        {
+          "operation": "game.purchase.prepare",
+          "result": {
+            "confirmationId": "game_purchase_confirmation_01",
+            "expectedPriceCents": 1299
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "game.purchase.commit",
+      "producer": "game.purchase.prepare",
+      "purpose": "Consumir precio y confirmación verificados.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.72124
+    },
+    {
+      "arguments": {
+        "recipientId": "recipient_ana_01",
+        "text": "hola matriz"
+      },
+      "case_id": "message-recipient",
+      "exact": true,
+      "expected": {
+        "recipientId": "recipient_ana_01",
+        "text": "hola matriz"
+      },
+      "objective": "Envía a Ana el texto exacto \"hola matriz\".",
+      "observations": [
+        {
+          "operation": "message.recipient.resolve",
+          "result": {
+            "recipientId": "recipient_ana_01"
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "message.send",
+      "producer": "message.recipient.resolve",
+      "purpose": "Enviar el texto al destinatario verificado.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.668889
+    },
+    {
+      "allowed_extra": [
+        "expectedIsTrashed",
+        "expectedRevision",
+        "expectedTitle",
+        "title"
+      ],
+      "arguments": {
+        "noteId": "note_matrix_01"
+      },
+      "case_id": "note-created-read",
+      "exact": true,
+      "expected": {
+        "noteId": "note_matrix_01"
+      },
+      "objective": "Lee la misma nota que acabas de crear.",
+      "observations": [
+        {
+          "operation": "note.create",
+          "result": {
+            "noteId": "note_matrix_01"
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "note.read",
+      "producer": "note.create",
+      "purpose": "Leer la nota verificada.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.473454
+    },
+    {
+      "arguments": {
+        "expectedVersion": 7,
+        "reminderId": "reminder_due_01"
+      },
+      "case_id": "notification-dismiss",
+      "exact": true,
+      "expected": {
+        "expectedVersion": 7,
+        "reminderId": "reminder_due_01"
+      },
+      "objective": "Descarta el único recordatorio vencido verificado.",
+      "observations": [
+        {
+          "operation": "notification.list.due",
+          "result": {
+            "reminders": [
+              {
+                "reminderId": "reminder_due_01",
+                "version": 7
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "notification.dismiss",
+      "producer": "notification.list.due",
+      "purpose": "Descartar el recordatorio verificado.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.672187
+    },
+    {
+      "arguments": {
+        "captureId": "capture_matrix_01",
+        "language": "es"
+      },
+      "case_id": "capture-ocr",
+      "exact": true,
+      "expected": {
+        "captureId": "capture_matrix_01",
+        "language": "es"
+      },
+      "objective": "Lee con OCR la captura verificada usando el idioma literal es.",
+      "observations": [
+        {
+          "operation": "capture.screenshot",
+          "result": {
+            "captureId": "capture_matrix_01"
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "ocr.read",
+      "producer": "capture.screenshot",
+      "purpose": "Leer la captura en el idioma pedido.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.435424
+    },
+    {
+      "arguments": {
+        "documentId": "document_matrix_01"
+      },
+      "case_id": "office-created-read",
+      "exact": true,
+      "expected": {
+        "documentId": "document_matrix_01"
+      },
+      "objective": "Lee el mismo documento de Office que acabas de crear.",
+      "observations": [
+        {
+          "operation": "office.document.create",
+          "result": {
+            "documentId": "document_matrix_01"
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "office.document.read",
+      "producer": "office.document.create",
+      "purpose": "Leer el documento verificado.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.547613
+    },
+    {
+      "arguments": {
+        "confirmationId": "package_confirmation_01"
+      },
+      "case_id": "package-install-commit",
+      "exact": true,
+      "expected": {
+        "confirmationId": "package_confirmation_01"
+      },
+      "objective": "Confirma la instalación de paquete que acaba de prepararse.",
+      "observations": [
+        {
+          "operation": "package.install.prepare",
+          "result": {
+            "confirmationId": "package_confirmation_01"
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "package.install.commit",
+      "producer": "package.install.prepare",
+      "purpose": "Consumir la confirmación verificada.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.443078
+    },
+    {
+      "arguments": {
+        "deviceId": "scanner_device_01"
+      },
+      "case_id": "peripheral-scan",
+      "exact": true,
+      "expected": {
+        "deviceId": "scanner_device_01"
+      },
+      "objective": "Escanea usando el periférico llamado BAXY Scanner.",
+      "observations": [
+        {
+          "operation": "peripheral.list",
+          "result": {
+            "devices": [
+              {
+                "deviceId": "scanner_device_01",
+                "kind": "scanner",
+                "name": "BAXY Scanner"
+              },
+              {
+                "deviceId": "printer_device_01",
+                "kind": "printer",
+                "name": "BAXY Printer"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "peripheral.scan",
+      "producer": "peripheral.list",
+      "purpose": "Usar el escáner verificado.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.647732
+    },
+    {
+      "arguments": {
+        "deviceId": "printer_device_01",
+        "documentId": "document_matrix_01"
+      },
+      "case_id": "peripheral-print",
+      "exact": true,
+      "expected": {
+        "deviceId": "printer_device_01",
+        "documentId": "document_matrix_01"
+      },
+      "objective": "Imprime el documento con ID literal document_matrix_01 usando el periférico llamado BAXY Printer.",
+      "observations": [
+        {
+          "operation": "peripheral.list",
+          "result": {
+            "devices": [
+              {
+                "deviceId": "printer_device_01",
+                "kind": "printer",
+                "name": "BAXY Printer"
+              },
+              {
+                "deviceId": "scanner_device_01",
+                "kind": "scanner",
+                "name": "BAXY Scanner"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "peripheral.print",
+      "producer": "peripheral.list",
+      "purpose": "Imprimir el documento literal en la impresora verificada.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.650306
+    },
+    {
+      "arguments": {
+        "expectedVersion": 11,
+        "reminderId": "reminder_exact_01",
+        "reviewLabel": "Entrega"
+      },
+      "case_id": "reminder-delete",
+      "exact": true,
+      "expected": {
+        "expectedVersion": 11,
+        "reminderId": "reminder_exact_01",
+        "reviewLabel": "Entrega"
+      },
+      "objective": "Elimina el recordatorio exacto Entrega que acabas de resolver.",
+      "observations": [
+        {
+          "operation": "reminder.resolve.exact",
+          "result": {
+            "expectedVersion": 11,
+            "reminderId": "reminder_exact_01",
+            "reviewLabel": "Entrega"
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "reminder.delete",
+      "producer": "reminder.resolve.exact",
+      "purpose": "Eliminar el recordatorio verificado.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.814784
+    },
+    {
+      "arguments": {
+        "captureId": "capture_matrix_01",
+        "prompt": "solo iconos"
+      },
+      "case_id": "capture-vision",
+      "exact": true,
+      "expected": {
+        "captureId": "capture_matrix_01",
+        "prompt": "solo iconos"
+      },
+      "objective": "Describe la captura verificada con el prompt exacto \"solo iconos\".",
+      "observations": [
+        {
+          "operation": "capture.screenshot",
+          "result": {
+            "captureId": "capture_matrix_01"
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "vision.describe",
+      "producer": "capture.screenshot",
+      "purpose": "Describir la captura con el prompt pedido.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.544994
+    },
+    {
+      "arguments": {
+        "profileId": "wifi_profile_home"
+      },
+      "case_id": "wifi-profile",
+      "exact": true,
+      "expected": {
+        "profileId": "wifi_profile_home"
+      },
+      "objective": "Conecta el perfil Wi-Fi llamado Home Lab.",
+      "observations": [
+        {
+          "operation": "wifi.profile.list",
+          "result": {
+            "profiles": [
+              {
+                "label": "Home Lab",
+                "profileId": "wifi_profile_home"
+              },
+              {
+                "label": "Guest",
+                "profileId": "wifi_profile_guest"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "wifi.connect",
+      "producer": "wifi.profile.list",
+      "purpose": "Conectar el perfil verificado.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 0.602012
+    },
+    {
+      "arguments": {
+        "windowId": "window_0123456789abcdef0123456789ab",
+        "x": 120,
+        "y": 240
+      },
+      "case_id": "window-move",
+      "exact": true,
+      "expected": {
+        "windowId": "window_0123456789abcdef0123456789ab",
+        "x": 120,
+        "y": 240
+      },
+      "objective": "Mueve la ventana resuelta a x 120 e y 240.",
+      "observations": [
+        {
+          "operation": "window.resolve",
+          "result": {
+            "windows": [
+              {
+                "windowId": "window_0123456789abcdef0123456789ab"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "window.move",
+      "producer": "window.resolve",
+      "purpose": "Mover la ventana a las coordenadas literales.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 1.193549
+    },
+    {
+      "arguments": {
+        "height": 720,
+        "width": 1280,
+        "windowId": "window_0123456789abcdef0123456789ab"
+      },
+      "case_id": "window-resize",
+      "exact": true,
+      "expected": {
+        "height": 720,
+        "width": 1280,
+        "windowId": "window_0123456789abcdef0123456789ab"
+      },
+      "objective": "Redimensiona la ventana resuelta a ancho 1280 y alto 720.",
+      "observations": [
+        {
+          "operation": "window.resolve",
+          "result": {
+            "windows": [
+              {
+                "windowId": "window_0123456789abcdef0123456789ab"
+              }
+            ]
+          },
+          "status": "completed",
+          "stepId": "producer",
+          "verified": true
+        }
+      ],
+      "operation": "window.resize",
+      "producer": "window.resolve",
+      "purpose": "Aplicar el tamaño literal a la ventana verificada.",
+      "response_code": null,
+      "response_type": "plan.ground.result",
+      "seconds": 1.249044
+    }
+  ],
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "schema": "baxy.dependency-grounding-matrix.v1",
+  "scope": "real_llm_plan_ground_only_synthetic_verified_observations",
+  "source": {
+    "probe_sha256": "4a3f77b2bf4404a8fc6f6764997a269867d888c5132331590e7943fb9619b44d"
+  },
+  "total_seconds": 17.122
+}

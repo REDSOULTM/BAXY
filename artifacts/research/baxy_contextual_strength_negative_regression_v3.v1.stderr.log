@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_baxy_contextual_strength_negative_regression_v3.py", line 161, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_baxy_contextual_strength_negative_regression_v3.py", line 137, in main
+    report = evaluate(
+             ^^^^^^^^^
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_baxy_contextual_strength_negative_regression_v3.py", line 95, in evaluate
+    inner = _V2.evaluate(output_path=inner_path, **inner_arguments)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_baxy_contextual_fusion_negative_regression_v2.py", line 319, in evaluate
+    raise RuntimeError("baxy_contextual_negative_cuda_unavailable")
+RuntimeError: baxy_contextual_negative_cuda_unavailable

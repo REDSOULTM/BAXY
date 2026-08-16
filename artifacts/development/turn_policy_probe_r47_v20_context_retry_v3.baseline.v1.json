@@ -1,0 +1,42 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v20_context_retry_v3.baseline.v1.raw.jsonl",
+    "sha256": "031f6cef1bbc8c174ca8a670e7718b0a2381f714f9dff31c9a0071bec887d634"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "critical:why_after_failure",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-438587b83f0ad776c27b47f4",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7833,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "La acción no se pudo completar debido al agotamiento del tiempo.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T00:46:17.091674+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 1,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "baxy.physical-dependent-missions-preregistration.v1",
+  "createdAtLocal": "2026-08-11T10:38:00-04:00",
+  "status": "prepared_before_implementation_or_measurement",
+  "authority": "physical end-to-end product path only; not a blind cut-C accuracy oracle",
+  "mustRunAfter": [
+    "physical wake v17 combined receipt is consumed and terminal",
+    "post-wake Mind social-closure repair passes development regressions"
+  ],
+  "resealedAtLocal": "2026-08-11T18:05:00-04:00",
+  "resealReason": {
+    "measurementStatusWhenResealed": "unopened",
+    "plannedReceiptsExisted": false,
+    "explanation": [
+      "The wake v17 gate this preregistration originally waited on was opened",
+      "once on 2026-08-11 and rejected at 46/48 positives. That corpus is",
+      "consumed and may never be reopened, so 'v17 passes' can never become",
+      "true and would freeze this campaign permanently.",
+      "The frozen program tree had already drifted away from the v17 identity",
+      "before the request-completion repair landed: the frozen roots hold 347",
+      "Python files against the 344 the v17 preflight recorded, and the tree",
+      "hashed to 84205440ba7df56f492948bbd3dbca8d29cf1e1a63a212dca83f78e0c2371f71",
+      "with that repair excluded. This re-seal therefore restores a binding",
+      "that was already void; it does not discard a valid one.",
+      "No mission of this campaign has been measured, no audio was opened and",
+      "no receipt existed when the re-seal was written."
+    ]
+  },
+  "sourceIdentityBeforeImplementation": {
+    "scripts/run_llm_plan_execution_gate.py": "bc8a47db41ca8e32ac1c23b836896632e054419398fdca73d902bcc6e581be94",
+    "scripts/run_physical_voice_to_core_gate.py": "7366571b6c260bd719117be03095e4c9ebfbf0db13219007d2c089f1a35443a9",
+    "scripts/test_mind_voice.py": "ddef36e3a938698523dee9e5ae3354a19655f91e8c5dba0753664a32f44002a0",
+    "tests/test_llm_plan_execution_gate_cases.py": "fb50620badf1e862afd59772db39c1e7557509377baad74170065199b631bf62",
+    "wakeProgramTreeSha256": "d0cf265cfe6b8379637a893da9fc5b9bf05c73f1dbeb5cc77d973ad604db49d2",
+    "wakeV17HistoricalProgramTreeSha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "safety": {
+    "dataRoot": "fresh isolated BAXY_DATA_DIR per mission",
+    "personalBaxyDataReadable": false,
+    "personalBaxyDataWritable": false,
+    "externalEffectsAllowed": false,
+    "localEffectsAllowed": [
+      "note.create inside the isolated temporary data root"
+    ],
+    "confirmation": "exact invocation-bound token issued only inside the gate for isolated note.create",
+    "cleanupRequired": true,
+    "capturedAudioRetained": false,
+    "transcriptsRetained": false,
+    "transcriptHashesRetained": true,
+    "maximumAmbiguousEffects": 0
+  },
+  "missions": [
+    {
+      "id": "es_note_dependency_then_audio",
+      "language": "es",
+      "sapiVoiceLcid": "80A",
+      "text": "Baxy, crea una nota local titulada Faro con contenido luz, lee esa misma nota y después revisa el estado del audio",
+      "expectedOperations": [
+        "note.create",
+        "note.read",
+        "audio.status"
+      ],
+      "dependencyPositions": [
+        [],
+        [0],
+        []
+      ]
+    },
+    {
+      "id": "en_two_notes_cross_read",
+      "language": "en",
+      "sapiVoiceLcid": "409",
+      "text": "Baxy, create a local note titled North with content blue and another titled South with content green, then read the second note and finally the first note",
+      "expectedOperations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "dependencyPositions": [
+        [],
+        [],
+        [1],
+        [0]
+      ]
+    },
+    {
+      "id": "spanglish_note_dependency_then_system",
+      "language": "spanglish",
+      "sapiVoiceLcid": "80A",
+      "text": "Oye Baxy, create una nota local llamada Puente con contenido listo, read esa misma nota y después check el estado del sistema",
+      "expectedOperations": [
+        "note.create",
+        "note.read",
+        "system.status"
+      ],
+      "dependencyPositions": [
+        [],
+        [0],
+        []
+      ]
+    }
+  ],
+  "measurementMatrix": {
+    "text": {
+      "missions": 3,
+      "requiredPassed": 3,
+      "output": "artifacts/product/physical_dependent_missions_text_v1.json"
+    },
+    "voice": {
+      "path": "speaker -> room -> Realtek input 6 -> wake -> Parakeet final STT -> Mind -> verified Core",
+      "inputDevice": 6,
+      "outputDevice": 9,
+      "rawCaptureHelperSha256": "0e00447efac6fbfab8cb144263527cca9119f5f5a1d6aa1d723828380a3922f8",
+      "playbackGain": 0.65,
+      "missions": 3,
+      "requiredPassed": 3,
+      "output": "artifacts/product/physical_dependent_missions_voice_v1.json"
+    },
+    "combinedOutput": "artifacts/product/physical_dependent_missions_combined_v1.json"
+  },
+  "acceptance": {
+    "textMissions": "3/3",
+    "voiceMissions": "3/3",
+    "verifiedSteps": "20/20 total across text and voice",
+    "exactOperationOrder": true,
+    "exactDependencyAuthority": true,
+    "allStepsCompleted": true,
+    "allStepsIndependentlyVerified": true,
+    "ambiguousEffects": 0,
+    "externalEffects": 0,
+    "ownedProcessesRemaining": 0
+  },
+  "plannedOutputsAbsent": true,
+  "modelInvoked": false,
+  "audioPlayedOrCaptured": false,
+  "effectsExecuted": 0
+}

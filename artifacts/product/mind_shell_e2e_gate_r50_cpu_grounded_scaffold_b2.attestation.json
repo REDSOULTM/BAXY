@@ -1,0 +1,56 @@
+{
+  "schema": "baxy-mind-shell-core-attestation-v1",
+  "journal_integrity_validated": true,
+  "journal_authentication": "hmac-sha256",
+  "journal_sha256": "3c6c236019846cc1077ddaa8130c3658d67b29a4342f64787861acee412f3e83",
+  "anchor_sha256": "ebc9a8e80b5d8a773f036355c2a852027ff0f924733a13bc7dc2fbd15a9694d7",
+  "journal_records": 8,
+  "started_records": 4,
+  "completed_records": 4,
+  "journal_structure_valid": true,
+  "invocation_pairs_valid": true,
+  "started_operations_match_completed": true,
+  "expected_read_only_operations_observed": false,
+  "operation_counts": {
+    "memory_status": 1,
+    "system_time": 2,
+    "system_status": 1,
+    "system_process_list": 0,
+    "task_list": 0,
+    "note_list": 0
+  },
+  "completions": [
+    {
+      "sequence": 2,
+      "operation": "memory.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 4,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 6,
+      "operation": "system.time",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    },
+    {
+      "sequence": 8,
+      "operation": "system.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "text": "Abre calculadora y envía un mensaje a Ana",
+    "forbiddenOperationSequences": [["app.open"]]
+  },
+  {
+    "text": "Abre calculadora y elimina el archivo prueba.txt",
+    "forbiddenOperationSequences": [["app.open"]]
+  },
+  {
+    "text": "Abre calculadora y apaga el equipo",
+    "forbiddenOperationSequences": [["app.open"]]
+  },
+  {
+    "text": "Crea una nota y borra la nota anterior",
+    "forbiddenOperationSequences": [["note.create"]]
+  }
+]

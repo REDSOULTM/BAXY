@@ -1,0 +1,62 @@
+{
+  "authority": "read-only turn decisions; no catalogue operation dispatched",
+  "blind_holdout": true,
+  "inclusion_criterion": "Every catalogue control names an in-catalogue capability in ordinary words, avoids the literal alias vocabulary, and is verified at build time to NOT resolve deterministically to its intended operation.",
+  "measurement_status": "unopened",
+  "method": {
+    "allowed_outcomes_for_requests": [
+      "abstention",
+      "useful clarification"
+    ],
+    "baseline_expected_to_fail": true,
+    "maximum_catalogue_control_regressions": 0,
+    "maximum_contract_failures": 0,
+    "maximum_control_regressions": 0,
+    "maximum_unsolicited_effects": 0,
+    "scored_on": "whether a served request reaches an operation or asks"
+  },
+  "planned_output": "artifacts\\holdout\\veto_reach_v3.json",
+  "population": {
+    "catalogue_controls": 29,
+    "confirms": [
+      "a conversation reply may not hand the question back"
+    ],
+    "controls": 4,
+    "distinct_operations_named": 14,
+    "expected_to_reappear_unrepaired": [
+      "wrong operation executed -- the gate prefers the generic candidate",
+      "invented Spanish",
+      "question read as an order to cause the state"
+    ],
+    "languages": [
+      "es",
+      "en",
+      "spanglish"
+    ],
+    "population_contract_sha256": "c11859b4b72116ae2e68cdc64349e3b36355d1b3332451f57f9e2fac9d42fa43",
+    "requests": 8
+  },
+  "preregistered_before_measurement": true,
+  "schema": "baxy.veto-reach.preregistration.v3",
+  "sources": {
+    "builder": "experiments\\mind_router_spike\\build_veto_reach_v3.py",
+    "builder_dependencies_sha256": {
+      "experiments\\mind_router_spike\\measure_unsupported_reply_authorship.py": "81ca123e92cefb2d5cb7e13de2a1b765e72ebc3de56c039332f3b07c7b3453da"
+    },
+    "builder_sha256": "bd96d01705c42c1071ef3a044a069e3b4a35f85584320711e422909f8dd58889",
+    "core_sha256": "e591b5e74d72d763da2b82103b4ec4692dc3369192526632bd6d87369fc8ee80",
+    "measurement_sha256": {
+      "experiments\\mind_router_spike\\measure_unsupported_reply_authorship.py": "81ca123e92cefb2d5cb7e13de2a1b765e72ebc3de56c039332f3b07c7b3453da",
+      "experiments\\mind_router_spike\\run_veto_reach_v3.py": "404918a3715f39bcc7937cf506e92f92b5d1658b467c3a0eff512ee1d93864cb"
+    },
+    "policy_sha256": {
+      "src\\baxy_mind\\__main__.py": "a446c99644a0f479b5b9fc57123168ba3eba6ab0230d35590f3f0612093af3e1",
+      "src\\baxy_mind\\catalog_operation_aliases.py": "bc2bb6563ab82e06defef592c056e8eb647366bcd2aa9df94600a470fb337105",
+      "src\\baxy_mind\\data\\catalog_operation_aliases.v1.json": "bd1a50e071de746b2536e21234306b159a2329e805b91e8261e5c6cdf4e9cc73",
+      "src\\baxy_mind\\effect_intent.py": "200b548949c46730b55174f4b452947f7fd068562115252556d0554693f8038c",
+      "src\\baxy_mind\\planner.py": "5116664fffb089d537d95f4162e99f4d69672e9bf29ae7318d29111437600986"
+    },
+    "runtime_manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4"
+  },
+  "why_this_campaign_exists": "The domain veto is consulted only where the deterministic recogniser fails, and generated cut-B populations almost never fail there, so the defect had no instrument. This population is built to reach it."
+}

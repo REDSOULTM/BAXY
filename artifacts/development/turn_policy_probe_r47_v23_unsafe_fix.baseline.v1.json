@@ -1,0 +1,42 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v23_unsafe_fix.baseline.v1.raw.jsonl",
+    "sha256": "8c282cd394f6e71e360d37aa68dc41f5bbfe842d69195ccf8e8cfb46e8406928"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:6305",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-5af0c94d4b3885d291ec4a84",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.231,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "what do you want to do today?",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T01:49:44.002904+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 1,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

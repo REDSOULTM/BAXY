@@ -1,0 +1,63 @@
+{
+  "schema": "baxy.stt-common-voice-sps-reservation-contract.v1",
+  "createdAtUtc": "2026-08-11T09:49:24.2807145Z",
+  "role": "blind_holdout_reservation_before_archive_open",
+  "sourceAudit": {
+    "path": "artifacts/research/fresh_postweight_stt_source_audit_v1.json",
+    "sha256": "3adf2651b88fade3762f3444ef28f025965d41178cbfd96450b87990cc7f7793"
+  },
+  "reservationTool": {
+    "path": "experiments/stt_quality/reserve_common_voice_spontaneous_holdout.py",
+    "sha256": "74064eed662410a6769d9305fb568a0a0535c654b879e3eb24af72fe155eb1ff"
+  },
+  "expectedArchives": {
+    "es": {
+      "datasetId": "cmqi28y2v004imf076oh7e5zs",
+      "archiveFilename": "common-voice-spontaneous-speech-4-0-span-c5b31fca.tar.gz",
+      "bytes": 28931716,
+      "validatedClips": 37,
+      "pageSampleManifestSha256": "c45afd91685e79a087fbfd5e72adde2eb339b90946c95d9216da2a4fbec59526"
+    },
+    "en": {
+      "datasetId": "cmqialpeo0077nr077xqdqo0j",
+      "archiveFilename": "common-voice-spontaneous-speech-4-0-engl-c643378f.tar.gz",
+      "bytes": 522005930,
+      "validatedClips": 2305,
+      "pageSampleManifestSha256": "90a194f1ec64d8c402c6de5ea016c2cebf8b4079378e3b24f42c4de4639909a3"
+    }
+  },
+  "selectionPolicy": {
+    "snapshot": "sps-corpus-4.0-2026-06-12",
+    "languages": [
+      "es",
+      "en"
+    ],
+    "validationRule": "split is train/dev/test OR integer votes >= 2; transcription present",
+    "minimumValidationVotes": 2,
+    "pageSampleExclusion": "exclude when normalized prompt OR transcription SHA-256 is blocklisted",
+    "qualityExclusions": [
+      "dataset-language-audio-mismatch",
+      "non-allowed-script"
+    ],
+    "english": {
+      "sourceSplit": "test",
+      "targetCases": 300,
+      "speakerRule": "speaker has no train or dev row in the archive"
+    },
+    "spanish": {
+      "sourceSplit": "any validated row, including unassigned",
+      "minimumCases": 25,
+      "selection": "all eligible rows"
+    },
+    "rank": "SHA-256(seed|locale|audio_id|audio_file), ascending",
+    "seed": "baxy-common-voice-sps-v4-blind-2026-08-11",
+    "audioDecoded": false,
+    "modelInvoked": false
+  },
+  "referenceTranscriptsOpened": false,
+  "audioDecoded": false,
+  "modelInvoked": false,
+  "caseIdsSelected": false,
+  "thresholdsChanged": false,
+  "effectsExecuted": 0
+}

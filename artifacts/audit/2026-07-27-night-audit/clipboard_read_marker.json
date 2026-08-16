@@ -1,0 +1,52 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "operation": "clipboard.read.text",
+  "arguments": {
+    "maxCharacters": 200
+  },
+  "confirmation_followed": true,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "312d7dc3-d629-4a8d-afd8-02bdc8aee29c",
+      "missionId": "6f141f50-8026-4a63-940d-251c25bc717e",
+      "invocationId": "01c8c7db-9833-4481-8dbd-9b372102d758",
+      "status": "pending",
+      "message": "Necesito tu confirmación antes de hacer eso.",
+      "verified": false,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "token": "MBsF8eftWY2FSpqRNFCRmiaJCX2M_TA7o-ucZ6Iphe8",
+        "expiresAtUtc": "2026-07-27T06:21:21.5429425+00:00",
+        "reconciliationRequired": false
+      },
+      "errorCode": "confirmation_required"
+    },
+    {
+      "type": "operation.response",
+      "requestId": "bc865141-59d6-4ed8-aa5b-d5ca46557007",
+      "missionId": "6f141f50-8026-4a63-940d-251c25bc717e",
+      "invocationId": "01c8c7db-9833-4481-8dbd-9b372102d758",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "text": "BAXY overnight audit marker 2026-07-27",
+        "characterCount": 38,
+        "truncated": false,
+        "sequenceNumber": 358
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 0.28221750000011525,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

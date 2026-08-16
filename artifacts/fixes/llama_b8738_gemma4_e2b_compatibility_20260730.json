@@ -1,0 +1,22 @@
+{
+  "schema": "baxy.llama-version-compatibility-audit.v1",
+  "measured_at_utc": "2026-07-30",
+  "release": {
+    "tag": "b8738",
+    "commit": "d6f303004",
+    "asset": "llama-b8738-bin-win-cuda-12.4-x64.zip",
+    "asset_sha256": "201d011e7e1fcbf28bc156c69a691772459467b4efd7bc3d51d50fedd348d239",
+    "asset_sha256_verified": true
+  },
+  "model": {
+    "architecture": "gemma4",
+    "type": "E2B",
+    "registered_sha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889"
+  },
+  "outcome": "not_compatible",
+  "load_error": "missing tensor 'blk.15.attn_k.weight'",
+  "turn_requests_completed": 0,
+  "manifest_changed": false,
+  "installation_changed": false,
+  "runtime_remains": "b9980"
+}

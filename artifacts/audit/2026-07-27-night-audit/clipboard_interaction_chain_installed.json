@@ -1,0 +1,228 @@
+{
+  "schema": "baxy.audit.clipboard-interaction-chain.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "elapsed_seconds": 5.589795800000502,
+  "total": 4,
+  "verified": 4,
+  "copy_marker_length": 48,
+  "paste_marker_length": 49,
+  "copy_target_verified": true,
+  "paste_target_verified": true,
+  "cases": [
+    {
+      "operation": "clipboard.copy",
+      "arguments": {},
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ced96586-5feb-43c8-8bc9-0026aafebea2",
+          "missionId": "0ee1dfa7-774e-4561-882f-8754ad7709e4",
+          "invocationId": "0a52c17f-dcbb-430c-b750-8369495f4d95",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "sXOX9I-IZlvCAC257Fx0ciJ7Szer7WozinJBmWUN9-c",
+            "expiresAtUtc": "2026-07-27T07:24:59.3861805+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "7cbf1a68-5f6b-4690-87d5-965b13c368fb",
+          "missionId": "0ee1dfa7-774e-4561-882f-8754ad7709e4",
+          "invocationId": "0a52c17f-dcbb-430c-b750-8369495f4d95",
+          "status": "completed",
+          "message": "Listo, copié la selección del control enfocado y verifiqué el cambio real del portapapeles.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "copy",
+            "key": "",
+            "pointerAction": "",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 0,
+            "clipboardFormatCount": 7,
+            "clipboardSequenceBefore": 607,
+            "clipboardSequenceAfter": 617,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": null,
+            "acceptedEvents": 4,
+            "expectedEvents": 4,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 10308,
+            "foregroundProcessIdAfter": 10308,
+            "foregroundTitleBefore": "BAXY audit copy 4e7c8395",
+            "authority": "win32_foreground_identity_sendinput_clipboard_sequence_postread",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.7259764999998879
+    },
+    {
+      "operation": "clipboard.read.text",
+      "arguments": {
+        "maxCharacters": 56
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ed356d14-3140-4ed1-90e0-b64d33af2568",
+          "missionId": "d7247696-e518-440e-a50c-c242df6f4993",
+          "invocationId": "ce3c2364-c8e0-48b7-b5d5-83b6ec2482c3",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "DWj3DEeFv_mfEOhF582JGHt9LcsqEoHGHgBGnvDRRcc",
+            "expiresAtUtc": "2026-07-27T07:25:00.1119911+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "cc0b7f98-674a-492a-9a0b-b8c1a0f8bc7b",
+          "missionId": "d7247696-e518-440e-a50c-c242df6f4993",
+          "invocationId": "ce3c2364-c8e0-48b7-b5d5-83b6ec2482c3",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "text": "BAXY_AUDIT_COPY_4e7c8395d3a6462790197a750f24d5f7",
+            "characterCount": 48,
+            "truncated": false,
+            "sequenceNumber": 617
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03369910000037635
+    },
+    {
+      "operation": "clipboard.write.text",
+      "arguments": {
+        "text": "BAXY_AUDIT_PASTE_4e7c8395d3a6462790197a750f24d5f7"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "917ff039-182d-4a50-a63f-da8acaf9df2b",
+          "missionId": "b5de9636-f987-474a-8084-babae5290b7b",
+          "invocationId": "b0520ac3-f209-4e33-b263-186e82741fa2",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "t4hDfUwsaT4rkJ7PdgW8vtMjszHaMlu2oRTpXzziR5M",
+            "expiresAtUtc": "2026-07-27T07:25:00.5321157+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "42acbca8-aee3-4767-90f4-7f71e50b047c",
+          "missionId": "b5de9636-f987-474a-8084-babae5290b7b",
+          "invocationId": "b0520ac3-f209-4e33-b263-186e82741fa2",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "sequenceNumber": 622,
+            "characterCount": 49,
+            "changed": true
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.0366438000000926
+    },
+    {
+      "operation": "clipboard.paste",
+      "arguments": {},
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "6a350dec-82aa-491d-81a0-8dcd4533912c",
+          "missionId": "070cca3b-42ca-49e5-a5bf-cfbed7da7863",
+          "invocationId": "ba901d97-206a-4bf9-b901-c1600bea3616",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "i6NZfZbp4XcS_-LSxB2XIs-NKIN6k-MlKro_WcW5fvE",
+            "expiresAtUtc": "2026-07-27T07:25:01.8955006+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "1ff4843d-bd3d-4dcd-bcfb-6849111e798c",
+          "missionId": "070cca3b-42ca-49e5-a5bf-cfbed7da7863",
+          "invocationId": "ba901d97-206a-4bf9-b901-c1600bea3616",
+          "status": "completed",
+          "message": "Listo, pegué el contenido del portapapeles en el control enfocado y Windows aceptó todos los eventos.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "paste",
+            "key": "",
+            "pointerAction": "",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 0,
+            "clipboardFormatCount": 4,
+            "clipboardSequenceBefore": 622,
+            "clipboardSequenceAfter": 622,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": null,
+            "acceptedEvents": 4,
+            "expectedEvents": 4,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 28068,
+            "foregroundProcessIdAfter": 28068,
+            "foregroundTitleBefore": "BAXY audit paste 4e7c8395",
+            "authority": "win32_clipboard_nonempty_foreground_identity_sendinput_acceptance",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.7526797999998962
+    }
+  ],
+  "error": null,
+  "process_exit_code": 0,
+  "stderr": ""
+}

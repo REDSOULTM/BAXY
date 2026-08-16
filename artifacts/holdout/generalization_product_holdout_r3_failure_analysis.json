@@ -1,0 +1,72 @@
+{
+  "authority": "offline_analysis_only_no_sidecar_no_plan_no_core_no_provider",
+  "created_at_utc": "2026-08-03T11:29:30.341722+00:00",
+  "development_output": {
+    "path": "artifacts\\development\\generalization_product_r3_failures.v1.jsonl",
+    "rows": 109,
+    "sha256": "1c3e7345122cb1f0beef66a410226167202e02192ea6c4f0f93cbac5c0d69406"
+  },
+  "effects_executed": 0,
+  "holdout_reuse_policy": "opened R3 failures are development data and R3 is never blind again",
+  "metrics": {
+    "by_case_type": {
+      "clarification": 2,
+      "single_action": 107
+    },
+    "by_cause": {
+      "app_parser": 9,
+      "decision": 30,
+      "recovery": 8,
+      "retrieval": 56,
+      "unsafe_clarification_effect": 2,
+      "veto:compound_conservation": 4
+    },
+    "by_family": {
+      "app": 6,
+      "audio": 2,
+      "backup": 4,
+      "calendar": 2,
+      "capture": 10,
+      "email": 2,
+      "game": 4,
+      "input": 6,
+      "media": 4,
+      "memory": 9,
+      "message": 5,
+      "network": 7,
+      "ocr": 5,
+      "office": 2,
+      "package": 2,
+      "peripheral": 2,
+      "reminder": 1,
+      "routine": 4,
+      "streaming": 8,
+      "system": 3,
+      "task": 3,
+      "vision": 8,
+      "web": 2,
+      "window": 8
+    },
+    "by_owner": {
+      "app_private_memory_parser": 9,
+      "mind_sidecar": 100
+    },
+    "failures": 109,
+    "unsafe_effects": 31
+  },
+  "schema": "baxy.generalization-product-r3-failure-analysis.v1",
+  "source": {
+    "analyzer": "experiments\\mind_router_spike\\analyze_generalization_product_r3_failures.py",
+    "analyzer_sha256": "3aed538f8e1c1cb590505560847fffee0b52def3b3ce1de2aefb4b170c5afc79",
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v3.jsonl",
+    "corpus_sha256": "cb79baf06faaa3117513a19a554f967f5c9f2fe9dade39ed8479c457635bfdf6",
+    "memory_trx": "artifacts\\holdout\\generalization_product_holdout_r3_memory.trx",
+    "memory_trx_sha256": "58ca1dd18aa8e18cacc7fa19adffd4cc96aedf310a47e850affba9cfbbe38c97",
+    "mind_raw_audit": "artifacts\\holdout\\generalization_product_holdout_r3_mind.raw.jsonl",
+    "mind_raw_audit_sha256": "28ae5f0d7ba82f6b0d0141c0d78dbcca2b2999e238cbd862125e6830d6d5d2d9",
+    "mind_result": "artifacts\\holdout\\generalization_product_holdout_r3_mind.json",
+    "mind_result_sha256": "a0ba54a91514cac91ad5d317b709c135f6793aacb8884e0e04f03bd876cc8692",
+    "product_result": "artifacts\\holdout\\generalization_product_holdout_r3_product.json",
+    "product_result_sha256": "72eb500d96630774f1e2c536e5ed52fbea2f8e625f774ed14f0b0ebd482d470a"
+  }
+}

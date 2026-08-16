@@ -1,0 +1,59 @@
+{
+  "schema": "baxy.guard-count-overlap-verdict.v1",
+  "date": "2026-07-29",
+  "candidate": "reuse the semantic guard's released server slot for the candidate-free effect-count verifier while the primary policy is still decoding",
+  "safety": {
+    "core_started": false,
+    "external_effects_executed": false,
+    "maximum_concurrent_completions": 3,
+    "prompts_models_schemas_unchanged": true
+  },
+  "replicas": [
+    {
+      "artifact": "guard_count_overlap_ab_20260729.json",
+      "arm_order": [
+        "baseline",
+        "overlap"
+      ],
+      "exact_outputs": true,
+      "all_p50_delta_seconds": -0.05586625000250933,
+      "action_p50_delta_seconds": -0.13781759999983478,
+      "action_total_delta_seconds": -0.805797100005293
+    },
+    {
+      "artifact": "guard_count_overlap_ab_reverse_20260729.json",
+      "arm_order": [
+        "overlap",
+        "baseline"
+      ],
+      "exact_outputs": true,
+      "all_p50_delta_seconds": 0.012679100000241306,
+      "action_p50_delta_seconds": -0.04906510000364506,
+      "action_total_delta_seconds": 0.17081679999319022
+    },
+    {
+      "artifact": "guard_count_overlap_ab_third_20260729.json",
+      "arm_order": [
+        "baseline",
+        "overlap"
+      ],
+      "exact_outputs": true,
+      "all_p50_delta_seconds": -0.03734294999776466,
+      "action_p50_delta_seconds": -0.026148099994316,
+      "action_total_delta_seconds": -0.12955549999605864
+    }
+  ],
+  "aggregate": {
+    "turns": 18,
+    "action_turns": 9,
+    "exact_outputs": true,
+    "action_p50_improved_replicas": 3,
+    "all_total_delta_seconds": -0.7275702999977511,
+    "mean_delta_seconds_per_turn": -0.04042057222209729,
+    "action_total_delta_seconds": -0.7645358000081615,
+    "mean_delta_seconds_per_action": -0.08494842222312905,
+    "count_started_and_finished_before_policy_on_all_candidate_actions": true
+  },
+  "verdict": "promoted",
+  "reason": "All three replicas, including the reversed arm order, preserved exact outputs and improved action p50. The candidate reuses an existing slot, keeps the three-request ceiling, and hides the unchanged count verifier behind the primary decode."
+}

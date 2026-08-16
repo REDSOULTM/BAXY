@@ -1,0 +1,36 @@
+{
+  "constraints": {
+    "external_effects_executed": 0,
+    "no_lexical_gate": true,
+    "no_retriever": true,
+    "opened_v9": false,
+    "providers_enabled": false,
+    "runtime_modified": false
+  },
+  "identities": {
+    "preregistration_sha256": "5e4016de10a3ed2b7e536b7728c4c654513065e51c3cbbad7cea64248551ca49",
+    "program_sha256": "3bb4fcd0ddf412f5859d39e6e07174505baf27a5425e503f39e06bc0bb071f19",
+    "result_sha256": "674fa6efd3b403aed932922a32f4d5f5910bceda8f5f1facd20ece1893b0b6b1"
+  },
+  "reason": {
+    "exact_measured": 16,
+    "exact_required": 74,
+    "oos_zero_candidates_measured": 5,
+    "oos_zero_candidates_required": 9,
+    "p95_seconds": 0.370289
+  },
+  "schema": "baxy.cross-encoder-r209-audit-r210.v1",
+  "training": {
+    "checkpoint_saved": false,
+    "epoch_mean_losses": [
+      0.23876836461576983,
+      0.14872885945162692,
+      0.12812688637100442
+    ],
+    "pairs": 23700,
+    "peak_allocated_mib": 3632.3,
+    "peak_reserved_mib": 3858.0,
+    "seconds": 3690.188
+  },
+  "verdict": "reject_candidate"
+}

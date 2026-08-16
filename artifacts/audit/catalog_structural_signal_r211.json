@@ -1,0 +1,2605 @@
+{
+  "authority": "diagnostic_only_no_runtime_gate_or_operation_selection",
+  "conclusion": {
+    "lexical_gate_authorized": false,
+    "runtime_change_authorized": false,
+    "schema_carries_no_explicit_domain_ontology": true,
+    "schema_carries_typed_argument_and_risk_signal": true
+  },
+  "counts": {
+    "families": 31,
+    "operations": 169,
+    "operations_with_required_fields": 125,
+    "operations_without_required_fields": 44
+  },
+  "families": {
+    "app": {
+      "operations": 3,
+      "operations_with_required_fields": 3,
+      "required_fields": [
+        "appId",
+        "name",
+        "windowId"
+      ],
+      "risks": {
+        "low_reversible": 1,
+        "read_only": 1,
+        "work_loss": 1
+      }
+    },
+    "audio": {
+      "operations": 5,
+      "operations_with_required_fields": 4,
+      "required_fields": [
+        "amount",
+        "direction",
+        "level",
+        "state"
+      ],
+      "risks": {
+        "low_reversible": 4,
+        "read_only": 1
+      }
+    },
+    "backup": {
+      "operations": 8,
+      "operations_with_required_fields": 6,
+      "required_fields": [
+        "backupId",
+        "destinationRelativePath",
+        "expectedSha256",
+        "folder",
+        "resourceId"
+      ],
+      "risks": {
+        "low_reversible": 4,
+        "read_only": 4
+      }
+    },
+    "bluetooth": {
+      "operations": 3,
+      "operations_with_required_fields": 2,
+      "required_fields": [
+        "deviceId",
+        "state"
+      ],
+      "risks": {
+        "low_reversible": 1,
+        "privacy_sensitive": 1,
+        "read_only": 1
+      }
+    },
+    "browser": {
+      "operations": 5,
+      "operations_with_required_fields": 3,
+      "required_fields": [
+        "action",
+        "browser",
+        "url"
+      ],
+      "risks": {
+        "external_communication": 2,
+        "low_reversible": 1,
+        "privacy_sensitive": 2
+      }
+    },
+    "calendar": {
+      "operations": 2,
+      "operations_with_required_fields": 2,
+      "required_fields": [
+        "endUtc",
+        "startUtc",
+        "title"
+      ],
+      "risks": {
+        "external_communication": 1,
+        "read_only": 1
+      }
+    },
+    "capture": {
+      "operations": 2,
+      "operations_with_required_fields": 0,
+      "required_fields": [],
+      "risks": {
+        "privacy_sensitive": 2
+      }
+    },
+    "clipboard": {
+      "operations": 4,
+      "operations_with_required_fields": 1,
+      "required_fields": [
+        "text"
+      ],
+      "risks": {
+        "privacy_sensitive": 4
+      }
+    },
+    "email": {
+      "operations": 2,
+      "operations_with_required_fields": 1,
+      "required_fields": [
+        "text"
+      ],
+      "risks": {
+        "external_communication": 1,
+        "privacy_sensitive": 1
+      }
+    },
+    "filesystem": {
+      "operations": 20,
+      "operations_with_required_fields": 19,
+      "required_fields": [
+        "destinationRelativePath",
+        "expectedSha256",
+        "fileName",
+        "folder",
+        "leftQuery",
+        "path",
+        "query",
+        "relativePath",
+        "resourceId",
+        "restoreId",
+        "reviewLabel",
+        "rightQuery",
+        "sourceFileName",
+        "text",
+        "trashId"
+      ],
+      "risks": {
+        "low_reversible": 9,
+        "read_only": 8,
+        "recoverable_delete": 3
+      }
+    },
+    "game": {
+      "operations": 11,
+      "operations_with_required_fields": 9,
+      "required_fields": [
+        "appId",
+        "confirmationId",
+        "expectedPriceCents",
+        "provider",
+        "title"
+      ],
+      "risks": {
+        "installation": 2,
+        "low_reversible": 1,
+        "monetary": 1,
+        "read_only": 5,
+        "work_loss": 2
+      }
+    },
+    "input": {
+      "operations": 8,
+      "operations_with_required_fields": 5,
+      "required_fields": [
+        "action",
+        "key",
+        "label",
+        "language",
+        "text"
+      ],
+      "risks": {
+        "external_communication": 1,
+        "low_reversible": 5,
+        "privacy_sensitive": 1,
+        "read_only": 1
+      }
+    },
+    "media": {
+      "operations": 6,
+      "operations_with_required_fields": 5,
+      "required_fields": [
+        "action",
+        "provider",
+        "query",
+        "seconds",
+        "title"
+      ],
+      "risks": {
+        "external_communication": 3,
+        "low_reversible": 2,
+        "read_only": 1
+      }
+    },
+    "memory": {
+      "operations": 11,
+      "operations_with_required_fields": 11,
+      "required_fields": [
+        "confirmationRequired",
+        "destination",
+        "enabled",
+        "includeSecrets",
+        "kind",
+        "limit",
+        "mustNotDeletePersistent",
+        "offset",
+        "retention",
+        "scope",
+        "selector",
+        "sensitivity",
+        "tags",
+        "value",
+        "version"
+      ],
+      "risks": {
+        "low_reversible": 4,
+        "privacy_sensitive": 3,
+        "read_only": 3,
+        "work_loss": 1
+      }
+    },
+    "message": {
+      "operations": 2,
+      "operations_with_required_fields": 2,
+      "required_fields": [
+        "channel",
+        "recipient",
+        "recipientId",
+        "text"
+      ],
+      "risks": {
+        "external_communication": 1,
+        "read_only": 1
+      }
+    },
+    "network": {
+      "operations": 5,
+      "operations_with_required_fields": 1,
+      "required_fields": [
+        "host"
+      ],
+      "risks": {
+        "privacy_sensitive": 1,
+        "read_only": 4
+      }
+    },
+    "note": {
+      "operations": 7,
+      "operations_with_required_fields": 3,
+      "required_fields": [
+        "content",
+        "expectedRevision",
+        "expectedTitle",
+        "noteId",
+        "query",
+        "title"
+      ],
+      "risks": {
+        "low_reversible": 3,
+        "read_only": 3,
+        "recoverable_delete": 1
+      }
+    },
+    "notification": {
+      "operations": 6,
+      "operations_with_required_fields": 4,
+      "required_fields": [
+        "dueUtc",
+        "expectedVersion",
+        "hour",
+        "kind",
+        "reminderId",
+        "title"
+      ],
+      "risks": {
+        "low_reversible": 4,
+        "read_only": 2
+      }
+    },
+    "ocr": {
+      "operations": 1,
+      "operations_with_required_fields": 1,
+      "required_fields": [
+        "captureId"
+      ],
+      "risks": {
+        "privacy_sensitive": 1
+      }
+    },
+    "office": {
+      "operations": 2,
+      "operations_with_required_fields": 2,
+      "required_fields": [
+        "documentId",
+        "format",
+        "title"
+      ],
+      "risks": {
+        "low_reversible": 1,
+        "read_only": 1
+      }
+    },
+    "package": {
+      "operations": 2,
+      "operations_with_required_fields": 2,
+      "required_fields": [
+        "confirmationId",
+        "packageId"
+      ],
+      "risks": {
+        "installation": 1,
+        "read_only": 1
+      }
+    },
+    "peripheral": {
+      "operations": 3,
+      "operations_with_required_fields": 2,
+      "required_fields": [
+        "deviceId",
+        "documentId"
+      ],
+      "risks": {
+        "privacy_sensitive": 2,
+        "read_only": 1
+      }
+    },
+    "reminder": {
+      "operations": 5,
+      "operations_with_required_fields": 4,
+      "required_fields": [
+        "dueUtc",
+        "expectedVersion",
+        "reminderId",
+        "reviewLabel",
+        "title"
+      ],
+      "risks": {
+        "low_reversible": 2,
+        "read_only": 2,
+        "recoverable_delete": 1
+      }
+    },
+    "routine": {
+      "operations": 7,
+      "operations_with_required_fields": 6,
+      "required_fields": [
+        "enabled",
+        "expectedRevision",
+        "name",
+        "phrase",
+        "reviewLabel",
+        "routineId"
+      ],
+      "risks": {
+        "low_reversible": 3,
+        "read_only": 3,
+        "recoverable_delete": 1
+      }
+    },
+    "streaming": {
+      "operations": 2,
+      "operations_with_required_fields": 2,
+      "required_fields": [
+        "resourceUri",
+        "service",
+        "title"
+      ],
+      "risks": {
+        "external_communication": 2
+      }
+    },
+    "system": {
+      "operations": 11,
+      "operations_with_required_fields": 5,
+      "required_fields": [
+        "action",
+        "amount",
+        "direction",
+        "name",
+        "setting",
+        "value"
+      ],
+      "risks": {
+        "low_reversible": 1,
+        "privacy_sensitive": 1,
+        "read_only": 6,
+        "work_loss": 3
+      }
+    },
+    "task": {
+      "operations": 9,
+      "operations_with_required_fields": 8,
+      "required_fields": [
+        "details",
+        "due",
+        "expectedVersion",
+        "query",
+        "reviewLabel",
+        "taskId",
+        "title"
+      ],
+      "risks": {
+        "low_reversible": 5,
+        "read_only": 3,
+        "recoverable_delete": 1
+      }
+    },
+    "vision": {
+      "operations": 1,
+      "operations_with_required_fields": 1,
+      "required_fields": [
+        "captureId"
+      ],
+      "risks": {
+        "privacy_sensitive": 1
+      }
+    },
+    "web": {
+      "operations": 1,
+      "operations_with_required_fields": 1,
+      "required_fields": [
+        "query"
+      ],
+      "risks": {
+        "read_only": 1
+      }
+    },
+    "wifi": {
+      "operations": 6,
+      "operations_with_required_fields": 2,
+      "required_fields": [
+        "profileId",
+        "profileName"
+      ],
+      "risks": {
+        "privacy_sensitive": 4,
+        "read_only": 2
+      }
+    },
+    "window": {
+      "operations": 9,
+      "operations_with_required_fields": 8,
+      "required_fields": [
+        "height",
+        "name",
+        "process",
+        "width",
+        "windowId",
+        "x",
+        "y"
+      ],
+      "risks": {
+        "low_reversible": 6,
+        "read_only": 3
+      }
+    }
+  },
+  "identities": {
+    "catalog_sha256": "2d5a257c9c2986b22a1f3159ffd30b4d658045d3cb7e15982abc42819651e376",
+    "program_sha256": "a1759cc9d674371551c44fc1d02adb3ad6a0e64286b4df71140cd7848109e28a"
+  },
+  "operations": [
+    {
+      "description_sha256": "dcd9499cf4d13033ad7a46ea9178dcc02df800735c60ef648dc9fd7045037ac5",
+      "family": "app",
+      "name": "app.close",
+      "property_fields": [
+        "windowId"
+      ],
+      "required_fields": [
+        "windowId"
+      ],
+      "risk": "work_loss"
+    },
+    {
+      "description_sha256": "ca73e3a918aafc4ecc6e0a6d7e661fbae7c33e830f0fb7ccde634a34d0b12ae7",
+      "family": "app",
+      "name": "app.installed",
+      "property_fields": [
+        "name"
+      ],
+      "required_fields": [
+        "name"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "a8917a453fcf9cf28fd4078f2f0e7fcdb0cb1a80ae61d0e59fc7326fbbb44ff8",
+      "family": "app",
+      "name": "app.open",
+      "property_fields": [
+        "appId"
+      ],
+      "required_fields": [
+        "appId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "fc7255375618eb8e835393e62bb562db31ded24366521c05e9f03acc81585ed7",
+      "family": "audio",
+      "name": "audio.microphone.mute",
+      "property_fields": [
+        "state"
+      ],
+      "required_fields": [
+        "state"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "9e35f15d212baa21ce304ae93c0ef32c59f16af19610dd8ea8692b1f012ecd1e",
+      "family": "audio",
+      "name": "audio.mute",
+      "property_fields": [
+        "state"
+      ],
+      "required_fields": [
+        "state"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "3fb6b80344d8f8b0411005f3313b135d0eb0304477fa5a71cb90c7d42be59988",
+      "family": "audio",
+      "name": "audio.status",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "d849b02d5671ce9799e182dc420925dbe720fdab933e2e3a9ff19fa11bc8a111",
+      "family": "audio",
+      "name": "audio.volume",
+      "property_fields": [
+        "level"
+      ],
+      "required_fields": [
+        "level"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "ff42489bd7faa9dbb249db0fe086ae8cb978b80dc4378bf89f345c8ce1a5b438",
+      "family": "audio",
+      "name": "audio.volume.adjust",
+      "property_fields": [
+        "amount",
+        "direction"
+      ],
+      "required_fields": [
+        "amount",
+        "direction"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "120ede13e874e36738c7c47e37adb84ccffd30d83d4a6f8c7c2f1f5dbd3ffba4",
+      "family": "backup",
+      "name": "backup.create",
+      "property_fields": [
+        "expectedSha256",
+        "resourceId"
+      ],
+      "required_fields": [
+        "expectedSha256",
+        "resourceId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "75df2a06f6630373a0a3d57194c5dd0009b7c6b46e210338882519b8bee9ea9a",
+      "family": "backup",
+      "name": "backup.known.create",
+      "property_fields": [
+        "folder"
+      ],
+      "required_fields": [
+        "folder"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "5d92da7ecd8db36c67c4fdc4f86b2e5c83157257718e5baa27f454cd2aa80ced",
+      "family": "backup",
+      "name": "backup.known.list",
+      "property_fields": [
+        "limit"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "7f47e2ddc022238b6fe3acbfd6a908cacff552fd2d8ff314fa01748d586eb030",
+      "family": "backup",
+      "name": "backup.known.restore.latest",
+      "property_fields": [
+        "folder"
+      ],
+      "required_fields": [
+        "folder"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "ca23cc00e72416008fd732cc871264d7325ebb7bdd361776b50c941d2febe1cf",
+      "family": "backup",
+      "name": "backup.known.verify.latest",
+      "property_fields": [
+        "folder"
+      ],
+      "required_fields": [
+        "folder"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "4078f026dd8ebe5166bf1bb8560dc45e710c069cd5fb1da7fbd4415078146a47",
+      "family": "backup",
+      "name": "backup.list",
+      "property_fields": [
+        "limit"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "f0602b8922cd202af4ceaa87382a5b139c76c822f8b75eb8de5f647eea3b13bd",
+      "family": "backup",
+      "name": "backup.restore",
+      "property_fields": [
+        "backupId",
+        "destinationRelativePath"
+      ],
+      "required_fields": [
+        "backupId",
+        "destinationRelativePath"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "4c15274a1cecc0ba3f111087e0501d017934c7fc836813525b687e3406a27c82",
+      "family": "backup",
+      "name": "backup.verify",
+      "property_fields": [
+        "backupId"
+      ],
+      "required_fields": [
+        "backupId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "ba56fa94fc544528c7c2f1dc9525706c8f9d015f7d80ea7ecc9bcd2adf396a03",
+      "family": "bluetooth",
+      "name": "bluetooth.device.list",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "4b1cf7372b7c9938b9ed18ad1a36461e3f92c080319810d9a25abb193f0200b0",
+      "family": "bluetooth",
+      "name": "bluetooth.device.pair",
+      "property_fields": [
+        "deviceId"
+      ],
+      "required_fields": [
+        "deviceId"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "e2bfa7d5d1eff86893ec8847098276fc3a9e5cd3dfb7c9e15ddb53c3bd30d5c0",
+      "family": "bluetooth",
+      "name": "bluetooth.radio.set",
+      "property_fields": [
+        "state"
+      ],
+      "required_fields": [
+        "state"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "28e066a399476de2b072a7332230c728a355da82f43041d412a482a1f7a0d93e",
+      "family": "browser",
+      "name": "browser.control",
+      "property_fields": [
+        "action"
+      ],
+      "required_fields": [
+        "action"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "7676bcd460b08082495594dc48533c362e29ffa1da33fab81db833d21e94d5d2",
+      "family": "browser",
+      "name": "browser.navigate",
+      "property_fields": [
+        "url"
+      ],
+      "required_fields": [
+        "url"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "99e811a2d1858a896d72fec67b54cd62e87e205e8343f7acf1fe0df80836f9e4",
+      "family": "browser",
+      "name": "browser.navigate.named",
+      "property_fields": [
+        "browser",
+        "url"
+      ],
+      "required_fields": [
+        "browser",
+        "url"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "9d0a3db13ba9d1d387452fc97ef3ece95f066dc2262318b94cb17d51e00da968",
+      "family": "browser",
+      "name": "browser.page.read",
+      "property_fields": [
+        "maximumCharacters"
+      ],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "2c66d631eda3eedb49ba5f4ac0307ed81dd9e93322f392c08e46b6c7fd79bfe1",
+      "family": "browser",
+      "name": "browser.tabs.list",
+      "property_fields": [
+        "limit"
+      ],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "fdf8d9a9b2a166bf89ea53ee7f7a339be86450a8374e6b71e38e374b19d1a3f3",
+      "family": "calendar",
+      "name": "calendar.event.create",
+      "property_fields": [
+        "endUtc",
+        "startUtc",
+        "title"
+      ],
+      "required_fields": [
+        "endUtc",
+        "startUtc",
+        "title"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "51694413d10b34cd30ba2b7ea21316df0ed64a5ea58ddb009729287bec456090",
+      "family": "calendar",
+      "name": "calendar.event.list",
+      "property_fields": [
+        "endUtc",
+        "startUtc"
+      ],
+      "required_fields": [
+        "endUtc",
+        "startUtc"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "92ceb4ecf2026179f19686a9436227e37a0ff514944a04b223d3d385a740ab05",
+      "family": "capture",
+      "name": "capture.active.window",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "5df4575fe93e899401ab3e98d352659fd9560f711d4f8ebe9fdf96010c13698e",
+      "family": "capture",
+      "name": "capture.screenshot",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "cf5ba66e3cc8eb33352cca4d8aa794724e7b572db6d92de36c36c5a160c905b1",
+      "family": "clipboard",
+      "name": "clipboard.copy",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "09ad2d1d9a27576d62912ea9e810378aa897499870716a6c5bf71022c386e457",
+      "family": "clipboard",
+      "name": "clipboard.paste",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "f7f0547f296cd9e4b180849fa2a402a22438f3bdc00fa397b2ede56df810b934",
+      "family": "clipboard",
+      "name": "clipboard.read.text",
+      "property_fields": [
+        "maxCharacters"
+      ],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "aa2d826d5392d3e7d4255f155f52d22c18582859b64106833bcc5f2a64e3c0f6",
+      "family": "clipboard",
+      "name": "clipboard.write.text",
+      "property_fields": [
+        "text"
+      ],
+      "required_fields": [
+        "text"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "f707a82639c6048273cecd6214a083f505ce62192f49b0ee9c2a32e28991b05f",
+      "family": "email",
+      "name": "email.latest.read",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "994a89f8177d426ba753a48a060bc0f48fac269011cd15e23cc8507c9e6a790e",
+      "family": "email",
+      "name": "email.latest.reply",
+      "property_fields": [
+        "text"
+      ],
+      "required_fields": [
+        "text"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "8b8c619c67f548ec47654a56f65359783e026b26f742b6c89b416e5e6ee3b21a",
+      "family": "filesystem",
+      "name": "filesystem.copy",
+      "property_fields": [
+        "destinationRelativePath",
+        "expectedSha256",
+        "resourceId"
+      ],
+      "required_fields": [
+        "destinationRelativePath",
+        "expectedSha256",
+        "resourceId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "085a7a7e132acc56fc166b613211403417a406a898d879a0cb63272eb499d34f",
+      "family": "filesystem",
+      "name": "filesystem.create.directory",
+      "property_fields": [
+        "relativePath"
+      ],
+      "required_fields": [
+        "relativePath"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "8d4bace9b83e2bd86519dbf4eb529821b61368487e185385eb7e1c41f5f2e4a5",
+      "family": "filesystem",
+      "name": "filesystem.file.open.latest",
+      "property_fields": [
+        "folder"
+      ],
+      "required_fields": [
+        "folder"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "f15eb72721c4036f528c3ba3c12289d0866589a113a0dce5eb17e02a2659e8ca",
+      "family": "filesystem",
+      "name": "filesystem.folder.open",
+      "property_fields": [
+        "folder"
+      ],
+      "required_fields": [
+        "folder"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "389535169a856dbc480ce5587680b7f559c6e3e90bf82a263667d45193c44512",
+      "family": "filesystem",
+      "name": "filesystem.hash",
+      "property_fields": [
+        "resourceId"
+      ],
+      "required_fields": [
+        "resourceId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "9548635c0c3e38ac570602453283a37d2102052f5d6895b96d448e46585bface",
+      "family": "filesystem",
+      "name": "filesystem.known.duplicates",
+      "property_fields": [
+        "folder",
+        "limit"
+      ],
+      "required_fields": [
+        "folder"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "c5291a60c6c1dd34721ecaf6c79918d688a0b70cb92af7e814d5092fe75608f2",
+      "family": "filesystem",
+      "name": "filesystem.known.search",
+      "property_fields": [
+        "folder",
+        "limit",
+        "query",
+        "subdirectory"
+      ],
+      "required_fields": [
+        "folder",
+        "query"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "b764b666001a264aec821337e66d326981f8802292b059bf75636a518dc1a76b",
+      "family": "filesystem",
+      "name": "filesystem.known.trash.named",
+      "property_fields": [
+        "fileName",
+        "folder"
+      ],
+      "required_fields": [
+        "fileName",
+        "folder"
+      ],
+      "risk": "recoverable_delete"
+    },
+    {
+      "description_sha256": "ed3e25c17c8ae6cbc22eeac16d9e1a31c9d94f114adc2b24c941897a9b50bc22",
+      "family": "filesystem",
+      "name": "filesystem.list",
+      "property_fields": [
+        "limit",
+        "relativeDirectory"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "b770defa7023d1908f1e747ef35dcc8f41cb40571e4ddc24c42c0ad87a0d73ab",
+      "family": "filesystem",
+      "name": "filesystem.move",
+      "property_fields": [
+        "destinationRelativePath",
+        "expectedSha256",
+        "resourceId"
+      ],
+      "required_fields": [
+        "destinationRelativePath",
+        "expectedSha256",
+        "resourceId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "ab77cd9c6d28449b8656dabd85681de665a744676ddfdf21522163344ee6d36b",
+      "family": "filesystem",
+      "name": "filesystem.path.ensure.absent",
+      "property_fields": [
+        "path"
+      ],
+      "required_fields": [
+        "path"
+      ],
+      "risk": "recoverable_delete"
+    },
+    {
+      "description_sha256": "0bf435986fea8f8a97074d0d05b933399d578fcec71af49ff245964456782163",
+      "family": "filesystem",
+      "name": "filesystem.read.text",
+      "property_fields": [
+        "maximumBytes",
+        "resourceId"
+      ],
+      "required_fields": [
+        "resourceId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "5d4170b06cc56dc9d605cc954b6a4a474f9a72057095113d139214c72f43ea02",
+      "family": "filesystem",
+      "name": "filesystem.sandbox.append.named",
+      "property_fields": [
+        "fileName",
+        "text"
+      ],
+      "required_fields": [
+        "fileName",
+        "text"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "79f47ca1d9f758e15f38bb589512462bd0a2805a725d32248f4a6b0638ebf40b",
+      "family": "filesystem",
+      "name": "filesystem.sandbox.diff.named",
+      "property_fields": [
+        "leftQuery",
+        "rightQuery"
+      ],
+      "required_fields": [
+        "leftQuery",
+        "rightQuery"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "23e9f727412409e3a149aadb8d335125527d67ca3f1ecdff71e5176d7c23c36e",
+      "family": "filesystem",
+      "name": "filesystem.sandbox.move.named",
+      "property_fields": [
+        "destinationRelativePath",
+        "sourceFileName"
+      ],
+      "required_fields": [
+        "destinationRelativePath",
+        "sourceFileName"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "5a17c61644374bd05d32b47cf2ad6b5d1387f3262647058903b964fe051836ec",
+      "family": "filesystem",
+      "name": "filesystem.search",
+      "property_fields": [
+        "limit",
+        "query"
+      ],
+      "required_fields": [
+        "query"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "ff42564317d5bbd101306786aa15edc94838f2c3f0735277f1ca803ec959c272",
+      "family": "filesystem",
+      "name": "filesystem.trash.commit",
+      "property_fields": [
+        "reviewLabel",
+        "trashId"
+      ],
+      "required_fields": [
+        "reviewLabel",
+        "trashId"
+      ],
+      "risk": "recoverable_delete"
+    },
+    {
+      "description_sha256": "d5b5dda8369115cf108dabd31c74228fe289928489b07d83d598f820f112df5a",
+      "family": "filesystem",
+      "name": "filesystem.trash.prepare",
+      "property_fields": [
+        "resourceId"
+      ],
+      "required_fields": [
+        "resourceId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "647c937f2cdf23c7f56a3d7ad68f273d18dc50cda86f95f128e7730dfc99cdbf",
+      "family": "filesystem",
+      "name": "filesystem.trash.restore",
+      "property_fields": [
+        "restoreId"
+      ],
+      "required_fields": [
+        "restoreId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "cebfbba664b5e1ddb9f5fcb324621e9aa527244bae109c531180ee07bc235350",
+      "family": "filesystem",
+      "name": "filesystem.write.text",
+      "property_fields": [
+        "expectedSha256",
+        "relativePath",
+        "text"
+      ],
+      "required_fields": [
+        "relativePath",
+        "text"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "4e0bfbda9a442b43785962dbfbba80b592fbe6d230f4d19c938dacc213d29561",
+      "family": "game",
+      "name": "game.catalog.list",
+      "property_fields": [
+        "limit",
+        "query"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "aece0bd06221f8efae7a9789496c88f6dbe271780a006b1cef38c7cd539441ef",
+      "family": "game",
+      "name": "game.install.cancel",
+      "property_fields": [
+        "appId"
+      ],
+      "required_fields": [
+        "appId"
+      ],
+      "risk": "work_loss"
+    },
+    {
+      "description_sha256": "d647a7e5c5bd0eb941c805411023a4f9971929f8788acc8e6c00c67f65e07756",
+      "family": "game",
+      "name": "game.install.cancel.active",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "work_loss"
+    },
+    {
+      "description_sha256": "0c7f93cd22b4b107743a4314561339976ec33dbb4bc946091e75dce93e040aa7",
+      "family": "game",
+      "name": "game.install.commit",
+      "property_fields": [
+        "confirmationId"
+      ],
+      "required_fields": [
+        "confirmationId"
+      ],
+      "risk": "installation"
+    },
+    {
+      "description_sha256": "81388d0b68a7296e6b3f7ce58eff721ed978408adca1c10d6e5bdc01dd0216c1",
+      "family": "game",
+      "name": "game.install.named",
+      "property_fields": [
+        "title"
+      ],
+      "required_fields": [
+        "title"
+      ],
+      "risk": "installation"
+    },
+    {
+      "description_sha256": "ebb74d5165e7fcd0aa0c7fbaa67242e6857b0d2bf4bbcb37de679c79706704ba",
+      "family": "game",
+      "name": "game.install.prepare",
+      "property_fields": [
+        "appId"
+      ],
+      "required_fields": [
+        "appId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "41d183b6baf998783c1dcdef94bf9d04d2dacd405289c4f9e074654d94b9b97b",
+      "family": "game",
+      "name": "game.install.status",
+      "property_fields": [
+        "appId"
+      ],
+      "required_fields": [
+        "appId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "881c92b7193d7cb6f97464e6159256afff9fa3dd32b9632c951c341e55e77a42",
+      "family": "game",
+      "name": "game.installed.named",
+      "property_fields": [
+        "provider",
+        "title"
+      ],
+      "required_fields": [
+        "provider",
+        "title"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "0f1018c8ae443d8ff6febfff7b05422e1b93ee64d77fe39bc23e223a1025aa1c",
+      "family": "game",
+      "name": "game.launch",
+      "property_fields": [
+        "appId"
+      ],
+      "required_fields": [
+        "appId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "25eb60a45a25f740db70748fa8151f7dbe2add3152f6e8ca5072a9fcf703a5da",
+      "family": "game",
+      "name": "game.purchase.commit",
+      "property_fields": [
+        "confirmationId",
+        "expectedPriceCents"
+      ],
+      "required_fields": [
+        "confirmationId",
+        "expectedPriceCents"
+      ],
+      "risk": "monetary"
+    },
+    {
+      "description_sha256": "045b87e12448b431875dd0a4bef8c9334451c0dd25bcc863565bae999f874837",
+      "family": "game",
+      "name": "game.purchase.prepare",
+      "property_fields": [
+        "appId"
+      ],
+      "required_fields": [
+        "appId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "d9581156b8505cc9c46022ee0dd27fb2212438c90914ba529e798c60bb9b131b",
+      "family": "input",
+      "name": "input.key.press",
+      "property_fields": [
+        "key"
+      ],
+      "required_fields": [
+        "key"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "0d1dbc49c5f667638fab8b99428879d96cc87841b3e91f3be17021f3f163ea57",
+      "family": "input",
+      "name": "input.keyboard.layout",
+      "property_fields": [
+        "language"
+      ],
+      "required_fields": [
+        "language"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "121c8c1cd1eb7b454e416144eae917061db0dd8ac12a8133fb31df10b0e0b21d",
+      "family": "input",
+      "name": "input.keyboard.open",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "d55498a214f60ac382e1ef0d9efb6802ab8eb7a02dba1ce21c21202ae76f7e1f",
+      "family": "input",
+      "name": "input.keyboard.status",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "8b65727d4bd514f2a0333ec46697cb4aa0fe6710f8b307ba8d571c9f158adf46",
+      "family": "input",
+      "name": "input.pointer.control",
+      "property_fields": [
+        "action"
+      ],
+      "required_fields": [
+        "action"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "de170f4ec3fc32ba9dd98cea293f39ed5fe63c485a04abd47ff4461799f59491",
+      "family": "input",
+      "name": "input.select.all",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "7ce72258379fdbc2b61753dec620c76416bcd726601febb845fd67057475fd72",
+      "family": "input",
+      "name": "input.text.type",
+      "property_fields": [
+        "text"
+      ],
+      "required_fields": [
+        "text"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "db35fc1d3f5b5d824dcd3ed19bdc65ff737e84242592d1b7675c46ec951bb8e9",
+      "family": "input",
+      "name": "input.visible.click",
+      "property_fields": [
+        "label"
+      ],
+      "required_fields": [
+        "label"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "1f9e02ac3d8935368591759d868df34607d331474e071ec11ace726a9338b1ee",
+      "family": "media",
+      "name": "media.control",
+      "property_fields": [
+        "action",
+        "sourceApp"
+      ],
+      "required_fields": [
+        "action"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "1ba30acc000c165110606b6369003b81481f12da0438386c1bc41a4de3dfd845",
+      "family": "media",
+      "name": "media.play.exact",
+      "property_fields": [
+        "provider",
+        "title"
+      ],
+      "required_fields": [
+        "provider",
+        "title"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "9caf85b734d4048acf8f088d39df72a0d62a019cb049beb5fbaa5c8e201bcd2e",
+      "family": "media",
+      "name": "media.play.query",
+      "property_fields": [
+        "provider",
+        "query"
+      ],
+      "required_fields": [
+        "provider",
+        "query"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "b99139c8d1c455d15906cae58fc9aa3bfe491ffa6c827b37a8002185b2dd46bc",
+      "family": "media",
+      "name": "media.play.youtube",
+      "property_fields": [
+        "query"
+      ],
+      "required_fields": [
+        "query"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "5bf66ebac243099fc680cae5b5ba04a6a90ac8e58d97046a8225a21b3df3660b",
+      "family": "media",
+      "name": "media.seek.relative",
+      "property_fields": [
+        "seconds"
+      ],
+      "required_fields": [
+        "seconds"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "28c1ac1165e3adf86c04040637bf5b00d4fc5863d1e3dbef76f117aa8a0fa191",
+      "family": "media",
+      "name": "media.status",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "37593f5b3db71a17cbf55ebd01178d435466eb99a601159f8db9e2765d30ac92",
+      "family": "memory",
+      "name": "memory.correct",
+      "property_fields": [
+        "expectedValue",
+        "kind",
+        "retention",
+        "selector",
+        "value",
+        "version"
+      ],
+      "required_fields": [
+        "retention",
+        "selector",
+        "value",
+        "version"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "ef790026593a26160b616f53e865bfef88d7fc7781d1b829f0d5ac9be199631a",
+      "family": "memory",
+      "name": "memory.disable",
+      "property_fields": [
+        "enabled",
+        "version"
+      ],
+      "required_fields": [
+        "enabled",
+        "version"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "ffec89bf7dd84df8a902e4cc1504bb78ff9c6544a391f2fc57c8290a4e81e71c",
+      "family": "memory",
+      "name": "memory.enable",
+      "property_fields": [
+        "enabled",
+        "version"
+      ],
+      "required_fields": [
+        "enabled",
+        "version"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "26b90a70afe8d00f9fceb9108c2e3993325abf0376a172a00add60fbd6e7d2c6",
+      "family": "memory",
+      "name": "memory.export",
+      "property_fields": [
+        "destination",
+        "includeSecrets",
+        "version"
+      ],
+      "required_fields": [
+        "destination",
+        "includeSecrets",
+        "version"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "98a8e5cb3e1d395e74e1e69e5c037698ca4d2c4a9a845421ee184c9949a990a4",
+      "family": "memory",
+      "name": "memory.forget",
+      "property_fields": [
+        "confirmationRequired",
+        "scope",
+        "selector",
+        "version"
+      ],
+      "required_fields": [
+        "confirmationRequired",
+        "scope",
+        "selector",
+        "version"
+      ],
+      "risk": "work_loss"
+    },
+    {
+      "description_sha256": "d3ee25fd2e8cd9f92e713754e69c37a1c1e6f28e3ca679fecd3f53deb509143f",
+      "family": "memory",
+      "name": "memory.list",
+      "property_fields": [
+        "limit",
+        "offset",
+        "version"
+      ],
+      "required_fields": [
+        "limit",
+        "offset",
+        "version"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "d51f918508ae4458caca5d906e4508d08df1eacc18a76d70ce95ea366e053c13",
+      "family": "memory",
+      "name": "memory.recall",
+      "property_fields": [
+        "scope",
+        "selector",
+        "version"
+      ],
+      "required_fields": [
+        "scope",
+        "selector",
+        "version"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "61491bc38139583a78fb39fbdf794b6278280fabcc089d04c1a9a8ab101ff78a",
+      "family": "memory",
+      "name": "memory.save",
+      "property_fields": [
+        "expiryPolicy",
+        "kind",
+        "retention",
+        "selector",
+        "sensitivity",
+        "tags",
+        "value",
+        "version"
+      ],
+      "required_fields": [
+        "kind",
+        "retention",
+        "selector",
+        "sensitivity",
+        "tags",
+        "value",
+        "version"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "77f9060aa5136a9c66f918a60d7dee29179c0dc758270a0b3a7ed0829f6ee7ce",
+      "family": "memory",
+      "name": "memory.sensitive.save",
+      "property_fields": [
+        "expiryPolicy",
+        "kind",
+        "retention",
+        "selector",
+        "sensitivity",
+        "tags",
+        "value",
+        "version"
+      ],
+      "required_fields": [
+        "kind",
+        "retention",
+        "selector",
+        "sensitivity",
+        "tags",
+        "value",
+        "version"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "67a74f1fd4077eae1c9ef89c5f36c59875e3061267dec086c39b49af9eb2e3ae",
+      "family": "memory",
+      "name": "memory.session.clear",
+      "property_fields": [
+        "confirmationRequired",
+        "mustNotDeletePersistent",
+        "scope",
+        "selector",
+        "version"
+      ],
+      "required_fields": [
+        "confirmationRequired",
+        "mustNotDeletePersistent",
+        "scope",
+        "selector",
+        "version"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "2fd9b7c87d2f911ac7a42faafb11024e6e31c39f080a1e0b06448dafc882ea33",
+      "family": "memory",
+      "name": "memory.status",
+      "property_fields": [
+        "version"
+      ],
+      "required_fields": [
+        "version"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "142f007a23a24f68bff92f502e5a3c0862ce1868f7fc88e0923c3c25a8e9079d",
+      "family": "message",
+      "name": "message.recipient.resolve",
+      "property_fields": [
+        "channel",
+        "recipient"
+      ],
+      "required_fields": [
+        "channel",
+        "recipient"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "22f690934ba50d1d1fb688c11e53b0e1e5bd8ed308730622f11e2b2eae6056a0",
+      "family": "message",
+      "name": "message.send",
+      "property_fields": [
+        "recipientId",
+        "text"
+      ],
+      "required_fields": [
+        "recipientId",
+        "text"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "219f2d9fd998b71d58f91606382adae1e07c3c4060082d1f0f8725ff235caa29",
+      "family": "network",
+      "name": "network.dns.status",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "64324c3756274c9b11b6251ad5e05ae3af8ae8b683ee39926a9daeec66779cc9",
+      "family": "network",
+      "name": "network.ip.list",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "120fa2c3dd2c58108643394965530d48f9504ae78896bce2e9eff9da0d8f79cb",
+      "family": "network",
+      "name": "network.ping",
+      "property_fields": [
+        "host"
+      ],
+      "required_fields": [
+        "host"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "9532af88732533cf9acc1bd14938c7f1697b85eb6ae0c863734df9cf9c586ac8",
+      "family": "network",
+      "name": "network.port.list",
+      "property_fields": [
+        "limit"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "99b6dd424b57e798f50ae7c020e256ce27717456c4ae212996341ca7b61e434c",
+      "family": "network",
+      "name": "network.status",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "b1b158df7aeb93849f19b02520f0fd2f074b52a1c035d6bd56f3a06c267cfc77",
+      "family": "note",
+      "name": "note.create",
+      "property_fields": [
+        "content",
+        "title"
+      ],
+      "required_fields": [
+        "content",
+        "title"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "f33dfc5a4406aed0b36182b66d24c9af298cc86beb377cbe68b076f282ea42e2",
+      "family": "note",
+      "name": "note.list",
+      "property_fields": [
+        "limit",
+        "offset",
+        "scope"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "8d5e0053cfb7c2ef420d21d6746bb7a2be344c1560ac4792b9515f3d9179110d",
+      "family": "note",
+      "name": "note.read",
+      "property_fields": [
+        "expectedIsTrashed",
+        "expectedRevision",
+        "expectedTitle",
+        "noteId",
+        "title"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "4c7af80ea56a508edfa5d289db0147e02f01056803ddfecd3c587d33fa1b19ea",
+      "family": "note",
+      "name": "note.restore",
+      "property_fields": [
+        "expectedIsTrashed",
+        "expectedRevision",
+        "expectedTitle",
+        "noteId",
+        "title"
+      ],
+      "required_fields": [],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "0bfc2fbe6f18e53fbb95c83aad4cf406588cbec6eba1de49b8fb10734a3d5837",
+      "family": "note",
+      "name": "note.search",
+      "property_fields": [
+        "includeTrashed",
+        "limit",
+        "query"
+      ],
+      "required_fields": [
+        "query"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "1d5aba07a0c661d28e598ee0cd5204581c842a120c8ae5b5b93d99ea18f80515",
+      "family": "note",
+      "name": "note.trash",
+      "property_fields": [
+        "expectedIsTrashed",
+        "expectedRevision",
+        "expectedTitle",
+        "noteId",
+        "title"
+      ],
+      "required_fields": [],
+      "risk": "recoverable_delete"
+    },
+    {
+      "description_sha256": "98c6dae8c540457d03278e1323c01a24dbdc50e24cc811ce41cb77d6bffbd6f4",
+      "family": "note",
+      "name": "note.update",
+      "property_fields": [
+        "content",
+        "expectedRevision",
+        "expectedTitle",
+        "noteId",
+        "title"
+      ],
+      "required_fields": [
+        "content",
+        "expectedRevision",
+        "expectedTitle",
+        "noteId",
+        "title"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "8d705a32f83610fb67ce86bd590cc86b83cdb237942d5533e0cf36644596f79f",
+      "family": "notification",
+      "name": "notification.cancel.at",
+      "property_fields": [
+        "hour",
+        "kind",
+        "minute",
+        "period"
+      ],
+      "required_fields": [
+        "hour",
+        "kind"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "a6794d8174d39dd7feccd6329a7323ec3e4c92abfd502d37c222bc3a0750b7b2",
+      "family": "notification",
+      "name": "notification.cancel.latest",
+      "property_fields": [
+        "kind"
+      ],
+      "required_fields": [
+        "kind"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "d346170098e016603576a6a6d3f1677582deaeb1d63792240546af0424d12fc8",
+      "family": "notification",
+      "name": "notification.diagnose",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "ff5816e3b4b1b9378facdf34bd29d82593ad8ebda65087749a9c97a2edd4eff6",
+      "family": "notification",
+      "name": "notification.dismiss",
+      "property_fields": [
+        "expectedVersion",
+        "reminderId"
+      ],
+      "required_fields": [
+        "expectedVersion",
+        "reminderId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "dd60e06f3381ea5c25c02c3f8133558590e36455e0ce28f821d03e3558bfb28d",
+      "family": "notification",
+      "name": "notification.list.due",
+      "property_fields": [
+        "limit"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "d66f9c0b1de5645893562b5882c93cd7981106f3e4e43488bb944e4a9eea2b31",
+      "family": "notification",
+      "name": "notification.schedule",
+      "property_fields": [
+        "dueUtc",
+        "kind",
+        "recurrence",
+        "title"
+      ],
+      "required_fields": [
+        "dueUtc",
+        "kind",
+        "title"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "f11a223a8be21d36feb5d865282aeb1898a3dd71d9e93e47235c3367a37be829",
+      "family": "ocr",
+      "name": "ocr.read",
+      "property_fields": [
+        "captureId",
+        "language"
+      ],
+      "required_fields": [
+        "captureId"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "4fdc26b1e6f941544c4f5d59dd8e8a018a89e0deaeff5754e98d521f6a0ab95a",
+      "family": "office",
+      "name": "office.document.create",
+      "property_fields": [
+        "format",
+        "title"
+      ],
+      "required_fields": [
+        "format",
+        "title"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "6bf8bb0d6b106d70c492d74df1422e49072d38d4b61800a7873d96d98e13a4d6",
+      "family": "office",
+      "name": "office.document.read",
+      "property_fields": [
+        "documentId"
+      ],
+      "required_fields": [
+        "documentId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "e5e8c62d4a602841fecfdc797e27a0812d23ca287db2b9db57993fed992a107e",
+      "family": "package",
+      "name": "package.install.commit",
+      "property_fields": [
+        "confirmationId"
+      ],
+      "required_fields": [
+        "confirmationId"
+      ],
+      "risk": "installation"
+    },
+    {
+      "description_sha256": "8c087de810df4fd6dc26a480e31499c855110df036cca39c890d660126dfae43",
+      "family": "package",
+      "name": "package.install.prepare",
+      "property_fields": [
+        "packageId",
+        "version"
+      ],
+      "required_fields": [
+        "packageId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "d6cf73095652450e377d43402905c34df4afaf7b4fa83994c8ea8a26eea3bb7b",
+      "family": "peripheral",
+      "name": "peripheral.list",
+      "property_fields": [
+        "kind"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "6e017a33c67385406b884845d29b9afc771ee18c3da0d66409c7f3f43c242f6e",
+      "family": "peripheral",
+      "name": "peripheral.print",
+      "property_fields": [
+        "deviceId",
+        "documentId"
+      ],
+      "required_fields": [
+        "deviceId",
+        "documentId"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "b694df9c8d8772c6e64e1a46226ac3ffe974324a7b6364f8ea5d90e314a10c6d",
+      "family": "peripheral",
+      "name": "peripheral.scan",
+      "property_fields": [
+        "deviceId"
+      ],
+      "required_fields": [
+        "deviceId"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "960bb4fe0d32da23edf65c96a93bb216a055677dda8d0f0c252248364abe9c0f",
+      "family": "reminder",
+      "name": "reminder.create",
+      "property_fields": [
+        "details",
+        "dueUtc",
+        "title"
+      ],
+      "required_fields": [
+        "dueUtc",
+        "title"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "9da8700bd55b07046ee92034eb56c1b497d6464560ee330e9c323d61f3107195",
+      "family": "reminder",
+      "name": "reminder.delete",
+      "property_fields": [
+        "expectedVersion",
+        "reminderId",
+        "reviewLabel"
+      ],
+      "required_fields": [
+        "expectedVersion",
+        "reminderId",
+        "reviewLabel"
+      ],
+      "risk": "recoverable_delete"
+    },
+    {
+      "description_sha256": "9e4ba7eb90ac45787a678e87fb73344de60754c5ccc90c6e8c13dc6438d96504",
+      "family": "reminder",
+      "name": "reminder.list",
+      "property_fields": [
+        "limit"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "0cb653eb156114109b2aaf705f11a3f15690f29ca227cef4786598e23872fbe1",
+      "family": "reminder",
+      "name": "reminder.resolve.exact",
+      "property_fields": [
+        "includeDeleted",
+        "title"
+      ],
+      "required_fields": [
+        "title"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "1223c226b455627e9931fc13be1389536d313dd1e1783fbbe048cf64387f0dab",
+      "family": "reminder",
+      "name": "reminder.restore",
+      "property_fields": [
+        "expectedVersion",
+        "reminderId"
+      ],
+      "required_fields": [
+        "expectedVersion",
+        "reminderId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "0eab77a516485226daabdadc87b25a93f073bbf3b910db30085aab066956d906",
+      "family": "routine",
+      "name": "routine.delete",
+      "property_fields": [
+        "expectedRevision",
+        "reviewLabel",
+        "routineId"
+      ],
+      "required_fields": [
+        "expectedRevision",
+        "reviewLabel",
+        "routineId"
+      ],
+      "risk": "recoverable_delete"
+    },
+    {
+      "description_sha256": "712a6659ff7fc3337a52dc76370a155d735618936b0ab09e209de74d6c11bf4a",
+      "family": "routine",
+      "name": "routine.list",
+      "property_fields": [
+        "includeDeleted",
+        "limit"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "c2a382ce5a0e7eb66da8f87ef1c39f943e54feefb9435a5bc2507529cc6e5a71",
+      "family": "routine",
+      "name": "routine.phrase.create",
+      "property_fields": [
+        "action",
+        "name",
+        "phrase"
+      ],
+      "required_fields": [
+        "name",
+        "phrase"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "12f0d409a7f4e0fe6d507ec18ead0ec5464e83007ee0ede56cae7227a34abd99",
+      "family": "routine",
+      "name": "routine.read",
+      "property_fields": [
+        "includeDeleted",
+        "routineId"
+      ],
+      "required_fields": [
+        "routineId"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "5a127c1b513e1cfe43648e53e4b0c7ef0427e9439ca5bd3e0d109c0bac45ec28",
+      "family": "routine",
+      "name": "routine.resolve.exact",
+      "property_fields": [
+        "includeDeleted",
+        "name"
+      ],
+      "required_fields": [
+        "name"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "5af73e02c7ad9601d1506348f743361efd9182da05839fe143890bdd70c4d860",
+      "family": "routine",
+      "name": "routine.restore",
+      "property_fields": [
+        "expectedRevision",
+        "routineId"
+      ],
+      "required_fields": [
+        "expectedRevision",
+        "routineId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "4c9599e7eb7c42a6b78c386e9ce85b864653baaa01e005eba388e466402f2467",
+      "family": "routine",
+      "name": "routine.set.enabled",
+      "property_fields": [
+        "enabled",
+        "expectedRevision",
+        "routineId"
+      ],
+      "required_fields": [
+        "enabled",
+        "expectedRevision",
+        "routineId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "b9f15c7d7b0c327ab84fff062015e896e66959c70c87a442ad848bcb0be09544",
+      "family": "streaming",
+      "name": "streaming.navigate",
+      "property_fields": [
+        "resourceUri",
+        "service"
+      ],
+      "required_fields": [
+        "resourceUri",
+        "service"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "5e3920d141966b121abaa6ba530f8481ecfa3a34984b78e30f7b045411c17b77",
+      "family": "streaming",
+      "name": "streaming.play.named",
+      "property_fields": [
+        "service",
+        "title"
+      ],
+      "required_fields": [
+        "service",
+        "title"
+      ],
+      "risk": "external_communication"
+    },
+    {
+      "description_sha256": "ca5297a095fd7023dedfbe07596cfd435de0d852fc741cf45af6c43144107582",
+      "family": "system",
+      "name": "system.application.crash.diagnose",
+      "property_fields": [
+        "hours",
+        "limit"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "b2a6ee6910c9bfbaad23c22712fd965fa259b0ad24d9ec886ee86661ffcddc72",
+      "family": "system",
+      "name": "system.identity",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "b06a8ed3a674aaf5c5c2997932d94d8d5556a468842b7a5978babb04ebd4a426",
+      "family": "system",
+      "name": "system.power",
+      "property_fields": [
+        "action"
+      ],
+      "required_fields": [
+        "action"
+      ],
+      "risk": "work_loss"
+    },
+    {
+      "description_sha256": "ec40725c678f04a3e456650b98bbf38eaa1ef9109469b019f14f35c25e0dcd6a",
+      "family": "system",
+      "name": "system.process.list",
+      "property_fields": [
+        "limit",
+        "sort"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "43096c9f43a654df8c7559b6e939e20f255af0ebcb3a88bea2ceccafe45a47ae",
+      "family": "system",
+      "name": "system.process.terminate.named",
+      "property_fields": [
+        "name"
+      ],
+      "required_fields": [
+        "name"
+      ],
+      "risk": "work_loss"
+    },
+    {
+      "description_sha256": "6e5892493bf2a1de78e74c74e2575a65ea7637cc73714350553f676649ab685c",
+      "family": "system",
+      "name": "system.recyclebin.empty",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "work_loss"
+    },
+    {
+      "description_sha256": "732d716ae0d05eb3bfb9c6fafb4ccf29cc29316a5ebd5f8b26368495de74efb6",
+      "family": "system",
+      "name": "system.settings.adjust",
+      "property_fields": [
+        "amount",
+        "direction",
+        "setting"
+      ],
+      "required_fields": [
+        "amount",
+        "direction",
+        "setting"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "e6bcd5b6b4073b34a50deaeda3833b9a30b0a3261b0e601c6bc796f121028655",
+      "family": "system",
+      "name": "system.settings.set",
+      "property_fields": [
+        "setting",
+        "value"
+      ],
+      "required_fields": [
+        "setting",
+        "value"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "b4b0721ed31491fc2f8bc8ae48ee4998110aea9eabeae46b96a1a04ceb4d31c1",
+      "family": "system",
+      "name": "system.settings.status",
+      "property_fields": [
+        "setting"
+      ],
+      "required_fields": [
+        "setting"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "37f234e3e7dbd7fb7d3323ca376e5d20d8c13490dd80ba8e71bd239efa36535b",
+      "family": "system",
+      "name": "system.status",
+      "property_fields": [
+        "scope"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "8a04bd42dc4eec9ecf7caf63f39eb73afb4b756b2fba4e368e82c01871b04ed1",
+      "family": "system",
+      "name": "system.time",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "89060dc0b45511d6c098cb6e31d7207b841c2cfc548d8c16632e2310285f97b6",
+      "family": "task",
+      "name": "task.complete",
+      "property_fields": [
+        "expectedVersion",
+        "taskId"
+      ],
+      "required_fields": [
+        "expectedVersion",
+        "taskId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "db3d894b9ae7e16af55b3afea8c1280ac54938b54df25a1d9723c70a32a8cfe9",
+      "family": "task",
+      "name": "task.create",
+      "property_fields": [
+        "details",
+        "due",
+        "title"
+      ],
+      "required_fields": [
+        "title"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "57919529ffbd225b8a7057bd91ad4867c1934a26bdd641c11fcfe3e450115159",
+      "family": "task",
+      "name": "task.delete",
+      "property_fields": [
+        "expectedVersion",
+        "reviewLabel",
+        "taskId"
+      ],
+      "required_fields": [
+        "expectedVersion",
+        "reviewLabel",
+        "taskId"
+      ],
+      "risk": "recoverable_delete"
+    },
+    {
+      "description_sha256": "fb12bcae4d67bdea065ab9108766144b990aa20faf8c61097b07c3f28c2cdf59",
+      "family": "task",
+      "name": "task.list",
+      "property_fields": [
+        "includeDeleted",
+        "limit",
+        "status"
+      ],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "aca361a3c3106b5643e14e443de669e46e37df52b45b6e9aab63c7c61ef8d730",
+      "family": "task",
+      "name": "task.reopen",
+      "property_fields": [
+        "expectedVersion",
+        "taskId"
+      ],
+      "required_fields": [
+        "expectedVersion",
+        "taskId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "b1736224d972cb5dbade1dc8053f2acdebc835d1102c34d835a1aae097c82d36",
+      "family": "task",
+      "name": "task.resolve.exact",
+      "property_fields": [
+        "includeDeleted",
+        "title"
+      ],
+      "required_fields": [
+        "title"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "ffafb315c228ec6762c5b965fef993a9cc7cae0c2a67c19897038c5005d01506",
+      "family": "task",
+      "name": "task.restore",
+      "property_fields": [
+        "expectedVersion",
+        "taskId"
+      ],
+      "required_fields": [
+        "expectedVersion",
+        "taskId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "bbc76e494534e92b737d8dfaa11af601c4b58abb47b2ef3d6792655e357b78a0",
+      "family": "task",
+      "name": "task.search",
+      "property_fields": [
+        "limit",
+        "query",
+        "status"
+      ],
+      "required_fields": [
+        "query"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "041b93acc762f0c037609761e11dbd57519f13c5f8b4f0c6a9a7043e4c382bf2",
+      "family": "task",
+      "name": "task.update",
+      "property_fields": [
+        "details",
+        "due",
+        "expectedVersion",
+        "taskId",
+        "title"
+      ],
+      "required_fields": [
+        "details",
+        "due",
+        "expectedVersion",
+        "taskId",
+        "title"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "a99772150bd59789b4109dc74342ba2bdaca994bd917e47fe6ad0474a667b700",
+      "family": "vision",
+      "name": "vision.describe",
+      "property_fields": [
+        "captureId",
+        "prompt"
+      ],
+      "required_fields": [
+        "captureId"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "8bc1459c1da9e0b906d51ef28b5ed6a5536cfc27f5d863edb9ee8b8dd6a25729",
+      "family": "web",
+      "name": "web.search",
+      "property_fields": [
+        "limit",
+        "query"
+      ],
+      "required_fields": [
+        "query"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "22d55f008bdc03b838b915f521659ffe6f51d2b4ee5cc3e7d790d9bc9c63f6e5",
+      "family": "wifi",
+      "name": "wifi.connect",
+      "property_fields": [
+        "profileId"
+      ],
+      "required_fields": [
+        "profileId"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "f0f55fb2e0edf47089e743790aa9c70765a330cb8696c786eddc6e7685bd4c9f",
+      "family": "wifi",
+      "name": "wifi.connect.named",
+      "property_fields": [
+        "profileName"
+      ],
+      "required_fields": [
+        "profileName"
+      ],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "3fb15830466989070441146db4d557e0acca2dab78bcd30c79cfb49563a9699a",
+      "family": "wifi",
+      "name": "wifi.disconnect",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "155a8466a4c09431ca64141eae34d40ecbd277e103571aa37624ffd24eebe64f",
+      "family": "wifi",
+      "name": "wifi.ensure.connected",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "4b6873380bf68e67fb37bce4dfbf0be943465c3edf666d66f79b63708a75cd67",
+      "family": "wifi",
+      "name": "wifi.profile.list",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "d29f87e970afbd4641189c7d54fe8e934b55394e2a2f440670bb59311afa4e95",
+      "family": "wifi",
+      "name": "wifi.status",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "privacy_sensitive"
+    },
+    {
+      "description_sha256": "b085280311f0b1e747157367959884cebe9615d334f7873123a8b56547ab05ea",
+      "family": "window",
+      "name": "window.active",
+      "property_fields": [],
+      "required_fields": [],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "a86155b415933d530297d9057f25a28aebd494d10de0bfec78ebb762dc258880",
+      "family": "window",
+      "name": "window.application.status",
+      "property_fields": [
+        "name"
+      ],
+      "required_fields": [
+        "name"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "0b496b20144a2f073e13a6df3a94c41b0f6db636a7b04e709c1f0f632b519e3e",
+      "family": "window",
+      "name": "window.focus",
+      "property_fields": [
+        "windowId"
+      ],
+      "required_fields": [
+        "windowId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "ee21992e063090babe3743924cfb6b2f0ce4b84fa35845733b6d4ea1c39979bb",
+      "family": "window",
+      "name": "window.maximize",
+      "property_fields": [
+        "windowId"
+      ],
+      "required_fields": [
+        "windowId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "f51df56597f45aecb5d1f1836da88043cb8d05b41257d88fcfb6b6eaf7403894",
+      "family": "window",
+      "name": "window.minimize",
+      "property_fields": [
+        "windowId"
+      ],
+      "required_fields": [
+        "windowId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "7c64be0457e5022d619705ecc966f7802fcf1f13d531f98d3f0ab3869bae3d98",
+      "family": "window",
+      "name": "window.move",
+      "property_fields": [
+        "windowId",
+        "x",
+        "y"
+      ],
+      "required_fields": [
+        "windowId",
+        "x",
+        "y"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "083d086e81f4ab0df77d8a17179d51baf369c20e1eb7acdd2910d4a429b4548c",
+      "family": "window",
+      "name": "window.resize",
+      "property_fields": [
+        "height",
+        "width",
+        "windowId"
+      ],
+      "required_fields": [
+        "height",
+        "width",
+        "windowId"
+      ],
+      "risk": "low_reversible"
+    },
+    {
+      "description_sha256": "19ff336230448472012f0a45f4fdd7e49986fad72ae8b2f9b895a0e7e2038289",
+      "family": "window",
+      "name": "window.resolve",
+      "property_fields": [
+        "limit",
+        "process"
+      ],
+      "required_fields": [
+        "process"
+      ],
+      "risk": "read_only"
+    },
+    {
+      "description_sha256": "68ac0bac0b0c01bc424b34f9046c92ed17941db749d758c6ded0ddfefb5295fd",
+      "family": "window",
+      "name": "window.restore",
+      "property_fields": [
+        "windowId"
+      ],
+      "required_fields": [
+        "windowId"
+      ],
+      "risk": "low_reversible"
+    }
+  ],
+  "schema": "baxy.catalog-structural-signal-r211.v1"
+}

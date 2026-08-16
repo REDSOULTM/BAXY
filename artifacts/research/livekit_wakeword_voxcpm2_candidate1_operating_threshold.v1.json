@@ -1,0 +1,67 @@
+{
+  "schema": "baxy.livekit-wake-operating-threshold.v1",
+  "measured_at_utc": "2026-08-04T16:36:22.857424+00:00",
+  "method": "lowest_threshold_with_false_positive_count_at_or_below_ceiling",
+  "model": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_development_v1/baxy_voxcpm2_development_v1.onnx",
+  "model_sha256": "2a9ede965cff74f80704dfe977b667e4b8c502e57ca0b33041d6af3ed4b2f617",
+  "positive_features": {
+    "path": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_development_v1/positive_features_test.npy",
+    "sha256": "70e3c529d5b44ad75169d080fd2f534785117b1bcbde111f70177b7bd144c999",
+    "clips": 906,
+    "dropped_rows": 0
+  },
+  "negative_features": [
+    {
+      "path": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_development_v1/negative_features_test.npy",
+      "sha256": "99d0fa93fb078f9fd1dedaa2f53f864cdc937b382aed51545a1d19a8e949c2b3",
+      "clips": 1452,
+      "dropped_rows": 0
+    },
+    {
+      "path": "D:/BAXYRuntime/experiments/wakeword/livekit_data/features/validation_set_features.npy",
+      "sha256": "a56a8a0f8e0efb91900acc6de4c0cdf4c564842e8475a7d49b36c039e17a690f",
+      "clips": 30084,
+      "dropped_rows": 1
+    }
+  ],
+  "clip_duration_seconds": 2.0,
+  "validation_hours": 17.52,
+  "operating_point": {
+    "threshold": 0.44649088382720953,
+    "target_fpph": 0.1,
+    "max_false_positives": 1,
+    "false_positives": 1,
+    "fpph": 0.05707762557077626,
+    "true_positives": 584,
+    "false_negatives": 322,
+    "recall": 0.6445916114790287,
+    "meets_target_fpph": true,
+    "minimum_recall": 0.95,
+    "meets_minimum_recall": false,
+    "candidate_operating_gate_passed": false
+  },
+  "score_quantiles": {
+    "positive": {
+      "0.0": 0.006669163703918457,
+      "0.01": 0.017761559784412385,
+      "0.05": 0.06691884249448776,
+      "0.5": 0.5840060710906982,
+      "0.95": 0.7968007326126099,
+      "0.99": 0.8174380809068681,
+      "1.0": 0.8391673564910889
+    },
+    "negative": {
+      "0.0": 0.002331078052520752,
+      "0.01": 0.0029069289565086366,
+      "0.05": 0.0033156052231788635,
+      "0.5": 0.005935549736022949,
+      "0.95": 0.02243386209011078,
+      "0.99": 0.04866918474435821,
+      "1.0": 0.4826744496822357
+    }
+  },
+  "onnxruntime": "1.28.0",
+  "blind_human_partition_accessed": false,
+  "candidate_frozen": false,
+  "effects_executed": 0
+}

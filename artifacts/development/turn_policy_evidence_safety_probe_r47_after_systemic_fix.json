@@ -1,0 +1,200 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_evidence_safety_probe_r47_after_systemic_fix.raw.jsonl",
+    "sha256": "d18548605f1d52474a48bc99c3e265f6bd62a8ca34b62310efdea51cc0426bb8"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13342",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-a57884cac78a057986c0a0a6",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 2.5188,
+        "operation": "task.list",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "context:pronoun_with_history",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action",
+        "clarify"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-8bf299ff163799bdaf8753a3",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.6901,
+        "operation": null,
+        "question": "¿Te gustaría que abra la calculadora para realizar una cuenta?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:13592",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-99f128b431a09ec99b671aaa",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.7023,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "New Zealand is located in the South Pacific Ocean, south of Australia and north of Antarctica. It consists of two main islands, the North Island and the South Island, along with several smaller islands. The country is known for its natural landscapes, including mountains, forests, and beaches.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:3624",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-67137759cf7bc89de9c25c5b",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.9001,
+        "operation": "web.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:4449",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7c541c8b62e9622436614b3d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.6949,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "It is expected to rain at 1 PM today.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14505",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-bac351a16849a6792c3f431d",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.529,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "El actual primer ministro de Rusia es Mikhail Mishustin. Fue nombrado en 2022 y ha sido ministro de economía y desarrollo. Se le conoce como \"el ministro de la economía\" por su rol en la gestión del país. Su ministerio es uno de los más importantes del gobierno ruso.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9630",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-aa38011c2e6db84872debe14",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.9945,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que cerrar Word podía perder cambios no guardados.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:25594bc18ff7fdb9141e716574f07f623cb0cef1061a0c90e30c97c8ad3a32ba",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-1aa5edb2de041ad22b35501e",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8001,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo poner Joust tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T19:24:39.197945+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 8,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

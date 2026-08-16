@@ -1,0 +1,64 @@
+{
+  "schema": "baxy.physical-dependent-missions-program-supplement.v1",
+  "createdAtLocal": "2026-08-11T11:37:26-04:00",
+  "status": "program_ready_outputs_absent",
+  "basePreregistration": {
+    "path": "artifacts/development/physical_dependent_missions_preregistration_20260811.json",
+    "sha256": "4efa85e3bf6edc4b55b9a480d7cb7de0aa590b6afa2de41548282cbe5a5d880e",
+    "supersededSha256": "8f310ba69a5edcf308cc04777775d9a2a2a5d1b387bb896ffd706f391fea36fb",
+    "resealNote": "Re-sealed before any measurement; no planned receipt existed."
+  },
+  "program": {
+    "runner": "experiments/mission_validation/run_physical_dependent_missions_v1.py",
+    "runnerSha256": "1da2057c14cb7963d1b4c2cd8bb05b35c1b21d24bdf1836acdb5b1b1512e4ff9",
+    "postWakeCertifier": "experiments/mission_validation/certify_post_wake_repairs_v1.py",
+    "postWakeCertifierSha256": "d885c3d8c5540878f2de5d6a08a95fb8b450c4d90d5c9a951801cf450da1d2e6",
+    "regressionTest": "tests/test_physical_dependent_missions_program.py",
+    "regressionTestSha256": "66e8306bcde4e39c075a554e6720b829d973cb736ddbdfa653b77e9322a0f578",
+    "validation": "10/10 program and preregistration tests passed; Ruff and format passed"
+  },
+  "preconditions": [
+    "wake v17 combined receipt has 48/48 positives, 0/96 false activations, latency within bounds and promotionEligible=true",
+    "post-wake receipt reruns focused regressions and source-quality Fast",
+    "post-wake receipt binds a full 45/45 GPU and 45/45 CPU budget report with GPU llm_http=19 seconds and CPU llm_http=120 seconds"
+  ],
+  "textPath": {
+    "missions": 3,
+    "steps": 10,
+    "realMind": true,
+    "verifiedCore": true
+  },
+  "voicePath": {
+    "missions": 3,
+    "steps": 10,
+    "physicalChain": "SAPI speaker -> room -> Realtek 6 -> certified wake cascade -> Parakeet final STT -> real Mind -> verified Core",
+    "inputDevice": 6,
+    "outputDevice": 9,
+    "gain": 0.65,
+    "maximumCaptureAttempts": 6,
+    "capturedAudioRetained": false,
+    "transcriptTextRetained": false
+  },
+  "safety": {
+    "freshTemporaryDataRootPerMission": true,
+    "personalBaxyDataAccessed": false,
+    "onlyAllowedMutation": "note.create inside the isolated data root",
+    "confirmationBoundToExactInvocation": true,
+    "exactOperationOrderRequired": true,
+    "exactDependencyAuthorityRequired": true,
+    "everyStepIndependentlyVerified": true,
+    "maximumAmbiguousEffects": 0,
+    "maximumExternalEffects": 0,
+    "cleanupAndZeroOwnedProcessesRequired": true
+  },
+  "plannedOutputs": {
+    "postWakeReceipt": "artifacts/product/post_wake_repairs_receipt_20260811.json",
+    "text": "artifacts/product/physical_dependent_missions_text_v1.json",
+    "voice": "artifacts/product/physical_dependent_missions_voice_v1.json",
+    "combined": "artifacts/product/physical_dependent_missions_combined_v1.json",
+    "allAbsent": true
+  },
+  "audioPlayedOrCaptured": false,
+  "modelInvokedByThisProgramPreparation": false,
+  "effectsExecuted": 0
+}

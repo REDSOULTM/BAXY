@@ -1,0 +1,131 @@
+{
+  "schema_version": 2,
+  "measured_at_utc": "2026-07-20T18:01:39.912571+00:00",
+  "scope": "physical_core_final23_new_routes",
+  "core_catalog_count": 158,
+  "cases": [
+    {
+      "operation": "network.dns.status",
+      "arguments": {},
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "result": {
+        "version": 1,
+        "activeInterfaceCount": 20,
+        "serverAddresses": [
+          "200.28.4.129",
+          "200.28.4.130",
+          "fec0:0:0:ffff::1",
+          "fec0:0:0:ffff::2",
+          "fec0:0:0:ffff::3"
+        ]
+      }
+    },
+    {
+      "operation": "network.ping",
+      "arguments": {
+        "host": "google.com"
+      },
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "result": {
+        "version": 1,
+        "host": "google.com",
+        "reachable": true,
+        "status": "success",
+        "roundtripMilliseconds": 8,
+        "address": "64.233.190.139"
+      }
+    },
+    {
+      "operation": "network.ping",
+      "arguments": {
+        "host": "nodo"
+      },
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "result": {
+        "version": 1,
+        "host": "nodo",
+        "reachable": false,
+        "status": "name_resolution_failed",
+        "roundtripMilliseconds": null,
+        "address": null
+      }
+    },
+    {
+      "operation": "system.identity",
+      "arguments": {},
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "result": {
+        "version": 1,
+        "domain": "REDNOTE",
+        "userName": "usuario",
+        "qualifiedName": "REDNOTE\\usuario"
+      }
+    },
+    {
+      "operation": "notification.schedule",
+      "arguments": {
+        "dueUtc": "2026-07-21T13:00:00Z",
+        "kind": "reminder",
+        "title": "Reunión"
+      },
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "result": {
+        "version": 1,
+        "kind": "reminder",
+        "title": "Reunión",
+        "dueUtc": "2026-07-21T13:00:00+00:00",
+        "taskName": "BAXY-Reminder-3343b70449d141bba928cab411889692",
+        "state": "Ready",
+        "nextRunUtc": "2026-07-21T13:00:00.0000000+00:00",
+        "authority": "windows_task_scheduler_postread"
+      }
+    },
+    {
+      "operation": "notification.cancel.latest",
+      "arguments": {
+        "kind": "reminder"
+      },
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "result": {
+        "version": 1,
+        "kind": "reminder",
+        "taskName": "BAXY-Reminder-3343b70449d141bba928cab411889692",
+        "authority": "windows_task_scheduler_absence_postread",
+        "canceled": true
+      }
+    },
+    {
+      "operation": "media.status",
+      "arguments": {},
+      "status": "completed",
+      "verified": true,
+      "errorCode": null,
+      "result": {
+        "version": 1,
+        "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+        "title": "Gimme! Gimme! Gimme! (A Man After Midnight)",
+        "artist": "ABBA",
+        "playbackStatus": "playing",
+        "authority": "windows_smtc_current_session_read"
+      }
+    }
+  ],
+  "summary": {
+    "verified": 7,
+    "total": 7,
+    "all_verified": true
+  },
+  "stderr": ""
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "baxy.mswc-forced-alignment-shortlist-report.v1",
+  "measured_at_utc": "2026-08-06T09:06:24.881510+00:00",
+  "scope": "research_reserved_cached_signal_top_depth_union",
+  "sources": {
+    "hyper_ctc_cache_sha256": "75933083f9ed8bd131dc8f525dec6ef598149be4873d2d60c6ad195890ddaf06",
+    "whisper_cache_sha256": "4c9e90feb769fd12909748a337fe10b3210beb5dcc097f3d076d05c5ef04e0c4",
+    "output_cache_sha256": "f04db9ba8baa53fca98a9fe585dd85f93d22436d375612266638349649b8d228"
+  },
+  "contract": {
+    "depth_per_signal": 3,
+    "signals": [
+      "hyperspotter",
+      "phoneme_ctc",
+      "whisper_transcript_whole",
+      "whisper_transcript_token",
+      "hyperspotter_ctc_baseline",
+      "three_way_linear"
+    ],
+    "positive_candidate_forced_into_shortlist": false
+  },
+  "metrics": {
+    "queries": 1200,
+    "candidate_width": 41,
+    "shortlist_width_minimum": 3,
+    "shortlist_width_mean": 6.6625,
+    "shortlist_width_p95": 9.049999999999955,
+    "shortlist_width_maximum": 12,
+    "true_candidate_recall": null
+  },
+  "label_metrics_computed": false,
+  "research_tuning_examples_scored": false,
+  "research_reserved_examples_scored": true,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

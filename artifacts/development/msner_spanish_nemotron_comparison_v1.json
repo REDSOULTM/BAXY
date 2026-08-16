@@ -1,0 +1,85 @@
+{
+  "schema": "baxy.msner-nemotron-comparison-analysis.v1",
+  "analyzedAtUtc": "2026-08-11T07:18:09.078747+00:00",
+  "status": "nemotron_rejected",
+  "baseline": {
+    "engine": "parakeet_greedy",
+    "corpusWer": 0.083017,
+    "entityExactRecall": 0.819559,
+    "nonemptyRate": 0.992063,
+    "realTimeFactorP95": 0.08519353724982268
+  },
+  "candidate": {
+    "engine": "nemotron_auto",
+    "corpusWer": 0.27852,
+    "entityExactRecall": 0.53168,
+    "nonemptyRate": 0.988095,
+    "realTimeFactorP95": 0.3208141383611715
+  },
+  "comparison": {
+    "entityRelationship": {
+      "bothPreserved": 373,
+      "nemotronRescued": 13,
+      "nemotronDamaged": 222,
+      "neitherPreserved": 118
+    },
+    "caseWerRelationship": {
+      "parakeetBetter": 475,
+      "nemotronBetter": 5,
+      "tie": 24
+    },
+    "entityUnionOracleRecall": 0.837466,
+    "caseChoiceOracleWer": 0.082343,
+    "caseChoiceOracleEntityRecall": 0.827824,
+    "parakeetEmptyCases": [
+      {
+        "caseId": "msner-es-development-0027",
+        "nemotronNonempty": false,
+        "nemotronWer": 1.0
+      },
+      {
+        "caseId": "msner-es-development-0221",
+        "nemotronNonempty": false,
+        "nemotronWer": 1.0
+      },
+      {
+        "caseId": "msner-es-development-0323",
+        "nemotronNonempty": false,
+        "nemotronWer": 1.0
+      },
+      {
+        "caseId": "msner-es-development-0333",
+        "nemotronNonempty": true,
+        "nemotronWer": 0.5
+      }
+    ],
+    "nemotronEmptyCases": 6
+  },
+  "decision": {
+    "candidatePromoted": false,
+    "nemotronAllowedAsGeneralSecondary": false,
+    "nemotronAllowedAsEmptyFallback": false,
+    "validationBlindMayOpen": false,
+    "finalBlindMayOpen": false,
+    "reason": "The candidate rescues too few entities, damages many baseline successes, worsens WER, and leaves three of four baseline empty utterances empty. Even oracle fusion remains far below the gate.",
+    "nextArchitecture": "reference-independent selective contextual recovery on top of the Parakeet primary"
+  },
+  "sources": {
+    "parakeet": {
+      "artifactSha256": "e988aab17c350aa0c026673a3b4f00b0173b7e5b57de945dbb29d5974f258a12",
+      "detailSha256": "1d0b32a62b2ebe25854fe62e5bc9118eeea85b9389cb5ebe52a80ceefab8d9be"
+    },
+    "nemotron": {
+      "artifactSha256": "cf00d336bceb0c87be08746a99f1369faf5f2c709d30a6573fd5e24998a3de85",
+      "detailSha256": "d2fec9837d2bef3f8abb0941e866510a160b00352ea5e5e94c64358c8fa3eddc"
+    }
+  },
+  "contract": {
+    "developmentRowsOpened": true,
+    "validationBlindRowsOpened": false,
+    "finalBlindRowsOpened": false,
+    "rawTextStoredInRepository": false,
+    "effectsExecuted": 0
+  },
+  "effectsExecuted": 0
+}

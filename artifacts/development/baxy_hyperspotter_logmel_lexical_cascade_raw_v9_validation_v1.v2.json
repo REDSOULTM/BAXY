@@ -1,0 +1,255 @@
+{
+  "schema": "baxy.hyperspotter-logmel-lexical-cascade-raw-development.v1",
+  "measuredAtUtc": "2026-08-08T10:13:10.119931+00:00",
+  "scope": "opened_known_playback_raw_candidate_window_cascade",
+  "role": "validation",
+  "policy": {
+    "upstream": "union_of_frozen_same_window_multialias_reports",
+    "logmelWindowScope": "rolling_history_through_first_upstream_candidate",
+    "logmelVerifierScoreGte": 3.0,
+    "lexicalFallback": "entire_transcript_exact_normalized_alias_only",
+    "exactAliases": [
+      "baxi",
+      "baxy",
+      "boxy"
+    ]
+  },
+  "models": {
+    "fusionManifestSha256": "87dd1534fdf9d513b5fc4ae58f4fc4dc8a4489452c554f362285e615a700b77d",
+    "melFiltersSha256": "94b385f1d7568735fa40099550f5d71e8210bef150a3c9d4d86f0d5f2eb86db8",
+    "upstreamReportSha256": [
+      "75d82632c3b960bba04c0f8d1aa5f3636ca862cdf3c1b6787da3dc9a0a8151cf",
+      "3eb68c7da19baa62f923b1fa2a58f513754856fd1825117d7a88253a4c8a51d6"
+    ],
+    "logmelVerifierSha256": "12292f1f854bb28340732dd4404f023b673042497aaf656447fca3f192508a39",
+    "parakeet": {
+      "encoderSha256": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoderSha256": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joinerSha256": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokensSha256": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    }
+  },
+  "corpusManifestSha256": "01f31768dd77f85d73ba57c627301159e19363f52ab0878370c165b48eb05348",
+  "positive": {
+    "files": 4,
+    "upstreamCandidateFiles": 4,
+    "logmelAcceptedFiles": 4,
+    "lexicalInvocations": 0,
+    "lexicalAcceptedFiles": 0,
+    "acceptedFiles": 4,
+    "verificationSeconds": {
+      "minimum": 0.003004400059580803,
+      "p50": 0.0034930500551126897,
+      "p95": 0.005370000062976032,
+      "maximum": 0.005696700070984662
+    },
+    "candidateLogmelScores": {
+      "minimum": 3.5750207901000977,
+      "p50": 5.769024848937988,
+      "p95": 7.021560955047607,
+      "maximum": 7.145641803741455
+    },
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "36409c2d1f0cf099987439e84adc4aa83fb57d3abc6efeff81874a8bfc425211",
+        "upstreamCandidate": true,
+        "candidateWindowIndexes": [
+          0
+        ],
+        "verifierWindowIndexes": [
+          0
+        ],
+        "logmelVerifierScore": 3.5750207901000977,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": true,
+        "reason": "logmel_verifier"
+      },
+      {
+        "record": 1,
+        "audioSha256": "d9c682d2c009c59e36df3b729f6e3e545239c124b6bde7f6faa41efc8418e34e",
+        "upstreamCandidate": true,
+        "candidateWindowIndexes": [
+          1
+        ],
+        "verifierWindowIndexes": [
+          0,
+          1
+        ],
+        "logmelVerifierScore": 7.145641803741455,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": true,
+        "reason": "logmel_verifier"
+      },
+      {
+        "record": 2,
+        "audioSha256": "07b2b113286dd711e4134dde96696a9af96b29d5b27cb3aececab43a1c68b3d2",
+        "upstreamCandidate": true,
+        "candidateWindowIndexes": [
+          0
+        ],
+        "verifierWindowIndexes": [
+          0
+        ],
+        "logmelVerifierScore": 5.219613552093506,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": true,
+        "reason": "logmel_verifier"
+      },
+      {
+        "record": 3,
+        "audioSha256": "0e05fdf5c397fb7bbd6a8d599614ff1714fabe23e7601a90c796b7854032da80",
+        "upstreamCandidate": true,
+        "candidateWindowIndexes": [
+          0
+        ],
+        "verifierWindowIndexes": [
+          0
+        ],
+        "logmelVerifierScore": 6.318436145782471,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": true,
+        "reason": "logmel_verifier"
+      }
+    ],
+    "transcriptTextRetained": false
+  },
+  "negative": {
+    "files": 8,
+    "upstreamCandidateFiles": 0,
+    "logmelAcceptedFiles": 0,
+    "lexicalInvocations": 0,
+    "lexicalAcceptedFiles": 0,
+    "acceptedFiles": 0,
+    "verificationSeconds": {
+      "minimum": 1.100008375942707e-06,
+      "p50": 2.0500156097114086e-06,
+      "p95": 3.2849842682480807e-06,
+      "maximum": 3.600027412176132e-06
+    },
+    "candidateLogmelScores": null,
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "8a7c10ec1ff22104e74fe3fbf26d2ed1367c2befce0471823495c18e07499ac5",
+        "upstreamCandidate": false,
+        "candidateWindowIndexes": [],
+        "verifierWindowIndexes": [],
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 1,
+        "audioSha256": "a692206f7272c744a953755ba3291e721b2212acda706a4f2510d8e4eb136269",
+        "upstreamCandidate": false,
+        "candidateWindowIndexes": [],
+        "verifierWindowIndexes": [],
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 2,
+        "audioSha256": "172ba2b1525c0831b731661f26dd13dfa74f5d3b3c6df9a63a92265d3bf36e92",
+        "upstreamCandidate": false,
+        "candidateWindowIndexes": [],
+        "verifierWindowIndexes": [],
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 3,
+        "audioSha256": "3faa8695ff4e251ac884e0fb11e7832fbb95e0d61a17fc6a7c23e141cdec129c",
+        "upstreamCandidate": false,
+        "candidateWindowIndexes": [],
+        "verifierWindowIndexes": [],
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 4,
+        "audioSha256": "8e5620a628290e7d3ec4e1479607e4f76024d5c7da4960f241d519e9e9ae1f3c",
+        "upstreamCandidate": false,
+        "candidateWindowIndexes": [],
+        "verifierWindowIndexes": [],
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 5,
+        "audioSha256": "9899b26c4783ee8c78bf928fd7a1a793b0784411e792187a9062a691ab861957",
+        "upstreamCandidate": false,
+        "candidateWindowIndexes": [],
+        "verifierWindowIndexes": [],
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 6,
+        "audioSha256": "1a2c1e7e5552d803bd215712a7ca59bfbf3988d880d5f2b93b7a043cfaee4f75",
+        "upstreamCandidate": false,
+        "candidateWindowIndexes": [],
+        "verifierWindowIndexes": [],
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 7,
+        "audioSha256": "911fb5fed3b1731fc5feea9b7a883d7d0fc344de9e1b6f422889fe3bae7a4fff",
+        "upstreamCandidate": false,
+        "candidateWindowIndexes": [],
+        "verifierWindowIndexes": [],
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalExactAlias": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      }
+    ],
+    "transcriptTextRetained": false
+  },
+  "elapsedWallSeconds": 0.03822059999220073,
+  "openedCorpusPassed": true,
+  "candidateFrozen": false,
+  "blindHumanPartitionAccessed": false,
+  "promotable": true,
+  "developmentOnly": true,
+  "effectsExecuted": 0,
+  "filenamesOrTranscriptsRetained": false
+}

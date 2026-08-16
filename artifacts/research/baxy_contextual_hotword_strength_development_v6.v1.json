@@ -1,0 +1,58 @@
+{
+  "schema": "baxy.contextual-hotword-strength-development.v6",
+  "measuredAtUtc": "2026-08-06T17:55:18.420946+00:00",
+  "scope": "opened_human_development_hotword_strength_selection",
+  "sources": {
+    "priorConsensusDevelopmentSha256": "054de5c44babde9dc8c67c290c9c989e88fe5dcd26f30e8d5ff6c0944015884d",
+    "failedNegativeRegressionSha256": "eaf6d578e8ce6e1ec8a1c3a039da4e808ca99fc2bade099922cb5223fff5a741"
+  },
+  "scoreSummaries": {
+    "1.0": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "2.0": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "3.0": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "4.0": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "5.0": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    }
+  },
+  "completeRecallScores": [
+    4.0,
+    5.0
+  ],
+  "lowestCompleteRecallScore": 4.0,
+  "selectionRule": "lowest_score_with_4_of_4_positive_and_0_of_8_matched_negative",
+  "expandedHumanDevelopmentAudioAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "audioTranscriptsOrFilenamesRetained": false,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "effectsExecuted": 0
+}

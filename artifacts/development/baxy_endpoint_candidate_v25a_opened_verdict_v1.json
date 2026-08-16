@@ -1,0 +1,105 @@
+{
+  "schema": "baxy.endpoint-candidate-opened-verdict.v1",
+  "measuredAtUtc": "2026-08-11T00:43:48.830318+00:00",
+  "candidateManifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+  "baselineManifestSha256": "bd8534c0e0a7cf46f35e6f75dfb00379305bd3da78d0a69fedd36154f5946f9c",
+  "acousticBaselineByteParity": {
+    "upstreamGraphs": true,
+    "acousticVerifiers": true,
+    "melFilters": true,
+    "routes": true,
+    "singleAliasRescue": true
+  },
+  "contract": {
+    "scoreGte": -1.0,
+    "aliases": [
+      "backsy",
+      "bakse",
+      "baxi",
+      "baxy",
+      "boxy"
+    ],
+    "retrySpeedFactors": [
+      0.85,
+      1.14
+    ]
+  },
+  "metrics": {
+    "humanCombined": {
+      "hits": 48,
+      "files": 48,
+      "rate": 1.0
+    },
+    "humanCombinedFalseActivations": {
+      "hits": 0,
+      "files": 96,
+      "rate": 0.0
+    },
+    "runtimeNegativeFiles": 384,
+    "runtimeFalseActivations": 0,
+    "clearConfusable": {
+      "hits": 17,
+      "files": 17
+    },
+    "clearSuffixIndependent": {
+      "hits": 69,
+      "files": 69
+    },
+    "confusableBreakdown": {
+      "Backsy": {
+        "hits": 3,
+        "files": 3
+      },
+      "Basi": {
+        "hits": 0,
+        "files": 7
+      },
+      "Baxi": {
+        "hits": 2,
+        "files": 2
+      },
+      "Baxy": {
+        "hits": 12,
+        "files": 12
+      }
+    },
+    "suffixBreakdown": {
+      "Backsy": {
+        "hits": 20,
+        "files": 20
+      },
+      "Basi": {
+        "hits": 1,
+        "files": 27
+      },
+      "Baxi": {
+        "hits": 15,
+        "files": 15
+      },
+      "Baxy": {
+        "hits": 34,
+        "files": 34
+      }
+    },
+    "maximumRuntimeP50Seconds": 1.1206373000168242,
+    "maximumRuntimeP95Seconds": 1.5541092999919783
+  },
+  "sources": {
+    "candidate_manifest": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "baseline_manifest": "bd8534c0e0a7cf46f35e6f75dfb00379305bd3da78d0a69fedd36154f5946f9c",
+    "human_runtime_report": "0925912d7c274d7f6475af4cb006b01c405cdb88d1117bcd4977341b0dbd161a",
+    "confusable_runtime_report": "b09d023b7e2e25c1511d473be011fc07748e210f12a5d94a22806da383aecc11",
+    "suffix_runtime_report": "a3760bf00092f0881617c7ae13f229391bc6c3ec2decb73a768294811675cf98",
+    "human_fusion_report": "fe0524905d79ccf85bbabd00508781bd16ab0d8fdf1617c2df94a00ab752af69",
+    "confusable_source_corpus": "d4e49112f1f4332f9b402fa3a1e2b181331abadcd1d228e05eb17f88b24481f8",
+    "confusable_physical_corpus": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+    "suffix_source_corpus": "c2ee7bf30f12f2db96e9fd0e5e629239df7b385ed8e3be4efc00036d7a3a12ee",
+    "suffix_physical_corpus": "c02ef09a09d932c5afb355c87badf0352f594985f4ed9e38b1e1847926784f38"
+  },
+  "openedDevelopmentPassed": true,
+  "candidateFrozen": false,
+  "freshBlindPhysicalRequired": true,
+  "promotable": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0
+}

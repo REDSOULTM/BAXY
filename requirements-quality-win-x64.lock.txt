@@ -1,0 +1,7 @@
+# Reproducible source-quality toolchain for BAXY's supported Windows x64 host.
+# Regenerate deliberately when requirements-quality.txt changes.
+--only-binary=:all:
+--require-hashes
+
+ruff==0.15.22 \
+    --hash=sha256:9be63ba1eb936acd2d1342fb8337c356353706fce233b2a15a09a97037e6acde

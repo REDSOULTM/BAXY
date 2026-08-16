@@ -1,0 +1,40 @@
+{
+  "schema": "baxy.audit.known-trash-restore-chain.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "operation": "filesystem.known.trash.named",
+  "file_name": "baxy-audit-known-trash-20260727.txt",
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "d3f9c619-9b88-4e92-8283-3c8523978caa",
+      "missionId": "44316d92-c0c2-4699-9a96-c80d92fd344a",
+      "invocationId": "c6345732-4c8e-4950-bc57-b17d8c875b4b",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "reviewLabel": "baxy-audit-known-trash-20260727.txt",
+        "folder": "downloads",
+        "restoreId": "restore_e17acfd5a3f14677819e3474fc384d61",
+        "sourceAbsent": true,
+        "sha256": "0a29519009b9f98295108286df3428fa276a87a118433e25a9c92c233ce09dba",
+        "authority": "windows_known_file_private_trash_postread"
+      },
+      "errorCode": null
+    }
+  ],
+  "source_absent_after_trash": true,
+  "restored": true,
+  "restored_hash_matches": true,
+  "private_trash_absent_after_restore": true,
+  "final_target_present": true,
+  "final_hash_matches": true,
+  "elapsed_seconds": 0.0513319000001502,
+  "errors": [],
+  "process_exit_code": 0,
+  "stderr": ""
+}

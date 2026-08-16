@@ -1,0 +1,19 @@
+{
+  "schema": "baxy.audit.protocol-fuzz-recovery-stress.v1",
+  "core": "D:\\BAXY\\source\\artifacts\\product\\build\\audit-remediation-20260727-v109-dev\\app\\core\\baxy-core.exe",
+  "coreVersion": "1.0.9",
+  "catalogCount": 168,
+  "cases": 500,
+  "completedCases": 500,
+  "elapsedSeconds": 16.280569700000342,
+  "invalidResponseTypes": {
+    "protocol.error": 500
+  },
+  "invalidErrorCodes": {
+    "invalid_message_size": 36,
+    "malformed_json": 464
+  },
+  "problems": [],
+  "processExitCode": 0,
+  "stderr": ""
+}

@@ -1,0 +1,4906 @@
+{
+  "authority": "raw_selection_only_no_core_plan_or_provider",
+  "configuration": {
+    "candidate_limit": 3,
+    "classifier_batch_size": 32,
+    "classifier_device": "cpu",
+    "explicit_no_match": true,
+    "native_selector_tool_choice": "required"
+  },
+  "contains_utterance_text": false,
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-02T10:20:12.392974+00:00",
+  "metrics": {
+    "cases": 198,
+    "classifier_batch_seconds": 9.689647,
+    "classifier_seconds_per_case": 0.048938,
+    "combined_accuracy": 0.7222222222222222,
+    "combined_correct": 143,
+    "fixed_product_errors": 85,
+    "product_r4_exact": 73,
+    "regressed_product_successes": 15,
+    "selector_seconds_max": 3.379493,
+    "selector_seconds_p50": 0.34053100000000003,
+    "selector_seconds_p95": 0.396083,
+    "specialist_recall": 197,
+    "specialist_recall_rate": 0.9949494949494949
+  },
+  "records": [
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132353635313636",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 3.379493,
+      "source_id": "mtop-official-v2:en:3132353635313636",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "media.control",
+        "__none__"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "media.control",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132353731363536",
+      "offered_operations": [
+        "media.control",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.341541,
+      "source_id": "mtop-official-v2:en:3132353731363536",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.control",
+        "media.status",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.control",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3132353731363536",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.control"
+      ],
+      "selector_seconds": 0.353769,
+      "source_id": "mtop-official-v2:es:3132353731363536",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "__none__",
+        "media.control"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3132363230393230",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.35635,
+      "source_id": "mtop-official-v2:en:3132363230393230",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3133343439353837",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.296608,
+      "source_id": "mtop-official-v2:en:3133343439353837",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3135323934363737",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.285146,
+      "source_id": "mtop-official-v2:en:3135323934363737",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3135323934363737",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.290902,
+      "source_id": "mtop-official-v2:es:3135323934363737",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "__none__",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3135333030343036",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.334228,
+      "source_id": "mtop-official-v2:en:3135333030343036",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3135333030343036",
+      "offered_operations": [
+        "notification.schedule",
+        "notification.dismiss"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.318602,
+      "source_id": "mtop-official-v2:es:3135333030343036",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "notification.dismiss"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3135333031303832",
+      "offered_operations": [
+        "notification.schedule",
+        "reminder.create",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.340563,
+      "source_id": "mtop-official-v2:en:3135333031303832",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "reminder.create",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3136343034383432",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.360953,
+      "source_id": "mtop-official-v2:en:3136343034383432",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3136343034383432",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.291883,
+      "source_id": "mtop-official-v2:es:3136343034383432",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3138383931353330",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.292762,
+      "source_id": "mtop-official-v2:en:3138383931353330",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3138393837373730",
+      "offered_operations": [
+        "message.send",
+        "web.search"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.352669,
+      "source_id": "mtop-official-v2:en:3138393837373730",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "message.send",
+        "web.search"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393736323530",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.354314,
+      "source_id": "mtop-official-v2:en:3139393736323530",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393736323530",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.291793,
+      "source_id": "mtop-official-v2:es:3139393736323530",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393736363532",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.32008,
+      "source_id": "mtop-official-v2:en:3139393736363532",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393736363532",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.284096,
+      "source_id": "mtop-official-v2:es:3139393736363532",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393739333636",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.312363,
+      "source_id": "mtop-official-v2:en:3139393739333636",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393739333636",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.341408,
+      "source_id": "mtop-official-v2:es:3139393739333636",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393832313134",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.33918,
+      "source_id": "mtop-official-v2:en:3139393832313134",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393832313134",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.291546,
+      "source_id": "mtop-official-v2:es:3139393832313134",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393833363831",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.33401,
+      "source_id": "mtop-official-v2:en:3139393833363831",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393833363831",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.335754,
+      "source_id": "mtop-official-v2:es:3139393833363831",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "__none__"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393835363939",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.365076,
+      "source_id": "mtop-official-v2:en:3139393835363939",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393835363939",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.346866,
+      "source_id": "mtop-official-v2:es:3139393835363939",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3139393837323835",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.312644,
+      "source_id": "mtop-official-v2:en:3139393837323835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3139393837323835",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.319563,
+      "source_id": "mtop-official-v2:es:3139393837323835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231313436383932",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.396083,
+      "source_id": "mtop-official-v2:en:3231313436383932",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231313437323638",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.389657,
+      "source_id": "mtop-official-v2:en:3231313437323638",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231313437353832",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.317955,
+      "source_id": "mtop-official-v2:en:3231313437353832",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231313437353832",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.327556,
+      "source_id": "mtop-official-v2:es:3231313437353832",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231313532373435",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.367888,
+      "source_id": "mtop-official-v2:en:3231313532373435",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231313532373435",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.304697,
+      "source_id": "mtop-official-v2:es:3231313532373435",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231313535313831",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.361211,
+      "source_id": "mtop-official-v2:en:3231313535313831",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.resolve.exact",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323233383637",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.340127,
+      "source_id": "mtop-official-v2:en:3231323233383637",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.resolve.exact",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323233383637",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.284671,
+      "source_id": "mtop-official-v2:es:3231323233383637",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323235313134",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.33384,
+      "source_id": "mtop-official-v2:en:3231323235313134",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323235313134",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.291286,
+      "source_id": "mtop-official-v2:es:3231323235313134",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323235323630",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.340171,
+      "source_id": "mtop-official-v2:en:3231323235323630",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323235323630",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.291913,
+      "source_id": "mtop-official-v2:es:3231323235323630",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323235383134",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.381623,
+      "source_id": "mtop-official-v2:en:3231323235383134",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323235383134",
+      "offered_operations": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.37499,
+      "source_id": "mtop-official-v2:es:3231323235383134",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "notification.cancel.latest",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323236363936",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.368679,
+      "source_id": "mtop-official-v2:en:3231323236363936",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323236363936",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.346602,
+      "source_id": "mtop-official-v2:es:3231323236363936",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323237353830",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.31999,
+      "source_id": "mtop-official-v2:en:3231323237353830",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323237353830",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.290976,
+      "source_id": "mtop-official-v2:es:3231323237353830",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323237383137",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.create",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.375145,
+      "source_id": "mtop-official-v2:en:3231323237383137",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.create",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323237383137",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.create",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.306087,
+      "source_id": "mtop-official-v2:es:3231323237383137",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.create",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323239383538",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.create",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.297862,
+      "source_id": "mtop-official-v2:en:3231323239383538",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.create",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323239383538",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.resolve.exact"
+      ],
+      "selector_seconds": 0.381054,
+      "source_id": "mtop-official-v2:es:3231323239383538",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323330343034",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.362068,
+      "source_id": "mtop-official-v2:en:3231323330343034",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323330343034",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.333261,
+      "source_id": "mtop-official-v2:es:3231323330343034",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.delete",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323331353235",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.3898,
+      "source_id": "mtop-official-v2:en:3231323331353235",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323331353235",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.329494,
+      "source_id": "mtop-official-v2:es:3231323331353235",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323331363732",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.399573,
+      "source_id": "mtop-official-v2:en:3231323331363732",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323331363732",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.334474,
+      "source_id": "mtop-official-v2:es:3231323331363732",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323332373333",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.create",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.388266,
+      "source_id": "mtop-official-v2:en:3231323332373333",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.create",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323332373333",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.374796,
+      "source_id": "mtop-official-v2:es:3231323332373333",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323334333230",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.338723,
+      "source_id": "mtop-official-v2:en:3231323334333230",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323334333230",
+      "offered_operations": [
+        "reminder.resolve.exact",
+        "reminder.delete",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.695865,
+      "source_id": "mtop-official-v2:es:3231323334333230",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.resolve.exact",
+        "reminder.delete",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.resolve.exact",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323335303038",
+      "offered_operations": [
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.resolve.exact"
+      ],
+      "selector_seconds": 0.341716,
+      "source_id": "mtop-official-v2:en:3231323335303038",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.resolve.exact",
+        "reminder.delete",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.resolve.exact",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323335303038",
+      "offered_operations": [
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.resolve.exact"
+      ],
+      "selector_seconds": 0.331515,
+      "source_id": "mtop-official-v2:es:3231323335303038",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.resolve.exact",
+        "reminder.delete",
+        "__none__"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323335343239",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.338133,
+      "source_id": "mtop-official-v2:es:3231323335343239",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323336303131",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.372049,
+      "source_id": "mtop-official-v2:en:3231323336303131",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "reminder.delete"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323336303131",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.316755,
+      "source_id": "mtop-official-v2:es:3231323336303131",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323336313031",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.375233,
+      "source_id": "mtop-official-v2:en:3231323336313031",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.delete",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323336313031",
+      "offered_operations": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.delete"
+      ],
+      "selector_seconds": 0.340456,
+      "source_id": "mtop-official-v2:es:3231323336313031",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "notification.cancel.latest"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323337333139",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.410138,
+      "source_id": "mtop-official-v2:en:3231323337333139",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323337333139",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.340059,
+      "source_id": "mtop-official-v2:es:3231323337333139",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323337343333",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.35641,
+      "source_id": "mtop-official-v2:en:3231323337343333",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323337343333",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.359587,
+      "source_id": "mtop-official-v2:es:3231323337343333",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323337383431",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.380891,
+      "source_id": "mtop-official-v2:en:3231323337383431",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323337383431",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.353848,
+      "source_id": "mtop-official-v2:es:3231323337383431",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323338323130",
+      "offered_operations": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "reminder.create"
+      ],
+      "selector_seconds": 0.354495,
+      "source_id": "mtop-official-v2:en:3231323338323130",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323338323130",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.347018,
+      "source_id": "mtop-official-v2:es:3231323338323130",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323430343738",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.312382,
+      "source_id": "mtop-official-v2:en:3231323430343738",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "reminder.create",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323430343738",
+      "offered_operations": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.288847,
+      "source_id": "mtop-official-v2:es:3231323430343738",
+      "specialist_recall": true,
+      "specialist_top": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323736333038",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.370994,
+      "source_id": "mtop-official-v2:en:3231323736333038",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323736333038",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.342464,
+      "source_id": "mtop-official-v2:es:3231323736333038",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "__none__",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323738343339",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.366684,
+      "source_id": "mtop-official-v2:en:3231323738343339",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323738343339",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.356098,
+      "source_id": "mtop-official-v2:es:3231323738343339",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323739343937",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.359723,
+      "source_id": "mtop-official-v2:en:3231323739343937",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323831323533",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.361544,
+      "source_id": "mtop-official-v2:en:3231323831323533",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323831323533",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.338811,
+      "source_id": "mtop-official-v2:es:3231323831323533",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323832333037",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.360805,
+      "source_id": "mtop-official-v2:en:3231323832333037",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323832333037",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.347031,
+      "source_id": "mtop-official-v2:es:3231323832333037",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323835333232",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.319642,
+      "source_id": "mtop-official-v2:en:3231323835333232",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323835333232",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.340289,
+      "source_id": "mtop-official-v2:es:3231323835333232",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323835353835",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.326519,
+      "source_id": "mtop-official-v2:en:3231323835353835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323835353835",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.340175,
+      "source_id": "mtop-official-v2:es:3231323835353835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231323836303332",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.332871,
+      "source_id": "mtop-official-v2:en:3231323836303332",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231323836303332",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.34772,
+      "source_id": "mtop-official-v2:es:3231323836303332",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231333039363939",
+      "offered_operations": [
+        "media.play.query",
+        "web.search"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.347065,
+      "source_id": "mtop-official-v2:en:3231333039363939",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "media.play.query",
+        "web.search"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231333131303830",
+      "offered_operations": [
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.389543,
+      "source_id": "mtop-official-v2:en:3231333131303830",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231333131303830",
+      "offered_operations": [
+        "web.search",
+        "media.play.query"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 1.2697,
+      "source_id": "mtop-official-v2:es:3231333131303830",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "web.search",
+        "media.play.query"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231333531353538",
+      "offered_operations": [
+        "media.play.query",
+        "web.search"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 1.153037,
+      "source_id": "mtop-official-v2:en:3231333531353538",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "media.play.query",
+        "web.search"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231333934383739",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.375225,
+      "source_id": "mtop-official-v2:en:3231333934383739",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231333934383739",
+      "offered_operations": [
+        "message.send",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.35519,
+      "source_id": "mtop-official-v2:es:3231333934383739",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "__none__",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353232303237",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.387259,
+      "source_id": "mtop-official-v2:en:3231353232303237",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231353232303237",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.312524,
+      "source_id": "mtop-official-v2:es:3231353232303237",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353232323839",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.388756,
+      "source_id": "mtop-official-v2:en:3231353232323839",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "media.control",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231353232323839",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.31945,
+      "source_id": "mtop-official-v2:es:3231353232323839",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "__none__",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353438393331",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.34017,
+      "source_id": "mtop-official-v2:en:3231353438393331",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231353438393331",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.291826,
+      "source_id": "mtop-official-v2:es:3231353438393331",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353439303936",
+      "offered_operations": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.389018,
+      "source_id": "mtop-official-v2:en:3231353439303936",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231353439303936",
+      "offered_operations": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.delete"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.340235,
+      "source_id": "mtop-official-v2:es:3231353439303936",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.delete"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353439353537",
+      "offered_operations": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.340191,
+      "source_id": "mtop-official-v2:en:3231353439353537",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353533313534",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.333272,
+      "source_id": "mtop-official-v2:en:3231353533313534",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231353533313534",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.298809,
+      "source_id": "mtop-official-v2:es:3231353533313534",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353533353835",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.326222,
+      "source_id": "mtop-official-v2:en:3231353533353835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231353533353835",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.291851,
+      "source_id": "mtop-official-v2:es:3231353533353835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353535343436",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "media.control"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.39595,
+      "source_id": "mtop-official-v2:en:3231353535343436",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "media.control"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231353535343436",
+      "offered_operations": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.delete"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.395591,
+      "source_id": "mtop-official-v2:es:3231353535343436",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.delete"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231353938383134",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.363133,
+      "source_id": "mtop-official-v2:en:3231353938383134",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363030323639",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.33829,
+      "source_id": "mtop-official-v2:en:3231363030323639",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363030323639",
+      "offered_operations": [
+        "notification.schedule",
+        "reminder.create",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.340036,
+      "source_id": "mtop-official-v2:es:3231363030323639",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "reminder.create",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363032323232",
+      "offered_operations": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.389133,
+      "source_id": "mtop-official-v2:en:3231363032323232",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363032323232",
+      "offered_operations": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.319246,
+      "source_id": "mtop-official-v2:es:3231363032323232",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363038353835",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.340272,
+      "source_id": "mtop-official-v2:en:3231363038353835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363038353835",
+      "offered_operations": [
+        "notification.schedule",
+        "reminder.create",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.340499,
+      "source_id": "mtop-official-v2:es:3231363038353835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "reminder.create",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363039353831",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.405407,
+      "source_id": "mtop-official-v2:en:3231363039353831",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363039353831",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.324135,
+      "source_id": "mtop-official-v2:es:3231363039353831",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363333363135",
+      "offered_operations": [
+        "notification.schedule",
+        "message.send"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.348099,
+      "source_id": "mtop-official-v2:en:3231363333363135",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363333363135",
+      "offered_operations": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.312019,
+      "source_id": "mtop-official-v2:es:3231363333363135",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "reminder.create",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363334313532",
+      "offered_operations": [
+        "notification.schedule",
+        "reminder.create",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.325633,
+      "source_id": "mtop-official-v2:en:3231363334313532",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "reminder.create",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363334313532",
+      "offered_operations": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.298317,
+      "source_id": "mtop-official-v2:es:3231363334313532",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "reminder.create",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336353433",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.dismiss"
+      ],
+      "selector_seconds": 0.335979,
+      "source_id": "mtop-official-v2:en:3231363336353433",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.schedule",
+        "__none__"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336363637",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.351206,
+      "source_id": "mtop-official-v2:en:3231363336363637",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "__none__",
+        "notification.cancel.latest"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363336363637",
+      "offered_operations": [
+        "notification.dismiss",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.dismiss"
+      ],
+      "selector_seconds": 0.312864,
+      "source_id": "mtop-official-v2:es:3231363336363637",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "__none__",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336363935",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.375064,
+      "source_id": "mtop-official-v2:en:3231363336363935",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363336363935",
+      "offered_operations": [
+        "notification.schedule",
+        "notification.dismiss"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.33327,
+      "source_id": "mtop-official-v2:es:3231363336363935",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "notification.dismiss"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336373731",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.388553,
+      "source_id": "mtop-official-v2:en:3231363336373731",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363336383839",
+      "offered_operations": [
+        "message.send",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.348213,
+      "source_id": "mtop-official-v2:en:3231363336383839",
+      "specialist_recall": false,
+      "specialist_top": [
+        "__none__",
+        "message.send",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363336383839",
+      "offered_operations": [
+        "message.send",
+        "notification.dismiss"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.312358,
+      "source_id": "mtop-official-v2:es:3231363336383839",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "message.send",
+        "notification.dismiss"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231363337303139",
+      "offered_operations": [
+        "notification.schedule",
+        "notification.dismiss"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.335018,
+      "source_id": "mtop-official-v2:en:3231363337303139",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "notification.dismiss"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231363337303139",
+      "offered_operations": [
+        "notification.schedule",
+        "notification.dismiss"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.289258,
+      "source_id": "mtop-official-v2:es:3231363337303139",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "notification.dismiss"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231373236373334",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.340396,
+      "source_id": "mtop-official-v2:en:3231373236373334",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "__none__",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231373236373334",
+      "offered_operations": [
+        "message.send",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.348609,
+      "source_id": "mtop-official-v2:es:3231373236373334",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "__none__",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3231393233313132",
+      "offered_operations": [
+        "notification.schedule",
+        "notification.dismiss"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.335833,
+      "source_id": "mtop-official-v2:en:3231393233313132",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "notification.dismiss"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3231393233313132",
+      "offered_operations": [
+        "notification.schedule",
+        "notification.dismiss"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.287449,
+      "source_id": "mtop-official-v2:es:3231393233313132",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "notification.dismiss"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "calendar.event.list",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232323232333534",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.388896,
+      "source_id": "mtop-official-v2:en:3232323232333534",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "calendar.event.list",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232323232333534",
+      "offered_operations": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "calendar.event.list"
+      ],
+      "selector_seconds": 0.319774,
+      "source_id": "mtop-official-v2:es:3232323232333534",
+      "specialist_recall": true,
+      "specialist_top": [
+        "calendar.event.list",
+        "web.search",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232323830393133",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.38165,
+      "source_id": "mtop-official-v2:en:3232323830393133",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "__none__",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232323830393133",
+      "offered_operations": [
+        "media.play.query",
+        "web.search"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.347003,
+      "source_id": "mtop-official-v2:es:3232323830393133",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "media.play.query",
+        "web.search"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232343331313033",
+      "offered_operations": [
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.348426,
+      "source_id": "mtop-official-v2:en:3232343331313033",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232343331313033",
+      "offered_operations": [
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.291667,
+      "source_id": "mtop-official-v2:es:3232343331313033",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232343533323032",
+      "offered_operations": [
+        "reminder.create",
+        "message.send"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.346602,
+      "source_id": "mtop-official-v2:en:3232343533323032",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "reminder.create",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232343533323032",
+      "offered_operations": [
+        "message.send",
+        "reminder.create"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.340055,
+      "source_id": "mtop-official-v2:es:3232343533323032",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "message.send",
+        "reminder.create"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232353832363539",
+      "offered_operations": [
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.35406,
+      "source_id": "mtop-official-v2:en:3232353832363539",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232353832363539",
+      "offered_operations": [
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.298527,
+      "source_id": "mtop-official-v2:es:3232353832363539",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232353832383130",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.348273,
+      "source_id": "mtop-official-v2:en:3232353832383130",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232353832383130",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.294188,
+      "source_id": "mtop-official-v2:es:3232353832383130",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232353833353131",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.316329,
+      "source_id": "mtop-official-v2:en:3232353833353131",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:3232353833353131",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.326457,
+      "source_id": "mtop-official-v2:es:3232353833353131",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "message.send",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:3232353833383434",
+      "offered_operations": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "message.send"
+      ],
+      "selector_seconds": 0.360157,
+      "source_id": "mtop-official-v2:en:3232353833383434",
+      "specialist_recall": true,
+      "specialist_top": [
+        "message.send",
+        "reminder.resolve.exact",
+        "notification.schedule"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343635373334",
+      "offered_operations": [
+        "media.status",
+        "message.send",
+        "media.control"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.375019,
+      "source_id": "mtop-official-v2:en:39343635373334",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "message.send",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343635373334",
+      "offered_operations": [
+        "media.status",
+        "media.control",
+        "message.send"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.354444,
+      "source_id": "mtop-official-v2:es:39343635373334",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "media.control",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343732383932",
+      "offered_operations": [
+        "media.status",
+        "message.send",
+        "media.control"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.354787,
+      "source_id": "mtop-official-v2:en:39343732383932",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "message.send",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343734333932",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.333073,
+      "source_id": "mtop-official-v2:en:39343734333932",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343737333034",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.335113,
+      "source_id": "mtop-official-v2:en:39343737333034",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "__none__",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343737333034",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.331006,
+      "source_id": "mtop-official-v2:es:39343737333034",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343738333632",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.360926,
+      "source_id": "mtop-official-v2:en:39343738333632",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343738333632",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.312763,
+      "source_id": "mtop-official-v2:es:39343738333632",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343739393837",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.361333,
+      "source_id": "mtop-official-v2:en:39343739393837",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343739393837",
+      "offered_operations": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.291095,
+      "source_id": "mtop-official-v2:es:39343739393837",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "calendar.event.list",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343837363034",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.340357,
+      "source_id": "mtop-official-v2:en:39343837363034",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343837363034",
+      "offered_operations": [
+        "notification.schedule",
+        "notification.dismiss"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.3124,
+      "source_id": "mtop-official-v2:es:39343837363034",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "notification.dismiss"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343930383530",
+      "offered_operations": [
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.349442,
+      "source_id": "mtop-official-v2:en:39343930383530",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "ood_no_effect",
+      "expected_operation": "__none__",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343930383530",
+      "offered_operations": [
+        "message.send",
+        "web.search"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.537528,
+      "source_id": "mtop-official-v2:es:39343930383530",
+      "specialist_recall": true,
+      "specialist_top": [
+        "__none__",
+        "message.send",
+        "web.search"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343931303336",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.384155,
+      "source_id": "mtop-official-v2:en:39343931303336",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "__none__",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate_missing_information",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343932323338",
+      "offered_operations": [
+        "notification.schedule",
+        "reminder.create",
+        "message.send"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.367867,
+      "source_id": "mtop-official-v2:en:39343932323338",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "reminder.create",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39343936303234",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.388672,
+      "source_id": "mtop-official-v2:en:39343936303234",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "media.control",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39343936303234",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.312635,
+      "source_id": "mtop-official-v2:es:39343936303234",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "media.control",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353031323338",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.36124,
+      "source_id": "mtop-official-v2:en:39353031323338",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "media.seek.relative",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353031323338",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.298403,
+      "source_id": "mtop-official-v2:es:39353031323338",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353036333537",
+      "offered_operations": [
+        "media.status",
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.360987,
+      "source_id": "mtop-official-v2:en:39353036333537",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353036333537",
+      "offered_operations": [
+        "media.status",
+        "media.control",
+        "web.search"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.347353,
+      "source_id": "mtop-official-v2:es:39353036333537",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "media.control",
+        "web.search"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353037313539",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.333596,
+      "source_id": "mtop-official-v2:en:39353037313539",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "media.seek.relative",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.schedule",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353037313539",
+      "offered_operations": [
+        "notification.schedule",
+        "media.seek.relative"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.schedule"
+      ],
+      "selector_seconds": 0.285187,
+      "source_id": "mtop-official-v2:es:39353037313539",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.schedule",
+        "__none__",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353137313235",
+      "offered_operations": [
+        "web.search",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.343253,
+      "source_id": "mtop-official-v2:en:39353137313235",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "__none__",
+        "media.status"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "web.search",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353137313235",
+      "offered_operations": [
+        "web.search",
+        "media.status"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "web.search"
+      ],
+      "selector_seconds": 0.288272,
+      "source_id": "mtop-official-v2:es:39353137313235",
+      "specialist_recall": true,
+      "specialist_top": [
+        "web.search",
+        "__none__",
+        "media.status"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353230313632",
+      "offered_operations": [
+        "media.status",
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": true,
+      "selected_operations": [],
+      "selector_seconds": 0.374824,
+      "source_id": "mtop-official-v2:en:39353230313632",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353230333237",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.389128,
+      "source_id": "mtop-official-v2:en:39353230333237",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "__none__",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353230333237",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.319115,
+      "source_id": "mtop-official-v2:es:39353230333237",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "media.control",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353232323538",
+      "offered_operations": [
+        "media.status",
+        "message.send",
+        "media.control"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.369215,
+      "source_id": "mtop-official-v2:en:39353232323538",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "message.send",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353232323538",
+      "offered_operations": [
+        "media.status",
+        "message.send",
+        "web.search"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.318031,
+      "source_id": "mtop-official-v2:es:39353232323538",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "message.send",
+        "web.search"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353435313433",
+      "offered_operations": [
+        "media.status",
+        "message.send",
+        "media.control"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.328953,
+      "source_id": "mtop-official-v2:en:39353435313433",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "message.send",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.status",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353435313433",
+      "offered_operations": [
+        "media.status",
+        "web.search",
+        "message.send"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.status"
+      ],
+      "selector_seconds": 0.351674,
+      "source_id": "mtop-official-v2:es:39353435313433",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.status",
+        "web.search",
+        "message.send"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.control",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353438393835",
+      "offered_operations": [
+        "media.control",
+        "media.play.query"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.control"
+      ],
+      "selector_seconds": 0.354346,
+      "source_id": "mtop-official-v2:en:39353438393835",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.control",
+        "media.play.query",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353530393635",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.375861,
+      "source_id": "mtop-official-v2:en:39353530393635",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "__none__",
+        "media.control"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.control",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353630373036",
+      "offered_operations": [
+        "media.control",
+        "media.play.query"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.control"
+      ],
+      "selector_seconds": 0.353385,
+      "source_id": "mtop-official-v2:en:39353630373036",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.control",
+        "media.play.query",
+        "__none__"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "media.control",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353630373036",
+      "offered_operations": [
+        "media.control",
+        "media.seek.relative",
+        "media.play.query"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.seek.relative"
+      ],
+      "selector_seconds": 0.375786,
+      "source_id": "mtop-official-v2:es:39353630373036",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.control",
+        "media.seek.relative",
+        "media.play.query"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353637313432",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "reminder.resolve.exact"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.415632,
+      "source_id": "mtop-official-v2:en:39353637313432",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "reminder.resolve.exact"
+      ]
+    },
+    {
+      "correct": false,
+      "disposition": "candidate",
+      "expected_operation": "notification.dismiss",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353637313432",
+      "offered_operations": [
+        "notification.dismiss",
+        "notification.cancel.latest"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.322166,
+      "source_id": "mtop-official-v2:es:39353637313432",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "__none__"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353734343832",
+      "offered_operations": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.3928,
+      "source_id": "mtop-official-v2:en:39353734343832",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "notification.cancel.latest",
+      "locale": "es",
+      "mission_id": "mtop-official-v2:39353734343832",
+      "offered_operations": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ],
+      "product_r4_exact": false,
+      "selected_no_match": false,
+      "selected_operations": [
+        "notification.cancel.latest"
+      ],
+      "selector_seconds": 0.319497,
+      "source_id": "mtop-official-v2:es:39353734343832",
+      "specialist_recall": true,
+      "specialist_top": [
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "reminder.list"
+      ]
+    },
+    {
+      "correct": true,
+      "disposition": "candidate",
+      "expected_operation": "media.play.query",
+      "locale": "en",
+      "mission_id": "mtop-official-v2:39353831333837",
+      "offered_operations": [
+        "media.play.query",
+        "media.control"
+      ],
+      "product_r4_exact": true,
+      "selected_no_match": false,
+      "selected_operations": [
+        "media.play.query"
+      ],
+      "selector_seconds": 0.38268,
+      "source_id": "mtop-official-v2:en:39353831333837",
+      "specialist_recall": true,
+      "specialist_top": [
+        "media.play.query",
+        "media.control",
+        "__none__"
+      ]
+    }
+  ],
+  "schema": "baxy.mdeberta-native-selector-mtop-development.v1",
+  "scope": "development_only_mtop_test_and_baxy_blind_reserve_sealed",
+  "source": {
+    "baxy_blind_reserve_opened": false,
+    "checkpoint": {
+      "config_sha256": "493a450ee9c8807f6db62d233b2f1633f2afda342ff52ac8929a05bdc2db6a89",
+      "path": "D:\\BAXYRuntime\\experiments\\mtop-operation-classifier-v8-mdeberta",
+      "weights": [
+        {
+          "bytes": 997906080,
+          "name": "model-00001-of-00002.safetensors",
+          "sha256": "61f3d7dba7f9ccc33bda5cb391d29c5e3085a0bac24600df5a153abdbea70ed6"
+        },
+        {
+          "bytes": 117401860,
+          "name": "model-00002-of-00002.safetensors",
+          "sha256": "7a3d5a0ab22e3ebb778cb401c98ea07c17ae15592b82a9456cb04b2fe19cf163"
+        }
+      ]
+    },
+    "mtop_development_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "mtop_manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "mtop_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "mtop_test_content_read": false,
+    "product_probe": "artifacts\\fixes\\mtop_product_validation_development_r4_current.json",
+    "product_probe_sha256": "ce94daa12acc9310031bc49a04bf98d7ee5e3a4777f2ae2d1ef54f37773ded31",
+    "runtime": {
+      "gguf": {
+        "bytes": 2497280256,
+        "name": "Qwen3-4B-Q4_K_M.gguf"
+      },
+      "llama_server": {
+        "bytes": 9216,
+        "name": "llama-server.exe"
+      },
+      "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+      "mind": {
+        "module": "baxy_mind"
+      },
+      "profiles": {
+        "cpu_fallback_layers": 0,
+        "gpu_layers": 99
+      },
+      "python": {
+        "bytes": 274424,
+        "name": "python.exe"
+      },
+      "source": "registered_manifest"
+    }
+  }
+}

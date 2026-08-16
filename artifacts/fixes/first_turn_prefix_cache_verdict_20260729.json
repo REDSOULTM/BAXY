@@ -1,0 +1,144 @@
+{
+  "schema": "baxy.first-turn-prefix-cache-verdict.v1",
+  "date": "2026-07-29",
+  "runtime": {
+    "llama_cpp": "b9980",
+    "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+    "model_sha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+    "parallel_slots": 3,
+    "context_tokens_per_slot": 4096
+  },
+  "online_prefix_priming": {
+    "status": "rejected_for_cold_start",
+    "production_changed": false,
+    "runs": [
+      "artifacts/fixes/first_turn_prefix_priming_ab_20260729.json",
+      "artifacts/fixes/first_turn_prefix_priming_ab_reverse_20260729.json"
+    ],
+    "controls": {
+      "fresh_server_per_case_and_arm": true,
+      "one_real_turn_per_server": true,
+      "real_case_text_in_priming_requests": false,
+      "pgl_primed_concurrently": true,
+      "exact_turn_outputs": "12/12",
+      "identical_real_request_payloads": "12/12",
+      "identical_real_prompt_token_totals": "12/12"
+    },
+    "cache_n_median": {
+      "baseline": {
+        "P": 0,
+        "G": 0,
+        "L": 0
+      },
+      "primed": {
+        "P": 562,
+        "G": 149,
+        "L": 209
+      }
+    },
+    "priming_seconds": {
+      "median": 0.816148650003015,
+      "minimum": 0.770431399992958,
+      "maximum": 0.877159699994081
+    },
+    "delta_primed_minus_baseline_seconds": {
+      "first_turn_e2e_after_priming": {
+        "median": -0.2813607000061893,
+        "total": -3.9278277000266826,
+        "wins": "11/12",
+        "minimum": -0.7215371000056621,
+        "maximum": 0.12483790000260342
+      },
+      "ready_to_first_turn_complete_including_priming": {
+        "median": 0.5212389000043913,
+        "total": 5.84344609999971,
+        "wins": "0/12",
+        "minimum": 0.06885289999627275,
+        "maximum": 0.8954293999995571
+      },
+      "startup_to_first_turn_complete": {
+        "median": 0.46084295000036946,
+        "total": 5.240863999992143,
+        "wins": "1/12",
+        "minimum": -0.028042199999617878,
+        "maximum": 0.7276153999919188
+      }
+    },
+    "reason": "The already-primed turn is usually faster, but the concurrent priming costs more than it saves. Both arm orders move latency ahead of the real turn and worsen the honest ready-to-response and cold startup-to-response totals."
+  },
+  "persisted_slot_restore": {
+    "status": "rejected_mechanism_failed",
+    "production_changed": false,
+    "runtime_manifest_changed": false,
+    "installed_assets_changed": false,
+    "runs": [
+      "artifacts/fixes/first_turn_prefix_restore_smoke_20260729.json",
+      "artifacts/fixes/first_turn_prefix_restore_mechanism_probe_20260729.json",
+      "artifacts/fixes/first_turn_prefix_restore_pinned_probe_20260729.json"
+    ],
+    "saved_files": {
+      "P": {
+        "n_saved": 562,
+        "size_bytes": 5192260
+      },
+      "G": {
+        "n_saved": 154,
+        "size_bytes": 1512700
+      },
+      "L": {
+        "n_saved": 214,
+        "size_bytes": 2101900
+      }
+    },
+    "pinned_probe": {
+      "integrity_verification_seconds": 0.015669300002628006,
+      "parallel_restore_api_seconds": 0.033147400004963856,
+      "integrity_plus_restore_seconds": 0.04881670000759186,
+      "restore": {
+        "P": {
+          "n_restored": 562,
+          "n_read": 5192260,
+          "restore_ms": 13.149
+        },
+        "G": {
+          "n_restored": 154,
+          "n_read": 1512700,
+          "restore_ms": 6.657
+        },
+        "L": {
+          "n_restored": 214,
+          "n_read": 2101900,
+          "restore_ms": 9.79
+        }
+      },
+      "real_pgl_cache_n": {
+        "P": 0,
+        "G": 0,
+        "L": 0
+      },
+      "real_pgl_id_slot": {
+        "P": 0,
+        "G": 1,
+        "L": 2
+      },
+      "exact_turn_output": true,
+      "delta_restored_minus_baseline_seconds": {
+        "first_turn_e2e": -0.374214799994661,
+        "ready_to_first_turn_complete_including_restore": -0.325304199992388,
+        "startup_to_first_turn_complete": 0.0025690000038594007
+      }
+    },
+    "reason": "b9980 reported the exact number of KV entries saved and restored, but the following real P/G/L requests reused zero tokens. This remained true with automatic slot selection and with explicit P/G/L id_slot values. The apparent hot-turn variation in the pinned one-case probe therefore is not cache reuse, and cold startup-to-response did not improve."
+  },
+  "final_decision": {
+    "status": "rejected",
+    "production_action": "none",
+    "installed_runtime_action": "none",
+    "exhausted_hypotheses": [
+      "concurrent online P/G/L prefix priming",
+      "persisted P/G/L slot save and automatic restore",
+      "persisted P/G/L slot restore with explicit first-turn id_slot"
+    ],
+    "safe_reconsideration_condition": "Only reconsider if llama.cpp exposes a versioned, model-bound persistent prompt cache that restores both KV state and token-match metadata, and a repeated opposite-order gate improves startup-to-first-response after verification and restore are included."
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "baxy-agent-assets-v1",
+  "archive": {
+    "path": "bootstrap/baxy-agent-assets-v1.zip",
+    "bytes": 34201686,
+    "sha256": "543956a65bd11d68251b911964b3a240331c436776e8a3935733da5bdf90fe3a"
+  },
+  "files": [
+    {
+      "package_path": "artifacts/historical_exhaustive/all_executable_cases.jsonl",
+      "destination_root": "repository",
+      "destination_path": "artifacts/historical_exhaustive/all_executable_cases.jsonl",
+      "bytes": 114406825,
+      "sha256": "561f67ce527fba5544eafbca79dec2aacc2be8f8a248ffca145cacf9f7f4a6d6",
+      "jsonl_rows": 67720
+    },
+    {
+      "package_path": "artifacts/historical_exhaustive/runtime_language_scope.jsonl",
+      "destination_root": "repository",
+      "destination_path": "artifacts/historical_exhaustive/runtime_language_scope.jsonl",
+      "bytes": 3567712,
+      "sha256": "28b683054fe6eaaec3ba98a35e96366a52b5e8b7f6d09a03939fe500292a760c",
+      "jsonl_rows": 14845
+    },
+    {
+      "package_path": "artifacts/historical_exhaustive/runtime_oracle.jsonl",
+      "destination_root": "repository",
+      "destination_path": "artifacts/historical_exhaustive/runtime_oracle.jsonl",
+      "bytes": 9036621,
+      "sha256": "5707a97f385e94e3313c48a4f73eab225c27a4ba145b0c3ec2b6f36c5b0ae1c8",
+      "jsonl_rows": 14845
+    },
+    {
+      "package_path": "FunctionGemma/finetune_llm/curated/train_v3.jsonl",
+      "destination_root": "function_gemma",
+      "destination_path": "finetune_llm/curated/train_v3.jsonl",
+      "bytes": 5402482,
+      "sha256": "6ccf110a23090ce274695d24a7c7956f2ea36e91b51fe001509be4a9abd01643",
+      "jsonl_rows": 6905
+    },
+    {
+      "package_path": "legacy/Experimentando/test_open_spotify.wav",
+      "destination_root": "repository",
+      "destination_path": "legacy/Experimentando/test_open_spotify.wav",
+      "bytes": 78950,
+      "sha256": "032214cfb8c8c49e7a988186e8f7e2e19d0dba9dc79d02903d56928932f48b3c",
+      "jsonl_rows": null
+    }
+  ]
+}

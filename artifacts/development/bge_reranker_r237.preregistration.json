@@ -1,0 +1,30 @@
+{
+  "schema": "baxy.bge-reranker.r237-acquisition-preregistration.v1",
+  "authority": "sealed_before_external_weight_acquisition_or_model_start",
+  "candidate": {
+    "model_id": "BAAI/bge-reranker-v2-m3",
+    "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "storage": "D:\\BAXYRuntime\\candidates\\BAAI--bge-reranker-v2-m3",
+    "architecture": "multilingual_cross_encoder_query_operation_relevance",
+    "runtime_integration": "none"
+  },
+  "future_measurement": {
+    "calibration": "public development corpus only",
+    "r228_used": false,
+    "public_holdout_used": false,
+    "oos_requires_zero_candidates": true,
+    "raw_scores_before_threshold": true
+  },
+  "constraints": {
+    "model_started": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r234_sha256": "10ebd512df812aacc1db458ef4c7771076b861af26810a9568e8f9ef4c8f2bab",
+    "r228_sha256": "fe094331bce2045a7f2bc0afa18fdd20636678d66bafd69b569976af811cfc2a",
+    "program_sha256": "0cdabbccb4b77f9baa72f7e418dd3a4c8b9e5aaec7032b354f736115935a72b6"
+  }
+}

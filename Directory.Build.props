@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <BaxyDefaultTargetFramework>net10.0</BaxyDefaultTargetFramework>
+    <BaxyWindowsTargetFramework>net10.0-windows10.0.19041.0</BaxyWindowsTargetFramework>
+    <BaxyRuntimeIdentifier>win-x64</BaxyRuntimeIdentifier>
+    <BaxyDevelopmentConfiguration>Release</BaxyDevelopmentConfiguration>
+    <TargetFramework>$(BaxyDefaultTargetFramework)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+</Project>

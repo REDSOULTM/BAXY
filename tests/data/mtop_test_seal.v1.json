@@ -1,0 +1,40 @@
+{
+  "members": {
+    "en": {
+      "archive_member": "mtop/en/test.txt",
+      "bytes": 2007476,
+      "compressed_bytes": 367005,
+      "crc32": "6607a6b7",
+      "member_sha256": "b81158cb1a7d9d06caa3e4feb1b13568215a6b9ae3fb2a51fafbdc4df3817330",
+      "record_ids_sha256": "e5f1a8244deeb700b8e73e891c7bc070f26521ed0b0e76e47eb619f275cdd118",
+      "rows": 4386
+    },
+    "es": {
+      "archive_member": "mtop/es/test.txt",
+      "bytes": 1518975,
+      "compressed_bytes": 220238,
+      "crc32": "afbf293c",
+      "member_sha256": "decd5b4624ec8a169169dbda08d7dc9378511de480713dd4640f9fd4f119b757",
+      "record_ids_sha256": "a4dd4c79fdae685f06bc25da477caa5ae9fa5e214272fc71f1c0a56aeed86807",
+      "rows": 2998
+    }
+  },
+  "protocol": {
+    "aggregate_algorithm": "sha256(locale || NUL || binary(record_ids_sha256), locale-sorted)",
+    "columns_inspected": false,
+    "content_decoded": false,
+    "record_id_algorithm": "sha256(domain || NUL || locale || NUL || ordinal || NUL || sha256(raw_line_without_eol))",
+    "record_id_domain": "baxy.mtop.test-record.v1"
+  },
+  "record_ids_aggregate_sha256": "c4f350e0a86d34f0afddcb53e095a5036fd40807d03f645ab37a7ccf70caf6d3",
+  "rows": 7384,
+  "schema": "baxy.mtop-test-byte-seal.v1",
+  "source": {
+    "archive_bytes": 8596555,
+    "archive_file_name": "mtop.zip",
+    "archive_sha256": "0c086500aed2ed48d3df383c91664b152e4a46e2adef6a635fa16d508ebaec0b",
+    "license": "CC-BY-SA-4.0",
+    "name": "MTOP official release (README data format v2)",
+    "source_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d"
+  }
+}

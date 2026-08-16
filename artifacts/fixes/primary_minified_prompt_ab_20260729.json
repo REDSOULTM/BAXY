@@ -1,0 +1,3415 @@
+{
+  "schema": "baxy.primary-minified-prompt-ab.v1",
+  "arm_order": [
+    "baseline",
+    "minified"
+  ],
+  "exclusive_gpu_preflight": {
+    "passed": true,
+    "preexisting_llama_servers": []
+  },
+  "runtime": {
+    "server": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+    "model": "D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+    "model_sha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+    "core": "C:\\Users\\usuario\\AppData\\Local\\Temp\\baxy-core-vc-gate-20260729\\baxy-core.exe",
+    "core_sha256": "b962159c3485e8c306912ebb3422bf1c89ba30803de716af82102743c1e8120c",
+    "parallel": 3,
+    "context_per_slot": 4096
+  },
+  "corpus": {
+    "path": "D:\\BAXY\\source\\tests\\data\\historical_messages.jsonl",
+    "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+    "rows": 14836,
+    "selection_seed": "baxy-primary-minified-prompt-v1",
+    "selected_cases": 11,
+    "selected_sources_sha256": "70c68d696d6eaf786b057853ae73a5726123d06a3dc5dd949cec61bcc98a6760"
+  },
+  "candidate": {
+    "scope": "primary system prompt only",
+    "suffix": "Devuelve JSON minificado, sin espacios ni saltos de línea.",
+    "generic_json_schema_unchanged": true,
+    "all_cases_use_generic_json_schema": true,
+    "response_format_hashes": [
+      "09d7ef6970ad33162f2d5946abc8ff5f62477f140e7528fed21a195a1e851c49",
+      "1f9f4aaa4dcc6ce509f62b6f3a26235f1c879323ac500b2c03c733e127ef5186",
+      "230f54f21505473cd4444474c2055beb45b8b826e0ff6300c47f26527bb2af93",
+      "2aa0f32c3dfed9880b50808e9424678896e24e113b3a852304422f65dc33ae65",
+      "4c0cb22a83c0db35d2a3de62565c75b15e3d87fd8e131a37393afa0ce8868521",
+      "84e545372f8cbba6624747d93cfde2ffc669741e4001873882bc0551c819de81",
+      "8901dbd93f58cb65f354ae5ff36a594bd1a351261f14bf080f14025b97bbae09",
+      "a73c03c6043982342378494d35b3402d624bd0805974f964adf8bfc107a31a7b",
+      "baf235688bb499d72c3ca1667d4756d1ecbb4ca74c691ff7fca5b9e736b771c3",
+      "d44b377e08829f0740aa52a33b49109db30a7481147f841873932a4fa3e4c11b",
+      "fb000816d5f0aca73fdbd90d3f0fa7a6fa6bf4ae0755326778300dd8e36c5fe9"
+    ]
+  },
+  "comparison": {
+    "cases": [
+      {
+        "case_id": "conversation-01",
+        "primary_semantic_equal": false,
+        "final_decision_equal": true,
+        "baseline_expected_mode": true,
+        "candidate_expected_mode": true,
+        "primary_predicted_token_delta": -32.0,
+        "primary_elapsed_delta_seconds": -0.27484779999940656,
+        "e2e_delta_seconds": -0.2748591000017768,
+        "baseline_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "Latencia se refiere al tiempo que tarda una solicitud en ser procesada y recibir una respuesta.",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "¿Te refieres a la latencia en un contexto específico?",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "conversation-02",
+        "primary_semantic_equal": false,
+        "final_decision_equal": true,
+        "baseline_expected_mode": true,
+        "candidate_expected_mode": true,
+        "primary_predicted_token_delta": -32.0,
+        "primary_elapsed_delta_seconds": -0.2787132000012207,
+        "e2e_delta_seconds": -0.2787584000034258,
+        "baseline_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "Es una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente externa.",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "¿Te gustaría que te explique qué es una resistencia eléctrica?",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "conversation-03",
+        "primary_semantic_equal": false,
+        "final_decision_equal": true,
+        "baseline_expected_mode": true,
+        "candidate_expected_mode": true,
+        "primary_predicted_token_delta": -9.0,
+        "primary_elapsed_delta_seconds": 0.022492100000818027,
+        "e2e_delta_seconds": 0.021650699996826006,
+        "baseline_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "¿Necesitas que te explique la idempotencia en el contexto de BAXY o en general?",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "action-01",
+        "primary_semantic_equal": false,
+        "final_decision_equal": false,
+        "baseline_expected_mode": true,
+        "candidate_expected_mode": false,
+        "primary_predicted_token_delta": -20.0,
+        "primary_elapsed_delta_seconds": -0.2721148999989964,
+        "e2e_delta_seconds": 0.44771010000113165,
+        "baseline_primary_projection": {
+          "mode": "action",
+          "operation": "web.search",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "web.search"
+          ],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "¿Necesitas que busque algo específico en Python o quieres que te muestre los resultados generales?",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "action",
+          "operation": "web.search",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "web.search"
+          ],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "multiple",
+          "effect_operations": [
+            "web.search",
+            "task.resolve.exact",
+            "system.process.list",
+            "filesystem.known.duplicates"
+          ],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "action-02",
+        "primary_semantic_equal": true,
+        "final_decision_equal": true,
+        "baseline_expected_mode": false,
+        "candidate_expected_mode": false,
+        "primary_predicted_token_delta": -34.0,
+        "primary_elapsed_delta_seconds": -0.0902001000031305,
+        "e2e_delta_seconds": -0.02281539999967208,
+        "baseline_primary_projection": {
+          "mode": "action",
+          "operation": "app.open",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "app.open"
+          ],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "action",
+          "operation": "app.open",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "app.open"
+          ],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "app.open"
+          ],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "app.open"
+          ],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "action-03",
+        "primary_semantic_equal": false,
+        "final_decision_equal": false,
+        "baseline_expected_mode": false,
+        "candidate_expected_mode": false,
+        "primary_predicted_token_delta": -45.0,
+        "primary_elapsed_delta_seconds": -0.3519747999998799,
+        "e2e_delta_seconds": -0.3518071000034979,
+        "baseline_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "Carter v3, ¿hay algo más que deba recordar sobre este proyecto?",
+          "conversation_kind": "followup",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "followup",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "plan-01",
+        "primary_semantic_equal": false,
+        "final_decision_equal": false,
+        "baseline_expected_mode": true,
+        "candidate_expected_mode": true,
+        "primary_predicted_token_delta": -43.0,
+        "primary_elapsed_delta_seconds": -0.7542858999986493,
+        "e2e_delta_seconds": -0.10712339999736287,
+        "baseline_primary_projection": {
+          "mode": "plan",
+          "operation": "browser.navigate",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "multiple",
+          "effect_operations": [
+            "browser.navigate",
+            "web.search"
+          ],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "action",
+          "operation": "web.search",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "web.search"
+          ],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "multiple",
+          "effect_operations": [
+            "browser.navigate",
+            "web.search"
+          ],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "web.search"
+          ],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "plan-02",
+        "primary_semantic_equal": true,
+        "final_decision_equal": true,
+        "baseline_expected_mode": true,
+        "candidate_expected_mode": true,
+        "primary_predicted_token_delta": -26.0,
+        "primary_elapsed_delta_seconds": -0.03732340000351542,
+        "e2e_delta_seconds": -0.13093449999723816,
+        "baseline_primary_projection": {
+          "mode": "action",
+          "operation": "browser.navigate",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "browser.navigate"
+          ],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "action",
+          "operation": "browser.navigate",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "browser.navigate"
+          ],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "browser.navigate"
+          ],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "browser.navigate"
+          ],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "plan-03",
+        "primary_semantic_equal": true,
+        "final_decision_equal": true,
+        "baseline_expected_mode": true,
+        "candidate_expected_mode": true,
+        "primary_predicted_token_delta": -36.0,
+        "primary_elapsed_delta_seconds": -0.5405970000028901,
+        "e2e_delta_seconds": -0.4528656999973464,
+        "baseline_primary_projection": {
+          "mode": "action",
+          "operation": "browser.navigate",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "browser.navigate"
+          ],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "action",
+          "operation": "browser.navigate",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "browser.navigate"
+          ],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "browser.navigate"
+          ],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "browser.navigate"
+          ],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "clarify-task",
+        "primary_semantic_equal": false,
+        "final_decision_equal": true,
+        "baseline_expected_mode": false,
+        "candidate_expected_mode": false,
+        "primary_predicted_token_delta": -37.0,
+        "primary_elapsed_delta_seconds": -0.15807649999987916,
+        "e2e_delta_seconds": 0.3996880000013334,
+        "baseline_primary_projection": {
+          "mode": "action",
+          "operation": "task.create",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "task.create"
+          ],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "conversation",
+          "operation": "",
+          "question": "",
+          "conversation_kind": "unsupported",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "action",
+          "operation": "task.create",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "task.create"
+          ],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "action",
+          "operation": "task.create",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "task.create"
+          ],
+          "response_language": "es"
+        }
+      },
+      {
+        "case_id": "clarify-note",
+        "primary_semantic_equal": true,
+        "final_decision_equal": true,
+        "baseline_expected_mode": false,
+        "candidate_expected_mode": false,
+        "primary_predicted_token_delta": -36.0,
+        "primary_elapsed_delta_seconds": -0.9344203000000562,
+        "e2e_delta_seconds": -0.9998697999981232,
+        "baseline_primary_projection": {
+          "mode": "action",
+          "operation": "note.create",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "note.create"
+          ],
+          "response_language": "es"
+        },
+        "candidate_primary_projection": {
+          "mode": "action",
+          "operation": "note.create",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "note.create"
+          ],
+          "response_language": "es"
+        },
+        "baseline_final_projection": {
+          "mode": "action",
+          "operation": "note.create",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "note.create"
+          ],
+          "response_language": "es"
+        },
+        "candidate_final_projection": {
+          "mode": "action",
+          "operation": "note.create",
+          "question": "",
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "note.create"
+          ],
+          "response_language": "es"
+        }
+      }
+    ],
+    "primary_semantic_exact": false,
+    "final_decisions_exact": false,
+    "baseline_expected_modes": 7,
+    "candidate_expected_modes": 6,
+    "primary_candidate_wins": 10,
+    "e2e_candidate_wins": 8,
+    "primary_predicted_token_delta_total": -350.0,
+    "primary_elapsed_delta_seconds": {
+      "count": 11,
+      "total": -3.670061800006806,
+      "mean": -0.33364198181880056,
+      "p50": -0.27484779999940656,
+      "p95": -0.007415650001348695,
+      "max": 0.022492100000818027
+    },
+    "e2e_delta_seconds": {
+      "count": 11,
+      "total": -1.7499845999991521,
+      "mean": -0.159089509090832,
+      "p50": -0.13093449999723816,
+      "p95": 0.42369905000123254,
+      "max": 0.44771010000113165
+    }
+  },
+  "arms": [
+    {
+      "profile": "baseline",
+      "prompt_sha256": "f7edfb2dab01b54a5c3d7dacfc81e79a0cf4d4954a656afbf5030ed683ac4b1c",
+      "prompt_chars": 2769,
+      "cases": [
+        {
+          "case_id": "conversation-01",
+          "source": "msg_b61d46d0e270aa1f9d72",
+          "text": "qué es latencia",
+          "expected_mode": "conversation",
+          "expected_operations": [],
+          "candidate_names": [
+            "note.restore",
+            "app.open",
+            "message.send",
+            "filesystem.sandbox.append.named"
+          ],
+          "elapsed_seconds": 3.0764796000003116,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "conversation-02",
+          "source": "msg_d40203029671eeacf230",
+          "text": "qué es una resistencia eléctrica",
+          "expected_mode": "conversation",
+          "expected_operations": [],
+          "candidate_names": [
+            "backup.create",
+            "app.open",
+            "window.resolve",
+            "peripheral.list"
+          ],
+          "elapsed_seconds": 2.476458000001003,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "conversation-03",
+          "source": "msg_da3449194b05d0ad7f9f",
+          "text": "explica idempotencia",
+          "expected_mode": "conversation",
+          "expected_operations": [],
+          "candidate_names": [
+            "notification.cancel.latest",
+            "filesystem.write.text",
+            "system.status",
+            "task.search"
+          ],
+          "elapsed_seconds": 2.222105900000315,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "action-01",
+          "source": "msg_c51ebb28e9a836c8ea8b",
+          "text": "search on bing for python",
+          "expected_mode": "action",
+          "expected_operations": [
+            "web.search"
+          ],
+          "candidate_names": [
+            "web.search",
+            "task.resolve.exact",
+            "system.process.list",
+            "filesystem.known.duplicates"
+          ],
+          "elapsed_seconds": 3.546998900001199,
+          "decision": {
+            "mode": "action",
+            "operation": "web.search",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "web.search"
+            ],
+            "effect_verification": "agreed",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "action",
+            "operation": "web.search",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "web.search"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "action-02",
+          "source": "msg_98d06426515623e13e72",
+          "text": "abre la app de configuración",
+          "expected_mode": "action",
+          "expected_operations": [
+            "app.open"
+          ],
+          "candidate_names": [
+            "app.open",
+            "routine.phrase.create",
+            "wifi.connect.named",
+            "system.process.list"
+          ],
+          "elapsed_seconds": 3.1017912999996042,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "app.open"
+            ],
+            "effect_verification": "disagreement",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "app.open"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "action-03",
+          "source": "msg_3d93b750a663115ac1ff",
+          "text": "recuerda que mi proyecto se llama Carter v3",
+          "expected_mode": "action",
+          "expected_operations": [
+            "memory.save"
+          ],
+          "candidate_names": [
+            "memory.save",
+            "ocr.read",
+            "filesystem.known.trash.named",
+            "audio.microphone.mute"
+          ],
+          "elapsed_seconds": 2.4693929000022763,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "followup",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "followup",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "plan-01",
+          "source": "msg_ef6a46d916293f229077",
+          "text": "open the browser, search for hotels in Rome, open the first one and save it to favorites",
+          "expected_mode": "plan",
+          "expected_operations": [
+            "browser.navigate",
+            "web.search"
+          ],
+          "candidate_names": [
+            "browser.navigate",
+            "web.search",
+            "package.install.prepare",
+            "system.process.terminate.named"
+          ],
+          "elapsed_seconds": 2.7285768000001553,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "multiple",
+            "effect_operations": [
+              "browser.navigate",
+              "web.search"
+            ],
+            "effect_verification": "multiple",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "multiple",
+            "effect_operations": [
+              "browser.navigate",
+              "web.search"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "plan-02",
+          "source": "msg_a041d3cc1896f6840a08",
+          "text": "abre el navegador, ve a YouTube, busca lofi, ponla a sonar y baja el volumen",
+          "expected_mode": "plan",
+          "expected_operations": [
+            "audio.volume",
+            "browser.navigate",
+            "streaming.navigate",
+            "web.search"
+          ],
+          "candidate_names": [
+            "audio.volume",
+            "browser.navigate",
+            "streaming.navigate",
+            "web.search"
+          ],
+          "elapsed_seconds": 3.368338299998868,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "effect_verification": "disagreement",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "plan-03",
+          "source": "msg_eb3bb0677e401c1f52f4",
+          "text": "abre el navegador, ve a Wikipedia y busca la teoria de la relatividad",
+          "expected_mode": "plan",
+          "expected_operations": [
+            "browser.navigate",
+            "web.search"
+          ],
+          "candidate_names": [
+            "browser.navigate",
+            "web.search",
+            "filesystem.copy",
+            "backup.known.create"
+          ],
+          "elapsed_seconds": 3.1830597999978636,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "effect_verification": "disagreement",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "clarify-task",
+          "source": "curated-incomplete-request",
+          "text": "Crea una tarea.",
+          "expected_mode": "clarify",
+          "expected_operations": [],
+          "candidate_names": [
+            "task.create",
+            "task.update",
+            "capture.active.window",
+            "reminder.restore"
+          ],
+          "elapsed_seconds": 3.7247773999988567,
+          "decision": {
+            "mode": "action",
+            "operation": "task.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "task.create"
+            ],
+            "effect_verification": "agreed",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "action",
+            "operation": "task.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "task.create"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "clarify-note",
+          "source": "curated-incomplete-request",
+          "text": "Crea una nota.",
+          "expected_mode": "clarify",
+          "expected_operations": [],
+          "candidate_names": [
+            "note.create",
+            "routine.delete",
+            "system.process.list",
+            "backup.list"
+          ],
+          "elapsed_seconds": 4.2283621999995376,
+          "decision": {
+            "mode": "action",
+            "operation": "note.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "note.create"
+            ],
+            "effect_verification": "agreed",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "action",
+            "operation": "note.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "note.create"
+            ],
+            "response_language": "es"
+          }
+        }
+      ],
+      "primary_posts": [
+        {
+          "case": "conversation-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "f7f90db1126d02da0788b35c8cad812d1d18f9b72850382482076bde03e519ad",
+          "elapsed_seconds": 3.0754402999991726,
+          "cache_n": 0,
+          "prompt_n": 691,
+          "prompt_ms": 895.904,
+          "predicted_n": 88,
+          "predicted_ms": 2151.349,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Latencia se refiere al tiempo que tarda una solicitud en ser procesada y recibir una respuesta.\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 278,
+          "content_utf8_bytes": 278,
+          "content_whitespace_chars": 44,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "Latencia se refiere al tiempo que tarda una solicitud en ser procesada y recibir una respuesta.",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "conversation-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "96adc7ad9fd3436d03beb9d863f39c8a95260ec9a3a02f66e473d4c7202ccdf8",
+          "elapsed_seconds": 2.475464800001646,
+          "cache_n": 565,
+          "prompt_n": 125,
+          "prompt_ms": 238.737,
+          "predicted_n": 87,
+          "predicted_ms": 2217.479,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Es una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente externa.\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 288,
+          "content_utf8_bytes": 288,
+          "content_whitespace_chars": 44,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "Es una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente externa.",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "conversation-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "8b7b2de848d772f3e01d2847c97d3f0c6455703ad33989900f2be0b027988b59",
+          "elapsed_seconds": 2.220397299999604,
+          "cache_n": 563,
+          "prompt_n": 116,
+          "prompt_ms": 261.384,
+          "predicted_n": 69,
+          "predicted_ms": 1932.393,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 183,
+          "content_utf8_bytes": 183,
+          "content_whitespace_chars": 29,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "action-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "c63afbd6499da65acd1d43149b63e90289e555de5c60f32ba29de8f03ab5f066",
+          "elapsed_seconds": 2.360810499998479,
+          "cache_n": 563,
+          "prompt_n": 128,
+          "prompt_ms": 251.534,
+          "predicted_n": 80,
+          "predicted_ms": 2088.244,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"web.search\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"web.search\"\n  ],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 197,
+          "content_utf8_bytes": 197,
+          "content_whitespace_chars": 37,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "web.search",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "web.search"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "action-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "d06435bc68d12365bd32732e07ee9e82b4965e52c4052f815e016f9f325c252e",
+          "elapsed_seconds": 2.372985100002552,
+          "cache_n": 554,
+          "prompt_n": 161,
+          "prompt_ms": 316.027,
+          "predicted_n": 80,
+          "predicted_ms": 2036.832,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"app.open\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"app.open\"\n  ],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 193,
+          "content_utf8_bytes": 193,
+          "content_whitespace_chars": 37,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "app.open",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "app.open"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "action-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "08cfb7a94ec03360dfc7273a8a2e6be878b2bd206dd673611341c875d2ca050c",
+          "elapsed_seconds": 2.468344499997329,
+          "cache_n": 563,
+          "prompt_n": 119,
+          "prompt_ms": 245.947,
+          "predicted_n": 86,
+          "predicted_ms": 2212.61,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Carter v3, ¿hay algo más que deba recordar sobre este proyecto?\",\n  \"conversation_kind\": \"followup\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 245,
+          "content_utf8_bytes": 247,
+          "content_whitespace_chars": 39,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "Carter v3, ¿hay algo más que deba recordar sobre este proyecto?",
+            "conversation_kind": "followup",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "plan-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "abf62c5d46ab475dcff208ef03f24354e0486da98c3f89e451b263a6e686a15e",
+          "elapsed_seconds": 2.727828999999474,
+          "cache_n": 563,
+          "prompt_n": 156,
+          "prompt_ms": 260.963,
+          "predicted_n": 87,
+          "predicted_ms": 2445.041,
+          "content": "{\n  \"mode\": \"plan\",\n  \"operation\": \"browser.navigate\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"multiple\",\n  \"effect_operations\": [\n    \"browser.navigate\",\n    \"web.search\"\n  ],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 230,
+          "content_utf8_bytes": 230,
+          "content_whitespace_chars": 42,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "plan",
+            "operation": "browser.navigate",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "multiple",
+            "effect_operations": [
+              "browser.navigate",
+              "web.search"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "plan-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "c39a983a8ea16d699b92002b2e32583cc6ae6edc18711eb0072ed2b8724f1771",
+          "elapsed_seconds": 2.4757869000022765,
+          "cache_n": 563,
+          "prompt_n": 124,
+          "prompt_ms": 243.053,
+          "predicted_n": 80,
+          "predicted_ms": 2208.779,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"browser.navigate\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"browser.navigate\"\n  ],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 209,
+          "content_utf8_bytes": 209,
+          "content_whitespace_chars": 37,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "browser.navigate",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "plan-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "a5f15554c2ca5ed1803d8e16a76bef1c9908e6d63127a636978a0b1fe6cb77d0",
+          "elapsed_seconds": 2.408099200001743,
+          "cache_n": 569,
+          "prompt_n": 113,
+          "prompt_ms": 264.04,
+          "predicted_n": 80,
+          "predicted_ms": 2133.064,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"browser.navigate\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"browser.navigate\"\n  ],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 209,
+          "content_utf8_bytes": 209,
+          "content_whitespace_chars": 37,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "browser.navigate",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "clarify-task",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "7a4bed5d5963eb8ab3438871c94749673959eb6535779d107b45fa0c74f4f5a2",
+          "elapsed_seconds": 2.404017799999565,
+          "cache_n": 563,
+          "prompt_n": 112,
+          "prompt_ms": 300.463,
+          "predicted_n": 80,
+          "predicted_ms": 2093.754,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 199,
+          "content_utf8_bytes": 199,
+          "content_whitespace_chars": 37,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "task.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "task.create"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "clarify-note",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "4bc4310976c985f27ef7a8bdfe17f585d4c84d4fae5fdb0c152ef0a132d139c3",
+          "elapsed_seconds": 3.0846238999984052,
+          "cache_n": 562,
+          "prompt_n": 121,
+          "prompt_ms": 277.686,
+          "predicted_n": 80,
+          "predicted_ms": 2780.982,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"note.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"note.create\"\n  ],\n  \"response_language\": \"es\"\n}",
+          "content_chars": 199,
+          "content_utf8_bytes": 199,
+          "content_whitespace_chars": 37,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "note.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "note.create"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        }
+      ],
+      "all_posts": [
+        {
+          "case": "conversation-01",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "43bd07c9bc2abbf0b7b2b1337db95244020e480333e6d7bede66a29b300f0bd5",
+          "elapsed_seconds": 1.1812637000002724,
+          "cache_n": 0,
+          "prompt_n": 224,
+          "prompt_ms": 946.735,
+          "predicted_n": 6,
+          "predicted_ms": 207.333,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "conversation-01",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "43dfebf3e50cf6520baa9b8a4a936331eb86ae6c91b58db8c250f3806eace70f",
+          "elapsed_seconds": 1.6531520999997156,
+          "cache_n": 0,
+          "prompt_n": 164,
+          "prompt_ms": 534.4,
+          "predicted_n": 20,
+          "predicted_ms": 1111.706,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "conversation-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "f7f90db1126d02da0788b35c8cad812d1d18f9b72850382482076bde03e519ad",
+          "elapsed_seconds": 3.0754402999991726,
+          "cache_n": 0,
+          "prompt_n": 691,
+          "prompt_ms": 895.904,
+          "predicted_n": 88,
+          "predicted_ms": 2151.349,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Latencia se refiere al tiempo que tarda una solicitud en ser procesada y recibir una respuesta.\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "conversation-02",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "ebfdbe8b9be6dd50015b13dfa4be89e41a5220c11f3731fd92bdadd5769e02bd",
+          "elapsed_seconds": 0.6301903999992646,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 376.329,
+          "predicted_n": 6,
+          "predicted_ms": 199.664,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "conversation-02",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "8c53768d00bda5351ffe77ccccdbc902e6ff6b8ccae4690a765b963355d470fd",
+          "elapsed_seconds": 1.1180234999992535,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 360.848,
+          "predicted_n": 19,
+          "predicted_ms": 734.9,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "conversation-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "96adc7ad9fd3436d03beb9d863f39c8a95260ec9a3a02f66e473d4c7202ccdf8",
+          "elapsed_seconds": 2.475464800001646,
+          "cache_n": 565,
+          "prompt_n": 125,
+          "prompt_ms": 238.737,
+          "predicted_n": 87,
+          "predicted_ms": 2217.479,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Es una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente externa.\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "conversation-03",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "13ac1474e91cb2ed9a96840468ea867e6809398a21bbb27977ed6fa318bd26d2",
+          "elapsed_seconds": 0.5401120999995328,
+          "cache_n": 206,
+          "prompt_n": 18,
+          "prompt_ms": 335.917,
+          "predicted_n": 6,
+          "predicted_ms": 182.379,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "conversation-03",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "a7202e54e670d503fed844559be5ac041a378a7aaf7658244d15e7710edf2112",
+          "elapsed_seconds": 1.1176353999981075,
+          "cache_n": 146,
+          "prompt_n": 18,
+          "prompt_ms": 386.696,
+          "predicted_n": 19,
+          "predicted_ms": 700.257,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "conversation-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "8b7b2de848d772f3e01d2847c97d3f0c6455703ad33989900f2be0b027988b59",
+          "elapsed_seconds": 2.220397299999604,
+          "cache_n": 563,
+          "prompt_n": 116,
+          "prompt_ms": 261.384,
+          "predicted_n": 69,
+          "predicted_ms": 1932.393,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "action-01",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "32fbe4311104cd463c3932f5075d8635d4c487077486b253edbc8d903e5d7d23",
+          "elapsed_seconds": 0.6417222999989463,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 384.778,
+          "predicted_n": 6,
+          "predicted_ms": 198.575,
+          "content": "{\"language\":\"en\"}"
+        },
+        {
+          "case": "action-01",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "f8299084101882d76be26231455bd25ea724329b9c10abf325c16c4c07c7dee8",
+          "elapsed_seconds": 1.1249188000001595,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 372.971,
+          "predicted_n": 19,
+          "predicted_ms": 726.663,
+          "content": "{\"request_type\":\"external_read\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "action-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "c63afbd6499da65acd1d43149b63e90289e555de5c60f32ba29de8f03ab5f066",
+          "elapsed_seconds": 2.360810499998479,
+          "cache_n": 563,
+          "prompt_n": 128,
+          "prompt_ms": 251.534,
+          "predicted_n": 80,
+          "predicted_ms": 2088.244,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"web.search\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"web.search\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "action-01",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "d639e02c950272faa16d27dae24056206a6397875e698f4ebca81e916b8fd525",
+          "elapsed_seconds": 0.6359073999992688,
+          "cache_n": 0,
+          "prompt_n": 77,
+          "prompt_ms": 153.254,
+          "predicted_n": 10,
+          "predicted_ms": 459.657,
+          "content": "{\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "action-01",
+          "stage": "C",
+          "id_slot": null,
+          "payload_sha256": "202322ab50c52b553a170e0c2754aaefeefce9e89ac37fc6689ecc906bc28e24",
+          "elapsed_seconds": 0.5488340000010794,
+          "cache_n": 0,
+          "prompt_n": 163,
+          "prompt_ms": 186.774,
+          "predicted_n": 9,
+          "predicted_ms": 354.213,
+          "content": "{\"compatible\":true}"
+        },
+        {
+          "case": "action-02",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "91f212583a1f9c6bd8e41309ec9432ca3c6fee30723172e4ef46e037247bdd37",
+          "elapsed_seconds": 0.6788419999975304,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 390.686,
+          "predicted_n": 6,
+          "predicted_ms": 228.697,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "action-02",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "34fc6718b82e7fd2e838548f83026638bbd66ea64ec30be8a2580248aa6e730e",
+          "elapsed_seconds": 1.1640564000008453,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 373.526,
+          "predicted_n": 19,
+          "predicted_ms": 764.294,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "action-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "d06435bc68d12365bd32732e07ee9e82b4965e52c4052f815e016f9f325c252e",
+          "elapsed_seconds": 2.372985100002552,
+          "cache_n": 554,
+          "prompt_n": 161,
+          "prompt_ms": 316.027,
+          "predicted_n": 80,
+          "predicted_ms": 2036.832,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"app.open\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"app.open\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "action-02",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "a88aa15fe423e89679c257974008bde891ca1d4f8119682c766c053750ce7709",
+          "elapsed_seconds": 0.7277657999984513,
+          "cache_n": 63,
+          "prompt_n": 14,
+          "prompt_ms": 134.115,
+          "predicted_n": 11,
+          "predicted_ms": 567.625,
+          "content": "{\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "action-03",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "da4cef9a95e15787ddf736aee48a5386f8d6de94f351128df2af8d7744ecd486",
+          "elapsed_seconds": 0.7009370999985549,
+          "cache_n": 206,
+          "prompt_n": 25,
+          "prompt_ms": 329.295,
+          "predicted_n": 6,
+          "predicted_ms": 263.79,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "action-03",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "f0204e5296ab9f33ba14e44859f70aae3069b095e75177fe2bb596adbc09da3b",
+          "elapsed_seconds": 1.1336426000016218,
+          "cache_n": 146,
+          "prompt_n": 25,
+          "prompt_ms": 374.757,
+          "predicted_n": 19,
+          "predicted_ms": 744.462,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "action-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "08cfb7a94ec03360dfc7273a8a2e6be878b2bd206dd673611341c875d2ca050c",
+          "elapsed_seconds": 2.468344499997329,
+          "cache_n": 563,
+          "prompt_n": 119,
+          "prompt_ms": 245.947,
+          "predicted_n": 86,
+          "predicted_ms": 2212.61,
+          "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"Carter v3, ¿hay algo más que deba recordar sobre este proyecto?\",\n  \"conversation_kind\": \"followup\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "plan-01",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "a62e0fb573248f97affe3172d7d07b04221b259020f43f085cb94f284d87b447",
+          "elapsed_seconds": 0.7548274000000674,
+          "cache_n": 206,
+          "prompt_n": 33,
+          "prompt_ms": 353.364,
+          "predicted_n": 6,
+          "predicted_ms": 271.904,
+          "content": "{\"language\":\"en\"}"
+        },
+        {
+          "case": "plan-01",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "c7458043063ebb9dab74960d673c063fadc5c94822f12b345b4e3d7529590627",
+          "elapsed_seconds": 1.1865228999995452,
+          "cache_n": 146,
+          "prompt_n": 33,
+          "prompt_ms": 404.968,
+          "predicted_n": 19,
+          "predicted_ms": 756.421,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "abf62c5d46ab475dcff208ef03f24354e0486da98c3f89e451b263a6e686a15e",
+          "elapsed_seconds": 2.727828999999474,
+          "cache_n": 563,
+          "prompt_n": 156,
+          "prompt_ms": 260.963,
+          "predicted_n": 87,
+          "predicted_ms": 2445.041,
+          "content": "{\n  \"mode\": \"plan\",\n  \"operation\": \"browser.navigate\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"multiple\",\n  \"effect_operations\": [\n    \"browser.navigate\",\n    \"web.search\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "plan-02",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "f1dbe85f618590976dd4397a98778ec2dbd47077d45b9161b87d6e38e6c6924a",
+          "elapsed_seconds": 0.7279097999999067,
+          "cache_n": 206,
+          "prompt_n": 34,
+          "prompt_ms": 343.326,
+          "predicted_n": 6,
+          "predicted_ms": 269.02,
+          "content": "{\"language\":\"mixed\"}"
+        },
+        {
+          "case": "plan-02",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "07561c6ee9cd0c3ce3b8f19cc1120c51344c74d575d1929ebabb811ecead8391",
+          "elapsed_seconds": 1.1659419999996317,
+          "cache_n": 146,
+          "prompt_n": 34,
+          "prompt_ms": 380.791,
+          "predicted_n": 19,
+          "predicted_ms": 757.651,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "c39a983a8ea16d699b92002b2e32583cc6ae6edc18711eb0072ed2b8724f1771",
+          "elapsed_seconds": 2.4757869000022765,
+          "cache_n": 563,
+          "prompt_n": 124,
+          "prompt_ms": 243.053,
+          "predicted_n": 80,
+          "predicted_ms": 2208.779,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"browser.navigate\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"browser.navigate\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "plan-02",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "476e11545e945024e33b12d60722365b6751ae8b61cfa2a2c3b3de482a2d3b55",
+          "elapsed_seconds": 0.8914441000015358,
+          "cache_n": 63,
+          "prompt_n": 29,
+          "prompt_ms": 144.493,
+          "predicted_n": 12,
+          "predicted_ms": 714.847,
+          "content": "{\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-03",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "bafee2e3387a469674a6fc540841d3a918e3b52d874b47b19a66333026499c35",
+          "elapsed_seconds": 0.7656803000027139,
+          "cache_n": 206,
+          "prompt_n": 29,
+          "prompt_ms": 381.896,
+          "predicted_n": 6,
+          "predicted_ms": 276.087,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "plan-03",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "a0280d8f90668eac8e870184b0bd79081121bfde7daad79ca4704a55e98d73fb",
+          "elapsed_seconds": 1.2162267999992764,
+          "cache_n": 146,
+          "prompt_n": 29,
+          "prompt_ms": 423.188,
+          "predicted_n": 19,
+          "predicted_ms": 777.074,
+          "content": "{\"request_type\":\"external_read\",\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "a5f15554c2ca5ed1803d8e16a76bef1c9908e6d63127a636978a0b1fe6cb77d0",
+          "elapsed_seconds": 2.408099200001743,
+          "cache_n": 569,
+          "prompt_n": 113,
+          "prompt_ms": 264.04,
+          "predicted_n": 80,
+          "predicted_ms": 2133.064,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"browser.navigate\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"browser.navigate\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "plan-03",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "0968aa28be8af8b3417355faaae09d3f3266cdffa4198b3dc2b40d6fc40f5c78",
+          "elapsed_seconds": 0.7737788000013097,
+          "cache_n": 63,
+          "prompt_n": 24,
+          "prompt_ms": 146.404,
+          "predicted_n": 12,
+          "predicted_ms": 597.435,
+          "content": "{\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "be69e776765bfdfb13b769e25ebde5dc91f79d19ae1993a94874fe181d7696e2",
+          "elapsed_seconds": 0.7655861999992339,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 347.955,
+          "predicted_n": 6,
+          "predicted_ms": 263.788,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "76ad10aad45debf6da7d28682eddddc23622b229a4c68d4385847f3d406e3cb8",
+          "elapsed_seconds": 1.2008791000007477,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 437.944,
+          "predicted_n": 19,
+          "predicted_ms": 748.434,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "7a4bed5d5963eb8ab3438871c94749673959eb6535779d107b45fa0c74f4f5a2",
+          "elapsed_seconds": 2.404017799999565,
+          "cache_n": 563,
+          "prompt_n": 112,
+          "prompt_ms": 300.463,
+          "predicted_n": 80,
+          "predicted_ms": 2093.754,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"task.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"task.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "345ce74553ec84881e7c52565ed6af78943a8ccb9c9bee670be8260ac9bd4983",
+          "elapsed_seconds": 0.778861800001323,
+          "cache_n": 63,
+          "prompt_n": 14,
+          "prompt_ms": 135.014,
+          "predicted_n": 11,
+          "predicted_ms": 617.367,
+          "content": "{\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "C",
+          "id_slot": null,
+          "payload_sha256": "758e16e8f488d7161460b9dd4280e0b9f97054ad5fe4d2884589d8671d53536c",
+          "elapsed_seconds": 0.5405233999990742,
+          "cache_n": 58,
+          "prompt_n": 126,
+          "prompt_ms": 175.776,
+          "predicted_n": 9,
+          "predicted_ms": 353.446,
+          "content": "{\"compatible\":true}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "19a6f3ffb62fca97babbbe4ce1d31cf7d084a69ccf692a28539571b45b42ba9c",
+          "elapsed_seconds": 0.7164831000009144,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 350.677,
+          "predicted_n": 6,
+          "predicted_ms": 203.44,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "3e02e4f64e7a05770588830ae8033128d749876c1e8a65863b5bef36f9701937",
+          "elapsed_seconds": 1.5429093999991892,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 428.602,
+          "predicted_n": 19,
+          "predicted_ms": 1094.299,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "4bc4310976c985f27ef7a8bdfe17f585d4c84d4fae5fdb0c152ef0a132d139c3",
+          "elapsed_seconds": 3.0846238999984052,
+          "cache_n": 562,
+          "prompt_n": 121,
+          "prompt_ms": 277.686,
+          "predicted_n": 80,
+          "predicted_ms": 2780.982,
+          "content": "{\n  \"mode\": \"action\",\n  \"operation\": \"note.create\",\n  \"question\": \"\",\n  \"conversation_kind\": \"\",\n  \"effect_count\": \"one\",\n  \"effect_operations\": [\n    \"note.create\"\n  ],\n  \"response_language\": \"es\"\n}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "1e4cd51be5c304d30bcd3d18b13612edad16a166c64eded07049dd937588ca60",
+          "elapsed_seconds": 0.6347686000008252,
+          "cache_n": 63,
+          "prompt_n": 14,
+          "prompt_ms": 130.909,
+          "predicted_n": 10,
+          "predicted_ms": 475.219,
+          "content": "{\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "C",
+          "id_slot": null,
+          "payload_sha256": "285dbbaf8258ccdc69395704d89579236e0db34677c65d1c46810f52bed47c1c",
+          "elapsed_seconds": 0.5075480999985302,
+          "cache_n": 58,
+          "prompt_n": 105,
+          "prompt_ms": 183.315,
+          "predicted_n": 9,
+          "predicted_ms": 312.138,
+          "content": "{\"compatible\":true}"
+        }
+      ],
+      "stage_summary": {
+        "P": {
+          "calls": 11,
+          "cache_n_median": 563.0,
+          "prompt_n_median": 124.0,
+          "prompt_ms_median": 261.384,
+          "elapsed_median_seconds": 2.468344499997329
+        },
+        "G": {
+          "calls": 11,
+          "cache_n_median": 146.0,
+          "prompt_n_median": 19.0,
+          "prompt_ms_median": 386.696,
+          "elapsed_median_seconds": 1.1659419999996317
+        },
+        "L": {
+          "calls": 11,
+          "cache_n_median": 206.0,
+          "prompt_n_median": 19.0,
+          "prompt_ms_median": 353.364,
+          "elapsed_median_seconds": 0.7164831000009144
+        },
+        "V": {
+          "calls": 6,
+          "cache_n_median": 63.0,
+          "prompt_n_median": 19.0,
+          "prompt_ms_median": 139.7535,
+          "elapsed_median_seconds": 0.7507722999998805
+        },
+        "C": {
+          "calls": 3,
+          "cache_n_median": 58.0,
+          "prompt_n_median": 126.0,
+          "prompt_ms_median": 183.315,
+          "elapsed_median_seconds": 0.5405233999990742
+        }
+      },
+      "primary_metrics": {
+        "elapsed_seconds": {
+          "count": 11,
+          "total": 28.073799300000246,
+          "mean": 2.552163572727295,
+          "p50": 2.468344499997329,
+          "p95": 3.080032099998789,
+          "max": 3.0846238999984052
+        },
+        "predicted_tokens": {
+          "count": 11,
+          "total": 897.0,
+          "mean": 81.54545454545455,
+          "p50": 80.0,
+          "p95": 87.5,
+          "max": 88.0
+        },
+        "predicted_seconds": {
+          "count": 11,
+          "total": 24.300527,
+          "mean": 2.209138818181818,
+          "p50": 2.151349,
+          "p95": 2.6130115,
+          "max": 2.780982
+        },
+        "prompt_tokens": {
+          "count": 11,
+          "total": 1966.0,
+          "mean": 178.72727272727272,
+          "p50": 124.0,
+          "p95": 426.0,
+          "max": 691.0
+        },
+        "prompt_seconds": {
+          "count": 11,
+          "total": 3.555738,
+          "mean": 0.3232489090909091,
+          "p50": 0.261384,
+          "p95": 0.6059655,
+          "max": 0.895904
+        },
+        "cache_tokens": {
+          "count": 11,
+          "total": 5628.0,
+          "mean": 511.6363636363636,
+          "p50": 563.0,
+          "p95": 567.0,
+          "max": 569.0
+        },
+        "minified_outputs": 0,
+        "whitespace_chars_total": 420,
+        "content_chars_total": 2430
+      },
+      "decision_pipeline_e2e_seconds": {
+        "count": 11,
+        "total": 34.12634109999999,
+        "mean": 3.102394645454545,
+        "p50": 3.1017912999996042,
+        "p95": 3.976569799999197,
+        "max": 4.2283621999995376
+      }
+    },
+    {
+      "profile": "minified",
+      "prompt_sha256": "5d738d94ba1c61087ab21700770eafe518350d42e38d12a8a9f94e4293f10451",
+      "prompt_chars": 2828,
+      "cases": [
+        {
+          "case_id": "conversation-01",
+          "source": "msg_b61d46d0e270aa1f9d72",
+          "text": "qué es latencia",
+          "expected_mode": "conversation",
+          "expected_operations": [],
+          "candidate_names": [
+            "note.restore",
+            "app.open",
+            "message.send",
+            "filesystem.sandbox.append.named"
+          ],
+          "elapsed_seconds": 2.801620499998535,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "conversation-02",
+          "source": "msg_d40203029671eeacf230",
+          "text": "qué es una resistencia eléctrica",
+          "expected_mode": "conversation",
+          "expected_operations": [],
+          "candidate_names": [
+            "backup.create",
+            "app.open",
+            "window.resolve",
+            "peripheral.list"
+          ],
+          "elapsed_seconds": 2.197699599997577,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "conversation-03",
+          "source": "msg_da3449194b05d0ad7f9f",
+          "text": "explica idempotencia",
+          "expected_mode": "conversation",
+          "expected_operations": [],
+          "candidate_names": [
+            "notification.cancel.latest",
+            "filesystem.write.text",
+            "system.status",
+            "task.search"
+          ],
+          "elapsed_seconds": 2.243756599997141,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "action-01",
+          "source": "msg_c51ebb28e9a836c8ea8b",
+          "text": "search on bing for python",
+          "expected_mode": "action",
+          "expected_operations": [
+            "web.search"
+          ],
+          "candidate_names": [
+            "web.search",
+            "task.resolve.exact",
+            "system.process.list",
+            "filesystem.known.duplicates"
+          ],
+          "elapsed_seconds": 3.994709000002331,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "multiple",
+            "effect_operations": [
+              "web.search",
+              "task.resolve.exact",
+              "system.process.list",
+              "filesystem.known.duplicates"
+            ],
+            "effect_verification": "multiple",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "multiple",
+            "effect_operations": [
+              "web.search",
+              "task.resolve.exact",
+              "system.process.list",
+              "filesystem.known.duplicates"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "action-02",
+          "source": "msg_98d06426515623e13e72",
+          "text": "abre la app de configuración",
+          "expected_mode": "action",
+          "expected_operations": [
+            "app.open"
+          ],
+          "candidate_names": [
+            "app.open",
+            "routine.phrase.create",
+            "wifi.connect.named",
+            "system.process.list"
+          ],
+          "elapsed_seconds": 3.078975899999932,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "app.open"
+            ],
+            "effect_verification": "disagreement",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "app.open"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "action-03",
+          "source": "msg_3d93b750a663115ac1ff",
+          "text": "recuerda que mi proyecto se llama Carter v3",
+          "expected_mode": "action",
+          "expected_operations": [
+            "memory.save"
+          ],
+          "candidate_names": [
+            "memory.save",
+            "ocr.read",
+            "filesystem.known.trash.named",
+            "audio.microphone.mute"
+          ],
+          "elapsed_seconds": 2.1175857999987784,
+          "decision": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "conversation",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "plan-01",
+          "source": "msg_ef6a46d916293f229077",
+          "text": "open the browser, search for hotels in Rome, open the first one and save it to favorites",
+          "expected_mode": "plan",
+          "expected_operations": [
+            "browser.navigate",
+            "web.search"
+          ],
+          "candidate_names": [
+            "browser.navigate",
+            "web.search",
+            "package.install.prepare",
+            "system.process.terminate.named"
+          ],
+          "elapsed_seconds": 2.6214534000027925,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "web.search"
+            ],
+            "effect_verification": "disagreement",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "web.search"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "plan-02",
+          "source": "msg_a041d3cc1896f6840a08",
+          "text": "abre el navegador, ve a YouTube, busca lofi, ponla a sonar y baja el volumen",
+          "expected_mode": "plan",
+          "expected_operations": [
+            "audio.volume",
+            "browser.navigate",
+            "streaming.navigate",
+            "web.search"
+          ],
+          "candidate_names": [
+            "audio.volume",
+            "browser.navigate",
+            "streaming.navigate",
+            "web.search"
+          ],
+          "elapsed_seconds": 3.23740380000163,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "effect_verification": "disagreement",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "plan-03",
+          "source": "msg_eb3bb0677e401c1f52f4",
+          "text": "abre el navegador, ve a Wikipedia y busca la teoria de la relatividad",
+          "expected_mode": "plan",
+          "expected_operations": [
+            "browser.navigate",
+            "web.search"
+          ],
+          "candidate_names": [
+            "browser.navigate",
+            "web.search",
+            "filesystem.copy",
+            "backup.known.create"
+          ],
+          "elapsed_seconds": 2.730194100000517,
+          "decision": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "effect_verification": "disagreement",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "plan",
+            "operation": null,
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "clarify-task",
+          "source": "curated-incomplete-request",
+          "text": "Crea una tarea.",
+          "expected_mode": "clarify",
+          "expected_operations": [],
+          "candidate_names": [
+            "task.create",
+            "task.update",
+            "capture.active.window",
+            "reminder.restore"
+          ],
+          "elapsed_seconds": 4.12446540000019,
+          "decision": {
+            "mode": "action",
+            "operation": "task.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "task.create"
+            ],
+            "effect_verification": "recovered",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "action",
+            "operation": "task.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "task.create"
+            ],
+            "response_language": "es"
+          }
+        },
+        {
+          "case_id": "clarify-note",
+          "source": "curated-incomplete-request",
+          "text": "Crea una nota.",
+          "expected_mode": "clarify",
+          "expected_operations": [],
+          "candidate_names": [
+            "note.create",
+            "routine.delete",
+            "system.process.list",
+            "backup.list"
+          ],
+          "elapsed_seconds": 3.2284924000014144,
+          "decision": {
+            "mode": "action",
+            "operation": "note.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "note.create"
+            ],
+            "effect_verification": "agreed",
+            "response_language": "es"
+          },
+          "decision_projection": {
+            "mode": "action",
+            "operation": "note.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "note.create"
+            ],
+            "response_language": "es"
+          }
+        }
+      ],
+      "primary_posts": [
+        {
+          "case": "conversation-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "ebee537fee0c1e810f69e31936859abe0df1c851907666988a3b4577d8db20c1",
+          "elapsed_seconds": 2.800592499999766,
+          "cache_n": 0,
+          "prompt_n": 705,
+          "prompt_ms": 898.102,
+          "predicted_n": 56,
+          "predicted_ms": 1877.022,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"¿Te refieres a la latencia en un contexto específico?\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}",
+          "content_chars": 207,
+          "content_utf8_bytes": 209,
+          "content_whitespace_chars": 8,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "¿Te refieres a la latencia en un contexto específico?",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "conversation-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "5c05b2a03e9537b694f3b7f8d953f2c92ec2cb472ffb567ccd4124c6a6f56735",
+          "elapsed_seconds": 2.1967516000004252,
+          "cache_n": 579,
+          "prompt_n": 125,
+          "prompt_ms": 262.977,
+          "predicted_n": 55,
+          "predicted_ms": 1908.251,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"¿Te gustaría que te explique qué es una resistencia eléctrica?\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}",
+          "content_chars": 216,
+          "content_utf8_bytes": 220,
+          "content_whitespace_chars": 9,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "¿Te gustaría que te explique qué es una resistencia eléctrica?",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "conversation-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "376c52e616ba1833a1b908806f831c812149199c99ceaac7f35e2868f9df4c2a",
+          "elapsed_seconds": 2.242889400000422,
+          "cache_n": 577,
+          "prompt_n": 116,
+          "prompt_ms": 240.318,
+          "predicted_n": 60,
+          "predicted_ms": 1982.149,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"¿Necesitas que te explique la idempotencia en el contexto de BAXY o en general?\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}",
+          "content_chars": 233,
+          "content_utf8_bytes": 234,
+          "content_whitespace_chars": 13,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "¿Necesitas que te explique la idempotencia en el contexto de BAXY o en general?",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "action-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "d7d3d429d6a04a19f4330211417c9622b1f0b3f567f60f9b946ce34103e11f30",
+          "elapsed_seconds": 2.0886955999994825,
+          "cache_n": 577,
+          "prompt_n": 128,
+          "prompt_ms": 254.741,
+          "predicted_n": 60,
+          "predicted_ms": 1807.672,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"¿Necesitas que busque algo específico en Python o quieres que te muestre los resultados generales?\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}",
+          "content_chars": 252,
+          "content_utf8_bytes": 254,
+          "content_whitespace_chars": 14,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "¿Necesitas que busque algo específico en Python o quieres que te muestre los resultados generales?",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 2
+        },
+        {
+          "case": "action-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "26f050eb49b3b4c37c046b8449fc0e387f35390837fd3332a608a5d5b26e60f5",
+          "elapsed_seconds": 2.2827849999994214,
+          "cache_n": 570,
+          "prompt_n": 159,
+          "prompt_ms": 266.188,
+          "predicted_n": 46,
+          "predicted_ms": 2001.039,
+          "content": "{\"mode\":\"action\",\"operation\":\"app.open\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"response_language\":\"es\"}",
+          "content_chars": 156,
+          "content_utf8_bytes": 156,
+          "content_whitespace_chars": 0,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "app.open",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "app.open"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "action-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "829bf3522d1406b95bc48c7df96632f97b3ea4ddb88ded70ba5dfb6f5f1702aa",
+          "elapsed_seconds": 2.116369699997449,
+          "cache_n": 577,
+          "prompt_n": 119,
+          "prompt_ms": 241.646,
+          "predicted_n": 41,
+          "predicted_ms": 1851.118,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}",
+          "content_chars": 154,
+          "content_utf8_bytes": 154,
+          "content_whitespace_chars": 0,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "plan-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "38cd9215ac789b22c2389af701c4fdb3305615d1fc73252489595b7191bd8879",
+          "elapsed_seconds": 1.9735431000008248,
+          "cache_n": 577,
+          "prompt_n": 156,
+          "prompt_ms": 282.055,
+          "predicted_n": 44,
+          "predicted_ms": 1661.655,
+          "content": "{\"mode\":\"action\",\"operation\":\"web.search\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.search\"],\"response_language\":\"es\"}",
+          "content_chars": 160,
+          "content_utf8_bytes": 160,
+          "content_whitespace_chars": 0,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "web.search",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "web.search"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "plan-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "bc3ba3ef6abbe01e600655e66650eb9f0100b402b821ffbcd16849aacf248b5b",
+          "elapsed_seconds": 2.438463499998761,
+          "cache_n": 577,
+          "prompt_n": 124,
+          "prompt_ms": 248.491,
+          "predicted_n": 54,
+          "predicted_ms": 2180.211,
+          "content": "{\"mode\":\"action\",\"operation\":\"browser.navigate\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\n\"one\",\n\"effect_operations\": [\n\"browser.navigate\"\n],\n\"response_language\":\"es\"}",
+          "content_chars": 178,
+          "content_utf8_bytes": 178,
+          "content_whitespace_chars": 6,
+          "is_minified_json": false,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "browser.navigate",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "plan-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "5b29eacb2975fc70c687d17644f98a7441c94345efde0540c4933a4af683d437",
+          "elapsed_seconds": 1.867502199998853,
+          "cache_n": 583,
+          "prompt_n": 113,
+          "prompt_ms": 249.828,
+          "predicted_n": 44,
+          "predicted_ms": 1597.822,
+          "content": "{\"mode\":\"action\",\"operation\":\"browser.navigate\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"browser.navigate\"],\"response_language\":\"es\"}",
+          "content_chars": 172,
+          "content_utf8_bytes": 172,
+          "content_whitespace_chars": 0,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "browser.navigate",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "browser.navigate"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "clarify-task",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "04fd494bc037c70511a5a021c80310d460b30ff6325cb4bae1e6557ff2330f91",
+          "elapsed_seconds": 2.2459412999996857,
+          "cache_n": 577,
+          "prompt_n": 112,
+          "prompt_ms": 247.459,
+          "predicted_n": 43,
+          "predicted_ms": 1956.273,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"\",\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}",
+          "content_chars": 156,
+          "content_utf8_bytes": 156,
+          "content_whitespace_chars": 0,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "conversation",
+            "operation": "",
+            "question": "",
+            "conversation_kind": "unsupported",
+            "effect_count": "zero",
+            "effect_operations": [],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        },
+        {
+          "case": "clarify-note",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "640762df5f92f59b28aa24ea94ab581d050b4ee3f7868c34a3a84f478d4454c5",
+          "elapsed_seconds": 2.150203599998349,
+          "cache_n": 576,
+          "prompt_n": 121,
+          "prompt_ms": 230.117,
+          "predicted_n": 44,
+          "predicted_ms": 1894.033,
+          "content": "{\"mode\":\"action\",\"operation\":\"note.create\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"note.create\"],\"response_language\":\"es\"}",
+          "content_chars": 162,
+          "content_utf8_bytes": 162,
+          "content_whitespace_chars": 0,
+          "is_minified_json": true,
+          "semantic_projection": {
+            "mode": "action",
+            "operation": "note.create",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": [
+              "note.create"
+            ],
+            "response_language": "es"
+          },
+          "primary_attempt_count": 1
+        }
+      ],
+      "all_posts": [
+        {
+          "case": "conversation-01",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "43bd07c9bc2abbf0b7b2b1337db95244020e480333e6d7bede66a29b300f0bd5",
+          "elapsed_seconds": 1.3011191000005056,
+          "cache_n": 0,
+          "prompt_n": 224,
+          "prompt_ms": 890.44,
+          "predicted_n": 6,
+          "predicted_ms": 273.041,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "conversation-01",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "43dfebf3e50cf6520baa9b8a4a936331eb86ae6c91b58db8c250f3806eace70f",
+          "elapsed_seconds": 1.9368245000005118,
+          "cache_n": 0,
+          "prompt_n": 164,
+          "prompt_ms": 521.769,
+          "predicted_n": 20,
+          "predicted_ms": 1409.427,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "conversation-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "ebee537fee0c1e810f69e31936859abe0df1c851907666988a3b4577d8db20c1",
+          "elapsed_seconds": 2.800592499999766,
+          "cache_n": 0,
+          "prompt_n": 705,
+          "prompt_ms": 898.102,
+          "predicted_n": 56,
+          "predicted_ms": 1877.022,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"¿Te refieres a la latencia en un contexto específico?\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "conversation-02",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "ebfdbe8b9be6dd50015b13dfa4be89e41a5220c11f3731fd92bdadd5769e02bd",
+          "elapsed_seconds": 0.5942405999994662,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 338.712,
+          "predicted_n": 6,
+          "predicted_ms": 235.212,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "conversation-02",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "8c53768d00bda5351ffe77ccccdbc902e6ff6b8ccae4690a765b963355d470fd",
+          "elapsed_seconds": 1.3935060000003432,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 390.198,
+          "predicted_n": 19,
+          "predicted_ms": 973.219,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "conversation-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "5c05b2a03e9537b694f3b7f8d953f2c92ec2cb472ffb567ccd4124c6a6f56735",
+          "elapsed_seconds": 2.1967516000004252,
+          "cache_n": 579,
+          "prompt_n": 125,
+          "prompt_ms": 262.977,
+          "predicted_n": 55,
+          "predicted_ms": 1908.251,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"¿Te gustaría que te explique qué es una resistencia eléctrica?\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "conversation-03",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "13ac1474e91cb2ed9a96840468ea867e6809398a21bbb27977ed6fa318bd26d2",
+          "elapsed_seconds": 0.71501200000057,
+          "cache_n": 206,
+          "prompt_n": 18,
+          "prompt_ms": 384.653,
+          "predicted_n": 6,
+          "predicted_ms": 272.246,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "conversation-03",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "a7202e54e670d503fed844559be5ac041a378a7aaf7658244d15e7710edf2112",
+          "elapsed_seconds": 1.1949620000013965,
+          "cache_n": 146,
+          "prompt_n": 18,
+          "prompt_ms": 372.039,
+          "predicted_n": 19,
+          "predicted_ms": 799.454,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "conversation-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "376c52e616ba1833a1b908806f831c812149199c99ceaac7f35e2868f9df4c2a",
+          "elapsed_seconds": 2.242889400000422,
+          "cache_n": 577,
+          "prompt_n": 116,
+          "prompt_ms": 240.318,
+          "predicted_n": 60,
+          "predicted_ms": 1982.149,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"¿Necesitas que te explique la idempotencia en el contexto de BAXY o en general?\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "action-01",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "32fbe4311104cd463c3932f5075d8635d4c487077486b253edbc8d903e5d7d23",
+          "elapsed_seconds": 0.5909776000007696,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 329.402,
+          "predicted_n": 6,
+          "predicted_ms": 240.868,
+          "content": "{\"language\":\"en\"}"
+        },
+        {
+          "case": "action-01",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "f8299084101882d76be26231455bd25ea724329b9c10abf325c16c4c07c7dee8",
+          "elapsed_seconds": 1.1844725999981165,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 383.24,
+          "predicted_n": 19,
+          "predicted_ms": 772.377,
+          "content": "{\"request_type\":\"external_read\",\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "action-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "d7d3d429d6a04a19f4330211417c9622b1f0b3f567f60f9b946ce34103e11f30",
+          "elapsed_seconds": 2.0886955999994825,
+          "cache_n": 577,
+          "prompt_n": 128,
+          "prompt_ms": 254.741,
+          "predicted_n": 60,
+          "predicted_ms": 1807.672,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"¿Necesitas que busque algo específico en Python o quieres que te muestre los resultados generales?\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "action-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "3ed13eaffb044798f5bfd04079c005f0ea1ae9c306ca1b15e5814a1e9f3b5d55",
+          "elapsed_seconds": 1.9047752000005858,
+          "cache_n": 570,
+          "prompt_n": 315,
+          "prompt_ms": 274.234,
+          "predicted_n": 65,
+          "predicted_ms": 1609.941,
+          "content": "{\"mode\":\"action\",\"operation\":\"web.search\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"web.search\",\"task.resolve.exact\",\"system.process.list\",\"filesystem.known.duplicates\"],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "action-02",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "91f212583a1f9c6bd8e41309ec9432ca3c6fee30723172e4ef46e037247bdd37",
+          "elapsed_seconds": 0.7282061000005342,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 413.211,
+          "predicted_n": 6,
+          "predicted_ms": 262.608,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "action-02",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "34fc6718b82e7fd2e838548f83026638bbd66ea64ec30be8a2580248aa6e730e",
+          "elapsed_seconds": 1.2187363000011828,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 398.321,
+          "predicted_n": 19,
+          "predicted_ms": 800.935,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "action-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "26f050eb49b3b4c37c046b8449fc0e387f35390837fd3332a608a5d5b26e60f5",
+          "elapsed_seconds": 2.2827849999994214,
+          "cache_n": 570,
+          "prompt_n": 159,
+          "prompt_ms": 266.188,
+          "predicted_n": 46,
+          "predicted_ms": 2001.039,
+          "content": "{\"mode\":\"action\",\"operation\":\"app.open\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "action-02",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "a88aa15fe423e89679c257974008bde891ca1d4f8119682c766c053750ce7709",
+          "elapsed_seconds": 0.7948478999969666,
+          "cache_n": 0,
+          "prompt_n": 77,
+          "prompt_ms": 162.453,
+          "predicted_n": 11,
+          "predicted_ms": 610.865,
+          "content": "{\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "action-03",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "da4cef9a95e15787ddf736aee48a5386f8d6de94f351128df2af8d7744ecd486",
+          "elapsed_seconds": 0.6967843999991601,
+          "cache_n": 206,
+          "prompt_n": 25,
+          "prompt_ms": 283.889,
+          "predicted_n": 6,
+          "predicted_ms": 276.759,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "action-03",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "f0204e5296ab9f33ba14e44859f70aae3069b095e75177fe2bb596adbc09da3b",
+          "elapsed_seconds": 1.4883577000000514,
+          "cache_n": 146,
+          "prompt_n": 25,
+          "prompt_ms": 310.285,
+          "predicted_n": 19,
+          "predicted_ms": 1169.344,
+          "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "action-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "829bf3522d1406b95bc48c7df96632f97b3ea4ddb88ded70ba5dfb6f5f1702aa",
+          "elapsed_seconds": 2.116369699997449,
+          "cache_n": 577,
+          "prompt_n": 119,
+          "prompt_ms": 241.646,
+          "predicted_n": 41,
+          "predicted_ms": 1851.118,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"\",\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "plan-01",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "a62e0fb573248f97affe3172d7d07b04221b259020f43f085cb94f284d87b447",
+          "elapsed_seconds": 0.6258662000000186,
+          "cache_n": 206,
+          "prompt_n": 33,
+          "prompt_ms": 357.997,
+          "predicted_n": 6,
+          "predicted_ms": 245.543,
+          "content": "{\"language\":\"en\"}"
+        },
+        {
+          "case": "plan-01",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "c7458043063ebb9dab74960d673c063fadc5c94822f12b345b4e3d7529590627",
+          "elapsed_seconds": 1.2475370000029216,
+          "cache_n": 146,
+          "prompt_n": 33,
+          "prompt_ms": 407.611,
+          "predicted_n": 19,
+          "predicted_ms": 805.01,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-01",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "38cd9215ac789b22c2389af701c4fdb3305615d1fc73252489595b7191bd8879",
+          "elapsed_seconds": 1.9735431000008248,
+          "cache_n": 577,
+          "prompt_n": 156,
+          "prompt_ms": 282.055,
+          "predicted_n": 44,
+          "predicted_ms": 1661.655,
+          "content": "{\"mode\":\"action\",\"operation\":\"web.search\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.search\"],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "plan-01",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "59c3d197682e0623ad12066ccb9f203cb4d27591cb7ed85436aefc7a2d28c7bc",
+          "elapsed_seconds": 0.6468803999996453,
+          "cache_n": 63,
+          "prompt_n": 28,
+          "prompt_ms": 137.764,
+          "predicted_n": 10,
+          "predicted_ms": 479.428,
+          "content": "{\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-02",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "f1dbe85f618590976dd4397a98778ec2dbd47077d45b9161b87d6e38e6c6924a",
+          "elapsed_seconds": 0.7067975999998453,
+          "cache_n": 206,
+          "prompt_n": 34,
+          "prompt_ms": 337.416,
+          "predicted_n": 6,
+          "predicted_ms": 267.702,
+          "content": "{\"language\":\"mixed\"}"
+        },
+        {
+          "case": "plan-02",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "07561c6ee9cd0c3ce3b8f19cc1120c51344c74d575d1929ebabb811ecead8391",
+          "elapsed_seconds": 1.2560793999982707,
+          "cache_n": 146,
+          "prompt_n": 34,
+          "prompt_ms": 377.327,
+          "predicted_n": 19,
+          "predicted_ms": 865.584,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-02",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "bc3ba3ef6abbe01e600655e66650eb9f0100b402b821ffbcd16849aacf248b5b",
+          "elapsed_seconds": 2.438463499998761,
+          "cache_n": 577,
+          "prompt_n": 124,
+          "prompt_ms": 248.491,
+          "predicted_n": 54,
+          "predicted_ms": 2180.211,
+          "content": "{\"mode\":\"action\",\"operation\":\"browser.navigate\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\n\"one\",\n\"effect_operations\": [\n\"browser.navigate\"\n],\n\"response_language\":\"es\"}"
+        },
+        {
+          "case": "plan-02",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "476e11545e945024e33b12d60722365b6751ae8b61cfa2a2c3b3de482a2d3b55",
+          "elapsed_seconds": 0.7979665000020759,
+          "cache_n": 63,
+          "prompt_n": 29,
+          "prompt_ms": 143.468,
+          "predicted_n": 12,
+          "predicted_ms": 630.603,
+          "content": "{\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-03",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "bafee2e3387a469674a6fc540841d3a918e3b52d874b47b19a66333026499c35",
+          "elapsed_seconds": 0.7168612000023131,
+          "cache_n": 206,
+          "prompt_n": 29,
+          "prompt_ms": 298.037,
+          "predicted_n": 6,
+          "predicted_ms": 284.635,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "plan-03",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "a0280d8f90668eac8e870184b0bd79081121bfde7daad79ca4704a55e98d73fb",
+          "elapsed_seconds": 1.1435372000014468,
+          "cache_n": 146,
+          "prompt_n": 29,
+          "prompt_ms": 319.431,
+          "predicted_n": 19,
+          "predicted_ms": 816.351,
+          "content": "{\"request_type\":\"external_read\",\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "plan-03",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "5b29eacb2975fc70c687d17644f98a7441c94345efde0540c4933a4af683d437",
+          "elapsed_seconds": 1.867502199998853,
+          "cache_n": 583,
+          "prompt_n": 113,
+          "prompt_ms": 249.828,
+          "predicted_n": 44,
+          "predicted_ms": 1597.822,
+          "content": "{\"mode\":\"action\",\"operation\":\"browser.navigate\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"browser.navigate\"],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "plan-03",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "0968aa28be8af8b3417355faaae09d3f3266cdffa4198b3dc2b40d6fc40f5c78",
+          "elapsed_seconds": 0.8613202000015008,
+          "cache_n": 63,
+          "prompt_n": 24,
+          "prompt_ms": 146.863,
+          "predicted_n": 12,
+          "predicted_ms": 688.143,
+          "content": "{\"effect_count\":\"multiple\"}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "be69e776765bfdfb13b769e25ebde5dc91f79d19ae1993a94874fe181d7696e2",
+          "elapsed_seconds": 0.6826915999990888,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 361.461,
+          "predicted_n": 6,
+          "predicted_ms": 284.135,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "76ad10aad45debf6da7d28682eddddc23622b229a4c68d4385847f3d406e3cb8",
+          "elapsed_seconds": 1.3846477000006416,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 340.552,
+          "predicted_n": 19,
+          "predicted_ms": 1034.183,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "04fd494bc037c70511a5a021c80310d460b30ff6325cb4bae1e6557ff2330f91",
+          "elapsed_seconds": 2.2459412999996857,
+          "cache_n": 577,
+          "prompt_n": 112,
+          "prompt_ms": 247.459,
+          "predicted_n": 43,
+          "predicted_ms": 1956.273,
+          "content": "{\"mode\":\"conversation\",\"operation\":\"\",\"question\":\"\",\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "other",
+          "id_slot": null,
+          "payload_sha256": "3b5d5195515cbcbd4a98fcc0d7e933de5ca2f31b2d65346b8a48e6a4789c5269",
+          "elapsed_seconds": 0.5068954000016674,
+          "cache_n": 0,
+          "prompt_n": 185,
+          "prompt_ms": 207.8,
+          "predicted_n": 19,
+          "predicted_ms": 271.187,
+          "content": "{\n  \"operation\": \"task.create\"\n}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "C",
+          "id_slot": null,
+          "payload_sha256": "758e16e8f488d7161460b9dd4280e0b9f97054ad5fe4d2884589d8671d53536c",
+          "elapsed_seconds": 0.6063441999976931,
+          "cache_n": 0,
+          "prompt_n": 184,
+          "prompt_ms": 199.527,
+          "predicted_n": 9,
+          "predicted_ms": 397.69,
+          "content": "{\"compatible\":true}"
+        },
+        {
+          "case": "clarify-task",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "345ce74553ec84881e7c52565ed6af78943a8ccb9c9bee670be8260ac9bd4983",
+          "elapsed_seconds": 0.7637856000001193,
+          "cache_n": 63,
+          "prompt_n": 14,
+          "prompt_ms": 145.709,
+          "predicted_n": 11,
+          "predicted_ms": 605.125,
+          "content": "{\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "L",
+          "id_slot": null,
+          "payload_sha256": "19a6f3ffb62fca97babbbe4ce1d31cf7d084a69ccf692a28539571b45b42ba9c",
+          "elapsed_seconds": 0.7144249000011769,
+          "cache_n": 206,
+          "prompt_n": 19,
+          "prompt_ms": 335.598,
+          "predicted_n": 6,
+          "predicted_ms": 262.028,
+          "content": "{\"language\":\"es\"}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "G",
+          "id_slot": null,
+          "payload_sha256": "3e02e4f64e7a05770588830ae8033128d749876c1e8a65863b5bef36f9701937",
+          "elapsed_seconds": 1.4176346999993257,
+          "cache_n": 146,
+          "prompt_n": 19,
+          "prompt_ms": 366.418,
+          "predicted_n": 19,
+          "predicted_ms": 1028.695,
+          "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "P",
+          "id_slot": null,
+          "payload_sha256": "640762df5f92f59b28aa24ea94ab581d050b4ee3f7868c34a3a84f478d4454c5",
+          "elapsed_seconds": 2.150203599998349,
+          "cache_n": 576,
+          "prompt_n": 121,
+          "prompt_ms": 230.117,
+          "predicted_n": 44,
+          "predicted_ms": 1894.033,
+          "content": "{\"mode\":\"action\",\"operation\":\"note.create\",\"question\":\"\",\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"note.create\"],\"response_language\":\"es\"}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "V",
+          "id_slot": null,
+          "payload_sha256": "1e4cd51be5c304d30bcd3d18b13612edad16a166c64eded07049dd937588ca60",
+          "elapsed_seconds": 0.6168596999996225,
+          "cache_n": 63,
+          "prompt_n": 14,
+          "prompt_ms": 132.87,
+          "predicted_n": 10,
+          "predicted_ms": 457.554,
+          "content": "{\"effect_count\":\"zero\"}"
+        },
+        {
+          "case": "clarify-note",
+          "stage": "C",
+          "id_slot": null,
+          "payload_sha256": "285dbbaf8258ccdc69395704d89579236e0db34677c65d1c46810f52bed47c1c",
+          "elapsed_seconds": 0.4602201000016066,
+          "cache_n": 58,
+          "prompt_n": 105,
+          "prompt_ms": 169.086,
+          "predicted_n": 9,
+          "predicted_ms": 281.255,
+          "content": "{\"compatible\":true}"
+        }
+      ],
+      "stage_summary": {
+        "P": {
+          "calls": 12,
+          "cache_n_median": 577.0,
+          "prompt_n_median": 124.5,
+          "prompt_ms_median": 252.2845,
+          "elapsed_median_seconds": 2.173477599999387
+        },
+        "G": {
+          "calls": 11,
+          "cache_n_median": 146.0,
+          "prompt_n_median": 19.0,
+          "prompt_ms_median": 377.327,
+          "elapsed_median_seconds": 1.2560793999982707
+        },
+        "L": {
+          "calls": 11,
+          "cache_n_median": 206.0,
+          "prompt_n_median": 19.0,
+          "prompt_ms_median": 338.712,
+          "elapsed_median_seconds": 0.7067975999998453
+        },
+        "V": {
+          "calls": 6,
+          "cache_n_median": 63.0,
+          "prompt_n_median": 26.0,
+          "prompt_ms_median": 144.5885,
+          "elapsed_median_seconds": 0.779316749998543
+        },
+        "C": {
+          "calls": 2,
+          "cache_n_median": 29.0,
+          "prompt_n_median": 144.5,
+          "prompt_ms_median": 184.3065,
+          "elapsed_median_seconds": 0.5332821499996498
+        },
+        "other": {
+          "calls": 1,
+          "cache_n_median": 0.0,
+          "prompt_n_median": 185.0,
+          "prompt_ms_median": 207.8,
+          "elapsed_median_seconds": 0.5068954000016674
+        }
+      },
+      "primary_metrics": {
+        "elapsed_seconds": {
+          "count": 11,
+          "total": 24.40373749999344,
+          "mean": 2.2185215909084945,
+          "p50": 2.1967516000004252,
+          "p95": 2.6195279999992636,
+          "max": 2.800592499999766
+        },
+        "predicted_tokens": {
+          "count": 11,
+          "total": 547.0,
+          "mean": 49.72727272727273,
+          "p50": 46.0,
+          "p95": 60.0,
+          "max": 60.0
+        },
+        "predicted_seconds": {
+          "count": 11,
+          "total": 20.717245,
+          "mean": 1.883385909090909,
+          "p50": 1.8940329999999999,
+          "p95": 2.090625,
+          "max": 2.180211
+        },
+        "prompt_tokens": {
+          "count": 11,
+          "total": 1978.0,
+          "mean": 179.8181818181818,
+          "p50": 124.0,
+          "p95": 432.0,
+          "max": 705.0
+        },
+        "prompt_seconds": {
+          "count": 11,
+          "total": 3.421922,
+          "mean": 0.3110838181818182,
+          "p50": 0.249828,
+          "p95": 0.5900785,
+          "max": 0.898102
+        },
+        "cache_tokens": {
+          "count": 11,
+          "total": 5770.0,
+          "mean": 524.5454545454545,
+          "p50": 577.0,
+          "p95": 581.0,
+          "max": 583.0
+        },
+        "minified_outputs": 10,
+        "whitespace_chars_total": 50,
+        "content_chars_total": 2046
+      },
+      "decision_pipeline_e2e_seconds": {
+        "count": 11,
+        "total": 32.37635650000084,
+        "mean": 2.9433051363637124,
+        "p50": 2.801620499998535,
+        "p95": 4.0595872000012605,
+        "max": 4.12446540000019
+      }
+    }
+  ],
+  "candidate_status": "research_only",
+  "decision_rule": "Reject on any primary semantic or final decision mismatch. Otherwise promote only if opposite-order runs show a repeatable token and latency reduction without an end-to-end tail regression."
+}

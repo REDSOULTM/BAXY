@@ -1,0 +1,3498 @@
+{
+  "catalog_operations": 169,
+  "checks": {
+    "all_contract_projections_identical": false,
+    "all_four_runs_completed": true,
+    "candidate_reduces_vram_both_orders": true,
+    "candidate_turn_p95_not_over_120_percent": false,
+    "candidate_under_3072_mib_both_orders": true,
+    "zero_contract_errors": true
+  },
+  "comparison": {
+    "candidate_turn_p95_seconds_median": 5.201,
+    "candidate_vram_peak_mib_median": 2959.6,
+    "common_cases": 45,
+    "complete_replies_identical": 26,
+    "contract_projections_identical": 42,
+    "control_turn_p95_seconds_median": 3.614,
+    "control_vram_peak_mib_median": 3517.6
+  },
+  "measured_at_utc": "2026-08-03T21:05:12.375576+00:00",
+  "profiles": {
+    "candidate": {
+      "batch": 2048,
+      "gpu_layers": 35,
+      "kv_cache_type": "q4_0",
+      "kv_offload": "on",
+      "ubatch": 512
+    },
+    "control": {
+      "batch": 2048,
+      "gpu_layers": 99,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "ubatch": 512
+    }
+  },
+  "runs": [
+    {
+      "aborted": false,
+      "arm": "control",
+      "batch": 2048,
+      "checks": {
+        "all_requests_completed": true,
+        "gpu_telemetry_available": true,
+        "process_gpu_telemetry_available": true,
+        "startup_within_shell_handshake": true,
+        "vram_within_budget": false,
+        "zero_errors": true
+      },
+      "errors": [],
+      "gpu_layers": 99,
+      "gpu_telemetry_available": true,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "latency_seconds": {
+        "arguments": {
+          "count": 10,
+          "max": 0.823,
+          "p50": 0.603,
+          "p95": 0.823
+        },
+        "narrate": {
+          "count": 5,
+          "max": 0.291,
+          "p50": 0.19,
+          "p95": 0.291
+        },
+        "turn.decide": {
+          "count": 30,
+          "max": 5.79,
+          "p50": 0.171,
+          "p95": 3.558
+        }
+      },
+      "process_gpu_telemetry_available": true,
+      "process_tree_vram_peak_mib": 3517.6,
+      "requests_completed": 45,
+      "requests_expected": 45,
+      "requests_skipped_after_abort": 0,
+      "response_signatures": [
+        {
+          "case_id": "turn-00",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-01",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-02",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-03",
+          "complete_reply_sha256": "d8068f0c2a0152dae026d0c5384bd6e994e8338bb1a5406f8482e14362b7fc3d",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.mute"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.mute"
+            ],
+            "kind": "action",
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "1cc19fbccf1b05dea2fbe21712d673b4b53e743cb3112e67d7572ad59eb11b02",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-04",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-05",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-06",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-07",
+          "complete_reply_sha256": "f3acbb69bf9f4bc6a80f86b41f84e6d254673fa69f36439194f5775b2c3e003b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-08",
+          "complete_reply_sha256": "2a87b45052d6e0090b8d70ec74c7bd78335d38d5bf36e8cedee537c5e4389082",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-09",
+          "complete_reply_sha256": "92f14655a98135e61361edfb56ce766570ec3d414716be5d85733e53d70b3097",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-10",
+          "complete_reply_sha256": "7e839b45fc3c9f66eca12c4d67c123ab61d5a84c89be68cb98706d8b569bdb4d",
+          "contract_projection": {
+            "effect_operations": [
+              "wifi.disconnect"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "wifi.disconnect"
+            ],
+            "kind": "action",
+            "operation": "wifi.disconnect",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "ea431884a6b74f88a1b05dfd6d61424f5dd212eda0ad949c0c36aa89310db2cb",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-11",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-12",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-13",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-14",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-15",
+          "complete_reply_sha256": "0f516704876f40de9b4c44e5732838fef99f15005094149dcf2eec5fb5486b0e",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": "turn_runtime_failure",
+            "intent_operations": [],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": "semantic_clarification",
+            "type": "turn.result"
+          },
+          "contract_sha256": "d85b041bae8d02cf0a45634b12f5e91187963b0a8ddf37ae2e18543a003eec0b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-16",
+          "complete_reply_sha256": "f3986cef8986c5ea2b6e9a22f5ed6fa63d71791b2eb2d4ad2910a9186d8fd51d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-17",
+          "complete_reply_sha256": "db21efd1a242134334c8efba7ec7323b11d94fd8a9e6499359f67bce30a589e1",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-18",
+          "complete_reply_sha256": "cb0d68e11df68875c1c974b9d57b43bd3863fc2033de448c3dc4bc99109bb185",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume.adjust"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "18c4c928d430104b0737f1e7a61662834abc7dd8b417b64e58bc14aa8e875789",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-19",
+          "complete_reply_sha256": "a9564a8fa661a2cb3546bfb5ec1b18ac2bfc93460758058823fa70782bb653c9",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-20",
+          "complete_reply_sha256": "b2fc7db020f5cbdbbb6a0f9a02357a69a32f85aa0c2b81db3a465a787749a3f6",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-21",
+          "complete_reply_sha256": "71a716a9e96ca53a0f99a8d085ca017ae076b090c2796cdf12ac9639188ff68d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-22",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-23",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-24",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-25",
+          "complete_reply_sha256": "1c6b4c5fde4cc96cb3ce2aa32090c43898d583466aa6b0bee09876d01a5012f7",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-26",
+          "complete_reply_sha256": "cd5cd7fab0b6d514bc9ac990b853447020b273a68906dea2c0e92296d5ed6cbd",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-27",
+          "complete_reply_sha256": "776e72e9b7d875db5a68744ecb77bccd9af204c3a81025b57dc3b195119dc844",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-28",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-29",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "arguments-00",
+          "complete_reply_sha256": "d98affafadcda1dda57753b3f5ac3c639fb54a36bdcc8bb6bccf1193827c4b35",
+          "contract_projection": {
+            "arguments": {
+              "level": 30
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "3e61372097a1fc3c82ea438a51108fc0e22f49d96d37218466c87003b689c07a",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-01",
+          "complete_reply_sha256": "0abf7747242e77ac1851fdc01dca23c0a10f858a5c96c411f912e0b4a6e46316",
+          "contract_projection": {
+            "arguments": {
+              "level": 75
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9268b37c63e8c52b762a26c27a96d1e2962c6cace268800ea00652ecaa5b4d98",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-02",
+          "complete_reply_sha256": "f408853717b726ca9c6377c977c3d459e41c8c8203c44e7b7bc48952f6818101",
+          "contract_projection": {
+            "arguments": {
+              "state": true
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "f8d2f2e806cff88a5796d4e86306badb0cce898072bf50fe87964c681520a443",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-03",
+          "complete_reply_sha256": "7388749fe26ce6938483c5af12337aacb4b673ad0db6c8408896bca68c1956ce",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "audio.mute",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "718c1eeaedd8baa8b46d7837889563a7c35b759c304299f68a1fb92388ff72f1",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-04",
+          "complete_reply_sha256": "c60d3309c38da4c975e02d91276c547c340e2d34dea00438af3fdbb45b42a510",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-05",
+          "complete_reply_sha256": "bb76ec675a8cd932816d4dc9a5b54677fe094b52cabad520ba1a15be10126c6f",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-06",
+          "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+          "contract_projection": {
+            "arguments": {
+              "appId": "calculadora"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "app.open",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-07",
+          "complete_reply_sha256": "168c68475ae8d2bc6c108fa33bfb6d7eedb64acaa5989f916273c6fad034b3d3",
+          "contract_projection": {
+            "arguments": {
+              "host": "example.com"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "network.ping",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "e7ed7ed667cd7d4767d9d536704a2c072c5d7028d5e449a7081f892d91717156",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-08",
+          "complete_reply_sha256": "fb320862c2003721243befc8472fc727ee092dea6def68613be39db2eab14275",
+          "contract_projection": {
+            "arguments": {
+              "action": "pause",
+              "sourceApp": "spotify"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "media.control",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "93746a9b481b01943588b98d8dff5cfa65b7aeaec2aa30ee942b29c4bc21a99f",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-09",
+          "complete_reply_sha256": "d5c22dd15ffb73ce9281079164c873737ea475dc5fb544913fc416e21f693ea0",
+          "contract_projection": {
+            "arguments": {
+              "setting": "brightness",
+              "value": 40
+            },
+            "code": null,
+            "ok": true,
+            "operation": "system.settings.set",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a2022e70c145d5161798b5ce18a9095b0dfb2bcc137b7de5929361f4d6fc8f88",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "narrate-00",
+          "complete_reply_sha256": "c7761063b81904e08f659ca022a3b6aeafe5989487b344c56ac1357b75479f4c",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-01",
+          "complete_reply_sha256": "2d4c7f0e33dcde3ddc08b407d9ffeb6e8f25ecdb60a54f20020413963013afeb",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-02",
+          "complete_reply_sha256": "677a5779b033ca04c205f926a7bff76af27a592a8341af43a5e40c6f67a8e6f9",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-03",
+          "complete_reply_sha256": "d2f5494fdb331db47a839c085d572736d3aecd9f67395f4c648418b1677250da",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-04",
+          "complete_reply_sha256": "4f249ff0d7eaf5dba9b7e695121f9138dc4f92e54f7f2577dd121e853468e625",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        }
+      ],
+      "sequence": 1,
+      "startup": {
+        "catalog_ready_seconds": 3.01,
+        "hello_seconds": 1.606
+      },
+      "status": "failed",
+      "timeouts_seconds": {
+        "arguments": 20.0,
+        "handshake": 120.0,
+        "llm_http": 19.0,
+        "narrate": 20.0,
+        "turn.decide": 22.0
+      },
+      "tree_ram_peak_mib": 4621.8,
+      "ubatch": 512,
+      "vram_baseline_total_mib": 336,
+      "vram_delta_mib": 3518,
+      "vram_peak_total_mib": 3854
+    },
+    {
+      "aborted": false,
+      "arm": "candidate",
+      "batch": 2048,
+      "checks": {
+        "all_requests_completed": true,
+        "gpu_telemetry_available": true,
+        "process_gpu_telemetry_available": true,
+        "startup_within_shell_handshake": true,
+        "vram_within_budget": true,
+        "zero_errors": true
+      },
+      "errors": [],
+      "gpu_layers": 35,
+      "gpu_telemetry_available": true,
+      "kv_cache_type": "q4_0",
+      "kv_offload": "on",
+      "latency_seconds": {
+        "arguments": {
+          "count": 10,
+          "max": 1.516,
+          "p50": 0.891,
+          "p95": 1.516
+        },
+        "narrate": {
+          "count": 5,
+          "max": 0.698,
+          "p50": 0.375,
+          "p95": 0.698
+        },
+        "turn.decide": {
+          "count": 30,
+          "max": 6.694,
+          "p50": 0.215,
+          "p95": 5.616
+        }
+      },
+      "process_gpu_telemetry_available": true,
+      "process_tree_vram_peak_mib": 2959.6,
+      "requests_completed": 45,
+      "requests_expected": 45,
+      "requests_skipped_after_abort": 0,
+      "response_signatures": [
+        {
+          "case_id": "turn-00",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-01",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-02",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-03",
+          "complete_reply_sha256": "d8068f0c2a0152dae026d0c5384bd6e994e8338bb1a5406f8482e14362b7fc3d",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.mute"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.mute"
+            ],
+            "kind": "action",
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "1cc19fbccf1b05dea2fbe21712d673b4b53e743cb3112e67d7572ad59eb11b02",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-04",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-05",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-06",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-07",
+          "complete_reply_sha256": "f3acbb69bf9f4bc6a80f86b41f84e6d254673fa69f36439194f5775b2c3e003b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-08",
+          "complete_reply_sha256": "febf9f564206b7a65e00d4eb6fc9cdbcdb9f35ae965f1b4d167e658214271b3f",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-09",
+          "complete_reply_sha256": "8741eac8f8b405eab4e4096d51a02d1e976ce4fddd8e94d89ae309fb0f47f13e",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-10",
+          "complete_reply_sha256": "5bbdbe003305bcc91cc514042648d3e1bbfca276b8b0874961d7957c4cb7a86f",
+          "contract_projection": {
+            "effect_operations": [
+              "wifi.profile.list"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "wifi.profile.list"
+            ],
+            "kind": "action",
+            "operation": "wifi.profile.list",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "81628a6b5e427df727de53bc75c9d5776d4b2152f4bee1facdc004c3cc49b24b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-11",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-12",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-13",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-14",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-15",
+          "complete_reply_sha256": "2dd87761eb7abef755ab5cf50552af2cb6bdeb7611e1e3849ffc23a679f6ab5a",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-16",
+          "complete_reply_sha256": "80b9f876d99084cfb89567dd8d5e21b2b18f5a42a6a0821da8d29405cd35f80c",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-17",
+          "complete_reply_sha256": "db93aefc8a1de726a20c52fac28016ccdae19c889441b2a2bce6f4c8900a6e52",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-18",
+          "complete_reply_sha256": "3f70a794a48116c4062762e84c8e645c3c8b33357d61d4a8710e894ae871a553",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume.adjust"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "18c4c928d430104b0737f1e7a61662834abc7dd8b417b64e58bc14aa8e875789",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-19",
+          "complete_reply_sha256": "5969ad2402fac2e866717412545001bbcad51673ecd4f4d3e938f87c8a7077f9",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-20",
+          "complete_reply_sha256": "d66ed4a792077d7f19c357df2261b317b9f7f3adafdbb3114d61c63e0368fe30",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": "turn_runtime_failure",
+            "intent_operations": [],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": "semantic_clarification",
+            "type": "turn.result"
+          },
+          "contract_sha256": "d85b041bae8d02cf0a45634b12f5e91187963b0a8ddf37ae2e18543a003eec0b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-21",
+          "complete_reply_sha256": "71a716a9e96ca53a0f99a8d085ca017ae076b090c2796cdf12ac9639188ff68d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-22",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-23",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-24",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-25",
+          "complete_reply_sha256": "f85cd77e856f00be4131c2368d1c3fd96d666960b18d50667db8e352eff0c775",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-26",
+          "complete_reply_sha256": "6f4f9265c8f28ce3925bf468a573219c56218840f26b492c1a0f8ad081f1f7b8",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-27",
+          "complete_reply_sha256": "253ce6e191820c9a5f77c3e2ac63245cf1110a5c7de157716bd5a258bd74b3cf",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-28",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-29",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "arguments-00",
+          "complete_reply_sha256": "d98affafadcda1dda57753b3f5ac3c639fb54a36bdcc8bb6bccf1193827c4b35",
+          "contract_projection": {
+            "arguments": {
+              "level": 30
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "3e61372097a1fc3c82ea438a51108fc0e22f49d96d37218466c87003b689c07a",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-01",
+          "complete_reply_sha256": "0abf7747242e77ac1851fdc01dca23c0a10f858a5c96c411f912e0b4a6e46316",
+          "contract_projection": {
+            "arguments": {
+              "level": 75
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9268b37c63e8c52b762a26c27a96d1e2962c6cace268800ea00652ecaa5b4d98",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-02",
+          "complete_reply_sha256": "f408853717b726ca9c6377c977c3d459e41c8c8203c44e7b7bc48952f6818101",
+          "contract_projection": {
+            "arguments": {
+              "state": true
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "f8d2f2e806cff88a5796d4e86306badb0cce898072bf50fe87964c681520a443",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-03",
+          "complete_reply_sha256": "14e3745832c03bd0138c6a294b236a403e241a1f2c41dc35b0658d62321338ca",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "audio.mute",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "718c1eeaedd8baa8b46d7837889563a7c35b759c304299f68a1fb92388ff72f1",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-04",
+          "complete_reply_sha256": "2a1532c855fd5a9ca0f99204d0733ca5fbb96a07ad986c6e93d2d4b455bec880",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-05",
+          "complete_reply_sha256": "125dd354be16702c4cd4f81ce4dd6e553253b071d43ea820fc0840d2b73f6b52",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-06",
+          "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+          "contract_projection": {
+            "arguments": {
+              "appId": "calculadora"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "app.open",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-07",
+          "complete_reply_sha256": "168c68475ae8d2bc6c108fa33bfb6d7eedb64acaa5989f916273c6fad034b3d3",
+          "contract_projection": {
+            "arguments": {
+              "host": "example.com"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "network.ping",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "e7ed7ed667cd7d4767d9d536704a2c072c5d7028d5e449a7081f892d91717156",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-08",
+          "complete_reply_sha256": "fb320862c2003721243befc8472fc727ee092dea6def68613be39db2eab14275",
+          "contract_projection": {
+            "arguments": {
+              "action": "pause",
+              "sourceApp": "spotify"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "media.control",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "93746a9b481b01943588b98d8dff5cfa65b7aeaec2aa30ee942b29c4bc21a99f",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-09",
+          "complete_reply_sha256": "d5c22dd15ffb73ce9281079164c873737ea475dc5fb544913fc416e21f693ea0",
+          "contract_projection": {
+            "arguments": {
+              "setting": "brightness",
+              "value": 40
+            },
+            "code": null,
+            "ok": true,
+            "operation": "system.settings.set",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a2022e70c145d5161798b5ce18a9095b0dfb2bcc137b7de5929361f4d6fc8f88",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "narrate-00",
+          "complete_reply_sha256": "465711f93cef29435537a4a086cf5f2b3773cbee21c182f7e85075e067cbc6bd",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-01",
+          "complete_reply_sha256": "0dede4bb9460c63a16e22fb3ff4bfe31cb40b54635fd9b9b24331f06528f1e4d",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-02",
+          "complete_reply_sha256": "677a5779b033ca04c205f926a7bff76af27a592a8341af43a5e40c6f67a8e6f9",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-03",
+          "complete_reply_sha256": "d2f5494fdb331db47a839c085d572736d3aecd9f67395f4c648418b1677250da",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-04",
+          "complete_reply_sha256": "2f4f03275489fdc6e40eb7dd54f9466ca22ace65220e449538dbea9c26b6053e",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        }
+      ],
+      "sequence": 2,
+      "startup": {
+        "catalog_ready_seconds": 2.833,
+        "hello_seconds": 1.544
+      },
+      "status": "passed",
+      "timeouts_seconds": {
+        "arguments": 20.0,
+        "handshake": 120.0,
+        "llm_http": 19.0,
+        "narrate": 20.0,
+        "turn.decide": 22.0
+      },
+      "tree_ram_peak_mib": 4375.6,
+      "ubatch": 512,
+      "vram_baseline_total_mib": 336,
+      "vram_delta_mib": 2960,
+      "vram_peak_total_mib": 3296
+    },
+    {
+      "aborted": false,
+      "arm": "candidate",
+      "batch": 2048,
+      "checks": {
+        "all_requests_completed": true,
+        "gpu_telemetry_available": true,
+        "process_gpu_telemetry_available": true,
+        "startup_within_shell_handshake": true,
+        "vram_within_budget": true,
+        "zero_errors": true
+      },
+      "errors": [],
+      "gpu_layers": 35,
+      "gpu_telemetry_available": true,
+      "kv_cache_type": "q4_0",
+      "kv_offload": "on",
+      "latency_seconds": {
+        "arguments": {
+          "count": 10,
+          "max": 1.662,
+          "p50": 0.937,
+          "p95": 1.662
+        },
+        "narrate": {
+          "count": 5,
+          "max": 0.731,
+          "p50": 0.364,
+          "p95": 0.731
+        },
+        "turn.decide": {
+          "count": 30,
+          "max": 9.931,
+          "p50": 0.213,
+          "p95": 4.787
+        }
+      },
+      "process_gpu_telemetry_available": true,
+      "process_tree_vram_peak_mib": 2959.6,
+      "requests_completed": 45,
+      "requests_expected": 45,
+      "requests_skipped_after_abort": 0,
+      "response_signatures": [
+        {
+          "case_id": "turn-00",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-01",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-02",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-03",
+          "complete_reply_sha256": "d8068f0c2a0152dae026d0c5384bd6e994e8338bb1a5406f8482e14362b7fc3d",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.mute"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.mute"
+            ],
+            "kind": "action",
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "1cc19fbccf1b05dea2fbe21712d673b4b53e743cb3112e67d7572ad59eb11b02",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-04",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-05",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-06",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-07",
+          "complete_reply_sha256": "f3acbb69bf9f4bc6a80f86b41f84e6d254673fa69f36439194f5775b2c3e003b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-08",
+          "complete_reply_sha256": "febf9f564206b7a65e00d4eb6fc9cdbcdb9f35ae965f1b4d167e658214271b3f",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-09",
+          "complete_reply_sha256": "8741eac8f8b405eab4e4096d51a02d1e976ce4fddd8e94d89ae309fb0f47f13e",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-10",
+          "complete_reply_sha256": "7e839b45fc3c9f66eca12c4d67c123ab61d5a84c89be68cb98706d8b569bdb4d",
+          "contract_projection": {
+            "effect_operations": [
+              "wifi.disconnect"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "wifi.disconnect"
+            ],
+            "kind": "action",
+            "operation": "wifi.disconnect",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "ea431884a6b74f88a1b05dfd6d61424f5dd212eda0ad949c0c36aa89310db2cb",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-11",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-12",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-13",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-14",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-15",
+          "complete_reply_sha256": "0dfee65a08175c561ea9b9b13be63f0b5cad66322c74f1864174a79ca57ed55b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": "turn_runtime_failure",
+            "intent_operations": [],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": "semantic_clarification",
+            "type": "turn.result"
+          },
+          "contract_sha256": "d85b041bae8d02cf0a45634b12f5e91187963b0a8ddf37ae2e18543a003eec0b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-16",
+          "complete_reply_sha256": "de83206e9d98f23986785cc05a1bcb0b95348e46500cd1e000ac2371e251eedd",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-17",
+          "complete_reply_sha256": "db93aefc8a1de726a20c52fac28016ccdae19c889441b2a2bce6f4c8900a6e52",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-18",
+          "complete_reply_sha256": "3f70a794a48116c4062762e84c8e645c3c8b33357d61d4a8710e894ae871a553",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume.adjust"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "18c4c928d430104b0737f1e7a61662834abc7dd8b417b64e58bc14aa8e875789",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-19",
+          "complete_reply_sha256": "5969ad2402fac2e866717412545001bbcad51673ecd4f4d3e938f87c8a7077f9",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-20",
+          "complete_reply_sha256": "3088ea3de145b67109a6208487975c67304d5939ead8cf972a35907210e2d6b5",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-21",
+          "complete_reply_sha256": "71a716a9e96ca53a0f99a8d085ca017ae076b090c2796cdf12ac9639188ff68d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-22",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-23",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-24",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-25",
+          "complete_reply_sha256": "f85cd77e856f00be4131c2368d1c3fd96d666960b18d50667db8e352eff0c775",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-26",
+          "complete_reply_sha256": "699b1f422580755f85482b6b39bcf89328128b12e128ff4ccb70a1cada2772d3",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-27",
+          "complete_reply_sha256": "253ce6e191820c9a5f77c3e2ac63245cf1110a5c7de157716bd5a258bd74b3cf",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-28",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-29",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "arguments-00",
+          "complete_reply_sha256": "d98affafadcda1dda57753b3f5ac3c639fb54a36bdcc8bb6bccf1193827c4b35",
+          "contract_projection": {
+            "arguments": {
+              "level": 30
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "3e61372097a1fc3c82ea438a51108fc0e22f49d96d37218466c87003b689c07a",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-01",
+          "complete_reply_sha256": "0abf7747242e77ac1851fdc01dca23c0a10f858a5c96c411f912e0b4a6e46316",
+          "contract_projection": {
+            "arguments": {
+              "level": 75
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9268b37c63e8c52b762a26c27a96d1e2962c6cace268800ea00652ecaa5b4d98",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-02",
+          "complete_reply_sha256": "f408853717b726ca9c6377c977c3d459e41c8c8203c44e7b7bc48952f6818101",
+          "contract_projection": {
+            "arguments": {
+              "state": true
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "f8d2f2e806cff88a5796d4e86306badb0cce898072bf50fe87964c681520a443",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-03",
+          "complete_reply_sha256": "93426bad106afa103e8de51df9b61162435a7f001a232b3c7fee054c86adc179",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "audio.mute",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "718c1eeaedd8baa8b46d7837889563a7c35b759c304299f68a1fb92388ff72f1",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-04",
+          "complete_reply_sha256": "2a1532c855fd5a9ca0f99204d0733ca5fbb96a07ad986c6e93d2d4b455bec880",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-05",
+          "complete_reply_sha256": "125dd354be16702c4cd4f81ce4dd6e553253b071d43ea820fc0840d2b73f6b52",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-06",
+          "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+          "contract_projection": {
+            "arguments": {
+              "appId": "calculadora"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "app.open",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-07",
+          "complete_reply_sha256": "168c68475ae8d2bc6c108fa33bfb6d7eedb64acaa5989f916273c6fad034b3d3",
+          "contract_projection": {
+            "arguments": {
+              "host": "example.com"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "network.ping",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "e7ed7ed667cd7d4767d9d536704a2c072c5d7028d5e449a7081f892d91717156",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-08",
+          "complete_reply_sha256": "fb320862c2003721243befc8472fc727ee092dea6def68613be39db2eab14275",
+          "contract_projection": {
+            "arguments": {
+              "action": "pause",
+              "sourceApp": "spotify"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "media.control",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "93746a9b481b01943588b98d8dff5cfa65b7aeaec2aa30ee942b29c4bc21a99f",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-09",
+          "complete_reply_sha256": "d5c22dd15ffb73ce9281079164c873737ea475dc5fb544913fc416e21f693ea0",
+          "contract_projection": {
+            "arguments": {
+              "setting": "brightness",
+              "value": 40
+            },
+            "code": null,
+            "ok": true,
+            "operation": "system.settings.set",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a2022e70c145d5161798b5ce18a9095b0dfb2bcc137b7de5929361f4d6fc8f88",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "narrate-00",
+          "complete_reply_sha256": "465711f93cef29435537a4a086cf5f2b3773cbee21c182f7e85075e067cbc6bd",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-01",
+          "complete_reply_sha256": "0dede4bb9460c63a16e22fb3ff4bfe31cb40b54635fd9b9b24331f06528f1e4d",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-02",
+          "complete_reply_sha256": "677a5779b033ca04c205f926a7bff76af27a592a8341af43a5e40c6f67a8e6f9",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-03",
+          "complete_reply_sha256": "4e7848bcbb824c8d13d2874c717ac92688653ba54e1a8d1a8a70e92dd48b6758",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-04",
+          "complete_reply_sha256": "383c4737059498222bf1f749372bbaa93918a0657c654606a8c9f8ba329beb4e",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        }
+      ],
+      "sequence": 3,
+      "startup": {
+        "catalog_ready_seconds": 2.833,
+        "hello_seconds": 1.545
+      },
+      "status": "passed",
+      "timeouts_seconds": {
+        "arguments": 20.0,
+        "handshake": 120.0,
+        "llm_http": 19.0,
+        "narrate": 20.0,
+        "turn.decide": 22.0
+      },
+      "tree_ram_peak_mib": 4342.4,
+      "ubatch": 512,
+      "vram_baseline_total_mib": 336,
+      "vram_delta_mib": 2960,
+      "vram_peak_total_mib": 3296
+    },
+    {
+      "aborted": false,
+      "arm": "control",
+      "batch": 2048,
+      "checks": {
+        "all_requests_completed": true,
+        "gpu_telemetry_available": true,
+        "process_gpu_telemetry_available": true,
+        "startup_within_shell_handshake": true,
+        "vram_within_budget": false,
+        "zero_errors": true
+      },
+      "errors": [],
+      "gpu_layers": 99,
+      "gpu_telemetry_available": true,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "latency_seconds": {
+        "arguments": {
+          "count": 10,
+          "max": 0.825,
+          "p50": 0.625,
+          "p95": 0.825
+        },
+        "narrate": {
+          "count": 5,
+          "max": 0.291,
+          "p50": 0.232,
+          "p95": 0.291
+        },
+        "turn.decide": {
+          "count": 30,
+          "max": 5.973,
+          "p50": 0.167,
+          "p95": 3.669
+        }
+      },
+      "process_gpu_telemetry_available": true,
+      "process_tree_vram_peak_mib": 3517.6,
+      "requests_completed": 45,
+      "requests_expected": 45,
+      "requests_skipped_after_abort": 0,
+      "response_signatures": [
+        {
+          "case_id": "turn-00",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-01",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-02",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-03",
+          "complete_reply_sha256": "d8068f0c2a0152dae026d0c5384bd6e994e8338bb1a5406f8482e14362b7fc3d",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.mute"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.mute"
+            ],
+            "kind": "action",
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "1cc19fbccf1b05dea2fbe21712d673b4b53e743cb3112e67d7572ad59eb11b02",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-04",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-05",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-06",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-07",
+          "complete_reply_sha256": "f3acbb69bf9f4bc6a80f86b41f84e6d254673fa69f36439194f5775b2c3e003b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-08",
+          "complete_reply_sha256": "2a87b45052d6e0090b8d70ec74c7bd78335d38d5bf36e8cedee537c5e4389082",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-09",
+          "complete_reply_sha256": "92f14655a98135e61361edfb56ce766570ec3d414716be5d85733e53d70b3097",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-10",
+          "complete_reply_sha256": "7e839b45fc3c9f66eca12c4d67c123ab61d5a84c89be68cb98706d8b569bdb4d",
+          "contract_projection": {
+            "effect_operations": [
+              "wifi.disconnect"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "wifi.disconnect"
+            ],
+            "kind": "action",
+            "operation": "wifi.disconnect",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "ea431884a6b74f88a1b05dfd6d61424f5dd212eda0ad949c0c36aa89310db2cb",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-11",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-12",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-13",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-14",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-15",
+          "complete_reply_sha256": "0f516704876f40de9b4c44e5732838fef99f15005094149dcf2eec5fb5486b0e",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": "turn_runtime_failure",
+            "intent_operations": [],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": "semantic_clarification",
+            "type": "turn.result"
+          },
+          "contract_sha256": "d85b041bae8d02cf0a45634b12f5e91187963b0a8ddf37ae2e18543a003eec0b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-16",
+          "complete_reply_sha256": "f3986cef8986c5ea2b6e9a22f5ed6fa63d71791b2eb2d4ad2910a9186d8fd51d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-17",
+          "complete_reply_sha256": "db21efd1a242134334c8efba7ec7323b11d94fd8a9e6499359f67bce30a589e1",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-18",
+          "complete_reply_sha256": "4eaad2c682a972bf4ee0b977110e9ca1ca38564a9f535357fe3a840b9adc28df",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume.adjust"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "18c4c928d430104b0737f1e7a61662834abc7dd8b417b64e58bc14aa8e875789",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-19",
+          "complete_reply_sha256": "a9564a8fa661a2cb3546bfb5ec1b18ac2bfc93460758058823fa70782bb653c9",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-20",
+          "complete_reply_sha256": "b2fc7db020f5cbdbbb6a0f9a02357a69a32f85aa0c2b81db3a465a787749a3f6",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-21",
+          "complete_reply_sha256": "71a716a9e96ca53a0f99a8d085ca017ae076b090c2796cdf12ac9639188ff68d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-22",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-23",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-24",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-25",
+          "complete_reply_sha256": "1c6b4c5fde4cc96cb3ce2aa32090c43898d583466aa6b0bee09876d01a5012f7",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-26",
+          "complete_reply_sha256": "cd5cd7fab0b6d514bc9ac990b853447020b273a68906dea2c0e92296d5ed6cbd",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-27",
+          "complete_reply_sha256": "776e72e9b7d875db5a68744ecb77bccd9af204c3a81025b57dc3b195119dc844",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-28",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-29",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "arguments-00",
+          "complete_reply_sha256": "d98affafadcda1dda57753b3f5ac3c639fb54a36bdcc8bb6bccf1193827c4b35",
+          "contract_projection": {
+            "arguments": {
+              "level": 30
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "3e61372097a1fc3c82ea438a51108fc0e22f49d96d37218466c87003b689c07a",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-01",
+          "complete_reply_sha256": "0abf7747242e77ac1851fdc01dca23c0a10f858a5c96c411f912e0b4a6e46316",
+          "contract_projection": {
+            "arguments": {
+              "level": 75
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9268b37c63e8c52b762a26c27a96d1e2962c6cace268800ea00652ecaa5b4d98",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-02",
+          "complete_reply_sha256": "f408853717b726ca9c6377c977c3d459e41c8c8203c44e7b7bc48952f6818101",
+          "contract_projection": {
+            "arguments": {
+              "state": true
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "f8d2f2e806cff88a5796d4e86306badb0cce898072bf50fe87964c681520a443",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-03",
+          "complete_reply_sha256": "7388749fe26ce6938483c5af12337aacb4b673ad0db6c8408896bca68c1956ce",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "audio.mute",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "718c1eeaedd8baa8b46d7837889563a7c35b759c304299f68a1fb92388ff72f1",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-04",
+          "complete_reply_sha256": "c60d3309c38da4c975e02d91276c547c340e2d34dea00438af3fdbb45b42a510",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-05",
+          "complete_reply_sha256": "bb76ec675a8cd932816d4dc9a5b54677fe094b52cabad520ba1a15be10126c6f",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-06",
+          "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+          "contract_projection": {
+            "arguments": {
+              "appId": "calculadora"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "app.open",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-07",
+          "complete_reply_sha256": "168c68475ae8d2bc6c108fa33bfb6d7eedb64acaa5989f916273c6fad034b3d3",
+          "contract_projection": {
+            "arguments": {
+              "host": "example.com"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "network.ping",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "e7ed7ed667cd7d4767d9d536704a2c072c5d7028d5e449a7081f892d91717156",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-08",
+          "complete_reply_sha256": "fb320862c2003721243befc8472fc727ee092dea6def68613be39db2eab14275",
+          "contract_projection": {
+            "arguments": {
+              "action": "pause",
+              "sourceApp": "spotify"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "media.control",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "93746a9b481b01943588b98d8dff5cfa65b7aeaec2aa30ee942b29c4bc21a99f",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-09",
+          "complete_reply_sha256": "d5c22dd15ffb73ce9281079164c873737ea475dc5fb544913fc416e21f693ea0",
+          "contract_projection": {
+            "arguments": {
+              "setting": "brightness",
+              "value": 40
+            },
+            "code": null,
+            "ok": true,
+            "operation": "system.settings.set",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a2022e70c145d5161798b5ce18a9095b0dfb2bcc137b7de5929361f4d6fc8f88",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "narrate-00",
+          "complete_reply_sha256": "c7761063b81904e08f659ca022a3b6aeafe5989487b344c56ac1357b75479f4c",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-01",
+          "complete_reply_sha256": "a8bc3a3c11cb235a433c41d9cd330433dcba4b3676d1f1b45554f49f46129616",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-02",
+          "complete_reply_sha256": "677a5779b033ca04c205f926a7bff76af27a592a8341af43a5e40c6f67a8e6f9",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-03",
+          "complete_reply_sha256": "d2f5494fdb331db47a839c085d572736d3aecd9f67395f4c648418b1677250da",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-04",
+          "complete_reply_sha256": "040b523a0042f8b2f60ad2464aa98ab0d514a0f46c2574dd2fd493cc85fedc4f",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        }
+      ],
+      "sequence": 4,
+      "startup": {
+        "catalog_ready_seconds": 2.844,
+        "hello_seconds": 1.537
+      },
+      "status": "failed",
+      "timeouts_seconds": {
+        "arguments": 20.0,
+        "handshake": 120.0,
+        "llm_http": 19.0,
+        "narrate": 20.0,
+        "turn.decide": 22.0
+      },
+      "tree_ram_peak_mib": 4634.2,
+      "ubatch": 512,
+      "vram_baseline_total_mib": 336,
+      "vram_delta_mib": 3518,
+      "vram_peak_total_mib": 3854
+    }
+  ],
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "schema": "baxy.qwen-gpu-prefill-abba.v1",
+  "scope": {
+    "changed_variable": "llama.cpp prefill buffers, KV format/placement and GPU layers",
+    "context_tokens_per_slot": 4096,
+    "effects_executed": 0,
+    "order": [
+      "control",
+      "candidate",
+      "candidate",
+      "control"
+    ],
+    "parallel_slots": 3,
+    "tree_frozen_during_measurement": true
+  },
+  "source": {
+    "budget_gate_sha256": "62547931787746268c8d90f996d5b7480823e5075b237ee48e55219f0d1cb6dc",
+    "experiment_sha256": "7a39c64d1ce01aa14e18bf0eae0a5ad854067acb9fc8e1e3979c7928b62e91c6",
+    "llm_py_sha256": "d0a2aae87bf215cc6d410289bc5451f18414e20624aa99b859424a67a1c5c697"
+  },
+  "status": "failed"
+}

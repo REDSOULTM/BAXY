@@ -1,0 +1,652 @@
+{
+  "records": [
+    {
+      "case_id": "v1-req-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo podar el seto de la entrada.",
+      "request_text": "Poda el seto de la entrada.",
+      "role": "request",
+      "seconds": 2.033
+    },
+    {
+      "case_id": "v1-req-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo planchar las camisas del armario.",
+      "request_text": "Plancha las camisas del armario.",
+      "role": "request",
+      "seconds": 1.883
+    },
+    {
+      "case_id": "v1-req-03",
+      "effect_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "filesystem.sandbox.append.named",
+      "question": "",
+      "reply_text": "",
+      "request_text": "Barre las hojas del sendero.",
+      "role": "request",
+      "seconds": 2.585
+    },
+    {
+      "case_id": "v1-req-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot sand the shelf in the hallway.",
+      "request_text": "Sand the shelf in the hallway.",
+      "role": "request",
+      "seconds": 2.373
+    },
+    {
+      "case_id": "v1-req-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot fold the towels in the cupboard as requested.",
+      "request_text": "Fold the towels in the cupboard.",
+      "role": "request",
+      "seconds": 1.799
+    },
+    {
+      "case_id": "v1-req-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo podar el hedge de la entrada.",
+      "request_text": "Poda el hedge de la entrada.",
+      "role": "request",
+      "seconds": 1.784
+    },
+    {
+      "case_id": "v1-req-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo barer las leaves del sendero.",
+      "request_text": "Barre las leaves del sendero.",
+      "role": "request",
+      "seconds": 1.361
+    },
+    {
+      "case_id": "v1-req-08",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer fila los cuchillos de la cocina.",
+      "request_text": "Afila los cuchillos de la cocina.",
+      "role": "request",
+      "seconds": 2.388
+    },
+    {
+      "case_id": "v1-ctl-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Los setos podados en formas suelen ser una opción estética y funcional para controlar su crecimiento. Depende de cómo se corte y qué forma se elija, puede afectar la salud del árbol y la apariencia general. Si se hacen de manera equilibrada, pueden favorecer el desarrollo del árbol. Sin embargo, si se cortan en exceso o en malas formas, pueden dañar el árbol.",
+      "request_text": "Que te parecen los setos podados en formas?",
+      "role": "control",
+      "seconds": 4.259
+    },
+    {
+      "case_id": "v1-ctl-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Hedgerows are often composed of a mix of plant species, including shrubs, flowers, and sometimes even trees, creating a diverse ecosystem that supports various wildlife.",
+      "request_text": "Tell me something odd about hedgerows.",
+      "role": "control",
+      "seconds": 2.227
+    },
+    {
+      "case_id": "v1-ctl-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Entiendo que mencionas que podar el seto te llevó toda la tarde.",
+      "request_text": "Podar el seto nos llevo toda la tarde.",
+      "role": "control",
+      "seconds": 3.049
+    },
+    {
+      "case_id": "v1-ctl-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I understand that you observed that rearranging that shelf took longer than anticipated.",
+      "request_text": "Sanding that shelf took longer than expected.",
+      "role": "control",
+      "seconds": 1.359
+    },
+    {
+      "case_id": "v1-cat-01",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Te refieres a si estás conectado a la señal de la casa o a algo específico que deseas verificar?",
+      "reply_text": "",
+      "request_text": "dime si sigo enganchado a la senal de la casa",
+      "role": "catalogue_control",
+      "seconds": 2.6
+    },
+    {
+      "case_id": "v1-cat-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Estás diciendo que no tienes conexión a internet?",
+      "request_text": "estoy colgado del router o me quede sin enlace?",
+      "role": "catalogue_control",
+      "seconds": 2.035
+    },
+    {
+      "case_id": "v1-cat-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I notice you're asking if the House Signal is still active or if it has dropped.",
+      "request_text": "am i still hooked to the house signal or did it drop",
+      "role": "catalogue_control",
+      "seconds": 1.773
+    },
+    {
+      "case_id": "v1-cat-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer que se caye la senal de la casa.",
+      "request_text": "sigo hooked a la senal de la casa o se cayo",
+      "role": "catalogue_control",
+      "seconds": 2.553
+    },
+    {
+      "case_id": "v1-cat-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Cómo está la máquina ahora mismo? ¿Está funcionando bien o hay algún problema?",
+      "request_text": "como anda de salud la maquina ahora mismo",
+      "role": "catalogue_control",
+      "seconds": 1.857
+    },
+    {
+      "case_id": "v1-cat-06",
+      "effect_operations": [
+        "task.list"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "task.list",
+      "question": "",
+      "reply_text": "",
+      "request_text": "dame el panorama general de como esta funcionando esto",
+      "role": "catalogue_control",
+      "seconds": 0.716
+    },
+    {
+      "case_id": "v1-cat-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't have the capability to check the health of a machine. Could you please specify what type of machine you're referring to?",
+      "request_text": "how healthy is the machine right now",
+      "role": "catalogue_control",
+      "seconds": 1.317
+    },
+    {
+      "case_id": "v1-cat-08",
+      "effect_operations": [
+        "task.list"
+      ],
+      "kind": "action",
+      "language": "spanglish",
+      "operation": "task.list",
+      "question": "",
+      "reply_text": "",
+      "request_text": "dame el panorama de como esta running esto",
+      "role": "catalogue_control",
+      "seconds": 0.904
+    },
+    {
+      "case_id": "v1-cat-09",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Mencionas que hay una posibilidad de que estés incomunicado o que no haya salida hacia afuera.",
+      "request_text": "hay salida hacia afuera o estoy incomunicado",
+      "role": "catalogue_control",
+      "seconds": 3.121
+    },
+    {
+      "case_id": "v1-cat-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I sense you're feeling disconnected from the world.",
+      "request_text": "is there a way out to the world or am i cut off",
+      "role": "catalogue_control",
+      "seconds": 2.959
+    },
+    {
+      "case_id": "v1-cat-11",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Cuáles aparatos tienes enchufados en este momento?",
+      "request_text": "que aparatos tengo enchufados ahora",
+      "role": "catalogue_control",
+      "seconds": 2.217
+    },
+    {
+      "case_id": "v1-cat-12",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't know what devices are currently plugged into your computer. Would you like me to check for you?",
+      "request_text": "what gadgets do i have plugged in right now",
+      "role": "catalogue_control",
+      "seconds": 1.049
+    },
+    {
+      "case_id": "v1-cat-13",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo ver qué dispositivos están conectados en este momento. ¿Puedes describirme el tipo de dispositivo o la conexión que estás utilizando?",
+      "request_text": "que gadgets tengo plugged in ahora",
+      "role": "catalogue_control",
+      "seconds": 1.224
+    },
+    {
+      "case_id": "v1-cat-14",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I mention that you can revert to restore points.",
+      "request_text": "give me the roll of restore points i can go back to",
+      "role": "catalogue_control",
+      "seconds": 1.759
+    },
+    {
+      "case_id": "v1-cat-15",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo capturar el estado actual de la pantalla ahora.",
+      "request_text": "dejame una instantanea de lo que se ve ahora",
+      "role": "catalogue_control",
+      "seconds": 2.854
+    },
+    {
+      "case_id": "v1-cat-16",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿En qué contexto te refieres al uso de palabras \"listas para soltar\"? ¿Estás hablando de palabras que quieres usar en un diálogo, en un juego, o en algo específico?",
+      "request_text": "que palabras tengo listas para soltar",
+      "role": "catalogue_control",
+      "seconds": 3.09
+    },
+    {
+      "case_id": "v1-cat-17",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "What words are you holding ready to drop?",
+      "request_text": "what words am i holding ready to drop",
+      "role": "catalogue_control",
+      "seconds": 2.318
+    },
+    {
+      "case_id": "v1-cat-18",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Do you mean the notes or jottings you have saved on this computer? I can help you find them if you tell me more details about them.",
+      "request_text": "what jottings do i have saved around here",
+      "role": "catalogue_control",
+      "seconds": 1.417
+    },
+    {
+      "case_id": "v1-cat-19",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "the volume is coming out of the pc and is being heard through the speakers.",
+      "request_text": "how is the volume and where is it coming out",
+      "role": "catalogue_control",
+      "seconds": 1.141
+    },
+    {
+      "case_id": "v1-cat-20",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer que la pantalla mere.",
+      "request_text": "en que estoy parado ahora en la pantalla",
+      "role": "catalogue_control",
+      "seconds": 1.108
+    },
+    {
+      "case_id": "v1-cat-21",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "You are sitting on a Windows 10 desktop screen. The background is a light gray color, and the taskbar is at the bottom of the screen. The desktop is clean with a few icons and a clock. The screen is in English, and the system is set to use the default language.",
+      "request_text": "what am i sitting on right now on screen",
+      "role": "catalogue_control",
+      "seconds": 1.844
+    },
+    {
+      "case_id": "v1-cat-22",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Qué tipo de emisiones o programas se transmiten por radio corta en tu área?",
+      "request_text": "que hay al alcance por la radio corta",
+      "role": "catalogue_control",
+      "seconds": 1.975
+    },
+    {
+      "case_id": "v1-cat-23",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The term 'within reach over the short radio' is not standard or commonly used. If you are referring to something that is within reach (physically accessible) and can be reached via a short radio signal, it would depend on the specific context, such as the distance between the transmitting and receiving antennas, the frequency of the radio signal, and the environment. If you have a specific scenario or technical question in mind, please provide more details.",
+      "request_text": "what is within reach over the short radio",
+      "role": "catalogue_control",
+      "seconds": 1.555
+    },
+    {
+      "case_id": "v1-cat-24",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿cuáles son los juegos que tengo instalados en este momento?",
+      "reply_text": "",
+      "request_text": "que puedo jugar de lo que tengo instalado",
+      "role": "catalogue_control",
+      "seconds": 3.394
+    },
+    {
+      "case_id": "v1-cat-25",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "What applications are installed on your computer?",
+      "request_text": "what can i play from what is installed",
+      "role": "catalogue_control",
+      "seconds": 1.987
+    },
+    {
+      "case_id": "v1-cat-26",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo ver qué automatismos tienes activos o configurados en tu sistema. ¿Puedes decirme en qué contexto te refieres? Por ejemplo, si estás hablando de automatismos en Windows, en un programa específico o en un entorno de desarrollo.",
+      "request_text": "que automatismos tengo dejados listos",
+      "role": "catalogue_control",
+      "seconds": 2.419
+    },
+    {
+      "case_id": "v1-cat-27",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "What automations do you have standing by?",
+      "request_text": "what automations do i have standing by",
+      "role": "catalogue_control",
+      "seconds": 0.92
+    },
+    {
+      "case_id": "v1-cat-28",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Estoy aquí para ayudarte. ¿En qué área te refieres?",
+      "request_text": "que cosas estan corriendo por dentro",
+      "role": "catalogue_control",
+      "seconds": 2.274
+    },
+    {
+      "case_id": "v1-cat-29",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "What is running underneath refers to the processes and services that are active in the background of a computer system, such as the operating system, background applications, and other services that are not directly visible to the user.",
+      "request_text": "what things are running underneath",
+      "role": "catalogue_control",
+      "seconds": 2.034
+    }
+  ],
+  "schema": "baxy.veto-reach-result.v1",
+  "scope": "sealed_blind_population_that_reaches_the_domain_veto",
+  "status": "failed",
+  "summary": {
+    "all_replies_distinct": true,
+    "catalogue_control_regressions": [
+      {
+        "case_id": "v1-cat-02",
+        "kind": "conversation",
+        "reply": "¿Estás diciendo que no tienes conexión a internet?"
+      },
+      {
+        "case_id": "v1-cat-03",
+        "kind": "conversation",
+        "reply": "I notice you're asking if the House Signal is still active or if it has dropped."
+      },
+      {
+        "case_id": "v1-cat-04",
+        "kind": "conversation",
+        "reply": "No puedo hacer que se caye la senal de la casa."
+      },
+      {
+        "case_id": "v1-cat-05",
+        "kind": "conversation",
+        "reply": "¿Cómo está la máquina ahora mismo? ¿Está funcionando bien o hay algún problema?"
+      },
+      {
+        "case_id": "v1-cat-07",
+        "kind": "conversation",
+        "reply": "I don't have the capability to check the health of a machine. Could you please specify what type of machine you're refer"
+      },
+      {
+        "case_id": "v1-cat-09",
+        "kind": "conversation",
+        "reply": "Mencionas que hay una posibilidad de que estés incomunicado o que no haya salida hacia afuera."
+      },
+      {
+        "case_id": "v1-cat-10",
+        "kind": "conversation",
+        "reply": "I sense you're feeling disconnected from the world."
+      },
+      {
+        "case_id": "v1-cat-11",
+        "kind": "conversation",
+        "reply": "¿Cuáles aparatos tienes enchufados en este momento?"
+      },
+      {
+        "case_id": "v1-cat-12",
+        "kind": "conversation",
+        "reply": "I don't know what devices are currently plugged into your computer. Would you like me to check for you?"
+      },
+      {
+        "case_id": "v1-cat-13",
+        "kind": "conversation",
+        "reply": "No puedo ver qué dispositivos están conectados en este momento. ¿Puedes describirme el tipo de dispositivo o la conexión"
+      },
+      {
+        "case_id": "v1-cat-14",
+        "kind": "conversation",
+        "reply": "I mention that you can revert to restore points."
+      },
+      {
+        "case_id": "v1-cat-15",
+        "kind": "conversation",
+        "reply": "No puedo capturar el estado actual de la pantalla ahora."
+      },
+      {
+        "case_id": "v1-cat-16",
+        "kind": "conversation",
+        "reply": "¿En qué contexto te refieres al uso de palabras \"listas para soltar\"? ¿Estás hablando de palabras que quieres usar en un"
+      },
+      {
+        "case_id": "v1-cat-17",
+        "kind": "conversation",
+        "reply": "What words are you holding ready to drop?"
+      },
+      {
+        "case_id": "v1-cat-18",
+        "kind": "conversation",
+        "reply": "Do you mean the notes or jottings you have saved on this computer? I can help you find them if you tell me more details "
+      },
+      {
+        "case_id": "v1-cat-19",
+        "kind": "conversation",
+        "reply": "the volume is coming out of the pc and is being heard through the speakers."
+      },
+      {
+        "case_id": "v1-cat-20",
+        "kind": "conversation",
+        "reply": "No puedo hacer que la pantalla mere."
+      },
+      {
+        "case_id": "v1-cat-21",
+        "kind": "conversation",
+        "reply": "You are sitting on a Windows 10 desktop screen. The background is a light gray color, and the taskbar is at the bottom o"
+      },
+      {
+        "case_id": "v1-cat-22",
+        "kind": "conversation",
+        "reply": "¿Qué tipo de emisiones o programas se transmiten por radio corta en tu área?"
+      },
+      {
+        "case_id": "v1-cat-23",
+        "kind": "conversation",
+        "reply": "The term 'within reach over the short radio' is not standard or commonly used. If you are referring to something that is"
+      },
+      {
+        "case_id": "v1-cat-25",
+        "kind": "conversation",
+        "reply": "What applications are installed on your computer?"
+      },
+      {
+        "case_id": "v1-cat-26",
+        "kind": "conversation",
+        "reply": "No puedo ver qué automatismos tienes activos o configurados en tu sistema. ¿Puedes decirme en qué contexto te refieres? "
+      },
+      {
+        "case_id": "v1-cat-27",
+        "kind": "conversation",
+        "reply": "What automations do you have standing by?"
+      },
+      {
+        "case_id": "v1-cat-28",
+        "kind": "conversation",
+        "reply": "Estoy aquí para ayudarte. ¿En qué área te refieres?"
+      },
+      {
+        "case_id": "v1-cat-29",
+        "kind": "conversation",
+        "reply": "What is running underneath refers to the processes and services that are active in the background of a computer system, "
+      }
+    ],
+    "catalogue_controls": 29,
+    "catalogue_controls_asking": 2,
+    "catalogue_controls_reaching_an_operation": 2,
+    "contract_failures": [
+      {
+        "case_id": "v1-req-03",
+        "reason": "empty_reply"
+      }
+    ],
+    "control_regressions": [],
+    "controls": 4,
+    "distinct_openings": 7,
+    "distinct_replies": 7,
+    "fixed_constant_detected": false,
+    "requests": 8,
+    "spoken_replies": 7,
+    "unsolicited_effects": 1
+  }
+}

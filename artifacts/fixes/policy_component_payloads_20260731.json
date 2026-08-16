@@ -1,0 +1,404 @@
+{
+ "baxy_turn_decision": {
+  "messages": [
+   {
+    "role": "system",
+    "content": "Eres la política contextual de turnos de BAXY. Con el mensaje actual, el historial acotado y las operaciones candidatas, clasifica exactamente un turno como conversation, clarify, action o plan. Esta etapa sólo clasifica: no redactes la respuesta final para la persona. El mensaje actual siempre domina al historial: el historial sólo sirve para resolver referencias o datos omitidos en el mensaje actual. Nunca borres, reduzcas ni sustituyas un efecto explícito del mensaje actual porque otro turno ya pidiera algo parecido. conversation no pide un efecto verificable. Consultar estado actual, datos personales o del equipo, buscar en una fuente externa, abrir, reproducir, crear o controlar algo sí es un efecto cuando un candidato lo realiza directamente; la forma gramatical de pregunta o cortesía no lo convierte en conversación. Una pregunta de conocimiento estable que puede responderse sin consultar estado ni una fuente sigue siendo conversation. Si la persona corrige un objetivo dentro del mismo turno, conserva sólo la corrección más reciente y no la trates como ambigüedad. clarify se usa sólo si existe una operación candidata compatible y al pedido le falta un dato que la persona puede aportar y que cambia el efecto; contiene una sola pregunta breve. Un pedido bien definido cuya capacidad no aparece entre las operaciones candidatas es conversation de tipo unsupported; no pidas un dato que no habilitaría esa capacidad. action requiere una única operación pública, inequívoca y presente en los candidatos. plan requiere una misión compuesta o dependiente. La ausencia de evidencia suficiente obliga a conversation o clarify: nunca elijas action ni plan por semejanza débil. No inventes operaciones, datos, permisos ni resultados. effect_operations enumera una operación candidata por cada efecto atómico y soportado que la persona pidió. Conserva el orden y repite el mismo nombre si se pidió dos veces la misma operación; no omitas un efecto sólo porque pueda faltarle un argumento: otra etapa posterior verificará sus datos contra el pedido y los contratos. Un turno conversacional o no soportado usa una lista vacía. effect_count resume la longitud: zero, one o multiple. one implica action y multiple implica plan. operation debe estar vacío salvo en action, donde debe coincidir con el único elemento de effect_operations; question debe estar vacía salvo en clarify. conversation_kind debe ser social, knowledge, followup o unsupported sólo para conversation, y vacío para los demás modos. response_language debe ser es, en o mixed según el idioma del mensaje actual. Resuelve los seguimientos elípticos contra el historial más reciente: no reinicies la conversación con otro saludo ni afirmes que falta información que ya está en ese historial."
+   },
+   {
+    "role": "user",
+    "content": "Mensaje actual:\ncontame un chiste corto\n\nOperaciones candidatas:\nbackup.verify | Reabre un backup privado y verifica tamaño y SHA-256.\nbackup.restore | Restaura un backup verificado únicamente en un destino libre del sandbox.\nbackup.create | Crea una copia privada inmutable de un archivo identificado y verifica su SHA-256.\nbackup.known.create | Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256.\nbackup.known.restore.latest | Restaura el backup ZIP más reciente en un directorio privado nuevo y verifica archivos y bytes extraídos.\nbackup.list | Lista copias privadas verificadas, ordenadas desde la mas reciente, sin exponer rutas internas.\nbackup.known.list | Lista los backups ZIP de carpetas conocidas y vuelve a verificar sus hashes.\nbackup.known.verify.latest | Verifica el SHA-256 del backup ZIP más reciente de la carpeta indicada.\nreminder.restore | Restaura un recordatorio eliminado mediante identidad y versión exactas.\nreminder.resolve.exact | Resuelve un recordatorio por título literal y devuelve autoridad CAS.\nreminder.create | Crea un recordatorio local futuro durable sin confundirlo con una tarea.\nreminder.delete | Envía un recordatorio exacto a papelera recuperable después de revisar su etiqueta.\nreminder.list | Lista recordatorios programados locales de forma acotada.\nweb.search | Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados.\nmessage.recipient.resolve | Resuelve un único destinatario autenticado y emite un identificador revisable.\nmessage.send | Envía un mensaje a un destinatario resuelto y exige recibo del provider oficial.\nperipheral.scan | Captura desde un escáner resuelto y devuelve una identidad privada verificable.\nperipheral.print | Envía un documento identificado a una impresora resuelta y verifica el job.\nperipheral.list | Enumera periféricos conectados, incluidos mouse y teclado, mediante APIs de Windows; puede filtrar por tipo.\noffice.document.create | Crea un documento mediante un adapter Office autenticado y devuelve su identidad.\noffice.document.read | Lee una proyección estructurada de un documento identificado mediante el adapter oficial.\nocr.read | Ejecuta OCR local sobre una captura identificada y un language pack disponible.\ngame.launch | Inicia un AppID poseído y verifica la identidad del proceso lanzado.\ngame.install.prepare | Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos.\ngame.install.named | Resuelve un título cerrado de Steam a su AppID, exige entitlement autenticado, inicia la instalación confirmada y verifica la transición del manifest.\ngame.installed.named | Comprueba por nombre si un juego esta instalado mediante manifiestos de Steam y Epic y verifica que exista su directorio local.\ngame.install.cancel.active | Cancela todas las descargas activas observadas en Steam y verifica que ninguna siga progresando.\ngame.catalog.list | Lista el catálogo local de Steam mediante una sesión resuelta y acotada."
+   }
+  ],
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "baxy_turn_decision",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "properties": {
+      "mode": {
+       "type": "string",
+       "enum": [
+        "conversation",
+        "clarify",
+        "action",
+        "plan"
+       ]
+      },
+      "operation": {
+       "type": "string",
+       "enum": [
+        "",
+        "backup.verify",
+        "backup.restore",
+        "backup.create",
+        "backup.known.create",
+        "backup.known.restore.latest",
+        "backup.list",
+        "backup.known.list",
+        "backup.known.verify.latest",
+        "reminder.restore",
+        "reminder.resolve.exact",
+        "reminder.create",
+        "reminder.delete",
+        "reminder.list",
+        "web.search",
+        "message.recipient.resolve",
+        "message.send",
+        "peripheral.scan",
+        "peripheral.print",
+        "peripheral.list",
+        "office.document.create",
+        "office.document.read",
+        "ocr.read",
+        "game.launch",
+        "game.install.prepare",
+        "game.install.named",
+        "game.installed.named",
+        "game.install.cancel.active",
+        "game.catalog.list"
+       ]
+      },
+      "question": {
+       "type": "string",
+       "maxLength": 512
+      },
+      "conversation_kind": {
+       "type": "string",
+       "enum": [
+        "",
+        "social",
+        "knowledge",
+        "followup",
+        "unsupported"
+       ]
+      },
+      "effect_count": {
+       "type": "string",
+       "enum": [
+        "zero",
+        "one",
+        "multiple"
+       ]
+      },
+      "effect_operations": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "enum": [
+         "backup.verify",
+         "backup.restore",
+         "backup.create",
+         "backup.known.create",
+         "backup.known.restore.latest",
+         "backup.list",
+         "backup.known.list",
+         "backup.known.verify.latest",
+         "reminder.restore",
+         "reminder.resolve.exact",
+         "reminder.create",
+         "reminder.delete",
+         "reminder.list",
+         "web.search",
+         "message.recipient.resolve",
+         "message.send",
+         "peripheral.scan",
+         "peripheral.print",
+         "peripheral.list",
+         "office.document.create",
+         "office.document.read",
+         "ocr.read",
+         "game.launch",
+         "game.install.prepare",
+         "game.install.named",
+         "game.installed.named",
+         "game.install.cancel.active",
+         "game.catalog.list"
+        ]
+       },
+       "maxItems": 8
+      },
+      "response_language": {
+       "type": "string",
+       "enum": [
+        "es",
+        "en",
+        "mixed"
+       ]
+      }
+     },
+     "required": [
+      "mode",
+      "operation",
+      "question",
+      "conversation_kind",
+      "effect_count",
+      "effect_operations",
+      "response_language"
+     ],
+     "additionalProperties": false
+    }
+   }
+  },
+  "temperature": 0.0,
+  "max_tokens": 160,
+  "seed": 0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "semantic_effect_guard": {
+  "messages": [
+   {
+    "role": "system",
+    "content": "Clasifica semánticamente el pedido actual. request_type es stable_conversation para charla, reacciones o conocimiento estable contestable sin consultar fuentes ni estado; external_read si exige consultar información vigente, una fuente nombrada, datos personales o estado del equipo; environment_change si pide crear, abrir, reproducir, cambiar o controlar algo; incomplete_effect si sólo hay una referencia o falta un objetivo o valor humano esencial para external_read o environment_change. Un nombre natural inequívoco cuenta como resuelto. effect_count es zero, one o multiple según los efectos atómicos pedidos; para stable_conversation su valor no concede autoridad. No identifiques operaciones ni inventes contexto."
+   },
+   {
+    "role": "user",
+    "content": "Mensaje actual:\ncontame un chiste corto"
+   }
+  ],
+  "temperature": 0.0,
+  "max_tokens": 64,
+  "seed": 0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "grammar": "root ::= \"{\\\"request_type\\\":\" request-type \",\\\"effect_count\\\":\" effect-count \"}\"\nrequest-type ::= \"\\\"stable_conversation\\\"\" | \"\\\"external_read\\\"\" | \"\\\"environment_change\\\"\" | \"\\\"incomplete_effect\\\"\"\neffect-count ::= \"\\\"zero\\\"\" | \"\\\"one\\\"\" | \"\\\"multiple\\\"\""
+ },
+ "language_grammar": {
+  "messages": [
+   {
+    "role": "system",
+    "content": "Clasifica solamente el idioma del mensaje actual. Identify only the language of the current message. Usa/return es when Spanish predominates, en when English predominates, and mixed whenever at least one meaningful command, content word, or phrase from each language appears. Proper names, capitalized product or brand names, code, and these instructions do not count as a second language."
+   },
+   {
+    "role": "user",
+    "content": "Mensaje actual:\nNecesito saber la hora"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"language\":\"es\"}"
+   },
+   {
+    "role": "user",
+    "content": "Mensaje actual:\nAbre Chrome ahora"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"language\":\"es\"}"
+   },
+   {
+    "role": "user",
+    "content": "Mensaje actual:\nThanks for the explanation"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"language\":\"en\"}"
+   },
+   {
+    "role": "user",
+    "content": "Mensaje actual:\nPlease abre la calculadora"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"language\":\"mixed\"}"
+   },
+   {
+    "role": "user",
+    "content": "Mensaje actual:\nReproduce some music y sube el volumen"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"language\":\"mixed\"}"
+   },
+   {
+    "role": "user",
+    "content": "Mensaje actual:\ncontame un chiste corto"
+   }
+  ],
+  "grammar": "root ::= \"{\" \"\\\"language\\\"\" \":\" \"\\\"\" language \"\\\"\" \"}\"\nlanguage ::= \"es\" | \"en\" | \"mixed\"",
+  "temperature": 0.0,
+  "max_tokens": 12,
+  "seed": 0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "chat": {
+  "messages": [
+   {
+    "role": "system",
+    "content": "Eres BAXY, un asistente local que vive en la PC Windows del usuario. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste."
+   },
+   {
+    "role": "system",
+    "content": "Política interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible."
+   },
+   {
+    "role": "system",
+    "content": "Política interna de idioma: responde exclusivamente en español."
+   },
+   {
+    "role": "user",
+    "content": "contame un chiste corto"
+   }
+  ],
+  "temperature": 0.0,
+  "max_tokens": 144,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "baxy_effect_count_verification": {
+  "messages": [
+   {
+    "role": "system",
+    "content": "Cuenta sólo los efectos atómicos distintos que la persona solicita. Objetivo, argumentos, dispositivo, fuente, destino, momento, condiciones y correcciones son modificadores de un efecto, no efectos adicionales. Usa multiple únicamente cuando se piden dos o más resultados o acciones distintas; no identifiques operaciones."
+   },
+   {
+    "role": "user",
+    "content": "necesito dejar el equipo en silencio ya mismo"
+   }
+  ],
+  "temperature": 0.0,
+  "seed": 0,
+  "max_tokens": 24,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "baxy_effect_count_verification",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "properties": {
+      "effect_count": {
+       "type": "string",
+       "enum": [
+        "zero",
+        "one",
+        "multiple"
+       ]
+      }
+     },
+     "required": [
+      "effect_count"
+     ],
+     "additionalProperties": false
+    }
+   }
+  }
+ },
+ "baxy_operation_compatibility": {
+  "messages": [
+   {
+    "role": "system",
+    "content": "Verifica estrictamente si la única operación suministrada puede satisfacer todo el pedido, incluidos objetivo, dispositivo, destino, momento y demás restricciones. compatible=true sólo para cobertura directa completa; semejanza o cobertura parcial es false. No propongas otra operación."
+   },
+   {
+    "role": "user",
+    "content": "Pedido:\nnecesito dejar el equipo en silencio ya mismo\n\nOperación:\nsystem.power | Solicita una transición confirmada de bloqueo, cierre de sesión o energía mediante la API oficial de Windows y exige su recibo de aceptación.\nContrato:\n{\"additionalProperties\":false,\"properties\":{\"action\":{\"enum\":[\"lock\",\"restart\",\"shutdown\",\"signout\",\"sleep\"],\"type\":\"string\"}},\"required\":[\"action\"],\"type\":\"object\"}"
+   }
+  ],
+  "temperature": 0.0,
+  "seed": 0,
+  "max_tokens": 24,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "baxy_operation_compatibility",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "properties": {
+      "compatible": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "compatible"
+     ],
+     "additionalProperties": false
+    }
+   }
+  }
+ },
+ "direct_grounded_arguments": {
+  "messages": [
+   {
+    "role": "system",
+    "content": "La operación system.power ya está elegida. Extrae sus argumentos del pedido; propósito: Solicita una transición confirmada de bloqueo, cierre de sesión o energía mediante la API oficial de Windows y exige su recibo de aceptación.. No inventes ni uses datos implícitos. Estos strings abiertos deben copiar una subcadena contigua exacta, sin traducir, normalizar ni crear IDs: []. Si falta un dato o una mención está negada, descartada, corregida, contrapuesta o ambigua, usa grounded=false y arguments=null; si todo está explícito, usa grounded=true. Formula fallback_question como una pregunta natural y breve para obtener estos campos: [\"action\"]. Usa el idioma del pedido, sin nombres internos, y termina con un solo '?'. Devuelve JSON compacto."
+   },
+   {
+    "role": "user",
+    "content": "necesito dejar el equipo en silencio ya mismo"
+   }
+  ],
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "direct_grounded_arguments",
+    "strict": true,
+    "schema": {
+     "type": "object",
+     "properties": {
+      "grounded": {
+       "type": "boolean"
+      },
+      "arguments": {
+       "anyOf": [
+        {
+         "type": "object",
+         "properties": {
+          "action": {
+           "type": "string",
+           "enum": [
+            "lock",
+            "restart",
+            "shutdown",
+            "signout",
+            "sleep"
+           ]
+          }
+         },
+         "required": [
+          "action"
+         ],
+         "additionalProperties": false
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "fallback_question": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 160
+      }
+     },
+     "required": [
+      "grounded",
+      "arguments",
+      "fallback_question"
+     ],
+     "additionalProperties": false
+    }
+   }
+  },
+  "temperature": 0.0,
+  "seed": 0,
+  "max_tokens": 192,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  }
+ }
+}

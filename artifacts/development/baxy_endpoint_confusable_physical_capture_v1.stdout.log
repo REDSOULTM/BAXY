@@ -1,0 +1,8 @@
+positive:20/24
+positive:24/24
+negative:20/96
+negative:40/96
+negative:60/96
+negative:80/96
+negative:96/96
+{"negative": 96, "positive": 24}

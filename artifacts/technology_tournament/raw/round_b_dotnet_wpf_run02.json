@@ -1,0 +1,738 @@
+{
+    "schema_version":  1,
+    "protocol_id":  "baxy-technology-tournament-v1",
+    "round":  "b_integrated_system",
+    "shell_id":  "dotnet-wpf",
+    "display_name":  ".NET WPF nativo",
+    "started_utc":  "2026-07-19T03:45:01.4327070Z",
+    "finished_utc":  "2026-07-19T03:45:29.1979951Z",
+    "ready_ms":  1592.6311,
+    "command":  [
+                    "D:\\BAXY\\source\\experiments\\technology_tournament\\round_b\\native_wpf\\bin\\Release\\net10.0-windows\\baxy-dotnet-wpf-slice.exe"
+                ],
+    "environment":  {
+                        "BAXY_ROUND_B_CORE":  "D:\\BAXY\\source\\artifacts\\technology_tournament\\build\\packaging\\dotnet_native_aot\\baxy-dotnet-slice.exe",
+                        "BAXY_ROUND_B_DATA":  "D:\\BAXY\\source\\artifacts\\technology_tournament\\work\\round_b\\dotnet-wpf\\data",
+                        "BAXY_ROUND_B_AUTOMATION":  "1"
+                    },
+    "provenance":  {
+                       "harness":  {
+                                       "path":  "experiments/technology_tournament/round_b/harness.ps1",
+                                       "sha256":  "2c6a19ea00cd9d8c9aa548fad5e2996e63e1fc72947ddd2dd03b58b43afea24c"
+                                   },
+                       "protocol":  {
+                                        "path":  "artifacts/technology_tournament/protocol.json",
+                                        "sha256":  "383a9e54cfc5a186de61f060aeb2a6cd013bab3ec21bdeb387063d935d99a892"
+                                    },
+                       "cases":  {
+                                     "path":  "experiments/technology_tournament/cases.json",
+                                     "sha256":  "62eb63e108256f5b91da4834d13efb8febc5aa137cb369acac966adce0dbf59d"
+                                 }
+                   },
+    "hashes":  {
+                   "shell_bundle_sha256":  "284d6c8f63c79ddb5770dea242e8742e6e3554a6fc35accbc22e59b90dfe247f",
+                   "shell_entrypoint_sha256":  "be1248232d2631a72a292030b3a4c9a978732c1723bfc9ad600f782d38c589f9",
+                   "core_sha256":  "27d566f7cdeb4f8bdd0cd7f1cadf4b89f8244aabc6f6e87b8174ee5e33bd403e",
+                   "source_tree_sha256":  "22b4332ca3bba36f60b0f3580584da8d133d12448e6a5aba5a736efe8ae6340a"
+               },
+    "shell_bundle_scope":  {
+                               "kind":  "explicit_fdd_runtime_files_loaded_by_the_measured_shell",
+                               "files":  [
+                                             {
+                                                 "path":  "experiments/technology_tournament/round_b/native_wpf/bin/Release/net10.0-windows/baxy-dotnet-wpf-slice.exe",
+                                                 "sha256":  "be1248232d2631a72a292030b3a4c9a978732c1723bfc9ad600f782d38c589f9"
+                                             },
+                                             {
+                                                 "path":  "experiments/technology_tournament/round_b/native_wpf/bin/Release/net10.0-windows/baxy-dotnet-wpf-slice.dll",
+                                                 "sha256":  "d6e81f71c59d8496db4fdc2284fc99df368696c063c011f3ff1964ac22391cdc"
+                                             },
+                                             {
+                                                 "path":  "experiments/technology_tournament/round_b/native_wpf/bin/Release/net10.0-windows/baxy-dotnet-wpf-slice.deps.json",
+                                                 "sha256":  "09da6e227311d23cb4efb8341154a9464e6c12461cee34415605030cb49291e8"
+                                             },
+                                             {
+                                                 "path":  "experiments/technology_tournament/round_b/native_wpf/bin/Release/net10.0-windows/baxy-dotnet-wpf-slice.runtimeconfig.json",
+                                                 "sha256":  "96bc2946dff8790400d652ec7f8de7bb043e954980d59470c112788b68a1fbd3"
+                                             }
+                                         ]
+                           },
+    "shell_bundle_bytes":  228304,
+    "core_bytes":  1850880,
+    "bundle_bytes":  2079184,
+    "accessibility":  {
+                          "named_nodes":  48,
+                          "core_ready_visible":  true,
+                          "technical_runtime_hidden":  true,
+                          "composer_named":  true,
+                          "send_named":  true,
+                          "live_regions":  [
+
+                                           ],
+                          "live_region_events":  32,
+                          "last_live_region_name":  "Anuncios de BAXY",
+                          "tab_target":  "Enviar mensaje",
+                          "shift_tab_target":  "ID de invocación de prueba",
+                          "focusable_controls":  [
+                                                     {
+                                                         "key":  "7.33756.1426874|InvocationInput|ID de invocación de prueba|ControlType.Edit",
+                                                         "automation_id":  "InvocationInput",
+                                                         "name":  "ID de invocación de prueba",
+                                                         "control_type":  "ControlType.Edit"
+                                                     },
+                                                     {
+                                                         "key":  "7.33756.23271310||Mover a papelera|ControlType.Button",
+                                                         "automation_id":  "",
+                                                         "name":  "Mover a papelera",
+                                                         "control_type":  "ControlType.Button"
+                                                     },
+                                                     {
+                                                         "key":  "7.33756.28043231|SendButton|Enviar mensaje|ControlType.Button",
+                                                         "automation_id":  "SendButton",
+                                                         "name":  "Enviar mensaje",
+                                                         "control_type":  "ControlType.Button"
+                                                     },
+                                                     {
+                                                         "key":  "7.33756.31101185|MessageInput|Mensaje para BAXY|ControlType.Edit",
+                                                         "automation_id":  "MessageInput",
+                                                         "name":  "Mensaje para BAXY",
+                                                         "control_type":  "ControlType.Edit"
+                                                     },
+                                                     {
+                                                         "key":  "7.33756.3113785|ContrastButton|Alternar contraste alto|ControlType.Button",
+                                                         "automation_id":  "ContrastButton",
+                                                         "name":  "Alternar contraste alto",
+                                                         "control_type":  "ControlType.Button"
+                                                     },
+                                                     {
+                                                         "key":  "7.33756.58574524||Leer una nota|ControlType.Button",
+                                                         "automation_id":  "",
+                                                         "name":  "Leer una nota",
+                                                         "control_type":  "ControlType.Button"
+                                                     },
+                                                     {
+                                                         "key":  "7.33756.9667952||Crear una nota|ControlType.Button",
+                                                         "automation_id":  "",
+                                                         "name":  "Crear una nota",
+                                                         "control_type":  "ControlType.Button"
+                                                     }
+                                                 ],
+                          "focus_start_key":  "7.33756.31101185|MessageInput|Mensaje para BAXY|ControlType.Edit",
+                          "forward_focus_order":  [
+                                                      "7.33756.31101185|MessageInput|Mensaje para BAXY|ControlType.Edit",
+                                                      "7.33756.28043231|SendButton|Enviar mensaje|ControlType.Button",
+                                                      "7.33756.3113785|ContrastButton|Alternar contraste alto|ControlType.Button",
+                                                      "7.33756.9667952||Crear una nota|ControlType.Button",
+                                                      "7.33756.58574524||Leer una nota|ControlType.Button",
+                                                      "7.33756.23271310||Mover a papelera|ControlType.Button",
+                                                      "7.33756.1426874|InvocationInput|ID de invocación de prueba|ControlType.Edit",
+                                                      "7.33756.31101185|MessageInput|Mensaje para BAXY|ControlType.Edit"
+                                                  ],
+                          "reverse_focus_order":  [
+                                                      "7.33756.31101185|MessageInput|Mensaje para BAXY|ControlType.Edit",
+                                                      "7.33756.1426874|InvocationInput|ID de invocación de prueba|ControlType.Edit",
+                                                      "7.33756.23271310||Mover a papelera|ControlType.Button",
+                                                      "7.33756.58574524||Leer una nota|ControlType.Button",
+                                                      "7.33756.9667952||Crear una nota|ControlType.Button",
+                                                      "7.33756.3113785|ContrastButton|Alternar contraste alto|ControlType.Button",
+                                                      "7.33756.28043231|SendButton|Enviar mensaje|ControlType.Button",
+                                                      "7.33756.31101185|MessageInput|Mensaje para BAXY|ControlType.Edit"
+                                                  ],
+                          "forward_focus_cycle_complete":  true,
+                          "reverse_focus_cycle_complete":  true,
+                          "keyboard_submit_case":  "T01_CONVERSATION",
+                          "raw_protocol_hidden":  true
+                      },
+    "resources":  {
+                      "idle":  {
+                                   "private_bytes":  129806336,
+                                   "working_set_bytes":  178491392,
+                                   "peak_working_set_bytes":  191180800,
+                                   "processes":  [
+                                                     {
+                                                         "pid":  33756,
+                                                         "name":  "baxy-dotnet-wpf-slice",
+                                                         "private_bytes":  125247488,
+                                                         "working_set_bytes":  161992704,
+                                                         "peak_working_set_bytes":  174682112
+                                                     },
+                                                     {
+                                                         "pid":  31036,
+                                                         "name":  "baxy-dotnet-slice",
+                                                         "private_bytes":  3256320,
+                                                         "working_set_bytes":  8994816,
+                                                         "peak_working_set_bytes":  8994816
+                                                     },
+                                                     {
+                                                         "pid":  15484,
+                                                         "name":  "conhost",
+                                                         "private_bytes":  1302528,
+                                                         "working_set_bytes":  7503872,
+                                                         "peak_working_set_bytes":  7503872
+                                                     }
+                                                 ]
+                               },
+                      "max_sampled_private_bytes":  137904128,
+                      "max_sampled_working_set_bytes":  194400256,
+                      "gpu":  {
+                                  "idle":  {
+                                               "dedicated_bytes":  14249984,
+                                               "shared_bytes":  7921664,
+                                               "source":  "Win32_PerfFormattedData_GPUPerformanceCounters_GPUProcessMemory",
+                                               "processes":  [
+                                                                 {
+                                                                     "pid":  33756,
+                                                                     "dedicated_bytes":  14249984,
+                                                                     "shared_bytes":  7921664
+                                                                 },
+                                                                 {
+                                                                     "pid":  31036,
+                                                                     "dedicated_bytes":  0,
+                                                                     "shared_bytes":  0
+                                                                 },
+                                                                 {
+                                                                     "pid":  15484,
+                                                                     "dedicated_bytes":  0,
+                                                                     "shared_bytes":  0
+                                                                 }
+                                                             ]
+                                           },
+                                  "max_sampled_dedicated_bytes":  17264640,
+                                  "max_sampled_shared_bytes":  8052736
+                              },
+                      "network_snapshot":  {
+                                               "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                               "observer_ok":  true,
+                                               "tcp":  [
+
+                                                       ],
+                                               "udp":  [
+
+                                                       ],
+                                               "samples":  [
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "process_ids":  [
+                                                                                       33756,
+                                                                                       31036,
+                                                                                       15484
+                                                                                   ],
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               }
+                                                           ],
+                                               "sampling_note":  "Discrete snapshots at idle, after every UI case, and before shutdown; not a continuous ETW trace."
+                                           }
+                  },
+    "functional":  {
+                       "passed_weight":  34,
+                       "total_weight":  34,
+                       "pass_ratio":  1,
+                       "cases":  [
+                                     {
+                                         "case_id":  "T01_CONVERSATION",
+                                         "weight":  1,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T02_CREATE_NOTE",
+                                         "weight":  2,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T03_READ_NOTE",
+                                         "weight":  1,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T04_COMPOUND_CREATE_READ",
+                                         "weight":  2,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T05_TRASH_NOTE",
+                                         "weight":  2,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T06_RESTORE_NOTE",
+                                         "weight":  2,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T07_IDEMPOTENT_REPLAY",
+                                         "weight":  3,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T08_BLOCK_MISSING",
+                                         "weight":  1,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "BLOQUEADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T09_BLOCK_TRAVERSAL",
+                                         "weight":  3,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "BLOQUEADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T10_BLOCK_ABSOLUTE_PATH",
+                                         "weight":  3,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "BLOQUEADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T11_BLOCK_NUL",
+                                         "weight":  3,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "BLOQUEADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T12_REFUSE_PROTECTED_DELETE",
+                                         "weight":  3,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "BLOQUEADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T13_UNKNOWN_HONEST",
+                                         "weight":  1,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "BLOQUEADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T14_UNICODE_FILENAME",
+                                         "weight":  2,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T15_TRUNCATED_JOURNAL_RECOVERY",
+                                         "weight":  3,
+                                         "passed":  true,
+                                         "route":  "visible_composer",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+                                                               "VERIFICADO"
+                                                           ]
+                                     },
+                                     {
+                                         "case_id":  "T16_MALFORMED_REQUEST",
+                                         "weight":  2,
+                                         "passed":  true,
+                                         "route":  "raw_core_transport_probe",
+                                         "failures":  [
+
+                                                      ],
+                                         "visible_state":  [
+
+                                                           ],
+                                         "transport_evidence":  {
+                                                                    "passed":  true,
+                                                                    "failures":  [
+
+                                                                                 ],
+                                                                    "process_survived":  true,
+                                                                    "recovery_response_valid":  true,
+                                                                    "recovery_response_state":  "done",
+                                                                    "stderr_redacted":  true,
+                                                                    "stderr_record":  "BAXY_PROTOCOL_ERROR malformed_json",
+                                                                    "malformed_stdout_protocol_records":  0,
+                                                                    "filesystem_unchanged":  true,
+                                                                    "filesystem_snapshot_scope":  "complete_workspace_before_recovery",
+                                                                    "workspace_before_malformed":  {
+                                                                                                       "root_exists":  false,
+                                                                                                       "entries":  [
+
+                                                                                                                   ]
+                                                                                                   },
+                                                                    "workspace_after_malformed_before_recovery":  {
+                                                                                                                      "root_exists":  false,
+                                                                                                                      "entries":  [
+
+                                                                                                                                  ]
+                                                                                                                  },
+                                                                    "exit_code":  0,
+                                                                    "timed_out":  false,
+                                                                    "network_snapshot":  {
+                                                                                             "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                                             "observer_ok":  true,
+                                                                                             "process_ids":  [
+                                                                                                                 23532,
+                                                                                                                 12144
+                                                                                                             ],
+                                                                                             "tcp":  [
+
+                                                                                                     ],
+                                                                                             "udp":  [
+
+                                                                                                     ]
+                                                                                         }
+                                                                }
+                                     }
+                                 ]
+                   },
+    "owned_process_ids_before_close":  [
+                                           33756,
+                                           31036,
+                                           15484
+                                       ],
+    "cleanup":  {
+                    "orphan_process_ids":  [
+
+                                           ],
+                    "passed":  true
+                }
+}

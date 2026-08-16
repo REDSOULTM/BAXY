@@ -1,0 +1,44 @@
+{
+  "schema": "baxy.qbyt-v2-dual-100h-preregistration.v11",
+  "registeredAtUtc": "2026-08-07T22:04:16.5442856Z",
+  "authority": "opened_development_regression_only",
+  "blindHoldout": false,
+  "freshHoldoutClaimSupported": false,
+  "farCertificationSupported": false,
+  "openedCorpus": true,
+  "candidateFrozen": false,
+  "policy": {
+    "name": "exactConfusableVetoThenStrictQbyTOrPlainThenHotSameView",
+    "qbytThreshold": 0.018335009925067425,
+    "expectedSentinelCandidates": 20962,
+    "maximumGuardedNegativeFalseActivations": 0,
+    "sameExactCpuFusionView": true,
+    "humanDevelopmentPositiveHits": 4,
+    "humanDevelopmentPositiveTotal": 4,
+    "humanDevelopmentFalseHits": 0,
+    "humanDevelopmentNegativeTotal": 8
+  },
+  "fixedEvidence": {
+    "innerEvaluatorSha256": "7ecbb31e895d7e89e21fc2dc8ebcf10988dd1cfecee9635d673cad7a30eeb4e1",
+    "evaluatorSha256": "f46ac87f3529c12d80522f8b80c5a8473188564214ad64da924242e4d7b53172",
+    "qbytVerifierSha256": "b7e7d1379c8ee63791c2d64d8548fa2d513c5a244cd79d9bb2cc5eb6b7b768a7",
+    "thresholdDeriverSha256": "992d97621c1a7b686163fee3e9ad085093457cbae514ea00db6c2502adb271f7",
+    "qbytCandidateSha256": "906117f3389d479c713a645d44b30d929106f9df31232582be04038a8d7c3b4b",
+    "humanEvidenceSha256": "0341870280b59362331aff2e04b10f948b0ea78840490c78fff4339a2cfea5ac",
+    "failedNegativeDiagnosticSha256": "b7ab71e7ceaea9d9acd1224f65dee96ce58c12e67b68107788bcd98b51e19356",
+    "screeningCacheSha256": "374d19d4381d3b573a82749851d1760c6cc581b55c052c84166750428fa5de34"
+  },
+  "cache": {
+    "reused": true,
+    "completeCandidates": 20962,
+    "containsTranscriptsOrFilenames": false
+  },
+  "schedule": {
+    "cudaBatchSize": 32,
+    "recordBatchSize": 64,
+    "sttBatchSize": 8,
+    "stage1Workers": 16,
+    "device": "cuda"
+  },
+  "plannedOutput": "D:\\BAXY\\source\\artifacts\\research\\baxy_qbyt_v2_dual_same_view_negative_regression_development_v11.v1.json"
+}

@@ -1,0 +1,31 @@
+{
+  "all_cases_completed": false,
+  "completed_cases": 1,
+  "generated_at_utc": "2026-07-22T07:41:46.323038+00:00",
+  "hard_failure_cases": [],
+  "hard_failures": 0,
+  "latency_seconds": {
+    "maximum": 0.047,
+    "p50": 0.047,
+    "p95": 0.047
+  },
+  "out_of_scope_language_cases": 3318,
+  "remaining_cases": 0,
+  "runtime_fingerprint": "e4e9e6ecd5c5dd11623762cd40d0e664cf978295efcd59c282d54305ee683a37",
+  "runtime_occurrences_covered": 1,
+  "schema_version": 1,
+  "scope": "every_exact_runtime_message_real_desktop_route_and_persistent_sidecar_no_effect",
+  "selected_cases": 1,
+  "shard_completed": true,
+  "shard_count": 1,
+  "shard_index": 0,
+  "source_case_sha256": "561f67ce527fba5544eafbca79dec2aacc2be8f8a248ffca145cacf9f7f4a6d6",
+  "source_language_scope_sha256": "28b683054fe6eaaec3ba98a35e96366a52b5e8b7f6d09a03939fe500292a760c",
+  "source_oracle_sha256": "97563e2d19da9f77871f0824411b4af27a792bef7f3ac2196bcb551ef69600a5",
+  "status_counts": {
+    "pass_safe_clarification": 1
+  },
+  "target_language_cases": 11527,
+  "tools_executed": 0,
+  "unique_runtime_cases": 14845
+}

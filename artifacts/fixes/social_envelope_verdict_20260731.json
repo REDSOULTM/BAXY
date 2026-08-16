@@ -1,0 +1,94 @@
+{
+ "schema": "baxy.social-envelope-verdict.v1",
+ "measured_at_utc": "2026-07-31",
+ "state": "PROMOVIDO",
+ "component": "baxy_mind/__main__._explicit_social_turn_decision; baxy_mind/effect_intent._REQUEST_PREFIX and _is_social_clause",
+ "question": "which turns still cross the primary policy for nothing? Fifteen of the thirty frozen workload turns already avoid the model, which is why decision_ms has a 21.9 ms median; every turn removed from P is worth more than any micro-optimisation of its schema.",
+ "finding": "the deterministic recogniser had no uniform notion of a social envelope. Two mechanically linked gaps followed from that: (A) an utterance that is nothing but a social act -- hola, buenas tardes, nos vemos, perfecto gracias, hi how are you -- paid a full P decode, because only bare gratitude was recognised; (B) a leading social act blocked an otherwise recognisable request, unless the greeting happened to be exactly `hola baxy`. `hola baxy, cuanta bateria queda` resolved to system.status while `hola, cuanta bateria queda` did not.",
+ "documentation_divergence_closed": "07_LATENCIA_END_TO_END.md already claimed that `saludos, agradecimientos, despedidas, no-entendimiento` skip E5 and semantic evidence. For saludos and despedidas that was false: only gratitude and non-understanding had a deterministic decision, so a greeting ran E5, P, G and L. The documentation described the intended design, not the code. This change makes the sentence true.",
+ "change": {
+  "whole_social_act": "_explicit_social_turn_decision now recognises greeting, farewell, gratitude and a well-being question, with an optional closed acknowledgement in front and the closed vocative `baxy` behind. Two closed vocabularies, one per language, consumed with re.fullmatch: any added clause stops matching and the turn returns to the model.",
+  "response_language": "the language is taken from the branch that matched, not from _explicit_response_language. That heuristic counts tokens against two closed word sets, neither of which contains `hi`, `hello` or `bye`, so it returns `es` for an English greeting. Reusing it would have answered `hi, how are you?` in Spanish. This was found by the new unit tests, not by the existing suite.",
+  "pending_clarification": "the shortcut now defers while a clarification is pending, mirroring _explicit_nonunderstanding_turn_decision. Deferring can only reproduce the baseline, because the turn goes to the model exactly as before.",
+  "request_prefix": "_REQUEST_PREFIX strips a leading greeting without requiring `baxy`, and absorbs Spanish inverted punctuation after the separator so `Hola, ¿qué hora es?` reaches its head. An explicit [,;:] separator is required for the bare greeting, which is what keeps `hola mundo` and `escribe hola` intact.",
+  "social_clause": "_is_social_clause accepts a clause that is entirely a greeting or farewell, anchored at both ends, so it stops counting as a pending request clause in the multi-clause resolver and in the compound-effect conservation contract."
+ },
+ "not_attempted_on_purpose": [
+  "`gracias capo`, `gracias crack`, `Gracias bb`: an open-ended compliment class. Fitting the three forms this corpus happens to contain would be corpus-fitting, and the fullmatch discipline is what makes the rest safe.",
+  "`gracias, <request>` as a request prefix: `por favor` and `please` are already stripped, but gratitude in front of a request is thinner evidence of a pure envelope than a greeting is. Measured (`gracias, cuanta bateria queda` still reaches the model) and left alone.",
+  "the residual 22 hidden requests below: fixing them means widening app.open, app.installed, capture.screenshot, browser.navigate.named and the compound plans that contain them, which is a different claim with its own blast radius."
+ ],
+ "physical_ab": {
+  "artifact": "social_envelope_20260731.json",
+  "probe": "experiments/mind_router_spike/probe_social_envelope.py",
+  "method": "the real sidecar per variant, whole sessions alternated in ABBA order, the same 20-case corpus twice per session. The baseline arm restores the gratitude-only pattern, the narrower request prefix and the narrower social-clause gate inside the same product code, so the two arms differ only in that one behaviour. P calls are attributed to a case by request identity, never by temporal proximity.",
+  "variant_took_effect": "P calls 98 -> 38. The whole-social family went from 28 P calls to 0 and the social-prefix family from 32 to 0, while the adversarial family stayed at 16 -> 16 and the frozen continuity family at 20 -> 20. A turn the candidate never sends to P has no telemetry row at all, which is the direct proof rather than an inference from wall time.",
+  "policy_decode_total_s": {
+   "baseline": 124.369,
+   "candidate": 46.772
+  },
+  "policy_prefill_total_s": {
+   "baseline": 24.264,
+   "candidate": 11.919
+  },
+  "by_family_p50_s": {
+   "whole-social": {
+    "baseline": 1.6582,
+    "candidate": 0.1735
+   },
+   "social-prefix": {
+    "baseline": 2.7044,
+    "candidate": 0.0009
+   },
+   "adversarial": {
+    "baseline": 1.5743,
+    "candidate": 1.6822
+   },
+   "frozen": {
+    "baseline": 1.7771,
+    "candidate": 1.8835
+   }
+  },
+  "honesty": "the turn p50 delta of -1.0007 s is reported for reference only and is not the headline. That distribution is bimodal, mixing deterministic turns near 0.001 s with model turns of several seconds; predicted_ms and p_calls from llama-server are what resolve the effect. A whole-social turn still calls chat to compose its visible answer, so the saving is E5 plus P, G and L, not the whole turn."
+ },
+ "decision_gates": {
+  "gap_A_whole_social": {
+   "gate": "exact decision equality against the model baseline on the frozen corpus",
+   "result": "PASSED. All seven whole-social cases decided `conversation` in both arms, deterministic in both, with the identical envelope. All four adversarial cases -- `escribe hola`, `hola, quien sos?`, `gracias capo`, `mandale hola a lucas por whatsapp` -- kept 4 P calls in both arms and the same decision, so nothing is swallowed."
+  },
+  "gap_B_social_prefix": {
+   "gate": "oracle corpus, the gate R3 and R10 used, NOT exact equality against the model",
+   "why": "an exact-equality gate against a P baseline can only be passed by a variant where P was already right, so it structurally rejects every case in which widening the recogniser fixes an answer. Gap B fails that gate on 2 of 4 cases, and both failures are P disagreeing with itself: the baseline resolved `cuanta bateria queda` to system.status but answered `buenos dias, cuanta bateria queda` with a clarification 4 times out of 4 (16 P calls), and resolved `pon el volumen al 30 por ciento` to audio.volume but turned `hola, pon el volumen al 30 por ciento` into a plan over audio.volume.adjust, a relative adjustment where the person named an absolute level.",
+   "attribution": "verified directly under both pattern sets: for every one of the four prefix cases the BARE form resolves identically in both arms, so the candidate never grants an operation the recogniser did not already grant the bare request.",
+   "artifact": "social_envelope_equivalence_20260731.json",
+   "result": "PASSED. 64 frozen cases from tests/test_effect_intent.py CASES x 13 envelopes = 832 comparisons per arm. Equivalent 222 -> 809. Regressions against the previous recogniser: 0. Authority manufactured by an envelope: 0 in both arms. Social vocabulary overlapping an effect: 0."
+  }
+ },
+ "guard_01_not_attributable": {
+  "claim": "the candidate introduced two decisions on `necesito dejar el equipo en silencio ya mismo`",
+  "verdict": "NOT attributable to this change. The deterministic path returns None for that text under BOTH pattern sets, verified directly, and P was called 4 times in each arm. The previous campaign already recorded guard-01 as the one nondeterministic case of its corpus in p_derived_fields_20260731.json, where the baseline itself produced both clarify and conversation. This is model nondeterminism under continuous batching, reported rather than hidden."
+ },
+ "findings_recorded_not_fixed": {
+  "colon_envelope": "a colon envelope is not split into clauses the way a comma is, so `Hola baxy: Abre la calculadora` still reaches the model. Eleven of the 22 residual cases share this cause.",
+  "named_browser_degradation": "`Hola baxy: Navega Opera a https://example.com/` resolves to browser.navigate instead of browser.navigate.named, which would navigate in the default browser rather than the one the person named. BOTH arms produce exactly this one case, so it predates this change; it is a finding of this audit, not an effect of it. Recorded, not fixed, because the cause is the browser matcher anchoring on the start of the string.",
+  "app_installed": "`¿Está instalada la calculadora?` loses its envelope under every form including `Baxy, `, which predates this change entirely. Same anchoring cause."
+ },
+ "coverage": {
+  "frozen_30_turn_workload": {
+   "deterministic_before": 15,
+   "deterministic_after": 16,
+   "flipped": "hola, todo bien?"
+  },
+  "frozen_historical_corpus": {
+   "scope": "343 short texts of the 14836-row frozen corpus that carry a social token",
+   "deterministic_before": 7,
+   "deterministic_after": 42,
+   "detail": "social 6 -> 39 and action 1 -> 3. The two new actions are `Hola, dime que hora es` and `hello, what time is it?`, both system.time, both matching the bare form."
+  }
+ },
+ "regression": "tests/test_turn_policy.py (36 social positives with their language, 20 adversarial negatives, 22 vocabulary-versus-effect boundary cases, 6 pending-clarification deferrals) and tests/test_effect_intent.py (9 curated bare-versus-wrapped pairs, 5 content-not-greeting cases, and the exhaustive 12-envelope invariant over the frozen CASES). Full gate 2026-07-31: 11/11 stages, Python 2090 passed / 2 sanctioned skips / 382 subtests (+106 over the previous closure), .NET 2282 passed / 18 environmental skips unchanged, Release build 0 warnings 0 errors.",
+ "effects_executed": 0,
+ "installation_touched": false,
+ "manifests_touched": false,
+ "rollback": "revert the _SOCIAL_* block and _explicit_social_turn_decision in src/baxy_mind/__main__.py with its call site, and _PREFIX_GAP, _REQUEST_PREFIX and _is_social_clause in src/baxy_mind/effect_intent.py; delete the two probe/detector scripts and the added tests."
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "baxy-night-audit-live-turn-probe-v1",
+  "measured_at": "2026-07-27T06:05:20.761736+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    },
+    {
+      "role": "assistant",
+      "content": "Hay una misión multipaso pendiente de una sesión anterior. Di «continuar» para reanudarla desde el último checkpoint o «cancelar» para detener sus pasos restantes."
+    },
+    {
+      "role": "user",
+      "content": "cancelar"
+    },
+    {
+      "role": "assistant",
+      "content": "Cancelé los pasos restantes de la misión."
+    }
+  ],
+  "cases": [
+    {
+      "text": "Abre Opera y navega a https://example.com/",
+      "elapsed_seconds": 10.664,
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "plan",
+        "operation": null,
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-1",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "browser.navigate",
+            "purpose": "Navegar a https://example.com/",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "url": "https://example.com/"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "browser.page.read",
+            "purpose": "Leer el contenido de la página navegada",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "after_dependencies",
+            "arguments": null
+          }
+        ]
+      }
+    }
+  ]
+}

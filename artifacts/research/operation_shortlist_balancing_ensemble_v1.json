@@ -1,0 +1,76 @@
+{
+  "best_joint": {
+    "current": 0.440789,
+    "current_identity": 0.179775,
+    "current_no_action": 0.809524,
+    "no_action_offset": 0.5,
+    "r4": 0.772727,
+    "validation": 0.952158,
+    "weights": {
+      "v1": 1.0,
+      "v2_balanced": 0.0,
+      "v2_sqrt": 0.0,
+      "v2_unweighted": 0.0
+    }
+  },
+  "best_r4_preserving_v1_current_accuracy": {
+    "current": 0.328947,
+    "current_identity": 0.224719,
+    "current_no_action": 0.47619,
+    "no_action_offset": 0.0,
+    "r4": 0.888889,
+    "validation": 0.972901,
+    "weights": {
+      "v1": 1.0,
+      "v2_balanced": 0.0,
+      "v2_sqrt": 0.0,
+      "v2_unweighted": 0.0
+    }
+  },
+  "blend_count": 1430,
+  "individual": {
+    "v1": {
+      "current": 0.328947,
+      "current_identity": 0.224719,
+      "current_no_action": 0.47619,
+      "r4": 0.888889,
+      "validation": 0.972901
+    },
+    "v2_balanced": {
+      "current": 0.210526,
+      "current_identity": 0.303371,
+      "current_no_action": 0.079365,
+      "r4": 0.934343,
+      "validation": 0.949816
+    },
+    "v2_sqrt": {
+      "current": 0.263158,
+      "current_identity": 0.258427,
+      "current_no_action": 0.269841,
+      "r4": 0.909091,
+      "validation": 0.967548
+    },
+    "v2_unweighted": {
+      "current": 0.309211,
+      "current_identity": 0.258427,
+      "current_no_action": 0.380952,
+      "r4": 0.888889,
+      "validation": 0.971228
+    }
+  },
+  "schema": "baxy.operation-shortlist-balancing-ensemble.v1",
+  "scope": "opened_development_only_no_promotion",
+  "sources": {
+    "mtop_development_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "mtop_manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "mtop_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "mtop_test_content_read": false,
+    "r4_selected_identity_sha256": "031d6173f29e1055b71fbd0da6e3fe13395fbc275c708f059a34ae788cb07f2d",
+    "training_sha256": "6d9a9f6f2f8d23a92a30e36b5a1d880a7a36025ea6974ed4d24b155cde88f17f"
+  },
+  "top1_oracle": {
+    "current": 0.375,
+    "r4": 0.934343,
+    "validation": 0.981265
+  }
+}

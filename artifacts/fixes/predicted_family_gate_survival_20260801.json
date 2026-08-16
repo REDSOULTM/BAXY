@@ -1,0 +1,2533 @@
+{
+  "cases": 147,
+  "effects_executed": 0,
+  "installation_touched": false,
+  "measured_at_utc": "2026-08-01T13:22:52.528467+00:00",
+  "method": "The recorded native required-arm operations replace only the primary policy object. The product semantic guard, count verifier, explicit contract and every downstream authority veto run against Qwen3 4B.",
+  "no_operation_share": 0.4558,
+  "outcomes": {
+    "error": 2,
+    "no_operation": 67,
+    "right_family": 57,
+    "wrong_family": 21
+  },
+  "right_family_share": 0.3878,
+  "rows": [
+    {
+      "case_id": "app-00",
+      "error": "",
+      "expected_family": "app",
+      "final_kind": "action",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.477773,
+      "text": "Abre Epic Games Launcher",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "app-01",
+      "error": "",
+      "expected_family": "app",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open",
+        "app.close"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.34698,
+      "text": "Abre Notepad y luego cierralo",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "app-02",
+      "error": "",
+      "expected_family": "app",
+      "final_kind": "plan",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.182669,
+      "text": "Abre Steam con máximo 2 intentos",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "app-03",
+      "error": "",
+      "expected_family": "app",
+      "final_kind": "action",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.8483,
+      "text": "Abre steam 0",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "app-04",
+      "error": "",
+      "expected_family": "app",
+      "final_kind": "action",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.923153,
+      "text": "Abre steam 1",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "app-05",
+      "error": "",
+      "expected_family": "app",
+      "final_kind": "action",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.200727,
+      "text": "Abre steam 2",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "audio-00",
+      "error": "",
+      "expected_family": "audio",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.volume"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.983699,
+      "text": "Abaixa o volume pra 30 por cento",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "audio-01",
+      "error": "",
+      "expected_family": "audio",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.volume.adjust"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.647168,
+      "text": "Augmente le volume de 10 pour cent",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "audio-02",
+      "error": "",
+      "expected_family": "audio",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.volume.adjust"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.228732,
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "audio-03",
+      "error": "",
+      "expected_family": "audio",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.volume.adjust"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.123875,
+      "text": "Baja el volumen 10%",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "audio-04",
+      "error": "",
+      "expected_family": "audio",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.volume"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.777996,
+      "text": "Bota o volume em 40 por cento",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "audio-05",
+      "error": "",
+      "expected_family": "audio",
+      "final_kind": "action",
+      "final_operations": [
+        "audio.volume"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.volume"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.571794,
+      "text": "Cambia el volumen a 10",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "backup-00",
+      "error": "",
+      "expected_family": "backup",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.write.text",
+        "filesystem.copy"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 0.956466,
+      "text": "Edita archivo y crea respaldo antes",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "backup-01",
+      "error": "",
+      "expected_family": "backup",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 1.797768,
+      "text": "cambia .env para usar ollama, pero solo con backup y confirmación",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "backup-02",
+      "error": "",
+      "expected_family": "backup",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 1.749963,
+      "text": "faz um backup do registro antes de mexer em algo",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "backup-03",
+      "error": "",
+      "expected_family": "backup",
+      "final_kind": "plan",
+      "final_operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "office",
+      "raw_operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 0.46595,
+      "text": "hace un backup de mis documentos a un pendrive",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "backup-04",
+      "error": "",
+      "expected_family": "backup",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_operations": [
+        "browser.page.read"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.499652,
+      "text": "show me the log of the backup job",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "bluetooth-00",
+      "error": "",
+      "expected_family": "bluetooth",
+      "final_kind": "plan",
+      "final_operations": [
+        "bluetooth.radio.set"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "bluetooth",
+      "raw_operations": [
+        "bluetooth.radio.set"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.985502,
+      "text": "abre configuración y entra a Bluetooth",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "bluetooth-01",
+      "error": "",
+      "expected_family": "bluetooth",
+      "final_kind": "action",
+      "final_operations": [
+        "bluetooth.radio.set"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "bluetooth",
+      "raw_operations": [
+        "bluetooth.radio.set"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.458734,
+      "text": "activa el bluetooth",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "bluetooth-02",
+      "error": "",
+      "expected_family": "bluetooth",
+      "final_kind": "action",
+      "final_operations": [
+        "bluetooth.radio.set"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "bluetooth",
+      "raw_operations": [
+        "bluetooth.radio.set"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.150593,
+      "text": "apagá el bluetooth",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "bluetooth-03",
+      "error": "",
+      "expected_family": "bluetooth",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "bluetooth",
+      "raw_operations": [
+        "bluetooth.radio.set"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.036579,
+      "text": "conecta el bluetooth",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "bluetooth-04",
+      "error": "",
+      "expected_family": "bluetooth",
+      "final_kind": "action",
+      "final_operations": [
+        "bluetooth.radio.set"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "bluetooth",
+      "raw_operations": [
+        "bluetooth.radio.set"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.069407,
+      "text": "desactivá el bluetooth",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "bluetooth-05",
+      "error": "",
+      "expected_family": "bluetooth",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "bluetooth",
+      "raw_operations": [
+        "bluetooth.radio.set"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.882563,
+      "text": "prendé el bluetooth",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "browser-00",
+      "error": "",
+      "expected_family": "browser",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_operations": [
+        "browser.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.950943,
+      "text": "Abre el navegador por defecto",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "browser-01",
+      "error": "",
+      "expected_family": "browser",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_operations": [
+        "browser.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.090632,
+      "text": "Abre github.com",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "browser-02",
+      "error": "",
+      "expected_family": "browser",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_operations": [
+        "browser.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.28582,
+      "text": "Abre la página de Steam de Marvel Rivals",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "browser-03",
+      "error": "",
+      "expected_family": "browser",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_operations": [
+        "browser.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.04715,
+      "text": "Abre la página de descargas de Python",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "browser-04",
+      "error": "",
+      "expected_family": "browser",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_operations": [
+        "browser.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.982357,
+      "text": "Abre la página oficial de OpenAI",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "browser-05",
+      "error": "",
+      "expected_family": "browser",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_operations": [
+        "browser.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.781245,
+      "text": "Abre o Google no navegador",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "calendar-00",
+      "error": "",
+      "expected_family": "calendar",
+      "final_kind": "plan",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "vision",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.34673,
+      "text": "Write me an email that I cant make it to the meeting",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "calendar-01",
+      "error": "",
+      "expected_family": "calendar",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.7221,
+      "text": "abrí el bloc de notas y escribí reunion manana",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "calendar-02",
+      "error": "",
+      "expected_family": "calendar",
+      "final_kind": "action",
+      "final_operations": [
+        "calendar.event.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "calendar",
+      "raw_operations": [
+        "calendar.event.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.354334,
+      "text": "agenda una reunion el viernes a las cinco",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "calendar-03",
+      "error": "",
+      "expected_family": "calendar",
+      "final_kind": "action",
+      "final_operations": [
+        "calendar.event.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "calendar",
+      "raw_operations": [
+        "calendar.event.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.437358,
+      "text": "agendá una reunión el viernes a las 3",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "calendar-04",
+      "error": "",
+      "expected_family": "calendar",
+      "final_kind": "action",
+      "final_operations": [
+        "web.search"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "web",
+      "raw_operations": [
+        "web.search"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 2.188099,
+      "text": "crea un evento el viernes a las 4",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "calendar-05",
+      "error": "",
+      "expected_family": "calendar",
+      "final_kind": "plan",
+      "final_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "message",
+      "raw_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 0.381807,
+      "text": "escribile un email a juan con el asunto reunion diciendo nos vemos",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "capture-00",
+      "error": "",
+      "expected_family": "capture",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.976816,
+      "text": "Sacale una foto de captura a mi pc, que se ve?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "capture-01",
+      "error": "",
+      "expected_family": "capture",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 3.487924,
+      "text": "how do I take a screenshot in Windows?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "capture-02",
+      "error": "",
+      "expected_family": "capture",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_operations": [
+        "capture.screenshot"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.527326,
+      "text": "tira uma captura de tela",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "capture-03",
+      "error": "",
+      "expected_family": "capture",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_operations": [
+        "capture.screenshot"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.819784,
+      "text": "toma screenshot, guárdalo y dime el path",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "capture-04",
+      "error": "",
+      "expected_family": "capture",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_operations": [
+        "capture.screenshot"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.709516,
+      "text": "toma una captura y guardala en el escritorio",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "capture-05",
+      "error": "",
+      "expected_family": "capture",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_operations": [
+        "capture.screenshot"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.74343,
+      "text": "toma una captura, guardala en el escritorio y abre el explorador ahi",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "clipboard-00",
+      "error": "",
+      "expected_family": "clipboard",
+      "final_kind": "plan",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.366689,
+      "text": "Pega esto en el bloc de notas",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "clipboard-01",
+      "error": "",
+      "expected_family": "clipboard",
+      "final_kind": "plan",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.252722,
+      "text": "copia texto de Notepad al portapapeles",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "clipboard-02",
+      "error": "",
+      "expected_family": "clipboard",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "clipboard",
+      "raw_operations": [
+        "clipboard.copy"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.483267,
+      "text": "copiame este texto al portapapeles que lo necesito pegar",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "clipboard-03",
+      "error": "",
+      "expected_family": "clipboard",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "clipboard",
+      "raw_operations": [
+        "clipboard.copy"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.204478,
+      "text": "copy my email address to the clipboard so I can paste it",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "clipboard-04",
+      "error": "",
+      "expected_family": "clipboard",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 2.21374,
+      "text": "pega texto en un archivo nuevo de Notepad",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "clipboard-05",
+      "error": "",
+      "expected_family": "clipboard",
+      "final_kind": "plan",
+      "final_operations": [
+        "clipboard.read.text"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "clipboard",
+      "raw_operations": [
+        "clipboard.read.text"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.026744,
+      "text": "que hay en el portapapeles",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "filesystem-00",
+      "error": "",
+      "expected_family": "filesystem",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.folder.open"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.210818,
+      "text": "Abre el archivo hola.txt del escritorio",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "filesystem-01",
+      "error": "",
+      "expected_family": "filesystem",
+      "final_kind": "plan",
+      "final_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.311818,
+      "text": "Abre el archivo más reciente de Descargas",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "filesystem-02",
+      "error": "",
+      "expected_family": "filesystem",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.400941,
+      "text": "Abre el último archivo que descargué",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "filesystem-03",
+      "error": "",
+      "expected_family": "filesystem",
+      "final_kind": "action",
+      "final_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.228684,
+      "text": "Borra la carpeta CarterTest del escritorio",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "filesystem-04",
+      "error": "",
+      "expected_family": "filesystem",
+      "final_kind": "action",
+      "final_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.395674,
+      "text": "Crea un archivo de texto en el escritorio que diga prueba Carter",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "filesystem-05",
+      "error": "",
+      "expected_family": "filesystem",
+      "final_kind": "action",
+      "final_operations": [
+        "filesystem.create.directory"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.create.directory"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.340262,
+      "text": "Crea una carpeta en el escritorio llamada CarterTest",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "game-00",
+      "error": "",
+      "expected_family": "game",
+      "final_kind": "action",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 2.123047,
+      "text": "Abre Big Picture",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "game-01",
+      "error": "",
+      "expected_family": "game",
+      "final_kind": "action",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 2.188484,
+      "text": "Abre Counter Strike",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "game-02",
+      "error": "ValueError: la aclaración expone un identificador interno",
+      "expected_family": "game",
+      "final_kind": null,
+      "final_operations": [],
+      "final_outcome": "error",
+      "predicted_family": "game",
+      "raw_operations": [
+        "game.launch"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.285711,
+      "text": "Abre Portal desde Steam",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "game-03",
+      "error": "",
+      "expected_family": "game",
+      "final_kind": "plan",
+      "final_operations": [
+        "app.open"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "app",
+      "raw_operations": [
+        "app.open"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.374248,
+      "text": "Abre a Loja do Steam",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "game-04",
+      "error": "",
+      "expected_family": "game",
+      "final_kind": "plan",
+      "final_operations": [
+        "game.launch"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "game",
+      "raw_operations": [
+        "game.launch"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.168179,
+      "text": "Abre capturas de Steam",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "game-05",
+      "error": "",
+      "expected_family": "game",
+      "final_kind": "plan",
+      "final_operations": [
+        "game.catalog.list"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "game",
+      "raw_operations": [
+        "game.catalog.list"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.139407,
+      "text": "Abre mi biblioteca de Steam",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "media-00",
+      "error": "",
+      "expected_family": "media",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_operations": [
+        "media.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.768072,
+      "text": "Active la fenêtre de Spotify",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "media-01",
+      "error": "",
+      "expected_family": "media",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_operations": [
+        "media.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.980119,
+      "text": "Affiche la fenêtre de Spotify par-dessus les autres",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "media-02",
+      "error": "",
+      "expected_family": "media",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_operations": [
+        "media.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.361905,
+      "text": "Ahora estoy poniendo musica en  mi pc, lo quieres probar?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "media-03",
+      "error": "",
+      "expected_family": "media",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_operations": [
+        "media.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.86663,
+      "text": "Apri Spotify e fai partire la musica",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "media-04",
+      "error": "",
+      "expected_family": "media",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_operations": [
+        "media.play.query"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.478638,
+      "text": "Baxy, pon música”.",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "media-05",
+      "error": "",
+      "expected_family": "media",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_operations": [
+        "media.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.04863,
+      "text": "Can you play tic tac toe with me?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "message-00",
+      "error": "",
+      "expected_family": "message",
+      "final_kind": "plan",
+      "final_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "message",
+      "raw_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.382541,
+      "text": "Dile a amor en WhatsApp que la amo mucho.",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "message-01",
+      "error": "",
+      "expected_family": "message",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.610438,
+      "text": "Dile a amor en wsp que la amo",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "message-02",
+      "error": "",
+      "expected_family": "message",
+      "final_kind": "plan",
+      "final_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "message",
+      "raw_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.35063,
+      "text": "Dile a amor que la amo demasiado en wsp",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "message-03",
+      "error": "",
+      "expected_family": "message",
+      "final_kind": "plan",
+      "final_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "message",
+      "raw_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.322749,
+      "text": "Dile a amor que la amo en wsp",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "message-04",
+      "error": "",
+      "expected_family": "message",
+      "final_kind": "plan",
+      "final_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "message",
+      "raw_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.368626,
+      "text": "Dile a amor que la amo muchisimo en wsp",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "message-05",
+      "error": "",
+      "expected_family": "message",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.749773,
+      "text": "Dile a enmanuel que es una increible persona en wsp",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "note-00",
+      "error": "",
+      "expected_family": "note",
+      "final_kind": "plan",
+      "final_operations": [
+        "note.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "note",
+      "raw_operations": [
+        "note.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.312862,
+      "text": "anota que tengo que comprar pan",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "note-01",
+      "error": "",
+      "expected_family": "note",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 1.242285,
+      "text": "anota que tengo que llamar al medico manana",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "note-02",
+      "error": "",
+      "expected_family": "note",
+      "final_kind": "plan",
+      "final_operations": [
+        "note.list"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "note",
+      "raw_operations": [
+        "note.list"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.128218,
+      "text": "apri il blocco note e scrivi la lista della spesa",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "note-03",
+      "error": "",
+      "expected_family": "note",
+      "final_kind": "plan",
+      "final_operations": [
+        "note.list"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "note",
+      "raw_operations": [
+        "note.list"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.126494,
+      "text": "apri il blocco note, scrivi la lista e salvala",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "note-04",
+      "error": "",
+      "expected_family": "note",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "game",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 1.712904,
+      "text": "apri la finestra Salva con nome nel Blocco note",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "note-05",
+      "error": "",
+      "expected_family": "note",
+      "final_kind": "action",
+      "final_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 2.324798,
+      "text": "convierte nota.txt a mayúsculas en un archivo nuevo",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "notification-00",
+      "error": "",
+      "expected_family": "notification",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.492248,
+      "text": "Pone una alarma para las 7 de la maniana",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "notification-01",
+      "error": "",
+      "expected_family": "notification",
+      "final_kind": "plan",
+      "final_operations": [
+        "notification.schedule"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "notification",
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.271683,
+      "text": "alarma para mañana 8am",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "notification-02",
+      "error": "",
+      "expected_family": "notification",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.97789,
+      "text": "arranca un temporizador de 10 minutos",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "notification-03",
+      "error": "",
+      "expected_family": "notification",
+      "final_kind": "action",
+      "final_operations": [
+        "notification.cancel.latest"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "notification",
+      "raw_operations": [
+        "notification.cancel.latest"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.944669,
+      "text": "cancelá la alarma",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "notification-04",
+      "error": "ValueError: la aclaración no es una única pregunta acotada",
+      "expected_family": "notification",
+      "final_kind": null,
+      "final_operations": [],
+      "final_outcome": "error",
+      "predicted_family": "notification",
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.006639,
+      "text": "pone un timer de 5 minutos",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "notification-05",
+      "error": "",
+      "expected_family": "notification",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.196055,
+      "text": "ponme un temporizador de diez minutos",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "ocr-00",
+      "error": "",
+      "expected_family": "ocr",
+      "final_kind": "plan",
+      "final_operations": [
+        "task.search"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.search"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 0.99907,
+      "text": "OCR limitado, mejor para detection",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "office-00",
+      "error": "",
+      "expected_family": "office",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_operations": [
+        "office.document.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.163751,
+      "text": "Can you make me a PowerPoint?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "office-01",
+      "error": "",
+      "expected_family": "office",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 1.175611,
+      "text": "Cierre de Word podía perder trabajo",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "office-02",
+      "error": "",
+      "expected_family": "office",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.951211,
+      "text": "Donde dejaste el Powerpoint? Que me hiciste",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "office-03",
+      "error": "",
+      "expected_family": "office",
+      "final_kind": "plan",
+      "final_operations": [
+        "office.document.read"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "office",
+      "raw_operations": [
+        "office.document.read"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.191672,
+      "text": "Fecha tudo que tá aberto do Word",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "office-04",
+      "error": "",
+      "expected_family": "office",
+      "final_kind": "plan",
+      "final_operations": [
+        "office.document.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "office",
+      "raw_operations": [
+        "office.document.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.215125,
+      "text": "Haz un powerpoint hablando de amor de 6 diapositivas",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "office-05",
+      "error": "",
+      "expected_family": "office",
+      "final_kind": "plan",
+      "final_operations": [
+        "office.document.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "office",
+      "raw_operations": [
+        "office.document.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.102497,
+      "text": "Hazme un PowerPoint de siete diapositivas que hable de los dinosaurios",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "peripheral-00",
+      "error": "",
+      "expected_family": "peripheral",
+      "final_kind": "plan",
+      "final_operations": [
+        "audio.microphone.mute"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.microphone.mute"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.052965,
+      "text": "anotá que terminé de configurar el micrófono",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "peripheral-01",
+      "error": "",
+      "expected_family": "peripheral",
+      "final_kind": "plan",
+      "final_operations": [
+        "audio.microphone.mute"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.microphone.mute"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.274351,
+      "text": "cambia el microfono por defecto",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "peripheral-02",
+      "error": "",
+      "expected_family": "peripheral",
+      "final_kind": "plan",
+      "final_operations": [
+        "audio.microphone.mute"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.microphone.mute"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.056928,
+      "text": "mutea el micrófono en discord",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "peripheral-03",
+      "error": "",
+      "expected_family": "peripheral",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.settings.set"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 2.570126,
+      "text": "set the HP LaserJet as my default printer",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "peripheral-04",
+      "error": "",
+      "expected_family": "peripheral",
+      "final_kind": "plan",
+      "final_operations": [
+        "audio.microphone.mute"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "audio",
+      "raw_operations": [
+        "audio.microphone.mute"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 0.999032,
+      "text": "silenciame el micrófono",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "reminder-00",
+      "error": "",
+      "expected_family": "reminder",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.status"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.627361,
+      "text": "avisame en 20 minutos que saque la comida",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "reminder-01",
+      "error": "",
+      "expected_family": "reminder",
+      "final_kind": "plan",
+      "final_operations": [
+        "system.power"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.power"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.203469,
+      "text": "avisame en una hora que salgo",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "reminder-02",
+      "error": "",
+      "expected_family": "reminder",
+      "final_kind": "action",
+      "final_operations": [
+        "reminder.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "reminder",
+      "raw_operations": [
+        "reminder.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.584047,
+      "text": "ponme un recordatorio en 2 minutos para tomar agua",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "reminder-03",
+      "error": "",
+      "expected_family": "reminder",
+      "final_kind": "action",
+      "final_operations": [
+        "reminder.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "reminder",
+      "raw_operations": [
+        "reminder.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.442095,
+      "text": "ponme un recordatorio para las 3 de la tarde",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "reminder-04",
+      "error": "",
+      "expected_family": "reminder",
+      "final_kind": "action",
+      "final_operations": [
+        "reminder.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "reminder",
+      "raw_operations": [
+        "reminder.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.538962,
+      "text": "ponme un recordatorio para llamar al dentista",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "reminder-05",
+      "error": "",
+      "expected_family": "reminder",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.status"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.582158,
+      "text": "recordatorio de tomar agua en 1 hora",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "routine-00",
+      "error": "",
+      "expected_family": "routine",
+      "final_kind": "plan",
+      "final_operations": [
+        "task.complete"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.complete"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.051828,
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "routine-01",
+      "error": "",
+      "expected_family": "routine",
+      "final_kind": "plan",
+      "final_operations": [
+        "routine.phrase.create"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "routine",
+      "raw_operations": [
+        "routine.phrase.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.190592,
+      "text": "crea una rutina que cada manana me de la hora",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "routine-02",
+      "error": "",
+      "expected_family": "routine",
+      "final_kind": "plan",
+      "final_operations": [
+        "task.create"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.create"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 0.962277,
+      "text": "creá el hábito de leer y registrá que lo hice hoy",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "routine-03",
+      "error": "",
+      "expected_family": "routine",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 1.611235,
+      "text": "cria o hábito de ler e regista que já o fiz hoje",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "streaming-00",
+      "error": "",
+      "expected_family": "streaming",
+      "final_kind": "plan",
+      "final_operations": [
+        "streaming.navigate"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "streaming",
+      "raw_operations": [
+        "streaming.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.131698,
+      "text": "Abri YouTube en el navegador",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "streaming-01",
+      "error": "",
+      "expected_family": "streaming",
+      "final_kind": "plan",
+      "final_operations": [
+        "streaming.navigate"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "streaming",
+      "raw_operations": [
+        "streaming.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.219758,
+      "text": "Acabas de reanudar el video youtube , pero yo queria de opera gx",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "streaming-02",
+      "error": "",
+      "expected_family": "streaming",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "streaming",
+      "raw_operations": [
+        "streaming.navigate",
+        "streaming.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 3.265801,
+      "text": "Antes de seguir quiero ver como pones una serie en disney y en netflix",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "streaming-03",
+      "error": "",
+      "expected_family": "streaming",
+      "final_kind": "plan",
+      "final_operations": [
+        "streaming.navigate"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "streaming",
+      "raw_operations": [
+        "streaming.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.344528,
+      "text": "Donde puedo ver la pelicula de superman que salio el ano pasado??",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "streaming-04",
+      "error": "",
+      "expected_family": "streaming",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "streaming",
+      "raw_operations": [
+        "streaming.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.519046,
+      "text": "Elige el primer resultado de YouTube",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "streaming-05",
+      "error": "",
+      "expected_family": "streaming",
+      "final_kind": "plan",
+      "final_operations": [
+        "streaming.navigate"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "streaming",
+      "raw_operations": [
+        "streaming.navigate"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.229858,
+      "text": "Hablame de emilia perez la pelicula es buena?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "system-00",
+      "error": "",
+      "expected_family": "system",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.559012,
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "system-01",
+      "error": "",
+      "expected_family": "system",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.622725,
+      "text": "1. No ya usamos mucha ram para baxy\n2. si intentalo",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "system-02",
+      "error": "",
+      "expected_family": "system",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.550921,
+      "text": "En latencia quien gana}? en consumo de recursos quien? ram?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "system-03",
+      "error": "",
+      "expected_family": "system",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 2.604091,
+      "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "system-04",
+      "error": "",
+      "expected_family": "system",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.173471,
+      "text": "Hay algo mas que use gpu??",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "system-05",
+      "error": "",
+      "expected_family": "system",
+      "final_kind": "plan",
+      "final_operations": [
+        "system.status"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "system",
+      "raw_operations": [
+        "system.status"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.170618,
+      "text": "Listoo la gpu dejo de usarseee",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "task-00",
+      "error": "",
+      "expected_family": "task",
+      "final_kind": "plan",
+      "final_operations": [
+        "task.complete"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.complete"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.137249,
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede.",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "task-01",
+      "error": "",
+      "expected_family": "task",
+      "final_kind": "plan",
+      "final_operations": [
+        "task.complete"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.complete"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.801674,
+      "text": "And which of those would you personally use for the required task?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "task-02",
+      "error": "",
+      "expected_family": "task",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.list"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.66068,
+      "text": "Bien hay una nueva sesion, verifica todo , lo que salio mal y bien",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "task-03",
+      "error": "",
+      "expected_family": "task",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.list"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.034844,
+      "text": "Cuanto tiempo hasta que tengas todo listo? , como ha ido el progreso?",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "task-04",
+      "error": "",
+      "expected_family": "task",
+      "final_kind": "plan",
+      "final_operations": [
+        "task.complete"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.complete"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.086498,
+      "text": "Deja todo lo que suma activado",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "task-05",
+      "error": "",
+      "expected_family": "task",
+      "final_kind": "clarify",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_operations": [
+        "task.create"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.114758,
+      "text": "Empieza de cero esta tarea",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "vision-00",
+      "error": "",
+      "expected_family": "vision",
+      "final_kind": "plan",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "vision",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.16674,
+      "text": "Abre configuración de pantalla",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "vision-01",
+      "error": "",
+      "expected_family": "vision",
+      "final_kind": "plan",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "vision",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.133547,
+      "text": "Activa cámara y mira qué hay",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "vision-02",
+      "error": "",
+      "expected_family": "vision",
+      "final_kind": "plan",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "vision",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.220909,
+      "text": "Escribe Batman en la búsqueda que ves",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "vision-03",
+      "error": "",
+      "expected_family": "vision",
+      "final_kind": "plan",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "vision",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.131216,
+      "text": "Graba la pantalla",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "vision-04",
+      "error": "",
+      "expected_family": "vision",
+      "final_kind": "plan",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "vision",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.123548,
+      "text": "Lee el mensaje de error de la pantalla",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "vision-05",
+      "error": "",
+      "expected_family": "vision",
+      "final_kind": "plan",
+      "final_operations": [
+        "vision.describe"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "vision",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.322141,
+      "text": "Lee lo que hay en pantalla",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "web-00",
+      "error": "",
+      "expected_family": "web",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "web",
+      "raw_operations": [
+        "web.search"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.667952,
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "web-01",
+      "error": "",
+      "expected_family": "web",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "web",
+      "raw_operations": [
+        "web.search"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.435035,
+      "text": "Abre Wikipedia y busca Alan Turing",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "web-02",
+      "error": "",
+      "expected_family": "web",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "web",
+      "raw_operations": [
+        "web.search"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.666502,
+      "text": "Abre opera gx y busca flash",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "web-03",
+      "error": "",
+      "expected_family": "web",
+      "final_kind": "plan",
+      "final_operations": [
+        "filesystem.search"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "filesystem",
+      "raw_operations": [
+        "filesystem.search"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 1.125312,
+      "text": "Busca archivos que contengan la palabra “Batman",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "web-04",
+      "error": "",
+      "expected_family": "web",
+      "final_kind": "action",
+      "final_operations": [
+        "game.install.named"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "game",
+      "raw_operations": [
+        "game.install.named"
+      ],
+      "raw_outcome": "wrong_family",
+      "seconds": 2.180318,
+      "text": "Busca el App ID de Doom Eternal en Steam usando la API publica",
+      "wrong_raw_proposal_retained_authority": true
+    },
+    {
+      "case_id": "web-05",
+      "error": "",
+      "expected_family": "web",
+      "final_kind": "plan",
+      "final_operations": [
+        "web.search"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "web",
+      "raw_operations": [
+        "web.search"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.17427,
+      "text": "Busca el botón Guardar y presiónalo",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "wifi-00",
+      "error": "",
+      "expected_family": "wifi",
+      "final_kind": "plan",
+      "final_operations": [
+        "wifi.connect"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "wifi",
+      "raw_operations": [
+        "wifi.connect"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.154573,
+      "text": "Conecta no Wi-Fi de novo",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "wifi-01",
+      "error": "",
+      "expected_family": "wifi",
+      "final_kind": "plan",
+      "final_operations": [
+        "wifi.ensure.connected"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "wifi",
+      "raw_operations": [
+        "wifi.ensure.connected"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.061696,
+      "text": "a qué wifi estoy conectado",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "wifi-02",
+      "error": "",
+      "expected_family": "wifi",
+      "final_kind": "action",
+      "final_operations": [
+        "wifi.disconnect"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "wifi",
+      "raw_operations": [
+        "wifi.disconnect"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.190776,
+      "text": "apagá el wifi",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "wifi-03",
+      "error": "",
+      "expected_family": "wifi",
+      "final_kind": "plan",
+      "final_operations": [
+        "wifi.disconnect",
+        "wifi.profile.list",
+        "wifi.connect"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "wifi",
+      "raw_operations": [
+        "wifi.disconnect",
+        "wifi.profile.list",
+        "wifi.connect"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 0.364174,
+      "text": "cambia el wifi a EV 2",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "wifi-04",
+      "error": "",
+      "expected_family": "wifi",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "wifi",
+      "raw_operations": [
+        "wifi.connect"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.742719,
+      "text": "conecta el wifi, abre el correo y leeme el ultimo mensaje",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "wifi-05",
+      "error": "",
+      "expected_family": "wifi",
+      "final_kind": "plan",
+      "final_operations": [
+        "wifi.connect"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "wifi",
+      "raw_operations": [
+        "wifi.connect"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.131907,
+      "text": "conectame a la red wifi de la familia",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "window-00",
+      "error": "",
+      "expected_family": "window",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "window",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 2.102764,
+      "text": "Abre una ventana incógnito",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "window-01",
+      "error": "",
+      "expected_family": "window",
+      "final_kind": "plan",
+      "final_operations": [
+        "window.minimize"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "window",
+      "raw_operations": [
+        "window.minimize"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.142266,
+      "text": "Cerra la ventana activa",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "window-02",
+      "error": "",
+      "expected_family": "window",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "window",
+      "raw_operations": [
+        "window.minimize"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 1.535723,
+      "text": "Minimiza tudo e mostra a área de trabalho",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "window-03",
+      "error": "",
+      "expected_family": "window",
+      "final_kind": "action",
+      "final_operations": [
+        "window.resolve"
+      ],
+      "final_outcome": "right_family",
+      "predicted_family": "window",
+      "raw_operations": [
+        "window.resolve"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.273184,
+      "text": "abre la ventana",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "window-04",
+      "error": "",
+      "expected_family": "window",
+      "final_kind": "plan",
+      "final_operations": [
+        "filesystem.move"
+      ],
+      "final_outcome": "wrong_family",
+      "predicted_family": "filesystem",
+      "raw_operations": [],
+      "raw_outcome": "no_operation",
+      "seconds": 2.232814,
+      "text": "arrastra este archivo a esa ventana",
+      "wrong_raw_proposal_retained_authority": false
+    },
+    {
+      "case_id": "window-05",
+      "error": "",
+      "expected_family": "window",
+      "final_kind": "conversation",
+      "final_operations": [],
+      "final_outcome": "no_operation",
+      "predicted_family": "window",
+      "raw_operations": [
+        "window.move"
+      ],
+      "raw_outcome": "right_family",
+      "seconds": 2.218388,
+      "text": "arrastra una ventana liviana a la derecha",
+      "wrong_raw_proposal_retained_authority": false
+    }
+  ],
+  "runtime_manifest_changed": false,
+  "schema": "baxy.predicted-family-gate-survival.v1",
+  "seconds_p50": 1.5822,
+  "seconds_p95": 2.4778,
+  "source": "D:\\BAXY\\source\\artifacts\\fixes\\native_predicted_family_qwen3_20260801.json",
+  "wrong_raw_proposals_retaining_authority": 20
+}

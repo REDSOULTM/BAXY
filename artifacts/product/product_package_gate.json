@@ -1,0 +1,96 @@
+{
+  "schema": "baxy-product-package-gate-v1",
+  "status": "passed",
+  "scope": "same-host clean Release build and deterministic offline ZIP packaging",
+  "source": {
+    "commit": "aac3e0509b848188e2cf50c01f09584af842bd90",
+    "dirty": false,
+    "provenance": "git_head_snapshot",
+    "build_manifest_schema": "baxy-product-build-v3",
+    "version": "1.0.0",
+    "runtime": "win-x64",
+    "dotnet_sdk": "10.0.100",
+    "powershell": "5.1.26100.8737"
+  },
+  "build_reproducibility": {
+    "isolated_replicas": 2,
+    "trees_byte_identical": true,
+    "payload_files": 7,
+    "payload_bytes": 82842635,
+    "manifest_bytes": 1478,
+    "manifest_sha256": "3e6486ee67ec9f0c263a6f83ccbe34eacd0c6ca4dc7a21d34d59ac35e852e259",
+    "app_bytes": 67079643,
+    "app_sha256": "57031a0fc5f79229bf8499da2cfb075e8872d7b9877a771bf7202a05e3ea9309",
+    "core_bytes": 7376384,
+    "core_sha256": "d2b03ef8fb4dc8c2379bbf3acde962b6b8fd15f04e59dd59729a22b52c204de5",
+    "first_party_signatures": "not_signed",
+    "microsoft_native_libraries_with_valid_signatures": 5,
+    "debug_symbol_files": 0,
+    "private_source_path_hits_ascii_or_utf16": 0
+  },
+  "package_reproducibility": {
+    "isolated_replicas": 2,
+    "byte_identical": true,
+    "filename": "BAXY-1.0.0-aac3e0509b84-win-x64.zip",
+    "bytes": 82845957,
+    "sha256": "11971bc0501598009145506f815407ec42a7c8fde2e88996815c1d2eaf3e7ba9",
+    "entries": 9,
+    "all_entries_stored": true,
+    "canonical_zip_layout": true,
+    "internal_sha256sums_verified": true,
+    "external_sidecars_exact": true,
+    "authenticity": "not_provided"
+  },
+  "regression": {
+    "python_tests_passed": 95,
+    "python_tests_failed": 0,
+    "dotnet_tests_passed": 1209,
+    "dotnet_tests_failed": 0,
+    "packaging_red_team_p0": 0,
+    "packaging_red_team_p1": 0
+  },
+  "native_aot_gpu_gate": {
+    "status": "passed",
+    "operations": 21,
+    "identity_adapters": 3,
+    "usage_adapters": 3,
+    "measured_adapters": 2,
+    "unavailable_adapters": 1,
+    "indexed_failures": 1,
+    "global_failures": 0,
+    "failure_codes": [
+      "unsupported"
+    ],
+    "transport_warmup": "malformed_json",
+    "stderr_bytes": 0,
+    "exit_code": 0
+  },
+  "self_contained_gui_smoke": {
+    "dotnet_root_intentionally_absent": true,
+    "dotnet_multilevel_lookup": "0",
+    "width": 980,
+    "height": 680,
+    "core_ready": true,
+    "mission_completed": true,
+    "note_files_observed_before_cleanup": 1,
+    "capture_sha256": "b9826c98cef137a21e2de42a1d010ef576c5dd30a668624916945101e13ad94d",
+    "capture_bytes": 71335,
+    "private_runtime_removed": true,
+    "owned_product_processes_after_gate": 0,
+    "preexisting_notepad_5472_preserved": true
+  },
+  "cleanup": {
+    "temporary_build_staging_directories": 0,
+    "temporary_package_staging_directories": 0,
+    "temporary_source_worktrees": 0,
+    "registered_git_worktrees": 1,
+    "owned_product_processes": 0
+  },
+  "limitations": [
+    "This is same-host evidence with shared installed SDK and caches, not cross-host or clean-room reproducibility.",
+    "The ZIP is an offline product package, not yet the per-user Windows installer or a clean Windows VM result.",
+    "The first-party executables are unsigned; SHA-256 proves consistency with trusted metadata, not publisher authenticity or resistance to whole-package replacement.",
+    "A kill or power loss can leave an unpromoted GUID staging directory or detached-worktree metadata for manual recovery.",
+    "The build and package scripts do not claim resistance to a hostile concurrent process running as the same Windows account."
+  ]
+}

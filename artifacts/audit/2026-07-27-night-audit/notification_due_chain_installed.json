@@ -1,0 +1,140 @@
+{
+  "schema": "baxy.audit.notification-due-chain.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "elapsed_seconds": 3.1767503999999462,
+  "total": 4,
+  "verified": 4,
+  "cases": [
+    {
+      "operation": "reminder.create",
+      "arguments": {
+        "title": "BAXY synthetic due reminder 8c1848be",
+        "details": "night audit",
+        "dueUtc": "2026-07-27T07:39:06.145183+00:00"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "7ff586f5-260f-4d87-8700-6387f639e5f7",
+          "missionId": "9bec68fc-3d34-4238-914f-2f5f42c76e81",
+          "invocationId": "aa1666f0-c512-41d1-9164-8406bfe2944f",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "reminderId": "c5246698-98ec-4d09-b190-8a57ad58b7a8",
+            "title": "BAXY synthetic due reminder 8c1848be",
+            "details": "night audit",
+            "dueUtc": "2026-07-27T07:39:06.145183+00:00",
+            "dismissed": false,
+            "deleted": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.059331600001314655
+    },
+    {
+      "operation": "notification.list.due",
+      "arguments": {
+        "limit": 10
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "01084e79-483c-4657-8be1-7b099924f22a",
+          "missionId": "7a764244-d753-4a70-87dc-73943ecd0644",
+          "invocationId": "b7fe31ec-e62e-417d-b710-702be2b717b9",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "reminders": [
+              {
+                "reminderId": "c5246698-98ec-4d09-b190-8a57ad58b7a8",
+                "title": "BAXY synthetic due reminder 8c1848be",
+                "details": "night audit",
+                "dueUtc": "2026-07-27T07:39:06.145183+00:00",
+                "dismissed": false,
+                "deleted": false,
+                "version": 1
+              }
+            ],
+            "count": 1,
+            "mode": "due",
+            "limit": 10
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03353830000014568
+    },
+    {
+      "operation": "notification.dismiss",
+      "arguments": {
+        "reminderId": "c5246698-98ec-4d09-b190-8a57ad58b7a8",
+        "expectedVersion": 1
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "a0392d15-f247-421f-9a80-db268f13fe79",
+          "missionId": "a4f20779-c1b6-4346-9a7c-2ffd3269b3c8",
+          "invocationId": "8893b2b6-47d7-4efe-955f-7408be51dac1",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 2,
+            "reminderId": "c5246698-98ec-4d09-b190-8a57ad58b7a8",
+            "title": "BAXY synthetic due reminder 8c1848be",
+            "details": "night audit",
+            "dueUtc": "2026-07-27T07:39:06.145183+00:00",
+            "dismissed": true,
+            "deleted": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.04586610000114888
+    },
+    {
+      "operation": "notification.list.due",
+      "arguments": {
+        "limit": 10
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "45bbbcb1-4b54-449a-b486-0815988026f4",
+          "missionId": "266d1aa7-1f0d-4ba0-8dd2-14843f6d063e",
+          "invocationId": "f2905444-5494-438b-94ce-fe97d64df2a3",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "reminders": [],
+            "count": 0,
+            "mode": "due",
+            "limit": 10
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.0313122999996267
+    }
+  ],
+  "error": null,
+  "process_exit_code": 0,
+  "stderr": ""
+}

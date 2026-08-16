@@ -1,0 +1,63 @@
+{
+  "schema": "baxy.exclusive-expanded-route-guard-development-preregistration.v1",
+  "createdAtUtc": "2026-08-11T17:42:57.1962475Z",
+  "purpose": "test whether strict lexical confirmation can safely guard logmel detections that depend exclusively on the expanded physical upstream model",
+  "role": "opened_development_diagnostic_only",
+  "program": "experiments/wake_validation/evaluate_exclusive_expanded_route_guard_v1.py",
+  "programSha256": "d228c0f2c965b066d3b1d7a3b627411e54c398a52e2c62364255948b77b9ecd6",
+  "candidateManifest": "D:/BAXYRuntime/experiments/wakeword/baxy_wake_routed_cascade_v25a_endpoint_development/baxy-wake-cascade-v2.json",
+  "candidateManifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+  "sttDirectory": "D:/BAXYRuntime/assets/stt/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+  "sttSha256": {
+    "encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+    "decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+    "joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+    "tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+  },
+  "contract": {
+    "blockSamples": 512,
+    "targetUpstreamTuple": [false, false, true],
+    "guard": "strict_leading_candidate_alias_without_hotwords_on_all_manifest_speed_views",
+    "noPositiveRegression": true,
+    "zeroNegativeFalseActivations": true,
+    "physicalV17Read": false,
+    "retainTranscriptText": false,
+    "retainFilenames": false,
+    "adjustThresholds": false,
+    "retrain": false,
+    "modifyRuntime": false,
+    "promotionEligible": false
+  },
+  "jobs": {
+    "endpoint_confusable": {
+      "cascadeReport": "artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json",
+      "cascadeReportSha256": "7b6a11cddf142a2964a4637c268baf4a0986802f975e7f3766d9980eb007daa0",
+      "corpus": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_endpoint_confusable_raw_v1_development",
+      "corpusManifestSha256": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+      "candidateManifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+      "plannedOutput": "artifacts/development/baxy_exclusive_expanded_route_guard_confusable_20260811.json"
+    },
+    "opened_physical_v20": {
+      "cascadeReport": "artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json",
+      "cascadeReportSha256": "2687bb40bade67e93e7010e8ec724e1b9f8a34af895a22b6f447f350a3d3731a",
+      "corpus": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_reserved_raw_v20_development",
+      "corpusManifestSha256": "a18e19dcf175994418f3f838c69032f17a1666fb61cfc2076075719ff3fdfbc6",
+      "candidateManifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+      "plannedOutput": "artifacts/development/baxy_exclusive_expanded_route_guard_v20_20260811.json"
+    },
+    "opened_human_v14": {
+      "cascadeReport": "artifacts/development/baxy_wake_cascade_human_v14_full_fixedrank_s9701_v3_human.json",
+      "cascadeReportSha256": "6847a3df611c76ffd1a3fe9c868ed0f04ee1544ed87e5f678b96776d617d1fba",
+      "corpus": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_real_human_augmented_raw_v14_validation",
+      "corpusManifestSha256": "d98078c60c0a13027c5c3c5d3e0bdd53bf787dc0db8245cc5abb53dde2735805",
+      "candidateManifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+      "plannedOutput": "artifacts/development/baxy_exclusive_expanded_route_guard_human_v14_20260811.json"
+    }
+  },
+  "interpretationRules": [
+    "A passing result is development evidence only and cannot override the rejected v17 receipt.",
+    "Any runtime change requires a separately frozen candidate and a fresh disjoint physical holdout.",
+    "The consumed physical v17 corpus and transcript evidence are forbidden inputs."
+  ],
+  "effectsExecuted": 0
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "baxy.llama-cuda-graph-opt-verdict.v1",
+  "date": "2026-07-29",
+  "candidate": "GGML_CUDA_GRAPH_OPT=1",
+  "runtime": "official llama.cpp b9980 CUDA 12.4 profile",
+  "scope": "Q/K/V CUDA stream concurrency; CUDA Graphs stayed enabled by default in both arms",
+  "decision": "rejected",
+  "production_changed": false,
+  "safety": {
+    "core_started": false,
+    "external_effects_executed": false,
+    "fresh_server_per_arm": true
+  },
+  "evidence": {
+    "forward_order": "artifacts/fixes/llama_cuda_graph_opt_ab_20260729.json",
+    "reverse_order": "artifacts/fixes/llama_cuda_graph_opt_ab_reverse_20260729.json",
+    "arm_orders": [
+      [
+        "baseline",
+        "graph"
+      ],
+      [
+        "graph",
+        "baseline"
+      ]
+    ],
+    "cases_per_arm_per_order": 6,
+    "aggregate_cases_per_profile": 12,
+    "payloads_identical": true,
+    "exact_outputs": true,
+    "exact_predicted_token_counts": true,
+    "mode_contracts": true,
+    "order_results_graph_minus_baseline": [
+      {
+        "order": "baseline-graph",
+        "p50_percent": 1.6559065759581104,
+        "p95_percent": -0.7614453372775887,
+        "max_percent": 0.5960129921096069,
+        "total_percent": -0.9788188507066531
+      },
+      {
+        "order": "graph-baseline",
+        "p50_percent": 1.6679300729181001,
+        "p95_percent": 2.624293692743862,
+        "max_percent": 3.0538228100556397,
+        "total_percent": 2.463804171673001
+      }
+    ],
+    "aggregate_graph_minus_baseline": {
+      "p50_seconds": 0.060171,
+      "p50_percent": 1.2504,
+      "p95_seconds": -0.063599,
+      "p95_percent": -1.0856,
+      "max_seconds": 0.034994,
+      "max_percent": 0.5960,
+      "total_seconds": 0.404946,
+      "total_percent": 0.7036
+    },
+    "aggregate_stage_request_p50_graph_minus_baseline": {
+      "P": {
+        "seconds": 0.105317,
+        "percent": 3.623
+      },
+      "G": {
+        "seconds": 0.051722,
+        "percent": 4.298
+      },
+      "L": {
+        "seconds": 0.034768,
+        "percent": 5.374
+      },
+      "V": {
+        "seconds": -0.197291,
+        "percent": -13.675
+      },
+      "C": {
+        "seconds": -0.009049,
+        "percent": -1.157
+      },
+      "E": {
+        "seconds": 0.063554,
+        "percent": 6.242
+      },
+      "chat": {
+        "seconds": -0.058315,
+        "percent": -2.997
+      }
+    }
+  },
+  "reason": "The candidate preserved quality but did not produce a repeatable end-to-end gain. Median latency regressed in both arm orders, aggregate total latency regressed, and the reverse order regressed p50, p95, max and total. Improvements in V and chat did not compensate for regressions in the critical P/G/L path.",
+  "promotion_rule": "Do not add GGML_CUDA_GRAPH_OPT to BAXY's runtime environment.",
+  "primary_sources": [
+    "https://github.com/ggml-org/llama.cpp/pull/16991",
+    "https://github.com/ggml-org/llama.cpp/discussions/17621",
+    "https://raw.githubusercontent.com/ggml-org/llama.cpp/b9980/ggml/src/ggml-cuda/ggml-cuda.cu"
+  ]
+}

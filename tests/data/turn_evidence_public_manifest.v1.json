@@ -1,0 +1,304 @@
+{
+  "schema": "baxy.turn-evidence-promotion-manifest.v1",
+  "runtime_schema": "baxy.turn-evidence-record.v1",
+  "sources": {
+    "presto": {
+      "source_map": {
+        "repo_path": "src/baxy_mind/data/presto_turn_evidence_map.v1.json",
+        "sha256": "cd9163c6b8ff8d962bfa2622030ee4b3504e2549fd7eb22ec8a348548f27df73",
+        "name": "PRESTO v1",
+        "download_url": "https://storage.googleapis.com/gresearch/presto/presto_v1.zip",
+        "project_url": "https://github.com/google-research-datasets/presto",
+        "license": "CC-BY-4.0",
+        "citation": "Goel et al. (2023), PRESTO: A Multilingual Dataset for Parsing Realistic Task-Oriented Dialogs"
+      },
+      "archive": {
+        "file_name": "presto_v1.zip",
+        "sha256": "1fc671692cceb31fbda17e351e47f2cc52ee8779042f92dc26674cc0cca2167f"
+      }
+    },
+    "massive": {
+      "source_map": {
+        "repo_path": "src/baxy_mind/data/massive_turn_evidence_map.v1.json",
+        "sha256": "f04bb4bd2314aefba254d124b982d6f5a9cfaf7c031ef906e8caa2f5c1e53589",
+        "name": "MASSIVE v1.1",
+        "download_url": "https://amazon-massive-nlu-dataset.s3.amazonaws.com/amazon-massive-dataset-1.1.tar.gz",
+        "project_url": "https://github.com/alexa/massive",
+        "license": "CC-BY-4.0",
+        "citation": "FitzGerald et al. (2023), MASSIVE: A 1M-Example Multilingual Natural Language Understanding Dataset",
+        "upstream_citation": "Bastianelli et al. (2020), SLURP: A Spoken Language Understanding Resource Package"
+      },
+      "archive": {
+        "file_name": "amazon-massive-dataset-1.1.tar.gz",
+        "sha256": "4cba5faa11c71437928e17cb1b9b3d8b8e727e7ea363a3a9a8045e19c0491577"
+      }
+    }
+  },
+  "constraints": {
+    "presto_locales": [
+      "en-US",
+      "es-ES"
+    ],
+    "massive_locales": [
+      "en-US",
+      "es-ES"
+    ],
+    "presto_no_context": true,
+    "massive_minimum_localized_judgments": 2,
+    "no_new_capabilities": true,
+    "public_train_only_at_runtime": true
+  },
+  "historical": {
+    "source_sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+    "source_rows": 14836,
+    "accepted_rows": 7383,
+    "excluded_private": 1814,
+    "excluded_noncanonical": 3969,
+    "excluded_ambiguous": 0,
+    "excluded_out_of_scope": 1670
+  },
+  "presto": {
+    "train": {
+      "archive_sha256": "1fc671692cceb31fbda17e351e47f2cc52ee8779042f92dc26674cc0cca2167f",
+      "source_rows": 276259,
+      "accepted_rows": 2613,
+      "excluded_locale": 180403,
+      "excluded_contextual": 79105,
+      "excluded_unmapped": 14138,
+      "excluded_invalid": 0,
+      "source_intents": {
+        "Create_note": 305,
+        "Find_parking": 361,
+        "Get_note": 374,
+        "Get_product": 454,
+        "Open_app": 561,
+        "Play_game": 558
+      },
+      "excluded_partition": 0,
+      "excluded_quality": 0
+    },
+    "validation": {
+      "archive_sha256": "1fc671692cceb31fbda17e351e47f2cc52ee8779042f92dc26674cc0cca2167f",
+      "source_rows": 82547,
+      "accepted_rows": 796,
+      "excluded_locale": 53901,
+      "excluded_contextual": 23598,
+      "excluded_unmapped": 4252,
+      "excluded_invalid": 0,
+      "source_intents": {
+        "Create_note": 112,
+        "Find_parking": 95,
+        "Get_note": 122,
+        "Get_product": 137,
+        "Open_app": 175,
+        "Play_game": 155
+      },
+      "excluded_partition": 0,
+      "excluded_quality": 0
+    },
+    "test": {
+      "archive_sha256": "1fc671692cceb31fbda17e351e47f2cc52ee8779042f92dc26674cc0cca2167f",
+      "source_rows": 194118,
+      "accepted_rows": 1875,
+      "excluded_locale": 126785,
+      "excluded_contextual": 55428,
+      "excluded_unmapped": 10030,
+      "excluded_invalid": 0,
+      "source_intents": {
+        "Create_note": 233,
+        "Find_parking": 248,
+        "Get_note": 251,
+        "Get_product": 322,
+        "Open_app": 421,
+        "Play_game": 400
+      },
+      "excluded_partition": 0,
+      "excluded_quality": 0
+    }
+  },
+  "massive": {
+    "train": {
+      "archive_sha256": "4cba5faa11c71437928e17cb1b9b3d8b8e727e7ea363a3a9a8045e19c0491577",
+      "source_rows": 33042,
+      "accepted_rows": 15608,
+      "excluded_locale": 0,
+      "excluded_contextual": 0,
+      "excluded_unmapped": 7420,
+      "excluded_invalid": 0,
+      "source_intents": {
+        "alarm_query": 260,
+        "alarm_remove": 156,
+        "alarm_set": 364,
+        "audio_volume_down": 104,
+        "audio_volume_mute": 220,
+        "audio_volume_other": 36,
+        "audio_volume_up": 220,
+        "calendar_query": 1132,
+        "calendar_set": 1620,
+        "cooking_query": 8,
+        "cooking_recipe": 414,
+        "datetime_query": 700,
+        "general_greet": 50,
+        "general_joke": 144,
+        "general_quirky": 1110,
+        "news_query": 1006,
+        "play_audiobook": 300,
+        "play_game": 224,
+        "play_music": 1278,
+        "play_podcasts": 386,
+        "play_radio": 566,
+        "qa_currency": 284,
+        "qa_definition": 534,
+        "qa_factoid": 1088,
+        "qa_maths": 156,
+        "qa_stock": 304,
+        "recommendation_events": 380,
+        "recommendation_locations": 346,
+        "recommendation_movies": 140,
+        "takeaway_query": 244,
+        "transport_query": 454,
+        "transport_traffic": 234,
+        "weather_query": 1146
+      },
+      "excluded_partition": 10014,
+      "excluded_quality": 0
+    },
+    "validation": {
+      "archive_sha256": "4cba5faa11c71437928e17cb1b9b3d8b8e727e7ea363a3a9a8045e19c0491577",
+      "source_rows": 33042,
+      "accepted_rows": 2787,
+      "excluded_locale": 0,
+      "excluded_contextual": 0,
+      "excluded_unmapped": 1278,
+      "excluded_invalid": 0,
+      "source_intents": {
+        "alarm_query": 38,
+        "alarm_remove": 28,
+        "alarm_set": 62,
+        "audio_volume_down": 16,
+        "audio_volume_mute": 30,
+        "audio_volume_up": 24,
+        "calendar_query": 204,
+        "calendar_set": 262,
+        "cooking_query": 4,
+        "cooking_recipe": 82,
+        "datetime_query": 127,
+        "general_greet": 4,
+        "general_joke": 30,
+        "general_quirky": 210,
+        "news_query": 164,
+        "play_audiobook": 70,
+        "play_game": 44,
+        "play_music": 246,
+        "play_podcasts": 68,
+        "play_radio": 92,
+        "qa_currency": 64,
+        "qa_definition": 110,
+        "qa_factoid": 180,
+        "qa_maths": 26,
+        "qa_stock": 48,
+        "recommendation_events": 52,
+        "recommendation_locations": 62,
+        "recommendation_movies": 24,
+        "takeaway_query": 48,
+        "transport_query": 72,
+        "transport_traffic": 44,
+        "weather_query": 252
+      },
+      "excluded_partition": 28976,
+      "excluded_quality": 1
+    },
+    "test": {
+      "archive_sha256": "4cba5faa11c71437928e17cb1b9b3d8b8e727e7ea363a3a9a8045e19c0491577",
+      "source_rows": 33042,
+      "accepted_rows": 3982,
+      "excluded_locale": 0,
+      "excluded_contextual": 0,
+      "excluded_unmapped": 1964,
+      "excluded_invalid": 1,
+      "source_intents": {
+        "alarm_query": 68,
+        "alarm_remove": 42,
+        "alarm_set": 82,
+        "audio_volume_down": 22,
+        "audio_volume_mute": 64,
+        "audio_volume_other": 12,
+        "audio_volume_up": 26,
+        "calendar_query": 252,
+        "calendar_set": 418,
+        "cooking_recipe": 144,
+        "datetime_query": 176,
+        "general_greet": 2,
+        "general_joke": 38,
+        "general_quirky": 338,
+        "news_query": 248,
+        "play_audiobook": 81,
+        "play_game": 70,
+        "play_music": 352,
+        "play_podcasts": 126,
+        "play_radio": 144,
+        "qa_currency": 78,
+        "qa_definition": 114,
+        "qa_factoid": 282,
+        "qa_maths": 50,
+        "qa_stock": 52,
+        "recommendation_events": 85,
+        "recommendation_locations": 62,
+        "recommendation_movies": 40,
+        "takeaway_query": 70,
+        "transport_query": 102,
+        "transport_traffic": 30,
+        "weather_query": 312
+      },
+      "excluded_partition": 27094,
+      "excluded_quality": 1
+    }
+  },
+  "outputs": {
+    "runtime": {
+      "repo_path": "tests/data/turn_evidence_runtime.v1.jsonl",
+      "rows": 25156,
+      "exact_text_ambiguous_removed": 22,
+      "exact_text_duplicates_removed": 21
+    },
+    "heldout": {
+      "repo_path": "tests/data/turn_evidence_public_holdout.v1.jsonl",
+      "rows": 9172,
+      "runtime_exact_text_overlap_removed": 10
+    }
+  },
+  "public_after_cross_split_dedup": 26998,
+  "runtime_modes": {
+    "action": 16395,
+    "conversation": 8409,
+    "plan": 352
+  },
+  "runtime_families": {
+    "app": 655,
+    "audio": 828,
+    "backup": 31,
+    "bluetooth": 31,
+    "browser": 93,
+    "calendar": 2883,
+    "capture": 15,
+    "clipboard": 12,
+    "filesystem": 29,
+    "game": 860,
+    "media": 2752,
+    "message": 27,
+    "note": 691,
+    "notification": 925,
+    "office": 103,
+    "package": 3,
+    "peripheral": 15,
+    "reminder": 34,
+    "routine": 13,
+    "streaming": 162,
+    "system": 830,
+    "task": 271,
+    "vision": 78,
+    "web": 5810,
+    "wifi": 32,
+    "window": 93
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "baxy.exclusive-expanded-route-guard-development.v1",
+  "measuredAtUtc": "2026-08-11T17:44:39.052256+00:00",
+  "label": "endpoint_confusable",
+  "preregistrationSha256": "6f9c2783914a5d78a80f9db0fc66e49d87e3cb3e149357d65eca5c93927db70d",
+  "inputsSha256": {
+    "program": "d228c0f2c965b066d3b1d7a3b627411e54c398a52e2c62364255948b77b9ecd6",
+    "candidateManifest": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "cascadeReport": "7b6a11cddf142a2964a4637c268baf4a0986802f975e7f3766d9980eb007daa0",
+    "corpusManifest": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4"
+  },
+  "contract": {
+    "blockSamples": 512,
+    "targetUpstreamTuple": [
+      false,
+      false,
+      true
+    ],
+    "strictAliases": [
+      "baxi",
+      "baxy",
+      "boxy"
+    ],
+    "retrySpeedFactors": [
+      0.85,
+      1.14
+    ],
+    "hotwords": false,
+    "physicalV17Read": false,
+    "transcriptTextRetained": false
+  },
+  "positive": {
+    "files": 24,
+    "currentAcceptedFiles": 16,
+    "currentLexicalAcceptedFiles": 16,
+    "routeTupleCounts": {},
+    "currentLogmelAccepted": 0,
+    "exclusiveExpandedAccepted": 0,
+    "exclusiveExpandedStrictAliasAccepted": 0,
+    "guardedLogmelAccepted": 0,
+    "removedByGuard": 0,
+    "prospectiveAcceptedFiles": 16,
+    "records": [],
+    "transcriptTextRetained": false
+  },
+  "negative": {
+    "files": 96,
+    "currentAcceptedFiles": 10,
+    "currentLexicalAcceptedFiles": 7,
+    "routeTupleCounts": {
+      "001": 3
+    },
+    "currentLogmelAccepted": 3,
+    "exclusiveExpandedAccepted": 3,
+    "exclusiveExpandedStrictAliasAccepted": 0,
+    "guardedLogmelAccepted": 0,
+    "removedByGuard": 3,
+    "prospectiveAcceptedFiles": 7,
+    "records": [
+      {
+        "record": 28,
+        "audioSha256": "6f870ee2a7e445f08d9b946882b11da44713009bd3e7d4f34c1f2f73e04bd916",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "5d798cccca7b9371e66fcb13b54969022951919ceb08305b3fffecf9c4ec917d",
+          "6680ffe8bbee6980d394a8c8b382312c446fb56309702e0825f719ee88e54009",
+          "aab4c1fa6eaf862b46d50b3a233f88bb9b36ed031b04f68b23dee0dc30a9a318"
+        ]
+      },
+      {
+        "record": 43,
+        "audioSha256": "5e1b9ea06d97bd87fa149d1af5dc719534c0359c7f0eefb515879c8f3d3c14cc",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "565232220c2e52c8967a56b76be012fd0a812ae78f587cb340a3a0af2ace35ad",
+          "8049570d5a7f17923baa7ee5311a3e8813fc892f66e48ee4a5179f785afac914",
+          "565232220c2e52c8967a56b76be012fd0a812ae78f587cb340a3a0af2ace35ad"
+        ]
+      },
+      {
+        "record": 72,
+        "audioSha256": "77357353b238cc4c972b14122056dd33ab31cc2fff3455bd6455c61c1a842004",
+        "upstreamCandidates": [
+          false,
+          false,
+          true
+        ],
+        "strictAliasMatched": false,
+        "attemptTranscriptSha256": [
+          "6680ffe8bbee6980d394a8c8b382312c446fb56309702e0825f719ee88e54009",
+          "5d798cccca7b9371e66fcb13b54969022951919ceb08305b3fffecf9c4ec917d",
+          "ff80e81a8bcff47e8d83d9c858c37587a22221b42a918b4f8aefe5c2d630b52e"
+        ]
+      }
+    ],
+    "transcriptTextRetained": false
+  },
+  "noPositiveRegression": true,
+  "zeroNegativeFalseActivations": false,
+  "developmentPassed": false,
+  "candidateRuntimeModified": false,
+  "promotionEligible": false,
+  "blindHumanPartitionAccessed": false,
+  "effectsExecuted": 0
+}

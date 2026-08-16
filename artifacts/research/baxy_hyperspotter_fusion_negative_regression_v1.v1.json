@@ -1,0 +1,81 @@
+{
+  "schema": "baxy.hyperspotter-fusion-negative-regression.v1",
+  "measuredAtUtc": "2026-08-06T12:41:39.656921+00:00",
+  "scope": "previously_opened_100h_negative_regression_cuda_screen_cpu_exact_belt",
+  "sources": {
+    "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+    "ctcVerifierManifestSha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "cudaParityReportSha256": "ec9664826eb1f8f7291f59e30b47ee33d3042f5ad351c39db9611c4cfe171b3f",
+    "teacherWeightsSha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "priorHoldoutReportSha256": "8c582921eba872a0af001770857d011519cab8ae5efa935da05bce60f4a1b43f",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "preregistrationSha256": "62e6a4fee1a0f6668f0750459400606a63801043411432120dbb47d307a349b8",
+    "actualFfmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "preregisteredFfmpegSha256": "1fcb0cb525085cc5be3ad4be16799d60786b65cc36951622a018d00f78c0fb5d"
+  },
+  "contract": {
+    "observedMaximumNormalizedScoreDrift": 0.001852023889695456,
+    "cpuRescoringBelt": 0.25,
+    "empiricalSafetyMultiplier": 134.9874596062093,
+    "stage1EligibilityReused": true,
+    "priorTranscriptsReusedWithoutContentInspection": true,
+    "decoderIdentityMatchesPreregistration": false,
+    "everyEligibleCaptureHashRevalidated": true,
+    "allViewsWithinBeltRescoredByExactCpuOnnx": true,
+    "freshHoldoutClaimSupported": false,
+    "farCertificationSupported": false
+  },
+  "metrics": {
+    "descriptiveExposureHours": 100.59087965277777,
+    "priorStage1Retained": 20537,
+    "priorStage1Eligible": 5854,
+    "verificationViews": 14644,
+    "cpuRescoredViews": 23,
+    "negativeFalseActivations": 17,
+    "descriptivePointFalseActivationsPerHour": 0.16900140508444747,
+    "maximumCudaScreenDecisionMargin": 4.56939545599842,
+    "maximumCpuRescoredDecisionMargin": 4.5694072923541915,
+    "minimumCpuRescoredDecisionMargin": -0.24184670475025127
+  },
+  "runtime": {
+    "cudaDevice": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "torch": "2.10.0+cu130",
+    "onnxruntime": "1.28.0",
+    "cudaBatchSize": 32,
+    "recordBatchSize": 32,
+    "screeningSeconds": 1299.6402799999923,
+    "cpuRescoreSeconds": 22.715860099880956,
+    "decodeMillisecondsPerEligibleRecord": {
+      "p50": 52.00344999320805,
+      "p95": 70.89639998157509,
+      "maximum": 725.3095000050962,
+      "mean": 55.750235838999004
+    },
+    "hyperMillisecondsPerView": {
+      "p50": 25.267250020988286,
+      "p95": 49.944244965445186,
+      "maximum": 124.03940001968294,
+      "mean": 27.916527144062734
+    },
+    "cudaCtcMillisecondsPerView": {
+      "p50": 19.28256249993865,
+      "p95": 19.680181248986628,
+      "maximum": 38.79870000127994,
+      "mean": 19.375467119681126
+    },
+    "cpuCtcMillisecondsPerRescoredView": {
+      "p50": 966.0763999563642,
+      "p95": 1169.4246200146154,
+      "maximum": 1182.800100010354,
+      "mean": 987.646091299172
+    }
+  },
+  "regressionPassed": false,
+  "candidateDevelopmentUse": true,
+  "candidateFrozen": true,
+  "productOperatingPoint": false,
+  "negativeCorpusPreviouslyAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "recordsOrFilenamesRetained": false,
+  "effectsExecuted": 0
+}

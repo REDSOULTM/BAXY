@@ -1,0 +1,38 @@
+{
+  "schema": "baxy.runtime-manifest-preflight.r222.v1",
+  "authority": "read_only_runtime_identity_preflight_not_model_start",
+  "manifest": {
+    "schema": "baxy-mind-runtime-v1",
+    "keys": [
+      "gguf",
+      "gguf_sha256",
+      "llama_server",
+      "llama_server_sha256",
+      "ngl",
+      "python",
+      "python_path",
+      "python_sha256",
+      "schema",
+      "stt_dir",
+      "stt_sha256",
+      "tts_model",
+      "tts_sha256",
+      "wake_on_start"
+    ],
+    "sha256": "c5a8b2a219a04eb695114094cba2dd46caf6cc81fd4403d7280558b39b2d9d86"
+  },
+  "outcome": {
+    "resolved": false,
+    "error": "hash SHA-256 no coincide: stt_dir"
+  },
+  "constraints": {
+    "model_started": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "program_sha256": "ba463e0a3522e9e9df1fbcf07221535cf64e57a96109b792846e082a17330c5f"
+  }
+}

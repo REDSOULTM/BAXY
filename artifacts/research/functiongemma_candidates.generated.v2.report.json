@@ -1,0 +1,40 @@
+{
+  "batch_language_counts": {
+    "en": 4,
+    "es": 4,
+    "spanglish": 2
+  },
+  "candidates": 4632,
+  "complete_operations": 19,
+  "effects_executed": 0,
+  "heldout": [
+    {
+      "path": "D:\\BAXY\\source\\experiments\\mind_router_spike\\data\\exact_operation_development.v1.jsonl",
+      "sha256": "d6162676ec59b5cf138de35ddce767f7239e3fe36f0755795321beca09df4909"
+    },
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\development\\current_catalog_review_development.v1.jsonl",
+      "sha256": "090e4b41939a6d355b44791afad978fe78249abf8cc886125a4969caa30c933a"
+    }
+  ],
+  "heldout_exact_overlap": 0,
+  "measured_at_utc": "2026-08-02T11:24:39.144713+00:00",
+  "model": {
+    "bytes": 2497280256,
+    "name": "Qwen3-4B-Q4_K_M.gguf",
+    "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5"
+  },
+  "operations_generated_this_run": 169,
+  "operations_present": 169,
+  "operations_requested": 169,
+  "output": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_candidates.generated.v2.jsonl",
+  "output_sha256": "b4f4ed3c59059841e985158522e109dc72ebc31a9b6b69d2665903521a98b288",
+  "runtime_manifest_changed": false,
+  "schema": "baxy.functiongemma-generation-run.v1",
+  "seed_input": null,
+  "target_language_counts": {
+    "en": 12,
+    "es": 12,
+    "spanglish": 6
+  }
+}

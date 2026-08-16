@@ -1,0 +1,1217 @@
+{
+  "accuracy": 0.9,
+  "cases": 70,
+  "configuration": "attested multilingual-e5-small embeddings + class-balanced LinearSVC C=3.0",
+  "corpus": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_training_corpus.v1.jsonl",
+  "corpus_sha256": "b27e871a49aacd0f1e527235422547a21ceb0fabcb01505a4f687ad3ed51ba18",
+  "effects_executed": 0,
+  "encoder_latency_seconds": {
+    "maximum": 0.044987,
+    "mean": 0.025392,
+    "p50": 0.024794,
+    "p95": 0.030355
+  },
+  "incremental_classifier_coefficients": 11935,
+  "measured_at_utc": "2026-08-01T22:57:53.774451+00:00",
+  "oracle": "D:\\BAXY\\source\\experiments\\mind_router_spike\\data\\exact_operation_development.v1.jsonl",
+  "oracle_sha256": "d6162676ec59b5cf138de35ddce767f7239e3fe36f0755795321beca09df4909",
+  "right": 63,
+  "rows": [
+    {
+      "case_id": "audio-absolute-es",
+      "expected_family": "audio",
+      "language": "es",
+      "ranked_families": [
+        "audio",
+        "peripheral",
+        "game",
+        "web",
+        "app"
+      ],
+      "right": true,
+      "seconds": 0.044987,
+      "text": "Pon el volumen del computador al 35 por ciento.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-absolute-en",
+      "expected_family": "audio",
+      "language": "en",
+      "ranked_families": [
+        "audio",
+        "game",
+        "peripheral",
+        "bluetooth",
+        "clipboard"
+      ],
+      "right": true,
+      "seconds": 0.025971,
+      "text": "Set the computer volume to 35 percent.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-adjust-up-es",
+      "expected_family": "audio",
+      "language": "es",
+      "ranked_families": [
+        "audio",
+        "clipboard",
+        "filesystem",
+        "browser",
+        "vision"
+      ],
+      "right": true,
+      "seconds": 0.022247,
+      "text": "Sube el volumen 10 puntos.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-adjust-up-en",
+      "expected_family": "audio",
+      "language": "en",
+      "ranked_families": [
+        "audio",
+        "window",
+        "vision",
+        "bluetooth",
+        "clipboard"
+      ],
+      "right": true,
+      "seconds": 0.022998,
+      "text": "Increase the volume by 10 points.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-adjust-down-es",
+      "expected_family": "audio",
+      "language": "es",
+      "ranked_families": [
+        "audio",
+        "reminder",
+        "calendar",
+        "media",
+        "vision"
+      ],
+      "right": true,
+      "seconds": 0.02737,
+      "text": "Baja el volumen en 15 puntos.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-adjust-down-en",
+      "expected_family": "audio",
+      "language": "en",
+      "ranked_families": [
+        "audio",
+        "reminder",
+        "vision",
+        "task",
+        "note"
+      ],
+      "right": true,
+      "seconds": 0.025919,
+      "text": "Lower the volume by 15 points.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-mute-es",
+      "expected_family": "audio",
+      "language": "es",
+      "ranked_families": [
+        "audio",
+        "app",
+        "bluetooth",
+        "network",
+        "memory"
+      ],
+      "right": true,
+      "seconds": 0.022098,
+      "text": "Silencia el audio del computador.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-mute-en",
+      "expected_family": "audio",
+      "language": "en",
+      "ranked_families": [
+        "audio",
+        "clipboard",
+        "bluetooth",
+        "calendar",
+        "network"
+      ],
+      "right": true,
+      "seconds": 0.023986,
+      "text": "Mute the computer speakers.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "microphone-mute-es",
+      "expected_family": "audio",
+      "language": "es",
+      "ranked_families": [
+        "audio",
+        "media",
+        "app",
+        "clipboard",
+        "calendar"
+      ],
+      "right": true,
+      "seconds": 0.025716,
+      "text": "Silencia el micrófono.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "microphone-mute-en",
+      "expected_family": "audio",
+      "language": "en",
+      "ranked_families": [
+        "audio",
+        "media",
+        "clipboard",
+        "bluetooth",
+        "memory"
+      ],
+      "right": true,
+      "seconds": 0.024794,
+      "text": "Mute my microphone.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-status-es",
+      "expected_family": "audio",
+      "language": "es",
+      "ranked_families": [
+        "audio",
+        "media",
+        "vision",
+        "system",
+        "bluetooth"
+      ],
+      "right": true,
+      "seconds": 0.024361,
+      "text": "¿En qué nivel está el volumen ahora?",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "audio-status-en",
+      "expected_family": "audio",
+      "language": "en",
+      "ranked_families": [
+        "audio",
+        "media",
+        "bluetooth",
+        "ocr",
+        "note"
+      ],
+      "right": true,
+      "seconds": 0.022249,
+      "text": "What is the current speaker volume?",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "app-open-es",
+      "expected_family": "app",
+      "language": "es",
+      "ranked_families": [
+        "media",
+        "app",
+        "audio",
+        "browser",
+        "calendar"
+      ],
+      "right": false,
+      "seconds": 0.021826,
+      "text": "Abre Spotify.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "app-open-en",
+      "expected_family": "app",
+      "language": "en",
+      "ranked_families": [
+        "app",
+        "media",
+        "audio",
+        "browser",
+        "filesystem"
+      ],
+      "right": true,
+      "seconds": 0.025847,
+      "text": "Open Spotify.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "app-close-es",
+      "expected_family": "app",
+      "language": "es",
+      "ranked_families": [
+        "app",
+        "media",
+        "audio",
+        "window",
+        "package"
+      ],
+      "right": true,
+      "seconds": 0.02487,
+      "text": "Cierra la ventana de Spotify.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "app-close-en",
+      "expected_family": "app",
+      "language": "en",
+      "ranked_families": [
+        "app",
+        "media",
+        "audio",
+        "window",
+        "package"
+      ],
+      "right": true,
+      "seconds": 0.022515,
+      "text": "Close the Spotify window.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "app-installed-es",
+      "expected_family": "app",
+      "language": "es",
+      "ranked_families": [
+        "app",
+        "game",
+        "network",
+        "package",
+        "audio"
+      ],
+      "right": true,
+      "seconds": 0.024421,
+      "text": "Comprueba si Discord está instalado.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "app-installed-en",
+      "expected_family": "app",
+      "language": "en",
+      "ranked_families": [
+        "game",
+        "network",
+        "message",
+        "app",
+        "package"
+      ],
+      "right": false,
+      "seconds": 0.025023,
+      "text": "Check whether Discord is installed.",
+      "top2": false,
+      "top3": false
+    },
+    {
+      "case_id": "browser-navigate-es",
+      "expected_family": "browser",
+      "language": "es",
+      "ranked_families": [
+        "browser",
+        "app",
+        "clipboard",
+        "calendar",
+        "web"
+      ],
+      "right": true,
+      "seconds": 0.025736,
+      "text": "Navega a https://example.com en el navegador controlado.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-navigate-en",
+      "expected_family": "browser",
+      "language": "en",
+      "ranked_families": [
+        "browser",
+        "app",
+        "input",
+        "web",
+        "filesystem"
+      ],
+      "right": true,
+      "seconds": 0.024626,
+      "text": "Navigate the controlled browser to https://example.com.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-named-es",
+      "expected_family": "browser",
+      "language": "es",
+      "ranked_families": [
+        "browser",
+        "clipboard",
+        "app",
+        "network",
+        "calendar"
+      ],
+      "right": true,
+      "seconds": 0.025218,
+      "text": "Abre https://example.com específicamente en Opera.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-named-en",
+      "expected_family": "browser",
+      "language": "en",
+      "ranked_families": [
+        "browser",
+        "app",
+        "clipboard",
+        "task",
+        "calendar"
+      ],
+      "right": true,
+      "seconds": 0.026961,
+      "text": "Open https://example.com specifically in Opera.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-read-es",
+      "expected_family": "browser",
+      "language": "es",
+      "ranked_families": [
+        "browser",
+        "clipboard",
+        "note",
+        "window",
+        "task"
+      ],
+      "right": true,
+      "seconds": 0.02502,
+      "text": "Lee el texto visible de la página actual.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-read-en",
+      "expected_family": "browser",
+      "language": "en",
+      "ranked_families": [
+        "browser",
+        "input",
+        "note",
+        "window",
+        "clipboard"
+      ],
+      "right": true,
+      "seconds": 0.025441,
+      "text": "Read the visible text on the current web page.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-tabs-es",
+      "expected_family": "browser",
+      "language": "es",
+      "ranked_families": [
+        "browser",
+        "app",
+        "window",
+        "routine",
+        "network"
+      ],
+      "right": true,
+      "seconds": 0.030047,
+      "text": "Muéstrame las pestañas abiertas del navegador controlado.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-tabs-en",
+      "expected_family": "browser",
+      "language": "en",
+      "ranked_families": [
+        "browser",
+        "app",
+        "filesystem",
+        "input",
+        "task"
+      ],
+      "right": true,
+      "seconds": 0.032567,
+      "text": "List the open tabs in the controlled browser.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-reload-es",
+      "expected_family": "browser",
+      "language": "es",
+      "ranked_families": [
+        "browser",
+        "media",
+        "filesystem",
+        "package",
+        "wifi"
+      ],
+      "right": true,
+      "seconds": 0.026207,
+      "text": "Recarga la página web actual.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "browser-reload-en",
+      "expected_family": "browser",
+      "language": "en",
+      "ranked_families": [
+        "browser",
+        "media",
+        "window",
+        "wifi",
+        "web"
+      ],
+      "right": true,
+      "seconds": 0.023696,
+      "text": "Reload the current web page.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "calendar-create-es",
+      "expected_family": "calendar",
+      "language": "es",
+      "ranked_families": [
+        "calendar",
+        "reminder",
+        "media",
+        "notification",
+        "routine"
+      ],
+      "right": true,
+      "seconds": 0.027592,
+      "text": "Crea en el calendario un evento llamado Demo mañana de nueve a diez de la mañana.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "calendar-create-en",
+      "expected_family": "calendar",
+      "language": "en",
+      "ranked_families": [
+        "calendar",
+        "reminder",
+        "routine",
+        "media",
+        "filesystem"
+      ],
+      "right": true,
+      "seconds": 0.026773,
+      "text": "Create a calendar event called Demo tomorrow from nine to ten in the morning.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "calendar-list-es",
+      "expected_family": "calendar",
+      "language": "es",
+      "ranked_families": [
+        "calendar",
+        "media",
+        "email",
+        "notification",
+        "reminder"
+      ],
+      "right": true,
+      "seconds": 0.024056,
+      "text": "Lista mis eventos del calendario de mañana.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "calendar-list-en",
+      "expected_family": "calendar",
+      "language": "en",
+      "ranked_families": [
+        "calendar",
+        "email",
+        "media",
+        "notification",
+        "reminder"
+      ],
+      "right": true,
+      "seconds": 0.023045,
+      "text": "List my calendar events for tomorrow.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "capture-screen-es",
+      "expected_family": "capture",
+      "language": "es",
+      "ranked_families": [
+        "capture",
+        "app",
+        "system",
+        "browser",
+        "ocr"
+      ],
+      "right": true,
+      "seconds": 0.024083,
+      "text": "Toma una captura de toda la pantalla.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "capture-screen-en",
+      "expected_family": "capture",
+      "language": "en",
+      "ranked_families": [
+        "system",
+        "clipboard",
+        "capture",
+        "browser",
+        "app"
+      ],
+      "right": false,
+      "seconds": 0.02474,
+      "text": "Take a screenshot of the whole screen.",
+      "top2": false,
+      "top3": true
+    },
+    {
+      "case_id": "capture-window-es",
+      "expected_family": "capture",
+      "language": "es",
+      "ranked_families": [
+        "capture",
+        "app",
+        "window",
+        "audio",
+        "package"
+      ],
+      "right": true,
+      "seconds": 0.022743,
+      "text": "Captura solamente la ventana activa.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "capture-window-en",
+      "expected_family": "capture",
+      "language": "en",
+      "ranked_families": [
+        "capture",
+        "package",
+        "window",
+        "input",
+        "app"
+      ],
+      "right": true,
+      "seconds": 0.022803,
+      "text": "Capture only the active window.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "clipboard-read-es",
+      "expected_family": "clipboard",
+      "language": "es",
+      "ranked_families": [
+        "clipboard",
+        "browser",
+        "note",
+        "email",
+        "ocr"
+      ],
+      "right": true,
+      "seconds": 0.022094,
+      "text": "Lee el texto que tengo en el portapapeles.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "clipboard-read-en",
+      "expected_family": "clipboard",
+      "language": "en",
+      "ranked_families": [
+        "clipboard",
+        "browser",
+        "email",
+        "note",
+        "media"
+      ],
+      "right": true,
+      "seconds": 0.025303,
+      "text": "Read the text currently in my clipboard.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "clipboard-write-es",
+      "expected_family": "clipboard",
+      "language": "es",
+      "ranked_families": [
+        "clipboard",
+        "task",
+        "ocr",
+        "routine",
+        "app"
+      ],
+      "right": true,
+      "seconds": 0.024421,
+      "text": "Escribe «informe listo» en el portapapeles.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "clipboard-write-en",
+      "expected_family": "clipboard",
+      "language": "en",
+      "ranked_families": [
+        "clipboard",
+        "task",
+        "package",
+        "office",
+        "filesystem"
+      ],
+      "right": true,
+      "seconds": 0.027214,
+      "text": "Put the text ‘report ready’ in the clipboard.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "note-create-es",
+      "expected_family": "note",
+      "language": "es",
+      "ranked_families": [
+        "note",
+        "app",
+        "reminder",
+        "package",
+        "audio"
+      ],
+      "right": true,
+      "seconds": 0.029029,
+      "text": "Crea una nota que diga comprar pan.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "note-create-en",
+      "expected_family": "note",
+      "language": "en",
+      "ranked_families": [
+        "note",
+        "reminder",
+        "clipboard",
+        "bluetooth",
+        "audio"
+      ],
+      "right": true,
+      "seconds": 0.025088,
+      "text": "Create a note that says buy bread.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "note-list-es",
+      "expected_family": "note",
+      "language": "es",
+      "ranked_families": [
+        "note",
+        "notification",
+        "memory",
+        "media",
+        "app"
+      ],
+      "right": true,
+      "seconds": 0.021272,
+      "text": "Lista mis notas guardadas.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "note-list-en",
+      "expected_family": "note",
+      "language": "en",
+      "ranked_families": [
+        "note",
+        "notification",
+        "backup",
+        "memory",
+        "email"
+      ],
+      "right": true,
+      "seconds": 0.021667,
+      "text": "List my saved notes.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "note-search-es",
+      "expected_family": "note",
+      "language": "es",
+      "ranked_families": [
+        "note",
+        "email",
+        "network",
+        "backup",
+        "filesystem"
+      ],
+      "right": true,
+      "seconds": 0.028365,
+      "text": "Busca entre mis notas las que mencionen presupuesto.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "note-search-en",
+      "expected_family": "note",
+      "language": "en",
+      "ranked_families": [
+        "note",
+        "email",
+        "streaming",
+        "reminder",
+        "filesystem"
+      ],
+      "right": true,
+      "seconds": 0.027444,
+      "text": "Search my notes for ones that mention budget.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "notification-schedule-es",
+      "expected_family": "notification",
+      "language": "es",
+      "ranked_families": [
+        "reminder",
+        "notification",
+        "calendar",
+        "audio",
+        "streaming"
+      ],
+      "right": false,
+      "seconds": 0.022782,
+      "text": "Programa una alarma para mañana a las siete.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "notification-schedule-en",
+      "expected_family": "notification",
+      "language": "en",
+      "ranked_families": [
+        "notification",
+        "reminder",
+        "audio",
+        "calendar",
+        "routine"
+      ],
+      "right": true,
+      "seconds": 0.023423,
+      "text": "Schedule an alarm for seven tomorrow morning.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "notification-list-es",
+      "expected_family": "notification",
+      "language": "es",
+      "ranked_families": [
+        "notification",
+        "email",
+        "media",
+        "note",
+        "system"
+      ],
+      "right": true,
+      "seconds": 0.026141,
+      "text": "Lista las notificaciones que ya deberían haber vencido.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "notification-list-en",
+      "expected_family": "notification",
+      "language": "en",
+      "ranked_families": [
+        "notification",
+        "note",
+        "message",
+        "email",
+        "system"
+      ],
+      "right": true,
+      "seconds": 0.025825,
+      "text": "List notifications that are already due.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "reminder-create-es",
+      "expected_family": "reminder",
+      "language": "es",
+      "ranked_families": [
+        "reminder",
+        "clipboard",
+        "package",
+        "system",
+        "email"
+      ],
+      "right": true,
+      "seconds": 0.02329,
+      "text": "Recuérdame comprar pilas mañana a las seis.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "reminder-create-en",
+      "expected_family": "reminder",
+      "language": "en",
+      "ranked_families": [
+        "reminder",
+        "system",
+        "email",
+        "bluetooth",
+        "package"
+      ],
+      "right": true,
+      "seconds": 0.024248,
+      "text": "Remind me to buy batteries tomorrow at six.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "reminder-list-es",
+      "expected_family": "reminder",
+      "language": "es",
+      "ranked_families": [
+        "reminder",
+        "notification",
+        "memory",
+        "backup",
+        "media"
+      ],
+      "right": true,
+      "seconds": 0.024371,
+      "text": "Muéstrame mis recordatorios pendientes.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "reminder-list-en",
+      "expected_family": "reminder",
+      "language": "en",
+      "ranked_families": [
+        "notification",
+        "reminder",
+        "media",
+        "backup",
+        "email"
+      ],
+      "right": false,
+      "seconds": 0.030357,
+      "text": "Show my pending reminders.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "media-play-es",
+      "expected_family": "media",
+      "language": "es",
+      "ranked_families": [
+        "media",
+        "streaming",
+        "calendar",
+        "bluetooth",
+        "email"
+      ],
+      "right": true,
+      "seconds": 0.030355,
+      "text": "Reproduce Bohemian Rhapsody de Queen.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "media-play-en",
+      "expected_family": "media",
+      "language": "en",
+      "ranked_families": [
+        "media",
+        "streaming",
+        "bluetooth",
+        "calendar",
+        "game"
+      ],
+      "right": true,
+      "seconds": 0.023733,
+      "text": "Play Bohemian Rhapsody by Queen.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "media-pause-es",
+      "expected_family": "media",
+      "language": "es",
+      "ranked_families": [
+        "media",
+        "audio",
+        "streaming",
+        "memory",
+        "bluetooth"
+      ],
+      "right": true,
+      "seconds": 0.022874,
+      "text": "Pausa la reproducción multimedia actual.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "media-pause-en",
+      "expected_family": "media",
+      "language": "en",
+      "ranked_families": [
+        "media",
+        "clipboard",
+        "audio",
+        "notification",
+        "calendar"
+      ],
+      "right": true,
+      "seconds": 0.025555,
+      "text": "Pause the current media playback.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "media-status-es",
+      "expected_family": "media",
+      "language": "es",
+      "ranked_families": [
+        "media",
+        "audio",
+        "browser",
+        "notification",
+        "note"
+      ],
+      "right": true,
+      "seconds": 0.022397,
+      "text": "¿Qué canción está sonando ahora?",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "media-status-en",
+      "expected_family": "media",
+      "language": "en",
+      "ranked_families": [
+        "media",
+        "audio",
+        "input",
+        "note",
+        "streaming"
+      ],
+      "right": true,
+      "seconds": 0.022834,
+      "text": "What song is playing right now?",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "system-status-es",
+      "expected_family": "system",
+      "language": "es",
+      "ranked_families": [
+        "system",
+        "memory",
+        "audio",
+        "window",
+        "game"
+      ],
+      "right": true,
+      "seconds": 0.024569,
+      "text": "Dime cuánta memoria RAM está usando este computador.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "system-status-en",
+      "expected_family": "system",
+      "language": "en",
+      "ranked_families": [
+        "system",
+        "audio",
+        "game",
+        "memory",
+        "window"
+      ],
+      "right": true,
+      "seconds": 0.025757,
+      "text": "Tell me how much RAM this computer is using.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "system-time-es",
+      "expected_family": "system",
+      "language": "es",
+      "ranked_families": [
+        "system",
+        "calendar",
+        "peripheral",
+        "audio",
+        "bluetooth"
+      ],
+      "right": true,
+      "seconds": 0.023656,
+      "text": "¿Qué hora marca este computador?",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "system-time-en",
+      "expected_family": "system",
+      "language": "en",
+      "ranked_families": [
+        "system",
+        "calendar",
+        "media",
+        "network",
+        "routine"
+      ],
+      "right": true,
+      "seconds": 0.023313,
+      "text": "What time does this computer show?",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "process-list-es",
+      "expected_family": "system",
+      "language": "es",
+      "ranked_families": [
+        "system",
+        "input",
+        "network",
+        "peripheral",
+        "routine"
+      ],
+      "right": true,
+      "seconds": 0.025056,
+      "text": "Lista los procesos que están ejecutándose en este computador.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "process-list-en",
+      "expected_family": "system",
+      "language": "en",
+      "ranked_families": [
+        "system",
+        "routine",
+        "peripheral",
+        "network",
+        "input"
+      ],
+      "right": true,
+      "seconds": 0.029825,
+      "text": "List the processes running on this computer.",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "web-search-es",
+      "expected_family": "web",
+      "language": "es",
+      "ranked_families": [
+        "system",
+        "browser",
+        "note",
+        "media",
+        "web"
+      ],
+      "right": false,
+      "seconds": 0.029359,
+      "text": "Busca en internet noticias sobre energía solar.",
+      "top2": false,
+      "top3": false
+    },
+    {
+      "case_id": "web-search-en",
+      "expected_family": "web",
+      "language": "en",
+      "ranked_families": [
+        "browser",
+        "system",
+        "web",
+        "note",
+        "media"
+      ],
+      "right": false,
+      "seconds": 0.024053,
+      "text": "Search the web for news about solar energy.",
+      "top2": false,
+      "top3": true
+    },
+    {
+      "case_id": "message-send-es",
+      "expected_family": "message",
+      "language": "es",
+      "ranked_families": [
+        "message",
+        "media",
+        "audio",
+        "email",
+        "reminder"
+      ],
+      "right": true,
+      "seconds": 0.025561,
+      "text": "Envía por WhatsApp a Música el mensaje «llego en diez minutos».",
+      "top2": true,
+      "top3": true
+    },
+    {
+      "case_id": "message-send-en",
+      "expected_family": "message",
+      "language": "en",
+      "ranked_families": [
+        "message",
+        "media",
+        "bluetooth",
+        "email",
+        "audio"
+      ],
+      "right": true,
+      "seconds": 0.027647,
+      "text": "Send Music the WhatsApp message ‘I will arrive in ten minutes’.",
+      "top2": true,
+      "top3": true
+    }
+  ],
+  "runtime_manifest_changed": false,
+  "schema": "baxy.family-arbiter-external-evaluation.v1",
+  "scope": "one diagnostic opening after C=3.0 was frozen on disjoint internal validation",
+  "top2_recall": 0.942857,
+  "top3_recall": 0.971429,
+  "training_rows": 1892
+}

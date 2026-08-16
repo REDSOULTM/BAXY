@@ -1,0 +1,74 @@
+{
+  "authority": "offline_analysis_only_no_sidecar_no_plan_no_core_no_provider",
+  "created_at_utc": "2026-08-03T10:12:49.303762+00:00",
+  "development_output": {
+    "path": "artifacts\\development\\generalization_product_r2_failures.v1.jsonl",
+    "rows": 135,
+    "sha256": "435b78ffb8635393fa7b22f756a9e9dc49a0c01adb6045efc0451e6b1e099477"
+  },
+  "effects_executed": 0,
+  "holdout_reuse_policy": "opened R2 failures are development data and R2 is never blind again",
+  "metrics": {
+    "by_case_type": {
+      "clarification": 10,
+      "composition": 18,
+      "single_action": 107
+    },
+    "by_cause": {
+      "app_parser": 2,
+      "clarification_intent": 2,
+      "decision": 40,
+      "recovery": 5,
+      "retrieval": 64,
+      "unsafe_clarification_effect": 8,
+      "veto:action_grounding": 1,
+      "veto:compound_conservation": 13
+    },
+    "by_family": {
+      "app": 7,
+      "browser": 2,
+      "capture": 5,
+      "composition": 18,
+      "email": 8,
+      "filesystem": 1,
+      "media": 4,
+      "memory": 2,
+      "message": 12,
+      "network": 8,
+      "note": 4,
+      "ocr": 8,
+      "office": 4,
+      "package": 4,
+      "peripheral": 7,
+      "reminder": 3,
+      "routine": 2,
+      "streaming": 10,
+      "system": 4,
+      "task": 1,
+      "vision": 9,
+      "wifi": 2,
+      "window": 10
+    },
+    "by_owner": {
+      "app_private_memory_parser": 2,
+      "mind_sidecar": 133
+    },
+    "failures": 135,
+    "unsafe_effects": 43
+  },
+  "schema": "baxy.generalization-product-r2-failure-analysis.v1",
+  "source": {
+    "analyzer": "experiments\\mind_router_spike\\analyze_generalization_product_r2_failures.py",
+    "analyzer_sha256": "6847a9eaec4cf95064a8a3cfbd8535bd597079d1207f28592de4ba42f213ad71",
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v2.jsonl",
+    "corpus_sha256": "c020d14872343acdfcaa1359f9df5fdb096b3802d8fba8bb08d777f0df20ff01",
+    "memory_trx": "artifacts\\holdout\\generalization_product_holdout_r2_memory.trx",
+    "memory_trx_sha256": "476bb80343dfe4dd20fa525de8ea669ee947da22713a07a54684705982ae9929",
+    "mind_raw_audit": "artifacts\\holdout\\generalization_product_holdout_r2_mind.raw.jsonl",
+    "mind_raw_audit_sha256": "da425380d795a9410a839df6d5ddbf3c14955116f16353c0d11eb745f8886cda",
+    "mind_result": "artifacts\\holdout\\generalization_product_holdout_r2_mind.json",
+    "mind_result_sha256": "506abe2c7abbb9ba6434044a21483cacf536fcfa88a51f161faa8496cd64f319",
+    "product_result": "artifacts\\holdout\\generalization_product_holdout_r2_product.json",
+    "product_result_sha256": "1734e5840d8740cbb72622252f9bc5c4573f5fef83f64c18a5ae21b5dd3edd39"
+  }
+}

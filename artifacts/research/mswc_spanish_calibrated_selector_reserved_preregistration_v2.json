@@ -1,0 +1,105 @@
+{
+  "schema": "baxy.mswc-spanish-calibrated-selector-reserved-preregistration.v2",
+  "preregistered_at_utc": "2026-08-06T08:55:06.879888+00:00",
+  "decision_locked": true,
+  "sources": {
+    "tuning_report_sha256": "d63bfdf5c165f7d281b487d80675bb957c20398121e897d5633f8e385d65c77a",
+    "tuning_hyper_ctc_cache_sha256": "20faabf607e4ec94acf104a61892bd2c0acb06bdc14067d83a49954febd621f7",
+    "tuning_whisper_cache_sha256": "533357a6ab548b2d782c7615788fd02bab8ca8d5d0e60b8f649c94a9dfd2426e",
+    "tuning_forced_alignment_cache_sha256": "7faf35f71becd51ce035ecec4a248fb0e7b4cd2a2bccdfca0e1baf6dc7c16d86",
+    "tuning_shortlist_cache_sha256": "0d7ed9faf8e921e9d5634e94df4f9b429673e04faeef4f7289858fc7991e685d",
+    "tuning_silence_prior_cache_sha256": "1ad2b8acf4d85cb856a86606c6e5c3edba6fd78a2311ebe1d01bd6c3386e2020",
+    "corpus_manifest_sha256": "b0030e3eea08d139a567a7ea987aa6f00b67433c5388993c8767466fec2eb6a0",
+    "hyperspotter_feature_manifest_sha256": "fb767ad10b590e3d73b809e771aef472d3c909cbc77f66419cd4d9ccf1595b6f",
+    "ctc_feature_manifest_sha256": "b93e849cf0f542d6b435df9019fc9d57a2d37d6b24b9e8a5d57b595d5c558913",
+    "initial_hyperspotter_checkpoint_sha256": "76b77d5c8a04b36fcc109f8670bdc51c81be6dbdc4f6fda8051e800e2a46d017",
+    "adapted_hyperspotter_checkpoint_sha256": "c042d8f24f6a7b298f18d142c6ac91551e829d553b475f7a0bd4e9b96f45747b",
+    "ctc_tokenizer_vocabulary_sha256": "d732ab2456c0c017930001dc9af0b41b3b93d25b2eb9740bf9d925508d7d87d0",
+    "whisper_model_bin_sha256": "69f74147e3334731bc3a76048724833325d2ec74642fb52620eda87352e3d4f1",
+    "code_sha256": {
+      "experiments/voice_latency/evaluate_mswc_hyperspotter_ctc_fusion_tuning_v5.py": "9835c556fbff763521ecf628a97185c8c4d2c03cfa9195eaacecddaeaa6aca60",
+      "experiments/voice_latency/evaluate_mswc_spanish_faster_whisper_tuning_v8.py": "c6ecd4e4f577a2f47e53b002797ae5667869f14302c860b0a06f3d38973556eb",
+      "experiments/voice_latency/evaluate_mswc_spanish_whisper_forced_alignment_tuning_v9.py": "d71633835c886939ebf0423d125fae339ac6e7bff1fff2c0c77aef214821a308",
+      "experiments/voice_latency/build_mswc_spanish_forced_alignment_shortlist_v1.py": "bc082e2f1374c99d034b7c1c17e832ff963a061f30d3872b6caf87497a819173",
+      "experiments/voice_latency/build_mswc_spanish_whisper_silence_prior_v1.py": "5102dac2b3e76ed2458203677275ff78c687d376c49e5a3a9568c52d0395037d",
+      "experiments/voice_latency/evaluate_mswc_spanish_calibrated_selector_tuning_v10.py": "1b92f07439007893ef87c7856f130368af539831459caac55734d1da01b4fdb2",
+      "experiments/voice_latency/evaluate_mswc_spanish_calibrated_selector_reserved_v11.py": "b9807c723652937e339541c94176d499430de0f4590cd96d4412cd2908dd32bc",
+      "experiments/voice_latency/preregister_mswc_spanish_calibrated_selector_reserved_v2.py": "f36511d189c966cd84cac8046f3559a2900183fb66615f991bcfe9f1f745ed51"
+    }
+  },
+  "locked_protocol": {
+    "split_seed": 6501,
+    "tuning_word_classes": 400,
+    "reserved_word_classes": 200,
+    "reserved_query_examples_per_word": 6,
+    "reserved_queries": 1200,
+    "hard_negative_candidates_per_query": 40,
+    "reserved_partition": "complement_of_tuning_words_in_research_v3",
+    "feature_cache_policy": "cache_only_without_label_metrics",
+    "hyperspotter_checkpoint": "listwise_train16_best_epoch_6",
+    "phoneme_ctc_length_bonus": 0.05,
+    "whisper_transcript": {
+      "model": "faster_whisper_large_v3",
+      "compute_type": "int8_float16",
+      "language": "es",
+      "beam_size": 1,
+      "inference_layout": "fixed_slot_batched",
+      "inference_batch_size": 8,
+      "slot_seconds": 2.0
+    },
+    "forced_alignment": {
+      "token_prefix": "leading_space",
+      "include_eot": false,
+      "length_power": 0.0,
+      "shortlist_depth_per_signal": 3,
+      "audio_batch_size": 2,
+      "candidate_batch_size": 13
+    },
+    "silence_prior": {
+      "num_frames": 100,
+      "weight": 0.63
+    },
+    "calibrated_fusion_weight": 0.6,
+    "selector": {
+      "type": "HistGradientBoostingClassifier",
+      "training_population": "all_400_tuning_word_classes",
+      "random_state": 13301,
+      "learning_rate": 0.08,
+      "max_iter": 220,
+      "max_leaf_nodes": 7,
+      "min_samples_leaf": 5,
+      "l2_regularization": 2.0,
+      "class_weight": "balanced",
+      "candidate_alternatives": "union_of_eight_signal_top1_predictions"
+    },
+    "decision_scores": "calibrated_fusion_with_minimal_selector_top1_override",
+    "quality_floor": {
+      "hard_candidate_top1_accuracy_minimum": 0.94,
+      "pair_auc_minimum": 0.99,
+      "equal_error_rate_maximum": 0.05,
+      "zero_false_true_pair_recall_minimum": 0.2
+    },
+    "acceptance": "all_four_quality_floor_conditions_must_pass",
+    "single_reserved_pass": true,
+    "no_retuning_after_reserved": true,
+    "individual_examples_exported": false,
+    "reserved_artifacts": {
+      "reserved_hyper_ctc_cache": "D:\\BAXYRuntime\\experiments\\wakeword\\mswc_spanish_reserved_hyper_ctc_v6.scores.v1.npz",
+      "reserved_whisper_cache": "D:\\BAXYRuntime\\experiments\\wakeword\\mswc_spanish_reserved_whisper_large_v3_v9.scores.v1.npz",
+      "reserved_forced_alignment_cache": "D:\\BAXYRuntime\\experiments\\wakeword\\mswc_spanish_reserved_forced_alignment_v10.scores.v1.npz",
+      "reserved_shortlist_cache": "D:\\BAXYRuntime\\experiments\\wakeword\\mswc_spanish_reserved_shortlist_depth3_v1.npz",
+      "reserved_silence_prior_cache": "D:\\BAXYRuntime\\experiments\\wakeword\\mswc_spanish_reserved_whisper_silence_prior_v1.npz",
+      "reserved_gate_output": "D:\\BAXY\\source\\artifacts\\research\\mswc_spanish_calibrated_selector_reserved_v11.v1.json"
+    }
+  },
+  "tuning_evidence": {
+    "hard_candidate_top1_accuracy": 0.9429166666666666,
+    "pair_auc": 0.9938728081597222,
+    "equal_error_rate": 0.028750000000000026,
+    "zero_false_true_pair_recall": 0.43416666666666665
+  },
+  "reserved_audio_accessed_before_preregistration": false,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

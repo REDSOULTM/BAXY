@@ -1,0 +1,80 @@
+{
+  "schema": "baxy.turn-retry-root-cause-verdict.v1",
+  "measured_at_utc": "2026-07-30",
+  "subject": "long clarify tail on turn-23/turn-06 (P thinking drain)",
+  "status": "cause_proven_no_safe_internal_fix",
+  "effect_free": true,
+  "decomposition_of_19_5s_turn23": {
+    "P_attempt_0a_seconds": 5.89,
+    "P_attempt_0b_seconds": 4.04,
+    "P_attempt_1a_seconds": 4.16,
+    "P_attempt_1b_truncated_seconds": 2.63,
+    "clarification_generation_seconds": 2.5,
+    "all_P_attempts": "finish_reason=length, 160 tokens drained, empty or truncated content",
+    "guard_language_reuse": "no repeated G/L rows on retry (promoted reuse verified working)",
+    "speculative_chat": "completed twice (~1.2s each) and was discarded by the clarify outcome"
+  },
+  "root_cause": {
+    "finding": "The P prompt for the same text is composed differently depending on whether the asynchronous turn-evidence index has finished building. With the index cold, candidate_families returns () (advisory fallback) and the shortlist is longer/lexical (5805 chars, sha 10700527944054bc): P answers validly in ~4.7s. With the index settled, the evidence-preferred shortlist is shorter (5347 chars, sha e18ff2be03cb1959) and Gemma-4 E2B deterministically drains its full 160-token budget on internal thinking despite --reasoning off/budget 0/enable_thinking=false (upstream llama.cpp/Gemma issue class #21321/#21338).",
+    "decisive_experiment": {
+      "turn23_alone_cold_index": {
+        "prompt_sha": "10700527944054bc",
+        "outcome": "conversation, 1 attempt, 4.77s"
+      },
+      "turn23_alone_after_90s_settle": {
+        "prompt_sha": "e18ff2be03cb1959",
+        "outcome": "clarify, 2 attempts, 19.51s, 4 drained P attempts"
+      },
+      "artifacts": [
+        "turn23_solo_cold_20260730.json",
+        "turn23_solo_settled_20260730.json"
+      ]
+    },
+    "determinism": "Within a warm-index session the drain reproduces exactly (3/3 attempts per run, 30/30 historical runs); the prompt hash is stable per state across fresh processes (turn_retry_probe4_a/b_20260730.json)."
+  },
+  "frequency_corpus": {
+    "complete_30_turn_runs_mined": 30,
+    "retry_counts": {
+      "turn-23": 30,
+      "turn-06": 27,
+      "turn-04": 15,
+      "turn-12": 4,
+      "turn-05": 1
+    },
+    "turn23_outcome": "clarify 30/30 with 2 attempts, 6.47-20.44s; runs near 19.5s hit the 19s llm_http deadline"
+  },
+  "correction_candidates": [
+    {
+      "candidate": "expanded max_tokens (320) only on the final logical retry attempt",
+      "status": "rejected_physically",
+      "evidence": "turn_retry_expanded_final_attempt_20260730.json: after two 160-token drains (~10s) the enlarged attempt is truncated by the 19s HTTP deadline (ran 6.64s, no completion); outcome and latency identical (19.51s clarify)."
+    },
+    {
+      "candidate": "skip wire attempt 0b after an empty length drain at temperature 0",
+      "status": "rejected_unprovable_equivalence",
+      "evidence": "greedy decoding is not numerically deterministic across slot states (equivalent_overhead_ab_20260730.json shows 2 distinct outputs per case within the same arm), so 0b can flip; historical turn-06 shows a logical retry that recovered a valid conversation, so removing retry work can lose recoveries."
+    },
+    {
+      "candidate": "fewer logical attempts / fail fast to clarification",
+      "status": "rejected_quality",
+      "evidence": "turn-06 history contains (14.59s, conversation, attempts=2): the logical retry sometimes recovers a valid decision."
+    },
+    {
+      "candidate": "GBNF direct retry, global 256/64 budgets, b10182 thinking budgets, reasoning-format/cutoff/early-abort/speculative retry",
+      "status": "rejected_previously",
+      "evidence": "see gpu_turn_tail_* artifacts of 2026-07-29/30"
+    },
+    {
+      "candidate": "decouple P prompt from evidence-index readiness (block until ready, or drop evidence-preferred families)",
+      "status": "blocked_authorization",
+      "evidence": "changes decision-relevant prompt composition or startup semantics; requires corpus recertification and an explicit contract decision. Note: the evidence-preferred (settled) shortlist is the certified behavior; the cold fallback that happens to avoid the drain is the degraded path."
+    },
+    {
+      "candidate": "upstream fix of Gemma-4 thinking drain",
+      "status": "blocked_upstream",
+      "evidence": "llama.cpp #21321/#21338; any server upgrade needs its own A/B (b10182 already measured, direction-unstable)"
+    }
+  ],
+  "architecture_note": "Decision nondeterminism across the index-readiness boundary is a product-behavior finding beyond latency: the same text yields conversation (cold index) or clarify (warm index). Registered for the maintainability ledger; resolving it requires a deliberate contract decision, not a latency patch.",
+  "verdict": "The 14-19.5s tail is fully explained: 4 serial drained P attempts plus clarification generation, bounded by the 19s/22s deadlines. Every remaining internal correction is either physically ineffective, quality-regressive, unprovable-safe, or requires authorization/upstream changes."
+}

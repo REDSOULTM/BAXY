@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-07-16T13:14:11.716678+00:00",
+  "scope": "authorized_exact_target_hardware_effects",
+  "cases": [
+    {
+      "case": "bluetooth_inventory",
+      "operation": "bluetooth.device.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 10,
+        "paired": 0,
+        "pairable": 0,
+        "authority": "windows_device_enumeration"
+      }
+    },
+    {
+      "case": "bluetooth_pair",
+      "status": "skipped",
+      "verified": false,
+      "reason": "no_exact_pairable_device"
+    },
+    {
+      "case": "peripheral_inventory",
+      "operation": "peripheral.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 8,
+        "printers": 7,
+        "scanners": 1,
+        "authority": "windows_print_wia_inventory"
+      }
+    },
+    {
+      "case": "print_document_create",
+      "operation": "office.document.create",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "documentId": "document_60549e72768b1bc3d0254321",
+        "format": "docx",
+        "title": "BAXY physical printer verification",
+        "length": 962,
+        "authority": "iso29500_ooxml_postread"
+      }
+    },
+    {
+      "case": "printer_job",
+      "operation": "peripheral.print",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "deviceId": "printer_65009214b8486ede90f63812",
+        "documentId": "document_60549e72768b1bc3d0254321",
+        "jobId": "print_2",
+        "status": "Printing, Retained",
+        "authority": "windows_print_spooler_postread"
+      }
+    },
+    {
+      "case": "scanner_capture",
+      "operation": "peripheral.scan",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "deviceId": "scanner_cc47c0d115b8219f74e6bf4d",
+        "captureId": "scan_420a460efcf642a2a4f9a06a9bce5d54",
+        "length": 11923854,
+        "sha256": "96129a521171fd034bd04a0bd333c67e659ae0fcae928081552c1c3f529b0bd2",
+        "authority": "wia_transfer_postread"
+      }
+    },
+    {
+      "case": "wifi_profiles",
+      "operation": "wifi.profile.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 12,
+        "authority": "netsh_wlan_profile_snapshot"
+      }
+    },
+    {
+      "case": "wifi_reconnect_current",
+      "status": "skipped",
+      "verified": false,
+      "reason": "connected_profile_not_resolved"
+    },
+    {
+      "case": "brightness_same_value",
+      "status": "skipped",
+      "verified": false,
+      "reason": "brightness_wmi_not_available"
+    },
+    {
+      "case": "steam_catalog",
+      "operation": "game.catalog.list",
+      "status": "completed",
+      "verified": true,
+      "error": null,
+      "effect_may_have_occurred": false,
+      "result": {
+        "version": 1,
+        "count": 33,
+        "states": {
+          "installed": 33
+        },
+        "authority": "steam_local_appmanifests"
+      }
+    },
+    {
+      "case": "steam_install_commit",
+      "status": "skipped",
+      "verified": false,
+      "reason": "no_owned_uninstalled_target"
+    },
+    {
+      "case": "steam_cancel_partial",
+      "status": "skipped",
+      "verified": false,
+      "reason": "no_partial_download"
+    }
+  ],
+  "summary": {
+    "verified": 7,
+    "safe_failures": 0,
+    "ambiguous_effects": 0,
+    "skipped_no_target": 5,
+    "total": 12
+  },
+  "stderr": ""
+}

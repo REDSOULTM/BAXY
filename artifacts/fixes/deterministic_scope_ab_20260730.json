@@ -1,0 +1,280 @@
+{
+  "action_turns": {
+    "after": [
+      {
+        "arguments_ms": 1.994,
+        "compose_ms": 376.281,
+        "core_ms": 300.904,
+        "decision_ms": 56.997,
+        "keystroke_to_proxy_paint_ms": 1692.151,
+        "turn": "t1"
+      },
+      {
+        "arguments_ms": 0.979,
+        "compose_ms": 636.819,
+        "core_ms": 222.777,
+        "decision_ms": 2.486,
+        "keystroke_to_proxy_paint_ms": 1167.0,
+        "turn": "t2"
+      },
+      {
+        "arguments_ms": 0.614,
+        "compose_ms": 488.012,
+        "core_ms": 203.854,
+        "decision_ms": 2.473,
+        "keystroke_to_proxy_paint_ms": 880.931,
+        "turn": "t3"
+      },
+      {
+        "arguments_ms": 1.07,
+        "compose_ms": 314.325,
+        "core_ms": 195.405,
+        "decision_ms": 2.225,
+        "keystroke_to_proxy_paint_ms": 684.423,
+        "turn": "t10"
+      },
+      {
+        "arguments_ms": 0.641,
+        "compose_ms": 593.617,
+        "core_ms": 201.192,
+        "decision_ms": 2.585,
+        "keystroke_to_proxy_paint_ms": 989.032,
+        "turn": "t11"
+      },
+      {
+        "arguments_ms": 0.642,
+        "compose_ms": 618.342,
+        "core_ms": 193.499,
+        "decision_ms": 2.352,
+        "keystroke_to_proxy_paint_ms": 981.073,
+        "turn": "t12"
+      }
+    ],
+    "before": [
+      {
+        "arguments_ms": null,
+        "compose_ms": 419.543,
+        "core_ms": 60.018,
+        "decision_ms": 73.965,
+        "keystroke_to_proxy_paint_ms": 1564.43,
+        "turn": "t1"
+      },
+      {
+        "arguments_ms": 1380.29,
+        "compose_ms": 372.369,
+        "core_ms": 300.096,
+        "decision_ms": 5.439,
+        "keystroke_to_proxy_paint_ms": 2262.97,
+        "turn": "t2"
+      },
+      {
+        "arguments_ms": 1214.146,
+        "compose_ms": 532.653,
+        "core_ms": 191.669,
+        "decision_ms": 1.734,
+        "keystroke_to_proxy_paint_ms": 2115.225,
+        "turn": "t3"
+      },
+      {
+        "arguments_ms": 1371.376,
+        "compose_ms": 501.286,
+        "core_ms": 189.342,
+        "decision_ms": 2.148,
+        "keystroke_to_proxy_paint_ms": 2236.497,
+        "turn": "t10"
+      },
+      {
+        "arguments_ms": 1172.793,
+        "compose_ms": 726.515,
+        "core_ms": 187.137,
+        "decision_ms": 2.673,
+        "keystroke_to_proxy_paint_ms": 2247.942,
+        "turn": "t11"
+      },
+      {
+        "arguments_ms": 1407.769,
+        "compose_ms": 392.811,
+        "core_ms": 188.532,
+        "decision_ms": 1.909,
+        "keystroke_to_proxy_paint_ms": 2164.498,
+        "turn": "t12"
+      }
+    ]
+  },
+  "authority_unchanged": "the value still crosses normalize_objective_arguments and every Core schema, risk, confirmation and verification gate",
+  "change": "system.status.scope is now supplied by the deterministic recognizer through the sanctioned _ground_explicit_arguments seam when the text names exactly one scope of the closed catalog enum, or a pair the enum measures in one reading. Anything ambiguous keeps the model grounding.",
+  "comparison": {
+    "arguments_ms": {
+      "after": {
+        "max_ms": 1.994,
+        "min_ms": 0.614,
+        "p50_ms": 0.81,
+        "samples": 6,
+        "stdev_ms": 0.529,
+        "values_ms": [
+          0.614,
+          0.641,
+          0.642,
+          0.979,
+          1.07,
+          1.994
+        ]
+      },
+      "before": {
+        "max_ms": 1407.769,
+        "min_ms": 1172.793,
+        "p50_ms": 1371.376,
+        "samples": 5,
+        "stdev_ms": 107.561,
+        "values_ms": [
+          1172.793,
+          1214.146,
+          1371.376,
+          1380.29,
+          1407.769
+        ]
+      },
+      "delta_p50_ms": -1370.566
+    },
+    "compose_ms": {
+      "after": {
+        "max_ms": 636.819,
+        "min_ms": 314.325,
+        "p50_ms": 540.814,
+        "samples": 6,
+        "stdev_ms": 135.121,
+        "values_ms": [
+          314.325,
+          376.281,
+          488.012,
+          593.617,
+          618.342,
+          636.819
+        ]
+      },
+      "before": {
+        "max_ms": 726.515,
+        "min_ms": 372.369,
+        "p50_ms": 460.414,
+        "samples": 6,
+        "stdev_ms": 131.247,
+        "values_ms": [
+          372.369,
+          392.811,
+          419.543,
+          501.286,
+          532.653,
+          726.515
+        ]
+      },
+      "delta_p50_ms": 80.4
+    },
+    "core_ms": {
+      "after": {
+        "max_ms": 300.904,
+        "min_ms": 193.499,
+        "p50_ms": 202.523,
+        "samples": 6,
+        "stdev_ms": 41.168,
+        "values_ms": [
+          193.499,
+          195.405,
+          201.192,
+          203.854,
+          222.777,
+          300.904
+        ]
+      },
+      "before": {
+        "max_ms": 300.096,
+        "min_ms": 60.018,
+        "p50_ms": 188.937,
+        "samples": 6,
+        "stdev_ms": 76.079,
+        "values_ms": [
+          60.018,
+          187.137,
+          188.532,
+          189.342,
+          191.669,
+          300.096
+        ]
+      },
+      "delta_p50_ms": 13.586
+    },
+    "decision_ms": {
+      "after": {
+        "max_ms": 56.997,
+        "min_ms": 2.225,
+        "p50_ms": 2.479,
+        "samples": 6,
+        "stdev_ms": 22.28,
+        "values_ms": [
+          2.225,
+          2.352,
+          2.473,
+          2.486,
+          2.585,
+          56.997
+        ]
+      },
+      "before": {
+        "max_ms": 73.965,
+        "min_ms": 1.734,
+        "p50_ms": 2.41,
+        "samples": 6,
+        "stdev_ms": 29.093,
+        "values_ms": [
+          1.734,
+          1.909,
+          2.148,
+          2.673,
+          5.439,
+          73.965
+        ]
+      },
+      "delta_p50_ms": 0.069
+    },
+    "keystroke_to_proxy_paint_ms": {
+      "after": {
+        "max_ms": 1692.151,
+        "min_ms": 684.423,
+        "p50_ms": 985.053,
+        "samples": 6,
+        "stdev_ms": 345.037,
+        "values_ms": [
+          684.423,
+          880.931,
+          981.073,
+          989.032,
+          1167.0,
+          1692.151
+        ]
+      },
+      "before": {
+        "max_ms": 2262.97,
+        "min_ms": 1564.43,
+        "p50_ms": 2200.497,
+        "samples": 6,
+        "stdev_ms": 267.691,
+        "values_ms": [
+          1564.43,
+          2115.225,
+          2164.498,
+          2236.497,
+          2247.942,
+          2262.97
+        ]
+      },
+      "delta_p50_ms": -1215.444
+    }
+  },
+  "effects_executed": 0,
+  "measured_at_utc": "2026-07-31T04:01:36.360741+00:00",
+  "method": "same interactive harness, same machine, warm runtime, ABBA order over action and conversation families, real click plus keystrokes; only action turns are compared here because only they ground arguments",
+  "schema": "baxy.deterministic-scope-ab.v1",
+  "traces": {
+    "after": "artifacts/fixes/app_visible_path_trace_scope_after_20260730.jsonl",
+    "before": "artifacts/fixes/app_visible_path_trace_abba2_20260730.jsonl"
+  }
+}

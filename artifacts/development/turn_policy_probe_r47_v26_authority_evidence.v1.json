@@ -1,0 +1,486 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v26_authority_evidence.v1.raw.jsonl",
+    "sha256": "d69f4267a3608943bb592656151c7cca7e5922a4ca2f1478314b0b166ee5ed85"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:1063",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0e71a308a085a5d250ac3683",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.7912,
+        "operation": null,
+        "question": "What is the hourly notification for sports news?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:3761",
+      "expected_families": [
+        "notification"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-df432d2be7a940196d0ede81",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.5542,
+        "operation": "system.power",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:5820",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ae7c3188adfe6f0fd1e400f2",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.5636,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot complete comfort my ears with arijit singh as requested.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:en-US:8520",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-0e1de3bd1965fac05dced988",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.5296,
+        "operation": "calendar.event.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:11841",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-197d735b58f9dacb73beb3b6",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 3.5264,
+        "operation": "task.search",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:1300",
+      "expected_families": [
+        "audio"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d09ea16ae5566fb56e57f686",
+        "error": "",
+        "failure_code": "",
+        "kind": "plan",
+        "latency_seconds": 2.178,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13607",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ca5e12d8ef5cec05d242022f",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.8862,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar casado tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:13630",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-3339af532a1f724c16e1c535",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.1896,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo saber exactamente dónde estás para poder decirte cuál es el zoo más cercano. Por favor, dime en qué ciudad o pueblo estás y te diré el zoo más próximo.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:14820",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e400e0ce3954cdef79737ad7",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.4378,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar el precio de las acciones tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:4400",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-474a75cbfec0cf82341d3a33",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.0053,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar pais tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:7477",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-268c81e0cd6d69bb72ae07e1",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.5676,
+        "operation": null,
+        "question": "When should I remind me to occupy myself with the anniversary of my parents' wedding?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9014",
+      "expected_families": [
+        "calendar"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f9b8928e2f3de27aef406bc9",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.4107,
+        "operation": null,
+        "question": "¿cuándo y qué es la notificación que quieres establecer?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:massive-v1.1:es-ES:9680",
+      "expected_families": [
+        "media"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e277f226323a0a73fca1fe84",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 1.0832,
+        "operation": "media.seek.relative",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:1276616b6bcda3e3536aa57c17fb61355195a1a8c6a51c95c8aeae99c8c47883",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-ad836c15f5222178706c3c21",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.92,
+        "operation": null,
+        "question": "What is the due date and title of the reminder you want to create?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:225d7b24b921f3e36a7ab3912301100a31c0585d5da49058991d93ebdcabc910",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-24f716ba00a7ac52f76eca27",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.6382,
+        "operation": null,
+        "question": "When should I create the memo to buy chocolate?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:d9d3295d000aab008da9e8f5ded46a5479a00a4a617d232d4afd63dfec28eb97",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-c6f4972ae2c5181c0062d140",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 2.0237,
+        "operation": null,
+        "question": "What is the title of the game you want to play on the Wii?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:1350afa7e376fe5159f90d97bf95bba6440b69ee01337d12edd218bfb1fdbbd3",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-f7c4ce799dfc5c049c88bc23",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 3.1603,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Puedes estacionar en el parking del zoo de Barcelona, ubicado en la entrada principal. También hay opciones de estacionamiento en las inmediaciones, como el parking de la plaza de la Constitución.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:5039de513081ab7dbd9b2a9ac843b609775ad3ef3a91d42a1eaedab50018b6a2",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-dc4fb78f034d9f1f3209d8ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.8221,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo completar las notas que mencionaste tal como fue pedido.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:676864d16124a7c8a39b906ebfd53fcf11dd40fc34f5839883c400bea8b5caef",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-d5ad58fd9bb3819c4ea30e2f",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 1.6926,
+        "operation": null,
+        "question": "¿cuál es el nombre de la aplicación que deseas verificar?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "action_grounding"
+        }
+      ],
+      "case_id": "holdout:presto-v1:es-ES:9049759cf9671c604a936fadf08a8949bcac50085a44e3a140dc586aee549a71",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-7b4dce8771fe1d1088179dc7",
+        "error": "",
+        "failure_code": "",
+        "kind": "clarify",
+        "latency_seconds": 3.4621,
+        "operation": null,
+        "question": "¿cuál es el nombre de la aplicación que quieres comprobar?",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T04:14:20.998467+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 1,
+    "cases": 20,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

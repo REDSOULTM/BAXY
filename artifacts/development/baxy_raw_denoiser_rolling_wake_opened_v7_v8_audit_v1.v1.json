@@ -1,0 +1,1408 @@
+{
+  "schema": "baxy.raw-denoiser-rolling-wake-audit.v1",
+  "measuredAtUtc": "2026-08-08T07:50:02.758467+00:00",
+  "scope": "opened_known_playback_wasapi_raw_rolling_candidate_denoiser_audit",
+  "policy": {
+    "rollingWindowSeconds": 3.0,
+    "sidePaddingSeconds": 1.0,
+    "hopSeconds": 0.25,
+    "hyperspotterMaximumLogitGte": 0.5,
+    "candidateOnlyContextualLexicalEvidenceRequired": true,
+    "contextualHotwordScore": 5.0
+  },
+  "models": {
+    "speechEnhancement": {
+      "gtcrn_simple": {
+        "sha256": "e77603ac0c23dac3227dd2d7135b3a585cbee2679048aecfa886657d3ae1b534",
+        "bytes": 535638
+      },
+      "dpdfnet_baseline": {
+        "sha256": "debaf0e8893479fca91b8b4c1eae8db195aa8980ccc9012f5809fde2b738151a",
+        "bytes": 8791035
+      },
+      "dpdfnet2": {
+        "sha256": "ce35d6025fc71df0ef10d1540e1b7916837bbfe5f6896deb744508d2cad487a9",
+        "bytes": 10249356
+      },
+      "dpdfnet4": {
+        "sha256": "71b588bc26163941aa82a592cce924b08c1fbdc0879fe44f5a2d4eac44bd8420",
+        "bytes": 11707436
+      },
+      "dpdfnet8": {
+        "sha256": "2751c1f5a4e849d23a07c675b4c838158b249b42152f10cc318522dd339134f0",
+        "bytes": 14623619
+      }
+    },
+    "hyperspotter": {
+      "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+      "graphSha256": "5934226a5abe42610d4e4575f3b2ee2489dd5a6c03911bf1d1f24095b536d10e",
+      "melFiltersSha256": "94b385f1d7568735fa40099550f5d71e8210bef150a3c9d4d86f0d5f2eb86db8"
+    }
+  },
+  "corpora": [
+    {
+      "corpusManifestSha256": "604a874cf9bf2313c74d5fa333670a1634d64113d79f4d2e2c1cff4934464723",
+      "positive": {
+        "files": 4,
+        "stage1AcceptedFiles": 4,
+        "variants": {
+          "raw": {
+            "acceptedFiles": 1,
+            "decisionSeconds": {
+              "minimum": 0.7636513999896124,
+              "p50": 0.8628227000008337,
+              "p95": 1.0518866949423682,
+              "maximum": 1.0794933999422938
+            }
+          },
+          "gtcrn_simple": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 1.0321957999840379,
+              "p50": 1.2713240000302903,
+              "p95": 1.4853435999713838,
+              "maximum": 1.4997789999470115
+            }
+          },
+          "dpdfnet_baseline": {
+            "acceptedFiles": 1,
+            "decisionSeconds": {
+              "minimum": 1.4909213000210002,
+              "p50": 1.5780066999723203,
+              "p95": 2.1777374800061806,
+              "maximum": 2.2686991000082344
+            }
+          },
+          "dpdfnet2": {
+            "acceptedFiles": 1,
+            "decisionSeconds": {
+              "minimum": 1.8804771000286564,
+              "p50": 2.1896502999588847,
+              "p95": 2.6011937150091398,
+              "maximum": 2.6698763000313193
+            }
+          },
+          "dpdfnet4": {
+            "acceptedFiles": 1,
+            "decisionSeconds": {
+              "minimum": 2.353339400026016,
+              "p50": 2.573768600006588,
+              "p95": 2.847487984987674,
+              "maximum": 2.8604609000030905
+            }
+          },
+          "dpdfnet8": {
+            "acceptedFiles": 1,
+            "decisionSeconds": {
+              "minimum": 3.0415657999692485,
+              "p50": 3.2652977500110865,
+              "p95": 3.703413254918996,
+              "maximum": 3.7522184998961166
+            }
+          }
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "392ebc2be395b6a2121960a735d947638ab867f29d44f7f2fa00b142b692d1d2",
+            "rollingHyperspotterMaximumLogit": 5.474152088165283,
+            "rollingWindowIndex": 1,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 1.0794933999422938
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "09acf71286f29b507f949e30442d8791ebfb2281eb386c94b9d37f53f779aa54",
+                "decisionSeconds": 1.4997789999470115
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 2.2686991000082344
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "654001e9e9ed80ba2f2567bcf027aa491c680b89b727511409151efd6f950eff",
+                "decisionSeconds": 2.6698763000313193
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "ddc55a7ddd5565d3494149c9fec32a6e13c40965f5481c2f511f870931c338a6",
+                "decisionSeconds": 2.8604609000030905
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 3.103745299973525
+              }
+            }
+          },
+          {
+            "record": 1,
+            "audioSha256": "775aa763057a95c8f3c8181018c4a93dc7390676abd9d03342f0ef612216610e",
+            "rollingHyperspotterMaximumLogit": 4.454800605773926,
+            "rollingWindowIndex": 0,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "98c48b21f0b38d4b261a49166983289fc4d8a0bbc044a094ae864bdec8bee9cd",
+                "decisionSeconds": 0.7636513999896124
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "bdcd97f30cbfe5dd7ccb535be65698b7339d7e62f69bbeb365266a84ba201525",
+                "decisionSeconds": 1.4035430001094937
+              },
+              "dpdfnet_baseline": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "0fd6e3eb8045b11853e3651e560f739852cb127dc058b609f4d5a2bbdebad9d7",
+                "decisionSeconds": 1.6622882999945432
+              },
+              "dpdfnet2": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "b63f625405931dc9d018a71583ca223b0c54cb87e2574247edd1153a10d9c716",
+                "decisionSeconds": 2.167308200034313
+              },
+              "dpdfnet4": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "c7c1af191b81127556d804319f6b87d599d648959926588429252a333a20677f",
+                "decisionSeconds": 2.37356240011286
+              },
+              "dpdfnet8": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "b63f625405931dc9d018a71583ca223b0c54cb87e2574247edd1153a10d9c716",
+                "decisionSeconds": 3.426850200048648
+              }
+            }
+          },
+          {
+            "record": 2,
+            "audioSha256": "ff54ca5e88386a87826cdcb68574266f3cfe836b65ea69a756bfc57aad99dec5",
+            "rollingHyperspotterMaximumLogit": 0.86495041847229,
+            "rollingWindowIndex": 2,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "dfa3476846ce31adf8b1496b34595fb3f5ca2adf22b6df8ca2264c718b985cd9",
+                "decisionSeconds": 0.8301967000588775
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "38178a20b470cfd18299fb1593dd4ba706f1a83321dac051d01086efd8b7a96f",
+                "decisionSeconds": 1.0321957999840379
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 1.4909213000210002
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "18196e76da0de459f82111f775295b877b1cbdbead6d64dc0876a6b42b4d0874",
+                "decisionSeconds": 1.8804771000286564
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "40a5badb46e40c15e090397d78a57759d5c163c80fe7e2d3c5da3ec47e424df4",
+                "decisionSeconds": 2.353339400026016
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "b356a126e4318643dbf54db33635cfdeb6f432960fe14752ab6caeec04b5dbfe",
+                "decisionSeconds": 3.0415657999692485
+              }
+            }
+          },
+          {
+            "record": 3,
+            "audioSha256": "1d6a37dc0e4e00281d1f95e792a9c02952ee7368d31a7f45deec534b2e32937d",
+            "rollingHyperspotterMaximumLogit": 2.56650447845459,
+            "rollingWindowIndex": 4,
+            "variants": {
+              "raw": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "8133a6dfb691fdf3f53d437acd82a26a2c02d436aff5bfda38147c9935251ea2",
+                "decisionSeconds": 0.89544869994279
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 1.139104999951087
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 1.4937250999500975
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "cdb4ee2aea69cc6a83331bbe96dc2caa9a299d21329efb0336fc02a82e1839a8",
+                "decisionSeconds": 2.2119923998834565
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 2.7739747999003157
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "85fec70372b092bb42d021a6d1b373081dde8bcf90feb49e0725e285043fb0ad",
+                "decisionSeconds": 3.7522184998961166
+              }
+            }
+          }
+        ],
+        "transcriptTextRetained": false
+      },
+      "negative": {
+        "files": 8,
+        "stage1AcceptedFiles": 1,
+        "variants": {
+          "raw": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.2171747999964282,
+              "p50": 0.25910849997308105,
+              "p95": 0.7870794499991458,
+              "maximum": 1.0462947000050917
+            }
+          },
+          "gtcrn_simple": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.21717349998652935,
+              "p50": 0.2591077499673702,
+              "p95": 1.0271159950236317,
+              "maximum": 1.4155832000542432
+            }
+          },
+          "dpdfnet_baseline": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.21717349998652935,
+              "p50": 0.2591077999677509,
+              "p95": 1.2434214000473722,
+              "maximum": 1.7483608000911772
+            }
+          },
+          "dpdfnet2": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.21717349998652935,
+              "p50": 0.25910769996698946,
+              "p95": 1.349809760018251,
+              "maximum": 1.9120352000463754
+            }
+          },
+          "dpdfnet4": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.2171733999857679,
+              "p50": 0.25910769996698946,
+              "p95": 1.658662005024961,
+              "maximum": 2.387192500056699
+            }
+          },
+          "dpdfnet8": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.2171733999857679,
+              "p50": 0.25910769996698946,
+              "p95": 2.146162300027207,
+              "maximum": 3.1371929000597447
+            }
+          }
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "e1fe1c086b53f1f1da92e5f307df151fda2d412e085d2682538896ba6df886a9",
+            "rollingHyperspotterMaximumLogit": -0.972754716873169,
+            "rollingWindowIndex": 2,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3056796999881044
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3056768999667838
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3056767999660224
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3056767999660224
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3056767999660224
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3056768999667838
+              }
+            }
+          },
+          {
+            "record": 1,
+            "audioSha256": "5800f1e74c546d5104fbc5e3e0838935832c6b4b699271a033d38d3421396e38",
+            "rollingHyperspotterMaximumLogit": -1.0699061155319214,
+            "rollingWindowIndex": 8,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.25028120004571974
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.25028040003962815
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2502803000388667
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.25028020003810525
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2502803000388667
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2502803000388667
+              }
+            }
+          },
+          {
+            "record": 2,
+            "audioSha256": "4d405a3dded729d011931ed0f7cde3ffeaea7808ce4ae9d7885d268ab59da345",
+            "rollingHyperspotterMaximumLogit": -0.5787982940673828,
+            "rollingWindowIndex": 5,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2568186999997124
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2568176999920979
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.25681779999285936
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.25681759999133646
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.25681759999133646
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.25681759999133646
+              }
+            }
+          },
+          {
+            "record": 3,
+            "audioSha256": "1d4ef6540510ed11129e48bf8b4a4e094979c0d104b1736c3277b4280115ee2c",
+            "rollingHyperspotterMaximumLogit": -1.70102059841156,
+            "rollingWindowIndex": 4,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2613982999464497
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.26139779994264245
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.26139779994264245
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.26139779994264245
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.26139779994264245
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.26139779994264245
+              }
+            }
+          },
+          {
+            "record": 4,
+            "audioSha256": "a481c77b821cdd20bad12d070f435015fce6be0e68dc9962a8b98ff935ade34e",
+            "rollingHyperspotterMaximumLogit": -1.0823702812194824,
+            "rollingWindowIndex": 5,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.276797299971804
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2767957999603823
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2767957999603823
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2767955999588594
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.27679569995962083
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2767955999588594
+              }
+            }
+          },
+          {
+            "record": 5,
+            "audioSha256": "93dcb9168910caa5fa5cb4e390fbe9c2fa604155948a40bf02577adaa43a91e0",
+            "rollingHyperspotterMaximumLogit": -1.9804129600524902,
+            "rollingWindowIndex": 0,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.22640789998695254
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2264063999755308
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.22640629997476935
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2264063999755308
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.22640629997476935
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.22640629997476935
+              }
+            }
+          },
+          {
+            "record": 6,
+            "audioSha256": "ca3b9d6cda49bc81b4369077f958adba6ff68dc520c2ed501a16a5e71e7015ad",
+            "rollingHyperspotterMaximumLogit": -0.590077817440033,
+            "rollingWindowIndex": 5,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2171747999964282
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.21717349998652935
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.21717349998652935
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.21717349998652935
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2171733999857679
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2171733999857679
+              }
+            }
+          },
+          {
+            "record": 7,
+            "audioSha256": "c174588dcdc95695fc74fc0581e566b605f936a7a6c170b90f9481ad9356d5c0",
+            "rollingHyperspotterMaximumLogit": 3.074875831604004,
+            "rollingWindowIndex": 5,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "354d23d461a0d2b18ed3c798476c3fda3f474fe981c172994ccbfa74fe4cabf8",
+                "decisionSeconds": 1.0462947000050917
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "354d23d461a0d2b18ed3c798476c3fda3f474fe981c172994ccbfa74fe4cabf8",
+                "decisionSeconds": 1.4155832000542432
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "354d23d461a0d2b18ed3c798476c3fda3f474fe981c172994ccbfa74fe4cabf8",
+                "decisionSeconds": 1.7483608000911772
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "354d23d461a0d2b18ed3c798476c3fda3f474fe981c172994ccbfa74fe4cabf8",
+                "decisionSeconds": 1.9120352000463754
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "354d23d461a0d2b18ed3c798476c3fda3f474fe981c172994ccbfa74fe4cabf8",
+                "decisionSeconds": 2.387192500056699
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 3.1371929000597447
+              }
+            }
+          }
+        ],
+        "transcriptTextRetained": false
+      }
+    },
+    {
+      "corpusManifestSha256": "594b490610ee05d6e1d3870ddd8dfdfd5fdfa31fd08cd7697f1612b6f05d790a",
+      "positive": {
+        "files": 4,
+        "stage1AcceptedFiles": 4,
+        "variants": {
+          "raw": {
+            "acceptedFiles": 1,
+            "decisionSeconds": {
+              "minimum": 0.7545257001183927,
+              "p50": 0.8784853499964811,
+              "p95": 1.0113343699777033,
+              "maximum": 1.0347781999735162
+            }
+          },
+          "gtcrn_simple": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 1.1380828999681398,
+              "p50": 1.2296795000438578,
+              "p95": 1.3420019000826868,
+              "maximum": 1.359630500082858
+            }
+          },
+          "dpdfnet_baseline": {
+            "acceptedFiles": 1,
+            "decisionSeconds": {
+              "minimum": 1.3679055999964476,
+              "p50": 1.466299900028389,
+              "p95": 1.5412452249904163,
+              "maximum": 1.5487206999678165
+            }
+          },
+          "dpdfnet2": {
+            "acceptedFiles": 1,
+            "decisionSeconds": {
+              "minimum": 1.8187018999597058,
+              "p50": 1.9444682999746874,
+              "p95": 2.1054835000366436,
+              "maximum": 2.1278194000478834
+            }
+          },
+          "dpdfnet4": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 2.398589300108142,
+              "p50": 2.4176793500082567,
+              "p95": 2.441116644948488,
+              "maximum": 2.4421692999312654
+            }
+          },
+          "dpdfnet8": {
+            "acceptedFiles": 2,
+            "decisionSeconds": {
+              "minimum": 3.0726050999946892,
+              "p50": 3.259803550026845,
+              "p95": 3.409479980135802,
+              "maximum": 3.4169726001564413
+            }
+          }
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "694884106caed301ba0da2d37b8ec35b1def8988b08fdf364311de9035dd41f6",
+            "rollingHyperspotterMaximumLogit": 3.5203933715820312,
+            "rollingWindowIndex": 3,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e361fb07ff945e39974cb3c9c59d7fc9b0f2abb7665e9a704f71bb49903901c0",
+                "decisionSeconds": 0.8784846999915317
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 1.1380828999681398
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "03b25bed61dad2fc92bb7ca539a0f5abb89e97a767e3ca68789d47009f9fa5c3",
+                "decisionSeconds": 1.4337155999382958
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 1.978913399972953
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 2.40020709997043
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 3.0726050999946892
+              }
+            }
+          },
+          {
+            "record": 1,
+            "audioSha256": "5f5ea7d43fa194f0d7b643ea7ec3bb37bd4daea09b8ddd200dbfc7a16dc2137f",
+            "rollingHyperspotterMaximumLogit": 4.183943271636963,
+            "rollingWindowIndex": 4,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "ea31a43ceb9868395a6ef57b73752d2416bc095cb371dd39093851fb976ae1ff",
+                "decisionSeconds": 1.0347781999735162
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 1.359630500082858
+              },
+              "dpdfnet_baseline": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "1a7c9abe92e40b6a3c67b7e2efa58c355d24a6806276de97aaa3f9c551bdc5a9",
+                "decisionSeconds": 1.5487206999678165
+              },
+              "dpdfnet2": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "c103cd1f987d541247a773ad54062307aac35960a0b143003b07982371ef4e85",
+                "decisionSeconds": 1.910023199976422
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "30aab11dec8eaa0583641ba1240f98f81dd92dc1702de03b433fede7d72f25fd",
+                "decisionSeconds": 2.4351516000460833
+              },
+              "dpdfnet8": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "94dd86531bfd02752adf7958fa0ee690ae59a49a25136dea106b6398f230e286",
+                "decisionSeconds": 3.1525853000348434
+              }
+            }
+          },
+          {
+            "record": 2,
+            "audioSha256": "c24afa0ae7eca2fa00674ce1c113ffcb96e49ac9f61da28cd7e4b238e93784fb",
+            "rollingHyperspotterMaximumLogit": 1.7011387348175049,
+            "rollingWindowIndex": 5,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "6b8fff535a8172044b68e46899a45b55ab75d6b6bcb5c6fdce63064c857501d9",
+                "decisionSeconds": 0.8784860000014305
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "86ab0965d43c5d182bf1a462fa817857af1b11905f054f2fb88f5942743857cf",
+                "decisionSeconds": 1.2172525000059977
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "c7a11e9a55de2b146e3b2d75e9112ee6af4e5b439658e725e6afca92e93bf0bd",
+                "decisionSeconds": 1.3679055999964476
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "c7a11e9a55de2b146e3b2d75e9112ee6af4e5b439658e725e6afca92e93bf0bd",
+                "decisionSeconds": 1.8187018999597058
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 2.4421692999312654
+              },
+              "dpdfnet8": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "30a5951ecea5ca8323312039d7df32bed4cd230a60e4556fafe37b78bc9694a4",
+                "decisionSeconds": 3.367021800018847
+              }
+            }
+          },
+          {
+            "record": 3,
+            "audioSha256": "0149981aa5ca71ab863289685af591ad13f0bb90ecfc724a1be3b4861a6d8242",
+            "rollingHyperspotterMaximumLogit": 0.8840221166610718,
+            "rollingWindowIndex": 5,
+            "variants": {
+              "raw": {
+                "accepted": true,
+                "lexicalEvidence": true,
+                "transcriptSha256": "0d3efee2a7fb5dfba04c71d755efae234127c550a4801be21693e77220f1b157",
+                "decisionSeconds": 0.7545257001183927
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "5ec1f7e700f37c3d0b2981d04855fc34b94aaa15457b05ca571817442d228f81",
+                "decisionSeconds": 1.242106500081718
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 1.4988842001184821
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 2.1278194000478834
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 2.398589300108142
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "decisionSeconds": 3.4169726001564413
+              }
+            }
+          }
+        ],
+        "transcriptTextRetained": false
+      },
+      "negative": {
+        "files": 8,
+        "stage1AcceptedFiles": 1,
+        "variants": {
+          "raw": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.24559880001470447,
+              "p50": 0.2998638999997638,
+              "p95": 0.6454755449027286,
+              "maximum": 0.824275599909015
+            }
+          },
+          "gtcrn_simple": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.24559740000404418,
+              "p50": 0.29986254998948425,
+              "p95": 0.81350975993555,
+              "maximum": 1.0827907999046147
+            }
+          },
+          "dpdfnet_baseline": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.24559740000404418,
+              "p50": 0.2998624999891035,
+              "p95": 0.9101121099258302,
+              "maximum": 1.2314097998896614
+            }
+          },
+          "dpdfnet2": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.24559730000328273,
+              "p50": 0.2998623999883421,
+              "p95": 1.3893916249100575,
+              "maximum": 1.9687628998653963
+            }
+          },
+          "dpdfnet4": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.24559730000328273,
+              "p50": 0.2998624499887228,
+              "p95": 1.6548734949727066,
+              "maximum": 2.37719659996219
+            }
+          },
+          "dpdfnet8": {
+            "acceptedFiles": 0,
+            "decisionSeconds": {
+              "minimum": 0.24559730000328273,
+              "p50": 0.2998624499887228,
+              "p95": 2.0120364049333133,
+              "maximum": 2.9266779999015853
+            }
+          }
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "5774c4aa17a638a71b36b261aef03f655836ca5ce86fcfe3743dda747b4f4054",
+            "rollingHyperspotterMaximumLogit": -0.6770991683006287,
+            "rollingWindowIndex": 8,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2981070999521762
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2981052999384701
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2981052999384701
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2981051999377087
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2981051999377087
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2981051999377087
+              }
+            }
+          },
+          {
+            "record": 1,
+            "audioSha256": "15ef698a838f33f175bc7aac255256af8727ab26573095eb749aec7f38b54762",
+            "rollingHyperspotterMaximumLogit": -0.4166438579559326,
+            "rollingWindowIndex": 8,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2921669000061229
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2921654999954626
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2921654999954626
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2921652999939397
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.29216539999470115
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.29216539999470115
+              }
+            }
+          },
+          {
+            "record": 2,
+            "audioSha256": "55b00e80099ab4da7412afbc50478db7ed746cfafbc9bd70c7a98b2c18b38785",
+            "rollingHyperspotterMaximumLogit": 0.24333316087722778,
+            "rollingWindowIndex": 5,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2799593999516219
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.27995769993867725
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.27995769993867725
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.27995769993867725
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2799575999379158
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.2799575999379158
+              }
+            }
+          },
+          {
+            "record": 3,
+            "audioSha256": "7bc400a5945062a037114f97fbef97e6bc1f236ddb7d17f20377bf8d86ff3add",
+            "rollingHyperspotterMaximumLogit": -0.9454641938209534,
+            "rollingWindowIndex": 4,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.24559880001470447
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.24559740000404418
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.24559740000404418
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.24559730000328273
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.24559730000328273
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.24559730000328273
+              }
+            }
+          },
+          {
+            "record": 4,
+            "audioSha256": "dddc7734fd627998fd15df3bcce8135461229eb84b9bd363a06581b311a3adbb",
+            "rollingHyperspotterMaximumLogit": -0.28973546624183655,
+            "rollingWindowIndex": 7,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3075900999829173
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.30758879997301847
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.307588699972257
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.307588699972257
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.307588699972257
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.307588699972257
+              }
+            }
+          },
+          {
+            "record": 5,
+            "audioSha256": "479c5a895e4d3db048fad8475c78e3a2a764394a585ba5d7a7d313254b713363",
+            "rollingHyperspotterMaximumLogit": -1.4601012468338013,
+            "rollingWindowIndex": 3,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.31341829989105463
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3134163999930024
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3134163999930024
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3134163999930024
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.31341629999224097
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.31341629999224097
+              }
+            }
+          },
+          {
+            "record": 6,
+            "audioSha256": "f30995bf49d9351e46e31e24bbe0b45df9d9879232760d1a4156cc097e183c37",
+            "rollingHyperspotterMaximumLogit": -1.2508001327514648,
+            "rollingWindowIndex": 5,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3016207000473514
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3016198000404984
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3016197000397369
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3016196000389755
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3016197000397369
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": null,
+                "decisionSeconds": 0.3016197000397369
+              }
+            }
+          },
+          {
+            "record": 7,
+            "audioSha256": "2b61d54c9710d0967d37e30e004a6ff2960f2f724128b1bafc50ee39976fdc0c",
+            "rollingHyperspotterMaximumLogit": 2.3276476860046387,
+            "rollingWindowIndex": 7,
+            "variants": {
+              "raw": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "354d23d461a0d2b18ed3c798476c3fda3f474fe981c172994ccbfa74fe4cabf8",
+                "decisionSeconds": 0.824275599909015
+              },
+              "gtcrn_simple": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "4e2e7d32c499366090dfbbedb0cf759d9ddf53e8073a0fc16b5f4298084e47a6",
+                "decisionSeconds": 1.0827907999046147
+              },
+              "dpdfnet_baseline": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "4e2e7d32c499366090dfbbedb0cf759d9ddf53e8073a0fc16b5f4298084e47a6",
+                "decisionSeconds": 1.2314097998896614
+              },
+              "dpdfnet2": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "4e2e7d32c499366090dfbbedb0cf759d9ddf53e8073a0fc16b5f4298084e47a6",
+                "decisionSeconds": 1.9687628998653963
+              },
+              "dpdfnet4": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "4e2e7d32c499366090dfbbedb0cf759d9ddf53e8073a0fc16b5f4298084e47a6",
+                "decisionSeconds": 2.37719659996219
+              },
+              "dpdfnet8": {
+                "accepted": false,
+                "lexicalEvidence": false,
+                "transcriptSha256": "354d23d461a0d2b18ed3c798476c3fda3f474fe981c172994ccbfa74fe4cabf8",
+                "decisionSeconds": 2.9266779999015853
+              }
+            }
+          }
+        ],
+        "transcriptTextRetained": false
+      }
+    }
+  ],
+  "variantSummary": {
+    "raw": {
+      "positiveAccepted": 2,
+      "positiveFiles": 8,
+      "negativeAccepted": 0,
+      "negativeFiles": 16,
+      "openedAuditPassed": false
+    },
+    "gtcrn_simple": {
+      "positiveAccepted": 0,
+      "positiveFiles": 8,
+      "negativeAccepted": 0,
+      "negativeFiles": 16,
+      "openedAuditPassed": false
+    },
+    "dpdfnet_baseline": {
+      "positiveAccepted": 2,
+      "positiveFiles": 8,
+      "negativeAccepted": 0,
+      "negativeFiles": 16,
+      "openedAuditPassed": false
+    },
+    "dpdfnet2": {
+      "positiveAccepted": 2,
+      "positiveFiles": 8,
+      "negativeAccepted": 0,
+      "negativeFiles": 16,
+      "openedAuditPassed": false
+    },
+    "dpdfnet4": {
+      "positiveAccepted": 1,
+      "positiveFiles": 8,
+      "negativeAccepted": 0,
+      "negativeFiles": 16,
+      "openedAuditPassed": false
+    },
+    "dpdfnet8": {
+      "positiveAccepted": 3,
+      "positiveFiles": 8,
+      "negativeAccepted": 0,
+      "negativeFiles": 16,
+      "openedAuditPassed": false
+    }
+  },
+  "elapsedWallSeconds": 105.67461099999491,
+  "blindHumanPartitionAccessed": false,
+  "promotable": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0,
+  "filenamesOrTranscriptsRetained": false
+}

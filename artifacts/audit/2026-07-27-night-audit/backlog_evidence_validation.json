@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-07-27T12:57:00-04:00",
+  "backlog": "BACKLOG.md",
+  "defects": 27,
+  "defectsWithEvidenceHeading": 27,
+  "evidenceReferences": 106,
+  "missingEvidenceReferences": [],
+  "notes": [
+    "The shorthand range app_open_installed_windows_notepad_3.json to _7.json was expanded conceptually; files 3 through 7 are present.",
+    "Runtime and source filenames mentioned outside Evidence sections are explanatory references and were not treated as audit artifacts."
+  ]
+}

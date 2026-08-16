@@ -1,0 +1,44 @@
+{
+  "schema": "baxy.ccby-wake-holdout-spec.v1",
+  "preregistration_sha256": "710932009064a00fcd925c4a95042069cfc0e68ae91acd22d779588be6a0b3d3",
+  "preregistration_amendments": [
+    {
+      "source_id": "LaTRmCVcsDY",
+      "field": "blind.hard_negative_sources[0].occurrence_seconds[0]",
+      "original_seconds": 441.44,
+      "corrected_acoustic_onset_seconds": 445.2,
+      "corrected_acoustic_end_seconds": 445.52,
+      "reason": "The subtitle time labels the preceding phrase 'Maxi Forall'; local Parakeet acoustic tokens identify 'F-a-xi' at 445.20-445.52 seconds.",
+      "performed_before_candidate_scoring": true,
+      "split_or_label_changed": false
+    }
+  ],
+  "entries": [
+    {"partition":"development","label":"positive","source_id":"MQXURO-3xrI","speaker_group":"ecogen_narrator","language":"en","source_relative_path":"real_positive_full_audio_ccby/MQXURO-3xrI.webm","target_onset_seconds":60.24,"output_name":"MQXURO-3xrI_060p480.wav"},
+    {"partition":"development","label":"positive","source_id":"MQXURO-3xrI","speaker_group":"ecogen_narrator","language":"en","source_relative_path":"real_positive_full_audio_ccby/MQXURO-3xrI.webm","target_onset_seconds":70.32,"output_name":"MQXURO-3xrI_070p520.wav"},
+    {"partition":"development","label":"positive","source_id":"MQXURO-3xrI","speaker_group":"ecogen_narrator","language":"en","source_relative_path":"real_positive_full_audio_ccby/MQXURO-3xrI.webm","target_onset_seconds":94.0,"output_name":"MQXURO-3xrI_094p159.wav"},
+    {"partition":"development","label":"positive","source_id":"MQXURO-3xrI","speaker_group":"ecogen_narrator","language":"en","source_relative_path":"real_positive_full_audio_ccby/MQXURO-3xrI.webm","target_onset_seconds":96.4,"output_name":"MQXURO-3xrI_096p680.wav"},
+    {"partition":"development","label":"positive","source_id":"MQXURO-3xrI","speaker_group":"ecogen_narrator","language":"en","source_relative_path":"real_positive_full_audio_ccby/MQXURO-3xrI.webm","target_onset_seconds":104.32,"output_name":"MQXURO-3xrI_104p520.wav"},
+    {"partition":"development","label":"positive","source_id":"MQXURO-3xrI","speaker_group":"ecogen_narrator","language":"en","source_relative_path":"real_positive_full_audio_ccby/MQXURO-3xrI.webm","target_onset_seconds":228.4,"output_name":"MQXURO-3xrI_228p599.wav"},
+    {"partition":"development","label":"positive","source_id":"MQXURO-3xrI","speaker_group":"ecogen_narrator","language":"en","source_relative_path":"real_positive_full_audio_ccby/MQXURO-3xrI.webm","target_onset_seconds":241.92,"output_name":"MQXURO-3xrI_242p159.wav"},
+    {"partition":"development","label":"positive","source_id":"LNZyJcCArhc","speaker_group":"jesus_marcos","language":"es","source_relative_path":"real_positive_full_audio_ccby_round2/LNZyJcCArhc.webm","target_onset_seconds":4.16,"output_name":"LNZyJcCArhc_004p160.wav"},
+    {"partition":"development","label":"positive","source_id":"WGa8E_eK9_w","speaker_group":"alexey_tukay","language":"ru","source_relative_path":"real_positive_full_audio_ccby_round2/WGa8E_eK9_w.webm","target_onset_seconds":9.2,"output_name":"WGa8E_eK9_w_009p200.wav"},
+    {"partition":"development","label":"positive","source_id":"WGa8E_eK9_w","speaker_group":"alexey_tukay","language":"ru","source_relative_path":"real_positive_full_audio_ccby_round2/WGa8E_eK9_w.webm","target_onset_seconds":14.0,"output_name":"WGa8E_eK9_w_014p000.wav"},
+    {"partition":"development","label":"positive","source_id":"WGa8E_eK9_w","speaker_group":"alexey_tukay","language":"ru","source_relative_path":"real_positive_full_audio_ccby_round2/WGa8E_eK9_w.webm","target_onset_seconds":29.04,"output_name":"WGa8E_eK9_w_029p040.wav"},
+    {"partition":"development","label":"positive","source_id":"WGa8E_eK9_w","speaker_group":"alexey_tukay","language":"ru","source_relative_path":"real_positive_full_audio_ccby_round2/WGa8E_eK9_w.webm","target_onset_seconds":36.88,"output_name":"WGa8E_eK9_w_036p880.wav"},
+    {"partition":"development","label":"positive","source_id":"WGa8E_eK9_w","speaker_group":"alexey_tukay","language":"ru","source_relative_path":"real_positive_full_audio_ccby_round2/WGa8E_eK9_w.webm","target_onset_seconds":53.52,"output_name":"WGa8E_eK9_w_053p520.wav"},
+    {"partition":"development","label":"positive","source_id":"BJLgprj4ztE","speaker_group":"baxi_ferrol_welcome_narrator","language":"es","source_relative_path":"real_positive_full_audio_ccby_round2/BJLgprj4ztE.webm","target_onset_seconds":67.2,"output_name":"BJLgprj4ztE_067p200.wav"},
+
+    {"partition":"development","label":"hard_negative","source_id":"jYChxFZPNNQ","speaker_group":"tarang_bakshi","language":"en","acoustic_label":"Tarang Bakshi /bækʃi/","source_relative_path":"real_positive_clips_ccby_audit/normalized_16k_mono/jYChxFZPNNQ_0003p5_0005p5.wav","target_onset_seconds":4.72,"output_name":"jYChxFZPNNQ_bakshi.wav"},
+    {"partition":"development","label":"hard_negative","source_id":"olFKsOxLG8k","speaker_group":"upendra_bakshi","language":"en","acoustic_label":"Upendra Bakshi /bækʃi/","source_relative_path":"real_positive_clips_ccby_audit/normalized_16k_mono/olFKsOxLG8k_4080_4090.wav","target_onset_seconds":5.52,"output_name":"olFKsOxLG8k_bakshi.wav"},
+    {"partition":"development","label":"hard_negative","source_id":"S_7-Gxa6ANU","speaker_group":"mahesh_faxi","language":"en","acoustic_label":"Mahesh Faxi /fæksi/","source_relative_path":"real_positive_clips_ccby_audit/normalized_16k_mono/S_7-Gxa6ANU_0044p5_0046p5.wav","target_onset_seconds":5.28,"output_name":"S_7-Gxa6ANU_faxi.wav"},
+    {"partition":"development","label":"hard_negative","source_id":"PuSaeFStpwc","speaker_group":"viplav_vaxi","language":"en","acoustic_label":"Viplav Vaxi /væksi/","source_relative_path":"real_positive_clips_ccby_audit/normalized_16k_mono/PuSaeFStpwc_precise_0000_0120.wav","target_onset_seconds":39.04,"output_name":"PuSaeFStpwc_vaxi.wav"},
+
+    {"partition":"blind","label":"positive","source_id":"ix-oaNUxFSA","speaker_group":"torroja_host","language":"es","source_relative_path":"real_positive_clips_ccby_audit/normalized_16k_mono/ix-oaNUxFSA_0009p5_0014p5.wav","target_onset_seconds":10.72,"output_name":"ix-oaNUxFSA_torroja_host.wav"},
+    {"partition":"blind","label":"positive","source_id":"ix-oaNUxFSA","speaker_group":"alberto_jimenez","language":"es","source_relative_path":"real_positive_clips_ccby_audit/normalized_16k_mono/ix-oaNUxFSA_0049p5_0054p0.wav","target_onset_seconds":12.08,"output_name":"ix-oaNUxFSA_alberto_jimenez.wav"},
+    {"partition":"blind","label":"positive","source_id":"mwSFvsMnBRE","speaker_group":"fix_it_with_fusco","language":"en","source_relative_path":"real_positive_clips_ccby_audit/normalized_16k_mono/mwSFvsMnBRE_0000_0003.wav","target_onset_seconds":0.56,"pre_seconds":0.0,"output_name":"mwSFvsMnBRE_fix_it_with_fusco.wav"},
+    {"partition":"blind","label":"positive","source_id":"gcSAZ2eLlZ4","speaker_group":"ballin_europe_narrator","language":"en","source_relative_path":"real_positive_clips_ccby_audit/normalized_16k_mono/gcSAZ2eLlZ4_precise_0032_0036.wav","target_onset_seconds":1.68,"output_name":"gcSAZ2eLlZ4_ballin_europe.wav"},
+
+    {"partition":"blind","label":"hard_negative","source_id":"LaTRmCVcsDY","speaker_group":"ballin_europe_faxi","language":"en","acoustic_label":"Faxi /fæksi/","source_relative_path":"real_positive_full_audio_ccby/LaTRmCVcsDY.webm","target_onset_seconds":445.2,"output_name":"LaTRmCVcsDY_faxi.wav"}
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "baxy-night-audit-package-prepare-crash-repro-v1",
+  "measured_at": "2026-07-27T18:22:32.387452+00:00",
+  "core": "D:\\BAXY\\source\\artifacts\\product\\build\\local-win-x64\\app\\core\\baxy-core.exe",
+  "winget_on_path": null,
+  "reproduced": true,
+  "runs": [
+    {
+      "attempt": 1,
+      "argument": "Microsoft.PowerToys",
+      "advertised_risk": "read_only",
+      "advertised_schema": {
+        "type": "object",
+        "properties": {
+          "packageId": {
+            "type": "string",
+            "x-maxUtf8Bytes": 256,
+            "x-nonWhitespace": true
+          },
+          "version": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "packageId"
+        ],
+        "additionalProperties": false
+      },
+      "response": null,
+      "exit_code": 70,
+      "stderr": "BAXY core stopped safely (Win32Exception)."
+    },
+    {
+      "attempt": 2,
+      "argument": "Microsoft.PowerToys",
+      "advertised_risk": "read_only",
+      "advertised_schema": {
+        "type": "object",
+        "properties": {
+          "packageId": {
+            "type": "string",
+            "x-maxUtf8Bytes": 256,
+            "x-nonWhitespace": true
+          },
+          "version": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "packageId"
+        ],
+        "additionalProperties": false
+      },
+      "response": null,
+      "exit_code": 70,
+      "stderr": "BAXY core stopped safely (Win32Exception)."
+    }
+  ]
+}

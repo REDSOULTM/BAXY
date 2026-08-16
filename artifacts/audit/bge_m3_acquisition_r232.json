@@ -1,0 +1,182 @@
+{
+  "schema": "baxy.bge-m3.r232-acquisition-attestation.v1",
+  "authority": "external_weights_attested_without_model_import_or_runtime_change",
+  "candidate": {
+    "model_id": "BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "storage": "D:\\BAXYRuntime\\candidates\\BAAI--bge-m3",
+    "files": [
+      {
+        "path": ".gitattributes",
+        "bytes": 1627,
+        "sha256": "7363a8ebd782ede400e72bb3e88c19248478eb6f280a7376d398fc2f22707b9a"
+      },
+      {
+        "path": "1_Pooling/config.json",
+        "bytes": 191,
+        "sha256": "e54c164a07274f2eb45bb724f54a79d1efcc90c41573887cd9a29aeee0597352"
+      },
+      {
+        "path": "colbert_linear.pt",
+        "bytes": 2100674,
+        "sha256": "19bfbae397c2b7524158c919d0e9b19393c5639d098f0a66932c91ed8f5f9abb"
+      },
+      {
+        "path": "config.json",
+        "bytes": 687,
+        "sha256": "26159e7ad065073448460117eb24b7a4572f6f4e78eadff65dc0a11c052449fa"
+      },
+      {
+        "path": "config_sentence_transformers.json",
+        "bytes": 123,
+        "sha256": "1eef72430e7194a1e59680e635aed81ffa083f05668dbc5bb1c56c04c0999c38"
+      },
+      {
+        "path": "imgs/.DS_Store",
+        "bytes": 6148,
+        "sha256": "d65165279105ca6773180500688df4bdc69a2c7b771752f0a46ef120b7fd8ec3"
+      },
+      {
+        "path": "imgs/bm25.jpg",
+        "bytes": 131849,
+        "sha256": "4d88d1c224dc6dae62b76547e1e79ed12e1085b94dc1fe0c50440a948277d89a"
+      },
+      {
+        "path": "imgs/long.jpg",
+        "bytes": 485432,
+        "sha256": "d2a44539154d2cee75abd032fe773d5514f1129b741c4641cde12554762709a6"
+      },
+      {
+        "path": "imgs/miracl.jpg",
+        "bytes": 576482,
+        "sha256": "a48c10a1be83aa7a92a25d85dbc6d2c0194b59503a2599a9e89bd7e063c32a66"
+      },
+      {
+        "path": "imgs/mkqa.jpg",
+        "bytes": 608027,
+        "sha256": "ae331fb64bdceeaafecc2f8cd89a2d55a3e41c429dcc5ba906cb9a7bdb73cf2b"
+      },
+      {
+        "path": "imgs/nqa.jpg",
+        "bytes": 158358,
+        "sha256": "5385ca9d6af4124932281039e1366d704d10ed81e905526f795f5732352394bb"
+      },
+      {
+        "path": "imgs/others.webp",
+        "bytes": 20984,
+        "sha256": "9222ef69ba79cbd3aa8c659bd3cbbf9d90b3dbb040526f56298ed9ceb05ec9df"
+      },
+      {
+        "path": "long.jpg",
+        "bytes": 126894,
+        "sha256": "4ba03433ef54575eeef5a291abd81661eb53c432677934dc4050565893e7a8a9"
+      },
+      {
+        "path": "modules.json",
+        "bytes": 349,
+        "sha256": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf"
+      },
+      {
+        "path": "onnx/config.json",
+        "bytes": 698,
+        "sha256": "f24afd5de914fba8c668426c43d208a1a54022500c63b2c160be20891686fce8"
+      },
+      {
+        "path": "onnx/Constant_7_attr__value",
+        "bytes": 65552,
+        "sha256": "cdf16f72c5d07b36484056e601ed9687f78477e5d85cee85a34f2406b7fb5906"
+      },
+      {
+        "path": "onnx/model.onnx",
+        "bytes": 724923,
+        "sha256": "f84251230831afb359ab26d9fd37d5936d4d9bb5d1d5410e66442f630f24435b"
+      },
+      {
+        "path": "onnx/model.onnx_data",
+        "bytes": 2266820608,
+        "sha256": "1eebfb28493f67bba03ce0ef64bfdc7fc5a3bd9d7493f818bb1d78cd798416b4"
+      },
+      {
+        "path": "onnx/sentencepiece.bpe.model",
+        "bytes": 5069051,
+        "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"
+      },
+      {
+        "path": "onnx/special_tokens_map.json",
+        "bytes": 964,
+        "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"
+      },
+      {
+        "path": "onnx/tokenizer.json",
+        "bytes": 17082821,
+        "sha256": "6710678b12670bc442b99edc952c4d996ae309a7020c1fa0096dd245c2faf790"
+      },
+      {
+        "path": "onnx/tokenizer_config.json",
+        "bytes": 1173,
+        "sha256": "7e4c1cc848840aeccdd763458c18dd525eb0f795c992e00ebe9c28554e7db2d4"
+      },
+      {
+        "path": "pytorch_model.bin",
+        "bytes": 2271145830,
+        "sha256": "b5e0ce3470abf5ef3831aa1bd5553b486803e83251590ab7ff35a117cf6aad38"
+      },
+      {
+        "path": "README.md",
+        "bytes": 15822,
+        "sha256": "0b81ccf9134e5874d620a86e6905062ea999e779c34eb1a7e65eaeb7fe00e450"
+      },
+      {
+        "path": "sentence_bert_config.json",
+        "bytes": 54,
+        "sha256": "eb9b44b13c0f52a3b3685c3b1cbdea1ba8b04bea123b98f61610048940776eb1"
+      },
+      {
+        "path": "sentencepiece.bpe.model",
+        "bytes": 5069051,
+        "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"
+      },
+      {
+        "path": "sparse_linear.pt",
+        "bytes": 3516,
+        "sha256": "45c93804d2142b8f6d7ec6914ae23a1eee9c6a1d27d83d908a20d2afb3595ad9"
+      },
+      {
+        "path": "special_tokens_map.json",
+        "bytes": 964,
+        "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 17098108,
+        "sha256": "21106b6d7dab2952c1d496fb21d5dc9db75c28ed361a05f5020bbba27810dd08"
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 444,
+        "sha256": "a62b2b6784f990259fddef5f16388693a8043be4f69179e6a5257eeb3f9abac4"
+      }
+    ],
+    "file_count": 30,
+    "total_bytes": 4587317404,
+    "content_merkle_sha256": "c6e5180e517f5ebc90d7a239339f24c449e29511c4acbc7017692f41c11aa142",
+    "config_model_type": "xlm-roberta"
+  },
+  "source": {
+    "preregistration": "artifacts\\holdout\\situated_cut_b_r228.bge_m3_r231.preregistration.json",
+    "preregistration_sha256": "2623d7f37086df63ba06c1387a9ccb22a36c13f2cdefb6af959d506e39b67a80"
+  },
+  "constraints": {
+    "model_imported": false,
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Freeze a fresh OOS population and a runner that retains raw retrieval, decision before veto and visible-text review before opening R228.",
+  "identities": {
+    "program_sha256": "6da671e6371f62f837376438d1ca9ce7086dcccb67b4cd409266df984621dbdb"
+  }
+}

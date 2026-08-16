@@ -1,0 +1,19 @@
+Loading similar tokens
+conformer_hyper_spotter - audio_encoder
+Total Trainable Params: 3722112
+conformer_hyper_spotter - text_encoder
+Total Trainable Params: 2025935
+conformer_hyper_spotter - embedding_2_ms
+Total Trainable Params: 656897
+conformer_hyper_spotter - perceiver_classifier
+Total Trainable Params: 1764777
+Loading similar tokens
+conformer_hyper_spotter - audio_encoder
+Total Trainable Params: 3722112
+conformer_hyper_spotter - text_encoder
+Total Trainable Params: 2025935
+conformer_hyper_spotter - embedding_2_ms
+Total Trainable Params: 656897
+conformer_hyper_spotter - perceiver_classifier
+Total Trainable Params: 1764777
+BAXY_WAKE_CASCADE_FAR|128/28539|windows=6360|screened=239

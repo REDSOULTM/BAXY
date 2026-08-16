@@ -1,0 +1,67 @@
+{
+  "schema_version": 2,
+  "measured_at": "2026-07-16T10:27:00Z",
+  "scope": "planner_only_no_tool_execution",
+  "starting_revision": "3db92e1",
+  "model": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+  "router": "intfloat/multilingual-e5-small",
+  "core_catalog_count": 102,
+  "cases": [
+    {
+      "id": "p1",
+      "objective": "¿Cuál es la capital de Francia?",
+      "expected": "conversation",
+      "observed": "conversation",
+      "seconds": 1.731,
+      "classification": "correct"
+    },
+    {
+      "id": "p2",
+      "objective": "Abre la calculadora y pon el volumen al 30 por ciento.",
+      "expected_operations": ["app.open", "audio.volume"],
+      "observed_operations": ["app.open", "audio.volume"],
+      "seconds": 6.397,
+      "classification": "structurally_correct_not_executed"
+    },
+    {
+      "id": "p3",
+      "objective": "Busca en el sandbox archivos que contengan informe y calcula el hash del resultado exacto.",
+      "expected_operations": ["filesystem.search", "filesystem.hash"],
+      "observed_operations": ["filesystem.search", "filesystem.hash"],
+      "seconds": 5.505,
+      "classification": "structurally_correct_not_executed",
+      "regression_closed": "literal operation leaf is pinned in shortlist and relevance gate"
+    },
+    {
+      "id": "p4",
+      "objective": "Toma una captura de pantalla y lee el texto de esa captura con OCR.",
+      "expected_operations": ["capture.screenshot", "ocr.read"],
+      "observed_operations": ["capture.screenshot", "ocr.read"],
+      "seconds": 5.037,
+      "classification": "structurally_correct_not_executed"
+    },
+    {
+      "id": "p5",
+      "objective": "Compra en Steam el juego con AppID 620 por exactamente 999 centavos: prepara la compra y luego confírmala.",
+      "expected_operations": ["game.purchase.prepare", "game.purchase.commit"],
+      "observed_operations": ["game.purchase.prepare", "game.purchase.commit"],
+      "seconds": 6.574,
+      "classification": "structurally_correct_not_executed_monetary_confirmation_still_required"
+    },
+    {
+      "id": "p6",
+      "objective": "Reproduce exactamente Billie Jean en Spotify y después pon el volumen al 30 por ciento.",
+      "expected_operations": ["media.play.exact", "audio.volume"],
+      "observed_operations": ["media.play.exact", "audio.volume"],
+      "seconds": 6.466,
+      "classification": "structurally_correct_not_executed"
+    }
+  ],
+  "summary": {
+    "correct_or_structurally_correct": 6,
+    "safe_rejections": 0,
+    "dangerous_plans_accepted": 0,
+    "tools_executed": 0,
+    "claim": "six-case diagnostic passed; separate historical corpus gate remains required"
+  }
+}

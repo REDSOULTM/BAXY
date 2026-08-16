@@ -1,0 +1,312 @@
+{
+  "schema": "baxy.stt-empty-primary-streaming-fallback-development.v1",
+  "measuredAtUtc": "2026-08-11T03:03:47.283681+00:00",
+  "source": "audio_arena",
+  "partition": "development",
+  "status": "passed",
+  "policy": {
+    "primary": "product_parakeet",
+    "fallback": "nemotron_auto",
+    "fallbackCondition": "primary transcript is empty",
+    "parallelStreamingRequired": true,
+    "endpointAvailabilityMeasurement": "primary finalization, or fallback maximum measured chunk decode plus fallback flush when primary is empty",
+    "physicalEndpointLatencyStillRequired": true
+  },
+  "inputs": {
+    "primary": {
+      "path": "experiments/stt_quality/evaluate_reserved_stt.py",
+      "sha256": "c0d5be0d64d931d2280b70b2c05f4bb5cafacd2d4053d074ef27a449c34c035a",
+      "reportStatus": "passed",
+      "reportPath": "D:/BAXY/source/artifacts/development/stt_audio_arena_product_parakeet_development_v4.json",
+      "reportSha256": "7111a53a12d4f33ff0a6f39a707f1ac5c093daad55f977e803ee04abbba9c549"
+    },
+    "fallback": {
+      "path": "experiments/stt_quality/evaluate_reserved_stt.py",
+      "sha256": "c0d5be0d64d931d2280b70b2c05f4bb5cafacd2d4053d074ef27a449c34c035a",
+      "reportStatus": "failed",
+      "reportPath": "D:/BAXY/source/artifacts/development/stt_audio_arena_nemotron_auto_development_v1.json",
+      "reportSha256": "f19ec3ff6831affec86efd2d0149b60b907b6f981c8fe6a9a77cf8b15b742489"
+    },
+    "contract": {
+      "path": "artifacts/research/stt_real_audio_development_preopen_contract_v7.json",
+      "sha256": "93858d9727d97955f22a77cf26fa20d929d5724a8b5c04f8e3fa18034115a0c3"
+    },
+    "runtime": {
+      "path": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json",
+      "sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+      "python": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe",
+      "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+      "sttDirectory": "D:/BAXYRuntime/assets/stt/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+      "sttSha256": "5a70e0862ca0ed713a2bb1bfd50bf4886ae027815c8634a3800da7bdec6ab28f"
+    }
+  },
+  "aggregate": {
+    "metrics": {
+      "cases": 12,
+      "fallbackCases": 0,
+      "fallbackRate": 0.0,
+      "nonemptyRate": 1.0,
+      "decodeErrors": 0,
+      "corpusWer": 0.0625,
+      "caseWerP95": 0.375,
+      "criticalAnchorRecall": 1.0,
+      "endpointAvailabilityP50Seconds": 0.481174,
+      "endpointAvailabilityP95Seconds": 1.276101,
+      "fallbackRealTimeFactorP95": 0.312402
+    },
+    "threshold": {
+      "expectedCases": 12,
+      "minimumNonemptyRate": 1.0,
+      "maximumCorpusWer": 0.2,
+      "maximumCaseWerP95": 0.5,
+      "minimumCriticalAnchorRecall": 0.99,
+      "maximumEndpointAvailabilityP95Seconds": 1.5,
+      "maximumFallbackRealTimeFactorP95": 0.5
+    },
+    "checks": {
+      "expectedCases": true,
+      "nonemptyRate": true,
+      "decodeErrors": true,
+      "endpointAvailabilityP95": true,
+      "fallbackRealTimeFactorP95": true,
+      "corpusWer": true,
+      "caseWerP95": true,
+      "criticalAnchorRecall": true
+    }
+  },
+  "cases": [
+    {
+      "caseId": "audio-arena-person1-000",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "Hi, this is Dana Fischer — that's F-I-S-C-H-E-R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "transcript": "Hi, this is Dana Fisher. That's F-I- S C H E R. I need to book a flight to New York and send an email to my colleague, Alex, about the meeting agenda.",
+      "nonempty": true,
+      "referenceTokens": 34,
+      "wordErrors": 1,
+      "wer": 0.029412,
+      "criticalAnchors": [
+        "F-I-S-C-H-E-R",
+        "Dana",
+        "New",
+        "York",
+        "Alex"
+      ],
+      "criticalAnchorsPreserved": [
+        "F-I-S-C-H-E-R",
+        "Dana",
+        "New",
+        "York",
+        "Alex"
+      ],
+      "endpointAvailabilitySeconds": 1.276101,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-001",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "Flying out of LAX, February third — I'd like a morning flight.",
+      "transcript": "Flying out of LAX February 3rd, I'd like a morning flight.",
+      "nonempty": true,
+      "referenceTokens": 11,
+      "wordErrors": 0,
+      "wer": 0.0,
+      "criticalAnchors": [
+        "LAX",
+        "February"
+      ],
+      "criticalAnchorsPreserved": [
+        "LAX",
+        "February"
+      ],
+      "endpointAvailabilitySeconds": 0.630416,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-002",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "Oh right, I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "transcript": "Oh right, I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "nonempty": true,
+      "referenceTokens": 14,
+      "wordErrors": 0,
+      "wer": 0.0,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "endpointAvailabilitySeconds": 0.745005,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-003",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "How much is the afternoon one?",
+      "transcript": "How much is the afternoon one?",
+      "nonempty": true,
+      "referenceTokens": 6,
+      "wordErrors": 0,
+      "wer": 0.0,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "endpointAvailabilitySeconds": 0.286707,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-004",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "The 2:30 Delta. Book that for just me.",
+      "transcript": "The 230 Delta. Book that one for just me.",
+      "nonempty": true,
+      "referenceTokens": 8,
+      "wordErrors": 1,
+      "wer": 0.125,
+      "criticalAnchors": [
+        "2:30",
+        "Delta"
+      ],
+      "criticalAnchorsPreserved": [
+        "2:30",
+        "Delta"
+      ],
+      "endpointAvailabilitySeconds": 0.532292,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-005",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "Great. Now about that email I mentioned.",
+      "transcript": "Great, now what about that email I mentioned?",
+      "nonempty": true,
+      "referenceTokens": 7,
+      "wordErrors": 1,
+      "wer": 0.142857,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "endpointAvailabilitySeconds": 0.317151,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-000",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "Hi, this is Dana Fischer — that's F-I-S-C-H-E-R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "transcript": "Hi, this is Dana Fisher. That's F I S C H E R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "nonempty": true,
+      "referenceTokens": 34,
+      "wordErrors": 1,
+      "wer": 0.029412,
+      "criticalAnchors": [
+        "F-I-S-C-H-E-R",
+        "Dana",
+        "New",
+        "York",
+        "Alex"
+      ],
+      "criticalAnchorsPreserved": [
+        "F-I-S-C-H-E-R",
+        "Dana",
+        "New",
+        "York",
+        "Alex"
+      ],
+      "endpointAvailabilitySeconds": 1.177141,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-001",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "Flying out of LAX, February third — I'd like a morning flight.",
+      "transcript": "Flying out of LAX, February 3rd, I'd like a morning flight.",
+      "nonempty": true,
+      "referenceTokens": 11,
+      "wordErrors": 0,
+      "wer": 0.0,
+      "criticalAnchors": [
+        "LAX",
+        "February"
+      ],
+      "criticalAnchorsPreserved": [
+        "LAX",
+        "February"
+      ],
+      "endpointAvailabilitySeconds": 0.481174,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-002",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "Oh right, I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "transcript": "Alright, I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "nonempty": true,
+      "referenceTokens": 14,
+      "wordErrors": 2,
+      "wer": 0.142857,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "endpointAvailabilitySeconds": 0.543411,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-003",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "How much is the afternoon one?",
+      "transcript": "How much is the afternoon?",
+      "nonempty": true,
+      "referenceTokens": 6,
+      "wordErrors": 1,
+      "wer": 0.166667,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "endpointAvailabilitySeconds": 0.282179,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-004",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "The 2:30 Delta. Book that for just me.",
+      "transcript": "It's 230 Delta, booked out for just me.",
+      "nonempty": true,
+      "referenceTokens": 8,
+      "wordErrors": 3,
+      "wer": 0.375,
+      "criticalAnchors": [
+        "2:30",
+        "Delta"
+      ],
+      "criticalAnchorsPreserved": [
+        "2:30",
+        "Delta"
+      ],
+      "endpointAvailabilitySeconds": 0.368594,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-005",
+      "selectedEngine": "product_parakeet",
+      "fallbackInvoked": false,
+      "reference": "Great. Now about that email I mentioned.",
+      "transcript": "Great. Now about that email I mentioned.",
+      "nonempty": true,
+      "referenceTokens": 7,
+      "wordErrors": 0,
+      "wer": 0.0,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "endpointAvailabilitySeconds": 0.349613,
+      "error": null
+    }
+  ],
+  "effectsExecuted": 0,
+  "fusionEvaluator": {
+    "path": "D:/BAXY/source/experiments/stt_quality/fuse_empty_primary_stt_fallback.py",
+    "sha256": "fc77a34539b47085d0f39f3fb7a6d79c4c29f9436d8b8e7f5b3e3a3e84a5e538"
+  }
+}

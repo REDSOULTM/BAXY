@@ -1,0 +1,63 @@
+{
+  "schema": "baxy.nemotron-mswc-spanish-word-gate.v2",
+  "measuredAtUtc": "2026-08-07T03:53:31.200202+00:00",
+  "scope": "opened_human_spanish_isolated_word_stt_measurement",
+  "sources": {
+    "corpusManifestSha256": "dce8bcec72ccbf5fe49e046aabba93f02046351bb809cc9e0a1da13ad6ba85a7",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "stt:encoder.int8.onnx": "012e9321373af99021415e0b0eb3ec827b4be3153be6f30d9b448fe65e896e68",
+    "stt:decoder.int8.onnx": "19f9c98fc6d0a2c33a65a43b36fdb2e914c26c0aa9764be3aebc502a1e982fb0",
+    "stt:joiner.int8.onnx": "4101c7c679a0bc30483794b27a059e34e79232aa2068d78d51231a22c8b0d7ce",
+    "stt:tokens.txt": "729cc103155bafa785f9cd45746cd41cabe97eab7182fc04d594129587958f8a",
+    "language": "es",
+    "tailPaddingSeconds": "1.0"
+  },
+  "contract": {
+    "queryPartitionOnly": true,
+    "queryClipsExpected": 2400,
+    "wordClassesExpected": 200,
+    "distinctSpeakersWithinEachWord": true,
+    "normalization": "unicode_casefold_strip_diacritics_letter_tokens",
+    "targetAccuracy": 0.99,
+    "language": "es",
+    "tailPaddingSeconds": 1.0,
+    "decodingMethod": "greedy_search",
+    "decodeOptionsFixedBeforeThisMeasurement": true,
+    "aggregateCheckpointOnly": true
+  },
+  "metrics": {
+    "queryClips": 2400,
+    "wordClasses": 200,
+    "exactUtteranceAccuracy": 0.14458333333333334,
+    "targetTokenRecall": 0.15,
+    "macroExactUtteranceAccuracy": 0.14458333333333334,
+    "characterErrorRate": 0.7777552125643109,
+    "emptyTranscripts": 1923,
+    "audioSeconds": 2399.9700000000003,
+    "decodeSeconds": 1002.5803319010884,
+    "audioRealtimeFactor": 0.41774702679662173
+  },
+  "gate": {
+    "passed": false,
+    "checks": {
+      "minimumExactUtteranceAccuracy": false,
+      "minimumTargetTokenRecall": false,
+      "minimumMacroExactUtteranceAccuracy": false,
+      "zeroEmptyTranscripts": false
+    }
+  },
+  "runtime": {
+    "loadAndWarmupSeconds": 6.657666299957782,
+    "batchSize": 8,
+    "decodeWorkers": 8,
+    "numThreads": 6
+  },
+  "freshHoldoutClaimSupported": false,
+  "commandSentenceClaimSupported": false,
+  "microphoneRoomClaimSupported": false,
+  "officialTestAudioAccessed": false,
+  "blindHumanAudioAccessed": false,
+  "speakerReidentificationAttempted": false,
+  "recordsClassesSpeakersFilenamesOrTranscriptsRetained": false,
+  "effectsExecuted": 0
+}

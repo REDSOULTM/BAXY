@@ -1,0 +1,64 @@
+{
+  "schema": "baxy.wakeword-small-streaming-verifier-feasibility.v1",
+  "measured_at_utc": "2026-08-04T18:35:33.4540626Z",
+  "scope": "architecture_research_only",
+  "decision": "prototype_a_small_independent_streaming_student_after_teacher_label_validation",
+  "primary_research": [
+    {
+      "title": "Dual Data Scaling for Robust Two-Stage User-Defined Keyword Spotting",
+      "url": "https://arxiv.org/abs/2510.10740",
+      "relevant_result": "six_layer_3.6M_parameter_phoneme_CTC_encoder_plus_0.5M_parameter_matcher"
+    },
+    {
+      "title": "WeKws: A production first small-footprint end-to-end Keyword Spotting Toolkit",
+      "url": "https://arxiv.org/abs/2210.16743",
+      "relevant_result": "production_oriented_small_footprint_streaming_KWS_with_ONNX_and_native_runtime"
+    }
+  ],
+  "external_reference": {
+    "repository": "https://github.com/wenet-e2e/wekws.git",
+    "checkout": "D:/BAXYRuntime/experiments/wakeword/tools/wekws",
+    "commit": "6a45aeb994dd81c0969ff877a5a7c46d60ed0c86",
+    "commit_date": "2026-07-23T14:11:32+08:00",
+    "license": "Apache-2.0",
+    "license_sha256": "1EB85FC97224598DAD1852B5D6483BBCF0AA8608790DCC657A5A2A761AE9C8C6",
+    "mdtc_source_sha256": "A6FB5799873CDFE52FFA28841085B900101944C7A2F2BA129EEFD67CCC38E03D",
+    "onnx_export_source_sha256": "3E8C8671BE96856DBE90E34ABA97F6FACE9ED2A6217B60D4192DF4D0D139C16E",
+    "reference_config_sha256": "EBC7EF1F46F6896EB7EFECE42C87CC7249F3D3AAA5B8E41DC567CD4DF5A01349"
+  },
+  "measured_reference_model": {
+    "architecture": "causal_multi_scale_depthwise_temporal_convolution",
+    "input_features": 80,
+    "hidden_dimension": 32,
+    "stacks": 3,
+    "blocks_per_stack": 4,
+    "kernel_size": 5,
+    "receptive_field_frames": 184,
+    "feature_frame_shift_milliseconds": 10,
+    "receptive_field_seconds": 1.84,
+    "parameters_with_linear_preprocessor_and_two_class_head": 35106,
+    "fp32_parameter_bytes": 140424,
+    "causal": true,
+    "onnx_export_supported": true,
+    "single_cpu_thread_benchmark": {
+      "chunk_frames": 20,
+      "chunk_audio_milliseconds": 200,
+      "warmup_iterations": 100,
+      "measured_iterations": 1000,
+      "median_milliseconds": 6.8267,
+      "p95_milliseconds": 14.4504,
+      "p99_milliseconds": 21.5407,
+      "maximum_milliseconds": 42.3176,
+      "runtime": "PyTorch eager; development reference only"
+    }
+  },
+  "product_constraints": {
+    "teacher_is_not_a_product_dependency": true,
+    "student_must_preserve_human_development_recall": 1.0,
+    "student_must_be_frozen_before_blind_scoring": true,
+    "student_requires_at_least_30_negative_hours_for_final_far_claim": true,
+    "installed_runtime_modified": false
+  },
+  "blind_human_partition_accessed": false,
+  "effects_executed": 0
+}

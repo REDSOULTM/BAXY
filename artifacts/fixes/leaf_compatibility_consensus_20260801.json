@@ -1,0 +1,2654 @@
+{
+  "cases": 147,
+  "effects_executed": 0,
+  "installation_touched": false,
+  "measured_at_utc": "2026-08-01T13:25:22.588834+00:00",
+  "method": "Every recorded leaf must independently pass the existing product compatibility schema against the trusted text and authenticated capability contract. Empty, partial or failed verification abstains.",
+  "no_operation_share": 0.9456,
+  "outcomes": {
+    "no_operation": 139,
+    "right_family": 7,
+    "wrong_family": 1
+  },
+  "right_family_share": 0.0476,
+  "rows": [
+    {
+      "accepted": false,
+      "case_id": "app-00",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "app",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "right_family",
+      "seconds": 0.343362,
+      "text": "Abre Epic Games Launcher",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-01",
+      "compatibility": {
+        "app.close": false,
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "app",
+      "operations": [
+        "app.open",
+        "app.close"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "right_family",
+      "seconds": 0.525806,
+      "text": "Abre Notepad y luego cierralo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-02",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "app",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "right_family",
+      "seconds": 0.30786,
+      "text": "Abre Steam con máximo 2 intentos",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-03",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "app",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "right_family",
+      "seconds": 0.371455,
+      "text": "Abre steam 0",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-04",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "app",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "right_family",
+      "seconds": 0.322307,
+      "text": "Abre steam 1",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-05",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "app",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "right_family",
+      "seconds": 0.318954,
+      "text": "Abre steam 2",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-00",
+      "compatibility": {
+        "audio.volume": false
+      },
+      "error": "",
+      "expected_family": "audio",
+      "operations": [
+        "audio.volume"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "right_family",
+      "seconds": 0.305548,
+      "text": "Abaixa o volume pra 30 por cento",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-01",
+      "compatibility": {
+        "audio.volume.adjust": false
+      },
+      "error": "",
+      "expected_family": "audio",
+      "operations": [
+        "audio.volume.adjust"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "right_family",
+      "seconds": 0.308824,
+      "text": "Augmente le volume de 10 pour cent",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-02",
+      "compatibility": {
+        "audio.volume.adjust": false
+      },
+      "error": "",
+      "expected_family": "audio",
+      "operations": [
+        "audio.volume.adjust"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "right_family",
+      "seconds": 0.308989,
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-03",
+      "compatibility": {
+        "audio.volume.adjust": false
+      },
+      "error": "",
+      "expected_family": "audio",
+      "operations": [
+        "audio.volume.adjust"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "right_family",
+      "seconds": 0.303881,
+      "text": "Baja el volumen 10%",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-04",
+      "compatibility": {
+        "audio.volume": false
+      },
+      "error": "",
+      "expected_family": "audio",
+      "operations": [
+        "audio.volume"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "right_family",
+      "seconds": 0.42692,
+      "text": "Bota o volume em 40 por cento",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-05",
+      "compatibility": {
+        "audio.volume": false
+      },
+      "error": "",
+      "expected_family": "audio",
+      "operations": [
+        "audio.volume"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "right_family",
+      "seconds": 0.417874,
+      "text": "Cambia el volumen a 10",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-00",
+      "compatibility": {
+        "filesystem.copy": false,
+        "filesystem.write.text": false
+      },
+      "error": "",
+      "expected_family": "backup",
+      "operations": [
+        "filesystem.write.text",
+        "filesystem.copy"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.76225,
+      "text": "Edita archivo y crea respaldo antes",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-01",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "backup",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "no_operation",
+      "seconds": 6e-06,
+      "text": "cambia .env para usar ollama, pero solo con backup y confirmación",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-02",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "backup",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_outcome": "no_operation",
+      "seconds": 3e-06,
+      "text": "faz um backup do registro antes de mexer em algo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-03",
+      "compatibility": {
+        "office.document.create": false,
+        "office.document.read": false
+      },
+      "error": "",
+      "expected_family": "backup",
+      "operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.608183,
+      "text": "hace un backup de mis documentos a un pendrive",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-04",
+      "compatibility": {
+        "browser.page.read": false
+      },
+      "error": "",
+      "expected_family": "backup",
+      "operations": [
+        "browser.page.read"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.446615,
+      "text": "show me the log of the backup job",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-00",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "error": "",
+      "expected_family": "bluetooth",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "bluetooth",
+      "raw_outcome": "right_family",
+      "seconds": 0.493939,
+      "text": "abre configuración y entra a Bluetooth",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": true,
+      "case_id": "bluetooth-01",
+      "compatibility": {
+        "bluetooth.radio.set": true
+      },
+      "error": "",
+      "expected_family": "bluetooth",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "right_family",
+      "predicted_family": "bluetooth",
+      "raw_outcome": "right_family",
+      "seconds": 0.329788,
+      "text": "activa el bluetooth",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-02",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "error": "",
+      "expected_family": "bluetooth",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "bluetooth",
+      "raw_outcome": "right_family",
+      "seconds": 0.420469,
+      "text": "apagá el bluetooth",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-03",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "error": "",
+      "expected_family": "bluetooth",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "bluetooth",
+      "raw_outcome": "right_family",
+      "seconds": 0.368522,
+      "text": "conecta el bluetooth",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-04",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "error": "",
+      "expected_family": "bluetooth",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "bluetooth",
+      "raw_outcome": "right_family",
+      "seconds": 0.301308,
+      "text": "desactivá el bluetooth",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-05",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "error": "",
+      "expected_family": "bluetooth",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "bluetooth",
+      "raw_outcome": "right_family",
+      "seconds": 0.299026,
+      "text": "prendé el bluetooth",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-00",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "error": "",
+      "expected_family": "browser",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_outcome": "right_family",
+      "seconds": 0.334774,
+      "text": "Abre el navegador por defecto",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": true,
+      "case_id": "browser-01",
+      "compatibility": {
+        "browser.navigate": true
+      },
+      "error": "",
+      "expected_family": "browser",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "right_family",
+      "predicted_family": "browser",
+      "raw_outcome": "right_family",
+      "seconds": 0.241599,
+      "text": "Abre github.com",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-02",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "error": "",
+      "expected_family": "browser",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_outcome": "right_family",
+      "seconds": 0.319151,
+      "text": "Abre la página de Steam de Marvel Rivals",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-03",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "error": "",
+      "expected_family": "browser",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_outcome": "right_family",
+      "seconds": 0.33618,
+      "text": "Abre la página de descargas de Python",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-04",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "error": "",
+      "expected_family": "browser",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_outcome": "right_family",
+      "seconds": 0.320927,
+      "text": "Abre la página oficial de OpenAI",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-05",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "error": "",
+      "expected_family": "browser",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "browser",
+      "raw_outcome": "right_family",
+      "seconds": 0.31624,
+      "text": "Abre o Google no navegador",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-00",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "error": "",
+      "expected_family": "calendar",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.326447,
+      "text": "Write me an email that I cant make it to the meeting",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-01",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "calendar",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.239497,
+      "text": "abrí el bloc de notas y escribí reunion manana",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-02",
+      "compatibility": {
+        "calendar.event.create": false
+      },
+      "error": "",
+      "expected_family": "calendar",
+      "operations": [
+        "calendar.event.create"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "calendar",
+      "raw_outcome": "right_family",
+      "seconds": 0.365029,
+      "text": "agenda una reunion el viernes a las cinco",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": true,
+      "case_id": "calendar-03",
+      "compatibility": {
+        "calendar.event.create": true
+      },
+      "error": "",
+      "expected_family": "calendar",
+      "operations": [
+        "calendar.event.create"
+      ],
+      "outcome": "right_family",
+      "predicted_family": "calendar",
+      "raw_outcome": "right_family",
+      "seconds": 0.374952,
+      "text": "agendá una reunión el viernes a las 3",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-04",
+      "compatibility": {
+        "web.search": false
+      },
+      "error": "",
+      "expected_family": "calendar",
+      "operations": [
+        "web.search"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "web",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.36638,
+      "text": "crea un evento el viernes a las 4",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-05",
+      "compatibility": {
+        "message.recipient.resolve": false,
+        "message.send": false
+      },
+      "error": "",
+      "expected_family": "calendar",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.683527,
+      "text": "escribile un email a juan con el asunto reunion diciendo nos vemos",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-00",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "error": "",
+      "expected_family": "capture",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.334723,
+      "text": "Sacale una foto de captura a mi pc, que se ve?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-01",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "capture",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_outcome": "no_operation",
+      "seconds": 7e-06,
+      "text": "how do I take a screenshot in Windows?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-02",
+      "compatibility": {
+        "capture.screenshot": false
+      },
+      "error": "",
+      "expected_family": "capture",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_outcome": "right_family",
+      "seconds": 0.388621,
+      "text": "tira uma captura de tela",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-03",
+      "compatibility": {
+        "capture.screenshot": false
+      },
+      "error": "",
+      "expected_family": "capture",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_outcome": "right_family",
+      "seconds": 0.353779,
+      "text": "toma screenshot, guárdalo y dime el path",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-04",
+      "compatibility": {
+        "capture.screenshot": false
+      },
+      "error": "",
+      "expected_family": "capture",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_outcome": "right_family",
+      "seconds": 0.377225,
+      "text": "toma una captura y guardala en el escritorio",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-05",
+      "compatibility": {
+        "capture.screenshot": false
+      },
+      "error": "",
+      "expected_family": "capture",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "capture",
+      "raw_outcome": "right_family",
+      "seconds": 0.360932,
+      "text": "toma una captura, guardala en el escritorio y abre el explorador ahi",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "clipboard-00",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "clipboard",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.332053,
+      "text": "Pega esto en el bloc de notas",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "clipboard-01",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "clipboard",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.329557,
+      "text": "copia texto de Notepad al portapapeles",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": true,
+      "case_id": "clipboard-02",
+      "compatibility": {
+        "clipboard.copy": true
+      },
+      "error": "",
+      "expected_family": "clipboard",
+      "operations": [
+        "clipboard.copy"
+      ],
+      "outcome": "right_family",
+      "predicted_family": "clipboard",
+      "raw_outcome": "right_family",
+      "seconds": 0.320719,
+      "text": "copiame este texto al portapapeles que lo necesito pegar",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "clipboard-03",
+      "compatibility": {
+        "clipboard.copy": false
+      },
+      "error": "",
+      "expected_family": "clipboard",
+      "operations": [
+        "clipboard.copy"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "clipboard",
+      "raw_outcome": "right_family",
+      "seconds": 0.39877,
+      "text": "copy my email address to the clipboard so I can paste it",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "clipboard-04",
+      "compatibility": {
+        "filesystem.sandbox.append.named": false
+      },
+      "error": "",
+      "expected_family": "clipboard",
+      "operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.321708,
+      "text": "pega texto en un archivo nuevo de Notepad",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "clipboard-05",
+      "compatibility": {
+        "clipboard.read.text": false
+      },
+      "error": "",
+      "expected_family": "clipboard",
+      "operations": [
+        "clipboard.read.text"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "clipboard",
+      "raw_outcome": "right_family",
+      "seconds": 0.446506,
+      "text": "que hay en el portapapeles",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-00",
+      "compatibility": {
+        "filesystem.folder.open": false
+      },
+      "error": "",
+      "expected_family": "filesystem",
+      "operations": [
+        "filesystem.folder.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "right_family",
+      "seconds": 0.457112,
+      "text": "Abre el archivo hola.txt del escritorio",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-01",
+      "compatibility": {
+        "filesystem.file.open.latest": false
+      },
+      "error": "",
+      "expected_family": "filesystem",
+      "operations": [
+        "filesystem.file.open.latest"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "right_family",
+      "seconds": 0.335489,
+      "text": "Abre el archivo más reciente de Descargas",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-02",
+      "compatibility": {
+        "filesystem.file.open.latest": false
+      },
+      "error": "",
+      "expected_family": "filesystem",
+      "operations": [
+        "filesystem.file.open.latest"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "right_family",
+      "seconds": 0.360135,
+      "text": "Abre el último archivo que descargué",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-03",
+      "compatibility": {
+        "filesystem.path.ensure.absent": false
+      },
+      "error": "",
+      "expected_family": "filesystem",
+      "operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "right_family",
+      "seconds": 0.342254,
+      "text": "Borra la carpeta CarterTest del escritorio",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-04",
+      "compatibility": {
+        "filesystem.sandbox.append.named": false
+      },
+      "error": "",
+      "expected_family": "filesystem",
+      "operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "right_family",
+      "seconds": 0.378732,
+      "text": "Crea un archivo de texto en el escritorio que diga prueba Carter",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-05",
+      "compatibility": {
+        "filesystem.create.directory": false
+      },
+      "error": "",
+      "expected_family": "filesystem",
+      "operations": [
+        "filesystem.create.directory"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "right_family",
+      "seconds": 0.374511,
+      "text": "Crea una carpeta en el escritorio llamada CarterTest",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "game-00",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "game",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.40719,
+      "text": "Abre Big Picture",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "game-01",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "game",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.321641,
+      "text": "Abre Counter Strike",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "game-02",
+      "compatibility": {
+        "game.launch": false
+      },
+      "error": "",
+      "expected_family": "game",
+      "operations": [
+        "game.launch"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "game",
+      "raw_outcome": "right_family",
+      "seconds": 0.43326,
+      "text": "Abre Portal desde Steam",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "game-03",
+      "compatibility": {
+        "app.open": false
+      },
+      "error": "",
+      "expected_family": "game",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "app",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.40137,
+      "text": "Abre a Loja do Steam",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "game-04",
+      "compatibility": {
+        "game.launch": false
+      },
+      "error": "",
+      "expected_family": "game",
+      "operations": [
+        "game.launch"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "game",
+      "raw_outcome": "right_family",
+      "seconds": 0.429057,
+      "text": "Abre capturas de Steam",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "game-05",
+      "compatibility": {
+        "game.catalog.list": false
+      },
+      "error": "",
+      "expected_family": "game",
+      "operations": [
+        "game.catalog.list"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "game",
+      "raw_outcome": "right_family",
+      "seconds": 0.315395,
+      "text": "Abre mi biblioteca de Steam",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-00",
+      "compatibility": {
+        "media.status": false
+      },
+      "error": "",
+      "expected_family": "media",
+      "operations": [
+        "media.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_outcome": "right_family",
+      "seconds": 0.419448,
+      "text": "Active la fenêtre de Spotify",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-01",
+      "compatibility": {
+        "media.status": false
+      },
+      "error": "",
+      "expected_family": "media",
+      "operations": [
+        "media.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_outcome": "right_family",
+      "seconds": 0.378828,
+      "text": "Affiche la fenêtre de Spotify par-dessus les autres",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-02",
+      "compatibility": {
+        "media.status": false
+      },
+      "error": "",
+      "expected_family": "media",
+      "operations": [
+        "media.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_outcome": "right_family",
+      "seconds": 0.437345,
+      "text": "Ahora estoy poniendo musica en  mi pc, lo quieres probar?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-03",
+      "compatibility": {
+        "media.status": false
+      },
+      "error": "",
+      "expected_family": "media",
+      "operations": [
+        "media.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_outcome": "right_family",
+      "seconds": 0.36632,
+      "text": "Apri Spotify e fai partire la musica",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-04",
+      "compatibility": {
+        "media.play.query": false
+      },
+      "error": "",
+      "expected_family": "media",
+      "operations": [
+        "media.play.query"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_outcome": "right_family",
+      "seconds": 0.331913,
+      "text": "Baxy, pon música”.",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-05",
+      "compatibility": {
+        "media.status": false
+      },
+      "error": "",
+      "expected_family": "media",
+      "operations": [
+        "media.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_outcome": "right_family",
+      "seconds": 0.389527,
+      "text": "Can you play tic tac toe with me?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "message-00",
+      "compatibility": {
+        "message.recipient.resolve": false,
+        "message.send": false
+      },
+      "error": "",
+      "expected_family": "message",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_outcome": "right_family",
+      "seconds": 0.611677,
+      "text": "Dile a amor en WhatsApp que la amo mucho.",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "message-01",
+      "compatibility": {
+        "message.recipient.resolve": false,
+        "message.send": false
+      },
+      "error": "",
+      "expected_family": "message",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_outcome": "right_family",
+      "seconds": 0.623052,
+      "text": "Dile a amor en wsp que la amo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "message-02",
+      "compatibility": {
+        "message.recipient.resolve": false,
+        "message.send": false
+      },
+      "error": "",
+      "expected_family": "message",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_outcome": "right_family",
+      "seconds": 0.594104,
+      "text": "Dile a amor que la amo demasiado en wsp",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "message-03",
+      "compatibility": {
+        "message.recipient.resolve": false,
+        "message.send": true
+      },
+      "error": "",
+      "expected_family": "message",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_outcome": "right_family",
+      "seconds": 0.569259,
+      "text": "Dile a amor que la amo en wsp",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "message-04",
+      "compatibility": {
+        "message.recipient.resolve": false,
+        "message.send": false
+      },
+      "error": "",
+      "expected_family": "message",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_outcome": "right_family",
+      "seconds": 0.651411,
+      "text": "Dile a amor que la amo muchisimo en wsp",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "message-05",
+      "compatibility": {
+        "message.recipient.resolve": false,
+        "message.send": false
+      },
+      "error": "",
+      "expected_family": "message",
+      "operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "message",
+      "raw_outcome": "right_family",
+      "seconds": 0.728437,
+      "text": "Dile a enmanuel que es una increible persona en wsp",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "note-00",
+      "compatibility": {
+        "note.create": false
+      },
+      "error": "",
+      "expected_family": "note",
+      "operations": [
+        "note.create"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "note",
+      "raw_outcome": "right_family",
+      "seconds": 0.395361,
+      "text": "anota que tengo que comprar pan",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "note-01",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "note",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "no_operation",
+      "seconds": 1.1e-05,
+      "text": "anota que tengo que llamar al medico manana",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "note-02",
+      "compatibility": {
+        "note.list": false
+      },
+      "error": "",
+      "expected_family": "note",
+      "operations": [
+        "note.list"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "note",
+      "raw_outcome": "right_family",
+      "seconds": 0.40951,
+      "text": "apri il blocco note e scrivi la lista della spesa",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "note-03",
+      "compatibility": {
+        "note.list": false
+      },
+      "error": "",
+      "expected_family": "note",
+      "operations": [
+        "note.list"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "note",
+      "raw_outcome": "right_family",
+      "seconds": 0.371831,
+      "text": "apri il blocco note, scrivi la lista e salvala",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "note-04",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "note",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "game",
+      "raw_outcome": "no_operation",
+      "seconds": 1.3e-05,
+      "text": "apri la finestra Salva con nome nel Blocco note",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "note-05",
+      "compatibility": {
+        "filesystem.sandbox.append.named": false
+      },
+      "error": "",
+      "expected_family": "note",
+      "operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.366323,
+      "text": "convierte nota.txt a mayúsculas en un archivo nuevo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-00",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "error": "",
+      "expected_family": "notification",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_outcome": "right_family",
+      "seconds": 0.402886,
+      "text": "Pone una alarma para las 7 de la maniana",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-01",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "error": "",
+      "expected_family": "notification",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_outcome": "right_family",
+      "seconds": 0.349954,
+      "text": "alarma para mañana 8am",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-02",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "error": "",
+      "expected_family": "notification",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_outcome": "right_family",
+      "seconds": 0.323611,
+      "text": "arranca un temporizador de 10 minutos",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-03",
+      "compatibility": {
+        "notification.cancel.latest": false
+      },
+      "error": "",
+      "expected_family": "notification",
+      "operations": [
+        "notification.cancel.latest"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_outcome": "right_family",
+      "seconds": 0.309363,
+      "text": "cancelá la alarma",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-04",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "error": "",
+      "expected_family": "notification",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_outcome": "right_family",
+      "seconds": 0.152994,
+      "text": "pone un timer de 5 minutos",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-05",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "error": "",
+      "expected_family": "notification",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "notification",
+      "raw_outcome": "right_family",
+      "seconds": 0.270962,
+      "text": "ponme un temporizador de diez minutos",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "ocr-00",
+      "compatibility": {
+        "task.search": false
+      },
+      "error": "",
+      "expected_family": "ocr",
+      "operations": [
+        "task.search"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.332742,
+      "text": "OCR limitado, mejor para detection",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "office-00",
+      "compatibility": {
+        "office.document.create": false
+      },
+      "error": "",
+      "expected_family": "office",
+      "operations": [
+        "office.document.create"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_outcome": "right_family",
+      "seconds": 0.326435,
+      "text": "Can you make me a PowerPoint?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "office-01",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "office",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_outcome": "no_operation",
+      "seconds": 7e-06,
+      "text": "Cierre de Word podía perder trabajo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "office-02",
+      "compatibility": {
+        "office.document.create": false,
+        "office.document.read": false
+      },
+      "error": "",
+      "expected_family": "office",
+      "operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_outcome": "right_family",
+      "seconds": 0.666583,
+      "text": "Donde dejaste el Powerpoint? Que me hiciste",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "office-03",
+      "compatibility": {
+        "office.document.read": false
+      },
+      "error": "",
+      "expected_family": "office",
+      "operations": [
+        "office.document.read"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_outcome": "right_family",
+      "seconds": 0.439648,
+      "text": "Fecha tudo que tá aberto do Word",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "office-04",
+      "compatibility": {
+        "office.document.create": false
+      },
+      "error": "",
+      "expected_family": "office",
+      "operations": [
+        "office.document.create"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_outcome": "right_family",
+      "seconds": 0.386526,
+      "text": "Haz un powerpoint hablando de amor de 6 diapositivas",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "office-05",
+      "compatibility": {
+        "office.document.create": false
+      },
+      "error": "",
+      "expected_family": "office",
+      "operations": [
+        "office.document.create"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "office",
+      "raw_outcome": "right_family",
+      "seconds": 0.361433,
+      "text": "Hazme un PowerPoint de siete diapositivas que hable de los dinosaurios",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "peripheral-00",
+      "compatibility": {
+        "audio.microphone.mute": false
+      },
+      "error": "",
+      "expected_family": "peripheral",
+      "operations": [
+        "audio.microphone.mute"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.33548,
+      "text": "anotá que terminé de configurar el micrófono",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "peripheral-01",
+      "compatibility": {
+        "audio.microphone.mute": false
+      },
+      "error": "",
+      "expected_family": "peripheral",
+      "operations": [
+        "audio.microphone.mute"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.338408,
+      "text": "cambia el microfono por defecto",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "peripheral-02",
+      "compatibility": {
+        "audio.microphone.mute": false
+      },
+      "error": "",
+      "expected_family": "peripheral",
+      "operations": [
+        "audio.microphone.mute"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "audio",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.465858,
+      "text": "mutea el micrófono en discord",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "peripheral-03",
+      "compatibility": {
+        "system.settings.set": false
+      },
+      "error": "",
+      "expected_family": "peripheral",
+      "operations": [
+        "system.settings.set"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.408872,
+      "text": "set the HP LaserJet as my default printer",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": true,
+      "case_id": "peripheral-04",
+      "compatibility": {
+        "audio.microphone.mute": true
+      },
+      "error": "",
+      "expected_family": "peripheral",
+      "operations": [
+        "audio.microphone.mute"
+      ],
+      "outcome": "wrong_family",
+      "predicted_family": "audio",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.341603,
+      "text": "silenciame el micrófono",
+      "wrong_raw_proposal_accepted": true
+    },
+    {
+      "accepted": false,
+      "case_id": "reminder-00",
+      "compatibility": {
+        "system.status": false
+      },
+      "error": "",
+      "expected_family": "reminder",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.324483,
+      "text": "avisame en 20 minutos que saque la comida",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "reminder-01",
+      "compatibility": {
+        "system.power": false
+      },
+      "error": "",
+      "expected_family": "reminder",
+      "operations": [
+        "system.power"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.326748,
+      "text": "avisame en una hora que salgo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": true,
+      "case_id": "reminder-02",
+      "compatibility": {
+        "reminder.create": true
+      },
+      "error": "",
+      "expected_family": "reminder",
+      "operations": [
+        "reminder.create"
+      ],
+      "outcome": "right_family",
+      "predicted_family": "reminder",
+      "raw_outcome": "right_family",
+      "seconds": 0.375064,
+      "text": "ponme un recordatorio en 2 minutos para tomar agua",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": true,
+      "case_id": "reminder-03",
+      "compatibility": {
+        "reminder.create": true
+      },
+      "error": "",
+      "expected_family": "reminder",
+      "operations": [
+        "reminder.create"
+      ],
+      "outcome": "right_family",
+      "predicted_family": "reminder",
+      "raw_outcome": "right_family",
+      "seconds": 0.368332,
+      "text": "ponme un recordatorio para las 3 de la tarde",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": true,
+      "case_id": "reminder-04",
+      "compatibility": {
+        "reminder.create": true
+      },
+      "error": "",
+      "expected_family": "reminder",
+      "operations": [
+        "reminder.create"
+      ],
+      "outcome": "right_family",
+      "predicted_family": "reminder",
+      "raw_outcome": "right_family",
+      "seconds": 0.382771,
+      "text": "ponme un recordatorio para llamar al dentista",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "reminder-05",
+      "compatibility": {
+        "system.status": false
+      },
+      "error": "",
+      "expected_family": "reminder",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.435618,
+      "text": "recordatorio de tomar agua en 1 hora",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "routine-00",
+      "compatibility": {
+        "task.complete": false
+      },
+      "error": "",
+      "expected_family": "routine",
+      "operations": [
+        "task.complete"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.36168,
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "routine-01",
+      "compatibility": {
+        "routine.phrase.create": false
+      },
+      "error": "",
+      "expected_family": "routine",
+      "operations": [
+        "routine.phrase.create"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "routine",
+      "raw_outcome": "right_family",
+      "seconds": 0.395349,
+      "text": "crea una rutina que cada manana me de la hora",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "routine-02",
+      "compatibility": {
+        "task.create": false
+      },
+      "error": "",
+      "expected_family": "routine",
+      "operations": [
+        "task.create"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.280388,
+      "text": "creá el hábito de leer y registrá que lo hice hoy",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "routine-03",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "routine",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "media",
+      "raw_outcome": "no_operation",
+      "seconds": 6e-06,
+      "text": "cria o hábito de ler e regista que já o fiz hoje",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-00",
+      "compatibility": {
+        "streaming.navigate": false
+      },
+      "error": "",
+      "expected_family": "streaming",
+      "operations": [
+        "streaming.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "streaming",
+      "raw_outcome": "right_family",
+      "seconds": 0.377605,
+      "text": "Abri YouTube en el navegador",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-01",
+      "compatibility": {
+        "streaming.navigate": false
+      },
+      "error": "",
+      "expected_family": "streaming",
+      "operations": [
+        "streaming.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "streaming",
+      "raw_outcome": "right_family",
+      "seconds": 0.362819,
+      "text": "Acabas de reanudar el video youtube , pero yo queria de opera gx",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-02",
+      "compatibility": {
+        "streaming.navigate": false
+      },
+      "error": "",
+      "expected_family": "streaming",
+      "operations": [
+        "streaming.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "streaming",
+      "raw_outcome": "right_family",
+      "seconds": 0.483756,
+      "text": "Antes de seguir quiero ver como pones una serie en disney y en netflix",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-03",
+      "compatibility": {
+        "streaming.navigate": false
+      },
+      "error": "",
+      "expected_family": "streaming",
+      "operations": [
+        "streaming.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "streaming",
+      "raw_outcome": "right_family",
+      "seconds": 0.357323,
+      "text": "Donde puedo ver la pelicula de superman que salio el ano pasado??",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-04",
+      "compatibility": {
+        "streaming.navigate": false
+      },
+      "error": "",
+      "expected_family": "streaming",
+      "operations": [
+        "streaming.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "streaming",
+      "raw_outcome": "right_family",
+      "seconds": 0.337118,
+      "text": "Elige el primer resultado de YouTube",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-05",
+      "compatibility": {
+        "streaming.navigate": false
+      },
+      "error": "",
+      "expected_family": "streaming",
+      "operations": [
+        "streaming.navigate"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "streaming",
+      "raw_outcome": "right_family",
+      "seconds": 0.409669,
+      "text": "Hablame de emilia perez la pelicula es buena?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-00",
+      "compatibility": {
+        "system.status": false
+      },
+      "error": "",
+      "expected_family": "system",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "right_family",
+      "seconds": 0.419935,
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-01",
+      "compatibility": {
+        "system.status": false
+      },
+      "error": "",
+      "expected_family": "system",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "right_family",
+      "seconds": 0.416177,
+      "text": "1. No ya usamos mucha ram para baxy\n2. si intentalo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-02",
+      "compatibility": {
+        "system.status": false
+      },
+      "error": "",
+      "expected_family": "system",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "right_family",
+      "seconds": 0.3893,
+      "text": "En latencia quien gana}? en consumo de recursos quien? ram?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-03",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "system",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "no_operation",
+      "seconds": 7e-06,
+      "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-04",
+      "compatibility": {
+        "system.status": false
+      },
+      "error": "",
+      "expected_family": "system",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "right_family",
+      "seconds": 0.432204,
+      "text": "Hay algo mas que use gpu??",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-05",
+      "compatibility": {
+        "system.status": false
+      },
+      "error": "",
+      "expected_family": "system",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "system",
+      "raw_outcome": "right_family",
+      "seconds": 0.357902,
+      "text": "Listoo la gpu dejo de usarseee",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "task-00",
+      "compatibility": {
+        "task.complete": false
+      },
+      "error": "",
+      "expected_family": "task",
+      "operations": [
+        "task.complete"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "right_family",
+      "seconds": 0.446141,
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede.",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "task-01",
+      "compatibility": {
+        "task.complete": false
+      },
+      "error": "",
+      "expected_family": "task",
+      "operations": [
+        "task.complete"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "right_family",
+      "seconds": 0.4783,
+      "text": "And which of those would you personally use for the required task?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "task-02",
+      "compatibility": {
+        "task.list": false
+      },
+      "error": "",
+      "expected_family": "task",
+      "operations": [
+        "task.list"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "right_family",
+      "seconds": 0.458152,
+      "text": "Bien hay una nueva sesion, verifica todo , lo que salio mal y bien",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "task-03",
+      "compatibility": {
+        "task.list": false
+      },
+      "error": "",
+      "expected_family": "task",
+      "operations": [
+        "task.list"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "right_family",
+      "seconds": 0.418324,
+      "text": "Cuanto tiempo hasta que tengas todo listo? , como ha ido el progreso?",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "task-04",
+      "compatibility": {
+        "task.complete": false
+      },
+      "error": "",
+      "expected_family": "task",
+      "operations": [
+        "task.complete"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "right_family",
+      "seconds": 0.43991,
+      "text": "Deja todo lo que suma activado",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "task-05",
+      "compatibility": {
+        "task.create": false
+      },
+      "error": "",
+      "expected_family": "task",
+      "operations": [
+        "task.create"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "task",
+      "raw_outcome": "right_family",
+      "seconds": 0.329731,
+      "text": "Empieza de cero esta tarea",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-00",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "error": "",
+      "expected_family": "vision",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "right_family",
+      "seconds": 0.326607,
+      "text": "Abre configuración de pantalla",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-01",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "error": "",
+      "expected_family": "vision",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "right_family",
+      "seconds": 0.338181,
+      "text": "Activa cámara y mira qué hay",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-02",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "error": "",
+      "expected_family": "vision",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "right_family",
+      "seconds": 0.324803,
+      "text": "Escribe Batman en la búsqueda que ves",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-03",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "error": "",
+      "expected_family": "vision",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "right_family",
+      "seconds": 0.326086,
+      "text": "Graba la pantalla",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-04",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "error": "",
+      "expected_family": "vision",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "right_family",
+      "seconds": 0.333465,
+      "text": "Lee el mensaje de error de la pantalla",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-05",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "error": "",
+      "expected_family": "vision",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "vision",
+      "raw_outcome": "right_family",
+      "seconds": 0.326164,
+      "text": "Lee lo que hay en pantalla",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "web-00",
+      "compatibility": {
+        "web.search": false
+      },
+      "error": "",
+      "expected_family": "web",
+      "operations": [
+        "web.search"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "web",
+      "raw_outcome": "right_family",
+      "seconds": 0.328814,
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "web-01",
+      "compatibility": {
+        "web.search": false
+      },
+      "error": "",
+      "expected_family": "web",
+      "operations": [
+        "web.search"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "web",
+      "raw_outcome": "right_family",
+      "seconds": 0.368492,
+      "text": "Abre Wikipedia y busca Alan Turing",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "web-02",
+      "compatibility": {
+        "web.search": false
+      },
+      "error": "",
+      "expected_family": "web",
+      "operations": [
+        "web.search"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "web",
+      "raw_outcome": "right_family",
+      "seconds": 0.363105,
+      "text": "Abre opera gx y busca flash",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "web-03",
+      "compatibility": {
+        "filesystem.search": false
+      },
+      "error": "",
+      "expected_family": "web",
+      "operations": [
+        "filesystem.search"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.444612,
+      "text": "Busca archivos que contengan la palabra “Batman",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "web-04",
+      "compatibility": {
+        "game.install.named": false
+      },
+      "error": "",
+      "expected_family": "web",
+      "operations": [
+        "game.install.named"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "game",
+      "raw_outcome": "wrong_family",
+      "seconds": 0.335331,
+      "text": "Busca el App ID de Doom Eternal en Steam usando la API publica",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "web-05",
+      "compatibility": {
+        "web.search": false
+      },
+      "error": "",
+      "expected_family": "web",
+      "operations": [
+        "web.search"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "web",
+      "raw_outcome": "right_family",
+      "seconds": 0.34763,
+      "text": "Busca el botón Guardar y presiónalo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-00",
+      "compatibility": {
+        "wifi.connect": false
+      },
+      "error": "",
+      "expected_family": "wifi",
+      "operations": [
+        "wifi.connect"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "wifi",
+      "raw_outcome": "right_family",
+      "seconds": 0.320584,
+      "text": "Conecta no Wi-Fi de novo",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-01",
+      "compatibility": {
+        "wifi.ensure.connected": false
+      },
+      "error": "",
+      "expected_family": "wifi",
+      "operations": [
+        "wifi.ensure.connected"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "wifi",
+      "raw_outcome": "right_family",
+      "seconds": 0.400752,
+      "text": "a qué wifi estoy conectado",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-02",
+      "compatibility": {
+        "wifi.disconnect": false
+      },
+      "error": "",
+      "expected_family": "wifi",
+      "operations": [
+        "wifi.disconnect"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "wifi",
+      "raw_outcome": "right_family",
+      "seconds": 0.300355,
+      "text": "apagá el wifi",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-03",
+      "compatibility": {
+        "wifi.connect": false,
+        "wifi.disconnect": false,
+        "wifi.profile.list": false
+      },
+      "error": "",
+      "expected_family": "wifi",
+      "operations": [
+        "wifi.disconnect",
+        "wifi.profile.list",
+        "wifi.connect"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "wifi",
+      "raw_outcome": "right_family",
+      "seconds": 0.973785,
+      "text": "cambia el wifi a EV 2",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-04",
+      "compatibility": {
+        "wifi.connect": false
+      },
+      "error": "",
+      "expected_family": "wifi",
+      "operations": [
+        "wifi.connect"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "wifi",
+      "raw_outcome": "right_family",
+      "seconds": 0.328117,
+      "text": "conecta el wifi, abre el correo y leeme el ultimo mensaje",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-05",
+      "compatibility": {
+        "wifi.connect": false
+      },
+      "error": "",
+      "expected_family": "wifi",
+      "operations": [
+        "wifi.connect"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "wifi",
+      "raw_outcome": "right_family",
+      "seconds": 0.323114,
+      "text": "conectame a la red wifi de la familia",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "window-00",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "window",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "window",
+      "raw_outcome": "no_operation",
+      "seconds": 5e-06,
+      "text": "Abre una ventana incógnito",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "window-01",
+      "compatibility": {
+        "window.minimize": false
+      },
+      "error": "",
+      "expected_family": "window",
+      "operations": [
+        "window.minimize"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "window",
+      "raw_outcome": "right_family",
+      "seconds": 0.327591,
+      "text": "Cerra la ventana activa",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "window-02",
+      "compatibility": {
+        "window.minimize": false
+      },
+      "error": "",
+      "expected_family": "window",
+      "operations": [
+        "window.minimize"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "window",
+      "raw_outcome": "right_family",
+      "seconds": 0.325152,
+      "text": "Minimiza tudo e mostra a área de trabalho",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "window-03",
+      "compatibility": {
+        "window.resolve": false
+      },
+      "error": "",
+      "expected_family": "window",
+      "operations": [
+        "window.resolve"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "window",
+      "raw_outcome": "right_family",
+      "seconds": 0.375024,
+      "text": "abre la ventana",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "window-04",
+      "compatibility": {},
+      "error": "",
+      "expected_family": "window",
+      "operations": [],
+      "outcome": "no_operation",
+      "predicted_family": "filesystem",
+      "raw_outcome": "no_operation",
+      "seconds": 6e-06,
+      "text": "arrastra este archivo a esa ventana",
+      "wrong_raw_proposal_accepted": false
+    },
+    {
+      "accepted": false,
+      "case_id": "window-05",
+      "compatibility": {
+        "window.move": false
+      },
+      "error": "",
+      "expected_family": "window",
+      "operations": [
+        "window.move"
+      ],
+      "outcome": "no_operation",
+      "predicted_family": "window",
+      "raw_outcome": "right_family",
+      "seconds": 0.361466,
+      "text": "arrastra una ventana liviana a la derecha",
+      "wrong_raw_proposal_accepted": false
+    }
+  ],
+  "runtime_manifest_changed": false,
+  "schema": "baxy.leaf-compatibility-consensus.v1",
+  "seconds_p50": 0.3609,
+  "seconds_p95": 0.6117,
+  "source": "D:\\BAXY\\source\\artifacts\\fixes\\native_predicted_family_qwen3_20260801.json",
+  "wrong_raw_proposals_accepted": 1
+}

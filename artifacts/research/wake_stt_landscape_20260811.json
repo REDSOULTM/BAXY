@@ -1,0 +1,60 @@
+{
+  "schema": "baxy.voice-technology-landscape.v1",
+  "researched_at_utc": "2026-08-11T11:41:25.4890135+00:00",
+  "scope": "Primary-source refresh for local Windows wake-word and multilingual STT alternatives after the MVP was sealed",
+  "constraints": [
+    "local and offline",
+    "Windows x64",
+    "Spanish, English and spanglish",
+    "always-on CPU wake path",
+    "STT final authority on CPU",
+    "no adoption without a frozen-tree physical ABBA comparison"
+  ],
+  "findings": [
+    {
+      "technology": "NVIDIA Parakeet TDT 0.6B v3",
+      "source": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+      "primary_source_claim": "Official multilingual release supports 25 European languages including Spanish and English, greedy transducer decoding and CC BY 4.0 use.",
+      "baxy_decision": "retain_as_mvp_final_stt_authority",
+      "reason": "It is already measured on this machine and remains the official Parakeet option that covers both required languages."
+    },
+    {
+      "technology": "NVIDIA Parakeet Unified EN 0.6B",
+      "source": "https://huggingface.co/nvidia/parakeet-unified-en-0.6b",
+      "primary_source_claim": "Official 2026 unified offline/streaming model supports latency down to 160 ms, but is English-only.",
+      "baxy_decision": "reject_as_product_replacement",
+      "reason": "Lower streaming latency cannot trade away Spanish or spanglish coverage."
+    },
+    {
+      "technology": "openWakeWord 0.6.0",
+      "source": "https://github.com/dscripka/openWakeWord",
+      "release_source": "https://github.com/dscripka/openWakeWord/releases",
+      "primary_source_claim": "The latest published release remains 0.6.0 and the project documents that its pretrained models are currently English-only.",
+      "baxy_decision": "reject_as_literal_drop_in_replacement",
+      "reason": "A generic WakeWord package does not supply a Spanish/English BAXY detector, and its stated operating targets are weaker than BAXY's physical zero-false-positive receipt."
+    },
+    {
+      "technology": "sherpa-onnx 1.13.2 open-vocabulary KWS",
+      "source": "https://github.com/k2-fsa/sherpa-onnx/releases",
+      "documentation": "https://k2-fsa.github.io/sherpa/onnx/kws/index.html",
+      "primary_source_claim": "The maintained local runtime exposes streaming keyword spotting, per-keyword boost/threshold controls, Windows builds and a C API; current official KWS models cover English or Chinese-English, not Spanish.",
+      "baxy_decision": "retain_as_post_v17_candidate_only",
+      "reason": "The architecture is operationally relevant, but language coverage and physical false-alarm behavior must be measured before any promotion."
+    },
+    {
+      "technology": "Massive Open-Vocabulary Keyword Spotting",
+      "source": "https://arxiv.org/abs/2606.11279",
+      "code": "https://github.com/Priberam/Enhance-CB-Whisper",
+      "primary_source_claim": "The 2026 method compresses open-vocabulary acoustic features for very large contextual glossaries without fine-tuning the ASR model.",
+      "baxy_decision": "research_reference_not_wake_replacement",
+      "reason": "Its published task is entity/glossary retrieval inside ASR, not an always-on room wake detector with a zero-false-activation contract."
+    }
+  ],
+  "result": {
+    "mvp_assets_changed": false,
+    "models_downloaded": 0,
+    "training_started": false,
+    "thresholds_changed": false,
+    "next_authorized_measurement": "Open the already-preregistered physical wake v17 once; only if it fails, benchmark a distinct sherpa-onnx open-vocabulary branch under a new frozen ABBA program."
+  }
+}

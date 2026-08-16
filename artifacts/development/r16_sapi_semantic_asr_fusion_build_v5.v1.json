@@ -1,0 +1,1767 @@
+{
+  "schema": "baxy.r16-sapi-semantic-asr-fusion-build-development.v5",
+  "measuredAtUtc": "2026-08-08T02:07:32.606471+00:00",
+  "scope": "opened_r16_pause_safe_dual_redecode_authenticated_catalog_asr_fusion_build",
+  "sources": {
+    "parakeetCorpusSha256": "fd6b121fdad379a82de9175c75d84f0d0b1fcd8ccf200b126c31601b6b23b327",
+    "whisperCorpusSha256": "426681fd087d2558e7d44adb0e05a2843f0768289137962167b577ce940bf066",
+    "authenticatedCatalog": {
+      "coreSha256": "e591b5e74d72d763da2b82103b4ec4692dc3369192526632bd6d87369fc8ee80",
+      "operationCatalogSha256": "67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41",
+      "applicationCatalogSha256": "90c45a8d27f5de3a09484f3340f499839f961a428ab881c679b062bc1e93004b",
+      "gameCatalogSha256": "83f675c556d682cdbf21352c6826ad26f6c6f0e095227ee6ac2127e89dde469a",
+      "operations": 169,
+      "applications": 293,
+      "games": 16
+    }
+  },
+  "rows": 337,
+  "selectionCounts": [
+    {
+      "source": "fusion",
+      "reason": "clause_union",
+      "cases": 1
+    },
+    {
+      "source": "parakeet",
+      "reason": "compound_coverage",
+      "cases": 1
+    },
+    {
+      "source": "parakeet",
+      "reason": "parakeet_clarification",
+      "cases": 1
+    },
+    {
+      "source": "parakeet",
+      "reason": "parakeet_complete_effect",
+      "cases": 3
+    },
+    {
+      "source": "whisper",
+      "reason": "clarification_consensus",
+      "cases": 7
+    },
+    {
+      "source": "whisper",
+      "reason": "conversation_safety",
+      "cases": 23
+    },
+    {
+      "source": "whisper",
+      "reason": "effect_consensus",
+      "cases": 202
+    },
+    {
+      "source": "whisper",
+      "reason": "quality_default",
+      "cases": 36
+    },
+    {
+      "source": "whisper",
+      "reason": "whisper_clarification",
+      "cases": 2
+    },
+    {
+      "source": "whisper",
+      "reason": "whisper_complete_effect",
+      "cases": 61
+    }
+  ],
+  "decisions": [
+    {
+      "caseId": "r16-app-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-app-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-app-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-app-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-app-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-app-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-audio-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-audio-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-audio-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-audio-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-audio-05-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-audio-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-backup-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-backup-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-backup-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-backup-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-backup-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-backup-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-bluetooth-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-bluetooth-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-bluetooth-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-bluetooth-04-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-bluetooth-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-bluetooth-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-browser-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-browser-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-browser-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-browser-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-browser-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-browser-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-calendar-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-calendar-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-calendar-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-capture-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-capture-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-capture-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-capture-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-capture-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-capture-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-clipboard-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-clipboard-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-clipboard-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-clipboard-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-clipboard-05-plain",
+      "source": "parakeet",
+      "reason": "compound_coverage"
+    },
+    {
+      "caseId": "r16-clipboard-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-email-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-email-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-email-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-email-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-email-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-email-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-filesystem-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-filesystem-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-filesystem-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-filesystem-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-filesystem-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-filesystem-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-game-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-game-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-game-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-game-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-game-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-game-06-plain",
+      "source": "parakeet",
+      "reason": "parakeet_complete_effect"
+    },
+    {
+      "caseId": "r16-input-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-input-02-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-input-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-input-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-input-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-input-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-media-01-plain",
+      "source": "parakeet",
+      "reason": "parakeet_complete_effect"
+    },
+    {
+      "caseId": "r16-media-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-media-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-media-05-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-media-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-message-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-message-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-message-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-message-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-message-05-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-message-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-network-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-network-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-network-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-network-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-network-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-network-06-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-note-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-note-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-note-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-note-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-note-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-note-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-notification-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-notification-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-notification-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-notification-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-notification-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-notification-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-ocr-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-ocr-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-ocr-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-ocr-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-ocr-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-ocr-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-office-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-office-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-office-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-office-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-office-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-office-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-package-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-package-02-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-package-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-package-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-package-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-package-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-peripheral-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-peripheral-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-peripheral-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-peripheral-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-peripheral-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-peripheral-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-reminder-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-reminder-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-reminder-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-reminder-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-reminder-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-reminder-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-routine-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-routine-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-routine-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-routine-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-routine-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-routine-06-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-streaming-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-streaming-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-streaming-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-streaming-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-streaming-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-streaming-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-system-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-system-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-system-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-system-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-system-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-system-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-task-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-task-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-task-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-task-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-task-05-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-task-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-vision-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-vision-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-vision-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-web-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-web-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-web-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-web-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-web-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-web-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-wifi-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-wifi-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-wifi-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-wifi-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-wifi-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-wifi-06-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-window-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-window-02-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-window-03-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-window-04-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-window-05-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-window-06-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-message-clarify-01-plain",
+      "source": "whisper",
+      "reason": "whisper_clarification"
+    },
+    {
+      "caseId": "r16-message-clarify-02-plain",
+      "source": "whisper",
+      "reason": "clarification_consensus"
+    },
+    {
+      "caseId": "r16-message-clarify-03-plain",
+      "source": "whisper",
+      "reason": "clarification_consensus"
+    },
+    {
+      "caseId": "r16-message-clarify-04-plain",
+      "source": "whisper",
+      "reason": "clarification_consensus"
+    },
+    {
+      "caseId": "r16-message-clarify-05-plain",
+      "source": "whisper",
+      "reason": "clarification_consensus"
+    },
+    {
+      "caseId": "r16-message-clarify-06-plain",
+      "source": "whisper",
+      "reason": "clarification_consensus"
+    },
+    {
+      "caseId": "r16-message-clarify-07-plain",
+      "source": "whisper",
+      "reason": "clarification_consensus"
+    },
+    {
+      "caseId": "r16-message-clarify-08-plain",
+      "source": "whisper",
+      "reason": "clarification_consensus"
+    },
+    {
+      "caseId": "r16-message-clarify-09-plain",
+      "source": "whisper",
+      "reason": "whisper_clarification"
+    },
+    {
+      "caseId": "r16-message-clarify-10-plain",
+      "source": "parakeet",
+      "reason": "parakeet_clarification"
+    },
+    {
+      "caseId": "r16-composition-01-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-02-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-03-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-04-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-05-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-06-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-07-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-08-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-09-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-10-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-11-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-12-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-13-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-14-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-15-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-16-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-17-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-18-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-19-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-20-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-21-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-22-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-23-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-24-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-25-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-26-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-27-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-28-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-29-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-30-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-31-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-32-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-33-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-34-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-35-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-36-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-37-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-38-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-39-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-40-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-41-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-42-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-43-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-44-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-45-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-46-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-47-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-48-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-49-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-50-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-51-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-52-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-53-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-54-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-55-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-56-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-57-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-58-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-59-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-60-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-61-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-62-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-63-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-64-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-65-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-66-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-67-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-68-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-69-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-70-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-71-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-72-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-73-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-74-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-75-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-76-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-77-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-78-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-79-01-plain",
+      "source": "parakeet",
+      "reason": "parakeet_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-80-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-81-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-82-01-plain",
+      "source": "fusion",
+      "reason": "clause_union"
+    },
+    {
+      "caseId": "r16-composition-83-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-84-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-85-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-86-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-87-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-88-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-89-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-90-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-91-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-92-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-93-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-94-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-95-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-96-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-97-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-98-01-plain",
+      "source": "whisper",
+      "reason": "whisper_complete_effect"
+    },
+    {
+      "caseId": "r16-composition-99-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-composition-100-01-plain",
+      "source": "whisper",
+      "reason": "effect_consensus"
+    },
+    {
+      "caseId": "r16-out-of-scope-01-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-02-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-03-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-04-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-05-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-06-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-07-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-08-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-09-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-10-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-11-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-12-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-13-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-14-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-15-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-16-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-17-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-18-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-19-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-20-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-21-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-22-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-23-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-24-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-25-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-26-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-27-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-28-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-29-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-30-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-31-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-32-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-33-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-34-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-35-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-36-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-37-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-38-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-39-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-40-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-41-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-42-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-43-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-44-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-45-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-46-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-47-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-48-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-49-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-50-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-51-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-52-plain",
+      "source": "whisper",
+      "reason": "conversation_safety"
+    },
+    {
+      "caseId": "r16-out-of-scope-53-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    },
+    {
+      "caseId": "r16-out-of-scope-54-plain",
+      "source": "whisper",
+      "reason": "quality_default"
+    }
+  ],
+  "outputSha256": "203e0bec25816ac4cc49582e3307cc51c421d23f3dd98070dcdd610ea8f34d9e",
+  "usesExpectedLabelsForSelection": false,
+  "catalogSource": "live_core_hello",
+  "supersedes": {
+    "artifact": "r16_sapi_semantic_asr_fusion_build_v4.v1.json",
+    "reason": "v5_redecodes_both_asrs_and_requires_terminal_status_consensus"
+  },
+  "effectsExecuted": 0,
+  "developmentOnly": true
+}

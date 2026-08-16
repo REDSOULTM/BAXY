@@ -1,0 +1,34 @@
+{
+  "schema": "baxy.llama-kv-unified-verdict.v1",
+  "status": "rejected",
+  "measured_on": "2026-07-29",
+  "runtime": {
+    "llama_server_build": 9980,
+    "llama_server_commit": "8014d2cf97a2419ca00d9d902be73ee411d61630",
+    "maximum_active_posts": 3,
+    "context_per_slot": 4096
+  },
+  "baseline": "Separate KV buffers selected by explicit --parallel 3",
+  "candidate": "--kv-unified",
+  "evidence": {
+    "artifact": "llama_kv_unified_ab_20260729.json",
+    "arm_order": [
+      "separate",
+      "unified"
+    ],
+    "mode_contracts": true,
+    "decisions_exact": true,
+    "arguments_exact": true,
+    "languages_exact": true,
+    "free_form_replies_exact": false,
+    "baseline_p50_seconds": 5.594785950001096,
+    "candidate_p50_seconds": 7.663473549999253,
+    "p50_regression_seconds": 2.068687599998157,
+    "p50_regression_percent": 36.97527695403167,
+    "baseline_total_seconds": 31.127707100004045,
+    "candidate_total_seconds": 43.543309799999406,
+    "total_regression_seconds": 12.415602699995361,
+    "total_regression_percent": 39.88601749594896
+  },
+  "decision": "No production setting was changed. Unified KV materially worsened latency and changed two free-form replies, so an opposite-order replica could not satisfy the promotion rule."
+}

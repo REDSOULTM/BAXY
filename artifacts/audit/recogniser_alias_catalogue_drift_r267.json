@@ -1,0 +1,77 @@
+{
+  "schema": "baxy.recogniser-alias-catalogue-drift-r267.v1",
+  "authority": "read_only_current_catalogue_alias_contract_audit_not_recogniser_or_model_measurement",
+  "verdict": "passed_current_catalogue_binding_without_manual_word_grammar_expansion",
+  "catalogue_binding": {
+    "catalogue_operations": 174,
+    "catalogue_operation_names_sha256": "23784c0d5e223c368be9e7665067378ad369aa5e934d9c27de5bd5a8dac518ae",
+    "alias_rows": 157,
+    "alias_target_operations": 157,
+    "all_alias_operations_are_current": true,
+    "retired_alias_target_operations": []
+  },
+  "unaliased_current_operations": {
+    "total": 17,
+    "intentional_private_memory_operations": [
+      "memory.correct",
+      "memory.disable",
+      "memory.enable",
+      "memory.export",
+      "memory.forget",
+      "memory.list",
+      "memory.recall",
+      "memory.save",
+      "memory.sensitive.save",
+      "memory.session.clear",
+      "memory.status"
+    ],
+    "word_lifecycle_operations_without_aliases": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "manual_word_aliases_added": false,
+    "requires_published_human_word_com_lifecycle_source": true
+  },
+  "interpretation": {
+    "repaired": [
+      "removed retired notification.cancel.at alias",
+      "rebound alias metadata from the 169-operation snapshot to R219"
+    ],
+    "not_measured": [
+      "recogniser reach",
+      "retrieval",
+      "model decision",
+      "vetoes",
+      "visible text",
+      "latency",
+      "providers",
+      "external effects"
+    ],
+    "does_not_authorize": [
+      "manual Word grammar expansion",
+      "R264/R266 rerun or tuning",
+      "R228, CLINC test/OOS test, or V9 access",
+      "runtime promotion"
+    ]
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "program_sha256": "1ac049797ed9b487a4a6c7311938b316ab3276f490896a606ee3064b81f921f7",
+    "alias_asset_sha256": "e8fc3ca7bb94224b24f653eb267d4426165554e78947e261fddbaf046b17a5a4",
+    "r219_catalogue_snapshot_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be"
+  }
+}

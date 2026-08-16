@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "D:\BAXY\source\scripts\run_turn_policy_gate.py", line 2825, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\BAXY\source\scripts\run_turn_policy_gate.py", line 2818, in main
+    report = run_gate(parse_args())
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\BAXY\source\scripts\run_turn_policy_gate.py", line 2654, in run_gate
+    write_json_atomic(output, report)
+  File "D:\BAXY\source\scripts\run_turn_policy_gate.py", line 214, in write_json_atomic
+    os.replace(temporary, path)
+PermissionError: [WinError 5] Acceso denegado: 'D:\\BAXY\\source\\artifacts\\product\\.turn_policy_gate.r47-nativeaot.corrected-v25.json.21084.2a515829f61647e69ef054f060b02438.tmp' -> 'D:\\BAXY\\source\\artifacts\\product\\turn_policy_gate.r47-nativeaot.corrected-v25.json'

@@ -1,0 +1,67 @@
+{
+  "schema": "baxy.livekit-wake-operating-threshold.v1",
+  "measured_at_utc": "2026-08-04T16:59:15.027774+00:00",
+  "method": "lowest_threshold_with_false_positive_count_at_or_below_ceiling",
+  "model": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_mixed_development_v4/baxy_voxcpm2_mixed_development_v4.onnx",
+  "model_sha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+  "positive_features": {
+    "path": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_mixed_development_v4/positive_features_test.npy",
+    "sha256": "6316cf942d69aabcfa9a7db377bb8784ec8941208306e2bf2ac6e8ae2657b383",
+    "clips": 1866,
+    "dropped_rows": 0
+  },
+  "negative_features": [
+    {
+      "path": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_mixed_development_v4/negative_features_test.npy",
+      "sha256": "fd97eb4f9b6789172e73fd97074d0b6ed412afedffdad5a5de362459edc9ded6",
+      "clips": 1452,
+      "dropped_rows": 0
+    },
+    {
+      "path": "D:/BAXYRuntime/experiments/wakeword/livekit_data/features/validation_set_features.npy",
+      "sha256": "a56a8a0f8e0efb91900acc6de4c0cdf4c564842e8475a7d49b36c039e17a690f",
+      "clips": 30084,
+      "dropped_rows": 1
+    }
+  ],
+  "clip_duration_seconds": 2.0,
+  "validation_hours": 17.52,
+  "operating_point": {
+    "threshold": 0.946897327899933,
+    "target_fpph": 0.1,
+    "max_false_positives": 1,
+    "false_positives": 1,
+    "fpph": 0.05707762557077626,
+    "true_positives": 764,
+    "false_negatives": 1102,
+    "recall": 0.40943193997856375,
+    "meets_target_fpph": true,
+    "minimum_recall": 0.95,
+    "meets_minimum_recall": false,
+    "candidate_operating_gate_passed": false
+  },
+  "score_quantiles": {
+    "positive": {
+      "0.0": 0.006756335496902466,
+      "0.01": 0.020340389013290407,
+      "0.05": 0.09150874614715576,
+      "0.5": 0.9288258850574493,
+      "0.95": 0.9815582931041718,
+      "0.99": 0.9861198008060456,
+      "1.0": 0.9891140460968018
+    },
+    "negative": {
+      "0.0": 0.0018499791622161865,
+      "0.01": 0.002658219635486603,
+      "0.05": 0.0031908228993415833,
+      "0.5": 0.006146162748336792,
+      "0.95": 0.027591131627559662,
+      "0.99": 0.1007279708981519,
+      "1.0": 0.9663510322570801
+    }
+  },
+  "onnxruntime": "1.28.0",
+  "blind_human_partition_accessed": false,
+  "candidate_frozen": false,
+  "effects_executed": 0
+}

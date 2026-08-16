@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>Baxy.Setup</AssemblyName>
+    <RootNamespace>Baxy.Setup</RootNamespace>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishAot>true</PublishAot>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(PublishAot)' == 'true'">
+    <LinkerArg Include="/Brepro" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(BaxyEmbeddedPackage)' != '' and '$(BaxyEmbeddedPackageAttestation)' != ''">
+    <EmbeddedResource Include="$(BaxyEmbeddedPackage)" LogicalName="Baxy.Setup.Payload.zip" />
+    <EmbeddedResource Include="$(BaxyEmbeddedPackageAttestation)" LogicalName="Baxy.Setup.Payload.attestation.json" />
+  </ItemGroup>
+  <Target Name="ValidateBaxyEmbeddedResourcePair" BeforeTargets="PrepareForBuild"
+          Condition="('$(BaxyEmbeddedPackage)' == '') != ('$(BaxyEmbeddedPackageAttestation)' == '')">
+    <Error Text="BaxyEmbeddedPackage and BaxyEmbeddedPackageAttestation must be supplied together." />
+  </Target>
+  <Target Name="RequireBaxyEmbeddedResourcesForPublish" BeforeTargets="Publish"
+          Condition="'$(BaxyDevelopmentPayloadlessPublish)' != 'true'">
+    <Error Condition="'$(BaxyEmbeddedPackage)' == '' or '$(BaxyEmbeddedPackageAttestation)' == ''"
+           Text="Delivery publish requires both canonical BAXY embedded-package resources." />
+  </Target>
+</Project>

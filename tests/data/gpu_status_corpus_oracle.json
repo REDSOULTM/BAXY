@@ -1,0 +1,473 @@
+{
+  "schema_version": 1,
+  "oracle_id": "baxy.system-status.gpu-local.v1",
+  "corpus": {
+    "path": "tests/data/historical_messages.jsonl",
+    "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e"
+  },
+  "normalization": {
+    "unicode": "NFC",
+    "whitespace": "collapse every Unicode whitespace run to one ASCII space, then trim",
+    "case": "Unicode casefold",
+    "order": [
+      "unicode_nfc",
+      "collapse_whitespace",
+      "trim",
+      "unicode_casefold"
+    ]
+  },
+  "digest_contract": {
+    "ids": "Sort unique message IDs ordinally; encode each ID followed by LF as UTF-8; SHA-256.",
+    "records": "Sort records ordinally by message ID; encode message_id + TAB + normalized text_literal + LF as UTF-8; SHA-256."
+  },
+  "selection": {
+    "acceptance_scope": "product_1_0",
+    "lexical_candidate_classes": [
+      "user_mission",
+      "conversation_question",
+      "feedback_failure"
+    ],
+    "lexical_regex": "(?i)\\b(?:gpu|vram|nvidia-smi)\\b",
+    "lexical_candidate_count": 148,
+    "lexical_candidate_normalized_literal_count": 125,
+    "lexical_candidate_ids_sha256": "fde1d597ceec751d130005ca2a4d42e131ff1f46e39dcfaeff7ea25e45e91ea8",
+    "lexical_candidate_records_sha256": "9aba2fe4d873ce6582f8f9803c0b8f26b255776c9bf2d92d8c835e378c285179",
+    "selected_lexical_candidate_count": 74,
+    "selected_temperature_collision_count": 3,
+    "selected_temperature_collision_ids": [
+      "msg_99d86e2e2024dc516f94",
+      "msg_d4592fc40c05abd6ca54",
+      "msg_db3ffae9912cbc514ca0"
+    ],
+    "selected_total_count": 77,
+    "is_exhaustive_lexical_inventory": false,
+    "purpose": "finite standalone positives and nearest fail-closed collisions"
+  },
+  "groups": {
+    "identity_historical": {
+      "operation": "system.status",
+      "scope": "gpu_identity",
+      "label_state": "historical_contract",
+      "count": 6,
+      "normalized_literal_count": 5,
+      "mission_count": 1,
+      "source_count": 4,
+      "ids_sha256": "9695f791cf890a0eddba9e94039abb39098945df437fdb12a79184c4e3892b70",
+      "records_sha256": "d30495b914722a4e150b31c576e7a53800d4fe5a286908b79a2f6d4bbc33658a",
+      "ids": [
+        "msg_8cfe84f5226cd59973dd",
+        "msg_25798bd1d137d1d9cf17",
+        "msg_67a43de3ee42abbbcfb6",
+        "msg_29a38a9fc31998c63949",
+        "msg_7712bf1ded58c448cf76",
+        "msg_ca21afa1a4d95e1ed414"
+      ]
+    },
+    "identity_semantic_repair": {
+      "operation": "system.status",
+      "scope": "gpu_identity",
+      "label_state": "semantic_positive_historically_unmapped",
+      "count": 1,
+      "normalized_literal_count": 1,
+      "mission_count": 1,
+      "source_count": 1,
+      "ids_sha256": "996a2d682c3baaeaa056e96db9a11d9a2c4ee4b89d8fafa12d8f11729ee557ad",
+      "records_sha256": "3fc67c6031eb13bf80c873f1960e08ced0cf5e73a0a7b893a38e5787c651b71d",
+      "ids": [
+        "msg_fb24f22424798be96fd1"
+      ]
+    },
+    "usage_semantic_repair": {
+      "operation": "system.status",
+      "scope": "gpu_usage",
+      "label_state": "semantic_positive_historically_unmapped",
+      "count": 4,
+      "normalized_literal_count": 2,
+      "mission_count": 1,
+      "source_count": 2,
+      "ids_sha256": "f8ed8c44451adaa7a17464f81844e8eb7d2dbd348f97b14f3e6355c604ca6807",
+      "records_sha256": "68b57c1f747fb6bb863dac2fe75555a0985a9de8faf9eac9d4e201af628c4837",
+      "ids": [
+        "msg_2509e2b456c10eeaa2a7",
+        "msg_95455f3781dc04138a67",
+        "msg_e5fbbb49c3797f243044",
+        "msg_c2967cff489b7b028ee9"
+      ]
+    },
+    "usage_historical": {
+      "operation": "system.status",
+      "scope": "gpu_usage",
+      "label_state": "historical_contract",
+      "count": 9,
+      "normalized_literal_count": 4,
+      "mission_count": 1,
+      "source_count": 4,
+      "ids_sha256": "4141bea579e0c3180861a9cf130ebfbd78c1fc53465b8bef5b5009c04635b542",
+      "records_sha256": "a617d664f56b0fb2045b47936a32f868df496caad0e48476ce0ec6961318debf",
+      "ids": [
+        "msg_357fb8aad81f7954a799",
+        "msg_bca19fd893995279f632",
+        "msg_ba7d6d55b74d48175e14",
+        "msg_9e532c16a1aaf385b6fd",
+        "msg_40244f58665f66f5f677",
+        "msg_efcf810373bdd404c942",
+        "msg_db849ea15db133ad1b22",
+        "msg_ce28d246589c5ab2751d",
+        "msg_0f9101a13549bc8d49ca"
+      ]
+    },
+    "usage_bounded_alias": {
+      "operation": "system.status",
+      "scope": "gpu_usage",
+      "label_state": "bounded_summary_resolution",
+      "count": 6,
+      "normalized_literal_count": 3,
+      "mission_count": 2,
+      "source_count": 3,
+      "ids_sha256": "ddfe566be528a212326c7e382615dc2cfd3cd166a9ec2e55ab7d31f89f934c19",
+      "records_sha256": "5c7cf387af1ad2badd97e46dc222dccf82798a7128ca3e1acb9e8a9c33a6e4e4",
+      "ids": [
+        "msg_cd154c6dc694f0965f55",
+        "msg_4f686d943b3dc84caa8c",
+        "msg_154315b7b3ae85edc2bb",
+        "msg_a5775b36707885259ffa",
+        "msg_849dfa226ef0036af84b",
+        "msg_934d5746d81bb344d883"
+      ]
+    },
+    "positive_union": {
+      "members": [
+        "identity_historical",
+        "identity_semantic_repair",
+        "usage_semantic_repair",
+        "usage_historical",
+        "usage_bounded_alias"
+      ],
+      "count": 26,
+      "normalized_literal_count": 15,
+      "mission_count": 3,
+      "source_count": 8,
+      "ids_sha256": "61d2265b499313c85e30d84e207ec462a0e166d4f88352549c1456f8d80335e4",
+      "records_sha256": "36ec73ee52e75f856a10dc4fdca8aa6868015b6f3af1eb1d202303ddd4ef171e"
+    },
+    "composition": {
+      "operation": null,
+      "count": 17,
+      "normalized_literal_count": 13,
+      "mission_count": 4,
+      "source_count": 9,
+      "ids_sha256": "d3c640324b210ec2ad0475648dd4e7a6b22c01bd5585c5c9767701661a667643",
+      "records_sha256": "c7dff98d56bdbb61a1f2fa00235d7155958a24dcc5e0145cc03852dd1a40f97b",
+      "ids": [
+        "msg_19d98d6134f1b995c8b8",
+        "msg_2ddbf23e7d95198ba16e",
+        "msg_3538440dc2b6638b3367",
+        "msg_9068e2ec6c26cb8fa39a",
+        "msg_9bc5090dad9264db6b33",
+        "msg_c39f75593327e44dae71",
+        "msg_084d1ce4e0b8e3bcbac3",
+        "msg_1b2ce4204c6fc1a1ac3f",
+        "msg_9dc3662511091542598f",
+        "msg_f4159f708a8c799b9698",
+        "msg_094aceeeb772669eb38d",
+        "msg_13a15bcc64547e1c7515",
+        "msg_2b7c59e5d0cd223b62d5",
+        "msg_3d7ffe97561676dc36f9",
+        "msg_cca6d0d5f0cf1afc9fee",
+        "msg_346340e574d2b3d1afc4",
+        "msg_d43fe1224cf6659402aa"
+      ]
+    },
+    "hard_negative": {
+      "operation": null,
+      "count": 34,
+      "normalized_literal_count": 26,
+      "mission_count": 5,
+      "source_count": 19,
+      "ids_sha256": "481280cb9d3e3978ac34cbbb5a849226a17c54247480c369fea6068af98275c6",
+      "records_sha256": "4cff5e3572cba6aa6aaba8e1369880644115d0fab54b47cf8e8afdf7096a0c39",
+      "ids": [
+        "msg_0bb44dde2befa91caff0",
+        "msg_15d162dcd2956325747b",
+        "msg_3258fe0b14eaa64d93ad",
+        "msg_5a245b2a9e232b9d4aa2",
+        "msg_657cd0e27023375b2e81",
+        "msg_97dfb54854e0ad6926f7",
+        "msg_a0aa0e4fe358b7c63572",
+        "msg_d0a33adb19eeba91a72c",
+        "msg_0667ec3d162af12e86e2",
+        "msg_984b51266373b1e21674",
+        "msg_b360355cf3bd084c8ee7",
+        "msg_b8f57ab9000f7f9a349d",
+        "msg_a809c0730a4c13476801",
+        "msg_be1aef7279cebeec4ad3",
+        "msg_c0eec94c521a035a8fec",
+        "msg_d4f4a11bff675ea680d0",
+        "msg_4dc5bfdcc1cf56957814",
+        "msg_d7873f8bf297c13b6cc4",
+        "msg_e9e57e78f21d864c1f45",
+        "msg_6de43daba1060ecd24d2",
+        "msg_ca72a833a3bc230f21b6",
+        "msg_e171942de13a486d06ef",
+        "msg_f69257fbebf90c83832e",
+        "msg_079162768aa0673ba716",
+        "msg_28432b60eca22bbf7107",
+        "msg_320355cb5035585afeb5",
+        "msg_4541053a6b29ec636d2e",
+        "msg_83ec349f31c83424d841",
+        "msg_924462d40fb844711297",
+        "msg_f9b7fc6890f8b020d3b1",
+        "msg_99d86e2e2024dc516f94",
+        "msg_9bcf971489a90c0df590",
+        "msg_d4592fc40c05abd6ca54",
+        "msg_db3ffae9912cbc514ca0"
+      ]
+    },
+    "selected_universe": {
+      "members": [
+        "positive_union",
+        "composition",
+        "hard_negative"
+      ],
+      "count": 77,
+      "normalized_literal_count": 54,
+      "mission_count": 8,
+      "source_count": 23,
+      "ids_sha256": "d67a8156f8cd5db417c1318a28ab900150b162e05104e197d60a921e454f2065",
+      "records_sha256": "4f7b212bdca9f4920ebf71a180470b2c4d61a82e823f415d18740f11dd611285"
+    },
+    "trace_only": {
+      "operation": "system.status",
+      "scope": null,
+      "count": 2,
+      "normalized_literal_count": 2,
+      "mission_count": 1,
+      "source_count": 1,
+      "ids_sha256": "e7d123c0eb96637e9aab0d4bd488f9b4117f50a7565b5ab33804b9ec748276f3",
+      "records_sha256": "dbba8acb099e5311b611866edbac704cfbdacce20bd53b34af2d8176790a895d",
+      "ids": [
+        "msg_715a5f073a94fd44cd3a",
+        "msg_e91c790eca9e0a310869"
+      ]
+    }
+  },
+  "canonical_cases": [
+    {
+      "scope": "gpu_identity",
+      "ids": ["msg_8cfe84f5226cd59973dd", "msg_25798bd1d137d1d9cf17"]
+    },
+    {
+      "scope": "gpu_identity",
+      "ids": ["msg_67a43de3ee42abbbcfb6"]
+    },
+    {
+      "scope": "gpu_identity",
+      "ids": ["msg_29a38a9fc31998c63949", "msg_7712bf1ded58c448cf76"]
+    },
+    {
+      "scope": "gpu_identity",
+      "ids": ["msg_ca21afa1a4d95e1ed414"]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": ["msg_2509e2b456c10eeaa2a7", "msg_95455f3781dc04138a67"]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": ["msg_e5fbbb49c3797f243044", "msg_c2967cff489b7b028ee9"]
+    },
+    {
+      "scope": "gpu_identity",
+      "ids": ["msg_fb24f22424798be96fd1"]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": ["msg_357fb8aad81f7954a799", "msg_bca19fd893995279f632"]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": [
+        "msg_ba7d6d55b74d48175e14",
+        "msg_9e532c16a1aaf385b6fd",
+        "msg_40244f58665f66f5f677"
+      ]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": [
+        "msg_efcf810373bdd404c942",
+        "msg_db849ea15db133ad1b22",
+        "msg_ce28d246589c5ab2751d"
+      ]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": ["msg_0f9101a13549bc8d49ca"]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": ["msg_cd154c6dc694f0965f55", "msg_4f686d943b3dc84caa8c"]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": ["msg_154315b7b3ae85edc2bb", "msg_a5775b36707885259ffa"]
+    },
+    {
+      "scope": "gpu_usage",
+      "ids": ["msg_849dfa226ef0036af84b", "msg_934d5746d81bb344d883"]
+    }
+  ],
+  "composition_cases": [
+    {
+      "category": "create_load_then_observe",
+      "ids": [
+        "msg_19d98d6134f1b995c8b8",
+        "msg_2ddbf23e7d95198ba16e",
+        "msg_3538440dc2b6638b3367",
+        "msg_9068e2ec6c26cb8fa39a",
+        "msg_9bc5090dad9264db6b33",
+        "msg_c39f75593327e44dae71"
+      ]
+    },
+    {
+      "category": "task_training_or_vision_context",
+      "ids": [
+        "msg_084d1ce4e0b8e3bcbac3",
+        "msg_1b2ce4204c6fc1a1ac3f",
+        "msg_9dc3662511091542598f",
+        "msg_f4159f708a8c799b9698"
+      ]
+    },
+    {
+      "category": "process_or_baxy_attribution",
+      "ids": [
+        "msg_094aceeeb772669eb38d",
+        "msg_13a15bcc64547e1c7515",
+        "msg_2b7c59e5d0cd223b62d5",
+        "msg_3d7ffe97561676dc36f9",
+        "msg_cca6d0d5f0cf1afc9fee"
+      ]
+    },
+    {
+      "category": "causal_diagnosis",
+      "ids": ["msg_346340e574d2b3d1afc4", "msg_d43fe1224cf6659402aa"]
+    }
+  ],
+  "hard_negative_cases": [
+    {
+      "category": "gpu_knowledge",
+      "ids": [
+        "msg_0bb44dde2befa91caff0",
+        "msg_15d162dcd2956325747b",
+        "msg_3258fe0b14eaa64d93ad",
+        "msg_5a245b2a9e232b9d4aa2",
+        "msg_657cd0e27023375b2e81",
+        "msg_97dfb54854e0ad6926f7",
+        "msg_a0aa0e4fe358b7c63572",
+        "msg_d0a33adb19eeba91a72c"
+      ]
+    },
+    {
+      "category": "prices_or_web",
+      "ids": [
+        "msg_0667ec3d162af12e86e2",
+        "msg_984b51266373b1e21674",
+        "msg_b360355cf3bd084c8ee7",
+        "msg_b8f57ab9000f7f9a349d"
+      ]
+    },
+    {
+      "category": "conditional_or_policy",
+      "ids": [
+        "msg_a809c0730a4c13476801",
+        "msg_be1aef7279cebeec4ad3",
+        "msg_c0eec94c521a035a8fec",
+        "msg_d4f4a11bff675ea680d0"
+      ]
+    },
+    {
+      "category": "assertion_without_query",
+      "ids": [
+        "msg_4dc5bfdcc1cf56957814",
+        "msg_d7873f8bf297c13b6cc4",
+        "msg_e9e57e78f21d864c1f45"
+      ]
+    },
+    {
+      "category": "model_or_history_vram",
+      "ids": [
+        "msg_6de43daba1060ecd24d2",
+        "msg_ca72a833a3bc230f21b6",
+        "msg_e171942de13a486d06ef",
+        "msg_f69257fbebf90c83832e"
+      ]
+    },
+    {
+      "category": "research",
+      "ids": ["msg_079162768aa0673ba716", "msg_28432b60eca22bbf7107"]
+    },
+    {
+      "category": "architecture_or_mutation",
+      "ids": ["msg_320355cb5035585afeb5", "msg_4541053a6b29ec636d2e"]
+    },
+    {
+      "category": "fragment_or_monitoring_ambiguity",
+      "ids": [
+        "msg_83ec349f31c83424d841",
+        "msg_924462d40fb844711297",
+        "msg_f9b7fc6890f8b020d3b1"
+      ]
+    },
+    {
+      "category": "temperature_false_friend",
+      "ids": [
+        "msg_99d86e2e2024dc516f94",
+        "msg_9bcf971489a90c0df590",
+        "msg_d4592fc40c05abd6ca54",
+        "msg_db3ffae9912cbc514ca0"
+      ]
+    }
+  ],
+  "behavioral_contracts": {
+    "provider_neutral_nvidia_smi_alias": {
+      "contract_origin": "architecture_decision_preserving_the_requested_outcome",
+      "ids": [
+        "msg_efcf810373bdd404c942",
+        "msg_db849ea15db133ad1b22",
+        "msg_ce28d246589c5ab2751d",
+        "msg_154315b7b3ae85edc2bb",
+        "msg_a5775b36707885259ffa",
+        "msg_849dfa226ef0036af84b",
+        "msg_934d5746d81bb344d883"
+      ],
+      "expected": {
+        "operation": "system.status",
+        "scope": "gpu_usage",
+        "must_not_claim_nvidia_smi_execution": true,
+        "must_not_spawn_a_subprocess": true
+      },
+      "historical_terminal_hint_ids": [
+        "msg_a5775b36707885259ffa",
+        "msg_db849ea15db133ad1b22",
+        "msg_ce28d246589c5ab2751d",
+        "msg_934d5746d81bb344d883"
+      ]
+    },
+    "excluded_metrics": {
+      "temperature": "no standalone product_1_0 corpus evidence and no universal Windows API",
+      "power_fan_clocks": "vendor-specific and outside the frozen standalone corpus",
+      "process_attribution": "requires a separate composed primitive and remains outside this standalone route",
+      "continuous_monitoring": "requires task lifecycle and remains outside this point-in-time route"
+    },
+    "summary_isolation": {
+      "expected": {
+        "generic_summary_includes_gpu": false,
+        "gpu_identity_collects_usage": false,
+        "gpu_usage_is_point_in_time": true
+      }
+    },
+    "boundary_semantics": {
+      "msg_f9b7fc6890f8b020d3b1": "outside the point-in-time snapshot parser, not a global rejection of future continuous GPU monitoring"
+    }
+  }
+}

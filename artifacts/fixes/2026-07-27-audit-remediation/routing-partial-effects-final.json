@@ -1,0 +1,182 @@
+{
+  "schema": "baxy-audit-remediation-live-turn-probe-v1",
+  "measured_at": "2026-07-27T19:45:46.685024+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    }
+  ],
+  "passed": 3,
+  "failed": 1,
+  "cases": [
+    {
+      "text": "Abre calculadora y envía un mensaje a Ana",
+      "expected": {
+        "forbiddenOperationSequences": [
+          [
+            "app.open"
+          ]
+        ]
+      },
+      "elapsed_seconds": 4.938,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "message.send"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-1",
+        "version": 1,
+        "kind": "clarify",
+        "question": "¿A qué canal deseas enviar el mensaje?",
+        "steps": []
+      }
+    },
+    {
+      "text": "Abre calculadora y elimina el archivo prueba.txt",
+      "expected": {
+        "forbiddenOperationSequences": [
+          [
+            "app.open"
+          ]
+        ]
+      },
+      "elapsed_seconds": 5.786,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "filesystem.write.text"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-2",
+        "version": 1,
+        "kind": "clarify",
+        "question": "¿Qué texto debo escribir para reemplazar el archivo prueba.txt?",
+        "steps": []
+      }
+    },
+    {
+      "text": "Abre calculadora y apaga el equipo",
+      "expected": {
+        "forbiddenOperationSequences": [
+          [
+            "app.open"
+          ]
+        ]
+      },
+      "elapsed_seconds": 17.88,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "clarify",
+        "operation": null,
+        "effectOperations": [],
+        "question": "¿Qué cálculo necesitas hacer?",
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": "semantic_clarification",
+        "recovery_attempts": 1,
+        "failure_code": "turn_runtime_failure"
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea una nota y borra la nota anterior",
+      "expected": {
+        "forbiddenOperationSequences": [
+          [
+            "note.create"
+          ]
+        ]
+      },
+      "elapsed_seconds": 5.069,
+      "matches": false,
+      "observedOperations": [
+        "note.create"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "note.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-4",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "note.create",
+            "purpose": "Conservar y completar este efecto solicitado.",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "content": "Crea una nota y borra la nota anterior",
+              "title": "Crea una nota y borra la nota anterior"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

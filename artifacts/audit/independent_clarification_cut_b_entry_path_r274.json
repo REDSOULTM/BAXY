@@ -1,0 +1,454 @@
+{
+  "schema": "baxy.independent-clarification-cut-b.entry-path-r274.v1",
+  "authority": "single_read_only_r270_entry_path_measurement_after_r273_preregistration",
+  "verdict": "development_r270_can_exercise_raw_model_decision_after_two_effect_gates",
+  "population": {
+    "rows": 93,
+    "request_texts_retained": false,
+    "request_identifiers_retained": false,
+    "intended_operation_identifiers_retained": true
+  },
+  "recogniser_surface": {
+    "catalogue_operations": 174,
+    "ordered_gates": [
+      "resolve_explicit_clarification_intent",
+      "resolve_explicit_effects"
+    ]
+  },
+  "observed": {
+    "explicit_clarification": 0,
+    "explicit_effect": 14,
+    "model_decision_candidate_after_two_effect_gates": 79,
+    "model_decision_candidate_reach": 0.8494623655913979,
+    "explicit_clarification_operations": {},
+    "explicit_effect_operations": {
+      "app.close": 3,
+      "media.play.query": 2,
+      "note.create": 4,
+      "task.create": 3,
+      "wifi.ensure.connected": 3
+    },
+    "by_family": {
+      "app": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 3,
+        "model_decision_candidate_after_two_effect_gates": 0
+      },
+      "audio": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "backup": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "bluetooth": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "browser": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "calendar": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "capture": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "clipboard": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "email": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "filesystem": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "game": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "input": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "media": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 2,
+        "model_decision_candidate_after_two_effect_gates": 1
+      },
+      "memory": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "message": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "network": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "note": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 3,
+        "model_decision_candidate_after_two_effect_gates": 0
+      },
+      "notification": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "ocr": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "office": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "package": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "peripheral": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "reminder": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "routine": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "streaming": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "system": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "task": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 3,
+        "model_decision_candidate_after_two_effect_gates": 0
+      },
+      "vision": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "web": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "wifi": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 3,
+        "model_decision_candidate_after_two_effect_gates": 0
+      },
+      "window": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      }
+    },
+    "by_language": {
+      "en": {
+        "rows": 31,
+        "explicit_clarification": 0,
+        "explicit_effect": 5,
+        "model_decision_candidate_after_two_effect_gates": 26
+      },
+      "es": {
+        "rows": 31,
+        "explicit_clarification": 0,
+        "explicit_effect": 4,
+        "model_decision_candidate_after_two_effect_gates": 27
+      },
+      "spanglish": {
+        "rows": 31,
+        "explicit_clarification": 0,
+        "explicit_effect": 5,
+        "model_decision_candidate_after_two_effect_gates": 26
+      }
+    },
+    "by_intended_operation": {
+      "app.close": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 3,
+        "model_decision_candidate_after_two_effect_gates": 0
+      },
+      "audio.volume": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "backup.restore": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "bluetooth.device.pair": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "browser.navigate": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "calendar.event.create": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "capture.active.window": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "clipboard.write.text": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "email.latest.reply": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "filesystem.move": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "game.install.named": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "input.text.type": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "media.play.query": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 2,
+        "model_decision_candidate_after_two_effect_gates": 1
+      },
+      "memory.save": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "message.send": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "network.ping": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "note.create": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 3,
+        "model_decision_candidate_after_two_effect_gates": 0
+      },
+      "notification.schedule": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "ocr.read": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "office.word.append": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "package.install.prepare": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "peripheral.print": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "reminder.create": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "routine.phrase.create": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "streaming.play.named": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "system.settings.set": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "task.create": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 3,
+        "model_decision_candidate_after_two_effect_gates": 0
+      },
+      "vision.describe": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "web.search": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      },
+      "wifi.connect.named": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 3,
+        "model_decision_candidate_after_two_effect_gates": 0
+      },
+      "window.minimize": {
+        "rows": 3,
+        "explicit_clarification": 0,
+        "explicit_effect": 0,
+        "model_decision_candidate_after_two_effect_gates": 3
+      }
+    }
+  },
+  "interpretation": {
+    "model_decision_candidate_reach_limit": 0.5,
+    "population_can_exercise_raw_model_decision": true,
+    "model_started": false,
+    "reason": "This partitions only the two ordered deterministic effect gates that precede the full decision flow. Explicit conversation and later policy exits are not credited as model-decision reach; no model, retrieval, veto, visible reply, provider, or external effect was measured."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r270_corpus_sha256": "a38ab784be38a159935e5b1500b3187e94aac9e7a3ad791080323bc9a8387d99",
+    "r270_preregistration_sha256": "c26fddc31a2d4d29a521e80ef8cbfb7b40e230246e9d66153909e92cc5d987c1",
+    "r272_result_sha256": "a42e60993d56dcf1e6354b49f4a476403f2fc95589600b75dc453eebe729ddc6",
+    "r273_preregistration_sha256": "e1cad3a4272c525183181b00c1a8272bafb7a67d49a9de366cee1866ea0d5961",
+    "catalogue_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "runner_sha256": "2cfc1078afb4e3e9f82d588f91583c4f85b6957c071f9625572b432ce31ffe87"
+  },
+  "next_requirement": "Do not modify R270 or tune the recogniser from this result. Only if this path has sufficient reach may a full model-decision candidate be separately preregistered."
+}

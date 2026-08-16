@@ -1,0 +1,65 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v26_catalog_fix_evidence.v1.raw.jsonl",
+    "sha256": "22445a86ff3cdbca723e634424793f35229a1132c3dd35b6e4a7388fb26d3bde"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "critical:single_action_es",
+      "expected_families": [
+        "app"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-e73892a511911bec342a719c",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0528,
+        "operation": "app.open",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "critical:compound_plan_es",
+      "expected_families": [],
+      "expected_modes": [
+        "plan"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-41be20bf0965330cec16621b",
+        "error": "",
+        "failure_code": "",
+        "kind": "plan",
+        "latency_seconds": 0.0177,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T04:11:19.953714+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 2,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

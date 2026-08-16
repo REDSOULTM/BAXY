@@ -1,0 +1,3399 @@
+{
+  "schema": "baxy.operation-shortlist-current-review-probe.v1",
+  "scope": "reviewed_development_only_not_blind",
+  "cases": 152,
+  "identity_cases": 89,
+  "no_action_cases": 63,
+  "global": {
+    "complete_identity_top_1": 0.224719,
+    "complete_identity_top_2": 0.41573,
+    "complete_identity_top_3": 0.494382,
+    "complete_identity_top_5": 0.58427
+  },
+  "conditional_global_known_effect": {
+    "complete_identity_top_1": 0.292135,
+    "complete_identity_top_2": 0.438202,
+    "complete_identity_top_3": 0.52809,
+    "complete_identity_top_5": 0.640449
+  },
+  "after_product_retrieval": {
+    "complete_identity_top_1": 0.348315,
+    "complete_identity_top_2": 0.662921,
+    "complete_identity_top_3": 0.775281,
+    "complete_identity_top_5": 0.775281
+  },
+  "conditional_after_product_retrieval": {
+    "complete_identity_top_1": 0.629213,
+    "complete_identity_top_2": 0.775281,
+    "complete_identity_top_3": 0.775281,
+    "complete_identity_top_5": 0.775281
+  },
+  "oracle_family_after_product_retrieval": {
+    "complete_identity_top_1": 0.629213,
+    "complete_identity_top_2": 0.775281,
+    "complete_identity_top_3": 0.775281,
+    "complete_identity_top_5": 0.775281
+  },
+  "no_action_top_1": 0.47619,
+  "rows": [
+    {
+      "case_id": "app-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "game.installed.named",
+        "web.search",
+        "game.catalog.list",
+        "reminder.create"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.open"
+      ],
+      "conditional_candidate_top_5": [
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "app-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.close",
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "app.open",
+        "web.search",
+        "__none__",
+        "message.send",
+        "app.close"
+      ],
+      "candidate_top_5": [
+        "app.open",
+        "__none__",
+        "app.close"
+      ],
+      "conditional_candidate_top_5": [
+        "app.open",
+        "app.close"
+      ]
+    },
+    {
+      "case_id": "app-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "__none__",
+        "game.installed.named",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.open"
+      ],
+      "conditional_candidate_top_5": [
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "app-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "game.install.named",
+        "__none__"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.open"
+      ],
+      "conditional_candidate_top_5": [
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "app-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "game.install.named",
+        "__none__"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.open"
+      ],
+      "conditional_candidate_top_5": [
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "app-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "__none__",
+        "game.installed.named",
+        "game.install.named"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.open"
+      ],
+      "conditional_candidate_top_5": [
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "audio-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "audio.volume",
+        "audio.status",
+        "input.pointer.control",
+        "audio.volume.adjust",
+        "browser.navigate.named"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "audio-01",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "audio.volume",
+        "__none__",
+        "web.search",
+        "audio.volume.adjust",
+        "input.pointer.control"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "audio-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.volume.adjust"
+        ]
+      ],
+      "global_top_5": [
+        "audio.volume",
+        "audio.volume.adjust",
+        "input.pointer.control",
+        "peripheral.scan",
+        "backup.known.list"
+      ],
+      "candidate_top_5": [
+        "audio.volume.adjust",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.volume.adjust"
+      ]
+    },
+    {
+      "case_id": "audio-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.volume.adjust"
+        ]
+      ],
+      "global_top_5": [
+        "audio.volume",
+        "audio.volume.adjust",
+        "audio.status",
+        "filesystem.move",
+        "peripheral.print"
+      ],
+      "candidate_top_5": [
+        "audio.volume.adjust",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.volume.adjust"
+      ]
+    },
+    {
+      "case_id": "audio-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "audio.volume",
+        "__none__",
+        "web.search",
+        "audio.volume.adjust",
+        "audio.status"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "audio-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.volume"
+        ]
+      ],
+      "global_top_5": [
+        "audio.volume",
+        "__none__",
+        "audio.status",
+        "clipboard.paste",
+        "filesystem.move"
+      ],
+      "candidate_top_5": [
+        "audio.volume",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.volume"
+      ]
+    },
+    {
+      "case_id": "backup-00",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "backup.create",
+          "filesystem.write.text"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "filesystem.known.search",
+        "filesystem.file.open.latest",
+        "web.search",
+        "filesystem.read.text"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "backup-01",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "backup.create",
+          "filesystem.write.text"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "backup.restore",
+        "backup.known.verify.latest",
+        "game.install.commit",
+        "memory.enable"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "backup-02",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "backup.restore",
+        "backup.known.verify.latest",
+        "calendar.event.list",
+        "backup.verify"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "backup-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "backup.known.verify.latest",
+        "backup.restore",
+        "filesystem.known.search",
+        "filesystem.known.trash.named",
+        "filesystem.write.text"
+      ],
+      "candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.restore",
+        "backup.verify",
+        "backup.known.restore.latest",
+        "backup.known.list"
+      ],
+      "conditional_candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.restore",
+        "backup.verify",
+        "backup.known.restore.latest",
+        "backup.known.list"
+      ]
+    },
+    {
+      "case_id": "backup-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "backup.known.verify.latest",
+        "backup.restore",
+        "routine.read",
+        "backup.verify"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "backup.known.verify.latest",
+        "backup.restore",
+        "backup.verify",
+        "backup.known.list"
+      ],
+      "conditional_candidate_top_5": [
+        "backup.known.verify.latest",
+        "backup.restore",
+        "backup.verify",
+        "backup.known.list",
+        "backup.known.restore.latest"
+      ]
+    },
+    {
+      "case_id": "bluetooth-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "filesystem.file.open.latest",
+        "app.open"
+      ],
+      "candidate_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "app.open",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "app.open",
+        "app.close"
+      ]
+    },
+    {
+      "case_id": "bluetooth-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "global_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "audio.mute",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "bluetooth.radio.set",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "bluetooth.radio.set"
+      ]
+    },
+    {
+      "case_id": "bluetooth-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "global_top_5": [
+        "notification.dismiss",
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "bluetooth.radio.set",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "bluetooth.radio.set"
+      ]
+    },
+    {
+      "case_id": "bluetooth-03",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "bluetooth.device.pair"
+        ]
+      ],
+      "global_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "wifi.connect",
+        "wifi.connect.named"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "bluetooth-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "global_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "notification.dismiss",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "bluetooth.radio.set",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "bluetooth.radio.set"
+      ]
+    },
+    {
+      "case_id": "bluetooth-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "bluetooth.radio.set"
+        ]
+      ],
+      "global_top_5": [
+        "bluetooth.device.list",
+        "bluetooth.radio.set",
+        "bluetooth.device.pair",
+        "web.search",
+        "message.send"
+      ],
+      "candidate_top_5": [
+        "bluetooth.radio.set",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "bluetooth.radio.set"
+      ]
+    },
+    {
+      "case_id": "browser-00",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "browser.navigate",
+        "filesystem.file.open.latest",
+        "web.search",
+        "app.open"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "browser-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "browser.navigate.named",
+        "web.search",
+        "browser.navigate",
+        "app.open"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "browser.navigate"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "browser-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate",
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "browser.control",
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "filesystem.folder.open"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "browser.navigate",
+        "web.search"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate",
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "browser-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate",
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "browser.control",
+        "__none__",
+        "filesystem.folder.open",
+        "game.install.cancel.active",
+        "filesystem.known.duplicates"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "web.search",
+        "browser.navigate"
+      ],
+      "conditional_candidate_top_5": [
+        "web.search",
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "browser-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate",
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "browser.control",
+        "__none__",
+        "browser.navigate.named",
+        "office.document.read",
+        "bluetooth.radio.set"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "web.search",
+        "browser.navigate"
+      ],
+      "conditional_candidate_top_5": [
+        "web.search",
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "browser-05",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "browser.navigate",
+        "app.open",
+        "browser.tabs.list",
+        "filesystem.file.open.latest"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "calendar-00",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "clipboard.write.text",
+        "message.send",
+        "web.search",
+        "email.latest.reply",
+        "memory.disable"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "calendar-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.open",
+          "input.text.type"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "note.search",
+        "message.send",
+        "notification.schedule",
+        "note.list"
+      ],
+      "candidate_top_5": [
+        "input.text.type",
+        "app.open",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "input.text.type",
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "calendar-02",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "web.search",
+        "reminder.create",
+        "message.send",
+        "__none__"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "calendar-03",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "web.search",
+        "reminder.create",
+        "message.send",
+        "filesystem.known.search"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "calendar-04",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "calendar.event.create"
+        ]
+      ],
+      "global_top_5": [
+        "reminder.create",
+        "notification.schedule",
+        "calendar.event.list",
+        "calendar.event.create",
+        "__none__"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "calendar-05",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "message.send",
+        "reminder.create",
+        "email.latest.reply",
+        "calendar.event.create",
+        "filesystem.known.search"
+      ],
+      "candidate_top_5": [
+        "calendar.event.create",
+        "__none__",
+        "calendar.event.list"
+      ],
+      "conditional_candidate_top_5": [
+        "calendar.event.create",
+        "calendar.event.list"
+      ]
+    },
+    {
+      "case_id": "capture-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "capture.screenshot",
+          "vision.describe"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "routine.phrase.create",
+        "audio.microphone.mute",
+        "ocr.read",
+        "capture.screenshot"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "conditional_candidate_top_5": [
+        "capture.screenshot",
+        "vision.describe"
+      ]
+    },
+    {
+      "case_id": "capture-01",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "peripheral.list",
+        "system.application.crash.diagnose",
+        "bluetooth.radio.set",
+        "routine.phrase.create"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "capture-02",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "routine.phrase.create",
+        "capture.screenshot",
+        "capture.active.window",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "capture-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "capture.screenshot"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "filesystem.known.trash.named",
+        "routine.phrase.create",
+        "filesystem.path.ensure.absent"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "capture.screenshot"
+      ],
+      "conditional_candidate_top_5": [
+        "capture.screenshot"
+      ]
+    },
+    {
+      "case_id": "capture-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "capture.screenshot",
+        "filesystem.known.trash.named",
+        "filesystem.known.search",
+        "__none__",
+        "ocr.read"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "capture-05",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "capture.screenshot",
+        "filesystem.folder.open",
+        "filesystem.file.open.latest",
+        "filesystem.known.trash.named"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "clipboard-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "clipboard.paste"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "clipboard.paste",
+        "note.search",
+        "note.list",
+        "__none__"
+      ],
+      "candidate_top_5": [
+        "clipboard.paste",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "clipboard.paste"
+      ]
+    },
+    {
+      "case_id": "clipboard-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "clipboard.copy"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.write.text",
+        "clipboard.copy",
+        "app.open",
+        "clipboard.paste",
+        "clipboard.read.text"
+      ],
+      "candidate_top_5": [
+        "clipboard.copy",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "clipboard.copy"
+      ]
+    },
+    {
+      "case_id": "clipboard-02",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "clipboard.write.text"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.write.text",
+        "clipboard.copy",
+        "clipboard.paste",
+        "clipboard.read.text",
+        "email.latest.reply"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "clipboard-03",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "clipboard.write.text",
+          "memory.recall"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "clipboard.paste",
+        "clipboard.write.text",
+        "clipboard.copy",
+        "email.latest.reply"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "clipboard-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.open",
+          "clipboard.paste"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.write.text",
+        "clipboard.paste",
+        "app.open",
+        "filesystem.known.search",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "clipboard.paste",
+        "app.open",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "clipboard.paste",
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "clipboard-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "clipboard.read.text"
+        ]
+      ],
+      "global_top_5": [
+        "clipboard.write.text",
+        "clipboard.paste",
+        "clipboard.read.text",
+        "calendar.event.list",
+        "clipboard.copy"
+      ],
+      "candidate_top_5": [
+        "clipboard.read.text",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "clipboard.read.text"
+      ]
+    },
+    {
+      "case_id": "filesystem-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "filesystem.file.open.latest",
+        "filesystem.known.trash.named",
+        "filesystem.sandbox.move.named",
+        "filesystem.known.search",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "filesystem-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.file.open.latest"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.file.open.latest",
+        "web.search",
+        "filesystem.known.search",
+        "filesystem.known.duplicates",
+        "notification.cancel.latest"
+      ],
+      "candidate_top_5": [
+        "filesystem.file.open.latest",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.file.open.latest"
+      ]
+    },
+    {
+      "case_id": "filesystem-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.file.open.latest"
+        ]
+      ],
+      "global_top_5": [
+        "filesystem.file.open.latest",
+        "__none__",
+        "filesystem.known.search",
+        "web.search",
+        "backup.known.restore.latest"
+      ],
+      "candidate_top_5": [
+        "filesystem.file.open.latest",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.file.open.latest"
+      ]
+    },
+    {
+      "case_id": "filesystem-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "reminder.delete",
+        "web.search",
+        "filesystem.known.trash.named",
+        "filesystem.folder.open",
+        "filesystem.create.directory"
+      ],
+      "candidate_top_5": [
+        "filesystem.known.trash.named",
+        "filesystem.folder.open",
+        "filesystem.create.directory",
+        "filesystem.copy",
+        "filesystem.list"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.known.trash.named",
+        "filesystem.folder.open",
+        "filesystem.create.directory",
+        "filesystem.copy",
+        "filesystem.list"
+      ]
+    },
+    {
+      "case_id": "filesystem-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "filesystem.write.text",
+        "reminder.create",
+        "filesystem.known.search",
+        "message.send",
+        "__none__"
+      ],
+      "candidate_top_5": [
+        "filesystem.write.text",
+        "filesystem.known.search",
+        "__none__",
+        "filesystem.list",
+        "filesystem.read.text"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.write.text",
+        "filesystem.known.search",
+        "filesystem.list",
+        "filesystem.read.text",
+        "filesystem.sandbox.diff.named"
+      ]
+    },
+    {
+      "case_id": "filesystem-05",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "filesystem.create.directory",
+        "filesystem.known.search",
+        "capture.screenshot",
+        "backup.known.create"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "filesystem.create.directory",
+        "filesystem.known.search",
+        "filesystem.folder.open",
+        "filesystem.known.trash.named"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.create.directory",
+        "filesystem.known.search",
+        "filesystem.folder.open",
+        "filesystem.known.trash.named",
+        "filesystem.copy"
+      ]
+    },
+    {
+      "case_id": "game-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "__none__",
+        "filesystem.file.open.latest",
+        "app.open",
+        "task.reopen"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.open",
+        "app.close",
+        "app.installed"
+      ],
+      "conditional_candidate_top_5": [
+        "app.open",
+        "app.close",
+        "app.installed"
+      ]
+    },
+    {
+      "case_id": "game-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.launch"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "app.open",
+        "filesystem.file.open.latest",
+        "task.reopen"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "game.launch"
+      ],
+      "conditional_candidate_top_5": [
+        "game.launch"
+      ]
+    },
+    {
+      "case_id": "game-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.launch"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "game.install.named"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "game.launch"
+      ],
+      "conditional_candidate_top_5": [
+        "game.launch"
+      ]
+    },
+    {
+      "case_id": "game-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "game.install.named",
+        "__none__"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "game-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "routine.phrase.create",
+        "game.install.named"
+      ],
+      "candidate_top_5": [
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "game.install.named",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "game.catalog.list",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "game.install.named",
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "game-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "game.catalog.list"
+        ]
+      ],
+      "global_top_5": [
+        "game.catalog.list",
+        "__none__",
+        "game.install.cancel.active",
+        "game.installed.named",
+        "message.send"
+      ],
+      "candidate_top_5": [
+        "game.catalog.list",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "game.catalog.list"
+      ]
+    },
+    {
+      "case_id": "media-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "media.play.exact",
+        "web.search",
+        "app.installed",
+        "wifi.disconnect"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "media-01",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "media.play.exact",
+        "message.send",
+        "app.installed"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "media-02",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "media.status",
+        "media.play.query",
+        "system.recyclebin.empty",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "media.status",
+        "media.play.query",
+        "media.control",
+        "media.play.youtube"
+      ],
+      "conditional_candidate_top_5": [
+        "media.status",
+        "media.play.query",
+        "media.control",
+        "media.play.youtube",
+        "media.seek.relative"
+      ]
+    },
+    {
+      "case_id": "media-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "media.play.exact",
+        "media.control",
+        "media.play.query"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "media-04",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "media.play.query"
+        ]
+      ],
+      "global_top_5": [
+        "media.play.query",
+        "notification.diagnose",
+        "__none__",
+        "media.control",
+        "audio.volume"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "media-05",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "media.play.query",
+        "note.read",
+        "__none__",
+        "bluetooth.device.pair",
+        "system.process.terminate.named"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "message-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "message.send"
+        ]
+      ],
+      "global_top_5": [
+        "message.send",
+        "__none__",
+        "browser.navigate",
+        "message.recipient.resolve",
+        "memory.disable"
+      ],
+      "candidate_top_5": [
+        "message.send",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "message.send"
+      ]
+    },
+    {
+      "case_id": "message-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "message.send"
+        ]
+      ],
+      "global_top_5": [
+        "message.send",
+        "memory.disable",
+        "browser.navigate",
+        "web.search",
+        "input.select.all"
+      ],
+      "candidate_top_5": [
+        "message.send",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "message.send"
+      ]
+    },
+    {
+      "case_id": "message-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "message.send"
+        ]
+      ],
+      "global_top_5": [
+        "message.send",
+        "web.search",
+        "browser.navigate",
+        "memory.disable",
+        "input.select.all"
+      ],
+      "candidate_top_5": [
+        "message.send",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "message.send"
+      ]
+    },
+    {
+      "case_id": "message-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "message.send"
+        ]
+      ],
+      "global_top_5": [
+        "message.send",
+        "memory.disable",
+        "browser.navigate",
+        "web.search",
+        "input.select.all"
+      ],
+      "candidate_top_5": [
+        "message.send",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "message.send"
+      ]
+    },
+    {
+      "case_id": "message-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "message.send"
+        ]
+      ],
+      "global_top_5": [
+        "message.send",
+        "web.search",
+        "memory.disable",
+        "browser.navigate",
+        "input.select.all"
+      ],
+      "candidate_top_5": [
+        "message.send",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "message.send"
+      ]
+    },
+    {
+      "case_id": "message-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "message.send"
+        ]
+      ],
+      "global_top_5": [
+        "message.send",
+        "__none__",
+        "web.search",
+        "memory.sensitive.save",
+        "backup.create"
+      ],
+      "candidate_top_5": [
+        "message.send",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "message.send"
+      ]
+    },
+    {
+      "case_id": "note-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.create"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "media.status",
+        "message.send",
+        "calendar.event.list",
+        "game.catalog.list"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "note.create"
+      ],
+      "conditional_candidate_top_5": [
+        "note.create"
+      ]
+    },
+    {
+      "case_id": "note-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.create"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "calendar.event.list",
+        "message.send",
+        "game.catalog.list",
+        "media.status"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "note.create"
+      ],
+      "conditional_candidate_top_5": [
+        "note.create"
+      ]
+    },
+    {
+      "case_id": "note-02",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "__none__",
+        "message.send",
+        "note.read",
+        "note.restore"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "note-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "message.send",
+        "__none__",
+        "web.search",
+        "note.read",
+        "note.restore"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "note-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "note.read",
+        "__none__",
+        "note.restore",
+        "note.trash"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "note-05",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "filesystem.known.search",
+          "filesystem.read.text",
+          "filesystem.write.text"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "filesystem.write.text",
+        "filesystem.sandbox.move.named",
+        "filesystem.known.search",
+        "filesystem.read.text"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "notification-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "backup.known.create",
+        "game.installed.named",
+        "capture.screenshot",
+        "system.settings.adjust"
+      ],
+      "candidate_top_5": [
+        "notification.schedule",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.schedule"
+      ]
+    },
+    {
+      "case_id": "notification-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "notification.dismiss",
+        "game.installed.named",
+        "browser.navigate.named",
+        "game.install.named"
+      ],
+      "candidate_top_5": [
+        "notification.schedule",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.schedule"
+      ]
+    },
+    {
+      "case_id": "notification-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "message.recipient.resolve",
+        "filesystem.move",
+        "peripheral.list",
+        "calendar.event.create"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "notification.schedule"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.schedule"
+      ]
+    },
+    {
+      "case_id": "notification-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.cancel.latest"
+        ]
+      ],
+      "global_top_5": [
+        "notification.cancel.latest",
+        "reminder.delete",
+        "notification.dismiss",
+        "notification.schedule",
+        "game.install.cancel"
+      ],
+      "candidate_top_5": [
+        "notification.cancel.latest",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.cancel.latest"
+      ]
+    },
+    {
+      "case_id": "notification-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "message.recipient.resolve",
+        "ocr.read",
+        "backup.known.create",
+        "filesystem.write.text"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "notification.schedule"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.schedule"
+      ]
+    },
+    {
+      "case_id": "notification-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "media.play.query",
+        "message.recipient.resolve",
+        "filesystem.move",
+        "game.installed.named"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "notification.schedule"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.schedule"
+      ]
+    },
+    {
+      "case_id": "ocr-00",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "ocr.read",
+        "filesystem.read.text",
+        "reminder.list"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "ocr.read"
+      ],
+      "conditional_candidate_top_5": [
+        "ocr.read"
+      ]
+    },
+    {
+      "case_id": "office-00",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "office.document.create"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "app.close",
+        "notification.schedule",
+        "audio.volume.adjust"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "office-01",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "app.close",
+        "system.process.terminate.named",
+        "browser.control",
+        "media.play.query"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.close",
+        "system.process.terminate.named",
+        "system.power",
+        "app.installed"
+      ],
+      "conditional_candidate_top_5": [
+        "app.close",
+        "system.process.terminate.named",
+        "system.power",
+        "app.installed",
+        "system.recyclebin.empty"
+      ]
+    },
+    {
+      "case_id": "office-02",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "app.close",
+        "web.search",
+        "calendar.event.list",
+        "filesystem.read.text"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.close",
+        "office.document.read",
+        "office.document.create",
+        "app.open"
+      ],
+      "conditional_candidate_top_5": [
+        "app.close",
+        "office.document.read",
+        "office.document.create",
+        "app.open",
+        "app.installed"
+      ]
+    },
+    {
+      "case_id": "office-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "calendar.event.list",
+        "web.search",
+        "task.create",
+        "message.send"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "office-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "__none__",
+        "app.close",
+        "reminder.create",
+        "media.play.query"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.close",
+        "media.play.query",
+        "office.document.create",
+        "media.seek.relative"
+      ],
+      "conditional_candidate_top_5": [
+        "app.close",
+        "media.play.query",
+        "office.document.create",
+        "media.seek.relative",
+        "media.play.youtube"
+      ]
+    },
+    {
+      "case_id": "office-05",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "message.send",
+        "app.close",
+        "audio.volume.adjust"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "app.close",
+        "office.document.create",
+        "office.document.read",
+        "app.open"
+      ],
+      "conditional_candidate_top_5": [
+        "app.close",
+        "office.document.create",
+        "office.document.read",
+        "app.open",
+        "app.installed"
+      ]
+    },
+    {
+      "case_id": "peripheral-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "note.create"
+        ]
+      ],
+      "global_top_5": [
+        "audio.microphone.mute",
+        "reminder.create",
+        "__none__",
+        "note.restore",
+        "routine.list"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "note.create"
+      ],
+      "conditional_candidate_top_5": [
+        "note.create"
+      ]
+    },
+    {
+      "case_id": "peripheral-01",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "audio.microphone.mute",
+        "audio.volume",
+        "web.search",
+        "routine.list"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "audio.microphone.mute",
+        "audio.volume",
+        "audio.status",
+        "audio.volume.adjust"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.microphone.mute",
+        "audio.volume",
+        "audio.status",
+        "audio.volume.adjust",
+        "audio.mute"
+      ]
+    },
+    {
+      "case_id": "peripheral-02",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "audio.microphone.mute",
+        "message.recipient.resolve",
+        "web.search",
+        "__none__",
+        "filesystem.sandbox.move.named"
+      ],
+      "candidate_top_5": [
+        "audio.microphone.mute",
+        "__none__",
+        "input.pointer.control",
+        "clipboard.paste",
+        "app.installed"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.microphone.mute",
+        "input.pointer.control",
+        "clipboard.paste",
+        "app.installed",
+        "streaming.play.named"
+      ]
+    },
+    {
+      "case_id": "peripheral-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "peripheral.print",
+        "notification.schedule",
+        "reminder.create",
+        "audio.microphone.mute"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "peripheral.print",
+        "peripheral.list",
+        "browser.navigate.named",
+        "browser.navigate"
+      ],
+      "conditional_candidate_top_5": [
+        "peripheral.print",
+        "peripheral.list",
+        "browser.navigate.named",
+        "browser.navigate",
+        "browser.tabs.list"
+      ]
+    },
+    {
+      "case_id": "peripheral-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "audio.microphone.mute"
+        ]
+      ],
+      "global_top_5": [
+        "audio.microphone.mute",
+        "web.search",
+        "__none__",
+        "filesystem.move",
+        "system.process.terminate.named"
+      ],
+      "candidate_top_5": [
+        "audio.microphone.mute",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.microphone.mute"
+      ]
+    },
+    {
+      "case_id": "reminder-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "message.send",
+        "reminder.create",
+        "web.search",
+        "package.install.commit"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "reminder.create"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.create"
+      ]
+    },
+    {
+      "case_id": "reminder-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "message.send",
+        "backup.restore",
+        "backup.known.restore.latest"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "reminder.create"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.create"
+      ]
+    },
+    {
+      "case_id": "reminder-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "reminder.create",
+        "__none__",
+        "reminder.delete",
+        "reminder.restore",
+        "notification.list.due"
+      ],
+      "candidate_top_5": [
+        "reminder.create",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.create"
+      ]
+    },
+    {
+      "case_id": "reminder-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "reminder.create",
+        "notification.schedule",
+        "reminder.resolve.exact",
+        "media.play.query",
+        "capture.screenshot"
+      ],
+      "candidate_top_5": [
+        "reminder.create",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.create"
+      ]
+    },
+    {
+      "case_id": "reminder-04",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "reminder.create"
+        ]
+      ],
+      "global_top_5": [
+        "reminder.create",
+        "__none__",
+        "reminder.delete",
+        "reminder.restore",
+        "capture.screenshot"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "reminder-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "reminder.create"
+        ],
+        [
+          "notification.schedule"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "reminder.create",
+        "reminder.delete",
+        "reminder.resolve.exact",
+        "reminder.restore"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "reminder.create"
+      ],
+      "conditional_candidate_top_5": [
+        "reminder.create"
+      ]
+    },
+    {
+      "case_id": "routine-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "notification.dismiss",
+        "message.send",
+        "routine.delete",
+        "browser.navigate"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "routine-01",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "notification.schedule",
+        "routine.phrase.create",
+        "routine.delete",
+        "__none__",
+        "routine.restore"
+      ],
+      "candidate_top_5": [
+        "routine.phrase.create",
+        "routine.delete",
+        "__none__",
+        "routine.restore",
+        "routine.resolve.exact"
+      ],
+      "conditional_candidate_top_5": [
+        "routine.phrase.create",
+        "routine.delete",
+        "routine.restore",
+        "routine.resolve.exact",
+        "routine.list"
+      ]
+    },
+    {
+      "case_id": "routine-02",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "reminder.create",
+        "memory.disable",
+        "message.send",
+        "clipboard.read.text"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "routine-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "message.send",
+        "web.search",
+        "calendar.event.list",
+        "system.application.crash.diagnose",
+        "__none__"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "streaming-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "media.play.youtube",
+        "web.search",
+        "browser.navigate",
+        "streaming.navigate"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "browser.navigate"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "streaming-01",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "browser.navigate.named"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "browser.navigate.named",
+        "media.play.youtube",
+        "wifi.connect",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "streaming-02",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "streaming.play.named",
+        "__none__",
+        "message.send",
+        "streaming.navigate"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "streaming-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "calendar.event.list",
+        "reminder.create",
+        "message.send"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "web.search"
+      ],
+      "conditional_candidate_top_5": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "streaming-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "media.play.youtube",
+        "web.search",
+        "note.search",
+        "streaming.navigate"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "media.play.youtube",
+        "streaming.navigate",
+        "media.play.exact",
+        "media.play.query"
+      ],
+      "conditional_candidate_top_5": [
+        "media.play.youtube",
+        "streaming.navigate",
+        "media.play.exact",
+        "media.play.query",
+        "streaming.play.named"
+      ]
+    },
+    {
+      "case_id": "streaming-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "reminder.create",
+        "media.play.query",
+        "streaming.navigate"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "web.search"
+      ],
+      "conditional_candidate_top_5": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "system-00",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "system.status",
+        "peripheral.list",
+        "bluetooth.radio.set",
+        "system.application.crash.diagnose"
+      ],
+      "candidate_top_5": [
+        "system.status",
+        "system.application.crash.diagnose",
+        "system.process.list",
+        "system.identity",
+        "system.settings.status"
+      ],
+      "conditional_candidate_top_5": [
+        "system.status",
+        "system.application.crash.diagnose",
+        "system.process.list",
+        "system.identity",
+        "system.settings.status"
+      ]
+    },
+    {
+      "case_id": "system-01",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "notification.diagnose",
+        "__none__",
+        "message.send",
+        "system.status",
+        "notification.list.due"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "system.status",
+        "notification.list.due",
+        "routine.delete",
+        "filesystem.trash.restore"
+      ],
+      "conditional_candidate_top_5": [
+        "system.status",
+        "notification.list.due",
+        "routine.delete",
+        "filesystem.trash.restore",
+        "game.installed.named"
+      ]
+    },
+    {
+      "case_id": "system-02",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "system.process.list",
+        "web.search",
+        "network.ping",
+        "filesystem.trash.prepare"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "system.process.list",
+        "system.status",
+        "system.recyclebin.empty",
+        "system.settings.set"
+      ],
+      "conditional_candidate_top_5": [
+        "system.process.list",
+        "system.status",
+        "system.recyclebin.empty",
+        "system.settings.set",
+        "system.process.terminate.named"
+      ]
+    },
+    {
+      "case_id": "system-03",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "message.send",
+        "memory.enable",
+        "filesystem.sandbox.diff.named"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "system.time",
+        "system.settings.status",
+        "system.status",
+        "system.application.crash.diagnose"
+      ],
+      "conditional_candidate_top_5": [
+        "system.time",
+        "system.settings.status",
+        "system.status",
+        "system.application.crash.diagnose",
+        "system.recyclebin.empty"
+      ]
+    },
+    {
+      "case_id": "system-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "calendar.event.list",
+        "__none__",
+        "audio.volume.adjust",
+        "system.status",
+        "system.settings.adjust"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "system.status",
+        "system.settings.adjust",
+        "system.recyclebin.empty",
+        "system.identity"
+      ],
+      "conditional_candidate_top_5": [
+        "system.status",
+        "system.settings.adjust",
+        "system.recyclebin.empty",
+        "system.identity",
+        "system.settings.status"
+      ]
+    },
+    {
+      "case_id": "system-05",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "system.status",
+        "media.play.query",
+        "web.search",
+        "game.install.cancel"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "system.status",
+        "system.recyclebin.empty",
+        "system.settings.adjust",
+        "system.process.list"
+      ],
+      "conditional_candidate_top_5": [
+        "system.status",
+        "system.recyclebin.empty",
+        "system.settings.adjust",
+        "system.process.list",
+        "system.settings.status"
+      ]
+    },
+    {
+      "case_id": "task-00",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "media.play.query",
+        "message.send",
+        "web.search",
+        "browser.control"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "audio.volume.adjust",
+        "task.list",
+        "task.create",
+        "audio.microphone.mute"
+      ],
+      "conditional_candidate_top_5": [
+        "audio.volume.adjust",
+        "task.list",
+        "task.create",
+        "audio.microphone.mute",
+        "task.update"
+      ]
+    },
+    {
+      "case_id": "task-01",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "message.send",
+        "wifi.status",
+        "task.create"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "task-02",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "message.send",
+        "web.search",
+        "media.status",
+        "note.update",
+        "audio.volume.adjust"
+      ],
+      "candidate_top_5": [
+        "browser.navigate",
+        "system.process.list",
+        "media.control",
+        "streaming.navigate",
+        "window.resize"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate",
+        "system.process.list",
+        "media.control",
+        "streaming.navigate",
+        "window.resize"
+      ]
+    },
+    {
+      "case_id": "task-03",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "game.install.status",
+        "clipboard.write.text",
+        "routine.list"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "task-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "audio.volume.adjust",
+        "input.select.all",
+        "clipboard.paste",
+        "web.search"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "system.settings.set",
+        "system.process.terminate.named",
+        "system.identity",
+        "system.recyclebin.empty"
+      ],
+      "conditional_candidate_top_5": [
+        "system.settings.set",
+        "system.process.terminate.named",
+        "system.identity",
+        "system.recyclebin.empty",
+        "system.process.list"
+      ]
+    },
+    {
+      "case_id": "task-05",
+      "outcome": "conversation",
+      "expected": [],
+      "global_top_5": [
+        "web.search",
+        "__none__",
+        "task.create",
+        "task.restore",
+        "task.delete"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "task.create",
+        "task.restore",
+        "task.delete",
+        "task.complete"
+      ],
+      "conditional_candidate_top_5": [
+        "task.create",
+        "task.restore",
+        "task.delete",
+        "task.complete",
+        "task.list"
+      ]
+    },
+    {
+      "case_id": "vision-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "system.settings.adjust",
+        "routine.phrase.create",
+        "input.keyboard.open"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "vision-01",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "calendar.event.list",
+        "__none__",
+        "window.active",
+        "notification.schedule",
+        "routine.set.enabled"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "system.recyclebin.empty",
+        "system.identity",
+        "system.settings.status",
+        "system.process.terminate.named"
+      ],
+      "conditional_candidate_top_5": [
+        "system.recyclebin.empty",
+        "system.identity",
+        "system.settings.status",
+        "system.process.terminate.named",
+        "vision.describe"
+      ]
+    },
+    {
+      "case_id": "vision-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.text.type"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "message.send",
+        "input.text.type",
+        "filesystem.write.text"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "input.text.type"
+      ],
+      "conditional_candidate_top_5": [
+        "input.text.type"
+      ]
+    },
+    {
+      "case_id": "vision-03",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "system.settings.adjust",
+        "window.focus",
+        "routine.phrase.create",
+        "input.keyboard.open"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "vision.describe",
+        "audio.microphone.mute",
+        "audio.volume",
+        "audio.mute"
+      ],
+      "conditional_candidate_top_5": [
+        "vision.describe",
+        "audio.microphone.mute",
+        "audio.volume",
+        "audio.mute",
+        "audio.status"
+      ]
+    },
+    {
+      "case_id": "vision-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "capture.screenshot",
+          "ocr.read"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "system.settings.adjust",
+        "message.send",
+        "email.latest.read",
+        "window.move"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "conditional_candidate_top_5": [
+        "capture.screenshot",
+        "ocr.read"
+      ]
+    },
+    {
+      "case_id": "vision-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "capture.screenshot",
+          "ocr.read"
+        ]
+      ],
+      "global_top_5": [
+        "web.search",
+        "calendar.event.list",
+        "system.settings.adjust",
+        "routine.phrase.create",
+        "input.keyboard.open"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "ocr.read",
+        "capture.screenshot"
+      ],
+      "conditional_candidate_top_5": [
+        "ocr.read",
+        "capture.screenshot"
+      ]
+    },
+    {
+      "case_id": "web-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate.named",
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "browser.navigate.named",
+        "__none__",
+        "web.search",
+        "peripheral.list",
+        "filesystem.known.search"
+      ],
+      "candidate_top_5": [
+        "browser.navigate.named",
+        "__none__",
+        "web.search"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate.named",
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "web-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate",
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "web.search",
+        "media.play.query",
+        "browser.navigate.named",
+        "app.open"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "web.search",
+        "browser.navigate"
+      ],
+      "conditional_candidate_top_5": [
+        "web.search",
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "web-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "browser.navigate.named",
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "browser.navigate.named",
+        "web.search",
+        "media.play.query",
+        "__none__",
+        "app.open"
+      ],
+      "candidate_top_5": [
+        "browser.navigate.named",
+        "web.search",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "browser.navigate.named",
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "web-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "filesystem.known.search"
+        ]
+      ],
+      "global_top_5": [
+        "note.search",
+        "filesystem.known.search",
+        "__none__",
+        "filesystem.sandbox.diff.named",
+        "filesystem.known.duplicates"
+      ],
+      "candidate_top_5": [
+        "filesystem.known.search",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "filesystem.known.search"
+      ]
+    },
+    {
+      "case_id": "web-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "web.search"
+        ]
+      ],
+      "global_top_5": [
+        "game.install.cancel.active",
+        "bluetooth.radio.set",
+        "web.search",
+        "media.play.query",
+        "game.catalog.list"
+      ],
+      "candidate_top_5": [
+        "web.search",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "web-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "input.visible.click"
+        ]
+      ],
+      "global_top_5": [
+        "media.play.query",
+        "input.visible.click",
+        "web.search",
+        "memory.save",
+        "memory.sensitive.save"
+      ],
+      "candidate_top_5": [
+        "input.visible.click",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "input.visible.click"
+      ]
+    },
+    {
+      "case_id": "wifi-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "wifi.ensure.connected",
+        "wifi.connect",
+        "wifi.profile.list",
+        "wifi.disconnect"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "wifi-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.status"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "wifi.connect.named",
+        "wifi.ensure.connected",
+        "notification.dismiss",
+        "message.send"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "wifi.status"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.status"
+      ]
+    },
+    {
+      "case_id": "wifi-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.disconnect"
+        ]
+      ],
+      "global_top_5": [
+        "notification.dismiss",
+        "wifi.connect.named",
+        "web.search",
+        "media.control",
+        "audio.mute"
+      ],
+      "candidate_top_5": [
+        "wifi.disconnect",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.disconnect"
+      ]
+    },
+    {
+      "case_id": "wifi-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.connect.named"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "wifi.connect.named",
+        "media.play.query",
+        "audio.volume",
+        "system.settings.adjust"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "wifi.connect.named"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.connect.named"
+      ]
+    },
+    {
+      "case_id": "wifi-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "email.latest.read",
+          "wifi.ensure.connected"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "wifi.connect.named",
+        "email.latest.reply",
+        "message.send",
+        "email.latest.read"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "email.latest.read",
+        "wifi.ensure.connected"
+      ],
+      "conditional_candidate_top_5": [
+        "email.latest.read",
+        "wifi.ensure.connected"
+      ]
+    },
+    {
+      "case_id": "wifi-05",
+      "outcome": "action",
+      "expected": [
+        [
+          "wifi.connect.named"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "wifi.connect.named",
+        "media.play.query",
+        "wifi.status",
+        "wifi.disconnect"
+      ],
+      "candidate_top_5": [
+        "__none__",
+        "wifi.connect.named"
+      ],
+      "conditional_candidate_top_5": [
+        "wifi.connect.named"
+      ]
+    },
+    {
+      "case_id": "window-00",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "__none__",
+        "app.close",
+        "web.search",
+        "window.application.status",
+        "filesystem.folder.open"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "window-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "app.close"
+        ]
+      ],
+      "global_top_5": [
+        "window.active",
+        "app.close",
+        "capture.active.window",
+        "window.focus",
+        "clipboard.paste"
+      ],
+      "candidate_top_5": [
+        "app.close",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "app.close"
+      ]
+    },
+    {
+      "case_id": "window-02",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "window.minimize",
+        "__none__",
+        "web.search",
+        "filesystem.list",
+        "input.text.type"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "window-03",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "app.open"
+        ]
+      ],
+      "global_top_5": [
+        "app.close",
+        "filesystem.folder.open",
+        "window.active",
+        "app.open",
+        "input.keyboard.open"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "window-04",
+      "outcome": "unsupported",
+      "expected": [],
+      "global_top_5": [
+        "app.close",
+        "filesystem.known.search",
+        "window.focus",
+        "filesystem.file.open.latest",
+        "window.active"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "window-05",
+      "outcome": "clarify",
+      "expected": [
+        [
+          "window.move"
+        ]
+      ],
+      "global_top_5": [
+        "__none__",
+        "window.application.status",
+        "app.close",
+        "web.search",
+        "window.active"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "notification-clock-00",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "reminder.delete",
+        "notification.dismiss",
+        "__none__",
+        "system.settings.adjust"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "notification-clock-01",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "__none__",
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "bluetooth.radio.set"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "notification-clock-02",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "notification.cancel.latest",
+        "notification.dismiss",
+        "__none__",
+        "filesystem.known.search"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "notification-clock-03",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.cancel.at"
+        ]
+      ],
+      "global_top_5": [
+        "notification.schedule",
+        "reminder.delete",
+        "notification.dismiss",
+        "notification.cancel.latest",
+        "memory.forget"
+      ],
+      "candidate_top_5": [
+        "__none__"
+      ],
+      "conditional_candidate_top_5": []
+    },
+    {
+      "case_id": "notification-clock-04",
+      "outcome": "action",
+      "expected": [
+        [
+          "notification.cancel.latest"
+        ]
+      ],
+      "global_top_5": [
+        "notification.cancel.latest",
+        "reminder.delete",
+        "notification.schedule",
+        "email.latest.reply",
+        "game.install.cancel"
+      ],
+      "candidate_top_5": [
+        "notification.cancel.latest",
+        "__none__"
+      ],
+      "conditional_candidate_top_5": [
+        "notification.cancel.latest"
+      ]
+    }
+  ]
+}

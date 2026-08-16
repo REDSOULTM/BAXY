@@ -1,0 +1,69 @@
+{
+  "schema": "baxy.llama-checkpoint-spacing-verdict.v1",
+  "status": "rejected",
+  "measured_on": "2026-07-29",
+  "runtime": {
+    "llama_server_build": 9980,
+    "llama_server_commit": "8014d2cf97a2419ca00d9d902be73ee411d61630",
+    "maximum_active_posts": 3,
+    "context_per_slot": 4096
+  },
+  "baseline": {
+    "ctx_checkpoints": 32,
+    "checkpoint_min_step_tokens": 256
+  },
+  "candidate": {
+    "ctx_checkpoints": 64,
+    "checkpoint_min_step_tokens": 64
+  },
+  "evidence": [
+    {
+      "artifact": "llama_checkpoint_spacing_ab_20260729.json",
+      "arm_order": [
+        "default",
+        "fine"
+      ],
+      "exact_outputs": true,
+      "mode_contracts": true,
+      "default_p50_seconds": 5.301702099999602,
+      "fine_p50_seconds": 5.414510149999842,
+      "default_total_seconds": 32.11076879999746,
+      "fine_total_seconds": 32.27271219999602
+    },
+    {
+      "artifact": "llama_checkpoint_spacing_ab_reverse_20260729.json",
+      "arm_order": [
+        "fine",
+        "default"
+      ],
+      "exact_outputs": true,
+      "mode_contracts": true,
+      "default_p50_seconds": 5.515582549998726,
+      "fine_p50_seconds": 5.421790449998298,
+      "default_total_seconds": 33.04107659999863,
+      "fine_total_seconds": 32.15635919998749
+    }
+  ],
+  "aggregate": {
+    "paired_cases": 12,
+    "candidate_faster_cases": 7,
+    "median_candidate_minus_default_seconds": -0.102858799999012,
+    "mean_candidate_minus_default_seconds": -0.0602311666677148,
+    "best_case_seconds": -0.788370600002963,
+    "worst_case_seconds": 0.668799999999464
+  },
+  "cache_observation": {
+    "all_stage_cache_n_medians_equal": true,
+    "all_stage_prompt_n_medians_equal": true,
+    "stages": [
+      "P",
+      "G",
+      "L",
+      "V",
+      "C",
+      "E",
+      "chat"
+    ]
+  },
+  "decision": "No production setting was changed. Finer checkpoints did not reuse any additional prompt tokens, reversed direction with arm order, and introduced material per-case variance."
+}

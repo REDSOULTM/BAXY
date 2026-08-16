@@ -1,0 +1,87 @@
+{
+  "schema": "baxy.mswc-spanish-qbye-fresh-gate.v2",
+  "measured_at_utc": "2026-08-06T05:02:55.678551+00:00",
+  "scope": "single_aggregate_open_of_fresh_disjoint_word_evaluation",
+  "sources": {
+    "preregistration_sha256": "6716549df12885517ab4837bb59fff35142159514b60ad390ccbfe74919abf78",
+    "fresh_feature_manifest_sha256": "fad6d2dd20ddd3b92d4c4de0aa9ed9f7af00de50e0f4aa4f11a08c53ec236bda",
+    "candidate_checkpoint_sha256": "76c251f4418700e840649156d1abef1c940852136a4110cc897d1f308976b127",
+    "reference_checkpoint_sha256": "6aca3a7c9cef64d2ed37846f14f48568fb06f360861dc609583e36d01aa17bfb"
+  },
+  "contract": {
+    "fresh_word_classes": 200,
+    "fresh_enrollments": 800,
+    "fresh_queries": 2400,
+    "gate_thresholds": {
+      "minimum_top1_accuracy": 0.94,
+      "minimum_pair_auc": 0.997,
+      "maximum_equal_error_rate": 0.025,
+      "minimum_true_pair_recall_at_zero_false_pairs": 0.2,
+      "minimum_top1_delta_over_reference": -0.005,
+      "minimum_pair_auc_delta_over_reference": -0.0005,
+      "maximum_equal_error_rate_delta_over_reference": 0.005,
+      "minimum_zero_false_recall_delta_over_reference": 0.0
+    },
+    "no_individual_query_export": true
+  },
+  "reference": {
+    "metrics": {
+      "classes": 200,
+      "enrollments": 800,
+      "queries": 2400,
+      "top1_accuracy": 0.915,
+      "macro_class_accuracy": 0.915,
+      "mean_true_minus_maximum_impostor_margin": 0.2215089378785415,
+      "median_true_minus_maximum_impostor_margin": 0.23947245250268112,
+      "positive_margin_queries": 2196,
+      "pair_auc": 0.998321676088777,
+      "equal_error_rate": 0.016722152428810748,
+      "equal_error_threshold": 0.4343549371859338,
+      "zero_false_pair_threshold": 0.9447055555553522,
+      "true_pairs_accepted_at_zero_false_pairs": 29,
+      "true_pairs": 2400,
+      "impostor_pairs": 477600
+    }
+  },
+  "candidate": {
+    "metrics": {
+      "classes": 200,
+      "enrollments": 800,
+      "queries": 2400,
+      "top1_accuracy": 0.91875,
+      "macro_class_accuracy": 0.91875,
+      "mean_true_minus_maximum_impostor_margin": 0.22919137579877494,
+      "median_true_minus_maximum_impostor_margin": 0.24878591393322969,
+      "positive_margin_queries": 2205,
+      "pair_auc": 0.9985070072585147,
+      "equal_error_rate": 0.014991624790619773,
+      "equal_error_threshold": 0.4420379168156297,
+      "zero_false_pair_threshold": 0.9457174338174364,
+      "true_pairs_accepted_at_zero_false_pairs": 63,
+      "true_pairs": 2400,
+      "impostor_pairs": 477600
+    }
+  },
+  "gate": {
+    "passed": false,
+    "checks": {
+      "minimum_top1_accuracy": false,
+      "minimum_pair_auc": true,
+      "maximum_equal_error_rate": true,
+      "minimum_true_pair_recall_at_zero_false_pairs": false,
+      "minimum_top1_delta_over_reference": true,
+      "minimum_pair_auc_delta_over_reference": true,
+      "maximum_equal_error_rate_delta_over_reference": true,
+      "minimum_zero_false_recall_delta_over_reference": true
+    }
+  },
+  "runtime_seconds": 9.929709599993657,
+  "fresh_examples_scored": true,
+  "fresh_evaluation_open_count": 1,
+  "individual_query_metrics_exported": false,
+  "baxy_human_examples_scored": false,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "candidate_frozen": false,
+  "effects_executed": 0
+}

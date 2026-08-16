@@ -1,0 +1,20 @@
+{
+  "candidates": 1689,
+  "complete_operations": 91,
+  "effects_executed": 0,
+  "heldout_exact_overlap": 0,
+  "heldout_sha256": "d6162676ec59b5cf138de35ddce767f7239e3fe36f0755795321beca09df4909",
+  "measured_at_utc": "2026-08-01T20:33:49.529599+00:00",
+  "model": {
+    "bytes": 2497280256,
+    "name": "Qwen3-4B-Q4_K_M.gguf",
+    "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5"
+  },
+  "operations_generated_this_run": 151,
+  "operations_present": 168,
+  "operations_requested": 168,
+  "output": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_candidates.generated.v1.jsonl",
+  "output_sha256": "98433abe6f1ccb0dfb55d7fbc05ad00022d74e6b79c0d3737e7f12a5c41ad750",
+  "runtime_manifest_changed": false,
+  "schema": "baxy.functiongemma-generation-run.v1"
+}

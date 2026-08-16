@@ -1,0 +1,299 @@
+{
+  "schema": "baxy.audit.browser-chain.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "elapsed_seconds": 4.7662241999996695,
+  "cases": [
+    {
+      "operation": "browser.navigate",
+      "arguments": {
+        "url": "https://example.com/"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "2acc94ec-9a85-4ed3-91d3-419ae60bf934",
+          "missionId": "bba7c672-642a-4d57-8ab9-df9a5a4b1ee5",
+          "invocationId": "72ff28df-17c9-477a-823b-639a8f8dab15",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "OcHH-thRY7alJF4_Ntx9U8DfAkmnVH0XGKPHknLUa_0",
+            "expiresAtUtc": "2026-07-27T06:17:39.0594374+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "434c5c92-c2ff-4b35-a15c-7df5a5bb258f",
+          "missionId": "bba7c672-642a-4d57-8ab9-df9a5a4b1ee5",
+          "invocationId": "72ff28df-17c9-477a-823b-639a8f8dab15",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "requestedUrl": "https://example.com/",
+            "finalUrl": "https://example.com/",
+            "targetId": "E5BF5E6EC2DB88394A9369B4EBA05B08",
+            "authority": "cdp"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 1.1803002999995442
+    },
+    {
+      "operation": "browser.page.read",
+      "arguments": {
+        "maximumCharacters": 2000
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "f02fcb5f-f2b1-448b-9259-a1726e00e9c2",
+          "missionId": "046472c4-fffe-4fe5-86bd-509470e015a6",
+          "invocationId": "f1b4c64f-942c-46b6-be77-9f6c32fe3068",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "9YtWRLNxKf5t9LPsjSpMoODkhvkCE1qrHO6aOXrYLGQ",
+            "expiresAtUtc": "2026-07-27T06:17:40.2397126+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "17f30e03-97ef-446e-adff-4ec871252a46",
+          "missionId": "046472c4-fffe-4fe5-86bd-509470e015a6",
+          "invocationId": "f1b4c64f-942c-46b6-be77-9f6c32fe3068",
+          "status": "completed",
+          "message": "Example Domain: Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\nLearn more",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "targetId": "E5BF5E6EC2DB88394A9369B4EBA05B08",
+            "url": "https://example.com/",
+            "title": "Example Domain",
+            "text": "Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\nLearn more",
+            "truncated": false,
+            "authority": "cdp_dom_visible_text_snapshot"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.07020610000017768
+    },
+    {
+      "operation": "browser.tabs.list",
+      "arguments": {
+        "limit": 5
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ea2ed278-a09e-4a6a-8b9d-fd50adf3aa52",
+          "missionId": "1ca49014-319c-4dc9-acf1-0c005dd93d2a",
+          "invocationId": "e9a37064-058b-4b77-add5-b0cb9f515a37",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "vDYXMZxcCaRZ46Uzifn5tz1lJKOrWGN0M2jsuOu8q5s",
+            "expiresAtUtc": "2026-07-27T06:17:40.3101070+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "a803f98d-25e5-4016-a3b0-8e4a5bc7eac7",
+          "missionId": "1ca49014-319c-4dc9-acf1-0c005dd93d2a",
+          "invocationId": "e9a37064-058b-4b77-add5-b0cb9f515a37",
+          "status": "completed",
+          "message": "Hay 1 pestaña web abierta en la sesión de BAXY.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "count": 1,
+            "truncated": false,
+            "tabs": [
+              {
+                "targetId": "E5BF5E6EC2DB88394A9369B4EBA05B08",
+                "title": "Example Domain",
+                "url": "https://example.com/"
+              }
+            ],
+            "authority": "cdp_page_targets_snapshot"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.06401979999918694
+    },
+    {
+      "operation": "browser.control",
+      "arguments": {
+        "action": "scroll_down"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "f74565c1-47a7-48b4-b611-6ede2569baa2",
+          "missionId": "17cbe8fd-9604-4aea-b788-7cb36ac7ba35",
+          "invocationId": "58ec1541-761f-4676-8c2d-31cc73bfcb48",
+          "status": "completed",
+          "message": "Listo, controlé y verifiqué la página actual.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "action": "scroll_down",
+            "targetId": "E5BF5E6EC2DB88394A9369B4EBA05B08",
+            "observedState": "scroll_boundary",
+            "authority": "cdp_postread"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.07924610000009125
+    },
+    {
+      "operation": "browser.control",
+      "arguments": {
+        "action": "reload"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "a950a16c-4bbc-43f0-a361-e3ce5046333c",
+          "missionId": "4496984e-ffa4-45ea-8ffc-c4c7ef9ec659",
+          "invocationId": "03f78f72-68f8-4d0d-83c2-78f947f885de",
+          "status": "completed",
+          "message": "Listo, controlé y verifiqué la página actual.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "action": "reload",
+            "targetId": "E5BF5E6EC2DB88394A9369B4EBA05B08",
+            "observedState": "complete|https://example.com/",
+            "authority": "cdp_postread"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.18980650000048627
+    },
+    {
+      "operation": "browser.navigate",
+      "arguments": {
+        "url": "https://example.com/?baxy-audit=1"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "185eef54-416f-453e-8ff4-64ac4bf6ffdb",
+          "missionId": "ee7c5add-6250-4aac-9873-acfae5fa2b3f",
+          "invocationId": "baa4e070-8878-4977-a612-6f44372eb599",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "lr2vK_J-4FAF88uXNqny8p6mBgIcbliLVdg36_467k4",
+            "expiresAtUtc": "2026-07-27T06:17:40.6429425+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "25e643a2-15b2-47b2-a5d0-fe06e5463101",
+          "missionId": "ee7c5add-6250-4aac-9873-acfae5fa2b3f",
+          "invocationId": "baa4e070-8878-4977-a612-6f44372eb599",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "requestedUrl": "https://example.com/?baxy-audit=1",
+            "finalUrl": "https://example.com/?baxy-audit=1",
+            "targetId": "E5BF5E6EC2DB88394A9369B4EBA05B08",
+            "authority": "cdp"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.8417268000002878
+    },
+    {
+      "operation": "browser.control",
+      "arguments": {
+        "action": "back"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ac66c886-cbe2-45ac-bca0-8cf4f25193cc",
+          "missionId": "2c9a7c8a-a5dc-4a6d-be48-7f6ff9b2d7d3",
+          "invocationId": "f5f77caa-8c10-4a7c-94d5-b502abdf0205",
+          "status": "completed",
+          "message": "Listo, controlé y verifiqué la página actual.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "action": "back",
+            "targetId": "E5BF5E6EC2DB88394A9369B4EBA05B08",
+            "observedState": "https://example.com/",
+            "authority": "cdp_postread"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.15322220000052766
+    },
+    {
+      "operation": "browser.control",
+      "arguments": {
+        "action": "close"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "e535d52a-482c-4268-bc64-39e4302bd807",
+          "missionId": "73396362-3099-41c1-857d-7f6b38eccf09",
+          "invocationId": "98c0c39f-d383-4370-8d75-dad51ee8422a",
+          "status": "failed",
+          "message": "No pude completar la operación.",
+          "verified": false,
+          "replayed": false,
+          "result": null,
+          "errorCode": "web_adapter_unavailable"
+        }
+      ],
+      "elapsed_seconds": 2.1788635000002614
+    }
+  ],
+  "error": null,
+  "process_exit_code": 0,
+  "stderr": ""
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "baxy.r9-sweep-inventory.v1",
+  "measured_at_utc": "2026-07-30",
+  "purpose": "an honest, file-level record of what the R9 sweep has actually reviewed, so that coverage is a checkable fact instead of a claim",
+  "scale_correction": "the earlier estimate of ~9000 lines was wrong. The three projects hold about 21000 lines of C#: Kernel ~5100 in 27 files, Security.Windows ~2900 in 8 files, Setup ~13100 in 28 files.",
+  "legend": {
+    "read_full": "every line read in this campaign",
+    "read_substantial": "the majority of the file read, including all of its decision and boundary logic",
+    "targeted": "inspected through symbol and pattern search plus the specific regions that matter for the audited invariants; not a literal full reading",
+    "not_reviewed": "not opened in this campaign"
+  },
+  "kernel": {
+    "read_full": [
+      "Mission/RequestFingerprint.cs",
+      "Journal/JournalHmacAuthenticator.cs",
+      "Operations/OperationOutcome.cs",
+      "Mission/IPrivateOperationEnvelopeAuthenticator.cs",
+      "Operations/OperationRisk.cs",
+      "Operations/IOperationResponseNarrator.cs"
+    ],
+    "read_substantial": [
+      "Mission/MissionEngine.cs",
+      "Mission/PrivateOperationBoundary.cs"
+    ],
+    "targeted": [
+      "Journal/FileInvocationJournal.cs",
+      "Mission/InMemoryConfirmationAuthority.cs",
+      "Operations/ProductCatalog.cs"
+    ],
+    "not_reviewed": [
+      "Operations/ProductOperationSchema.cs",
+      "Planning/MissionPlanProposal.cs",
+      "Journal/InMemoryInvocationJournal.cs",
+      "Operations/OperationRegistry.cs",
+      "Journal/JournalModels.cs",
+      "Operations/OperationDefinition.cs",
+      "Journal/IInvocationJournal.cs",
+      "Policy/RiskPolicy.cs",
+      "Journal/JournalJsonContext.cs",
+      "Journal/JournalIntegrityException.cs",
+      "Operations/IOperationHandler.cs",
+      "Operations/OperationInvocation.cs",
+      "Journal/JournalCapacityException.cs",
+      "Policy/PolicyDecision.cs",
+      "Journal/CompletedInvocation.cs",
+      "Properties/AssemblyInfo.cs"
+    ]
+  },
+  "security_windows": {
+    "read_full": ["WindowsCurrentUserDpapi.cs"],
+    "read_substantial": [
+      "ProtectedPayloadPathPolicy.cs",
+      "WindowsJournalAuthenticationKeyStore.cs"
+    ],
+    "targeted": ["WindowsPrivateStorage.cs"],
+    "not_reviewed": [
+      "WindowsProtectedPayload.cs",
+      "BoundProtectedJsonCodec.cs",
+      "ProtectedJsonEnvelopeCodec.cs",
+      "IProtectedPayload.cs"
+    ]
+  },
+  "setup": {
+    "targeted": ["InstallationEngine.cs"],
+    "not_reviewed": [
+      "WindowsProductLifecycle.cs",
+      "WindowsIntegrationStore.cs",
+      "SetupHostCandidateVerifier.cs",
+      "WindowsUninstallRegistry.cs",
+      "OwnedStartMenuShortcut.cs",
+      "StableSetupHostManager.cs",
+      "WindowsShellLink.cs",
+      "ProductPackageVerifier.cs",
+      "PathSafety.cs",
+      "SetupUninstallExecutor.cs",
+      "InstalledApplicationLauncher.cs",
+      "WindowsSetupResumeLauncher.cs",
+      "PackageModels.cs",
+      "StoredZipReader.cs",
+      "EmbeddedPackageSource.cs",
+      "ProductOperationLease.cs",
+      "PackageContract.cs",
+      "OperationGates.cs",
+      "SetupCommand.cs",
+      "SetupProductLifecycleExecutor.cs",
+      "WindowsProductLifecycleAdapters.cs",
+      "CanonicalWindowsPaths.cs",
+      "SemanticVersionComparer.cs",
+      "Program.cs",
+      "SetupExceptions.cs",
+      "SetupJsonContext.cs",
+      "Properties/AssemblyInfo.cs"
+    ]
+  },
+  "defects_found_and_fixed": [
+    "PrivateOperationBoundary.NormalizeOutcome dropped EffectMayHaveOccurred when reducing a private failure to the closed error-code allowlist (PrivateOperationAmbiguityTests, 4 tests)",
+    "PrivateOperationBoundary.NormalizeReplay rebuilt the failed private response without EffectMayHaveOccurred, so the replay of the same invocationId implicitly reported that the effect had not occurred. This made the first fix incomplete (PrivateReplayAmbiguityTests, 4 tests including a real FileInvocationJournal round trip across a simulated process restart)"
+  ],
+  "correct_behaviour_demonstrated": [
+    "MissionEngine commits the terminal record before propagating a cancellation, and the cancelled caller recovers the exact response by replaying the same invocationId (MissionEngineCancellationTests, 4 tests)",
+    "WindowsCurrentUserDpapi frees every native blob and zeroes plaintext on unprotect while leaving ciphertext untouched on protect",
+    "WindowsJournalAuthenticationKeyStore serialises per path, writes through a temporary file with flushToDisk and resolves the creation race with Rename(replace:false) so the loser reads the winner's key",
+    "InMemoryConfirmationAuthority mutates under a single lock, derives tokens from a random key plus nonce, compares with CryptographicOperations.FixedTimeEquals and redacts the token in ToString",
+    "FileInvocationJournal writes WriteThrough plus Flush(flushToDisk) and verifies a compaction by reopening it and comparing every entry before an atomic File.Replace",
+    "ProtectedPayloadPathPolicy rejects non-fixed drives, stray volume separators, oversized UTF-8 paths and reparse points along the whole chain, while WindowsPrivateStorage validates the opened handle rather than the path string"
+  ],
+  "observed_not_changed": [
+    "FileInvocationJournal.ReplaceFileWithRetry blocks up to 2 s synchronously during compaction; it is a retry against a real sharing violation on a rare path"
+  ],
+  "still_missing_for_a_complete_sweep": [
+    "a literal reading of the files listed as not_reviewed, above all the ~13100 lines of Setup",
+    "deterministic tests for: crash between effect, verification, journal and response; shutdown during spawn and during a request; File.Replace sharing-violation windows; DPAPI/ACL/reparse/TOCTOU on the private store; every injectable Setup fault point; double-dispose and late callbacks; protocol, file and process limits"
+  ],
+  "honesty_note": "R9 is PARTIAL. Two real defects were found and fixed and several invariants are now demonstrated, but this inventory shows the sweep is not complete and no claim of completion should be made from it."
+}

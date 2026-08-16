@@ -1,0 +1,2611 @@
+{
+  "schema": "baxy.audit.operation-coverage.v1",
+  "catalog_count": 168,
+  "functional_exercised_count": 149,
+  "verified_success_count": 135,
+  "unexercised_count": 19,
+  "unexercised_by_risk": {
+    "external_communication": [
+      "calendar.event.create",
+      "email.latest.reply",
+      "message.send"
+    ],
+    "installation": [
+      "game.install.commit",
+      "package.install.commit"
+    ],
+    "low_reversible": [
+      "backup.known.create",
+      "backup.known.restore.latest",
+      "game.launch"
+    ],
+    "monetary": [
+      "game.purchase.commit"
+    ],
+    "privacy_sensitive": [
+      "bluetooth.device.pair",
+      "peripheral.print",
+      "peripheral.scan",
+      "wifi.connect",
+      "wifi.connect.named",
+      "wifi.disconnect"
+    ],
+    "work_loss": [
+      "game.install.cancel",
+      "game.install.cancel.active",
+      "system.power",
+      "system.recyclebin.empty"
+    ]
+  },
+  "operations": [
+    {
+      "operation": "app.close",
+      "risk": "work_loss",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "action_failed"
+      ],
+      "sources": [
+        "visible_click_chain_installed.json",
+        "window_input_osk_close_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "app.installed",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "app.open",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "window_input_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "audio.microphone.mute",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "microphone_mute_restored_installed.json",
+        "microphone_mute_true_installed.json"
+      ]
+    },
+    {
+      "operation": "audio.mute",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "audio_mute_restored_installed.json",
+        "audio_mute_true_installed.json"
+      ]
+    },
+    {
+      "operation": "audio.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "audio_status_after_mute_cycle.json",
+        "audio_status_after_youtube_installed.json",
+        "audio_status_baseline.json",
+        "audio_status_restored.json",
+        "audio_status_restored_second.json",
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "audio.volume",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "audio_volume_bridge_0.json",
+        "audio_volume_restore_3.json",
+        "audio_volume_restore_3_second.json",
+        "audio_volume_set_7.json"
+      ]
+    },
+    {
+      "operation": "audio.volume.adjust",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "audio_volume_adjust_down_2.json"
+      ]
+    },
+    {
+      "operation": "backup.create",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json"
+      ]
+    },
+    {
+      "operation": "backup.known.create",
+      "risk": "low_reversible",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "backup.known.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "backup.known.restore.latest",
+      "risk": "low_reversible",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "backup.known.verify.latest",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "known_backup_not_found"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "backup.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json",
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "backup.restore",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json"
+      ]
+    },
+    {
+      "operation": "backup.verify",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "invalid_backup_id"
+      ],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json",
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "bluetooth.device.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "bluetooth.device.pair",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "bluetooth.radio.set",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "bluetooth_radio_set_noop_installed.json"
+      ]
+    },
+    {
+      "operation": "browser.control",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "web_adapter_unavailable"
+      ],
+      "sources": [
+        "browser_chain_generic_installed.json",
+        "streaming_navigate_chain_delayed_installed.json"
+      ]
+    },
+    {
+      "operation": "browser.navigate",
+      "risk": "external_communication",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "browser_chain_generic_installed.json",
+        "browser_visible_click_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "browser.navigate.named",
+      "risk": "external_communication",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "browser_chain_installed.json",
+        "browser_navigate_named_installed.json"
+      ]
+    },
+    {
+      "operation": "browser.page.read",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "browser_page_snapshot_invalid"
+      ],
+      "sources": [
+        "browser_chain_generic_installed.json",
+        "browser_chain_installed.json",
+        "browser_visible_click_chain_installed.json",
+        "streaming_navigate_chain_delayed_installed.json",
+        "streaming_navigate_chain_installed.json",
+        "streaming_navigate_chain_installed_2.json",
+        "streaming_navigate_chain_installed_3.json"
+      ]
+    },
+    {
+      "operation": "browser.tabs.list",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "browser_chain_generic_installed.json",
+        "streaming_navigate_chain_delayed_installed.json"
+      ]
+    },
+    {
+      "operation": "calendar.event.create",
+      "risk": "external_communication",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "calendar.event.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "outlook_profile_not_configured"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "capture.active.window",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "capture_active_window_installed.json"
+      ]
+    },
+    {
+      "operation": "capture.screenshot",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "capture_ocr_installed.json",
+        "capture_ocr_vision_installed.json"
+      ]
+    },
+    {
+      "operation": "clipboard.copy",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "clipboard_interaction_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "clipboard.paste",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "clipboard_interaction_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "clipboard.read.text",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "clipboard_interaction_chain_installed.json",
+        "clipboard_read_marker.json"
+      ]
+    },
+    {
+      "operation": "clipboard.write.text",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "clipboard_interaction_chain_installed.json",
+        "clipboard_write_marker.json"
+      ]
+    },
+    {
+      "operation": "email.latest.read",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "outlook_profile_not_configured"
+      ],
+      "sources": [
+        "email_latest_read_installed.json"
+      ]
+    },
+    {
+      "operation": "email.latest.reply",
+      "risk": "external_communication",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "filesystem.copy",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json"
+      ]
+    },
+    {
+      "operation": "filesystem.create.directory",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed.json",
+        "filesystem_chain_after_hash_installed_2.json",
+        "filesystem_chain_installed.json",
+        "filesystem_hash_crash_development.json",
+        "filesystem_hash_crash_installed_2.json"
+      ]
+    },
+    {
+      "operation": "filesystem.file.open.latest",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "file_open_latest_synthetic_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.folder.open",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "folder_open_downloads_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.hash",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "invalid_resource_id"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "filesystem.known.duplicates",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.known.search",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.known.trash.named",
+      "risk": "recoverable_delete",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "known_trash_restore_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed.json",
+        "filesystem_chain_after_hash_installed_2.json",
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json",
+        "sandbox_named_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.move",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json"
+      ]
+    },
+    {
+      "operation": "filesystem.path.ensure.absent",
+      "risk": "recoverable_delete",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_absolute_absent_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.read.text",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "invalid_resource_id"
+      ],
+      "sources": [
+        "filesystem_chain_after_hash_installed.json",
+        "filesystem_chain_after_hash_installed_2.json",
+        "filesystem_chain_installed.json",
+        "filesystem_hash_crash_development.json",
+        "filesystem_hash_crash_installed_2.json",
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "filesystem.sandbox.append.named",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "sandbox_named_file_ambiguous"
+      ],
+      "sources": [
+        "sandbox_named_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.sandbox.diff.named",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "sandbox_named_file_not_found"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "sandbox_named_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.sandbox.move.named",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "sandbox_move_destination_invalid"
+      ],
+      "sources": [
+        "sandbox_named_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "filesystem.search",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json",
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "filesystem.trash.commit",
+      "risk": "recoverable_delete",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json"
+      ]
+    },
+    {
+      "operation": "filesystem.trash.prepare",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "invalid_resource_id"
+      ],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json",
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "filesystem.trash.restore",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed_2.json"
+      ]
+    },
+    {
+      "operation": "filesystem.write.text",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "filesystem_chain_after_hash_installed.json",
+        "filesystem_chain_after_hash_installed_2.json",
+        "filesystem_chain_installed.json",
+        "filesystem_hash_crash_development.json",
+        "filesystem_hash_crash_installed_2.json"
+      ]
+    },
+    {
+      "operation": "game.catalog.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "game.install.cancel",
+      "risk": "work_loss",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "game.install.cancel.active",
+      "risk": "work_loss",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "game.install.commit",
+      "risk": "installation",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "game.install.named",
+      "risk": "installation",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "game_install_named_already_installed.json"
+      ]
+    },
+    {
+      "operation": "game.install.prepare",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "game_install_prepare_installed.json",
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "game.install.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "game_install_status_installed.json",
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "game.installed.named",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "game.launch",
+      "risk": "low_reversible",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "game.purchase.commit",
+      "risk": "monetary",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "game.purchase.prepare",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "steam_price_authority_required"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "input.key.press",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "window_input_osk_close_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "input.keyboard.layout",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "window_input_chain_installed.json",
+        "window_input_osk_close_installed.json",
+        "window_input_safe_chain_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_chain_installed.json",
+        "window_input_wpf_diagnostic_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "input.keyboard.open",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "window_input_chain_installed.json",
+        "window_input_osk_close_installed.json",
+        "window_input_safe_chain_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_chain_installed.json",
+        "window_input_wpf_diagnostic_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "input.keyboard.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json",
+        "window_input_chain_installed.json",
+        "window_input_osk_close_installed.json",
+        "window_input_safe_chain_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_chain_installed.json",
+        "window_input_wpf_diagnostic_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "input.pointer.control",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "window_input_osk_close_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "input.select.all",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "focused_control_has_no_text_pattern",
+        "select_all_uia_failed"
+      ],
+      "sources": [
+        "window_input_chain_installed.json",
+        "window_input_safe_chain_installed.json",
+        "window_input_wpf_chain_installed.json",
+        "window_input_wpf_diagnostic_installed.json"
+      ]
+    },
+    {
+      "operation": "input.text.type",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "window_input_chain_installed.json",
+        "window_input_osk_close_installed.json",
+        "window_input_safe_chain_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_chain_installed.json",
+        "window_input_wpf_diagnostic_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "input.visible.click",
+      "risk": "external_communication",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "browser_visible_click_chain_installed.json",
+        "visible_click_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "media.control",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "media_control_chain_installed.json",
+        "media_exact_control_chain_installed_2.json",
+        "media_exact_control_chain_installed_3.json",
+        "media_exact_control_chain_installed_5.json"
+      ]
+    },
+    {
+      "operation": "media.play.exact",
+      "risk": "external_communication",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "spotify_exact_play_control_not_found"
+      ],
+      "sources": [
+        "media_exact_control_chain_installed.json",
+        "media_exact_control_chain_installed_2.json",
+        "media_exact_control_chain_installed_3.json",
+        "media_exact_control_chain_installed_4.json",
+        "media_exact_control_chain_installed_5.json"
+      ]
+    },
+    {
+      "operation": "media.play.query",
+      "risk": "external_communication",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "media_control_chain_installed.json",
+        "spotify_plan_timeout_repro.json"
+      ]
+    },
+    {
+      "operation": "media.play.youtube",
+      "risk": "external_communication",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "media_play_youtube_installed.json"
+      ]
+    },
+    {
+      "operation": "media.seek.relative",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "media_control_chain_installed.json",
+        "media_exact_control_chain_installed_2.json",
+        "media_exact_control_chain_installed_3.json",
+        "media_exact_control_chain_installed_5.json"
+      ]
+    },
+    {
+      "operation": "media.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "media_session_not_found"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "media_control_chain_installed.json",
+        "media_exact_control_chain_installed_2.json",
+        "media_exact_control_chain_installed_3.json",
+        "media_exact_control_chain_installed_5.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "memory.correct",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "memory-extended-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.disable",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "memory-extended-ui-missions.jsonl",
+        "memory-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.enable",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "memory-extended-ui-missions.jsonl",
+        "memory-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.export",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "memory-extended-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.forget",
+      "risk": "work_loss",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "memory-extended-ui-missions.jsonl",
+        "memory-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "rejected"
+      ],
+      "errors": [
+        "invalid_private_envelope"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "memory-extended-ui-missions.jsonl",
+        "memory-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.recall",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed",
+        "rejected"
+      ],
+      "errors": [
+        "invalid_private_envelope",
+        "memory_disabled"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "memory-extended-ui-missions.jsonl",
+        "memory-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.save",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "memory_disabled"
+      ],
+      "sources": [
+        "memory-extended-ui-missions.jsonl",
+        "memory-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.sensitive.save",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "memory-extended-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.session.clear",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "memory-extended-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "memory.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "rejected"
+      ],
+      "errors": [
+        "invalid_private_envelope"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "memory-extended-ui-missions.jsonl",
+        "memory-ui-missions.jsonl"
+      ]
+    },
+    {
+      "operation": "message.recipient.resolve",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "discord_client_not_running"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "message.send",
+      "risk": "external_communication",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "network.dns.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "network.ip.list",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "network_ip_list_sanitized.json"
+      ]
+    },
+    {
+      "operation": "network.ping",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "network.port.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "network.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "note.create",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "note.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "note.read",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "invalid_arguments"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "note.restore",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "note.search",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "note.trash",
+      "risk": "recoverable_delete",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "note.update",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "notification.cancel.latest",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "notification_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "notification.diagnose",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "notification.dismiss",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "notification_due_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "notification.list.due",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "notification_due_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "notification.schedule",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "notification_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "ocr.read",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "capture_ocr_installed.json",
+        "capture_ocr_vision_installed.json"
+      ]
+    },
+    {
+      "operation": "office.document.create",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "office_document_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "office.document.read",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "office_document_not_resolved"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "office_document_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "package.install.commit",
+      "risk": "installation",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "package.install.prepare",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "peripheral.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "peripheral.print",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "peripheral.scan",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "reminder.create",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json",
+        "notification_due_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "reminder.delete",
+      "risk": "recoverable_delete",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "reminder.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "reminder.resolve.exact",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "reminder_not_found"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "reminder.restore",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "routine.delete",
+      "risk": "recoverable_delete",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "routine.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "routine.phrase.create",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "routine.read",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "invalid_arguments"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "routine.resolve.exact",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "routine_not_found"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "routine.restore",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "routine.set.enabled",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "streaming.navigate",
+      "risk": "external_communication",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "streaming_navigate_chain_delayed_installed.json",
+        "streaming_navigate_chain_installed.json",
+        "streaming_navigate_chain_installed_2.json",
+        "streaming_navigate_chain_installed_3.json"
+      ]
+    },
+    {
+      "operation": "streaming.play.named",
+      "risk": "external_communication",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "netflix_authentication_required"
+      ],
+      "sources": [
+        "streaming_play_named_netflix_installed.json"
+      ]
+    },
+    {
+      "operation": "system.application.crash.diagnose",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "system.identity",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "system.power",
+      "risk": "work_loss",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "system.process.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json",
+        "process_terminate_chain_installed.json",
+        "process_terminate_chain_installed_2.json"
+      ]
+    },
+    {
+      "operation": "system.process.terminate.named",
+      "risk": "work_loss",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "process_terminate_chain_installed.json",
+        "process_terminate_chain_installed_2.json"
+      ]
+    },
+    {
+      "operation": "system.recyclebin.empty",
+      "risk": "work_loss",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "system.settings.adjust",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "brightness_adjust_up5_installed.json"
+      ]
+    },
+    {
+      "operation": "system.settings.set",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "brightness_restore_0_installed.json"
+      ]
+    },
+    {
+      "operation": "system.settings.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "brightness_status_installed.json",
+        "brightness_status_restored_installed.json",
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "system.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "system.time",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "task.complete",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "task.create",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "task.delete",
+      "risk": "recoverable_delete",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "task.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "task.reopen",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "task.resolve.exact",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "task_not_found"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "task.restore",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "task.search",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "task.update",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "local_data_chain_installed.json"
+      ]
+    },
+    {
+      "operation": "vision.describe",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "vision_provider_not_configured"
+      ],
+      "sources": [
+        "capture_ocr_vision_installed.json"
+      ]
+    },
+    {
+      "operation": "web.search",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json",
+        "web_search_0.json",
+        "web_search_1.json",
+        "web_search_2.json",
+        "web_search_installed.json"
+      ]
+    },
+    {
+      "operation": "wifi.connect",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "wifi.connect.named",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "wifi.disconnect",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": false,
+      "has_verified_success": false,
+      "has_safe_failure": false,
+      "statuses": [],
+      "errors": [],
+      "sources": []
+    },
+    {
+      "operation": "wifi.ensure.connected",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "wifi_saved_profile_required"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "wifi.profile.list",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json"
+      ]
+    },
+    {
+      "operation": "wifi.status",
+      "risk": "privacy_sensitive",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "wifi_status_installed.json"
+      ]
+    },
+    {
+      "operation": "window.active",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "overnight_soak_installed.json",
+        "window_input_chain_installed.json",
+        "window_input_osk_close_installed.json",
+        "window_input_safe_chain_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_chain_installed.json",
+        "window_input_wpf_diagnostic_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "window.application.status",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "installed_catalog_smoke.json"
+      ]
+    },
+    {
+      "operation": "window.focus",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "visible_click_chain_installed.json",
+        "window_input_chain_installed.json",
+        "window_input_osk_close_installed.json",
+        "window_input_safe_chain_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_chain_installed.json",
+        "window_input_wpf_diagnostic_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "window.maximize",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "verification_failed"
+      ],
+      "sources": [
+        "window_input_osk_close_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "window.minimize",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": false,
+      "has_safe_failure": true,
+      "statuses": [
+        "failed"
+      ],
+      "errors": [
+        "verification_failed"
+      ],
+      "sources": [
+        "window_input_osk_close_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "window.move",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "window_input_osk_close_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "window.resize",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": false,
+      "statuses": [
+        "completed"
+      ],
+      "errors": [],
+      "sources": [
+        "window_input_osk_close_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "window.resolve",
+      "risk": "read_only",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "window_not_found"
+      ],
+      "sources": [
+        "installed_catalog_smoke.json",
+        "visible_click_chain_installed.json",
+        "window_input_chain_installed.json",
+        "window_input_osk_close_installed.json",
+        "window_input_safe_chain_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_after_select_installed.json",
+        "window_input_wpf_chain_installed.json",
+        "window_input_wpf_diagnostic_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    },
+    {
+      "operation": "window.restore",
+      "risk": "low_reversible",
+      "functionally_exercised": true,
+      "has_verified_success": true,
+      "has_safe_failure": true,
+      "statuses": [
+        "completed",
+        "failed"
+      ],
+      "errors": [
+        "verification_failed"
+      ],
+      "sources": [
+        "window_input_osk_close_installed.json",
+        "window_input_winforms_full_installed.json",
+        "window_input_wpf_full_installed.json"
+      ]
+    }
+  ]
+}

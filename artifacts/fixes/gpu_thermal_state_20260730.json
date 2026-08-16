@@ -1,0 +1,14 @@
+{
+  "schema": "baxy.gpu-thermal-state.v1",
+  "measured_at_local": "2026-07-30T02:29:55-04:00",
+  "device": "NVIDIA GeForce RTX 3060 Laptop GPU",
+  "temperature_celsius": 60,
+  "performance_state": "P3",
+  "sm_clock_mhz": 900,
+  "maximum_sm_clock_mhz": 2100,
+  "power_draw_watts": 19.76,
+  "current_power_limit_watts": 95,
+  "software_thermal_slowdown_active": true,
+  "source": "nvidia-smi -q -d PERFORMANCE,POWER,CLOCK",
+  "settings_changed": false
+}

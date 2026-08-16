@@ -1,0 +1,35 @@
+{
+  "schema": "baxy.mswc-faster-whisper-score-cache-build.v9",
+  "measured_at_utc": "2026-08-06T09:06:00.486128+00:00",
+  "scope": "reserved_transcript_score_cache_without_label_metrics",
+  "sources": {
+    "corpus_manifest_sha256": "b0030e3eea08d139a567a7ea987aa6f00b67433c5388993c8767466fec2eb6a0",
+    "model_tree_sha256": "4c38e9e79ccb0a6aae7cb9d964e596bb16ff78adf327f80096a340124f27fcc4",
+    "model_bin_sha256": "69f74147e3334731bc3a76048724833325d2ec74642fb52620eda87352e3d4f1",
+    "score_cache_sha256": "4c9e90feb769fd12909748a337fe10b3210beb5dcc097f3d076d05c5ef04e0c4"
+  },
+  "contract": {
+    "split_seed": 6501,
+    "word_set": "reserved",
+    "word_classes": 200,
+    "query_examples_per_word": 6,
+    "hard_negative_candidates_per_query": 40,
+    "language": "es",
+    "compute_type": "int8_float16",
+    "inference_layout": "fixed_slot_batched",
+    "label_metrics_computed": false
+  },
+  "queries_cached": 1200,
+  "accepted": false,
+  "runtime": {
+    "load_seconds": 16.168428000004496,
+    "decode_seconds": 410.75871460000053,
+    "total_seconds": 455.6208430000115
+  },
+  "individual_examples_exported": true,
+  "research_tuning_examples_scored": false,
+  "research_reserved_examples_scored": true,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

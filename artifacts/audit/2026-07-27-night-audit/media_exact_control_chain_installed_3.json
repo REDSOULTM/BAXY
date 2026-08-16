@@ -1,0 +1,173 @@
+{
+  "schema": "baxy.audit.media-control-chain.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "elapsed_seconds": 16.388306299999385,
+  "total": 5,
+  "verified": 5,
+  "playback_started": true,
+  "paused_before_cleanup": true,
+  "cases": [
+    {
+      "operation": "media.play.exact",
+      "arguments": {
+        "provider": "spotify",
+        "title": "Beat It"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ce7856bc-4075-4aa3-85b8-d222cc82d9a7",
+          "missionId": "8e8122e6-0760-4328-ab26-dba09ce3bc9a",
+          "invocationId": "d05006d0-0d69-4b12-ba15-c1fa9bc63a94",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "RoDHAQO50So9oND2Z9y--vGKjHbCstcZdeAcqmYQO7Q",
+            "expiresAtUtc": "2026-07-27T07:47:04.2859358+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "b64cd6b1-c09a-48f8-b2b1-dadafc3f75a7",
+          "missionId": "8e8122e6-0760-4328-ab26-dba09ce3bc9a",
+          "invocationId": "d05006d0-0d69-4b12-ba15-c1fa9bc63a94",
+          "status": "completed",
+          "message": "Listo, está sonando «Michael Jackson - Beat It».",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "provider": "spotify",
+            "title": "Michael Jackson - Beat It",
+            "playbackStatus": "playing",
+            "processId": 6220,
+            "authority": "spotify_windows_uia_postread"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 15.509337999999843
+    },
+    {
+      "operation": "media.status",
+      "arguments": {},
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "58ff3ef2-41f1-488f-b687-da6283fcba39",
+          "missionId": "53e693d6-3e63-44eb-9a18-6a66b92ab9cc",
+          "invocationId": "c9532d5b-6c23-42b7-8e4d-ead4ee340fba",
+          "status": "completed",
+          "message": "Está sonando «Beat It» de Michael Jackson.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+            "title": "Beat It",
+            "artist": "Michael Jackson",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc_current_session_read"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03904479999982868
+    },
+    {
+      "operation": "media.seek.relative",
+      "arguments": {
+        "seconds": 10
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "4deaa997-4ebf-41d3-b107-67787e8aaf88",
+          "missionId": "e1243587-b4ec-477c-be13-ec73d36620d0",
+          "invocationId": "cfeb3e1f-df01-4f90-8b0a-4510537ae38b",
+          "status": "completed",
+          "message": "Listo, adelanté 10 segundos y verifiqué la posición.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "requestedDeltaSeconds": 10,
+            "previousPositionSeconds": 0.859,
+            "positionSeconds": 10.862,
+            "durationSeconds": 258.296,
+            "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+            "authority": "windows_smtc_timeline_postread"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.3929582999990089
+    },
+    {
+      "operation": "media.control",
+      "arguments": {
+        "action": "pause",
+        "sourceApp": "spotify"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "e0ad6064-be68-4094-b850-768f72f9e8b0",
+          "missionId": "432ba25f-0051-4e8d-af4c-49a5a5692e6f",
+          "invocationId": "1a85f809-53f1-4c07-965f-9b3ab1ec7760",
+          "status": "completed",
+          "message": "Listo, cambié y verifiqué la reproducción.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "provider": "spotify",
+            "title": "Beat It",
+            "artist": "Michael Jackson",
+            "playbackStatus": "paused",
+            "authority": "windows_smtc"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.3908771999995224
+    },
+    {
+      "operation": "media.status",
+      "arguments": {},
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "3ed554d1-6f5e-41a2-99af-a45211ab5325",
+          "missionId": "65633f5f-0a56-4e40-a3a9-f643592a1c69",
+          "invocationId": "95cfaf6e-9b5a-4b21-b6e7-761c26ebddcb",
+          "status": "completed",
+          "message": "Está en pausa «Beat It» de Michael Jackson.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+            "title": "Beat It",
+            "artist": "Michael Jackson",
+            "playbackStatus": "paused",
+            "authority": "windows_smtc_current_session_read"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.040261100000861916
+    }
+  ],
+  "errors": [],
+  "process_exit_code": 0,
+  "stderr": ""
+}

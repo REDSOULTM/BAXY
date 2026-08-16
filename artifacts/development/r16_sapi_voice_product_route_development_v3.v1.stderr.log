@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "D:\BAXY\source\experiments\mind_router_spike\probe_r16_sapi_voice_product_route_development_v3.py", line 50, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\BAXY\source\experiments\mind_router_spike\probe_r16_sapi_voice_product_route_development_v3.py", line 46, in main
+    return runner.main()
+           ^^^^^^^^^^^^^
+  File "D:\BAXY\source\experiments\mind_router_spike\probe_generalization_product_r2_development.py", line 312, in main
+    report = run(args)
+             ^^^^^^^^^
+  File "D:\BAXY\source\experiments\mind_router_spike\probe_generalization_product_r2_development.py", line 194, in run
+    audits = _read_audit(
+             ^^^^^^^^^^^^
+  File "D:\BAXY\source\experiments\mind_router_spike\probe_current_catalog_review.py", line 176, in _read_audit
+    raise RuntimeError(
+RuntimeError: raw turn audit is incomplete: expected=337 actual=330

@@ -1,0 +1,198 @@
+{
+  "schema": "baxy.raw-acoustic-ensemble-wake-corpus-development.v1",
+  "measuredAtUtc": "2026-08-08T07:22:06.218545+00:00",
+  "scope": "opened_known_playback_wasapi_raw_room_corpus",
+  "policy": {
+    "primaryFirstScoreGte": 0.05,
+    "primaryPeakMaximumIndex": 1,
+    "primaryTailToPeakLte": 0.2,
+    "baseToPrimaryGte": 0.5,
+    "alignedToPrimaryGte": 0.6
+  },
+  "models": {
+    "base": {
+      "sha256": "dadb657e6ea0ea0241bc38130123b50bc63f08e6b99431393adc00b4eeb28921"
+    },
+    "aligned": {
+      "sha256": "dd8431c588b70425b3117a4eac4bab29e8c5b3ae94b26974a296e4f11b6437a3"
+    },
+    "primary": {
+      "sha256": "8c31c6e42f777028ff9642395ddc8e3828726c1b10a630936f1d847ec245e717"
+    }
+  },
+  "corpusManifestSha256": "8655251b5aaa808c2cbb87df4bbf97b721592277c5ef5427517f3000627a1ecb",
+  "positive": {
+    "files": 4,
+    "acceptedFiles": 2,
+    "decisionSeconds": {
+      "minimum": 0.9930889999959618,
+      "p50": 1.0475182500085793,
+      "maximum": 1.0854905999731272
+    },
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "faffdbed843e69581fb405550d43dc981e04605eeb3cb287244c8d1eadd990c3",
+        "accepted": true,
+        "reason": "early_three_model_consensus",
+        "primaryFirst": 0.3049832582473755,
+        "primaryMaximum": 0.5810877084732056,
+        "primaryPeakIndex": 1,
+        "primaryTailToPeak": 0.09046819407953649,
+        "baseToPrimary": 1.584602330856575,
+        "alignedToPrimary": 1.404572596628548
+      },
+      {
+        "record": 1,
+        "audioSha256": "fd0628fe139a61169e3610af067c51815af566c4b731d108be1d1504499bd52e",
+        "accepted": false,
+        "reason": "base_model_disagrees",
+        "primaryFirst": 0.09967616200447083,
+        "primaryMaximum": 0.13143163919448853,
+        "primaryPeakIndex": 1,
+        "primaryTailToPeak": 0.07137661294016436,
+        "baseToPrimary": 0.27845062508588214,
+        "alignedToPrimary": 1.0615857095757615
+      },
+      {
+        "record": 2,
+        "audioSha256": "ec7d8a35c3f3592e2bf4c0d6fcd4529c679eef748b9ebf3116d77e2dff76c3e3",
+        "accepted": true,
+        "reason": "early_three_model_consensus",
+        "primaryFirst": 0.37072503566741943,
+        "primaryMaximum": 0.5744409561157227,
+        "primaryPeakIndex": 1,
+        "primaryTailToPeak": 0.01679015970913679,
+        "baseToPrimary": 1.333033394483228,
+        "alignedToPrimary": 1.3485477591745594
+      },
+      {
+        "record": 3,
+        "audioSha256": "e3a972a2b540554b91af09d6b78b4257c69c06397d614ae28c8d0ec9953e7f24",
+        "accepted": false,
+        "reason": "base_model_disagrees",
+        "primaryFirst": 0.18014559149742126,
+        "primaryMaximum": 0.18014559149742126,
+        "primaryPeakIndex": 0,
+        "primaryTailToPeak": 0.05114362490142163,
+        "baseToPrimary": 0.4684331668013029,
+        "alignedToPrimary": 0.214816393183894
+      }
+    ]
+  },
+  "negative": {
+    "files": 8,
+    "acceptedFiles": 1,
+    "decisionSeconds": {
+      "minimum": 0.9078735000221059,
+      "p50": 1.0068578000064008,
+      "maximum": 1.1829351000487804
+    },
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "1d8f2a6f1c5d00290f652a47789ab0f777df6cd34b45015b1ecb4ce5f526e685",
+        "accepted": false,
+        "reason": "aligned_model_disagrees",
+        "primaryFirst": 0.2063244879245758,
+        "primaryMaximum": 0.2063244879245758,
+        "primaryPeakIndex": 0,
+        "primaryTailToPeak": 0.13159363123548248,
+        "baseToPrimary": 0.9581346567094716,
+        "alignedToPrimary": 0.5209629326511342
+      },
+      {
+        "record": 1,
+        "audioSha256": "cc52d06ad3202ed6ba7915902b4d31755da9eddd03933df68037b87308cd525b",
+        "accepted": false,
+        "reason": "wake_not_at_utterance_start",
+        "primaryFirst": 0.018084734678268433,
+        "primaryMaximum": 0.1399308443069458,
+        "primaryPeakIndex": 1,
+        "primaryTailToPeak": 0.06486039230720082,
+        "baseToPrimary": 1.3813279236683491,
+        "alignedToPrimary": 0.781629075884395
+      },
+      {
+        "record": 2,
+        "audioSha256": "6e1619e671a911b0df148576c79d78ad33cba22a4f43ae98c5904f9092124013",
+        "accepted": false,
+        "reason": "sustained_non_wake_response",
+        "primaryFirst": 0.08482864499092102,
+        "primaryMaximum": 0.08482864499092102,
+        "primaryPeakIndex": 0,
+        "primaryTailToPeak": 0.2513324833639395,
+        "baseToPrimary": 2.2146500621667475,
+        "alignedToPrimary": 0.39851151130015455
+      },
+      {
+        "record": 3,
+        "audioSha256": "be170e77876617839d961cf24fd7f750c161f0a6e493bfefddf478d5a5ad4488",
+        "accepted": false,
+        "reason": "wake_not_at_utterance_start",
+        "primaryFirst": 0.011115163564682007,
+        "primaryMaximum": 0.07201343774795532,
+        "primaryPeakIndex": 3,
+        "primaryTailToPeak": 0.5051953964003857,
+        "baseToPrimary": 1.1346813608843016,
+        "alignedToPrimary": 0.595261901116137
+      },
+      {
+        "record": 4,
+        "audioSha256": "108e3ec7b3864107afbdbdf3c07e239962935b1fec43e90a41c6a0f4c44217c5",
+        "accepted": false,
+        "reason": "base_model_disagrees",
+        "primaryFirst": 0.4658656418323517,
+        "primaryMaximum": 0.4658656418323517,
+        "primaryPeakIndex": 0,
+        "primaryTailToPeak": 0.13398350560653158,
+        "baseToPrimary": 0.17162234787587938,
+        "alignedToPrimary": 0.6141397020200479
+      },
+      {
+        "record": 5,
+        "audioSha256": "12f84b7f76267799cae760b5cf4e9332a4db759a794a1b1326c3fe6f4a6f9dec",
+        "accepted": true,
+        "reason": "early_three_model_consensus",
+        "primaryFirst": 0.07440739870071411,
+        "primaryMaximum": 0.2570796608924866,
+        "primaryPeakIndex": 1,
+        "primaryTailToPeak": 0.13716586820419094,
+        "baseToPrimary": 0.9746227812554413,
+        "alignedToPrimary": 0.6491768877051
+      },
+      {
+        "record": 6,
+        "audioSha256": "b4dd293f44784dcd54e1a96175d2b7b88ba528083eae004ed6e3c46445ded580",
+        "accepted": false,
+        "reason": "sustained_non_wake_response",
+        "primaryFirst": 0.051848143339157104,
+        "primaryMaximum": 0.158103346824646,
+        "primaryPeakIndex": 1,
+        "primaryTailToPeak": 0.8613290159522932,
+        "baseToPrimary": 1.3814627823809233,
+        "alignedToPrimary": 1.3043787563137739
+      },
+      {
+        "record": 7,
+        "audioSha256": "7bd6881ba5331f2a3bcde62247ec193c57d9c539fc4eb7b6f3cf3d82cc05d53a",
+        "accepted": false,
+        "reason": "wake_not_at_utterance_start",
+        "primaryFirst": 0.023353397846221924,
+        "primaryMaximum": 0.04964470863342285,
+        "primaryPeakIndex": 2,
+        "primaryTailToPeak": 0.14459959178772963,
+        "baseToPrimary": 0.7365536078760956,
+        "alignedToPrimary": 0.565227518309521
+      }
+    ]
+  },
+  "elapsedWallSeconds": 12.410934799932875,
+  "openedDevelopmentPassed": false,
+  "blindHumanPartitionAccessed": false,
+  "candidateFrozen": false,
+  "promotable": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0,
+  "filenamesOrTranscriptsRetained": false
+}

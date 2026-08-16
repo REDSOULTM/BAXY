@@ -1,0 +1,132 @@
+{
+  "schema": "baxy.audit.filesystem-chain.v1",
+  "core": "D:\\BAXY\\source\\artifacts\\product\\build\\local-win-x64\\app\\core\\baxy-core.exe",
+  "core_version": "1.0.0",
+  "catalog_count": 166,
+  "catalog_utf8_bytes": 73492,
+  "elapsed_seconds": 0.19897960000525927,
+  "total": 4,
+  "verified": 4,
+  "cases": [
+    {
+      "operation": "filesystem.create.directory",
+      "arguments": {
+        "relativePath": "documents"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "21d1b13e-fd6e-49b2-ae96-4768684c4026",
+          "missionId": "4d5b4d65-a605-41b8-8e56-6180c2be5c3b",
+          "invocationId": "f8ed15b7-2c15-42dd-b37f-852d88fb2e41",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_1dfe9b0c7bb24d0891567b5a83a73ec9",
+            "name": "documents",
+            "kind": "directory",
+            "size": 0,
+            "sha256": null,
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.0447003000008408
+    },
+    {
+      "operation": "filesystem.create.directory",
+      "arguments": {
+        "relativePath": "moved"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "1a69f7cc-3256-4a09-9779-f5b09d521842",
+          "missionId": "f538fef1-852a-46ca-8441-fa07daed6aa5",
+          "invocationId": "e4bbd097-c690-4cba-96f9-01c16cda511b",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_75d7c4a0d9774b93906121f92e424109",
+            "name": "moved",
+            "kind": "directory",
+            "size": 0,
+            "sha256": null,
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03707679999934044
+    },
+    {
+      "operation": "filesystem.write.text",
+      "arguments": {
+        "relativePath": "documents/source.txt",
+        "text": "BAXY synthetic filesystem audit: alpha\n",
+        "expectedSha256": null
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "6d52454d-30a4-458c-95a2-3178b0a4fb5d",
+          "missionId": "e378e9e4-a881-4008-a039-4bc0505849b7",
+          "invocationId": "c8ac0ccd-4309-46e1-bcf9-32fc4997faaa",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_f04b5cfdf01d4e858a919f7a461d4ef9",
+            "name": "source.txt",
+            "kind": "file",
+            "size": 39,
+            "sha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46",
+            "reachedState": false
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.05304620000242721
+    },
+    {
+      "operation": "filesystem.read.text",
+      "arguments": {
+        "resourceId": "fs_f04b5cfdf01d4e858a919f7a461d4ef9",
+        "maximumBytes": 4096
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "7f742a16-0122-403f-84de-dd61950f0847",
+          "missionId": "6287ce65-64aa-4028-9623-fe079c2e51f6",
+          "invocationId": "0b3206e1-01e5-4f63-93ff-6817c01e3fbe",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "resourceId": "fs_f04b5cfdf01d4e858a919f7a461d4ef9",
+            "text": "BAXY synthetic filesystem audit: alpha\n",
+            "utf8Bytes": 39,
+            "sha256": "323d16cb6c29b87398a45bfad981bc02578ea2e2c5aebf38ebf5dc648d14fc46"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03295819999766536
+    }
+  ],
+  "error": "RuntimeError: core closed before filesystem response",
+  "process_exit_code": 70,
+  "stderr": "BAXY core stopped safely (InvalidOperationException).\n"
+}

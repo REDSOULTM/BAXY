@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <AssemblyName>baxy-dotnet-slice</AssemblyName>
+    <RootNamespace>Baxy.Tournament</RootNamespace>
+    <PathMap>$(MSBuildProjectDirectory)=/_/experiments/technology_tournament/dotnet_windows_core</PathMap>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(PublishAot)' == 'true'">
+    <LinkerArg Include="/Brepro" />
+  </ItemGroup>
+</Project>

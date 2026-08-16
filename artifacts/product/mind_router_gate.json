@@ -1,0 +1,88 @@
+{
+  "schema": "baxy-mind-router-gate-v1",
+  "measured_at": "2026-07-22T22:59:07.354013+00:00",
+  "adr": "ADR-0005",
+  "router": "src/baxy_mind IntentRouter (e5-small, banco intent_bank.jsonl, tau 0.90/margen 0.005)",
+  "cases_total": 675,
+  "cases_correct": 675,
+  "accuracy": 1.0,
+  "per_set": {
+    "audio_mute": {
+      "total": 16,
+      "correct": 16,
+      "accuracy": 1.0
+    },
+    "audio_negative": {
+      "total": 128,
+      "correct": 128,
+      "accuracy": 1.0
+    },
+    "audio_status": {
+      "total": 16,
+      "correct": 16,
+      "accuracy": 1.0
+    },
+    "audio_volume": {
+      "total": 127,
+      "correct": 127,
+      "accuracy": 1.0
+    },
+    "audio_volume_alias": {
+      "total": 12,
+      "correct": 12,
+      "accuracy": 1.0
+    },
+    "gpu_composition": {
+      "total": 17,
+      "correct": 17,
+      "accuracy": 1.0
+    },
+    "gpu_negative": {
+      "total": 34,
+      "correct": 34,
+      "accuracy": 1.0
+    },
+    "gpu_status": {
+      "total": 26,
+      "correct": 26,
+      "accuracy": 1.0
+    },
+    "memory_negative": {
+      "total": 34,
+      "correct": 34,
+      "accuracy": 1.0
+    },
+    "memory_positive": {
+      "total": 105,
+      "correct": 105,
+      "accuracy": 1.0
+    },
+    "note_create": {
+      "total": 40,
+      "correct": 40,
+      "accuracy": 1.0
+    },
+    "note_negative": {
+      "total": 7,
+      "correct": 7,
+      "accuracy": 1.0
+    },
+    "system_status": {
+      "total": 113,
+      "correct": 113,
+      "accuracy": 1.0
+    }
+  },
+  "readonly_deviations": [
+    {
+      "message_id": "msg_b7d59617a32e63aca567",
+      "text": "cuánta memoria me queda libre",
+      "routed": "system.status:{'scope': 'memory'}",
+      "category": "memory_word_homonym"
+    }
+  ],
+  "failures": [],
+  "batch_seconds": 21.1,
+  "status": "passed",
+  "baseline": "router regex interino: 675/675 en estos sets por construcción, generalización ≈0 (ver experiments/mind_router_spike/VEREDICTO.md: LOO 89,3%)"
+}

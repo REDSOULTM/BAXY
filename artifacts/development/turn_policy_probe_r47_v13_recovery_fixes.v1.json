@@ -1,0 +1,67 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v13_recovery_fixes.v1.raw.jsonl",
+    "sha256": "0d3fb37fc0588f1fcd455738fd0a32de103a39cf39f091ac7de6cb2292c5c16f"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:b8c57ddbb3c48debcecfae960ffab108aa58981eec90a38a1689017f948b9601",
+      "expected_families": [
+        "web"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-b10b6efa3b31b95ce8fb66d0",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 0.464,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "I cannot process the request to get vanilla, wait, cinnamon using my American Express card.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    },
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:es-ES:c8d0ed59e47df202e8952788a4d885695ef489b96e80a13415231d2420b20657",
+      "expected_families": [
+        "game"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-21475150ac6d88b6a191e9ce",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 2.4559,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "Mencionas que quieres quitar, eh, poner el Fortnite.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T22:01:32.267394+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 2,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

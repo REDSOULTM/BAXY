@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-07-27T12:56:16-04:00",
+  "since": "2026-07-27T00:52:00-04:00",
+  "log": "Application",
+  "levels": [
+    "Critical",
+    "Error",
+    "Warning"
+  ],
+  "matchTerms": [
+    "BAXY",
+    "baxy-core",
+    "Baxy.App",
+    "llama-server",
+    ".NET Runtime",
+    "Application Error",
+    "Windows Error Reporting"
+  ],
+  "matchingEvents": 0
+}

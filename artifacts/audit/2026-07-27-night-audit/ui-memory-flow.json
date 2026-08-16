@@ -1,0 +1,1421 @@
+{
+    "captured_at_utc":  "2026-07-27T07:14:51.1958591+00:00",
+    "process_id":  29560,
+    "process_name":  "Baxy",
+    "main_window_title":  "BAXY",
+    "elements":  [
+                     {
+                         "index":  0,
+                         "control_type":  "ControlType.Pane",
+                         "name":  "BAXY Field, interfaz local",
+                         "automation_id":  "HistoricalFieldUi",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "0;-96;1920;1106"
+                     },
+                     {
+                         "index":  3,
+                         "control_type":  "ControlType.Pane",
+                         "name":  "field · gemma4",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "0;-96;1920;1106"
+                     },
+                     {
+                         "index":  6,
+                         "control_type":  "ControlType.Pane",
+                         "name":  "field · gemma4: contenido web",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "0;-96;1920;1107"
+                     },
+                     {
+                         "index":  10,
+                         "control_type":  "ControlType.Text",
+                         "name":  "Sin título",
+                         "automation_id":  "view_9",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "Empty"
+                     },
+                     {
+                         "index":  12,
+                         "control_type":  "ControlType.Button",
+                         "name":  "Minimizar",
+                         "automation_id":  "view_2",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "Empty"
+                     },
+                     {
+                         "index":  13,
+                         "control_type":  "ControlType.Button",
+                         "name":  "Maximizar",
+                         "automation_id":  "view_3",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "Empty"
+                     },
+                     {
+                         "index":  14,
+                         "control_type":  "ControlType.Button",
+                         "name":  "Cerrar",
+                         "automation_id":  "view_7",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "Empty"
+                     },
+                     {
+                         "index":  21,
+                         "control_type":  "ControlType.Document",
+                         "name":  "field · gemma4",
+                         "automation_id":  "RootWebArea",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "0;-96;1920;1107"
+                     },
+                     {
+                         "index":  23,
+                         "control_type":  "ControlType.Text",
+                         "name":  "gemma ",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "195;-14;59;19"
+                     },
+                     {
+                         "index":  24,
+                         "control_type":  "ControlType.Text",
+                         "name":  "4",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "253;-14;11;19"
+                     },
+                     {
+                         "index":  26,
+                         "control_type":  "ControlType.Text",
+                         "name":  "· field",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "272;-14;69;19"
+                     },
+                     {
+                         "index":  27,
+                         "control_type":  "ControlType.Button",
+                         "name":  "minimizar",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1572;-29;54;49"
+                     },
+                     {
+                         "index":  28,
+                         "control_type":  "ControlType.Button",
+                         "name":  "maximizar",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1629;-29;54;49"
+                     },
+                     {
+                         "index":  29,
+                         "control_type":  "ControlType.Button",
+                         "name":  "cerrar",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1686;-29;54;49"
+                     },
+                     {
+                         "index":  30,
+                         "control_type":  "ControlType.Text",
+                         "name":  "gemma 4",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "234;49;85;27"
+                     },
+                     {
+                         "index":  31,
+                         "control_type":  "ControlType.Text",
+                         "name":  "e2b · local",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;81;98;19"
+                     },
+                     {
+                         "index":  32,
+                         "control_type":  "ControlType.Button",
+                         "name":  "voice off — click to listen",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;120;251;51"
+                     },
+                     {
+                         "index":  33,
+                         "control_type":  "ControlType.Text",
+                         "name":  "system",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;188;57;21"
+                     },
+                     {
+                         "index":  34,
+                         "control_type":  "ControlType.Text",
+                         "name":  "34",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "426;190;18;19"
+                     },
+                     {
+                         "index":  35,
+                         "control_type":  "ControlType.Text",
+                         "name":  "%",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "443;190;9;19"
+                     },
+                     {
+                         "index":  36,
+                         "control_type":  "ControlType.Text",
+                         "name":  "cpu",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;222;31;24"
+                     },
+                     {
+                         "index":  37,
+                         "control_type":  "ControlType.Text",
+                         "name":  "21",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "243;223;22;23"
+                     },
+                     {
+                         "index":  38,
+                         "control_type":  "ControlType.Text",
+                         "name":  "%",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "269;227;9;18"
+                     },
+                     {
+                         "index":  39,
+                         "control_type":  "ControlType.Text",
+                         "name":  "mem",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;270;42;24"
+                     },
+                     {
+                         "index":  40,
+                         "control_type":  "ControlType.Text",
+                         "name":  "13.0",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "254;271;44;23"
+                     },
+                     {
+                         "index":  41,
+                         "control_type":  "ControlType.Text",
+                         "name":  "gb",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "301;275;18;18"
+                     },
+                     {
+                         "index":  42,
+                         "control_type":  "ControlType.Text",
+                         "name":  "gpu",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;318;33;24"
+                     },
+                     {
+                         "index":  43,
+                         "control_type":  "ControlType.Text",
+                         "name":  "15",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "245;319;22;23"
+                     },
+                     {
+                         "index":  44,
+                         "control_type":  "ControlType.Text",
+                         "name":  "%",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "271;323;9;18"
+                     },
+                     {
+                         "index":  45,
+                         "control_type":  "ControlType.Text",
+                         "name":  "net",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;366;27;24"
+                     },
+                     {
+                         "index":  46,
+                         "control_type":  "ControlType.Text",
+                         "name":  "0.0",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "239;367;33;23"
+                     },
+                     {
+                         "index":  47,
+                         "control_type":  "ControlType.Text",
+                         "name":  "mb/s",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "276;371;34;18"
+                     },
+                     {
+                         "index":  48,
+                         "control_type":  "ControlType.Text",
+                         "name":  "dsk",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;414;29;24"
+                     },
+                     {
+                         "index":  49,
+                         "control_type":  "ControlType.Text",
+                         "name":  "85",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "241;415;22;23"
+                     },
+                     {
+                         "index":  50,
+                         "control_type":  "ControlType.Text",
+                         "name":  "%",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "267;419;9;18"
+                     },
+                     {
+                         "index":  51,
+                         "control_type":  "ControlType.Text",
+                         "name":  "tmp",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;462;34;24"
+                     },
+                     {
+                         "index":  52,
+                         "control_type":  "ControlType.Text",
+                         "name":  "0",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "246;463;11;23"
+                     },
+                     {
+                         "index":  53,
+                         "control_type":  "ControlType.Text",
+                         "name":  "°c",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "261;467;17;18"
+                     },
+                     {
+                         "index":  54,
+                         "control_type":  "ControlType.Text",
+                         "name":  "perfil",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;516;45;20"
+                     },
+                     {
+                         "index":  55,
+                         "control_type":  "ControlType.Group",
+                         "name":  "accessibility mode",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;549;251;145"
+                     },
+                     {
+                         "index":  56,
+                         "control_type":  "ControlType.RadioButton",
+                         "name":  "normal",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;549;251;45"
+                     },
+                     {
+                         "index":  57,
+                         "control_type":  "ControlType.RadioButton",
+                         "name":  "no vidente",
+                         "automation_id":  "",
+                         "enabled":  false,
+                         "offscreen":  false,
+                         "bounds":  "201;599;251;45"
+                     },
+                     {
+                         "index":  58,
+                         "control_type":  "ControlType.RadioButton",
+                         "name":  "movilidad",
+                         "automation_id":  "",
+                         "enabled":  false,
+                         "offscreen":  false,
+                         "bounds":  "201;649;251;45"
+                     },
+                     {
+                         "index":  59,
+                         "control_type":  "ControlType.Text",
+                         "name":  "ctx",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;711;24;25"
+                     },
+                     {
+                         "index":  60,
+                         "control_type":  "ControlType.Text",
+                         "name":  "0.0k",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "236;712;44;24"
+                     },
+                     {
+                         "index":  61,
+                         "control_type":  "ControlType.Text",
+                         "name":  "/ 4.1k",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "284;716;50;19"
+                     },
+                     {
+                         "index":  62,
+                         "control_type":  "ControlType.Button",
+                         "name":  "TRIGGERS 0 active",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;765;122;82"
+                     },
+                     {
+                         "index":  63,
+                         "control_type":  "ControlType.Text",
+                         "name":  "TRIGGERS",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "214;775;58;15"
+                     },
+                     {
+                         "index":  64,
+                         "control_type":  "ControlType.Text",
+                         "name":  "0",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "214;814;9;23"
+                     },
+                     {
+                         "index":  66,
+                         "control_type":  "ControlType.Text",
+                         "name":  "active",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "232;819;31;17"
+                     },
+                     {
+                         "index":  67,
+                         "control_type":  "ControlType.Button",
+                         "name":  "TOOLS 168 wired",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "330;765;122;82"
+                     },
+                     {
+                         "index":  68,
+                         "control_type":  "ControlType.Text",
+                         "name":  "TOOLS",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "343;775;39;15"
+                     },
+                     {
+                         "index":  69,
+                         "control_type":  "ControlType.Text",
+                         "name":  "168",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "343;814;27;23"
+                     },
+                     {
+                         "index":  71,
+                         "control_type":  "ControlType.Text",
+                         "name":  "wired",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "379;819;30;17"
+                     },
+                     {
+                         "index":  72,
+                         "control_type":  "ControlType.Text",
+                         "name":  "uptime",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "201;880;47;21"
+                     },
+                     {
+                         "index":  73,
+                         "control_type":  "ControlType.Text",
+                         "name":  "02:58:28",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "386;882;66;19"
+                     },
+                     {
+                         "index":  74,
+                         "control_type":  "ControlType.Image",
+                         "name":  "agent state visualization",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "501;43;768;754"
+                     },
+                     {
+                         "index":  75,
+                         "control_type":  "ControlType.Text",
+                         "name":  "›",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "504;824;12;25"
+                     },
+                     {
+                         "index":  76,
+                         "control_type":  "ControlType.Edit",
+                         "name":  "message input",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "530;821;515;32"
+                     },
+                     {
+                         "index":  77,
+                         "control_type":  "ControlType.Text",
+                         "name":  "0",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1059;828;9;18"
+                     },
+                     {
+                         "index":  78,
+                         "control_type":  "ControlType.Text",
+                         "name":  " / 4k",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1067;828;42;18"
+                     },
+                     {
+                         "index":  79,
+                         "control_type":  "ControlType.Button",
+                         "name":  "microphone off",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1137;817;39;40"
+                     },
+                     {
+                         "index":  80,
+                         "control_type":  "ControlType.Button",
+                         "name":  "attach files",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1182;817;39;40"
+                     },
+                     {
+                         "index":  81,
+                         "control_type":  "ControlType.Button",
+                         "name":  "send",
+                         "automation_id":  "",
+                         "enabled":  false,
+                         "offscreen":  false,
+                         "bounds":  "1227;817;39;40"
+                     },
+                     {
+                         "index":  82,
+                         "control_type":  "ControlType.Text",
+                         "name":  "no attachments",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "504;881;103;21"
+                     },
+                     {
+                         "index":  83,
+                         "control_type":  "ControlType.Button",
+                         "name":  "new session",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1535;52;34;34"
+                     },
+                     {
+                         "index":  84,
+                         "control_type":  "ControlType.Button",
+                         "name":  "shortcuts",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1574;52;34;34"
+                     },
+                     {
+                         "index":  85,
+                         "control_type":  "ControlType.Button",
+                         "name":  "settings",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1613;52;106;34"
+                     },
+                     {
+                         "index":  86,
+                         "control_type":  "ControlType.Text",
+                         "name":  "activity",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;103;61;21"
+                     },
+                     {
+                         "index":  87,
+                         "control_type":  "ControlType.Text",
+                         "name":  "25",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1496;105;18;19"
+                     },
+                     {
+                         "index":  88,
+                         "control_type":  "ControlType.Text",
+                         "name":  " entries · #",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1513;105;104;19"
+                     },
+                     {
+                         "index":  89,
+                         "control_type":  "ControlType.Text",
+                         "name":  "6d8d78f33cbd",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1616;105;103;19"
+                     },
+                     {
+                         "index":  91,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14:48",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;142;69;19"
+                     },
+                     {
+                         "index":  92,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1395;141;61;19"
+                     },
+                     {
+                         "index":  93,
+                         "control_type":  "ControlType.Text",
+                         "name":  "No encontré memorias visibles para esa consulta.",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;167;392;25"
+                     },
+                     {
+                         "index":  94,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14:47",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;213;69;19"
+                     },
+                     {
+                         "index":  95,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1395;212;34;19"
+                     },
+                     {
+                         "index":  96,
+                         "control_type":  "ControlType.Text",
+                         "name":  "lista mi memoria",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;238;133;25"
+                     },
+                     {
+                         "index":  97,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14:44",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;283;69;19"
+                     },
+                     {
+                         "index":  98,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1395;282;61;19"
+                     },
+                     {
+                         "index":  99,
+                         "control_type":  "ControlType.Text",
+                         "name":  "No encontré memorias visibles para esa consulta.",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;308;392;25"
+                     },
+                     {
+                         "index":  100,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14:43",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;354;69;19"
+                     },
+                     {
+                         "index":  101,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1395;353;34;19"
+                     },
+                     {
+                         "index":  102,
+                         "control_type":  "ControlType.Text",
+                         "name":  "qué color me gusta",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;379;154;25"
+                     },
+                     {
+                         "index":  103,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14:40",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;424;69;19"
+                     },
+                     {
+                         "index":  104,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1395;423;61;19"
+                     },
+                     {
+                         "index":  105,
+                         "control_type":  "ControlType.Text",
+                         "name":  "Eliminé una memoria local.",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;449;213;25"
+                     },
+                     {
+                         "index":  106,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14:39",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;495;69;19"
+                     },
+                     {
+                         "index":  107,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1395;494;34;19"
+                     },
+                     {
+                         "index":  108,
+                         "control_type":  "ControlType.Text",
+                         "name":  "confirmar",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;520;77;25"
+                     },
+                     {
+                         "index":  109,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14:36",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;566;69;19"
+                     },
+                     {
+                         "index":  110,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1395;565;61;19"
+                     },
+                     {
+                         "index":  111,
+                         "control_type":  "ControlType.Text",
+                         "name":  "Esta acción eliminaría memoria local y no se puede deshacer. Responde únicamente «confirmar / confirm» o «cancelar / cancel».",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;591;349;77"
+                     },
+                     {
+                         "index":  112,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14:35",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;688;69;19"
+                     },
+                     {
+                         "index":  113,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1395;687;34;19"
+                     },
+                     {
+                         "index":  114,
+                         "control_type":  "ControlType.Text",
+                         "name":  "borra mi color favorito",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;713;179;25"
+                     },
+                     {
+                         "index":  115,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:43",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;759;69;19"
+                     },
+                     {
+                         "index":  116,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;758;61;19"
+                     },
+                     {
+                         "index":  117,
+                         "control_type":  "ControlType.Text",
+                         "name":  "Encontré la memoria local: favorite_color: azul",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;784;363;25"
+                     },
+                     {
+                         "index":  118,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:42",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;830;69;19"
+                     },
+                     {
+                         "index":  119,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;829;34;19"
+                     },
+                     {
+                         "index":  120,
+                         "control_type":  "ControlType.Text",
+                         "name":  "lista mi memoria",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;855;133;25"
+                     },
+                     {
+                         "index":  121,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:39",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;900;69;19"
+                     },
+                     {
+                         "index":  122,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;899;61;19"
+                     },
+                     {
+                         "index":  123,
+                         "control_type":  "ControlType.Text",
+                         "name":  "Encontré esta memoria local: favorite_color: azul",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;925;382;25"
+                     },
+                     {
+                         "index":  124,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:38",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;971;69;19"
+                     },
+                     {
+                         "index":  125,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;970;34;19"
+                     },
+                     {
+                         "index":  126,
+                         "control_type":  "ControlType.Text",
+                         "name":  "qué color me gusta",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;996;154;25"
+                     },
+                     {
+                         "index":  127,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:35",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1041;69;19"
+                     },
+                     {
+                         "index":  128,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1040;61;19"
+                     },
+                     {
+                         "index":  129,
+                         "control_type":  "ControlType.Text",
+                         "name":  "Guardé el dato en la memoria local.",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1066;283;25"
+                     },
+                     {
+                         "index":  130,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:35",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1112;69;19"
+                     },
+                     {
+                         "index":  131,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1111;34;19"
+                     },
+                     {
+                         "index":  132,
+                         "control_type":  "ControlType.Text",
+                         "name":  "recuerda que mi color favorito es azul",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1137;300;25"
+                     },
+                     {
+                         "index":  133,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:20",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1183;69;18"
+                     },
+                     {
+                         "index":  134,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1182;61;18"
+                     },
+                     {
+                         "index":  135,
+                         "control_type":  "ControlType.Text",
+                         "name":  "La memoria local está habilitada.",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1208;260;24"
+                     },
+                     {
+                         "index":  136,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:19",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1253;69;19"
+                     },
+                     {
+                         "index":  137,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1252;34;19"
+                     },
+                     {
+                         "index":  138,
+                         "control_type":  "ControlType.Text",
+                         "name":  "confirmar",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1278;77;25"
+                     },
+                     {
+                         "index":  139,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:09",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1324;69;19"
+                     },
+                     {
+                         "index":  140,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1323;61;19"
+                     },
+                     {
+                         "index":  141,
+                         "control_type":  "ControlType.Text",
+                         "name":  "Habilitar la memoria local permitirá conservar datos que pidas recordar. Responde únicamente «confirmar / confirm» o «cancelar / cancel».",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1349;384;77"
+                     },
+                     {
+                         "index":  142,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:13:08",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1446;69;19"
+                     },
+                     {
+                         "index":  143,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1445;34;19"
+                     },
+                     {
+                         "index":  144,
+                         "control_type":  "ControlType.Text",
+                         "name":  "activa la memoria",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1471;140;25"
+                     },
+                     {
+                         "index":  145,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:12:57",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1517;69;19"
+                     },
+                     {
+                         "index":  146,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1516;61;19"
+                     },
+                     {
+                         "index":  147,
+                         "control_type":  "ControlType.Text",
+                         "name":  "No pude hacerlo. (500: \"accion_no_completada\")",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1542;385;25"
+                     },
+                     {
+                         "index":  148,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:12:56",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1588;69;19"
+                     },
+                     {
+                         "index":  149,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1587;34;19"
+                     },
+                     {
+                         "index":  150,
+                         "control_type":  "ControlType.Text",
+                         "name":  "qué color me gusta",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1613;154;25"
+                     },
+                     {
+                         "index":  151,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:12:52",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1658;69;19"
+                     },
+                     {
+                         "index":  152,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1657;61;19"
+                     },
+                     {
+                         "index":  153,
+                         "control_type":  "ControlType.Text",
+                         "name":  "No pude hacerlo. (500: \"accion_no_completada\")",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1683;385;25"
+                     },
+                     {
+                         "index":  154,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:12:51",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1729;69;19"
+                     },
+                     {
+                         "index":  155,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1728;34;19"
+                     },
+                     {
+                         "index":  156,
+                         "control_type":  "ControlType.Text",
+                         "name":  "recuerda que mi color favorito es azul",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1754;300;25"
+                     },
+                     {
+                         "index":  157,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:12:15",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1799;69;19"
+                     },
+                     {
+                         "index":  158,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1798;61;19"
+                     },
+                     {
+                         "index":  159,
+                         "control_type":  "ControlType.Text",
+                         "name":  "La memoria local está deshabilitada.",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1824;287;25"
+                     },
+                     {
+                         "index":  160,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:12:14",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1870;69;19"
+                     },
+                     {
+                         "index":  161,
+                         "control_type":  "ControlType.Text",
+                         "name":  "YOU",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1869;34;19"
+                     },
+                     {
+                         "index":  162,
+                         "control_type":  "ControlType.Text",
+                         "name":  "tienes memoria",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1895;123;25"
+                     },
+                     {
+                         "index":  163,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:08:58",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1941;69;19"
+                     },
+                     {
+                         "index":  164,
+                         "control_type":  "ControlType.Text",
+                         "name":  "GEMMA",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1395;1940;61;19"
+                     },
+                     {
+                         "index":  165,
+                         "control_type":  "ControlType.Text",
+                         "name":  "Hola. Estoy lista para ayudarte con este equipo.",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  true,
+                         "bounds":  "1312;1966;375;25"
+                     },
+                     {
+                         "index":  166,
+                         "control_type":  "ControlType.Button",
+                         "name":  "SESSIONS 1 cached",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;760;200;82"
+                     },
+                     {
+                         "index":  167,
+                         "control_type":  "ControlType.Text",
+                         "name":  "SESSIONS",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1325;770;58;15"
+                     },
+                     {
+                         "index":  168,
+                         "control_type":  "ControlType.Text",
+                         "name":  "1",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1325;809;9;23"
+                     },
+                     {
+                         "index":  170,
+                         "control_type":  "ControlType.Text",
+                         "name":  "cached",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1343;814;38;17"
+                     },
+                     {
+                         "index":  171,
+                         "control_type":  "ControlType.Button",
+                         "name":  "MEMORY 0 pinned",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1519;760;200;82"
+                     },
+                     {
+                         "index":  172,
+                         "control_type":  "ControlType.Text",
+                         "name":  "MEMORY",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1532;770;54;15"
+                     },
+                     {
+                         "index":  173,
+                         "control_type":  "ControlType.Text",
+                         "name":  "0",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1532;809;10;23"
+                     },
+                     {
+                         "index":  175,
+                         "control_type":  "ControlType.Text",
+                         "name":  "pinned",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1550;814;38;17"
+                     },
+                     {
+                         "index":  176,
+                         "control_type":  "ControlType.Text",
+                         "name":  "local · no telemetry",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1312;875;127;21"
+                     },
+                     {
+                         "index":  177,
+                         "control_type":  "ControlType.Text",
+                         "name":  "03:14",
+                         "automation_id":  "",
+                         "enabled":  true,
+                         "offscreen":  false,
+                         "bounds":  "1677;877;42;19"
+                     }
+                 ]
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "baxy.evidence-readiness-stability-verdict.v1",
+  "measured_at_utc": "2026-07-30",
+  "subject": "turn decisions depend on the asynchronous semantic-promotion boundary",
+  "effect_free": true,
+  "architectural_cause": {
+    "mechanism": "Deliberate two-phase design in src/baxy_mind/__main__.py: the sidecar starts with a lexical-only PlannerCatalog (encoder=None, line ~2542) and promote_planner_resources swaps in the semantic catalog only after TurnEvidenceService leaves 'building' and the E5 router reports ready (line ~2401). Until then candidate_families() returns () and retrieve() returns [], and PlannerCatalog._semantic_scores silently returns {} on encoder failure - all advisory fallbacks that nevertheless change the P prompt composition.",
+    "boundary_timing": "turn.evidence.status reports building->ready at 19.33s and 21.82s after catalog.configure in two fresh sessions; the vector disk cache (LOCALAPPDATA/BAXYRuntime/turn-evidence, 38.6 MB, hit) means the E5 worker spin-up dominates the window, which is an asset/hardware floor, not an internal knob.",
+    "consequence": "every session serves its first ~20s of turns in the degraded lexical regime; in the frozen 30-turn workload turns 00-03 always run lexical, turn-04 straddles the boundary (explains its bimodal 15/30 retry rate), and later turns run semantic"
+  },
+  "instability_evidence": {
+    "same_text_two_decisions": "turn-23 alone: cold index -> conversation, 1 attempt, 4.77s (prompt sha 10700527); settled index -> clarify, 2 attempts, 19.51s with deterministic thinking drain (prompt sha e18ff2be)",
+    "artifacts": [
+      "turn23_solo_cold_20260730.json",
+      "turn23_solo_settled_20260730.json",
+      "turn_retry_root_cause_verdict_20260730.json"
+    ]
+  },
+  "variants": [
+    {
+      "variant": "V-A: gate turn intake on semantic readiness (turns wait until status=ready plus promotion margin)",
+      "status": "measured_not_promoted",
+      "corpus_run": "evidence_ready_gated_workload_20260730.json - full frozen 30-turn workload, 30/30 valid, 0 validation errors, p50 5.587s / p95 19.502s / max 19.523s",
+      "time_dependence": "eliminated by construction: every turn executes in the certified semantic regime regardless of arrival time",
+      "decision_diffs_vs_recorded_baseline": [
+        "turn-03 (mute everything please): conversation -> plan",
+        "turn-06 (cuanta vram se esta usando): clarify(2 attempts) -> conversation(1)"
+      ],
+      "reading": "the two diffs are exactly early/boundary turns whose recorded baseline decisions came from the lexical regime; whether the semantic-regime decisions are corrections requires oracle (final39-class) adjudication. turn-06 also shows that within the semantic regime cache-state nondeterminism still flips the drain (consistent with its 27/30 historical rate), so V-A stabilizes the regime, not the model's numeric sensitivity",
+      "cost": "first turn availability delayed up to ~19-22s after catalog; a product/SLA decision, not an internal optimization",
+      "promotion_blockers": [
+        "oracle adjudication of the early-turn decision flips",
+        "startup-availability SLA change requires explicit product authorization",
+        "full exhaustive corpus run (final39-class) - the 30-turn frozen workload is necessary but not sufficient for promotion"
+      ]
+    },
+    {
+      "variant": "V-B: always-lexical (drop semantic promotion)",
+      "status": "rejected_documentally",
+      "reason": "reverts the certified evidence quality wins (final scheduler preflight showed evidence gains a critical case); changes far more decisions than V-A"
+    },
+    {
+      "variant": "V-C: make readiness faster until blocking is cheap",
+      "status": "blocked_by_asset_floor",
+      "reason": "the vector cache already hits; the window is dominated by E5 worker spin-up (model load), which cannot be reduced without changing the encoder asset/runtime - outside internal scope"
+    },
+    {
+      "variant": "V-D: bounded partial waits inside candidate_families/retrieve",
+      "status": "rejected_documentally",
+      "reason": "narrows but does not eliminate the time dependence, failing the stability criterion"
+    }
+  ],
+  "verdict": "Cause proven and characterized; V-A is the only variant that eliminates the time dependence and it works physically (30/30 valid, all turns in the certified regime), but it is not promotable without oracle adjudication of the early-turn decision changes and an explicit product decision on delayed first-turn availability. Registered as an open product-behavior decision, not silently patched."
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "baxy.fresh-independent-cut-b.r264-preregistration.v1",
+  "authority": "sealed_before_recogniser_or_model_measurement",
+  "population": {
+    "rows": 114,
+    "semantic_cases": 38,
+    "families": 31,
+    "languages": {
+      "es": 38,
+      "en": 38,
+      "spanglish": 38
+    },
+    "office_cases": 8,
+    "confirmation_bound_cases": 3
+  },
+  "independence": {
+    "generator_imports_recogniser": false,
+    "generator_imports_alias_catalogue": false,
+    "generator_imports_prior_cut_b_builder": false,
+    "generator_uses_r196_language": false,
+    "generator_uses_current_catalogue_descriptions": false,
+    "manual_semantic_specification": true
+  },
+  "measurement_contract": {
+    "first_measurement": "read-only recogniser reach through resolve_explicit_effects after this preregistration is committed unchanged",
+    "recogniser_majority_limit": 0.5,
+    "later_model_path_minimum": 0.95,
+    "cause_buckets_required": [
+      "retrieval",
+      "decision",
+      "veto"
+    ],
+    "hard_zeros": [
+      "unsolicited_effects",
+      "unverified_successes",
+      "fixed_visible_replies"
+    ],
+    "cannot_refute": "This preregistration alone cannot establish model-path success, OOS behavior, real provider effects, or latency."
+  },
+  "constraints": {
+    "recogniser_measured": false,
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "catalogue_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "r196_sha256": "10f6e13c731ee8acd02b0f530b8da2696555f675f491599b2df23626cbfab080",
+    "corpus_sha256": "d36489e735bda4bec4fc4a5d14be8b14577741ff5b4d843ee0395d8f7eb758b2",
+    "program_sha256": "6e3dd9347f8ec7366dc5445647f7f4e22784869fd3042b9726115e6a630b0545"
+  },
+  "next_step": "Commit this preregistration unchanged, then run exactly one read-only recogniser-reach measurement before designing any model-path candidate."
+}

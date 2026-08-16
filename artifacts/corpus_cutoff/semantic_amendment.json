@@ -1,0 +1,238 @@
+{
+  "amendment_id": "2026-07-15-audio-status-v3",
+  "amendment_schema_version": 2,
+  "artifact_schema_transition": {
+    "from": 2,
+    "to": 2
+  },
+  "authority": {
+    "builder_sha256": "341e86f39c90c18f7c3cfa44f651b86139a64f298043a6b86a5c160df62c74ea",
+    "cutoff_utc": "2026-07-14T10:51:49.1612548Z",
+    "freeze_script_sha256": "27acb6ccc34b6820ab8614a19d41409645aabeb151803bfec4d34843e6c4ae5c",
+    "manifest_payload_sha256": "85929373646040f54771a7e3543a5ac3d022dbce688c55d17615ae35b7eb3fbd",
+    "source_manifest_file_sha256": "9da873e4b30dd81d1cc85d6e9bf4b19fb13aa96e8fcc5ce3b1f8265012ca59b0",
+    "source_manifest_unchanged": true,
+    "source_occurrences_unchanged": 122744,
+    "tournament_protocol_sha256": "383a9e54cfc5a186de61f060aeb2a6cd013bab3ec21bdeb387063d935d99a892",
+    "tournament_protocol_unchanged": true
+  },
+  "language_contract": {
+    "acceptance_scope_oracle": {
+      "coverage_claim": "positive_source_evidence_and_exact_audit_not_heuristic_exhaustiveness",
+      "cross_source_trace_only_keys": 2786,
+      "cross_source_trace_only_normalized_keys": 2746,
+      "exact_exception_keys": 18,
+      "literal_key_sha256": "144b1f85278a711759cbfec79d136c422b7c330ad8ba73275b07bc680ba9b110",
+      "matched_literal_keys": 2769,
+      "matched_rows": 2800,
+      "matched_source_occurrences": 5182,
+      "message_contract_sha256": "1e86f6ff4503458db6e6c0bb312f8e77928b0a63911f166745d6dcd6116c5363",
+      "message_id_sha256": "603faa6e1624e040ba3182580fa85f2b7de45c1f5f6a7251b24aa7a8dc4f80a1",
+      "name": "frozen_audited_non_target_oracle",
+      "source_files": [
+        {
+          "path": "functiongemma/finetune_llm/curated/train_v3.jsonl",
+          "sha256": "6ccf110a23090ce274695d24a7c7956f2ea36e91b51fe001509be4a9abd01643"
+        },
+        {
+          "path": "functiongemma/router/data/router_corpus_curated_ft.jsonl",
+          "sha256": "c7d15542b7da5d1b8ad6eacc683687bb8a6c1cc26fef3918ee3ca9f3878fd423"
+        },
+        {
+          "path": "functiongemma/router/data/router_eval_corpus.curated.jsonl",
+          "sha256": "c234df94bdb71befc8ba36fd8b9d40399cd140ae3e2ec76be48330c16369dfdb"
+        }
+      ],
+      "source_labeled_trace_only_locations": 2846,
+      "target_wins_or_source_override_keys": 18
+    },
+    "detector_caveat": "The per-row language field is heuristic; other is not itself an out-of-scope decision.",
+    "non_target_language_history_policy": "trace_only_not_acceptance_commitment",
+    "product_language_scope": [
+      "es",
+      "en",
+      "spanglish"
+    ]
+  },
+  "semantic_changes": [
+    "Separate actionable operations from explicitly denied effects.",
+    "Represent pure denials as no_action_constraint with no_effect risk.",
+    "Disambiguate opening Steam, navigating a game client, installing, launching and purchasing.",
+    "Bind contextual and deictic game commands to finite audited literal oracles.",
+    "Keep manifest-bound non-target-language history traceable without turning it into a BAXY 1.0 acceptance commitment.",
+    "Preserve target-language homographs and expressive literals such as ahah and haha as product scope.",
+    "Aggregate every scope basis and source-language label across consolidated provenance edges.",
+    "Split read-only global audio queries from volume mutations through a finite two-literal oracle."
+  ],
+  "metrics": {
+    "after": {
+      "acceptance_scope": {
+        "product_1_0": 12036,
+        "trace_only_not_acceptance_commitment": 2800
+      },
+      "canonical_missions": 2084,
+      "exact_duplicates": 3969,
+      "messages_with_denied_operations": 98,
+      "no_action_constraints": 79,
+      "operation_catalog_size": 43,
+      "raw_messages": 14836,
+      "redacted_messages": 656,
+      "source_occurrences": 122744,
+      "unique_literal_normalized": 10864,
+      "unique_scope_literal_contracts": 10867
+    },
+    "before": {
+      "acceptance_scope": {
+        "product_1_0": 12036,
+        "trace_only_not_acceptance_commitment": 2800
+      },
+      "canonical_missions": 2083,
+      "exact_duplicates": 3969,
+      "messages_with_denied_operations": 98,
+      "no_action_constraints": 79,
+      "operation_catalog_size": 42,
+      "raw_messages": 14836,
+      "redacted_messages": 656,
+      "source_occurrences": 122744,
+      "unique_literal_normalized": 10864,
+      "unique_scope_literal_contracts": 10867
+    }
+  },
+  "operation_oracles": {
+    "audio_status_target": {
+      "message_id_digest": "cd3512c246ca7b4fe29f98e944eac5885cd73ca478a4fa9183d21edb409c60fb",
+      "message_operation_digest": "d00b08f3344dc862e1cfa74bc1093134adfe843ad662f5e4cc3f96e6d9c77588",
+      "normalized_literal_digest": "b35442c8154d9233b02229c7922a1bf6d266e062a3476fcd05c51cf970faf156",
+      "normalized_literal_operation_digest": "b51f0f090299344a240dac4c32d5d275d667c1ff2c746ce0c1cd1658be7f81b3",
+      "normalized_literals": 2,
+      "rows": 16,
+      "trace_only_non_target_rows": 0
+    },
+    "game_install_target": {
+      "message_id_digest": "76faffd5817be902a5f6477d40acdd78bbf678a0ae2b17bbbaf8bbe6d9f24d90",
+      "message_operation_digest": "e341eec4c3173b62d87ea21fbb0718dc61a9998a8102674e3650138a1709ed5e",
+      "normalized_literal_digest": "486d6e182491b0689544e03ebfd80190b0b3c5763d2f985a50041d27cc2aa595",
+      "normalized_literal_operation_digest": "6df7649cedc7bdd19123bba6bb4d292d3f2d16cc011ad21ffe5de458336814f0",
+      "normalized_literals": 63,
+      "rows": 74,
+      "total_rows_including_trace": 81,
+      "trace_only_non_target_rows": 7
+    },
+    "game_launch_target": {
+      "message_id_digest": "7b9ccccd5c643660e786e7699cdb15062a2fef46671a1edcea641bd72eb2c3cc",
+      "message_operation_digest": "0e6dc7fa308df565c67fce47e394e1eeaffd0c8182ee907d9ba85278f963d363",
+      "normalized_literal_digest": "d51a40fdf93920a8b5ce67f4bbb74977f9e8702792b179eef333116d5ae752ba",
+      "normalized_literal_operation_digest": "1b2a3cd86fdb305d94127fc85b34277254ad999b6cf9bb618bb7c1ce75a2c8e3",
+      "normalized_literals": 29,
+      "rows": 46,
+      "trace_only_non_target_rows": 0
+    },
+    "game_manage_global": {
+      "message_id_digest": "9b8313bfa1e72b6ec145ddfe2c25446ab46ce145b6e4c0f48e389d476bb14287",
+      "message_operation_digest": "0f1df1847f8eb0dc84297ebced16a9d9423c41dc4f49dbdcd0edfc06252265ff",
+      "normalized_literal_operation_digest": "8b9a5101ce994b9231bd3d2d78f03ed9bd9d15da16f61e4951843392084ec134",
+      "product_rows": 160,
+      "rows": 169,
+      "trace_only_non_target_rows": 9
+    },
+    "game_purchase_global": {
+      "message_id_digest": "599ef4158d0d4342cc369203618995c32160884631f5369f5e0641763ca9c754",
+      "message_operation_digest": "f113a6e37d2d63a703a0749e83ee6f06320eb48d10db0dd3fb7c083fb59f11ee",
+      "normalized_literal_operation_digest": "867431d4cfb60cfbf40e689ca7398bcbc02f4d502668cb1a895bdc014344fecc",
+      "product_rows": 6,
+      "rows": 6,
+      "trace_only_non_target_rows": 0
+    }
+  },
+  "canonical_digests": {
+    "after": {
+      "mapping_sha256": "d344ecde935219b64ffe850cf519503f62f7ebf24372820cdf873bf8b9ccfd88",
+      "messages_sha256": "da9b309cdbcabc82cb6a6091f29aedff321a0ab2ebf817f14e09bf9a4708ddc8",
+      "missions_sha256": "9515424352a2de1edffa7e64ce866336614b192881a14249448af71493da8664"
+    },
+    "before": {
+      "mapping_sha256": "f9ef92da15fb0cd57b0e399e62e021f02ad1e3ad0a4ab8aef5c016c91b0c2c09",
+      "messages_sha256": "2cc440e274dc04137df1d48d3fe9e7d4356f99841476d64d4ab1010e06350322",
+      "missions_sha256": "73ec1c32db9e32edcfab3769fae223fe2cc1c5b637633b27602fb5188104d53c"
+    }
+  },
+  "file_sha256": {
+    "after": {
+      "extraction_report.json": "5c195fbf6c3be475675b4d3218dd47bbe5a6efa6a294c074718f4c660241a7ca",
+      "historical_message_mapping.jsonl": "b5e9c75cf095fc417e0f2b75e36b2d5e63bdded6634e6f5fbb835f2b24794f5b",
+      "historical_messages.jsonl": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+      "historical_missions.jsonl": "96e4f50566b657ec2f0dea89ddf6655dce2dc2ac63f17d0593ae05e9cc0c86d1"
+    },
+    "before": {
+      "extraction_report.json": "831862b5eec63bfa8a2d797cb48562589aca19066c17e173bb6fb61a6bae75a0",
+      "historical_message_mapping.jsonl": "5fccac4f7f5c2f2870400eae77dafa18b403dd600be24da9ef8d2650880e5b69",
+      "historical_messages.jsonl": "d9789574b41ff44fb057f17db696fd07140b299eb362a6b2636d86459bb804be",
+      "historical_missions.jsonl": "0e48678f5a23b14f8e1d8cb509cba3aace0fbfb9beb3546aa8d5bfd5fefd10bf"
+    }
+  },
+  "reproduction": {
+    "byte_comparison": {
+      "extraction_report.json": true,
+      "historical_message_mapping.jsonl": true,
+      "historical_messages.jsonl": true,
+      "historical_missions.jsonl": true
+    },
+    "commands": {
+      "isolated_preview": "python -X utf8 scripts/build_historical_corpus.py --output-dir <isolated-output-dir> --report <isolated-output-dir>/extraction_report.json",
+      "canonical": "python -X utf8 scripts/build_historical_corpus.py"
+    },
+    "passes": [
+      {
+        "builder_sha256": "341e86f39c90c18f7c3cfa44f651b86139a64f298043a6b86a5c160df62c74ea",
+        "ended_utc": "2026-07-15T22:54:35.7786717+00:00",
+        "mode": "isolated_preview",
+        "output_sha256": {
+          "extraction_report.json": "5c195fbf6c3be475675b4d3218dd47bbe5a6efa6a294c074718f4c660241a7ca",
+          "historical_message_mapping.jsonl": "b5e9c75cf095fc417e0f2b75e36b2d5e63bdded6634e6f5fbb835f2b24794f5b",
+          "historical_messages.jsonl": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+          "historical_missions.jsonl": "96e4f50566b657ec2f0dea89ddf6655dce2dc2ac63f17d0593ae05e9cc0c86d1"
+        },
+        "run_id": "a394452a322848ea9138bbe5bc7004e2",
+        "started_utc": "2026-07-15T22:51:37.6024018+00:00"
+      },
+      {
+        "builder_sha256": "341e86f39c90c18f7c3cfa44f651b86139a64f298043a6b86a5c160df62c74ea",
+        "ended_utc": "2026-07-15T22:57:50.0590263+00:00",
+        "mode": "canonical",
+        "output_sha256": {
+          "extraction_report.json": "5c195fbf6c3be475675b4d3218dd47bbe5a6efa6a294c074718f4c660241a7ca",
+          "historical_message_mapping.jsonl": "b5e9c75cf095fc417e0f2b75e36b2d5e63bdded6634e6f5fbb835f2b24794f5b",
+          "historical_messages.jsonl": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+          "historical_missions.jsonl": "96e4f50566b657ec2f0dea89ddf6655dce2dc2ac63f17d0593ae05e9cc0c86d1"
+        },
+        "run_id": "be78c4a10c5e4d84a58f75d5bd8221c4",
+        "started_utc": "2026-07-15T22:55:11.6538903+00:00"
+      }
+    ]
+  },
+  "verification": {
+    "canonical_matches_preview_byte_for_byte": true,
+    "commands": {
+      "corpus_contracts": "python -X utf8 -m pytest -p no:cacheprovider tests/test_historical_corpus.py -q",
+      "integration_audio": "dotnet test tests/Baxy.Integration.Tests/Baxy.Integration.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~Audio",
+      "kernel_catalog": "dotnet test tests/Baxy.Kernel.Tests/Baxy.Kernel.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~ProductCatalog",
+      "windows_audio_provider": "dotnet test tests/Baxy.Providers.Windows.Tests/Baxy.Providers.Windows.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~Audio",
+      "static": "python -m ruff check scripts/build_historical_corpus.py tests/test_historical_corpus.py"
+    },
+    "corpus_contract_subtests_passed": 58,
+    "corpus_contract_tests_passed": 37,
+    "focused_dotnet_tests_passed": 241,
+    "focused_tests_passed": 278,
+    "reproduction_passes": 2
+  },
+  "release_status": {
+    "blockers_unchanged": [
+      "B-004",
+      "B-005",
+      "B-006"
+    ],
+    "must_gates_approved": 5,
+    "must_gates_total": 15,
+    "runtime_implementation_advanced": true
+  }
+}

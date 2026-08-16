@@ -1,0 +1,90 @@
+{
+  "schema": "baxy-gui-capture-gate-v1",
+  "status": "passed",
+  "scope": "same-host physical WPF launch, typed note mission, UIA response observation, archived shell fidelity, native-pixel capture, and cleanup",
+  "source": {
+    "product_commit": "d69a960226bb6e9a81de4bd39d9d708afc6f63a8",
+    "product_dirty": false,
+    "version": "1.0.1",
+    "build_manifest_sha256": "139e359a184c8765d8793b517312d5c32f9bf6ee80d94d38419a2c64cc30136a",
+    "app_sha256": "454cb2fdd7ddbd8d6852ac7ab01d26105740c80841f1816a9afe2c12af6829b4",
+    "core_sha256": "8b230462012bae51701695e612fa21de9f198faaa13432466e47da645b2fc63e",
+    "capture_script_sha256": "d92577d081315cd1892080fafe57c7828528111b51758fa3372c18f2f56fffaa"
+  },
+  "physical_capture": {
+    "status": "passed",
+    "file": "product_notes_slice-gate11-final-1b991f8a5b312401e2355a4fd790b5ad61154af4a8f945fb76b005e6b1e4a32c.png",
+    "bytes": 89176,
+    "sha256": "1b991f8a5b312401e2355a4fd790b5ad61154af4a8f945fb76b005e6b1e4a32c",
+    "width": 980,
+    "height": 680,
+    "native_width": 980,
+    "native_height": 680,
+    "resampled": false,
+    "core_ready": true,
+    "mission": "note.create",
+    "mission_completed": true,
+    "response_observed_by_uia": true,
+    "note_files_in_isolated_root": 1,
+    "visible_response": "Guardé la nota «Compras»."
+  },
+  "fidelity": {
+    "archived_three_column_geometry": true,
+    "archived_palette": true,
+    "conversation_is_primary": true,
+    "adaptive_layout_contract": true,
+    "stable_unique_automation_ids": true,
+    "normal_text_contrast_at_least_4_5": true,
+    "deterministic_field_has_no_motion_timeline": true,
+    "visual_inspection_performed": true,
+    "window_fully_rendered": true,
+    "conversation_legible": true,
+    "composer_visible": true,
+    "obvious_clipping_or_overlap": false
+  },
+  "red_diagnosis": {
+    "initial_capture_failures": 2,
+    "operation": "passed",
+    "typed_projection": "passed",
+    "uia_observer": "failed",
+    "root_causes": [
+      "the observer coupled mission success to a load-sensitive full-tree UIA scan",
+      "Windows PowerShell 5.1 decoded direct non-ASCII script literals through its ANSI code page"
+    ],
+    "fix": [
+      "mission success now requires one durable note and a re-enabled editor",
+      "UIA response observation is recorded separately before capture",
+      "the exact Unicode response is constructed with explicit code points"
+    ],
+    "independent_release_diagnostic": {
+      "editor_reenabled": true,
+      "response_accessible": true,
+      "note_file_count": 1,
+      "response_observed_after_milliseconds": 676
+    },
+    "final_regression": "passed"
+  },
+  "regression": {
+    "main_window_shell_contract_tests_passed": 14,
+    "main_window_shell_contract_tests_failed": 0,
+    "product_packaging_tests_passed": 22,
+    "product_packaging_tests_failed": 0
+  },
+  "cleanup": {
+    "isolated_data_root_absent": true,
+    "diagnostic_roots_absent": true,
+    "residual_baxy_processes": 0,
+    "preexisting_data_top_level_count": 3,
+    "preexisting_notepad_5472_preserved": true
+  },
+  "acceptance": {
+    "gate_11_status": "passed",
+    "archived_visual_identity_proven": true,
+    "physical_conversation_flow_proven": true,
+    "physical_accessible_response_proven": true
+  },
+  "limitations": [
+    "The physical capture is from the current host and display configuration, not a claim about every monitor or assistive technology.",
+    "This gate proves the archived BAXY identity and a real accessible conversation flow; it does not claim Narrator, NVDA, or 200 percent DPI certification."
+  ]
+}

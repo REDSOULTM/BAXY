@@ -1,0 +1,65 @@
+{
+ "schema": "baxy.leading-band-verdict.v1",
+ "measured_at_utc": "2026-07-31",
+ "state": "PROMOVIDO",
+ "component": "baxy_mind/planner.PlannerCatalog.shortlist, per-family relevance band",
+ "continues": "R19_shortlist_catalog_floor. That change raised retrieval to the catalog's own ceiling; this one raises the ceiling itself.",
+ "problem": "after the catalog floor, 7 of the 57 oracle cases still lost the expected operation. Six of the seven had their family ALREADY in the shortlist and lost the exact operation to the per-family relevance band, not to the family ranking: `window.active`, `media.control`, `wifi.status` and `note.read` among them. Only `¿Cómo está la red?` was a genuinely missing family.",
+ "why_the_global_band_was_rejected_first": "widening FAMILY_RELEVANCE_BAND to 0.15 for every family reaches the same recall but costs about seven more operations per prompt against a cap of 28, and those extras are near-synonym siblings -- the population measured in R19 to make the model choose wrongly. That rejection stands.",
+ "change": "the wide band is paid only where the answer usually is. LEADING_FAMILIES = 1 gives the top-ranked family a band of FAMILY_RELEVANCE_BAND_LEADING = 0.15; every other family keeps 0.035.",
+ "sweep": {
+  "method": "leading families x leading band x per-family window over the frozen oracle, in one process, with the mean shortlist length beside recall",
+  "result": "leading 1 reaches 54/57 at a mean shortlist of 22.11. Leading 2 gives the same recall at 23.14 and the global band (leading 10) the same recall at 27.25. The cheapest configuration achieving the maximum was chosen.",
+  "reading": "the same recall as the global band for about five fewer operations per prompt"
+ },
+ "physical_ab": {
+  "artifact": "policy_tool_quality_20260731.json",
+  "method": "ABBA over whole sessions, 456 turns, recogniser suspended. The baseline arm carries the R19 floor and sets LEADING_FAMILIES to 0, so this A/B isolates the widened band alone instead of re-measuring the floor.",
+  "expected_operation_offered": {
+   "baseline": 0.877,
+   "candidate": 0.947
+  },
+  "accuracy_exact": {
+   "baseline": 0.561,
+   "candidate": 0.588
+  },
+  "mean_shortlist": {
+   "baseline": 21.0,
+   "candidate": 22.4
+  },
+  "prefill_ms_p50": {
+   "baseline": 276.5,
+   "candidate": 307.8
+  },
+  "decode_ms_p50": {
+   "baseline": 1659.5,
+   "candidate": 1693.1
+  },
+  "cases_improved": 2,
+  "cases_regressed": 1,
+  "cost_honestly": "+31 ms of prefill p50 and +1.4 operations per prompt. That is a real cost, about 1.8% of a turn whose decode is ~1.7 s, paid for +7.0 points of retrieval and +2.7 of accuracy. The +34 ms decode delta sits inside the spread this workload showed across four runs (1644, 1659, 1667, 1693 ms) and is not claimed as an effect.",
+  "dilution_note": "accuracy GIVEN a fair shortlist reads 64.0% -> 62.0%. That is not a quality regression: the newly offered turns are the ones the retrieval used to hide, they are harder than average, and adding them to the denominator lowers a conditional rate while raising the absolute one."
+ },
+ "repairs_two_of_the_three_r19_regressions": {
+  "Abre Opera": "browser.navigate.named -> app.open, exact 4 of 4",
+  "Crea un recordatorio llamado Auditoría para mañana a las 9": "notification.schedule -> reminder.create, exact 4 of 4",
+  "Abre Spotify": "STILL WRONG: media.play.query where app.open is expected. It is the last survivor of that family of defects and remains the named next target.",
+  "why": "the wider band brings the correct sibling into the leading family, so the model stops having to pick between a distant relative and nothing"
+ },
+ "new_regression_named": {
+  "case": "Busca Beat It en Spotify y reprodúcela",
+  "expected": "media.play.query",
+  "model_chose": "media.play.exact",
+  "deterministic": "4 of 4 in both arms",
+  "assessment": "genuine, not noise. The wider band brought media.play.exact into the leading family and the model preferred it. The oracle is right and the model is wrong: the request says `busca`, which is a search, and media.play.query is the operation that searches. It is the same near-synonym sibling defect this campaign keeps meeting, now with the sibling arriving instead of departing."
+ },
+ "combined_with_r19": {
+  "from": "the state before the floor: 60.5% of turns had the expected operation offered and 44.7% were exactly right",
+  "to": "94.7% offered and 58.8% exactly right",
+  "honesty": "these two endpoints come from two DIFFERENT paired A/Bs run in different sessions, each internally ABBA. They are composed here because both metrics are discrete outcomes rather than timings, so they do not carry the thermal sensitivity that makes cross-session latency comparisons invalid. The per-change deltas above are the paired ones and are what the promotion rests on."
+ },
+ "effects_executed": 0,
+ "installation_touched": false,
+ "rollback": "set LEADING_FAMILIES back to 0 in src/baxy_mind/planner.py",
+ "gate": "test_source_quality.ps1 -Mode Full: 11/11 stages green. Python 2099 passed / 2 sanctioned skips / 382 subtests; the five .NET suites all green; Release build 0 warnings, 0 errors. Like R19 this changes the shortlist ORDER and not its contract, so it adds no tests: its evidence is the retrieval oracle and the physical A/B."
+}

@@ -1,0 +1,216 @@
+# Three gate checks hash or format raw on-disk bytes: dotnet-format, the frozen
+# wake program tree (EXPECTED_PROGRAM_TREE_SHA256) and the Field UI seal in
+# MainWindowShellContractTests. Git for Windows ships core.autocrlf=true in its
+# system config, so without these declarations a clone checks the tree out in
+# CRLF and all three go red against seals that were always correct (R277/R278).
+* text=auto eol=lf
+
+# Pre-existing per-path declarations, kept as they were.
+/artifacts/corpus_cutoff/*.json text eol=lf
+/artifacts/technology_tournament/protocol.json text eol=lf
+/scripts/freeze_historical_sources.py text eol=lf
+/scripts/build_historical_corpus.py text eol=lf
+/tests/data/historical_*.jsonl text eol=lf
+/tests/data/gpu_status_corpus_oracle.json text eol=lf
+/tests/data/turn_evidence_public_*.json* text eol=lf
+/artifacts/product/mind_shell_e2e_gate*.json text eol=lf
+/artifacts/setup/baxy_1_0_8_release_attestation.json text eol=lf
+/src/baxy_mind/tools/router_bank_sources.py text eol=lf
+/src/baxy_mind/tools/data/router_cases.jsonl text eol=lf
+/src/baxy_mind/data/intent_bank.jsonl text eol=lf
+/experiments/mind_router_spike/dev_probes.py text eol=lf
+/experiments/mind_router_spike/data/core_hello.json text eol=lf
+/experiments/mind_router_spike/tournament_encoder_protocol.json text eol=lf
+/experiments/mind_llm_tournament/protocol.json text eol=lf
+/experiments/mind_llm_tournament/data/*.jsonl text eol=lf
+/src/Baxy.FieldUi/** text eol=lf
+
+# Published artifacts that were sealed while holding CRLF. Their on-disk sha256
+# is the value recorded in the tree, so they must survive a checkout byte for
+# byte instead of being renormalised. Do not convert these.
+/artifacts/audit/conditional_omissions_20260811/providers-v2.trx -text
+/artifacts/audit/conditional_omissions_20260811/providers.trx -text
+/artifacts/audit/conditional_omissions_20260811/setup-v2.trx -text
+/artifacts/audit/conditional_omissions_20260811/visible-v2.trx -text
+/artifacts/audit/mtop_family_recovery_loss_criterion_20260813.json -text
+/artifacts/audit/situated_cut_b_r228_recogniser_reach_r229.json -text
+/artifacts/audit/veto_reach_v8_veto_damage_by_cause_20260813.json -text
+/artifacts/development/baxy_exclusive_expanded_route_guard_confusable_20260811.json -text
+/artifacts/development/baxy_exclusive_expanded_route_guard_human_v14_20260811.stderr.log -text
+/artifacts/development/baxy_exclusive_expanded_route_guard_v20_20260811.json -text
+/artifacts/development/bge_qwen_embedding_cascade_r186_preregistration.json -text
+/artifacts/development/catalog_surface_current_tree_r1_memory_closure_fix_development.trx -text
+/artifacts/development/catalog_vocabulary_snapshot.json -text
+/artifacts/development/corpus_debt_inventory.json -text
+/artifacts/development/current_core_catalog_snapshot_r219.json -text
+/artifacts/development/dual_representation_oos_recovery_candidate_20260813.json -text
+/artifacts/development/functiongemma_cross_encoder_no_match_raw_20260813.json -text
+/artifacts/development/generalization_product_r2_memory_after_systemic_fix.v2.trx -text
+/artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx -text
+/artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx -text
+/artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx -text
+/artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx -text
+/artifacts/development/generalization_product_r7_memory_after_systemic_fix.v1.trx -text
+/artifacts/development/generalization_product_r9_memory_after_systemic_fix.v1.trx -text
+/artifacts/development/generalization_surface_memory_app_r1_after_systemic_fix.v1.trx -text
+/artifacts/development/independent_cut_b_oracle_r146.jsonl -text
+/artifacts/development/memory_social_closure_grammar_v2_development.trx -text
+/artifacts/development/msner_spanish_onnx_phrase_boosting_development_v1.json -text
+/artifacts/development/mtop_dual_oos_recovery_candidate_20260813.json -text
+/artifacts/development/mtop_family_recovery_candidate_20260813.json -text
+/artifacts/development/mtop_second_family_recovery_candidate_20260813.json -text
+/artifacts/development/multicluster_oos_recovery_candidate_20260813.json -text
+/artifacts/development/r196_full_provenance_classifier_training.jsonl -text
+/artifacts/development/r207_cross_encoder_pairs.jsonl -text
+/artifacts/development/stt_audio_arena_bounded_fusion_development_v4.json -text
+/artifacts/development/stt_audio_arena_nemotron_auto_development_v1.json -text
+/artifacts/development/stt_audio_arena_nemotron_auto_development_v2.json -text
+/artifacts/development/stt_audio_arena_nemotron_auto_development_v3.json -text
+/artifacts/development/stt_audio_arena_parakeet_greedy_development_v1.json -text
+/artifacts/development/stt_audio_arena_parakeet_greedy_development_v2.json -text
+/artifacts/development/stt_audio_arena_product_parakeet_development_v4.json -text
+/artifacts/development/stt_minds14_bounded_fusion_development_v4.json -text
+/artifacts/development/stt_minds14_nemotron_auto_development_v1.json -text
+/artifacts/development/stt_minds14_nemotron_auto_development_v2.json -text
+/artifacts/development/stt_minds14_nemotron_auto_development_v3.json -text
+/artifacts/development/stt_minds14_parakeet_greedy_development_v1.json -text
+/artifacts/development/stt_minds14_parakeet_greedy_development_v2.json -text
+/artifacts/development/stt_minds14_product_parakeet_development_v2.json -text
+/artifacts/fixes/compound_conservation_preflight_r10.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r11.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r12.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r13.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r14.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r15.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r16.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r17_expanded.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r18_expanded.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r19_expanded.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r20_metamorphic.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r21_metamorphic.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r22_ordinal.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r23_pairwise_final.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r24_extended_families.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r25_extended_final.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r26_cross_tail_final.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r27_action_tail_final.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r28_surface_final.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r29_clean_server.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r30_lexical_final.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r31_surface_lexical_final.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r32_long_dependency.compatibility.raw.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r4.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r5.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r6.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r7.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r8.compatibility.jsonl -text
+/artifacts/fixes/compound_conservation_preflight_r9.compatibility.jsonl -text
+/artifacts/fixes/integral_review_ledger_20260731.json -text
+/artifacts/fixes/invalid_empty_length_retry_temperature_ab_20260729.json -text
+/artifacts/fixes/llama_structured_top_k1_ab_20260729.json -text
+/artifacts/fixes/sibling_leaf_discrimination_20260801.raw.jsonl -text
+/artifacts/holdout/catalog_surface_current_tree_r1_memory.trx -text
+/artifacts/holdout/catalog_surface_current_tree_r2_memory.trx -text
+/artifacts/holdout/catalog_surface_holdout_r23_memory.trx -text
+/artifacts/holdout/catalog_surface_holdout_r24_memory.trx -text
+/artifacts/holdout/catalog_surface_holdout_r25_memory.trx -text
+/artifacts/holdout/catalog_surface_holdout_r26_memory.trx -text
+/artifacts/holdout/generalization_product_current_tree_r25_memory.trx -text
+/artifacts/holdout/generalization_product_current_tree_r27_memory.trx -text
+/artifacts/holdout/generalization_product_current_tree_r28.jsonl -text
+/artifacts/holdout/generalization_product_current_tree_r28_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r10_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r11_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r12_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r13_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r14_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r15_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r16_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r17_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r18_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r19_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r20_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r21_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r2_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r3_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r4_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r5_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r6_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r7_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r8_memory.trx -text
+/artifacts/holdout/generalization_product_holdout_r9_memory.trx -text
+/artifacts/holdout/memory_status_generalization_r1.trx -text
+/artifacts/holdout/memory_status_generalization_r2.trx -text
+/artifacts/holdout/memory_status_generalization_r3.trx -text
+/artifacts/holdout/situated_cut_b_r228.jsonl -text
+/artifacts/holdout/situated_cut_b_r228.preregistration.json -text
+/artifacts/holdout/veto_reach_v1.json -text
+/artifacts/holdout/veto_reach_v1.preregistration.json -text
+/artifacts/holdout/veto_reach_v2.json -text
+/artifacts/holdout/veto_reach_v2.preregistration.json -text
+/artifacts/holdout/veto_reach_v3.json -text
+/artifacts/holdout/veto_reach_v3.preregistration.json -text
+/artifacts/holdout/veto_reach_v4.preregistration.json -text
+/artifacts/holdout/veto_reach_v5.json -text
+/artifacts/holdout/veto_reach_v5.preregistration.json -text
+/artifacts/holdout/veto_reach_v6.json -text
+/artifacts/holdout/veto_reach_v6.preregistration.json -text
+/artifacts/holdout/veto_reach_v7.json -text
+/artifacts/holdout/veto_reach_v7.preregistration.json -text
+/artifacts/holdout/veto_reach_v8.consumed.json -text
+/artifacts/holdout/veto_reach_v8.corpus.jsonl -text
+/artifacts/holdout/veto_reach_v8.json -text
+/artifacts/holdout/veto_reach_v8.preregistration.json -text
+/artifacts/holdout/veto_reach_v8.raw-replies.jsonl -text
+/artifacts/holdout/veto_reach_v8.telemetry.jsonl -text
+/artifacts/holdout/veto_reach_v8.turn-audit.jsonl -text
+/artifacts/mvp/catalog_functional_matrix_memory_v1/catalog_memory_v1.trx -text
+/artifacts/mvp/external_provider_contract_matrix_v1.json -text
+/artifacts/mvp/local_stateful_handler_matrix_v1.json -text
+/artifacts/mvp/local_transient_handler_matrix_v2.json -text
+/artifacts/mvp/memory_handler_matrix_v1.json -text
+/artifacts/mvp/source_quality_full_20260811_final.log -text
+/artifacts/mvp/source_quality_full_20260811_r5_final.log -text
+/artifacts/mvp/visible_smoke_20260811/launcher.stdout.log -text
+/artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.attestation.json -text
+/artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.attestation.json -text
+/artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.attestation.json -text
+/artifacts/product/mvp/mind_shell_e2e_gate_v1.attestation.json -text
+/artifacts/product/product_notes_slice-gate11-final-1b991f8a5b312401e2355a4fd790b5ad61154af4a8f945fb76b005e6b1e4a32c.png -text
+/artifacts/product/product_notes_slice.png -text
+/artifacts/research/audio_arena_assistant_bench_stt_preregistration_v1.json -text
+/artifacts/research/bangor_miami_stt_preregistration_v1.json -text
+/artifacts/research/baxy_same_view_hot_negative_regression_development_v5.rejected_obsolete_sentinel_contract.stderr.log -text
+/artifacts/research/baxy_same_view_hot_negative_regression_development_v5.rejected_obsolete_sentinel_contract.stdout.log -text
+/artifacts/research/fresh_postweight_stt_source_audit_v1.json -text
+/artifacts/research/functiongemma_verifier_scored_validation_r1.json -text
+/artifacts/research/hyperspotter_conformer_opened_wake_pilot_20260811.json -text
+/artifacts/research/hyperspotter_whisper_opened_wake_pilot_20260811.json -text
+/artifacts/research/livekit_wakeword_piper_ipa_pilot.v1.json -text
+/artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_256_filtered_ipa.v1.json -text
+/artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_256_ipa.v1.json -text
+/artifacts/research/minds14_stt_preregistration_v1.json -text
+/artifacts/research/operation_shortlist_v1/operation_shortlist.v1.vocabulary.json.gz -text
+/artifacts/research/operation_shortlist_v1/operation_shortlist.v1.weights.npz -text
+/artifacts/research/operation_shortlist_v2/operation_shortlist.v1.vocabulary.json.gz -text
+/artifacts/research/operation_shortlist_v2/operation_shortlist.v1.weights.npz -text
+/artifacts/research/operation_shortlist_v3/operation_shortlist.v1.vocabulary.json.gz -text
+/artifacts/research/operation_shortlist_v3/operation_shortlist.v1.weights.npz -text
+/artifacts/research/prosody_spectral_loco_diagnostic_20260811.json -text
+/artifacts/research/stt_real_audio_development_preopen_contract_v1.json -text
+/artifacts/research/stt_real_audio_development_preopen_contract_v2.json -text
+/artifacts/research/stt_real_audio_development_preopen_contract_v3.json -text
+/artifacts/research/stt_real_audio_development_preopen_contract_v5.json -text
+/artifacts/research/stt_real_audio_development_preopen_contract_v6.json -text
+/artifacts/research/stt_real_audio_development_preopen_contract_v7.json -text
+/artifacts/research/stt_real_audio_development_preopen_contract_v8.json -text
+/artifacts/research/stt_real_audio_development_preopen_contract_v9.json -text
+/artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json -text
+/experiments/technology_tournament/round_b/tauri_rust/src-tauri/icons/icon.ico -text
+/src/baxy_mind/data/catalog_operation_aliases.v1.json -text
+/src/baxy_mind/data/family_classifier.v1.vocabulary.json.gz -text
+/src/baxy_mind/data/family_classifier.v1.weights.npz -text
+/src/baxy_mind/data/intent_bank.embeddings.npy -text
+/src/baxy_mind/data/semantic_family_arbiter.v1.weights.npz -text
+/tests/data/turn_evidence_public_holdout.v1.jsonl -text
+/tests/data/turn_evidence_public_manifest.v1.json -text

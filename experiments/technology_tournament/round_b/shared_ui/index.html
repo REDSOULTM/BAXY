@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' data:; style-src 'self'; script-src 'self'"
+    />
+    <title>BAXY — asistente local</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#composer">Saltar al mensaje</a>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand" aria-label="BAXY">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="brand-word">BAXY</span>
+          <span class="brand-edition">LOCAL</span>
+        </div>
+        <div class="topbar-status" aria-label="Estado del sistema">
+          <span id="privacy-state" class="status-pill ok"><span aria-hidden="true"></span>Privado</span>
+          <span id="bridge-state" class="status-pill pending"><span aria-hidden="true"></span>Conectando</span>
+          <button id="contrast-button" class="icon-button" type="button" aria-pressed="false" aria-label="Alternar contraste alto">◐</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="rail" aria-label="Resumen local">
+          <section class="identity-card" aria-labelledby="identity-title">
+            <div class="orb-small" aria-hidden="true"><span></span></div>
+            <div>
+              <p class="eyebrow">ASISTENTE</p>
+              <h1 id="identity-title">BAXY</h1>
+              <p>Siempre local. Siempre honesta.</p>
+            </div>
+          </section>
+
+          <section class="system-card" aria-labelledby="system-title">
+            <div class="section-heading">
+              <h2 id="system-title">Sistema</h2>
+              <span class="online-dot" aria-label="Disponible"></span>
+            </div>
+            <dl>
+              <div><dt>Core</dt><dd id="core-label">detectando…</dd></div>
+              <div><dt>Red</dt><dd>sin nube</dd></div>
+              <div><dt>Datos</dt><dd>en este equipo</dd></div>
+            </dl>
+          </section>
+
+          <section class="examples" aria-labelledby="examples-title">
+            <h2 id="examples-title">Prueba una misión</h2>
+            <button type="button" data-example="Crea la nota ideas.txt con el texto: comprar té">Crear una nota</button>
+            <button type="button" data-example="Lee la nota ideas.txt">Leer una nota</button>
+            <button type="button" data-example="Mueve la nota ideas.txt a la papelera">Mover a papelera</button>
+          </section>
+
+          <p class="local-note"><span aria-hidden="true">⌁</span>Nada sale de tu equipo.</p>
+        </aside>
+
+        <section class="conversation" aria-labelledby="conversation-title">
+          <div class="conversation-heading">
+            <div>
+              <p class="eyebrow">CONVERSACIÓN</p>
+              <h2 id="conversation-title">¿Qué hacemos hoy?</h2>
+            </div>
+            <span id="last-state" class="mission-state idle">Lista</span>
+          </div>
+
+          <div id="conversation-log" class="conversation-log" role="log" aria-live="polite" aria-relevant="additions text">
+            <article class="message assistant welcome-message">
+              <div class="avatar" aria-hidden="true">B</div>
+              <div class="bubble">
+                <p>Hola. Estoy lista para ayudarte con este equipo.</p>
+                <small>Trabajo localmente y verifico antes de decir que algo terminó.</small>
+              </div>
+            </article>
+          </div>
+
+          <div id="progress" class="progress-card" role="status" aria-live="polite" hidden>
+            <div class="progress-orb" aria-hidden="true"><span></span></div>
+            <div>
+              <strong id="progress-title">Entendiendo</strong>
+              <p id="progress-detail">Estoy preparando la misión…</p>
+            </div>
+          </div>
+
+          <form id="composer" class="composer" aria-label="Enviar mensaje a BAXY">
+            <div id="automation-panel" class="automation-panel" hidden>
+              <label for="automation-invocation">ID de invocación de prueba</label>
+              <input id="automation-invocation" type="text" maxlength="128" autocomplete="off" />
+            </div>
+            <label class="sr-only" for="message-input">Mensaje para BAXY</label>
+            <textarea
+              id="message-input"
+              name="message"
+              rows="1"
+              maxlength="16384"
+              autocomplete="off"
+              placeholder="Escribe una misión o pregunta…"
+              aria-describedby="composer-hint"
+            ></textarea>
+            <button id="send-button" class="send-button" type="submit" aria-label="Enviar mensaje">
+              <span>Enviar</span><b aria-hidden="true">↗</b>
+            </button>
+            <p id="composer-hint">Enter para enviar · Shift + Enter para nueva línea</p>
+          </form>
+        </section>
+
+        <aside class="activity" aria-labelledby="activity-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">ACTIVIDAD</p>
+              <h2 id="activity-title">Última misión</h2>
+            </div>
+          </div>
+          <ol id="activity-list" class="activity-list">
+            <li class="muted"><span>1</span><div><strong>En espera</strong><p>Aquí verás el progreso verificable.</p></div></li>
+          </ol>
+          <section class="trust-card" aria-labelledby="trust-title">
+            <span aria-hidden="true">✓</span>
+            <div><h3 id="trust-title">Efectos verificados</h3><p>BAXY no declara éxito por intención.</p></div>
+          </section>
+        </aside>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

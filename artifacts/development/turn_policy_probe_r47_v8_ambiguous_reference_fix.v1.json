@@ -1,0 +1,43 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v8_ambiguous_reference_fix.v1.raw.jsonl",
+    "sha256": "691c6c840272dc9c744ccb4d8f8175d8744609e9f8ac5432b5f7f1a22d56ef36"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "critical:ambiguous_reference_es",
+      "expected_families": [],
+      "expected_modes": [
+        "clarify",
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-f1adb8d9764b05ee35d84235",
+        "error": "",
+        "failure_code": "",
+        "kind": "conversation",
+        "latency_seconds": 1.367,
+        "operation": null,
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "No puedo abrir eso.",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-08T21:02:03.457313+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 1,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "baxy.audit.replay-chain.v1",
+  "coreVersion": "1.0.8",
+  "catalogCount": 168,
+  "elapsedSeconds": 0.08089619999918796,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "3ddc61fc-e79f-4642-b4f0-cd2837ada942",
+      "missionId": "36b9075b-1e41-4e8c-89c6-16210fb4d7ae",
+      "invocationId": "a8346763-c1cb-471b-8717-141162ec4d3a",
+      "status": "completed",
+      "message": "Guardé la nota «BAXY replay audit».",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "noteId": "9d969636-15b3-4e20-8f5d-e0ed641da592",
+        "title": "BAXY replay audit",
+        "content": "synthetic idempotency marker",
+        "createdAtUtc": "2026-07-27T07:02:18.3541548+00:00",
+        "updatedAtUtc": "2026-07-27T07:02:18.3541548+00:00",
+        "trashedAtUtc": null,
+        "revision": 1,
+        "isTrashed": false
+      },
+      "errorCode": null
+    },
+    {
+      "type": "operation.response",
+      "requestId": "ea286c2a-8132-47ac-87e5-c4aad094db75",
+      "missionId": "36b9075b-1e41-4e8c-89c6-16210fb4d7ae",
+      "invocationId": "a8346763-c1cb-471b-8717-141162ec4d3a",
+      "status": "completed",
+      "message": "Guardé la nota «BAXY replay audit».",
+      "verified": true,
+      "replayed": true,
+      "result": {
+        "noteId": "9d969636-15b3-4e20-8f5d-e0ed641da592",
+        "title": "BAXY replay audit",
+        "content": "synthetic idempotency marker",
+        "createdAtUtc": "2026-07-27T07:02:18.3541548+00:00",
+        "updatedAtUtc": "2026-07-27T07:02:18.3541548+00:00",
+        "trashedAtUtc": null,
+        "revision": 1,
+        "isTrashed": false
+      },
+      "errorCode": null
+    },
+    {
+      "type": "operation.response",
+      "requestId": "c57bbddd-d801-493e-a776-7a4db28c31f1",
+      "missionId": "c831b331-7441-4b0a-b970-04efc06ce770",
+      "invocationId": "4f944ad8-75a3-4371-8101-faf27d9bbfda",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "notes": [
+          {
+            "noteId": "9d969636-15b3-4e20-8f5d-e0ed641da592",
+            "title": "BAXY replay audit",
+            "createdAtUtc": "2026-07-27T07:02:18.3541548+00:00",
+            "updatedAtUtc": "2026-07-27T07:02:18.3541548+00:00",
+            "trashedAtUtc": null,
+            "revision": 1,
+            "isTrashed": false
+          }
+        ],
+        "count": 1,
+        "totalCount": 1,
+        "scope": "search",
+        "limit": 10,
+        "offset": 0,
+        "nextOffset": null
+      },
+      "errorCode": null
+    },
+    {
+      "type": "operation.response",
+      "requestId": "75281d68-f2f3-425f-aea9-1f5463e0f326",
+      "missionId": "36b9075b-1e41-4e8c-89c6-16210fb4d7ae",
+      "invocationId": "a8346763-c1cb-471b-8717-141162ec4d3a",
+      "status": "rejected",
+      "message": "Ese identificador ya pertenece a otra acción.",
+      "verified": false,
+      "replayed": false,
+      "result": null,
+      "errorCode": "idempotency_conflict"
+    }
+  ],
+  "error": null,
+  "coreExitCode": 0,
+  "stderr": ""
+}

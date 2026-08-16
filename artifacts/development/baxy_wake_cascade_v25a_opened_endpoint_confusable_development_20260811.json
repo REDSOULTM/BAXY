@@ -1,0 +1,1815 @@
+{
+  "schema": "baxy.wake-cascade-runtime-raw-development.v1",
+  "measuredAtUtc": "2026-08-11T17:23:10.918411+00:00",
+  "scope": "exact_production_stream_api_opened_wasapi_raw",
+  "role": "development",
+  "contract": {
+    "sampleRate": 16000,
+    "blockSamples": 512,
+    "leftContextSeconds": 1.0,
+    "minimumRightContextSeconds": 1.25,
+    "lexicalFallback": "bounded_direct_lexical_with_manifest_speed_views",
+    "verificationPolicy": "cascade"
+  },
+  "assets": {
+    "cascadeManifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "upstreamGraphSha256": [
+      "5934226a5abe42610d4e4575f3b2ee2489dd5a6c03911bf1d1f24095b536d10e",
+      "520726b44654f520af8fffb0fb01f4c4e124b5b1163c90f941db848db433b00b",
+      "f431744e153813a6df8afcefed46570345a4dc64c71a68f6a793ff05780f8cff"
+    ],
+    "melFiltersSha256": "94b385f1d7568735fa40099550f5d71e8210bef150a3c9d4d86f0d5f2eb86db8",
+    "logmelVerifierSha256": [
+      "b835475d6573217a24cd0b5c5c908dc9a64f432aafc998ca3e7b27c715e92c2a",
+      "aa507070699eeb4477741957bf30bf6170fe5242376f0419e05bed07281294b5",
+      "d8d0e4b993df824f67c5eab9108470d04c0aa3a756538efd8a6ca4848d574d18"
+    ]
+  },
+  "corpusManifestSha256": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+  "preregistrationSha256": null,
+  "positive": {
+    "files": 24,
+    "upstreamCandidateFiles": 16,
+    "logmelAcceptedFiles": 0,
+    "lexicalInvocations": 16,
+    "lexicalAcceptedFiles": 16,
+    "acceptedFiles": 16,
+    "runtimeSeconds": {
+      "minimum": 0.43431510002119467,
+      "p50": 0.7377701500081457,
+      "p95": 1.3389442049927307,
+      "maximum": 1.6760956999496557
+    },
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "90cba8054ef8813e98d95bb340ffb9c26c57e3af907b6a00a0ddc9b669fbc480",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.55613112449646,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "c1828623889819fbb32808878ada366bdffa5772ccab255765f10499fab30328",
+        "lexicalAttemptTranscriptSha256": [
+          "c1828623889819fbb32808878ada366bdffa5772ccab255765f10499fab30328"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 1,
+        "audioSha256": "9ae3a2e8dd18137cfbaf1f80666438f071a27b59d379ed4b1d581690533e584b",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.023943901062012,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "6991a91329a3fe0dbd2a33aafc1830cc017292e8deeff6e820f38de32f8d0b65",
+        "lexicalAttemptTranscriptSha256": [
+          "6991a91329a3fe0dbd2a33aafc1830cc017292e8deeff6e820f38de32f8d0b65"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 2,
+        "audioSha256": "4c047628582aa96b5add09c5fb404dbc4750f831e9fb07b75e4de87449393fb2",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 5.402787685394287,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "b8328e70e0fd3e9a07bb55fdfc49fd5dbf8e6c17ef52af3da93d70e022259f3d",
+        "lexicalAttemptTranscriptSha256": [
+          "b8328e70e0fd3e9a07bb55fdfc49fd5dbf8e6c17ef52af3da93d70e022259f3d"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 3,
+        "audioSha256": "60f98152326f32828f28109ca44a75f3659ce22946acdd5f6d646055221df442",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 4.524629592895508,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "e0133db270c43574fb447acc5cf09cdf742a205e1762dd9e2b1f9d23030b7ad3",
+        "lexicalAttemptTranscriptSha256": [
+          "e0133db270c43574fb447acc5cf09cdf742a205e1762dd9e2b1f9d23030b7ad3"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 4,
+        "audioSha256": "3d77ce2b9816edbb6f92d84051a77d207c6a772dab767f5dc6c560c4e58db43a",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 5.896238327026367,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "6e27b51221c06625b1c60d4848616891bb978db264293a080f00b82e30f8c9fa",
+        "lexicalAttemptTranscriptSha256": [
+          "5e4838a5ee53df6141c296435b7ac556f9f92de79331cbf1995b07b09402e242",
+          "6e27b51221c06625b1c60d4848616891bb978db264293a080f00b82e30f8c9fa"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 5,
+        "audioSha256": "1dd20f4cccc6a78cbc41de9d228b8ec507bda8424fe5ac84d853b11aef4f57e8",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.1703782081604,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "c1828623889819fbb32808878ada366bdffa5772ccab255765f10499fab30328",
+        "lexicalAttemptTranscriptSha256": [
+          "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "c1828623889819fbb32808878ada366bdffa5772ccab255765f10499fab30328"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 6,
+        "audioSha256": "facce206d91376faa4f84f81b20fd8d811e35c3143a8cf6486f85c64d9fc3b02",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 7,
+        "audioSha256": "b2afcf74d387c17785c0c77c8cd098c91e459828a3d387b88e84d101ce2e3748",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 4.256,
+        "logmelVerifierScore": 2.7443971633911133,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "d0657e3429d5acc0a895e4dfa3fba858169b146460f69c6a38fc011fbbaab415",
+        "lexicalAttemptTranscriptSha256": [
+          "d0657e3429d5acc0a895e4dfa3fba858169b146460f69c6a38fc011fbbaab415"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 8,
+        "audioSha256": "37891ce5861dea9a1d0e6cb907cd7a95d969d0cf50af2d4520fda84c6afa133a",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 5.150809288024902,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "be30df401af358de083606a1968d05008e001dce43c400608041e165e390b905",
+        "lexicalAttemptTranscriptSha256": [
+          "be30df401af358de083606a1968d05008e001dce43c400608041e165e390b905"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 9,
+        "audioSha256": "6a1b4c3400012d5bfa948ba18e704e3b00e26e57133470912fa2afd38f3bb350",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 10,
+        "audioSha256": "53cb3b2313491d34f2c30a699849d46d9674b2c3638fd49c2e570a37ad2b762d",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 11,
+        "audioSha256": "c11149faf11f64066cbbbeafc94266297aab003fde296d32bb0e4298a70afab2",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 12,
+        "audioSha256": "d27e3901d674e20e85c838d9fe3b5d0f9124da4e43b381ffb5cc1888068ee10f",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 13,
+        "audioSha256": "754e0e507899a9d6403ca46208241dd5bfff2e3ec511e58feb3e92b8fbe19541",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 14,
+        "audioSha256": "a6b35d0d152e78314039e98df146dd89c1d4650c090f26238e670ef73abf0ec0",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 5.099217891693115,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "3054604248a63d6ac409c3119f8e2cdc4547a95179ebe57901b2e2cbc1cdab31",
+        "lexicalAttemptTranscriptSha256": [
+          "82e5920d1cd31eaac28bf2134df9fcb0fe9dd782f224e8c687091f4c44bbe6c2",
+          "043ca18e19256017fcd577d37f1a779e026af9fbdb0a1078d464b71125201bd0",
+          "3054604248a63d6ac409c3119f8e2cdc4547a95179ebe57901b2e2cbc1cdab31"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 15,
+        "audioSha256": "4ded547d882e372e208e6b76e69e3e99c5864af5e24d61fa5bcae80e5a73f9fe",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 4.256,
+        "logmelVerifierScore": 2.869816780090332,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "4a6623e4ebc56330cde1e9f7bd34433ba8c035a53a3d7427e01e03bef93d2b26",
+        "lexicalAttemptTranscriptSha256": [
+          "e030c6edfc33b608d411552e21acb52fceb9b634e840c29f06dc97de1f9fdb4a",
+          "62a3ff55b0ba3e8353b737669a1b8719c250c50a432e6de3525566193fffd5c7",
+          "4a6623e4ebc56330cde1e9f7bd34433ba8c035a53a3d7427e01e03bef93d2b26"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 16,
+        "audioSha256": "df1e9e984ebd0f80515de81f38e821214b574ee94aa6c60a97577898f5c8e82f",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.5572144985198975,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "6991a91329a3fe0dbd2a33aafc1830cc017292e8deeff6e820f38de32f8d0b65",
+        "lexicalAttemptTranscriptSha256": [
+          "6991a91329a3fe0dbd2a33aafc1830cc017292e8deeff6e820f38de32f8d0b65"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 17,
+        "audioSha256": "2ef1ce76aaf5123ad3d1f691f5379072342cccb1e99ef3ac5ee6d0913fc85663",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 6.2245659828186035,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "fcb211fb1aedc48c6a5353d7bed78b1d7510d57807b44312115ddde108fe0de1",
+        "lexicalAttemptTranscriptSha256": [
+          "e8b275b5cbbf5d6f05f1293b555229e126084a9404492b5f03c40cc3bff2ba0e",
+          "dbf12a3d669f064c8477dd2ad23e07492c1b3bf13b62ef21d2ac0b37e62ee75b",
+          "fcb211fb1aedc48c6a5353d7bed78b1d7510d57807b44312115ddde108fe0de1"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 18,
+        "audioSha256": "cb122f38f6f9c4631ec3871c52ed552a8a208355ce12458d9af653af042a8529",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 19,
+        "audioSha256": "a32211436f3938e38cec1d111973e35cc89193d02b0def236751d78c116bb68f",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.43306827545166,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "be30df401af358de083606a1968d05008e001dce43c400608041e165e390b905",
+        "lexicalAttemptTranscriptSha256": [
+          "be30df401af358de083606a1968d05008e001dce43c400608041e165e390b905"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 20,
+        "audioSha256": "4861eb91bc06aebb77fd7ae64e8b049a2141b9052443afef54b30724f75f7a0b",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.776,
+        "logmelVerifierScore": 2.8165292739868164,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "6e27b51221c06625b1c60d4848616891bb978db264293a080f00b82e30f8c9fa",
+        "lexicalAttemptTranscriptSha256": [
+          "6e27b51221c06625b1c60d4848616891bb978db264293a080f00b82e30f8c9fa"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 21,
+        "audioSha256": "41908efedee79e777c541aeec522e1c47ff9d034b5a9391b09e7ae57c28707fc",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.8910250663757324,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "be30df401af358de083606a1968d05008e001dce43c400608041e165e390b905",
+        "lexicalAttemptTranscriptSha256": [
+          "be30df401af358de083606a1968d05008e001dce43c400608041e165e390b905"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 22,
+        "audioSha256": "2077313c718fe54d5c955d0d2d200cbee1e567c54c61b5cbc4eb9649c877b0ac",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 23,
+        "audioSha256": "fe52a5b6a3806d6e25098ad635488cb1f6d1829285675f97904373fb7adc11de",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.894211292266846,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "c1828623889819fbb32808878ada366bdffa5772ccab255765f10499fab30328",
+        "lexicalAttemptTranscriptSha256": [
+          "c1828623889819fbb32808878ada366bdffa5772ccab255765f10499fab30328"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      }
+    ],
+    "transcriptTextRetained": false
+  },
+  "negative": {
+    "files": 96,
+    "upstreamCandidateFiles": 42,
+    "logmelAcceptedFiles": 3,
+    "lexicalInvocations": 39,
+    "lexicalAcceptedFiles": 7,
+    "acceptedFiles": 10,
+    "runtimeSeconds": {
+      "minimum": 0.07024359999923036,
+      "p50": 0.7823610999912489,
+      "p95": 1.3754767999926116,
+      "maximum": 1.8274166999617592
+    },
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "51dde973d436e8b4089989536bd3674fbe7f233d9cf913953f6c1beebcdd87c1",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.264,
+        "logmelVerifierScore": 3.2045822143554688,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "ec1aec16c58a450d44d877f7bb07c7b814bca44207c31379708c7d6f49ef1b41",
+        "lexicalAttemptTranscriptSha256": [
+          "ec1aec16c58a450d44d877f7bb07c7b814bca44207c31379708c7d6f49ef1b41"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 1,
+        "audioSha256": "339d337cf61e6ddb975692d3c4a4c1312e4e04db902b227c49b9ccfe68e08262",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 2,
+        "audioSha256": "a2760eda17a943c5614cd7065a8f91c2b9896458a2feca12f806125ece93d473",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 3,
+        "audioSha256": "964a1b75346558ca9aa68be14fe0cc157efa12f5a7a04f0dce8c142205d0697f",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 4,
+        "audioSha256": "2e961e4efd438270c741dc17ad31677fd71b5b6b78d5e09c7c416cd23535ce56",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 5,
+        "audioSha256": "6f85079022fbd1b87c3fb0e57de5fe0a05d5b508b79d7c95b7b8f5d9a5f1ba2f",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 6,
+        "audioSha256": "b7ca010f38216fc6688bd6f111be125a3d35a1b2452cbc5266d6ed76cc4f83ed",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 7,
+        "audioSha256": "8bfd7cf1617f2e04c9521a945170a351443cd75460b8b74131d83cf9b5f9202f",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.234453201293945,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "565232220c2e52c8967a56b76be012fd0a812ae78f587cb340a3a0af2ace35ad",
+          "565232220c2e52c8967a56b76be012fd0a812ae78f587cb340a3a0af2ace35ad",
+          "565232220c2e52c8967a56b76be012fd0a812ae78f587cb340a3a0af2ace35ad"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 8,
+        "audioSha256": "09c9c4d7cbc75775fdba71ea8e2f594143dc79b775d942e0b9d5af5c676c24f6",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 5.594451904296875,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "aab4c1fa6eaf862b46d50b3a233f88bb9b36ed031b04f68b23dee0dc30a9a318",
+          "aab4c1fa6eaf862b46d50b3a233f88bb9b36ed031b04f68b23dee0dc30a9a318",
+          "35c4f2036b092d41bd343b45bef32e959f022630fb56629c5e273ea17eb8806e"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 9,
+        "audioSha256": "309ee939a0574a6583ccf8ccf5f07a2f0bf7cc709880e21ce90d71467b40afba",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 10,
+        "audioSha256": "11b7cd1d0d9dec3844d58d08fbe513769be3fe99918a0743f26a90dd4c17038d",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 11,
+        "audioSha256": "23ed7f0d283cbeb6ecb04fb6d470234b9cfedb9b5865a2cf20d70075e7589712",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 2.759192943572998,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "5ec1f7e700f37c3d0b2981d04855fc34b94aaa15457b05ca571817442d228f81",
+          "cdfee8d036748bd8c5feb6d376ab18457c2d48e753ca8550eb526ae07579a6bb",
+          "8bdc2aa5c7f8d79f1da2396edbba0e1f140528b42d9b3e5452ebc64687a5498b"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 12,
+        "audioSha256": "5731389fe8a4018e020bc911bde1c4673bafae6bc721f78dd7dc41aab0d1f761",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 2.601125478744507,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "0bcfa50ac00a155317db819221c1b657e8dfed00dfcb8ce428afd24bffd7c28a",
+          "0bcfa50ac00a155317db819221c1b657e8dfed00dfcb8ce428afd24bffd7c28a",
+          "0bcfa50ac00a155317db819221c1b657e8dfed00dfcb8ce428afd24bffd7c28a"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 13,
+        "audioSha256": "89c138044b75d42978c316d75a80a26abd33d749b137df16c6d60cda61e494f9",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 14,
+        "audioSha256": "9cd0eb9c9e4e70962e36e1367831386735deb5937b4f726db5218f33588f1942",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 3.85017991065979,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa",
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa",
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 15,
+        "audioSha256": "7e925a52864eb6a6015fe6cee2cbd6b076143db00b76c183fe03e6a1511efdfc",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 16,
+        "audioSha256": "41f4887cd7d18869cdf425c0e5626e6d83fb5952989915aa75e5b248d1ed1185",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 5.932663440704346,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "ff80e81a8bcff47e8d83d9c858c37587a22221b42a918b4f8aefe5c2d630b52e",
+          "5d798cccca7b9371e66fcb13b54969022951919ceb08305b3fffecf9c4ec917d",
+          "12022da51774808a8f065fd97d8bc6bcd43d18633031c629e771720d8016fdb0"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 17,
+        "audioSha256": "3f2788443d16a743b90a02385790d6b16fecf35fa82287a0a07ffb11c8b0f9c4",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 18,
+        "audioSha256": "8ce24ff035c46d116d1a697f8fe19e182d623b115b61ee43ba9549c14e6c92d4",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 19,
+        "audioSha256": "fb32420e98493c5c138f5dbd78ef1ab4aec1fe037d5b308aa94ffaaff5fb00aa",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 4.0,
+        "logmelVerifierScore": 2.818275213241577,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d",
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d",
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 20,
+        "audioSha256": "9df2372ceed3c9f67720ec1fad15a0e289b6a6bcb8474ae32c65d06392c5fdef",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 21,
+        "audioSha256": "740b1cf249a7e5451567c529cb14ff70f55181c8c31efe2a1b27896e8e93f2cc",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 4.000772953033447,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa",
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa",
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 22,
+        "audioSha256": "f0b3f571da930966d80bf04ae6a07072d2af6ae1472d05460cd0606d46243b3f",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 23,
+        "audioSha256": "a71be79fef4412ca334f0f899ec12fa5706e1d2997ae1c6b7fae496c92eae0fd",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 24,
+        "audioSha256": "f37d471bf3d62e65c75c8003474d414be870668ae124e1d2e59b14f53eaf5e74",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 2.5233864784240723,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "81b67bcb0de6968ba46821dd83f5bd6790301b4a587eed0eff68ef13464a4cd7",
+        "lexicalAttemptTranscriptSha256": [
+          "81b67bcb0de6968ba46821dd83f5bd6790301b4a587eed0eff68ef13464a4cd7"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 25,
+        "audioSha256": "661a1429eca10da46236d531fa102ebab84d665ba313f9a28cf71105e45cd9f0",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 26,
+        "audioSha256": "a44e70ee967db4d6ad8f8d502e8c30f97e834eea823fa2378f101bc74d0851ff",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 3.526587724685669,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "7d905cacafb1ed5248988d8ffac2514e785f9c7a08a1167ed13f11bf62ed4a50",
+          "1d489d7b9f4d6ec74a72a0464e77dc31f69a27fa49f24284ef917c66b2a07ec9",
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 27,
+        "audioSha256": "025bf250fb17519ac24d195273660e39cae361b398ae8125645cbb06adf66800",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 28,
+        "audioSha256": "6f870ee2a7e445f08d9b946882b11da44713009bd3e7d4f34c1f2f73e04bd916",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 3.2779622077941895,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": true,
+        "reason": "logmel_verifier"
+      },
+      {
+        "record": 29,
+        "audioSha256": "4b7bd37f788b8627bfcad3a82b7b6659ba4de84e8128cb5eaefec14c787d98fc",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 30,
+        "audioSha256": "9862efe7316f3cc7c95d94ba0332e42dc3b8ff3f72a88d9beefa54ec14012c09",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 31,
+        "audioSha256": "af7a32fe4b3770e0204c9779fdf7ca9f555e4d1fd6927fe2dee0da9b7318514e",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 32,
+        "audioSha256": "ddb72d429618778ac8bec0a321749fd116c0b9d061eb64a4a664e67a14a3704b",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 33,
+        "audioSha256": "a2d4873dc198347ae8b29419170b3802ef84993de54df25357659649e02bb294",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 34,
+        "audioSha256": "df9b66ffea206968b18f4fd031d04ebaebb176c46d68f26a9eb972cc9f439f29",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 35,
+        "audioSha256": "94d82f6cbd879b78eead997f76adb66978153ca6ca90f9132812833c79d68766",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 4.40442419052124,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "db0e17cd5d4e7197cba18c179ab5cabca58f3eb0f6e2e98f003016d04c9d4154",
+          "db0e17cd5d4e7197cba18c179ab5cabca58f3eb0f6e2e98f003016d04c9d4154",
+          "db0e17cd5d4e7197cba18c179ab5cabca58f3eb0f6e2e98f003016d04c9d4154"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 36,
+        "audioSha256": "7e307d3c622b2a6a7fd6d2d62be75d423db9a9802cc7972dfe20dcc4742fd116",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 37,
+        "audioSha256": "dae472d6bf0918c1233e85086a00981b404bc1122fe7c0a89edbc5649c7d8c35",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 4.256,
+        "logmelVerifierScore": 4.27764368057251,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "994dcfed43ff30d5ba328c6be349766c7528bf5f1ecb2225495df71e744108b5",
+          "994dcfed43ff30d5ba328c6be349766c7528bf5f1ecb2225495df71e744108b5",
+          "994dcfed43ff30d5ba328c6be349766c7528bf5f1ecb2225495df71e744108b5"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 38,
+        "audioSha256": "72c03ce70f5b9a0445e025722a2f57ec38f1f08bb44a4d13da6b52283128e63c",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 39,
+        "audioSha256": "5d6be82eaf2f3b3bc9ce168cecd28c79e46809bcbe9bdaed979a0d418c555be1",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 40,
+        "audioSha256": "463fc24e1cc47c017c4bcd9e9206235727198156739fcfe2bdc5a8596abb3f24",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.998866081237793,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa",
+          "1bee9e024186da2aef2e5fc03bc274c65a113805b0013eb66c3cb7718f4afe89",
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 41,
+        "audioSha256": "71e12778c80d46e73e891b455faaacade755dcee375714e02c5860525440da8d",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.264,
+        "logmelVerifierScore": 4.071316242218018,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f",
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f",
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 42,
+        "audioSha256": "2ad129de17448e543c7b2604d7ad62d2a011fffd945bde29cb7ca7bbafb7b582",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.5350141525268555,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "565232220c2e52c8967a56b76be012fd0a812ae78f587cb340a3a0af2ace35ad",
+          "565232220c2e52c8967a56b76be012fd0a812ae78f587cb340a3a0af2ace35ad",
+          "565232220c2e52c8967a56b76be012fd0a812ae78f587cb340a3a0af2ace35ad"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 43,
+        "audioSha256": "5e1b9ea06d97bd87fa149d1af5dc719534c0359c7f0eefb515879c8f3d3c14cc",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 4.089176177978516,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": true,
+        "reason": "logmel_verifier"
+      },
+      {
+        "record": 44,
+        "audioSha256": "dcde4af5497592b1f50260d9bb6b6e3ddb96f4d22fc6e81051a8d662bb359872",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 45,
+        "audioSha256": "3764b7dc48786efd8a88d9bd45c399babe4509ee5cc0d524356f7e94e93c8dd8",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.940354585647583,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f",
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f",
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 46,
+        "audioSha256": "9a9c5969e45c33591a07474496cdf4e9bc69b51b20ef2b8f531a542cd73db7e9",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.1249475479125977,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "e0133db270c43574fb447acc5cf09cdf742a205e1762dd9e2b1f9d23030b7ad3",
+        "lexicalAttemptTranscriptSha256": [
+          "e0133db270c43574fb447acc5cf09cdf742a205e1762dd9e2b1f9d23030b7ad3"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 47,
+        "audioSha256": "db610acbeb7e8609816bf7b02474cfb3f37b18349857fabf744e7ea64ac35df7",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 48,
+        "audioSha256": "7a2e7861f2d60267d5a4a76600682d94d322eeef775bfc3a4c2b7ec6fbc48b52",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.7678420543670654,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56",
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56",
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 49,
+        "audioSha256": "365c27f2b1386aff8a3239967656f324a76da900b1e8893eacb8dce442620be6",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 50,
+        "audioSha256": "1d270cfa52749d6975399103c4d9415f2d619a5ead8a62038edc1253a2666ee6",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 5.927639484405518,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "aab4c1fa6eaf862b46d50b3a233f88bb9b36ed031b04f68b23dee0dc30a9a318",
+          "aab4c1fa6eaf862b46d50b3a233f88bb9b36ed031b04f68b23dee0dc30a9a318",
+          "aab4c1fa6eaf862b46d50b3a233f88bb9b36ed031b04f68b23dee0dc30a9a318"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 51,
+        "audioSha256": "71c8f2ba5a0c9c7dfdf6670f530fb4d70008d23e0574573f0dcc8d95907ecb59",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 5.979422569274902,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "5d798cccca7b9371e66fcb13b54969022951919ceb08305b3fffecf9c4ec917d",
+          "ff80e81a8bcff47e8d83d9c858c37587a22221b42a918b4f8aefe5c2d630b52e",
+          "12022da51774808a8f065fd97d8bc6bcd43d18633031c629e771720d8016fdb0"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 52,
+        "audioSha256": "9e335cdd84d9cc2bfac5b0680ecc768d2df0842fa6575bd4fd6162bfe480f954",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 2.8526952266693115,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "e6ffb0be9929df0e45fbde8e11cc5fe5c91281045081572a33d11f0904b4c8a0",
+          "e6ffb0be9929df0e45fbde8e11cc5fe5c91281045081572a33d11f0904b4c8a0",
+          "e6ffb0be9929df0e45fbde8e11cc5fe5c91281045081572a33d11f0904b4c8a0"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 53,
+        "audioSha256": "37f2645dfd9bdef9f1c08ad49859e1a6a5911c5c6b2da08f99f0c7fe3045d398",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 54,
+        "audioSha256": "0418648f43b7b5480015055386e0cb668b45f2ebef4e1c9b16ae902b3689badc",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 4.0,
+        "logmelVerifierScore": 2.6697680950164795,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "74a796a34da65f6cbaa7190f17a22de457e37386ba115b436cbbedb6be3e5156",
+          "cdb4ee2aea69cc6a83331bbe96dc2caa9a299d21329efb0336fc02a82e1839a8",
+          "901b6cafbd2ed58df72001de16440add88653f8c33677062ff26a47505e8f417"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 55,
+        "audioSha256": "2d5a94ddcf364797b0d2ba41b69dba28a280a3bcb76623d138bec976b738c8f8",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 56,
+        "audioSha256": "48c3372910754c6a27bdac6d605e54d19a9a7e0b55ff3a1c863dcf38560a70b1",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.856450080871582,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "81b67bcb0de6968ba46821dd83f5bd6790301b4a587eed0eff68ef13464a4cd7",
+        "lexicalAttemptTranscriptSha256": [
+          "81b67bcb0de6968ba46821dd83f5bd6790301b4a587eed0eff68ef13464a4cd7"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 57,
+        "audioSha256": "dc5a721bda780167746213f7cb2a4d0dd4b0161be8be083f70d824af5babdf10",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.6556572914123535,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56",
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56",
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 58,
+        "audioSha256": "56746bb13c016e91aae85d8d66fcc26c1d54be66d9eac3b8bdb188bb494032d8",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.2039425373077393,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa",
+          "e36254a0a26b347fe04678d985b28003c2fbc3e09f318532a88553e874769969",
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 59,
+        "audioSha256": "e2dbd8ec6345230c8f3ee26aec084b1e0d864b50c015a68d4a2efbdd2e059f21",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 3.4610893726348877,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "e6ffb0be9929df0e45fbde8e11cc5fe5c91281045081572a33d11f0904b4c8a0",
+          "e6ffb0be9929df0e45fbde8e11cc5fe5c91281045081572a33d11f0904b4c8a0",
+          "e6ffb0be9929df0e45fbde8e11cc5fe5c91281045081572a33d11f0904b4c8a0"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 60,
+        "audioSha256": "c43e5836d3c0bae98120784184a71a96839af7346ba35498ef397cbddedbc2ac",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.75627326965332,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "0450c1ed1d9e7d2e7b32b12531cc0bee536fdcc1daff8cde0a41a54d82a27b59",
+          "859d73a7b462c2d57feed05813ce66dc8b5051e5dcf9d0a73d35b8dbcd18cce4",
+          "0450c1ed1d9e7d2e7b32b12531cc0bee536fdcc1daff8cde0a41a54d82a27b59"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 61,
+        "audioSha256": "93f9c197e988255ed47d659ed47ad7f4e57c07bf33376d9406ca027b23021a2a",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 3.1103975772857666,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d",
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d",
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 62,
+        "audioSha256": "f532e3030f04caa7666e33a70e4f813ddc34aff4189c8f76ce24464c9f772f59",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 63,
+        "audioSha256": "66c1a5eb0ceb510d6976eb560d6b2617c51db391833138769a4f3a49c37fe296",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 2.989121675491333,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d",
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d",
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 64,
+        "audioSha256": "404b2b58b5bbc82e7be93ecacd7eea0bc490776e35270dd3d42817292a7d82c1",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 65,
+        "audioSha256": "370d603b3e19b75de8a232fcf9085adca833d8c918118ee0fc771cae70b4f108",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 66,
+        "audioSha256": "95a8ece5a101b21cb86419998eb27a0aa0e28c5e609e314a9e9b37fa69762800",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 67,
+        "audioSha256": "e7d4e353c1da68bf9bc067e01459c1a81867671594e25019a7809fd527a0e413",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 2.7800514698028564,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "06de67ed63940d9071fe79fb093477d8efd49a11be425864b4040679225f6f08",
+        "lexicalAttemptTranscriptSha256": [
+          "06de67ed63940d9071fe79fb093477d8efd49a11be425864b4040679225f6f08"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 68,
+        "audioSha256": "270fe1fc39f6dc60fee86babc216e970d39c7eb5461e72b1419b7e989b996fb3",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 69,
+        "audioSha256": "1b417cc0011d9d2d737a16fa71dd858c4621b1efdc6497d4d3592ff09df7a8ab",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.194307327270508,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f",
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f",
+          "8b20bac5d5ccf5abd5c333678b0919e5216a404abc765a59d726e4587aca343f"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 70,
+        "audioSha256": "9ca5aeb264194418de296983bd25d7f5b6e0fb77f0bc2bf2a4dc3797748bc31d",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 71,
+        "audioSha256": "0a697b42fb5f14a0cd802544ffc6f06e7044f4677570233b764dec226d408c97",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 72,
+        "audioSha256": "77357353b238cc4c972b14122056dd33ab31cc2fff3455bd6455c61c1a842004",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 6.028514862060547,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": true,
+        "reason": "logmel_verifier"
+      },
+      {
+        "record": 73,
+        "audioSha256": "9034faca1dadf4e15d404b18835d9dd5508ee4623ad764b4950430d1d47b995f",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 74,
+        "audioSha256": "c98a76a629e45ea83560aebccd44cb1d041b4c5dce5ea1153936b9cebebbe4d3",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 75,
+        "audioSha256": "7f4480976a507260ce7ecc66857ef9bdb024582b1b05b795dc58f204e8c70eb4",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.008,
+        "logmelVerifierScore": 3.8980748653411865,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa",
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa",
+          "cd0bd3df23eb08ace401c72f6b5414fd579002fa87b20a98d7a64bfc121aa8aa"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 76,
+        "audioSha256": "fafa16692afdea7a5067a024543910647a7df3ad19214584bfff09b3b9815a61",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 77,
+        "audioSha256": "7b5b88637c04a5ff6a0940bcceac4127994f1432c1a160d8e0c45bac1d715764",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.264,
+        "logmelVerifierScore": 3.632307529449463,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "ec1aec16c58a450d44d877f7bb07c7b814bca44207c31379708c7d6f49ef1b41",
+        "lexicalAttemptTranscriptSha256": [
+          "ec1aec16c58a450d44d877f7bb07c7b814bca44207c31379708c7d6f49ef1b41"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 78,
+        "audioSha256": "daa532c0c7e1e4fed76418e21e075d44fb4ba87b3ec91ffac7901f0f60c2d9c0",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 5.074023246765137,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": "81b67bcb0de6968ba46821dd83f5bd6790301b4a587eed0eff68ef13464a4cd7",
+        "lexicalAttemptTranscriptSha256": [
+          "81b67bcb0de6968ba46821dd83f5bd6790301b4a587eed0eff68ef13464a4cd7"
+        ],
+        "lexicalAccepted": true,
+        "accepted": true,
+        "reason": "bounded_direct_lexical_verifier"
+      },
+      {
+        "record": 79,
+        "audioSha256": "76d314e8d3810c2b7f6c8a76aae88a270887be5e4f890b9306aaea99ad1bfeda",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 4.256,
+        "logmelVerifierScore": 3.977294683456421,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "994dcfed43ff30d5ba328c6be349766c7528bf5f1ecb2225495df71e744108b5",
+          "994dcfed43ff30d5ba328c6be349766c7528bf5f1ecb2225495df71e744108b5",
+          "994dcfed43ff30d5ba328c6be349766c7528bf5f1ecb2225495df71e744108b5"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 80,
+        "audioSha256": "0104a44cdf5944e3336317d685c526fcb476531617a89b0cf6fe2dc7777b0412",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 4.768,
+        "logmelVerifierScore": 4.349405765533447,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d",
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d",
+          "256623099cb9fbad6ee511b22195a431962537a6ce50843e51d772c638a4e16d"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 81,
+        "audioSha256": "53ede88eaa52cad251709523337949c51a731979e754e50edbc35b74ff25cb7e",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 82,
+        "audioSha256": "468abe8957e7c22656daad87acdc9f414a341342c1f424c209023ea6cfca40da",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 83,
+        "audioSha256": "259c388bd0fdbad9813210d0f7608056d577720f4108d4fd4e6325c37defb905",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 84,
+        "audioSha256": "307f3bd16057d786334ed13cc10d4e7dfb36e9121cb598f5d933e2e7647a0ccc",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 85,
+        "audioSha256": "ed07e33371eb15c8d746bcf82da6d340c91cb894b5624da1be88f8d6b432476c",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 86,
+        "audioSha256": "62dca70722764966abaa98f62975e81cf45f6c6c6e25f299051ea07c2fe6d2e5",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.406374931335449,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56",
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56",
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 87,
+        "audioSha256": "1b093b246414f46d64056df089566cc9abe30cb7e021ba5199535e25a7bd567c",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 88,
+        "audioSha256": "81eb38e950473dc771aab1337f38d3dd5d97968c34a5c92cd2be7fd489484a59",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 89,
+        "audioSha256": "c32dfcb41ba4e525b7e145f1d999426f9f4d48f25e74f2cafda2ba220ad8692b",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 90,
+        "audioSha256": "74eca2219a1c69a497276a49623f039bda1408ec63bd46699bfbd2779387cd3d",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 91,
+        "audioSha256": "35530ee09bf35f8320930ee303641d20b3fa993c67b1ccaabdb824b416c33305",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 92,
+        "audioSha256": "f8274e2744d99f598658283fa09bc3688b4a3e90b63ca843632ea8180d6c5666",
+        "upstreamCandidate": true,
+        "candidateAvailableAtStreamSeconds": 3.52,
+        "logmelVerifierScore": 4.80954122543335,
+        "lexicalVerifierInvoked": true,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56",
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56",
+          "0ec9f52393d6340993de218f1afa91d0001e0fdac9a7f7e70ca0764bdddf5f56"
+        ],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "candidate_rejected"
+      },
+      {
+        "record": 93,
+        "audioSha256": "77bb3863558da34c1549cd47a5e6957266b19bac0481b481592bb530b76639f5",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 94,
+        "audioSha256": "135a1a2169d574d2b614185d1cd7208b5504bd6574f54a582425d89c0490e79a",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      },
+      {
+        "record": 95,
+        "audioSha256": "011bb939956e8ffff56266c8cd6ad53a3ed6f6e591be8bacf9488b277bc7af2f",
+        "upstreamCandidate": false,
+        "candidateAvailableAtStreamSeconds": null,
+        "logmelVerifierScore": null,
+        "lexicalVerifierInvoked": false,
+        "lexicalTranscriptSha256": null,
+        "lexicalAttemptTranscriptSha256": [],
+        "lexicalAccepted": false,
+        "accepted": false,
+        "reason": "no_upstream_candidate"
+      }
+    ],
+    "transcriptTextRetained": false
+  },
+  "elapsedWallSeconds": 100.9330581999966,
+  "openedCorpusPassed": false,
+  "candidateFrozen": false,
+  "corpusFrozen": false,
+  "blindHumanPartitionAccessed": false,
+  "promotable": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0,
+  "filenamesOrTranscriptsRetained": false
+}

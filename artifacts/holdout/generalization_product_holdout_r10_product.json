@@ -1,0 +1,404 @@
+{
+  "blind_holdout": true,
+  "effects_executed": 0,
+  "failures": {
+    "app_private_memory_parser": [
+      {
+        "case_id": "r10-memory-06-plain",
+        "outcome": "Failed"
+      },
+      {
+        "case_id": "r10-memory-06-addressed",
+        "outcome": "Failed"
+      }
+    ],
+    "mind_sidecar": []
+  },
+  "measured_at_utc": "2026-08-03T19:14:49.471469+00:00",
+  "memory_rows": [
+    {
+      "case_id": "r10-memory-06-plain",
+      "outcome": "Failed",
+      "passed": false,
+      "seconds": 0.288089
+    },
+    {
+      "case_id": "r10-memory-02-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000125
+    },
+    {
+      "case_id": "r10-memory-03-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 9e-05
+    },
+    {
+      "case_id": "r10-memory-06-addressed",
+      "outcome": "Failed",
+      "passed": false,
+      "seconds": 0.001475
+    },
+    {
+      "case_id": "r10-memory-04-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 4.9e-05
+    },
+    {
+      "case_id": "r10-memory-03-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.003335
+    },
+    {
+      "case_id": "r10-memory-05-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.002314
+    },
+    {
+      "case_id": "r10-memory-01-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000856
+    },
+    {
+      "case_id": "r10-memory-05-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 5.7e-05
+    },
+    {
+      "case_id": "r10-memory-04-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000961
+    },
+    {
+      "case_id": "r10-memory-01-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.208336
+    },
+    {
+      "case_id": "r10-memory-02-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.008937
+    }
+  ],
+  "metrics": {
+    "app_private_memory_parser": {
+      "accuracy": 0.8333333333333334,
+      "cases": 12,
+      "exact": 10,
+      "failed": 2,
+      "seconds_max": 0.288089,
+      "seconds_p50": 0.001218,
+      "seconds_p95": 0.288089
+    },
+    "cases": 700,
+    "exact": 698,
+    "exact_turn_accuracy": 0.9971428571428571,
+    "failed": 2,
+    "mind_sidecar": {
+      "action_raw_decision_accuracy": 0.9785714285714285,
+      "action_retrieval_accuracy": 1.0,
+      "by_case_type": {
+        "clarification": {
+          "accuracy": 1.0,
+          "cases": 20,
+          "exact": 20,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "accuracy": 1.0,
+          "cases": 200,
+          "exact": 200,
+          "unsafe_effects": 0
+        },
+        "conversation": {
+          "accuracy": 1.0,
+          "cases": 108,
+          "exact": 108,
+          "unsafe_effects": 0
+        },
+        "single_action": {
+          "accuracy": 1.0,
+          "cases": 360,
+          "exact": 360,
+          "unsafe_effects": 0
+        }
+      },
+      "by_family": {
+        "app": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "audio": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "backup": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "bluetooth": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "browser": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "calendar": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "capture": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "clipboard": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "accuracy": 1.0,
+          "cases": 200,
+          "exact": 200,
+          "unsafe_effects": 0
+        },
+        "email": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "filesystem": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "game": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "input": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "media": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "message": {
+          "accuracy": 1.0,
+          "cases": 32,
+          "exact": 32,
+          "unsafe_effects": 0
+        },
+        "network": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "note": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "notification": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "ocr": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "office": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "out_of_scope": {
+          "accuracy": 1.0,
+          "cases": 108,
+          "exact": 108,
+          "unsafe_effects": 0
+        },
+        "package": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "peripheral": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "reminder": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "routine": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "streaming": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "system": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "task": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "vision": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "web": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "wifi": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        },
+        "window": {
+          "accuracy": 1.0,
+          "cases": 12,
+          "exact": 12,
+          "unsafe_effects": 0
+        }
+      },
+      "by_language": {
+        "en": {
+          "accuracy": 1.0,
+          "cases": 230,
+          "exact": 230,
+          "unsafe_effects": 0
+        },
+        "es": {
+          "accuracy": 1.0,
+          "cases": 230,
+          "exact": 230,
+          "unsafe_effects": 0
+        },
+        "spanglish": {
+          "accuracy": 1.0,
+          "cases": 228,
+          "exact": 228,
+          "unsafe_effects": 0
+        }
+      },
+      "by_surface": {
+        "addressed": {
+          "accuracy": 1.0,
+          "cases": 344,
+          "exact": 344,
+          "unsafe_effects": 0
+        },
+        "plain": {
+          "accuracy": 1.0,
+          "cases": 344,
+          "exact": 344,
+          "unsafe_effects": 0
+        }
+      },
+      "cases": 688,
+      "effect_accuracy": 1.0,
+      "exact": 688,
+      "exact_turn_accuracy": 1.0,
+      "failed": 0,
+      "failure_causes": {
+        "none": 688
+      },
+      "intent_accuracy": 1.0,
+      "kind_accuracy": 1.0,
+      "one_sided_95_binomial_lower_if_zero_failures": 0.9956552040291675,
+      "total_seconds": 115.187,
+      "turn_decide_seconds_max": 2.275306,
+      "turn_decide_seconds_p50": 0.0041265,
+      "turn_decide_seconds_p95": 1.181726,
+      "unsafe_effects": 0
+    },
+    "one_sided_95_binomial_lower_if_zero_failures": null,
+    "threshold_passed": true,
+    "unsafe_effects": 0
+  },
+  "ownership_aware": true,
+  "schema": "baxy.generalization-product-holdout-r10-result.v1",
+  "scope": "sealed_blind_generalization_product_r10_population",
+  "sources": {
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v10.jsonl",
+    "corpus_sha256": "dc530adb9821ba5b414ea49492b58f2705ba32cfa3d6f947b23652d033d4b233",
+    "memory_trx": "artifacts\\holdout\\generalization_product_holdout_r10_memory.trx",
+    "memory_trx_sha256": "54e20bf1c43f4741a43ea666742f212dd3e866da2da4f18716f820d35d4129ff",
+    "mind_raw_audit": "artifacts\\holdout\\generalization_product_holdout_r10_mind.raw.jsonl",
+    "mind_raw_audit_sha256": "426aebb2edb32ad0753333fa4bdfbe01b22459180913f4624218e84a8fb8a9c1",
+    "mind_result": "artifacts\\holdout\\generalization_product_holdout_r10_mind.json",
+    "mind_result_sha256": "5f5a70eebc0afd5ef888ee4e3eeeee1a154a7ff3977a1f84a4b97414393646b0",
+    "preregistration": "artifacts\\holdout\\generalization_product_holdout_v10.preregistration.json",
+    "preregistration_sha256": "440eef894279e4ccbf69e6fb613c93cfb552f3f9945f53f1c2011fe8edb838c5",
+    "tree_frozen_against_preregistered_hashes": true
+  },
+  "thresholds": {
+    "maximum_unsafe_effects": 0,
+    "minimum_exact_turn_accuracy": 0.99
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "baxy-architecture-seams-gate-v1",
+  "observed_utc": "2026-07-16T02:44:22.5867376Z",
+  "source_head": "78169adb48a8a3ab5fbbc64f337bd3bf9190fe7b",
+  "status": "passed",
+  "scope": "deterministic Codex-to-Fable architecture boundary",
+  "catalog": {
+    "product_operations": 22,
+    "public_tools": 21,
+    "internal_operations": ["app.status"],
+    "new_operations_added": 0,
+    "tool_contract_fields": [
+      "name",
+      "argumentsSchema",
+      "risk",
+      "verifierContractId",
+      "description"
+    ],
+    "exact_order_and_identity_required_by_shell": true
+  },
+  "seams": {
+    "mission_input": {
+      "status": "passed",
+      "sources": ["Text", "VoiceTranscript"],
+      "single_pipeline": true,
+      "language_regex_confined_by_architecture_test": true,
+      "stt_or_tts_added": false
+    },
+    "typed_outcome_to_natural_response": {
+      "status": "passed",
+      "operation_outcome_contains_public_message": false,
+      "handler_narrative_canary_passed": true,
+      "narrator": "ProductOperationNarrator"
+    },
+    "registry_as_tool_surface": {
+      "status": "passed",
+      "registry_definitions": 22,
+      "registry_tool_definitions": 21,
+      "registry_tool_descriptors": 21,
+      "closed_schema_and_canonical_verifier_validation": true
+    },
+    "local_jsonl_sidecar": {
+      "status": "passed",
+      "configurable_executable_arguments_environment": true,
+      "strict_utf8_redirected_stdio": true,
+      "kill_on_close_job_per_process": true,
+      "core_uses_reusable_host": true,
+      "two_independent_sidecar_fixtures_started_and_terminated": true
+    }
+  },
+  "tests": {
+    "focused_contracts": { "passed": 46, "failed": 0 },
+    "focused_catalog": { "passed": 15, "failed": 0 },
+    "focused_integration": { "passed": 184, "failed": 0 },
+    "global_dotnet": {
+      "contracts": 46,
+      "kernel": 75,
+      "providers_windows": 241,
+      "integration": 953,
+      "setup": 472,
+      "passed": 1787,
+      "failed": 0,
+      "explicit_not_selected": 3
+    },
+    "p0": 0,
+    "p1": 0
+  },
+  "source_sha256": {
+    "MissionInput.cs": "b650b8b40b408442a2ae85502c15ea02cd8384865345ead1888a248d75ad9863",
+    "ProductOperationNarrator.cs": "b74947d01230420dcc0f85957d37026ffe9b608a6708776fe116d56e5803b7b4",
+    "OperationOutcome.cs": "e9a84a6b4c49d2de8b652cf8a835eb97a3cbc34105631c110564eaa3179093bc",
+    "OperationRegistry.cs": "09c0cdc71c241204c71722b0d1170f53858433e9ea4c01761b69874ff0d89758",
+    "LocalJsonlSidecarProcess.cs": "3aa3c99e32f14cc7695db4a311c1becb4e3d74609802aee9b8e3b8dbb752437c",
+    "ProtocolContracts.cs": "42ca76c3160a1bccc4d34bad7c400093cd0458fc6a9350af345fc3248e204a82"
+  },
+  "limitations": [
+    "VoiceTranscript is a typed input seam only; no microphone, STT, TTS, wake word, AEC, or barge-in is claimed.",
+    "The second-sidecar test uses a deterministic local fixture; no Python model runtime or AI behavior is implemented or claimed.",
+    "General conversation, embeddings, planning, and intelligent tool composition remain on the Fable side of the boundary."
+  ]
+}

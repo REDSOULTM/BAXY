@@ -1,0 +1,133 @@
+{
+  "schema": "baxy.nemotron-lexical-wake-physical-room-development.v1",
+  "measuredAtUtc": "2026-08-08T04:29:15.168587+00:00",
+  "scope": "opened_human_nemotron_multilingual_physical_room_development",
+  "architecture": "vad_bounded_nemotron_auto_en_lexical_ensemble",
+  "stt": {
+    "backend": "sherpa-onnx-nemotron-3.5-streaming-int8",
+    "languages": [
+      "auto",
+      "en"
+    ],
+    "threads": 6,
+    "bundleSha256": {
+      "encoder.int8.onnx": "012e9321373af99021415e0b0eb3ec827b4be3153be6f30d9b448fe65e896e68",
+      "decoder.int8.onnx": "19f9c98fc6d0a2c33a65a43b36fdb2e914c26c0aa9764be3aebc502a1e982fb0",
+      "joiner.int8.onnx": "4101c7c679a0bc30483794b27a059e34e79232aa2068d78d51231a22c8b0d7ce",
+      "tokens.txt": "729cc103155bafa785f9cd45746cd41cabe97eab7182fc04d594129587958f8a"
+    }
+  },
+  "physicalPath": {
+    "topology": "explicit speaker -> room -> explicit microphone",
+    "inputDevice": "Varios micrófonos (Realtek(R) Audio)",
+    "outputDevice": "Altavoces (Realtek(R) Audio)",
+    "hardwareSampleRate": 48000,
+    "playbackGain": 0.25,
+    "capturedAudioRetained": false
+  },
+  "corpus": {
+    "positiveSha256": "e91ee28c9aa032f2bf9438e9544100c38f49a61b80c47f03dd6afbebb2f7be36",
+    "negativeSha256": "907cab5671312e0aaac971c45d1be7f94c3e4a4230f68149508041235c8bff4c",
+    "filenamesOrTranscriptsRetained": false
+  },
+  "positive": {
+    "files": 4,
+    "audioSeconds": 12.0,
+    "invalidAcousticPaths": 0,
+    "invalidReasonCounts": {},
+    "pathCorrelationP05": 0.3802040268954913,
+    "pathCorrelationP50": 0.42396000415946605,
+    "capturedSnrDbP05": 6.673611091982016,
+    "capturedSnrDbP50": 12.079870045016046,
+    "decodeSecondsP50": 1.0574581999098882,
+    "decodeSecondsP95": 1.420618399977684,
+    "ensembleSecondsP50": 2.1161812000209466,
+    "ensembleSecondsP95": 2.795102300005965,
+    "conditioningGainP50": 16.450084131144486,
+    "retainedAudioFractionP50": 0.7952941176470588,
+    "inputRobustPeakP50": 0.057887624111026534,
+    "policyMatches": {},
+    "languagePolicyMatches": {},
+    "transcriptSha256": [
+      "cc457d4645de228ebc6d66b6b0132a8c33b9c095eb621ee3cf5962891990db71",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778",
+      "2151adcc633df28b8603c49527add4d55bb0c6f7d14719a32454aade5f31eef2",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778",
+      "83f520b0c95d54f89ef69a731ce060711aecdf2e7a5452cc45b4475c72d5cfa8",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778",
+      "83f520b0c95d54f89ef69a731ce060711aecdf2e7a5452cc45b4475c72d5cfa8",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778"
+    ],
+    "transcriptTextRetained": false
+  },
+  "negative": {
+    "files": 8,
+    "audioSeconds": 24.0,
+    "invalidAcousticPaths": 0,
+    "invalidReasonCounts": {},
+    "pathCorrelationP05": 0.27099024064819927,
+    "pathCorrelationP50": 0.4042358637755566,
+    "capturedSnrDbP05": 7.871483142036365,
+    "capturedSnrDbP50": 10.358817323474023,
+    "decodeSecondsP50": 0.8947710000211373,
+    "decodeSecondsP95": 1.1891388999065384,
+    "ensembleSecondsP50": 1.854118000017479,
+    "ensembleSecondsP95": 2.5177674998994917,
+    "conditioningGainP50": 12.89372488483313,
+    "retainedAudioFractionP50": 0.7058823529411765,
+    "inputRobustPeakP50": 0.045071189217269415,
+    "policyMatches": {},
+    "languagePolicyMatches": {},
+    "transcriptSha256": [
+      "13780ed1e80afaf51206b7fe89326507532254b74fd858452e5e2254d074736c",
+      "7531ad63dbacd7d02195fd2b17abd3c6ed057ef1cbab6ec97c5f10d736721a1b",
+      "83f520b0c95d54f89ef69a731ce060711aecdf2e7a5452cc45b4475c72d5cfa8",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778",
+      "7078cd46346276bd03f9f61db6da6d95901ffb6c71363f071b5db250d0fb07cc",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778",
+      "8d72a83bb8eb158ce9dead363a28d3309e551b9a38aee7f3efd4b0e6d6608e5d",
+      "63ca4a2a0f9b22b0cdffd8356ed2509f1681a2a2b6b4d23b4fb69e9b2a336cd1",
+      "83f520b0c95d54f89ef69a731ce060711aecdf2e7a5452cc45b4475c72d5cfa8",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778",
+      "83f520b0c95d54f89ef69a731ce060711aecdf2e7a5452cc45b4475c72d5cfa8",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778",
+      "dc53859f4d5f327fe56667e739adc6a04bfa542daf1bb5fe0b787c8f390b842d",
+      "cffba50f13c274be54aa51b0d3307db31ce4453e79af5618a96b9f0d09a40778",
+      "2bd6d53ff3b0eccc65a87d6801d5c122c71efdf5dff644c0dc0e691d56755501",
+      "01b3f8c38d8086d33e7c5d8a94d3f7c31137812712086cb75cf6b31b649ea599"
+    ],
+    "transcriptTextRetained": false
+  },
+  "policies": {
+    "strictClosedPrefix": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "recall": 0.0,
+      "negativeFalseActivations": 0,
+      "negativeTotal": 8,
+      "acousticSmokePassed": false,
+      "authorityEligible": true
+    },
+    "openedDiagnosticAnywhere": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "recall": 0.0,
+      "negativeFalseActivations": 0,
+      "negativeTotal": 8,
+      "acousticSmokePassed": false,
+      "authorityEligible": false
+    }
+  },
+  "elapsedWallSeconds": 81.80061320005916,
+  "developmentOnly": true,
+  "promotable": false,
+  "promotionBlockedBy": [
+    "opened_development_corpus",
+    "diagnostic_anywhere_policy_not_authority",
+    "insufficient_positive_population",
+    "insufficient_negative_exposure",
+    "blind_multispeaker_physical_holdout_not_run",
+    "continuous_vad_runtime_not_integrated_or_profiled"
+  ],
+  "effectsExecuted": 0
+}

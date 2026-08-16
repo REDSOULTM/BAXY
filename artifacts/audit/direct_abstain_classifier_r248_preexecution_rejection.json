@@ -1,0 +1,29 @@
+{
+  "schema": "baxy.direct-abstain-classifier.r248-preexecution-rejection.v1",
+  "authority": "read_only_preexecution_attestation_no_model_import_or_training",
+  "verdict": "rejected_preexecution_insufficient_fresh_oos_for_registered_balance",
+  "reason": "R247's sealed runner requires one fresh OOS abstain row per R207 positive. After preserving every R236/R241/R243/R246 partition and R248's 256-row OOS evaluation, 1,479 fresh OOS rows remain for 4,740 R207 positives.",
+  "observed": {
+    "typed_families": 31,
+    "fresh_inside_evaluation_rows": 256,
+    "fresh_outside_evaluation_rows": 256,
+    "fresh_oos_training_rows_available": 1479,
+    "r207_positive_rows_required": 4740
+  },
+  "constraints": {
+    "model_started": false,
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r247_sha256": "19feddaf8123a731a0271b919375efcd06514cee37c68f2b54dd58f43e51123f",
+    "runner_sha256": "bc2ada9e1c17d9c80cf76f8490a722cad7fa95870ebd2c1dcacf4ead8c46d3a0",
+    "program_sha256": "64abfe79ce4f98f34704ca055be27c1fc125aa7ccf1c7e8227432391813a30de"
+  },
+  "next_requirement": "Do not alter or run R248. A successor may use only the demonstrably available fresh OOS rows with a separately sealed inverse-frequency class-weighted loss."
+}

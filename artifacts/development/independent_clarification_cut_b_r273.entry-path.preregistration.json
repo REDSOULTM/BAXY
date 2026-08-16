@@ -1,0 +1,52 @@
+{
+  "schema": "baxy.independent-clarification-cut-b.entry-path-r273-preregistration.v1",
+  "authority": "sealed_before_model_start_and_before_r270_entry_path_measurement",
+  "source": {
+    "r270_rows": 93,
+    "r270_corpus_sha256": "a38ab784be38a159935e5b1500b3187e94aac9e7a3ad791080323bc9a8387d99",
+    "r270_preregistration_sha256": "c26fddc31a2d4d29a521e80ef8cbfb7b40e230246e9d66153909e92cc5d987c1",
+    "r272_result_sha256": "a42e60993d56dcf1e6354b49f4a476403f2fc95589600b75dc453eebe729ddc6",
+    "catalogue_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "catalogue_operations": 174
+  },
+  "scoring": {
+    "runner": "experiments/mind_router_spike/measure_independent_clarification_cut_b_entry_path_r274.py",
+    "runner_sha256": "2cfc1078afb4e3e9f82d588f91583c4f85b6957c071f9625572b432ce31ffe87",
+    "ordered_gates": [
+      "resolve_explicit_clarification_intent",
+      "resolve_explicit_effects"
+    ],
+    "outcomes": [
+      "explicit_clarification",
+      "explicit_effect",
+      "model_decision_candidate_after_two_effect_gates"
+    ],
+    "model_decision_candidate_reach": "model_decision_candidate_after_two_effect_gates / rows",
+    "model_decision_candidate_reach_limit": 0.5,
+    "cuts": [
+      "overall",
+      "family",
+      "language",
+      "operation"
+    ],
+    "request_texts_retained": false,
+    "request_identifiers_retained": false,
+    "runner_hash_location_validated": "scoring.runner_sha256"
+  },
+  "constraints": {
+    "recogniser_measured": false,
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_step": "Commit R273 unchanged, freeze the worktree, then run R274 once before designing a full model-decision probe.",
+  "identities": {
+    "program_sha256": "234cfd607e0af90ee242a256974f5da737163be4258293614c66095759a361a4"
+  }
+}

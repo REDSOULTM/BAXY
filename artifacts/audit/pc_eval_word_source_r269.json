@@ -1,0 +1,65 @@
+{
+  "schema": "baxy.pc-eval-word-source.r269.v1",
+  "authority": "external_source_identity_and_semantic_admission_audit_not_model_training",
+  "verdict": "rejected_preexecution_instruction_only_no_com_or_lifecycle_verifier",
+  "source": {
+    "repository": "https://huggingface.co/datasets/StarBottle/PC-Eval",
+    "commit": "39317b7d903e5bbdf72c16069a9bbded67b31b21",
+    "license": "Apache-2.0",
+    "dataset_card_sha256": "4bcf87ecfbbb8e07a01b21415a970c8b53a5283bf6872b657040d3f45c9241f7",
+    "semantic_source_files": 9,
+    "source_files_merkle_sha256": "7d05daaa84cef66b7e8f236cf456aa732ec3a728d44ed605a20201d87d52ce9f",
+    "published_instruction_rows": 27,
+    "distinct_normalized_instruction_rows": 26,
+    "instruction_stream_is_json_array": false,
+    "published_word_instruction_rows": 7,
+    "published_instruction_language": "en",
+    "published_spanish_instruction_rows": 0,
+    "published_spanglish_instruction_rows": 0,
+    "instruction_texts_retained": false
+  },
+  "observed_surface": {
+    "source_native_baxy_operation_labels": false,
+    "word_lifecycle_keyword_rows": {
+      "office.word.append": 0,
+      "office.word.close": 0,
+      "office.word.discard": 0,
+      "office.word.save": 2,
+      "office.word.start": 4,
+      "office.word.status": 0
+    },
+    "published_execution_or_verifier_source_files": [],
+    "published_microsoft_word_com_trace": false,
+    "published_saved_dirty_verifier": false,
+    "published_confirmation_bound_discard_verifier": false
+  },
+  "admission": {
+    "required_baxy_operations": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "required_source": "Published human request text directly tied to Microsoft Word COM traces and state-sensitive lifecycle verifiers, including confirmation-bound unsaved discard, for all six current typed operations",
+    "admitted_baxy_operations": [],
+    "reason": "PC-Eval publishes English instruction strings and static input documents but no execution or verifier source, no BAXY operation labels, no Microsoft Word COM trace and no Spanish or spanglish request surface. Its seven Word instructions contain save/start wording only; append, close, discard and Saved/Dirty status are absent. Treating a compound instruction or static document as a typed lifecycle example would invent the missing mapping and cannot establish confirmation-bound discard or a native state verifier."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not use PC-Eval to fill R207 or create the new three-language Cut B. Search only for published human request text tied to native Microsoft Word COM lifecycle traces and state-sensitive verifiers for all six operations, including confirmation-bound unsaved discard.",
+  "identities": {
+    "catalogue_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "70d9be278f1413f34c80ed5a4ad22dc6cec3c2c10191cb70d2b106cf33fb2e5a"
+  }
+}

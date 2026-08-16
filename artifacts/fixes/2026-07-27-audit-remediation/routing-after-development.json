@@ -1,0 +1,1411 @@
+{
+  "schema": "baxy-night-audit-live-turn-probe-v1",
+  "measured_at": "2026-07-27T18:45:50.315745+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    }
+  ],
+  "cases": [
+    {
+      "text": "Hola",
+      "expected": {
+        "expectedKind": "conversation"
+      },
+      "elapsed_seconds": 3.703,
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¡Hola! ¿En qué puedo ayudarte hoy?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Gracias",
+      "expected": {
+        "expectedKind": "conversation"
+      },
+      "elapsed_seconds": 4.696,
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "De nada. ¿En qué más te puedo ayudar hoy?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "No entendí",
+      "expected": {
+        "expectedKind": "conversation"
+      },
+      "elapsed_seconds": 5.154,
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Quise decir que no entendí lo que dijiste anteriormente.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Qué hora es?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "system.time"
+      },
+      "elapsed_seconds": 19.511,
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "clarify",
+        "operation": null,
+        "effectOperations": [],
+        "question": "¿Puedes explicar con un poco más de detalle qué quieres?",
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": "protocol_fallback",
+        "recovery_attempts": 1,
+        "failure_code": "turn_runtime_failure"
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Qué fecha es hoy?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "system.time"
+      },
+      "elapsed_seconds": 3.671,
+      "result": {
+        "type": "turn.result",
+        "id": "case-5",
+        "kind": "action",
+        "operation": "system.time",
+        "effectOperations": [
+          "system.time"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Cómo está el equipo?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "system.status"
+      },
+      "elapsed_seconds": 4.84,
+      "result": {
+        "type": "turn.result",
+        "id": "case-6",
+        "kind": "action",
+        "operation": "system.status",
+        "effectOperations": [
+          "system.status"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Muéstrame el uso de memoria",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "system.status"
+      },
+      "elapsed_seconds": 2.852,
+      "result": {
+        "type": "turn.result",
+        "id": "case-7",
+        "kind": "action",
+        "operation": "system.status",
+        "effectOperations": [
+          "system.status"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista los procesos que más memoria usan",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "system.process.list"
+      },
+      "elapsed_seconds": 4.741,
+      "result": {
+        "type": "turn.result",
+        "id": "case-8",
+        "kind": "action",
+        "operation": "system.process.list",
+        "effectOperations": [
+          "system.process.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Cómo está la red?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "network.status"
+      },
+      "elapsed_seconds": 5.568,
+      "result": {
+        "type": "turn.result",
+        "id": "case-9",
+        "kind": "action",
+        "operation": "network.status",
+        "effectOperations": [
+          "network.status"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Haz ping a 127.0.0.1",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "network.ping"
+      },
+      "elapsed_seconds": 9.451,
+      "result": {
+        "type": "turn.result",
+        "id": "case-10",
+        "kind": "action",
+        "operation": "network.ping",
+        "effectOperations": [
+          "network.ping"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿En qué volumen está el computador?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "audio.status"
+      },
+      "elapsed_seconds": 6.125,
+      "result": {
+        "type": "turn.result",
+        "id": "case-11",
+        "kind": "action",
+        "operation": "audio.status",
+        "effectOperations": [
+          "audio.status"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Pon el volumen al 8 por ciento",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "audio.volume"
+      },
+      "elapsed_seconds": 8.296,
+      "result": {
+        "type": "turn.result",
+        "id": "case-12",
+        "kind": "action",
+        "operation": "audio.volume",
+        "effectOperations": [
+          "audio.volume"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Sube el volumen en 2 puntos",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "audio.volume.adjust"
+      },
+      "elapsed_seconds": 5.912,
+      "result": {
+        "type": "turn.result",
+        "id": "case-13",
+        "kind": "action",
+        "operation": "audio.volume.adjust",
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Silencia el audio",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "audio.mute"
+      },
+      "elapsed_seconds": 5.06,
+      "result": {
+        "type": "turn.result",
+        "id": "case-14",
+        "kind": "action",
+        "operation": "audio.mute",
+        "effectOperations": [
+          "audio.mute"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre la calculadora",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 5.724,
+      "result": {
+        "type": "turn.result",
+        "id": "case-15",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre el Bloc de notas",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 5.587,
+      "result": {
+        "type": "turn.result",
+        "id": "case-16",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Opera",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 5.568,
+      "result": {
+        "type": "turn.result",
+        "id": "case-17",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Spotify",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 5.223,
+      "result": {
+        "type": "turn.result",
+        "id": "case-18",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Está instalada la calculadora?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.installed"
+      },
+      "elapsed_seconds": 4.788,
+      "result": {
+        "type": "turn.result",
+        "id": "case-19",
+        "kind": "action",
+        "operation": "app.installed",
+        "effectOperations": [
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Qué ventana está activa?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "window.active"
+      },
+      "elapsed_seconds": 3.798,
+      "result": {
+        "type": "turn.result",
+        "id": "case-20",
+        "kind": "action",
+        "operation": "window.active",
+        "effectOperations": [
+          "window.active"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Maximiza la ventana activa",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "window.active",
+          "window.maximize"
+        ]
+      },
+      "elapsed_seconds": 6.679,
+      "result": {
+        "type": "turn.result",
+        "id": "case-21",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "window.active",
+          "window.maximize"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "error",
+        "id": "plan-21",
+        "code": "request_failed",
+        "message": "plan_contract_failure"
+      }
+    },
+    {
+      "text": "Minimiza la ventana activa",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "window.active",
+          "window.minimize"
+        ]
+      },
+      "elapsed_seconds": 11.499,
+      "result": {
+        "type": "turn.result",
+        "id": "case-22",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "window.active",
+          "window.minimize"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-22",
+        "version": 1,
+        "kind": "clarify",
+        "question": "¿Cuál es el nombre del proceso de la ventana que deseas minimizar?",
+        "steps": []
+      }
+    },
+    {
+      "text": "Escribe literalmente prueba BAXY",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "input.text.type"
+      },
+      "elapsed_seconds": 3.474,
+      "result": {
+        "type": "turn.result",
+        "id": "case-23",
+        "kind": "action",
+        "operation": "input.text.type",
+        "effectOperations": [
+          "input.text.type"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Selecciona todo",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "input.select.all"
+      },
+      "elapsed_seconds": 5.846,
+      "result": {
+        "type": "turn.result",
+        "id": "case-24",
+        "kind": "action",
+        "operation": "input.select.all",
+        "effectOperations": [
+          "input.select.all"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre el teclado en pantalla",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "input.keyboard.open"
+      },
+      "elapsed_seconds": 3.883,
+      "result": {
+        "type": "turn.result",
+        "id": "case-25",
+        "kind": "action",
+        "operation": "input.keyboard.open",
+        "effectOperations": [
+          "input.keyboard.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lee el portapapeles",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "clipboard.read.text"
+      },
+      "elapsed_seconds": 4.251,
+      "result": {
+        "type": "turn.result",
+        "id": "case-26",
+        "kind": "action",
+        "operation": "clipboard.read.text",
+        "effectOperations": [
+          "clipboard.read.text"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Copia la selección",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "clipboard.copy"
+      },
+      "elapsed_seconds": 3.576,
+      "result": {
+        "type": "turn.result",
+        "id": "case-27",
+        "kind": "action",
+        "operation": "clipboard.copy",
+        "effectOperations": [
+          "clipboard.copy"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Haz una captura de pantalla",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "capture.screenshot"
+      },
+      "elapsed_seconds": 3.728,
+      "result": {
+        "type": "turn.result",
+        "id": "case-28",
+        "kind": "action",
+        "operation": "capture.screenshot",
+        "effectOperations": [
+          "capture.screenshot"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lee con OCR la última captura",
+      "expected": {
+        "expectedKind": "clarify"
+      },
+      "elapsed_seconds": 7.5,
+      "result": {
+        "type": "turn.result",
+        "id": "case-29",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "ocr.read"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "error",
+        "id": "plan-29",
+        "code": "request_failed",
+        "message": "plan_contract_failure"
+      }
+    },
+    {
+      "text": "Crea una nota llamada Auditoría con el contenido prueba",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "note.create"
+      },
+      "elapsed_seconds": 4.507,
+      "result": {
+        "type": "turn.result",
+        "id": "case-30",
+        "kind": "action",
+        "operation": "note.create",
+        "effectOperations": [
+          "note.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis notas",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "note.list"
+      },
+      "elapsed_seconds": 2.498,
+      "result": {
+        "type": "turn.result",
+        "id": "case-31",
+        "kind": "action",
+        "operation": "note.list",
+        "effectOperations": [
+          "note.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Busca prueba en mis notas",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "note.search"
+      },
+      "elapsed_seconds": 4.72,
+      "result": {
+        "type": "turn.result",
+        "id": "case-32",
+        "kind": "action",
+        "operation": "note.search",
+        "effectOperations": [
+          "note.search"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea una tarea llamada Auditoría",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "task.create"
+      },
+      "elapsed_seconds": 4.483,
+      "result": {
+        "type": "turn.result",
+        "id": "case-33",
+        "kind": "action",
+        "operation": "task.create",
+        "effectOperations": [
+          "task.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis tareas pendientes",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "task.list"
+      },
+      "elapsed_seconds": 2.674,
+      "result": {
+        "type": "turn.result",
+        "id": "case-34",
+        "kind": "action",
+        "operation": "task.list",
+        "effectOperations": [
+          "task.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Busca Auditoría en mis tareas",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "task.search"
+      },
+      "elapsed_seconds": 2.9,
+      "result": {
+        "type": "turn.result",
+        "id": "case-35",
+        "kind": "action",
+        "operation": "task.search",
+        "effectOperations": [
+          "task.search"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea un recordatorio llamado Auditoría para mañana a las 9",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "reminder.create"
+      },
+      "elapsed_seconds": 4.234,
+      "result": {
+        "type": "turn.result",
+        "id": "case-36",
+        "kind": "action",
+        "operation": "reminder.create",
+        "effectOperations": [
+          "reminder.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis recordatorios",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "reminder.list"
+      },
+      "elapsed_seconds": 8.26,
+      "result": {
+        "type": "turn.result",
+        "id": "case-37",
+        "kind": "action",
+        "operation": "reminder.list",
+        "effectOperations": [
+          "reminder.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis rutinas",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "routine.list"
+      },
+      "elapsed_seconds": 5.981,
+      "result": {
+        "type": "turn.result",
+        "id": "case-38",
+        "kind": "action",
+        "operation": "routine.list",
+        "effectOperations": [
+          "routine.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Busca OpenAI en la web",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "web.search"
+      },
+      "elapsed_seconds": 5.934,
+      "result": {
+        "type": "turn.result",
+        "id": "case-39",
+        "kind": "action",
+        "operation": "web.search",
+        "effectOperations": [
+          "web.search"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Navega a https://example.com/",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "browser.navigate"
+      },
+      "elapsed_seconds": 5.225,
+      "result": {
+        "type": "turn.result",
+        "id": "case-40",
+        "kind": "action",
+        "operation": "browser.navigate",
+        "effectOperations": [
+          "browser.navigate"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Navega Opera a https://example.com/",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "browser.navigate.named"
+      },
+      "elapsed_seconds": 4.164,
+      "result": {
+        "type": "turn.result",
+        "id": "case-41",
+        "kind": "action",
+        "operation": "browser.navigate.named",
+        "effectOperations": [
+          "browser.navigate.named"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lee la página actual",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "browser.page.read"
+      },
+      "elapsed_seconds": 5.134,
+      "result": {
+        "type": "turn.result",
+        "id": "case-42",
+        "kind": "action",
+        "operation": "browser.page.read",
+        "effectOperations": [
+          "browser.page.read"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista las pestañas del navegador",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "browser.tabs.list"
+      },
+      "elapsed_seconds": 4.638,
+      "result": {
+        "type": "turn.result",
+        "id": "case-43",
+        "kind": "action",
+        "operation": "browser.tabs.list",
+        "effectOperations": [
+          "browser.tabs.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Recarga la página",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "browser.control"
+      },
+      "elapsed_seconds": 3.884,
+      "result": {
+        "type": "turn.result",
+        "id": "case-44",
+        "kind": "action",
+        "operation": "browser.control",
+        "effectOperations": [
+          "browser.control"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Busca Beat It en Spotify y reprodúcela",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "media.play.query"
+      },
+      "elapsed_seconds": 4.503,
+      "result": {
+        "type": "turn.result",
+        "id": "case-45",
+        "kind": "action",
+        "operation": "media.play.query",
+        "effectOperations": [
+          "media.play.query"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Pausa la música",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "media.control"
+      },
+      "elapsed_seconds": 5.119,
+      "result": {
+        "type": "turn.result",
+        "id": "case-46",
+        "kind": "action",
+        "operation": "media.control",
+        "effectOperations": [
+          "media.control"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Qué música está sonando?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "media.status"
+      },
+      "elapsed_seconds": 8.532,
+      "result": {
+        "type": "turn.result",
+        "id": "case-47",
+        "kind": "action",
+        "operation": "media.status",
+        "effectOperations": [
+          "media.status"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis juegos de Steam",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "game.catalog.list"
+      },
+      "elapsed_seconds": 4.371,
+      "result": {
+        "type": "turn.result",
+        "id": "case-48",
+        "kind": "action",
+        "operation": "game.catalog.list",
+        "effectOperations": [
+          "game.catalog.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Está instalado Portal 2?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "game.installed.named"
+      },
+      "elapsed_seconds": 5.839,
+      "result": {
+        "type": "turn.result",
+        "id": "case-49",
+        "kind": "action",
+        "operation": "game.installed.named",
+        "effectOperations": [
+          "game.installed.named"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista los dispositivos Bluetooth",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "bluetooth.device.list"
+      },
+      "elapsed_seconds": 4.731,
+      "result": {
+        "type": "turn.result",
+        "id": "case-50",
+        "kind": "action",
+        "operation": "bluetooth.device.list",
+        "effectOperations": [
+          "bluetooth.device.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista los periféricos conectados",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "peripheral.list"
+      },
+      "elapsed_seconds": 3.808,
+      "result": {
+        "type": "turn.result",
+        "id": "case-51",
+        "kind": "action",
+        "operation": "peripheral.list",
+        "effectOperations": [
+          "peripheral.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Cómo está el Wi-Fi?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "wifi.status"
+      },
+      "elapsed_seconds": 2.726,
+      "result": {
+        "type": "turn.result",
+        "id": "case-52",
+        "kind": "action",
+        "operation": "wifi.status",
+        "effectOperations": [
+          "wifi.status"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista los perfiles Wi-Fi guardados",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "wifi.profile.list"
+      },
+      "elapsed_seconds": 3.369,
+      "result": {
+        "type": "turn.result",
+        "id": "case-53",
+        "kind": "action",
+        "operation": "wifi.profile.list",
+        "effectOperations": [
+          "wifi.profile.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista mis próximos eventos del calendario",
+      "expected": {
+        "expectedKind": "clarify"
+      },
+      "elapsed_seconds": 8.37,
+      "result": {
+        "type": "turn.result",
+        "id": "case-54",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "calendar.event.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-54",
+        "version": 1,
+        "kind": "clarify",
+        "question": "¿Para qué fechas o rango de fechas te gustaría ver los próximos eventos?",
+        "steps": []
+      }
+    },
+    {
+      "text": "Lee el correo más reciente",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "email.latest.read"
+      },
+      "elapsed_seconds": 4.908,
+      "result": {
+        "type": "turn.result",
+        "id": "case-55",
+        "kind": "action",
+        "operation": "email.latest.read",
+        "effectOperations": [
+          "email.latest.read"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Opera, navega a https://example.com/ y lee la página",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "browser.navigate.named",
+          "browser.page.read"
+        ]
+      },
+      "elapsed_seconds": 10.184,
+      "result": {
+        "type": "turn.result",
+        "id": "case-56",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "browser.navigate.named",
+          "browser.page.read"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-56",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "browser.navigate.named",
+            "purpose": "Navegar a https://example.com/ en Opera",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "browser": "opera",
+              "url": "https://example.com/"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Haz una captura de pantalla y luego léela con OCR",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "capture.screenshot",
+          "ocr.read"
+        ]
+      },
+      "elapsed_seconds": 15.565,
+      "result": {
+        "type": "turn.result",
+        "id": "case-57",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "capture.screenshot",
+          "ocr.read"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-57",
+        "version": 1,
+        "kind": "clarify",
+        "question": "¿Qué aplicación deseas abrir para realizar la captura de pantalla?",
+        "steps": []
+      }
+    },
+    {
+      "text": "Crea una nota llamada Auditoría encadenada y después léela",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "note.create",
+          "note.read"
+        ]
+      },
+      "elapsed_seconds": 11.353,
+      "result": {
+        "type": "turn.result",
+        "id": "case-58",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "note.create",
+          "note.read"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-58",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "note.create",
+            "purpose": "Crea la nota llamada Auditoría encadenada",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "content": "Auditoría encadenada",
+              "title": "Auditoría encadenada"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "note.create",
+            "purpose": "Lee la nota creada",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "after_dependencies",
+            "arguments": null
+          }
+        ]
+      }
+    },
+    {
+      "text": "Pon el volumen al 8 por ciento y luego dime en cuánto quedó",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "audio.volume",
+          "audio.status"
+        ]
+      },
+      "elapsed_seconds": 13.911,
+      "result": {
+        "type": "turn.result",
+        "id": "case-59",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "audio.volume",
+          "audio.status"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-59",
+        "version": 1,
+        "kind": "clarify",
+        "question": "¿Qué porcentaje de volumen deseas subir o bajar?",
+        "steps": []
+      }
+    },
+    {
+      "text": "Abre Spotify, reproduce exactamente Beat It y después pausa",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "media.play.exact",
+          "media.control"
+        ]
+      },
+      "elapsed_seconds": 20.552,
+      "result": {
+        "type": "turn.result",
+        "id": "case-60",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "media.play.exact",
+          "media.control"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-60",
+        "version": 1,
+        "kind": "clarify",
+        "question": "¿Qué canción o artista debo buscar para reproducir?",
+        "steps": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "authority": "development_only_no_execution_authority_not_blind",
+  "blind_holdout": false,
+  "catalog": {
+    "operations": 169,
+    "sha256": "67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41"
+  },
+  "output": {
+    "bytes": 113903,
+    "path": "D:\\BAXY\\source\\artifacts\\development\\catalog_seen_scenarios_r2_dependency_complete.jsonl",
+    "sha256": "cbe9fc751ccfddf60ba1a66e5ca149ec1c0f29cec02783e2566444294ff51978"
+  },
+  "review": {
+    "all_rows_derived_from_authenticated_catalog": false,
+    "all_rows_explicitly_reviewed": true,
+    "language_counts": {
+      "en": 42,
+      "es": 85,
+      "spanglish": 42
+    },
+    "outcome_counts": {
+      "action": 169
+    },
+    "owner_counts": {
+      "app_memory_parser": 11,
+      "mind_sidecar": 158
+    },
+    "rows": 169
+  },
+  "schema": "baxy.catalog-seen-scenario-manifest.development.v1"
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "baxy.stt-holdout-source-acquisition.v1",
+  "acquiredAtUtc": "2026-08-11T01:28:15.8010403Z",
+  "role": "unmeasured_multivoice_es_en_stt_regression_source_not_final_blind_holdout",
+  "evaluationStatus": "unopened",
+  "modelAudioDecoded": false,
+  "parquetPayloadRowsRead": false,
+  "transcriptsInspected": false,
+  "corpusSelectionFrozen": false,
+  "canonicalSource": {
+    "name": "FLEURS: Few-shot Learning Evaluation of Universal Representations of Speech",
+    "publisher": "Google",
+    "paperUrl": "https://research.google/pubs/fleurs-few-shot-learning-evaluation-of-universal-representations-of-speech/",
+    "datasetUrl": "https://huggingface.co/datasets/google/fleurs",
+    "paperArxiv": "2205.12446",
+    "languages": 102,
+    "reportedApproximateHoursPerLanguage": 12,
+    "license": "CC-BY-4.0"
+  },
+  "repositorySnapshot": {
+    "repository": "google/fleurs",
+    "commit": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+    "lastModifiedUtc": "2026-05-15T09:35:34.000Z",
+    "private": false,
+    "gated": false
+  },
+  "convertedParquetSnapshot": {
+    "reference": "refs/convert/parquet",
+    "commit": "168de341b3db6859a9bac1c50a2ef5e3b47647e0",
+    "lastModifiedUtc": "2026-05-15T09:49:13.000Z",
+    "metadataApis": [
+      "https://datasets-server.huggingface.co/parquet?dataset=google%2Ffleurs",
+      "https://datasets-server.huggingface.co/size?dataset=google%2Ffleurs",
+      "https://datasets-server.huggingface.co/info?dataset=google%2Ffleurs"
+    ]
+  },
+  "localRoot": "D:/BAXYRuntime/experiments/stt_holdout_sources/google_fleurs_parquet_168de341",
+  "files": {
+    "en_us_test_0000.parquet": {
+      "sourceUrl": "https://huggingface.co/datasets/google/fleurs/resolve/refs%2Fconvert%2Fparquet/en_us/test/0000.parquet",
+      "bytes": 401722686,
+      "sha256": "6428a4d04d3aac29e16b45e039bb1470a8bd7aa334cf92f7984c9c520d1f234d",
+      "parquetMagicVerified": true,
+      "rows": 647,
+      "columns": 10
+    },
+    "es_419_test_0000.parquet": {
+      "sourceUrl": "https://huggingface.co/datasets/google/fleurs/resolve/refs%2Fconvert%2Fparquet/es_419/test/0000.parquet",
+      "bytes": 703040007,
+      "sha256": "f1e8b7f6eecb91d16b79d91bc1838d8b0e5ebc0b37b317e2b58eb8694c64d3c0",
+      "parquetMagicVerified": true,
+      "rows": 908,
+      "columns": 10
+    }
+  },
+  "observedStructuralCoverage": {
+    "payloadRowsRead": false,
+    "serverReportedTestRows": 1555,
+    "configurations": [
+      {
+        "config": "en_us",
+        "language": "English (United States)",
+        "testRows": 647
+      },
+      {
+        "config": "es_419",
+        "language": "Spanish (Latin America)",
+        "testRows": 908
+      }
+    ],
+    "audioSamplingRateHz": 16000,
+    "features": [
+      "id",
+      "num_samples",
+      "path",
+      "audio",
+      "transcription",
+      "raw_transcription",
+      "gender",
+      "lang_id",
+      "language",
+      "lang_group_id"
+    ],
+    "structuralMetadataSource": "Hugging Face datasets-server APIs at the recorded snapshots"
+  },
+  "modelContaminationAudit": {
+    "runtimeFinalAsr": "nvidia/parakeet-tdt-0.6b-v3-int8 via sherpa-onnx",
+    "officialModelCard": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+    "fleursListedAsParakeetEvaluationDataset": true,
+    "fleursListedAsParakeetTrainingDataset": false,
+    "eligibleAsFinalBlindModelSelectionHoldout": false,
+    "eligibleAsPublishedComparabilityRegression": true,
+    "reason": "NVIDIA's official model card reports FLEURS among the model's evaluation datasets. BAXY may use it for reproducible multilingual regression and external comparability, but not as the blind evidence that selects or certifies this ASR stack."
+  },
+  "measurementDiscipline": {
+    "audioMayBeDecodedOnlyAfterVersionedSelectorAndEvaluatorAreAdded": true,
+    "selectionMustBePreregisteredBeforeAnyBaxyModelDecoding": true,
+    "wakeValidationPartitionMayNotBeUsed": true,
+    "developmentFailuresMayNotTuneOnReservedEvaluationRows": true,
+    "fleursMayNotCloseTheFinalBlindSttRequirement": true,
+    "plannedMetrics": [
+      "word_error_rate_by_language_and_gender",
+      "semantic_operation_preservation",
+      "entity_and_number_preservation",
+      "stt_latency_p50_p95"
+    ]
+  },
+  "wakeProgramTree": {
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0",
+    "unchangedByAcquisition": true
+  },
+  "effectsExecuted": 0
+}

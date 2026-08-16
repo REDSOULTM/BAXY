@@ -1,0 +1,65 @@
+{
+  "schema": "baxy.local-model-candidate-verdict.v1",
+  "measured_at_local": "2026-08-11T08:07:19.0644861-04:00",
+  "preregistration": "artifacts/research/qwen35_4b_candidate_preregistration_20260811.json",
+  "candidate": {
+    "model": "Qwen3.5-4B-Q4_K_M.gguf",
+    "bytes": 2740937888,
+    "sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+    "llama_cpp_build": "b9980-8014d2cf9",
+    "initial_startup_seconds": 6.664,
+    "initial_health": "ok",
+    "initial_process_vram_mib": 3071.6
+  },
+  "frozen_development_workload": {
+    "requests_per_profile": 45,
+    "effects_executed": 0,
+    "gpu": {
+      "requests_completed": 45,
+      "errors": 11,
+      "exact_contracts": 34,
+      "process_tree_vram_peak_mib": 3077.6,
+      "tree_ram_peak_mib": 4755.4,
+      "turn_p50_seconds": 0.005,
+      "arguments_p50_seconds": 0.001,
+      "narrate_p50_seconds": 0.373,
+      "failed_checks": [
+        "zero_errors",
+        "vram_within_budget"
+      ]
+    },
+    "cpu": {
+      "requests_completed": 45,
+      "errors": 12,
+      "exact_contracts": 33,
+      "tree_ram_peak_mib": 6385.6,
+      "turn_p50_seconds": 0.011,
+      "arguments_p50_seconds": 0.006,
+      "narrate_p50_seconds": 5.79
+    },
+    "report": "artifacts/product/mind_budget_gate_qwen35_candidate_development_20260811.json",
+    "report_sha256": "32527c2f95d3b0f2b86346489930e5317ea9812ea961d67ede22a995112c6572"
+  },
+  "active_qwen3_comparator": {
+    "gpu_requests_completed": 45,
+    "gpu_errors": 0,
+    "gpu_process_tree_vram_peak_mib": 3065.6,
+    "gpu_tree_ram_peak_mib": 3074.5,
+    "gpu_narrate_p50_seconds": 0.236,
+    "cpu_requests_completed": 45,
+    "cpu_errors": 1,
+    "cpu_error_is_known_19_second_gate_timeout": true,
+    "report": "artifacts/product/mind_budget_gate_qwen_current_tree_20260811.json",
+    "report_sha256": "1e5a6eaa06945a93b82fec036fee3a35c5a87c5b8509600efd34a1f5225c14b2a"
+  },
+  "verdict": {
+    "status": "rejected",
+    "reason": "The candidate regressed semantic contract exactness in both profiles, exceeded the GPU budget during the full workload, used more RAM and narrated more slowly than active Qwen3-4B.",
+    "promotion_eligible": false,
+    "blind_holdout_opened": false,
+    "active_manifest_changed": false,
+    "active_model_after_experiment": "D:/BAXYRuntime/assets/models/Qwen3-4B-Q4_K_M.gguf",
+    "candidate_file_retained_only_under_experiments": true
+  },
+  "launch_note": "A first comparison invocation executed zero requests because the runtime resolver rejected a mixed explicit/manifest hash. The successful run supplied all four runtime components explicitly."
+}

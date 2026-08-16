@@ -1,0 +1,547 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-08-03T01:03:18.922707+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "Qwen3-4B-Q4_K_M.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "bytes": 2497280256
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 169,
+  "total_seconds": 37.019,
+  "cases": [
+    {
+      "case": "deterministic_file_write",
+      "planner_path": "deterministic_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "action",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "filesystem.write.text"
+      ],
+      "effect_operations": [
+        "filesystem.write.text"
+      ],
+      "decision_seconds": 3.296,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "filesystem.write.text"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "filesystem.write.text",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "relativePath",
+            "text"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "resourceId": "fs_e9e2060f14564990bd89228e861f2342",
+            "sha256": "0e792e6bc53bc71aee343a0c51831be27ec6428d82420c4add5ef31d3070d965"
+          }
+        }
+      ],
+      "seconds": 4.547,
+      "status": "passed",
+      "dependency_positions": [
+        []
+      ]
+    },
+    {
+      "case": "llm_note_roundtrip",
+      "planner_path": "real_llm_skeleton_and_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read"
+      ],
+      "decision_seconds": 0.005,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "8bfd3171-2b9f-4225-b76a-bca11cd5bf80",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "8bfd3171-2b9f-4225-b76a-bca11cd5bf80",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 1.394,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "case": "llm_note_ordinal_dependency",
+      "planner_path": "real_llm_conserved_turn_exact_dependency_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.read"
+      ],
+      "decision_seconds": 0.006,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "8e7aef24-632f-41f6-b05c-8b4969b37c86",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "e7e763eb-ba99-41cf-a460-d68d2589da89",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "8e7aef24-632f-41f6-b05c-8b4969b37c86",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 1.385,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "case": "office_roundtrip",
+      "planner_path": "deterministic_skeleton_real_llm_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "conversation",
+      "turn_question": "",
+      "turn_reply": "No puedo crear y leer ese documento como se pidió.",
+      "intent_operations": [],
+      "effect_operations": [],
+      "decision_seconds": 0.371,
+      "response_type": null,
+      "kind": null,
+      "operations": [],
+      "steps": [],
+      "seconds": 0.371,
+      "status": "failed",
+      "error": "turn decision did not exactly cover the bounded objective"
+    },
+    {
+      "case": "capture_ocr_grounding",
+      "planner_path": "deterministic_skeleton_real_llm_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "effect_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "decision_seconds": 0.003,
+      "response_type": null,
+      "kind": null,
+      "operations": [],
+      "steps": [],
+      "seconds": 0.003,
+      "status": "failed",
+      "error": "turn decision did not exactly cover the bounded objective"
+    },
+    {
+      "case": "llm_steam_catalog_status",
+      "planner_path": "real_llm_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "clarify",
+      "turn_question": "¿Puedes primero listar mis juegos instalados en Steam y luego verificar el estado de instalación del juego con AppID 945360?",
+      "turn_reply": "",
+      "intent_operations": [
+        "game.catalog.list",
+        "game.install.status"
+      ],
+      "effect_operations": [],
+      "decision_seconds": 3.967,
+      "response_type": null,
+      "kind": null,
+      "operations": [],
+      "steps": [],
+      "seconds": 3.967,
+      "status": "failed",
+      "error": "turn decision did not exactly cover the bounded objective"
+    },
+    {
+      "case": "web_search_and_navigation",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "effect_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "decision_seconds": 0.004,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "web.search",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "query"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "failed",
+          "verified": false,
+          "error": "web_search_results_irrelevant",
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 0.666,
+      "status": "failed",
+      "dependency_positions": [
+        [],
+        []
+      ],
+      "error": "web_search_results_irrelevant"
+    },
+    {
+      "case": "streaming_and_search",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "effect_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "decision_seconds": 0.004,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "steps": [],
+      "seconds": 0.951,
+      "status": "failed",
+      "dependency_positions": [
+        [],
+        []
+      ],
+      "error": "step step_1 selected authority outside its dependencies"
+    },
+    {
+      "case": "llm_calendar_read",
+      "planner_path": "real_llm_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "action",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "calendar.event.list"
+      ],
+      "effect_operations": [
+        "calendar.event.list"
+      ],
+      "decision_seconds": 0.006,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "calendar.event.list"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "calendar.event.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "endUtc",
+            "startUtc"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "failed",
+          "verified": false,
+          "error": "outlook_profile_not_configured",
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 1.203,
+      "status": "environment_blocked",
+      "dependency_positions": [
+        []
+      ],
+      "environmental_precondition": "outlook_profile_not_configured"
+    },
+    {
+      "case": "spotify_exact_then_pause",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "media.play.exact",
+        "media.control"
+      ],
+      "effect_operations": [
+        "media.play.exact",
+        "media.control"
+      ],
+      "decision_seconds": 0.007,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "media.play.exact",
+        "media.control"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "media.play.exact",
+          "risk": "external_communication",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "provider",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "processId": 29020
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "media.control",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "action"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "failed",
+          "verified": false,
+          "error": "smtc_postcondition_not_verified",
+          "effect_may_have_occurred": true
+        }
+      ],
+      "seconds": 15.834,
+      "status": "failed",
+      "dependency_positions": [
+        [],
+        []
+      ],
+      "error": "smtc_postcondition_not_verified"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "environment_blocked": 1,
+    "failed": 6,
+    "total": 10,
+    "verified_steps": 7,
+    "real_llm_plan_cases": 4,
+    "real_llm_plan_cases_passed": 2,
+    "model_grounded_steps": 2,
+    "ambiguous_effects": 1,
+    "status": "failed"
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

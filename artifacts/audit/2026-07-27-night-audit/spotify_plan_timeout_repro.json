@@ -1,0 +1,42 @@
+{
+  "schema": "baxy.audit.spotify-plan-timeout.v1",
+  "version": "1.0.8",
+  "commit": "f23b23f064211154e954d82883ba6bee5c2c466c",
+  "objective": "Reproduce exactamente Beat It en Spotify y luego pausa la reproducción",
+  "confirmation_sent_utc": "2026-07-27T05:47:29.4300019+00:00",
+  "core_operation": "media.play.query",
+  "core_started_utc": "2026-07-27T05:47:29.4397920+00:00",
+  "ui_timeout_message_utc": "2026-07-27T05:47:49.0000000+00:00",
+  "core_completed_utc": "2026-07-27T05:47:51.1734288+00:00",
+  "elapsed_core_seconds": 21.7336368,
+  "core_status": "completed",
+  "core_verified": true,
+  "core_result": {
+    "provider": "spotify",
+    "title": "Michael Jackson - Beat It",
+    "playbackStatus": "playing",
+    "authority": "spotify_windows_uia_postread"
+  },
+  "ui_messages": [
+    "No pude detener las acciones pendientes.",
+    "No pude hacer la acción solicitada."
+  ],
+  "outbox_after_verified_completion": {
+    "operation": "media.play.query",
+    "provider": "spotify",
+    "query": "Beat It",
+    "entry_count": 1
+  },
+  "observed_effect": {
+    "spotify_started": true,
+    "correct_query_visible": true,
+    "correct_track_visible": true,
+    "playback_position_seconds": 18,
+    "window_cleanup": "CloseMainWindow succeeded; all audit-created Spotify processes exited",
+    "preexisting_spotify_launcher_preserved": true
+  },
+  "notes": [
+    "Identifiers and the authenticated journal chain were intentionally omitted from this portable evidence file.",
+    "The authoritative local journal records the started/completed pair as sequences 121 and 122."
+  ]
+}

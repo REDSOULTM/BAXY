@@ -1,0 +1,28 @@
+{
+  "cases": 256,
+  "measured_at": "2026-08-02T19:22:43.168417+00:00",
+  "onnx_batch_vs_single": {
+    "argmax_equal": 256,
+    "maximum_probability_delta": 0.0,
+    "threshold_equal": 256
+  },
+  "schema": "baxy.mtop-compatibility-onnx-parity-diagnostic.v1",
+  "scope": "development_validation_only_no_text_persisted",
+  "status": "diagnostic_only",
+  "threshold": 0.906282544,
+  "torch_batch_vs_single": {
+    "argmax_equal": 256,
+    "maximum_probability_delta": 7.5e-08,
+    "threshold_equal": 256
+  },
+  "torch_vs_onnx_batch": {
+    "argmax_equal": 256,
+    "maximum_probability_delta": 7.883e-06,
+    "threshold_equal": 256
+  },
+  "torch_vs_onnx_single": {
+    "argmax_equal": 256,
+    "maximum_probability_delta": 7.957e-06,
+    "threshold_equal": 256
+  }
+}

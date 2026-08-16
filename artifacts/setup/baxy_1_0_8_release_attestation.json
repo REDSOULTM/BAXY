@@ -1,0 +1,139 @@
+{
+  "schema": "baxy-release-attestation-summary-v1",
+  "status": "passed_with_recovery_continuation",
+  "version": "1.0.8",
+  "completed_utc": "2026-07-25T11:39:13.0611012Z",
+  "candidate": {
+    "source_commit": "b41dda11567a209f7276df30dfab19d9b4dcefd7",
+    "source_provenance": "git_head_snapshot",
+    "product_payload_files": 35,
+    "product_payload_bytes": 171363178,
+    "product_a_b_exact": true,
+    "package_sha256": "9e4abb30c8f4312e094b5fad9dd1d40c631f2c0399769447da9acc22767f8cbb",
+    "package_bytes": 171376774,
+    "package_manifest_sha256": "cf148dc366f6fd167d22407ae654b5584a02541b6e75c511612ba6d98f0beb04",
+    "package_a_b_exact": true,
+    "setup_sha256": "c71fad8fce77d82a07ba97729d67546632b0772273a7cdf8f902204386696fe5",
+    "setup_bytes": 175300096,
+    "setup_manifest_sha256": "26d8cf4b9177f22edf94549689c957e347b4ceec9150012a0be81280390843c8",
+    "setup_a_b_exact": true,
+    "content_id": "52bf2752b9d1d5c191790b54dd1bf2131611896c713ac7fd0f29d48e7257c78f",
+    "authenticode": "NotSigned"
+  },
+  "validation": {
+    "dotnet_total": 2080,
+    "dotnet_passed": 2063,
+    "dotnet_failed": 0,
+    "dotnet_skipped": 17,
+    "dotnet_duration_seconds": 184.548,
+    "python_tests_passed": 611,
+    "python_subtests_passed": 350,
+    "python_failed": 0,
+    "python_skipped": 0,
+    "python_duration_seconds": 183.29,
+    "semantic_e2e_passed": 4,
+    "semantic_e2e_total": 4,
+    "resource_requests_gpu_passed": 45,
+    "resource_requests_cpu_passed": 45,
+    "evidence": {
+      "semantic_e2e": {
+        "path": "artifacts/product/mind_shell_e2e_gate.json",
+        "sha256": "26a48daf6b4458119bb2df234c8d2dd76c00842b101ac8e4b6b2ba4bd5a8d69b"
+      },
+      "resource_budget": {
+        "path": "artifacts/product/mind_budget_gate.json",
+        "sha256": "e5afd65855b080f7f02833616e261869f1c89fbf33fca66733ebefcc9b54d418"
+      },
+      "global_suites": {
+        "source_commits": [
+          "b41dda11567a209f7276df30dfab19d9b4dcefd7",
+          "cc2bf9de73b13fd47ab9881e817aea1d93ac2a2a"
+        ],
+        "console_output_archived": false
+      }
+    }
+  },
+  "attestation": {
+    "gate_source_commit": "cc2bf9de73b13fd47ab9881e817aea1d93ac2a2a",
+    "failed_evidence_name": "baxy-1.0.8-b41dda11567a-lifecycle.json",
+    "failed_evidence_sha256": "ae0885b6c3bd194eafc444bacdbdaf3ef85105bf1a7844ef8f0244d65f7281c7",
+    "continuation_evidence_name": "baxy-1.0.8-b41dda11567a-continuation-cc2bf9de73b1.json",
+    "continuation_evidence_sha256": "832956308a02581898d8f879efd3704136daaea94bfa5a67ac41c0a5d2d81c31",
+    "continuation_evidence_bytes": 7314,
+    "embedded_verification": "passed",
+    "first_attempt_status": "failed",
+    "first_attempt_failure_scope": "attestation_smoke",
+    "first_attempt_recovery": "passed",
+    "aggregate_status": "passed_with_recovery_continuation"
+  },
+  "lifecycle": [
+    {
+      "name": "validate_recovered_candidate",
+      "status": "passed",
+      "current": "1.0.8",
+      "previous": "1.0.7",
+      "core_smoke": "passed",
+      "core_capabilities": 168
+    },
+    {
+      "name": "rollback",
+      "status": "passed",
+      "current": "1.0.7",
+      "previous": "1.0.8",
+      "setup_exit_code": 0,
+      "setup_duration_ms": 12389,
+      "settle_duration_ms": 3359,
+      "core_smoke": "passed",
+      "core_capabilities": 168
+    },
+    {
+      "name": "reactivate_candidate",
+      "status": "passed",
+      "current": "1.0.8",
+      "previous": "1.0.7",
+      "setup_exit_code": 0,
+      "setup_duration_ms": 18489,
+      "settle_duration_ms": 3322,
+      "core_smoke": "passed",
+      "core_capabilities": 168
+    }
+  ],
+  "preservation": {
+    "install_id_preserved": true,
+    "shortcut_identity_preserved": true,
+    "preexisting_version_trees_unchanged": true,
+    "version_directories_before": 11,
+    "version_directories_after": 11,
+    "versions_deleted": 0,
+    "private_tree_sha256_before": "5dba08a032b8f08140f48ca8d431a5b44b910bcef7bab01d590a871d52591ebb",
+    "private_tree_sha256_after": "5dba08a032b8f08140f48ca8d431a5b44b910bcef7bab01d590a871d52591ebb",
+    "private_files": 12489,
+    "private_directories": 13744,
+    "private_bytes": 1780271404,
+    "private_data_unchanged": true
+  },
+  "final_state": {
+    "current": "1.0.8",
+    "previous": "1.0.7",
+    "owned_processes": 0,
+    "pending_transaction_artifacts": 0,
+    "residual_smoke_profiles": 0,
+    "mind_runtime_registered": true,
+    "wake_on_start": false,
+    "gpu_layers": 99
+  },
+  "privacy": {
+    "local_paths_included": false,
+    "private_content_included": false,
+    "install_id_included": false
+  },
+  "limitations": [
+    "same_host_current_user_profile",
+    "authenticode_not_signed",
+    "gui_not_launched",
+    "isolated_core_protocol_smoke_only",
+    "global_suite_console_output_not_archived",
+    "private_data_alternate_streams_not_inventoried",
+    "clean_profile_first_install_and_purge_not_attested"
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "schema": "baxy.livekit-wakeword-feasibility.v1",
+  "measured_at_utc": "2026-08-04T14:22:36.312233+00:00",
+  "upstream": {
+    "repository": "https://github.com/livekit/livekit-wakeword",
+    "version": "0.2.1",
+    "commit": "1ec7f680df30ff4ca0ebae6b5983441e94b10980",
+    "license": "Apache-2.0"
+  },
+  "method": {
+    "classifier": "conv_attention medium over frozen LiveKit speech embeddings",
+    "synthetic_base": {
+      "tts": "Piper en-us-libritts-high with SLERP speaker blending",
+      "positive_train_base": 1000,
+      "positive_test_base": 200,
+      "adversarial_negative_train_base": 1000,
+      "adversarial_negative_test_base": 200,
+      "background_train_base": 200,
+      "background_test_base": 40,
+      "augmentation_rounds": 3
+    },
+    "validation": {
+      "positive_clips": 600,
+      "negative_clips": 30804,
+      "negative_hours": 17.11,
+      "clip_seconds": 2.0
+    }
+  },
+  "external_data": {
+    "acav_training_features": {
+      "bytes": 17280000128,
+      "sha256": "721A66D0682C65A1B5C1DA0AA109409CEDE1D20E28B15235C344B000CBB7654F"
+    },
+    "general_validation_features": {
+      "bytes": 184836608,
+      "sha256": "A56A8A0F8E0EFB91900ACC6DE4C0CDF4C564842E8475A7D49B36C039E17A690F"
+    }
+  },
+  "experiments": [
+    {
+      "name": "baxy_feasibility_without_acav_training",
+      "steps_phase_1": 5000,
+      "threshold_0_5": {
+        "recall": 0.7166666666666667,
+        "fpph_observed": 19.984417608102845,
+        "accuracy": 0.8527821062199714
+      },
+      "best_scanned_threshold": {
+        "threshold": 0.22,
+        "recall": 0.9416666666666667,
+        "fpph_observed": 173.78262563303468
+      },
+      "aut": 0.02450977686880492,
+      "promotable": false,
+      "rejection": "General-speech false activations are orders of magnitude above the product bound."
+    },
+    {
+      "name": "baxy_acav_feasibility",
+      "steps_phase_1": 30000,
+      "steps_total": 36000,
+      "elapsed_seconds": 20192.3,
+      "threshold_0_5": {
+        "recall": 0.7783333333333333,
+        "fpph_observed": 0.1168679392286716,
+        "fpph_poisson_upper_95": 0.36795988438760896,
+        "accuracy": 0.8891342033502143
+      },
+      "best_scanned_threshold_with_observed_fpph_lte_0_1": {
+        "threshold": 0.53,
+        "recall": 0.7616666666666667,
+        "fpph_observed": 0.0584339696143358,
+        "fpph_poisson_upper_95": 0.27725683918121435,
+        "accuracy": 0.8808171016751072
+      },
+      "aut": 0.0037168874172185426,
+      "artifacts": {
+        "pt_sha256": "44735F7076A451941C5B4C4026A37ACDD347AB505312AC9716705D2B3E69764C",
+        "onnx_sha256": "49FBC66A9240E60F8A7EBC50E9777C433B45171373FCCB17F2B39D6048B62BBC",
+        "eval_sha256": "5E5909209579C5B3B99E23BEC9D010B36A605722678E177ABA8D5772FC732876",
+        "metrics_sha256": "5EB1393D6DD70402080DED4C6A7EB39365B9A0B48BD0E5BD8E87C14A38366DDC"
+      },
+      "promotable": false,
+      "rejection": "Recall is far below 95%, exposure is below 30 hours, and the exact 95% FAR upper bound exceeds 0.1/h."
+    }
+  ],
+  "scale_campaign": {
+    "status": "piper_rejected_voxcpm2_gguf_filter_validated",
+    "original_model_name": "baxy_piper_scale",
+    "replacement_model_name": "baxy_voxcpm2_gguf_ipa_filtered",
+    "positive_train_target": 25000,
+    "positive_test_target": 5000,
+    "negative_train_target": 25000,
+    "negative_test_target": 5000,
+    "background_train_target": 2000,
+    "background_test_target": 500,
+    "training_steps_phase_1": 100000,
+    "generator": "upstream single-process GPU generator",
+    "batch_size": 8,
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU 6 GiB",
+    "generation_resume": {
+      "validated_wav_files_before_rebuild": 30934,
+      "positive_train_original": 24648,
+      "positive_train_retained": 12324,
+      "negative_train": 6286,
+      "invalid_wav_files": 0,
+      "parallel_profiles_rejected": [
+        "2x32: approximately 5.50 GiB after sustained generation",
+        "2x24: approximately 5.18 GiB after sustained generation",
+        "2x20: approximately 5.27 GiB after sustained generation",
+        "2x16: approximately 5.64 GiB after sustained generation"
+      ],
+      "serial_gpu_memory_mib_observed_sustained_batch_16": 5874,
+      "batch_16_stop_positive_train": 15444,
+      "batch_16_post_stop_validation": "15444 positive_train and 6286 negative_train WAV files dense and valid; generator processes zero; GPU returned to 313 MiB.",
+      "reason": "Two independent CUDA allocator caches accumulated unsafe long-run memory; the upstream serial generator reuses one cache and preserves all valid clips."
+    },
+    "pronunciation_audit": {
+      "generator_phrase_order_before_fix": [
+        "baxy",
+        "baxi"
+      ],
+      "piper_en_us_ipa": {
+        "baxy": "bˈeɪksi",
+        "baxi": "bˈæksi"
+      },
+      "finding": "LiveKit cycles phrases by sample index; all even positive indices used the rejected bay-see pronunciation and all odd indices used the intended back-see pronunciation.",
+      "repair": "The complete 24648-file source split was archived, then the 12324 accepted odd-index clips were hard-linked into a dense replacement without decoding, rewriting, or deleting audio.",
+      "source_archive": "positive_train_pre_baxi_pronunciation_fix_v1",
+      "source_sha256": "231af24d747ca4b1d030e3ab74d22694a03e395392550db73ccb1588c1d49442",
+      "replacement_sha256": "43219eb181accf73760ae5a24da48d7d62b6bf4e70f931fde4b30b8b6173219c",
+      "report_sha256": "217d2101cd25f0457282bd790f047b32c16945e8836eb734bb48f63db1f83b40",
+      "target_phrases_after_fix": [
+        "baxi"
+      ]
+    },
+    "hard_negative_audit": {
+      "custom_negative_phrases": 69,
+      "unique_custom_negative_phrases": 69,
+      "upstream_auto_adversarial_phrases": 0,
+      "exact_en_us_ipa_homophones_of_target": 0,
+      "inventory_method": "Prior manual confusables plus audited one- and two-phoneme neighbours from CMUdict; exact acoustic homophones are excluded from the negative class.",
+      "cmudict_commit": "74790861f652b15e4ac49015a90074ad62a27690",
+      "real_ccby_expansion": {
+        "positive_train_at_pause": 19436,
+        "validated_positive_train": 19436,
+        "validated_negative_train": 6286,
+        "added_phrases": [
+          "Faxi",
+          "Vaxi",
+          "Mahesh Faxi",
+          "Viplav Vaxi",
+          "Tarang Bakshi",
+          "Upendra Bakshi"
+        ],
+        "piper_en_us_ipa": {
+          "Faxi": "fˈæksi",
+          "Vaxi": "vˈæksi",
+          "Bakshi": "bˈækʃi"
+        }
+      }
+    },
+    "positive_label_ipa_audit": {
+      "status": "both_piper_strategies_rejected_before_training",
+      "model": "facebook/wav2vec2-lv-60-espeak-cv-ft",
+      "model_revision": "ae45363bf3413b374fecd9dc8bc1df0e24c3b7f4",
+      "common_prefix_clips_per_strategy": 1048,
+      "accent_tolerant_targets": [
+        ["b", "a", "k", "s", "i"],
+        ["b", "æ", "k", "s", "i"],
+        ["b", "ɑ", "k", "s", "i"]
+      ],
+      "interpolated_slerp": {
+        "exact": 114,
+        "edit_distance_lte_1": 462
+      },
+      "discrete_speaker_endpoint": {
+        "exact": 120,
+        "edit_distance_lte_1": 411
+      },
+      "audit": "artifacts/research/livekit_wakeword_piper_ipa_pilot.v1.json",
+      "audit_sha256": "3C19A380471ECE78C7DA476CA27BB8ACFB1815A67937A2FDEF19D5F1402836BF",
+      "blind_human_partition_accessed": false
+    },
+    "voxcpm2_gguf_replacement": {
+      "status": "development_filter_validated",
+      "runtime_repository": "https://github.com/tc-mb/llama.cpp-omni",
+      "runtime_commit": "6e9ae1a06be74e1e05ada646d106fe174b4498ef",
+      "model_repository": "DennisHuang648/VoxCPM2-GGUF",
+      "model_revision": "169f64d8b98bbaab1761e4ca3a83e6af653456cc",
+      "base_lm": "VoxCPM2-BaseLM-Q8_0.gguf",
+      "base_lm_sha256": "0113177ABD11303503BF0B705E1613EC5F0A8508CC74A7DFD0F99312B962A962",
+      "acoustic": "VoxCPM2-Acoustic-F16.gguf",
+      "acoustic_sha256": "5BDE898488AD635FF55D24DA53543768FA33D5E5CDC538CE190E5EF831038E85",
+      "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU 6 GiB",
+      "measured_peak_gpu_mib": 5523,
+      "persistent_generation_mean_seconds_per_clip": 0.431,
+      "development_candidates": 256,
+      "pre_filter_exact_ipa": 170,
+      "post_vad_accepted": 163,
+      "post_transform_exact_ipa": 163,
+      "post_transform_exact_ipa_rate": 1.0,
+      "accepted_personas": 31,
+      "accepted_duration_seconds": {
+        "min": 0.635,
+        "max": 1.895,
+        "mean": 0.952
+      },
+      "pre_filter_audit": "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_256_ipa.v1.json",
+      "pre_filter_audit_sha256": "AC5EE39F3286154EF834CA33E6A4D0DBE42D3ED011BF96F1253A258286D1A83E",
+      "post_transform_audit": "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_256_filtered_ipa.v1.json",
+      "post_transform_audit_sha256": "A154424E1B653A62D60C3CD14830D9E444A553C503D68E2EE21EC8B4923AAD12",
+      "blind_human_partition_accessed": false,
+      "candidate_model_training_started": false
+    },
+    "note": "Research-only until an independent physical microphone corpus passes baxy-wake-corpus-gate-v3."
+  },
+  "research_basis": [
+    "https://github.com/livekit/livekit-wakeword/tree/v0.2.1",
+    "https://www.isca-archive.org/syndata4genai_2024/zhu24_syndata4genai.html",
+    "https://www.isca-archive.org/odyssey_2022/wang22c_odyssey.html",
+    "https://www.isca-archive.org/interspeech_2025/zhu25b_interspeech.html",
+    "https://www.isca-archive.org/interspeech_2025/zhang25h_interspeech.html",
+    "https://arxiv.org/abs/2605.22120",
+    "https://arxiv.org/abs/2606.06928",
+    "https://github.com/OpenBMB/VoxCPM",
+    "https://github.com/tc-mb/llama.cpp-omni",
+    "https://huggingface.co/facebook/wav2vec2-lv-60-espeak-cv-ft"
+  ],
+  "source_sha256": {
+    "small_config": "F51176CD3EAE2E92788EBE8BC46BB107A7779049FCAD58970C2F5D273AFCBB46",
+    "acav_config": "08F623AB60C2DF1F28D3ADC498E4B473C11B7CDCB1CA306F886EE6E839430033",
+    "scale_config": "1FC260024B7ECA547F6A9116F3D3355A9A49B7B90989CBBE46119D46D783B353",
+    "parallel_generator": "52EF97E6DEC5C48FE805D528113A1DB43DC2D754400D70A0D661ED2ED991F0E5",
+    "pronunciation_rebuild": "CD27E3D00ED89B929FF5BA1623AF7DFB32A45FC77718B9452812F3FFEB477617",
+    "pronunciation_rebuild_tests": "2B8811E9941CA07E51B05858E9D569825C0D680DA0D239FF8A64342572B2FA18",
+    "discrete_scale_config": "1E641DE868C404F05E9C3AFD9CBABED90F2AEF65BFED2C4059A7243F2A658B00",
+    "piper_ipa_audit_script": "CCA2A29474A4FCE71EE3BC2385F68B6877E175A8C69EC48BA9DD349B39EF5BAE",
+    "piper_ipa_audit_tests": "5F5F63B855A6E3336898B41EB2FDE881B77C2EA84005F38017397795E857458F",
+    "voxcpm2_generator": "691064A59061C58ADCE4506AEC25BAE38172C08D02528F29DD0A660403342E60",
+    "voxcpm2_generator_tests": "7850F3BA26888A138C023B7A81594F9EA3C089F13F38E5338447EE4C227FD27B",
+    "voxcpm2_ipa_audit": "14DB8103F2EB7D1B6FD05832F8CF292CEDFDE612D4CD1B7E50BBA94937888E09",
+    "voxcpm2_ipa_audit_tests": "96FF1E3A0AA0503DC2C7233950BD555493746E0CFCC50ED683E7D09277D2D98B",
+    "voxcpm2_filter": "BAB27D6E0349C55F91DA415B80891D1B8CA14AC6B90B0BED24ABBE156BCA2FE3",
+    "voxcpm2_filter_tests": "EE19AAC37F5DE19818190E3A4898348E4C5106ECDD172FEDF08C04942372E5A0",
+    "voxcpm2_personas": "2986FAF0CC71511601A79B149D55FD8039ECA405D889308CDBA2B06188487234"
+  },
+  "effects_executed": 0,
+  "promotable": false
+}

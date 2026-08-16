@@ -1,0 +1,641 @@
+{
+  "records": [
+    {
+      "case_id": "v6-req-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hervir el agua para el té de la tarde.",
+      "request_text": "Hierve el agua para el te de la tarde.",
+      "role": "request",
+      "seconds": 4.409
+    },
+    {
+      "case_id": "v6-req-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo despertar a tu hermano antes de las siete.",
+      "request_text": "Despierta a tu hermano antes de las siete.",
+      "role": "request",
+      "seconds": 2.491
+    },
+    {
+      "case_id": "v6-req-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo apretar el tornillo de la bisagra floja.",
+      "request_text": "Aprieta el tornillo de la bisagra floja.",
+      "role": "request",
+      "seconds": 2.069
+    },
+    {
+      "case_id": "v6-req-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo quebrar las nueces con el cascanueces.",
+      "request_text": "Quiebra las nueces con el cascanueces.",
+      "role": "request",
+      "seconds": 5.803
+    },
+    {
+      "case_id": "v6-req-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo morder la manzana del cesto de la entrada.",
+      "request_text": "Muerde la manzana del cesto de la entrada.",
+      "role": "request",
+      "seconds": 2.876
+    },
+    {
+      "case_id": "v6-req-06",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Estás diciendo que el bebé duerme en la cuna de mimbre o que quieres que lo haga?",
+      "reply_text": "",
+      "request_text": "Duerme al bebe en la cuna de mimbre.",
+      "role": "request",
+      "seconds": 9.095
+    },
+    {
+      "case_id": "v6-req-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo volar la cometa en el parque del río.",
+      "request_text": "Vuela la cometa en el parque del rio.",
+      "role": "request",
+      "seconds": 6.211
+    },
+    {
+      "case_id": "v6-req-08",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Podrías explicarme mejor qué es lo que quieres hacer?",
+      "reply_text": "",
+      "request_text": "Hiela el agua en la bandeja de cubitos.",
+      "role": "request",
+      "seconds": 5.565
+    },
+    {
+      "case_id": "v6-req-09",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo perrear al vecino.",
+      "request_text": "Niega la entrada al perro del vecino.",
+      "role": "request",
+      "seconds": 2.113
+    },
+    {
+      "case_id": "v6-req-10",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Qué significa 'ruga al panadero que guarde una hogaza'?",
+      "reply_text": "",
+      "request_text": "Ruega al panadero que guarde una hogaza.",
+      "role": "request",
+      "seconds": 5.056
+    },
+    {
+      "case_id": "v6-req-11",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo doblar las servilletas del cajon.",
+      "request_text": "Vuelve a doblar las servilletas del cajon.",
+      "role": "request",
+      "seconds": 7.031
+    },
+    {
+      "case_id": "v6-req-12",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Estás diciendo que quiero que la escalera sea más estable y menos vibrante?",
+      "reply_text": "",
+      "request_text": "Tiembla menos y sujeta bien la escalera.",
+      "role": "request",
+      "seconds": 6.616
+    },
+    {
+      "case_id": "v6-req-13",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hervir el agua para el afternoon tea.",
+      "request_text": "Hierve el agua para el afternoon tea.",
+      "role": "request",
+      "seconds": 3.553
+    },
+    {
+      "case_id": "v6-req-14",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo apretar el screw de la bisagra floja.",
+      "request_text": "Aprieta el screw de la bisagra floja.",
+      "role": "request",
+      "seconds": 3.589
+    },
+    {
+      "case_id": "v6-req-15",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "spanglish",
+      "operation": null,
+      "question": "¿Qué significa 'quiebra las walnuts con el cascanueces'?",
+      "reply_text": "",
+      "request_text": "Quiebra las walnuts con el cascanueces.",
+      "role": "request",
+      "seconds": 5.851
+    },
+    {
+      "case_id": "v6-req-16",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot boil the water for the afternoon tea.",
+      "request_text": "Boil the water for the afternoon tea.",
+      "role": "request",
+      "seconds": 1.346
+    },
+    {
+      "case_id": "v6-req-17",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot tighten the screw on the loose hinge as requested.",
+      "request_text": "Tighten the screw on the loose hinge.",
+      "role": "request",
+      "seconds": 2.938
+    },
+    {
+      "case_id": "v6-req-18",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot wake your brother before seven.",
+      "request_text": "Wake your brother before seven.",
+      "role": "request",
+      "seconds": 2.248
+    },
+    {
+      "case_id": "v6-ctl-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "If a laptop ran out of battery mid-update, the update process would likely be interrupted.",
+      "request_text": "No errand for the machine, simply reply: what would happen if a laptop ran out of battery mid-update",
+      "role": "control",
+      "seconds": 0.411
+    },
+    {
+      "case_id": "v6-ctl-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Si que un portátil se queda sin batería durante una actualización, el sistema podría perder conexión con internet, funciones en segundo plano podrían interrumpirse, y la actualización podría interrumpirse prematuramente.",
+      "request_text": "Ningun encargo para la computadora, respondeme sin mas: que ocurriria si un portatil se quedara sin bateria a media actualizacion",
+      "role": "control",
+      "seconds": 0.997
+    },
+    {
+      "case_id": "v6-ctl-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "Si la laptop se quedara sin batería durante una actualización, podría reiniciarse automáticamente o requerir un reinicio manual. La actualización puede interrumpirse si la batería se agota. La laptop podría apagarse o reiniciarse dependiendo de la configuración y el sistema operativo. Si la batería se agota durante la actualización, es probable que la laptop se reinicie o se apague.",
+      "request_text": "Ningun errand para la computadora, respondeme sin mas: what pasaria si un laptop se quedara sin battery a media actualizacion",
+      "role": "control",
+      "seconds": 1.567
+    },
+    {
+      "case_id": "v6-ctl-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "If someone had two screens, the second one would need its own cable.",
+      "request_text": "Not a single directive for this pc, let us just chat: if someone had two screens, would the second one need its own cable",
+      "role": "control",
+      "seconds": 0.302
+    },
+    {
+      "case_id": "v6-ctl-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Si alguien tiene dos pantallas, generalmente se necesita un cable para conectar la segunda, dependiendo del tipo de conexión y del sistema operativo. ¿Cuál es el sistema operativo que estás usando?",
+      "request_text": "Ni una directriz para este equipo, charlemos nomas: si alguien tuviera dos pantallas, haria falta un cable para la segunda",
+      "role": "control",
+      "seconds": 0.793
+    },
+    {
+      "case_id": "v6-ctl-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "A router would detect the conflict and notify the devices involved, prompting them to resolve the address conflict by changing their settings.",
+      "request_text": "No order travels to the computer here, talk to me: what would a router do if two devices claimed the same address",
+      "role": "control",
+      "seconds": 0.457
+    },
+    {
+      "case_id": "v6-ctl-07",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Qué haría un router si dos dispositivos intentaran utilizar la misma dirección IP?",
+      "reply_text": "",
+      "request_text": "Aqui no viaja ninguna orden al ordenador, hablame: que haria un router si dos aparatos reclamaran la misma direccion",
+      "role": "control",
+      "seconds": 3.718
+    },
+    {
+      "case_id": "v6-ctl-08",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I'm here to help you with anything related to the laptop. What specific issue are you having with the browser?",
+      "request_text": "No instruction goes to the laptop, only discuss it with me: people keep telling me open the browser right now",
+      "role": "control",
+      "seconds": 0.428
+    },
+    {
+      "case_id": "v6-ctl-09",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo acceder a la información del del portátil, pero te digo que no hay consignas que lleguen allí. ¿Te gustaría que te ayudara a resolver algo relacionado con eso?",
+      "request_text": "Ninguna consigna llega al portatil, solo comentalo conmigo: la gente me repite abre el navegador ahora mismo",
+      "role": "control",
+      "seconds": 0.796
+    },
+    {
+      "case_id": "v6-ctl-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "El pan recién hecho por la mañana mañana es delicioso y aroma a la casa. ¡Qué delicia!",
+      "request_text": "Que te parece el pan recien hecho por la manana?",
+      "role": "control",
+      "seconds": 0.447
+    },
+    {
+      "case_id": "v6-ctl-11",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Walnut trees produce nuts that are both edible and valuable for human consumption, as well as for wildlife. They thrive in a variety of climates and can grow up to 40 feet tall. The nuts are typically harvested in the fall and require processing to remove the hard shell. Some species are cultivated for commercial purposes, while others are found in the wild.",
+      "request_text": "Tell me something curious about walnut trees.",
+      "role": "control",
+      "seconds": 2.84
+    },
+    {
+      "case_id": "v6-ctl-12",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Te refieres a que el hervimiento del agua tomó más tiempo de lo esperado?",
+      "reply_text": "",
+      "request_text": "Hervir el agua nos llevo mas de lo previsto.",
+      "role": "control",
+      "seconds": 7.402
+    },
+    {
+      "case_id": "v6-cat-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Cuáles son los archivos o carpetas que has guardado en la nube o en un disco duro externo para poder acceder a ellos si es necesario?",
+      "request_text": "que copias viejas tengo a salvo por si acaso",
+      "role": "catalogue_control",
+      "seconds": 2.459
+    },
+    {
+      "case_id": "v6-cat-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't have access to your personal files or copies. Would you like me to help you find them or check your computer for any saved copies?",
+      "request_text": "what old copies do i have kept just in case",
+      "role": "catalogue_control",
+      "seconds": 4.092
+    },
+    {
+      "case_id": "v6-cat-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Cuál es el nombre del sistema operativo que estás usando?",
+      "request_text": "que old copies tengo a salvo por si acaso",
+      "role": "catalogue_control",
+      "seconds": 0.312
+    },
+    {
+      "case_id": "v6-cat-04",
+      "effect_operations": [
+        "system.identity"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "system.identity",
+      "question": "",
+      "reply_text": "",
+      "request_text": "que garabatos tengo guardados por aqui",
+      "role": "catalogue_control",
+      "seconds": 0.718
+    },
+    {
+      "case_id": "v6-cat-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't know what you're referring to. Could you clarify what \"scribbles\" you're talking about?",
+      "request_text": "what scribbles am i keeping around here",
+      "role": "catalogue_control",
+      "seconds": 1.608
+    },
+    {
+      "case_id": "v6-cat-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo dejar el sonido en nada.",
+      "request_text": "deja el sonido en nada",
+      "role": "catalogue_control",
+      "seconds": 2.12
+    },
+    {
+      "case_id": "v6-cat-07",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "en",
+      "operation": null,
+      "question": "¿A qué nivel está fijado el volumen absoluto de la salida predeterminada?",
+      "reply_text": "",
+      "request_text": "leave the sound at nothing",
+      "role": "catalogue_control",
+      "seconds": 2.419
+    },
+    {
+      "case_id": "v6-cat-08",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo dejar el sound en nada.",
+      "request_text": "deja el sound en nada",
+      "role": "catalogue_control",
+      "seconds": 1.86
+    },
+    {
+      "case_id": "v6-cat-09",
+      "effect_operations": [
+        "system.status"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "system.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "que nombre lleva puesto esta maquina",
+      "role": "catalogue_control",
+      "seconds": 0.012
+    },
+    {
+      "case_id": "v6-cat-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The box is wearing a red and white striped shirt with a black belt.",
+      "request_text": "what name is this box wearing",
+      "role": "catalogue_control",
+      "seconds": 1.271
+    },
+    {
+      "case_id": "v6-cat-11",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo ver el cuadro que tienes delante ahora mismo.",
+      "request_text": "que cuadro tengo delante ahora mismo",
+      "role": "catalogue_control",
+      "seconds": 2.273
+    },
+    {
+      "case_id": "v6-cat-12",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The frame in front of you right now is the one you are currently viewing on your Windows PC.",
+      "request_text": "what frame is in front of me right now",
+      "role": "catalogue_control",
+      "seconds": 2.591
+    },
+    {
+      "case_id": "v6-cat-13",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "La hora actual es 14:30.",
+      "request_text": "que hora marca este cacharro",
+      "role": "catalogue_control",
+      "seconds": 2.573
+    },
+    {
+      "case_id": "v6-cat-14",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't have access to real-time information, so I can't tell you what is sounding at the moment.",
+      "request_text": "what is sounding at the moment",
+      "role": "catalogue_control",
+      "seconds": 0.467
+    },
+    {
+      "case_id": "v6-cat-15",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Puedes aclarar qué programas estás referenciando y en qué contexto?",
+      "reply_text": "",
+      "request_text": "que programas tengo puestos en la maquina",
+      "role": "catalogue_control",
+      "seconds": 6.04
+    }
+  ],
+  "schema": "baxy.veto-reach-result.v6",
+  "scope": "sealed_blind_population_that_reaches_the_domain_veto",
+  "status": "failed",
+  "summary": {
+    "all_replies_distinct": true,
+    "catalogue_control_regressions": [
+      {
+        "case_id": "v6-cat-01",
+        "kind": "conversation",
+        "reply": "¿Cuáles son los archivos o carpetas que has guardado en la nube o en un disco duro externo para poder acceder a ellos si"
+      },
+      {
+        "case_id": "v6-cat-02",
+        "kind": "conversation",
+        "reply": "I don't have access to your personal files or copies. Would you like me to help you find them or check your computer for"
+      },
+      {
+        "case_id": "v6-cat-03",
+        "kind": "conversation",
+        "reply": "¿Cuál es el nombre del sistema operativo que estás usando?"
+      },
+      {
+        "case_id": "v6-cat-05",
+        "kind": "conversation",
+        "reply": "I don't know what you're referring to. Could you clarify what \"scribbles\" you're talking about?"
+      },
+      {
+        "case_id": "v6-cat-06",
+        "kind": "conversation",
+        "reply": "No puedo dejar el sonido en nada."
+      },
+      {
+        "case_id": "v6-cat-08",
+        "kind": "conversation",
+        "reply": "No puedo dejar el sound en nada."
+      },
+      {
+        "case_id": "v6-cat-10",
+        "kind": "conversation",
+        "reply": "The box is wearing a red and white striped shirt with a black belt."
+      },
+      {
+        "case_id": "v6-cat-11",
+        "kind": "conversation",
+        "reply": "No puedo ver el cuadro que tienes delante ahora mismo."
+      },
+      {
+        "case_id": "v6-cat-12",
+        "kind": "conversation",
+        "reply": "The frame in front of you right now is the one you are currently viewing on your Windows PC."
+      },
+      {
+        "case_id": "v6-cat-13",
+        "kind": "conversation",
+        "reply": "La hora actual es 14:30."
+      },
+      {
+        "case_id": "v6-cat-14",
+        "kind": "conversation",
+        "reply": "I don't have access to real-time information, so I can't tell you what is sounding at the moment."
+      }
+    ],
+    "catalogue_controls": 15,
+    "catalogue_controls_asking": 2,
+    "catalogue_controls_reaching_an_operation": 2,
+    "contract_failures": [],
+    "control_regressions": [
+      {
+        "case_id": "v6-ctl-09",
+        "reply": "No puedo acceder a la información del del portátil, pero te digo que no hay consignas que lleguen allí. ¿Te gustaría que"
+      }
+    ],
+    "controls": 12,
+    "counterfactuals_answered": [
+      "v6-ctl-01",
+      "v6-ctl-02",
+      "v6-ctl-03",
+      "v6-ctl-04",
+      "v6-ctl-05",
+      "v6-ctl-06",
+      "v6-ctl-07"
+    ],
+    "counterfactuals_regressed": [],
+    "distinct_openings": 13,
+    "distinct_replies": 13,
+    "fixed_constant_detected": false,
+    "invented_spanish_infinitives": [],
+    "malformed_spanish_modals": [],
+    "quoted_orders_executing_an_effect": [],
+    "requests": 18,
+    "spoken_replies": 13,
+    "unsolicited_effects": 0
+  }
+}

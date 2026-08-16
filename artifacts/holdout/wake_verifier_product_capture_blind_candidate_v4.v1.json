@@ -1,0 +1,130 @@
+{
+  "schema": "baxy.wake-verifier-product-capture-blind.v1",
+  "measured_at_utc": "2026-08-06T00:48:55.593019+00:00",
+  "sources": {
+    "corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+    "candidate_bundle_sha256": "d6a6cf9ae8aaed7f0dd59a05af262eea2c163fa717001e2e262be1f39723d9a2",
+    "preregistration_sha256": "62e6a4fee1a0f6668f0750459400606a63801043411432120dbb47d307a349b8",
+    "positive_development_report_sha256": "1a90944356541b811353ff0656eb88f519ffcccab91d42b4e1689db61d8db6f5",
+    "negative_holdout_report_sha256": "8c582921eba872a0af001770857d011519cab8ae5efa935da05bce60f4a1b43f",
+    "stage1_model_sha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "verifier_manifest_sha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "stt_files_sha256": {
+      "encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    },
+    "ffmpeg_sha256": "1fcb0cb525085cc5be3ad4be16799d60786b65cc36951622a018d00f78c0fb5d"
+  },
+  "contract": {
+    "first_causal_broad_hit": true,
+    "stt_decode_schedule": "single_stream_product_equivalent",
+    "stage1_hop_samples": 2560,
+    "audio_frame_samples": 512,
+    "pre_roll_seconds": 5.0,
+    "pre_roll_samples": 79872,
+    "trailing_silence_samples": 10752,
+    "verification_samples": 48000,
+    "primary_view_start_samples": 64000,
+    "activity_lookback_samples": 2560,
+    "activity_alignment_samples": 320,
+    "activity_vad_threshold": 0.1,
+    "maximum_turn_samples": 480000
+  },
+  "metrics": {
+    "positive_accepted": 1,
+    "positive_total": 4,
+    "hard_negative_false_accepts": 0,
+    "hard_negative_total": 1,
+    "gate_passed": false
+  },
+  "records": [
+    {
+      "relative_path": "blind/positive/ix-oaNUxFSA_torroja_host.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.01954624056816101
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 71040,
+      "transcript": "Alberto viene de Gaxi. Alberto.",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "blind/positive/ix-oaNUxFSA_alberto_jimenez.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.03322720527648926
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 71040,
+      "transcript": "y soporte técnico de BAX y calefacción.",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "blind/positive/mwSFvsMnBRE_fix_it_with_fusco.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 1.36,
+        "score": 0.027307331562042236
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 116864,
+      "verification_start_sample": 58880,
+      "transcript": "So this is a Baxi 600 and this is a one one in error.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 2.755241229224424,
+      "detected": true
+    },
+    {
+      "relative_path": "blind/positive/gcSAZ2eLlZ4_ballin_europe.wav",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.01789790391921997
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 70720,
+      "transcript": "Yeah.",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "blind/hard_negative/LaTRmCVcsDY_faxi.wav",
+      "label": "hard_negative",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.056555360555648804
+      },
+      "capture_source_start_sample": 0,
+      "capture_samples": 129664,
+      "verification_start_sample": 71040,
+      "transcript": "Country wise, just Maxi for Raw has some of the best players.",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    }
+  ],
+  "runtime_seconds": 12.088872300053481,
+  "candidate_frozen": true,
+  "product_operating_point": true,
+  "negative_holdout_gate_passed": true,
+  "blind_human_partition_accessed": true,
+  "effects_executed": 0
+}

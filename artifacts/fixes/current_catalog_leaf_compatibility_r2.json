@@ -1,0 +1,2779 @@
+{
+  "cases": 147,
+  "correct_proposal_recall": 0.20833333333333334,
+  "counts": {
+    "correct_accepted": 10,
+    "correct_rejected": 38,
+    "wrong_accepted": 2,
+    "wrong_rejected": 82
+  },
+  "effects_executed": 0,
+  "errors": 0,
+  "installation_touched": false,
+  "measured_at_utc": "2026-08-02T02:34:17.628932+00:00",
+  "method": "Every raw leaf recorded by R2 is independently checked against the trusted text and authenticated description/schema; the candidate veto accepts only unanimous true results.",
+  "proposals": 132,
+  "rows": [
+    {
+      "accepted": false,
+      "case_id": "app-00",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.401594,
+      "text": "Abre Epic Games Launcher",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-01",
+      "compatibility": {
+        "app.close": false,
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "app.open",
+        "app.close"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.580393,
+      "text": "Abre Notepad y luego cierralo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-02",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.342925,
+      "text": "Abre Steam con máximo 2 intentos",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-03",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.351761,
+      "text": "Abre steam 0",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-04",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.342389,
+      "text": "Abre steam 1",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "app-05",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.354012,
+      "text": "Abre steam 2",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-00",
+      "compatibility": {
+        "audio.volume": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "audio.volume"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.355924,
+      "text": "Abaixa o volume pra 30 por cento",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-01",
+      "compatibility": {
+        "audio.volume.adjust": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "audio.volume.adjust"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.349905,
+      "text": "Augmente le volume de 10 pour cent",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-02",
+      "compatibility": {
+        "audio.volume.adjust": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "audio.volume.adjust"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.331284,
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-03",
+      "compatibility": {
+        "audio.volume.adjust": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "audio.volume.adjust"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.3436,
+      "text": "Baja el volumen 10%",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-04",
+      "compatibility": {
+        "audio.volume": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "audio.volume"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.487179,
+      "text": "Bota o volume em 40 por cento",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "audio-05",
+      "compatibility": {
+        "audio.volume": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "audio.volume"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.453132,
+      "text": "Cambia el volumen a 10",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-00",
+      "compatibility": {
+        "backup.create": true,
+        "filesystem.write.text": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "backup.create",
+        "filesystem.write.text"
+      ],
+      "outcome": "clarify",
+      "raw_correct": true,
+      "seconds": 0.775124,
+      "text": "Edita archivo y crea respaldo antes",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-01",
+      "compatibility": {
+        "backup.verify": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "backup.verify"
+      ],
+      "outcome": "clarify",
+      "raw_correct": false,
+      "seconds": 0.467181,
+      "text": "cambia .env para usar ollama, pero solo con backup y confirmación",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-02",
+      "compatibility": {
+        "backup.verify": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "backup.verify"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.362353,
+      "text": "faz um backup do registro antes de mexer em algo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-03",
+      "compatibility": {
+        "backup.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "backup.create"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.379101,
+      "text": "hace un backup de mis documentos a un pendrive",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "backup-04",
+      "compatibility": {
+        "backup.list": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "backup.list"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.440845,
+      "text": "show me the log of the backup job",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-00",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.491009,
+      "text": "abre configuración y entra a Bluetooth",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": true,
+      "case_id": "bluetooth-01",
+      "compatibility": {
+        "bluetooth.radio.set": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.352049,
+      "text": "activa el bluetooth",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-02",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.456567,
+      "text": "apagá el bluetooth",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-03",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "clarify",
+      "raw_correct": false,
+      "seconds": 0.397412,
+      "text": "conecta el bluetooth",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-04",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.319344,
+      "text": "desactivá el bluetooth",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "bluetooth-05",
+      "compatibility": {
+        "bluetooth.radio.set": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "bluetooth.radio.set"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.380111,
+      "text": "prendé el bluetooth",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-00",
+      "compatibility": {
+        "browser.control": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.control"
+      ],
+      "outcome": "clarify",
+      "raw_correct": false,
+      "seconds": 0.363748,
+      "text": "Abre el navegador por defecto",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": true,
+      "case_id": "browser-01",
+      "compatibility": {
+        "browser.navigate": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.275084,
+      "text": "Abre github.com",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-02",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.356482,
+      "text": "Abre la página de Steam de Marvel Rivals",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-03",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.42309,
+      "text": "Abre la página de descargas de Python",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-04",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.361879,
+      "text": "Abre la página oficial de OpenAI",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "browser-05",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.353029,
+      "text": "Abre o Google no navegador",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-00",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 8e-06,
+      "text": "Write me an email that I cant make it to the meeting",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-01",
+      "compatibility": {
+        "input.text.type": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "input.text.type"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.279552,
+      "text": "abrí el bloc de notas y escribí reunion manana",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-02",
+      "compatibility": {
+        "calendar.event.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "calendar.event.create"
+      ],
+      "outcome": "clarify",
+      "raw_correct": true,
+      "seconds": 0.360335,
+      "text": "agenda una reunion el viernes a las cinco",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": true,
+      "case_id": "calendar-03",
+      "compatibility": {
+        "calendar.event.create": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "calendar.event.create"
+      ],
+      "outcome": "clarify",
+      "raw_correct": true,
+      "seconds": 0.385554,
+      "text": "agendá una reunión el viernes a las 3",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-04",
+      "compatibility": {
+        "calendar.event.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "calendar.event.create"
+      ],
+      "outcome": "clarify",
+      "raw_correct": true,
+      "seconds": 0.368166,
+      "text": "crea un evento el viernes a las 4",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "calendar-05",
+      "compatibility": {
+        "email.latest.reply": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "email.latest.reply"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.237795,
+      "text": "escribile un email a juan con el asunto reunion diciendo nos vemos",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-00",
+      "compatibility": {
+        "capture.screenshot": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.459399,
+      "text": "Sacale una foto de captura a mi pc, que se ve?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-01",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "conversation",
+      "raw_correct": true,
+      "seconds": 1e-05,
+      "text": "how do I take a screenshot in Windows?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-02",
+      "compatibility": {
+        "capture.screenshot": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.490085,
+      "text": "tira uma captura de tela",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-03",
+      "compatibility": {
+        "capture.screenshot": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.426521,
+      "text": "toma screenshot, guárdalo y dime el path",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-04",
+      "compatibility": {
+        "capture.screenshot": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "capture.screenshot"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.493972,
+      "text": "toma una captura y guardala en el escritorio",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "capture-05",
+      "compatibility": {
+        "capture.screenshot": false,
+        "filesystem.known.search": false,
+        "filesystem.move": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "capture.screenshot",
+        "filesystem.move",
+        "filesystem.known.search"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 1.24092,
+      "text": "toma una captura, guardala en el escritorio y abre el explorador ahi",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": true,
+      "case_id": "clipboard-00",
+      "compatibility": {
+        "clipboard.paste": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "clipboard.paste"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.375321,
+      "text": "Pega esto en el bloc de notas",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": true,
+      "case_id": "clipboard-01",
+      "compatibility": {
+        "clipboard.copy": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "clipboard.copy"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.368392,
+      "text": "copia texto de Notepad al portapapeles",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": true,
+      "case_id": "clipboard-02",
+      "compatibility": {
+        "clipboard.copy": true
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "clipboard.copy"
+      ],
+      "outcome": "clarify",
+      "raw_correct": false,
+      "seconds": 0.42409,
+      "text": "copiame este texto al portapapeles que lo necesito pegar",
+      "wrong_proposal_accepted": true,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "clipboard-03",
+      "compatibility": {
+        "clipboard.copy": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "clipboard.copy"
+      ],
+      "outcome": "clarify",
+      "raw_correct": false,
+      "seconds": 0.43694,
+      "text": "copy my email address to the clipboard so I can paste it",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "clipboard-04",
+      "compatibility": {
+        "clipboard.paste": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "clipboard.paste"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.354059,
+      "text": "pega texto en un archivo nuevo de Notepad",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "clipboard-05",
+      "compatibility": {
+        "clipboard.read.text": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "clipboard.read.text"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.42427,
+      "text": "que hay en el portapapeles",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-00",
+      "compatibility": {
+        "filesystem.folder.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "filesystem.folder.open"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.45456,
+      "text": "Abre el archivo hola.txt del escritorio",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-01",
+      "compatibility": {
+        "filesystem.file.open.latest": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "filesystem.file.open.latest"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.334801,
+      "text": "Abre el archivo más reciente de Descargas",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-02",
+      "compatibility": {
+        "filesystem.file.open.latest": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "filesystem.file.open.latest"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.341037,
+      "text": "Abre el último archivo que descargué",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-03",
+      "compatibility": {
+        "filesystem.path.ensure.absent": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.382513,
+      "text": "Borra la carpeta CarterTest del escritorio",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-04",
+      "compatibility": {
+        "filesystem.write.text": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "filesystem.write.text"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.394454,
+      "text": "Crea un archivo de texto en el escritorio que diga prueba Carter",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "filesystem-05",
+      "compatibility": {
+        "filesystem.create.directory": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "filesystem.create.directory"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.431522,
+      "text": "Crea una carpeta en el escritorio llamada CarterTest",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "game-00",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.412588,
+      "text": "Abre Big Picture",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "game-01",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.364747,
+      "text": "Abre Counter Strike",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "game-02",
+      "compatibility": {
+        "game.launch": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "game.launch"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.497139,
+      "text": "Abre Portal desde Steam",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "game-03",
+      "compatibility": {
+        "game.launch": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "game.launch"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.507156,
+      "text": "Abre a Loja do Steam",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "game-04",
+      "compatibility": {
+        "game.catalog.list": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "game.catalog.list"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.346922,
+      "text": "Abre capturas de Steam",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "game-05",
+      "compatibility": {
+        "game.catalog.list": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "game.catalog.list"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.34963,
+      "text": "Abre mi biblioteca de Steam",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-00",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.353973,
+      "text": "Active la fenêtre de Spotify",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "media-01",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 1.1e-05,
+      "text": "Affiche la fenêtre de Spotify par-dessus les autres",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-02",
+      "compatibility": {
+        "media.status": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "media.status"
+      ],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 0.418524,
+      "text": "Ahora estoy poniendo musica en  mi pc, lo quieres probar?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "media-03",
+      "compatibility": {
+        "media.play.query": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "media.play.query"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.344022,
+      "text": "Apri Spotify e fai partire la musica",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "media-04",
+      "compatibility": {
+        "media.play.query": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "media.play.query"
+      ],
+      "outcome": "clarify",
+      "raw_correct": true,
+      "seconds": 0.355006,
+      "text": "Baxy, pon música”.",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "media-05",
+      "compatibility": {
+        "media.status": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "media.status"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.397704,
+      "text": "Can you play tic tac toe with me?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "message-00",
+      "compatibility": {
+        "message.send": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "message.send"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.318478,
+      "text": "Dile a amor en WhatsApp que la amo mucho.",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "message-01",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 7e-06,
+      "text": "Dile a amor en wsp que la amo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "message-02",
+      "compatibility": {
+        "message.recipient.resolve": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "message.recipient.resolve"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.335482,
+      "text": "Dile a amor que la amo demasiado en wsp",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "message-03",
+      "compatibility": {
+        "message.recipient.resolve": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "message.recipient.resolve"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.32723,
+      "text": "Dile a amor que la amo en wsp",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "message-04",
+      "compatibility": {
+        "message.recipient.resolve": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "message.recipient.resolve"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.324009,
+      "text": "Dile a amor que la amo muchisimo en wsp",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "message-05",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 6e-06,
+      "text": "Dile a enmanuel que es una increible persona en wsp",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "note-00",
+      "compatibility": {
+        "note.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "note.create"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.360903,
+      "text": "anota que tengo que comprar pan",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "note-01",
+      "compatibility": {
+        "task.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "task.create"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.354102,
+      "text": "anota que tengo que llamar al medico manana",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "note-02",
+      "compatibility": {
+        "note.list": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "note.list"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.373982,
+      "text": "apri il blocco note e scrivi la lista della spesa",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "note-03",
+      "compatibility": {
+        "note.list": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "note.list"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.348307,
+      "text": "apri il blocco note, scrivi la lista e salvala",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "note-04",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.381391,
+      "text": "apri la finestra Salva con nome nel Blocco note",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "note-05",
+      "compatibility": {
+        "filesystem.read.text": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "filesystem.read.text"
+      ],
+      "outcome": "clarify",
+      "raw_correct": false,
+      "seconds": 0.360153,
+      "text": "convierte nota.txt a mayúsculas en un archivo nuevo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-00",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.396684,
+      "text": "Pone una alarma para las 7 de la maniana",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-01",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.369844,
+      "text": "alarma para mañana 8am",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-02",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.366709,
+      "text": "arranca un temporizador de 10 minutos",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-03",
+      "compatibility": {
+        "notification.cancel.latest": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "notification.cancel.latest"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.334172,
+      "text": "cancelá la alarma",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-04",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.156986,
+      "text": "pone un timer de 5 minutos",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "notification-05",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.272814,
+      "text": "ponme un temporizador de diez minutos",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "ocr-00",
+      "compatibility": {
+        "ocr.read": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "ocr.read"
+      ],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 0.32893,
+      "text": "OCR limitado, mejor para detection",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "office-00",
+      "compatibility": {
+        "office.document.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "office.document.create"
+      ],
+      "outcome": "clarify",
+      "raw_correct": true,
+      "seconds": 0.328918,
+      "text": "Can you make me a PowerPoint?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "office-01",
+      "compatibility": {
+        "system.process.terminate.named": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "system.process.terminate.named"
+      ],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 0.365758,
+      "text": "Cierre de Word podía perder trabajo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "office-02",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "conversation",
+      "raw_correct": true,
+      "seconds": 8e-06,
+      "text": "Donde dejaste el Powerpoint? Que me hiciste",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "office-03",
+      "compatibility": {
+        "office.document.read": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "office.document.read"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.418328,
+      "text": "Fecha tudo que tá aberto do Word",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "office-04",
+      "compatibility": {
+        "office.document.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "office.document.create"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.328941,
+      "text": "Haz un powerpoint hablando de amor de 6 diapositivas",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "office-05",
+      "compatibility": {
+        "office.document.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "office.document.create"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.338264,
+      "text": "Hazme un PowerPoint de siete diapositivas que hable de los dinosaurios",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "peripheral-00",
+      "compatibility": {
+        "note.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "note.create"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.333875,
+      "text": "anotá que terminé de configurar el micrófono",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "peripheral-01",
+      "compatibility": {
+        "audio.microphone.mute": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "audio.microphone.mute"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.33534,
+      "text": "cambia el microfono por defecto",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "peripheral-02",
+      "compatibility": {
+        "audio.microphone.mute": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "audio.microphone.mute"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.500148,
+      "text": "mutea el micrófono en discord",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "peripheral-03",
+      "compatibility": {
+        "peripheral.list": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "peripheral.list"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.383644,
+      "text": "set the HP LaserJet as my default printer",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": true,
+      "case_id": "peripheral-04",
+      "compatibility": {
+        "audio.microphone.mute": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "audio.microphone.mute"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.29381,
+      "text": "silenciame el micrófono",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "reminder-00",
+      "compatibility": {
+        "reminder.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "reminder.create"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.277881,
+      "text": "avisame en 20 minutos que saque la comida",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "reminder-01",
+      "compatibility": {
+        "system.status": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.309896,
+      "text": "avisame en una hora que salgo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": true,
+      "case_id": "reminder-02",
+      "compatibility": {
+        "reminder.create": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "reminder.create"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.396178,
+      "text": "ponme un recordatorio en 2 minutos para tomar agua",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": true,
+      "case_id": "reminder-03",
+      "compatibility": {
+        "reminder.create": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "reminder.create"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.335088,
+      "text": "ponme un recordatorio para las 3 de la tarde",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": true,
+      "case_id": "reminder-04",
+      "compatibility": {
+        "reminder.create": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "reminder.create"
+      ],
+      "outcome": "clarify",
+      "raw_correct": true,
+      "seconds": 0.296606,
+      "text": "ponme un recordatorio para llamar al dentista",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "reminder-05",
+      "compatibility": {
+        "notification.schedule": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "notification.schedule"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.24264,
+      "text": "recordatorio de tomar agua en 1 hora",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "routine-00",
+      "compatibility": {
+        "media.status": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "media.status"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.336174,
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "routine-01",
+      "compatibility": {
+        "routine.phrase.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "routine.phrase.create"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.306601,
+      "text": "crea una rutina que cada manana me de la hora",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "routine-02",
+      "compatibility": {
+        "filesystem.sandbox.append.named": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "filesystem.sandbox.append.named"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.292594,
+      "text": "creá el hábito de leer y registrá que lo hice hoy",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "routine-03",
+      "compatibility": {
+        "note.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "note.create"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.288064,
+      "text": "cria o hábito de ler e regista que já o fiz hoje",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": true,
+      "case_id": "streaming-00",
+      "compatibility": {
+        "browser.navigate": true
+      },
+      "correct_proposal_accepted": true,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.210916,
+      "text": "Abri YouTube en el navegador",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-01",
+      "compatibility": {
+        "media.play.youtube": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "media.play.youtube"
+      ],
+      "outcome": "clarify",
+      "raw_correct": false,
+      "seconds": 0.354268,
+      "text": "Acabas de reanudar el video youtube , pero yo queria de opera gx",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-02",
+      "compatibility": {
+        "streaming.navigate": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "streaming.navigate"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.380804,
+      "text": "Antes de seguir quiero ver como pones una serie en disney y en netflix",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-03",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 5e-06,
+      "text": "Donde puedo ver la pelicula de superman que salio el ano pasado??",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-04",
+      "compatibility": {
+        "media.play.youtube": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "media.play.youtube"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.25627,
+      "text": "Elige el primer resultado de YouTube",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "streaming-05",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 6e-06,
+      "text": "Hablame de emilia perez la pelicula es buena?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-00",
+      "compatibility": {
+        "system.status": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 0.387447,
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "system-01",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "conversation",
+      "raw_correct": true,
+      "seconds": 7e-06,
+      "text": "1. No ya usamos mucha ram para baxy\n2. si intentalo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-02",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "conversation",
+      "raw_correct": true,
+      "seconds": 2e-06,
+      "text": "En latencia quien gana}? en consumo de recursos quien? ram?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-03",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 2e-06,
+      "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-04",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "unsupported",
+      "raw_correct": true,
+      "seconds": 2e-06,
+      "text": "Hay algo mas que use gpu??",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "system-05",
+      "compatibility": {
+        "system.status": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 0.279137,
+      "text": "Listoo la gpu dejo de usarseee",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "task-00",
+      "compatibility": {
+        "task.complete": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "task.complete"
+      ],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 0.329888,
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede.",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "task-01",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "conversation",
+      "raw_correct": true,
+      "seconds": 9e-06,
+      "text": "And which of those would you personally use for the required task?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "task-02",
+      "compatibility": {
+        "browser.navigate": false,
+        "streaming.navigate": false,
+        "system.status": false,
+        "task.list": false,
+        "window.resize": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "system.status",
+        "task.list",
+        "streaming.navigate",
+        "browser.navigate",
+        "window.resize"
+      ],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 1.797444,
+      "text": "Bien hay una nueva sesion, verifica todo , lo que salio mal y bien",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "task-03",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "conversation",
+      "raw_correct": true,
+      "seconds": 7e-06,
+      "text": "Cuanto tiempo hasta que tengas todo listo? , como ha ido el progreso?",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "task-04",
+      "compatibility": {
+        "system.status": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "system.status"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.261257,
+      "text": "Deja todo lo que suma activado",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "task-05",
+      "compatibility": {
+        "task.create": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "task.create"
+      ],
+      "outcome": "conversation",
+      "raw_correct": false,
+      "seconds": 0.292898,
+      "text": "Empieza de cero esta tarea",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-00",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.283258,
+      "text": "Abre configuración de pantalla",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-01",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.279501,
+      "text": "Activa cámara y mira qué hay",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-02",
+      "compatibility": {
+        "input.text.type": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "input.text.type"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.351456,
+      "text": "Escribe Batman en la búsqueda que ves",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-03",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.27726,
+      "text": "Graba la pantalla",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "vision-04",
+      "compatibility": {
+        "vision.describe": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "vision.describe"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.279061,
+      "text": "Lee el mensaje de error de la pantalla",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": true,
+      "case_id": "vision-05",
+      "compatibility": {
+        "browser.page.read": true
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.page.read"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.262446,
+      "text": "Lee lo que hay en pantalla",
+      "wrong_proposal_accepted": true,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "web-00",
+      "compatibility": {
+        "app.open": false,
+        "web.search": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "app.open",
+        "web.search"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.595882,
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "web-01",
+      "compatibility": {
+        "browser.navigate": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "browser.navigate"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.254464,
+      "text": "Abre Wikipedia y busca Alan Turing",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "web-02",
+      "compatibility": {
+        "app.open": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "app.open"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.283614,
+      "text": "Abre opera gx y busca flash",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "web-03",
+      "compatibility": {
+        "filesystem.known.search": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "filesystem.known.search"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.280428,
+      "text": "Busca archivos que contengan la palabra “Batman",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "web-04",
+      "compatibility": {
+        "game.install.named": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "game.install.named"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.273596,
+      "text": "Busca el App ID de Doom Eternal en Steam usando la API publica",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "web-05",
+      "compatibility": {
+        "web.search": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "web.search"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.265422,
+      "text": "Busca el botón Guardar y presiónalo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-00",
+      "compatibility": {
+        "wifi.connect": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "wifi.connect"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.269601,
+      "text": "Conecta no Wi-Fi de novo",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-01",
+      "compatibility": {
+        "wifi.ensure.connected": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "wifi.ensure.connected"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.331415,
+      "text": "a qué wifi estoy conectado",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-02",
+      "compatibility": {
+        "wifi.disconnect": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "wifi.disconnect"
+      ],
+      "outcome": "action",
+      "raw_correct": true,
+      "seconds": 0.243909,
+      "text": "apagá el wifi",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-03",
+      "compatibility": {
+        "wifi.disconnect": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "wifi.disconnect"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.242249,
+      "text": "cambia el wifi a EV 2",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-04",
+      "compatibility": {
+        "email.latest.read": false,
+        "wifi.connect": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "wifi.connect",
+        "email.latest.read"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.51535,
+      "text": "conecta el wifi, abre el correo y leeme el ultimo mensaje",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "wifi-05",
+      "compatibility": {
+        "wifi.connect": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "wifi.connect"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.304664,
+      "text": "conectame a la red wifi de la familia",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "window-00",
+      "compatibility": {
+        "window.resolve": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "window.resolve"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.435351,
+      "text": "Abre una ventana incógnito",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "window-01",
+      "compatibility": {
+        "window.minimize": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "window.minimize"
+      ],
+      "outcome": "action",
+      "raw_correct": false,
+      "seconds": 0.345558,
+      "text": "Cerra la ventana activa",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "window-02",
+      "compatibility": {
+        "window.minimize": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "window.minimize"
+      ],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 0.38788,
+      "text": "Minimiza tudo e mostra a área de trabalho",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "window-03",
+      "compatibility": {
+        "window.resolve": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [
+        "window.resolve"
+      ],
+      "outcome": "clarify",
+      "raw_correct": false,
+      "seconds": 0.331883,
+      "text": "abre la ventana",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": true
+    },
+    {
+      "accepted": false,
+      "case_id": "window-04",
+      "compatibility": {},
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": false,
+      "error": "",
+      "operations": [],
+      "outcome": "unsupported",
+      "raw_correct": false,
+      "seconds": 7e-06,
+      "text": "arrastra este archivo a esa ventana",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    },
+    {
+      "accepted": false,
+      "case_id": "window-05",
+      "compatibility": {
+        "window.move": false
+      },
+      "correct_proposal_accepted": false,
+      "correct_proposal_rejected": true,
+      "error": "",
+      "operations": [
+        "window.move"
+      ],
+      "outcome": "clarify",
+      "raw_correct": true,
+      "seconds": 0.338423,
+      "text": "arrastra una ventana liviana a la derecha",
+      "wrong_proposal_accepted": false,
+      "wrong_proposal_rejected": false
+    }
+  ],
+  "schema": "baxy.current-catalog-leaf-compatibility.v1",
+  "scope": "development_review_not_blind",
+  "seconds_p50": 0.35350099999999995,
+  "seconds_p95": 0.507156,
+  "source": "D:\\BAXY\\source\\artifacts\\fixes\\current_catalog_review_product_probe_r2.json",
+  "source_sha256": "1a67fb7dd1bcf29e95e5a3221f96aebeeb5a3df923b46b71726c403093069123",
+  "wrong_proposal_rejection": 0.9761904761904762,
+  "wrong_proposals_accepted": 2
+}

@@ -1,0 +1,165 @@
+{
+  "candidates": {
+    "dateparser": {
+      "accuracy": 0.5,
+      "cases": 10,
+      "latency_seconds": {
+        "p50": 0.001332,
+        "p95": 0.09312
+      },
+      "package_root": "D:\\BAXYRuntime\\experiments\\dateparser-1.4.1",
+      "passed": 5,
+      "reason": "incorrect dependent/weekday normalization, false positive on invalid or ambiguous time text, and missed time span",
+      "samples": [
+        {
+          "expected": "2026-08-01T17:45:00+00:00",
+          "id": "dependent-relative-en",
+          "locale": "en",
+          "matches": [
+            {
+              "text": "15 minutes before",
+              "value": "2026-08-01T15:45:00+00:00"
+            },
+            {
+              "text": "at 2 pm",
+              "value": "2026-08-01T18:00:00+00:00"
+            }
+          ],
+          "passed": false,
+          "seconds": 0.09312,
+          "text": "set an alarm 15 minutes before my meeting at 2 pm"
+        },
+        {
+          "expected": "2026-08-01T23:00:00+00:00",
+          "id": "relative-duration-en",
+          "locale": "en",
+          "matches": [
+            {
+              "text": "7 hours",
+              "value": "2026-08-01T23:00:00+00:00"
+            }
+          ],
+          "passed": true,
+          "seconds": 0.001714,
+          "text": "set alarm for 7 hours"
+        },
+        {
+          "expected": "2026-08-01T23:00:00+00:00",
+          "id": "relative-duration-es",
+          "locale": "es",
+          "matches": [
+            {
+              "text": "a 7 horas",
+              "value": "2026-08-01T23:00:00+00:00"
+            }
+          ],
+          "passed": true,
+          "seconds": 0.003826,
+          "text": "pon la alarma de aquí a 7 horas"
+        },
+        {
+          "expected": "2026-08-03T10:00:00+00:00",
+          "id": "weekday-clock-en",
+          "locale": "en",
+          "matches": [
+            {
+              "text": "Monday at 6 am",
+              "value": "2027-06-01T04:00:00+00:00"
+            }
+          ],
+          "passed": false,
+          "seconds": 0.001701,
+          "text": "set an alarm for Monday at 6 am"
+        },
+        {
+          "expected": "supported_time_span",
+          "id": "weekend-es",
+          "locale": "es",
+          "matches": [],
+          "passed": false,
+          "seconds": 0.00129,
+          "text": "este fin de semana"
+        },
+        {
+          "expected": "abstain",
+          "id": "invalid-military-clock",
+          "locale": "en",
+          "matches": [
+            {
+              "text": "0760h",
+              "value": "2026-09-02T08:00:00+00:00"
+            }
+          ],
+          "passed": false,
+          "seconds": 0.001375,
+          "text": "make an alarm for 0760h"
+        },
+        {
+          "expected": "abstain",
+          "id": "ambiguous-mealtime-en",
+          "locale": "en",
+          "matches": [],
+          "passed": true,
+          "seconds": 0.000163,
+          "text": "snack time"
+        },
+        {
+          "expected": "abstain",
+          "id": "ambiguous-mealtime-es",
+          "locale": "es",
+          "matches": [
+            {
+              "text": "hora de",
+              "value": "2026-08-01T04:00:00+00:00"
+            }
+          ],
+          "passed": false,
+          "seconds": 0.001117,
+          "text": "hora de la merienda"
+        },
+        {
+          "expected": "abstain",
+          "id": "non-temporal-event-en",
+          "locale": "en",
+          "matches": [],
+          "passed": true,
+          "seconds": 0.000192,
+          "text": "beginning of school"
+        },
+        {
+          "expected": "abstain",
+          "id": "misspelled-weekday-en",
+          "locale": "en",
+          "matches": [],
+          "passed": true,
+          "seconds": 0.000193,
+          "text": "on Mondy"
+        }
+      ],
+      "status": "rejected",
+      "version": "1.4.1"
+    },
+    "duckling": {
+      "reason": "requires a Haskell toolchain and additional local server; not competitive with the notebook portability budget",
+      "status": "rejected_before_execution"
+    },
+    "microsoft_recognizers_text_datetime": {
+      "gate_lowered_or_suppressed": false,
+      "official_package_state": "deprecated_unmaintained",
+      "restore_errors": [
+        "NU1904: NuGet.CommandLine 5.11.5 critical vulnerability",
+        "GHSA-68w7-72jg-6qpp",
+        "NU1901: NuGet.CommandLine 5.11.5 low vulnerability",
+        "GHSA-g4vj-cjjj-v7hg"
+      ],
+      "restore_gate": "failed",
+      "status": "rejected_before_execution",
+      "version": "1.8.13"
+    }
+  },
+  "conclusion": "no measured off-the-shelf candidate is safe enough to grant temporal argument authority",
+  "measured_at": "2026-08-02T09:59:27.604402-04:00",
+  "reference_local": "2026-08-01T12:00:00",
+  "schema": "baxy.temporal-grounding-candidates.research.v1",
+  "side_effect_free": true
+}

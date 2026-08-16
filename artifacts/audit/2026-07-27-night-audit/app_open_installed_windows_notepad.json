@@ -1,0 +1,40 @@
+{
+  "schema": "baxy.audit.app-open-repro.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_utf8_bytes": 74282,
+  "app_id": "windows.notepad",
+  "elapsed_seconds": 5.557876699999724,
+  "process_exit_code": 0,
+  "response": {
+    "type": "operation.response",
+    "requestId": "af596dda-d028-443f-bb7d-e7d653f84536",
+    "missionId": "f72a21ac-cde1-44b8-a2b3-c9c845834201",
+    "invocationId": "5475de77-2da0-4572-91d1-bfa027046a26",
+    "status": "failed",
+    "message": "La apertura pudo haber comenzado, pero no pude corroborar la identidad, ventana visible y foco; Bloc de notas puede haber quedado abierto.",
+    "verified": false,
+    "replayed": false,
+    "result": null,
+    "errorCode": "verification_failed",
+    "effectMayHaveOccurred": true
+  },
+  "preexisting_notepad": {},
+  "created_notepad": {
+    "23544": [
+      {
+        "hwnd": 199372,
+        "title": "dArkOS4Clone-04302026.img.xz.7z.sha256.txt: Bloc de notas"
+      }
+    ]
+  },
+  "close_requests": [
+    {
+      "pid": 23544,
+      "hwnd": 199372,
+      "posted": true
+    }
+  ],
+  "remaining_created_notepad": {},
+  "stderr": ""
+}

@@ -1,0 +1,490 @@
+{
+  "records": [
+    {
+      "case_id": "v7-req-01",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Cuelga la ropa mojada en el balcon de atras?",
+      "reply_text": "",
+      "request_text": "Cuelga la ropa mojada en el balcon de atras.",
+      "role": "request",
+      "seconds": 6.287
+    },
+    {
+      "case_id": "v7-req-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo enfriar la sopa",
+      "request_text": "Sirve la sopa antes de que se enfrie del todo.",
+      "role": "request",
+      "seconds": 3.209
+    },
+    {
+      "case_id": "v7-req-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo envolver el regalo con el papel del cajón.",
+      "request_text": "Envuelve el regalo con el papel del cajon.",
+      "role": "request",
+      "seconds": 2.451
+    },
+    {
+      "case_id": "v7-req-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo barnizar la mesa del comedor este sábado.",
+      "request_text": "Barniza la mesa del comedor este sabado.",
+      "role": "request",
+      "seconds": 2.338
+    },
+    {
+      "case_id": "v7-req-05",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Te refieres a podar el rosal antes de que llueva o a algo relacionado con el clima?",
+      "reply_text": "",
+      "request_text": "Poda el rosal antes de que llueva.",
+      "role": "request",
+      "seconds": 5.305
+    },
+    {
+      "case_id": "v7-req-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo amasar el pan para el desayuno de mañana.",
+      "request_text": "Amasa el pan para el desayuno de manana.",
+      "role": "request",
+      "seconds": 1.964
+    },
+    {
+      "case_id": "v7-req-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo planchar la camisa azul del armario.",
+      "request_text": "Plancha la camisa azul del armario.",
+      "role": "request",
+      "seconds": 2.283
+    },
+    {
+      "case_id": "v7-req-08",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Estás indicando que quiero recoger las hojas del porche con el rastrillo?",
+      "reply_text": "",
+      "request_text": "Recoge las hojas del porche con el rastrillo.",
+      "role": "request",
+      "seconds": 5.593
+    },
+    {
+      "case_id": "v7-req-09",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo planchar la blue shirt del armario.",
+      "request_text": "Plancha la blue shirt del armario.",
+      "role": "request",
+      "seconds": 1.53
+    },
+    {
+      "case_id": "v7-req-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo envolver el gift con el papel del cajon.",
+      "request_text": "Envuelve el gift con el papel del cajon.",
+      "role": "request",
+      "seconds": 3.402
+    },
+    {
+      "case_id": "v7-req-11",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot iron the blue shirt from the wardrobe as requested.",
+      "request_text": "Iron the blue shirt from the wardrobe.",
+      "role": "request",
+      "seconds": 2.367
+    },
+    {
+      "case_id": "v7-req-12",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot prune the rose bush before it rains.",
+      "request_text": "Prune the rose bush before it rains.",
+      "role": "request",
+      "seconds": 3.662
+    },
+    {
+      "case_id": "v7-ctl-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Un gigabyte equivale a 1024 megabytes.",
+      "request_text": "Cuantos megabytes tiene un gigabyte?",
+      "role": "control",
+      "seconds": 2.662
+    },
+    {
+      "case_id": "v7-ctl-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Water boils at 212°F (100°C) at sea level.",
+      "request_text": "At what temperature does water boil at sea level?",
+      "role": "control",
+      "seconds": 2.98
+    },
+    {
+      "case_id": "v7-ctl-03",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Cuál es la hora habitual de inicio de la jornada laboral en España?",
+      "reply_text": "",
+      "request_text": "A que hora suele empezar la jornada laboral en Espana?",
+      "role": "control",
+      "seconds": 12.452
+    },
+    {
+      "case_id": "v7-ctl-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "A full charge on a phone typically lasts between 8 to 24 hours, depending on the battery capacity and usage. The exact duration varies by device and how much the phone is used.",
+      "request_text": "How many hours does a full charge usually last on a phone?",
+      "role": "control",
+      "seconds": 0.741
+    },
+    {
+      "case_id": "v7-ctl-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No entiendo bien la pregunta. ¿Estás hablando de planchar algo literalmente o en un contexto figurado? Si es el primero, no tengo la capacidad de planchar, pero si es un comentario o una metáfora, ¿qué significa para ti?",
+      "request_text": "Que te parece plancharlo todo de una vez?",
+      "role": "control",
+      "seconds": 4.684
+    },
+    {
+      "case_id": "v7-ctl-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Rose bushes typically have thorns, but some varieties lack them entirely.",
+      "request_text": "Tell me something odd about rose bushes.",
+      "role": "control",
+      "seconds": 3.665
+    },
+    {
+      "case_id": "v7-cat-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo ver la marca del reloj de este trasto.",
+      "request_text": "que marca el reloj de este trasto",
+      "role": "catalogue_control",
+      "seconds": 2.572
+    },
+    {
+      "case_id": "v7-cat-02",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "en",
+      "operation": null,
+      "question": "what time does the clock show?",
+      "reply_text": "",
+      "request_text": "what does the clock on this thing say",
+      "role": "catalogue_control",
+      "seconds": 3.489
+    },
+    {
+      "case_id": "v7-cat-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo determinar la marca del clock del trasto sin más información específica sobre el modelo o la marca del dispositivo.",
+      "request_text": "que marca el clock de este trasto",
+      "role": "catalogue_control",
+      "seconds": 3.2
+    },
+    {
+      "case_id": "v7-cat-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo determinar cuanta cuerda le queda antes de apagarse.",
+      "request_text": "cuanta cuerda le queda antes de apagarse",
+      "role": "catalogue_control",
+      "seconds": 1.314
+    },
+    {
+      "case_id": "v7-cat-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The winding is left before it shuts off depends on the specific device and its settings. You may need to check the user manual or settings for the exact number.",
+      "request_text": "how much winding is left before it shuts off",
+      "role": "catalogue_control",
+      "seconds": 1.983
+    },
+    {
+      "case_id": "v7-cat-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo decir cuánto sitio libre queda en el armario grande.",
+      "request_text": "cuanto sitio libre queda en el armario grande",
+      "role": "catalogue_control",
+      "seconds": 4.62
+    },
+    {
+      "case_id": "v7-cat-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "i don't have information on the current contents of the big cupboard. would you like me to check with you?",
+      "request_text": "how much free room is left in the big cupboard",
+      "role": "catalogue_control",
+      "seconds": 2.595
+    },
+    {
+      "case_id": "v7-cat-08",
+      "effect_operations": [
+        "audio.status"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "audio.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "a que altura esta puesto el sonido",
+      "role": "catalogue_control",
+      "seconds": 0.006
+    },
+    {
+      "case_id": "v7-cat-09",
+      "effect_operations": [
+        "audio.status"
+      ],
+      "kind": "action",
+      "language": "en",
+      "operation": "audio.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "how high is the sound set right now",
+      "role": "catalogue_control",
+      "seconds": 0.003
+    },
+    {
+      "case_id": "v7-cat-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Estás hablando de un objeto específico? Por favor, describe más detallamente qué tipo de objeto estás refiriéndote.",
+      "request_text": "como se llama este trasto por dentro",
+      "role": "catalogue_control",
+      "seconds": 0.526
+    },
+    {
+      "case_id": "v7-cat-11",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "This is called a 'Windows PC' or a 'desktop computer'.",
+      "request_text": "what is this thing called on the inside",
+      "role": "catalogue_control",
+      "seconds": 0.714
+    },
+    {
+      "case_id": "v7-cat-12",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Estoy mirando la pantalla de tu computadora, pero no puedo ver lo que estás viendo en este instante.",
+      "request_text": "que estoy mirando en este instante",
+      "role": "catalogue_control",
+      "seconds": 3.786
+    },
+    {
+      "case_id": "v7-cat-13",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "You are looking at the screen of your Windows PC, which is displaying this message in English.",
+      "request_text": "what am i looking at this very second",
+      "role": "catalogue_control",
+      "seconds": 2.455
+    },
+    {
+      "case_id": "v7-cat-14",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "Estoy mirando la pantalla de la PC de la usuario, que muestra la interfaz de Windows con el nombre de usuario 'BAXY' y la fecha y hora actual.",
+      "request_text": "que estoy mirando right now en la pantalla",
+      "role": "catalogue_control",
+      "seconds": 2.855
+    },
+    {
+      "case_id": "v7-cat-15",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Estás hablando de alguien específico? No estoy seguro de a qué te refieres. ¿Podrías aclarar un poco más?",
+      "request_text": "quien esta despierto ahi dentro trabajando",
+      "role": "catalogue_control",
+      "seconds": 2.206
+    }
+  ],
+  "schema": "baxy.veto-reach-result.v7",
+  "scope": "sealed_blind_population_that_reaches_the_conversation_honesty_path",
+  "status": "failed",
+  "summary": {
+    "all_replies_distinct": true,
+    "asserted_machine_states": [],
+    "catalogue_control_regressions": [
+      {
+        "case_id": "v7-cat-01",
+        "kind": "conversation",
+        "reply": "No puedo ver la marca del reloj de este trasto."
+      },
+      {
+        "case_id": "v7-cat-03",
+        "kind": "conversation",
+        "reply": "No puedo determinar la marca del clock del trasto sin más información específica sobre el modelo o la marca del disposit"
+      },
+      {
+        "case_id": "v7-cat-04",
+        "kind": "conversation",
+        "reply": "No puedo determinar cuanta cuerda le queda antes de apagarse."
+      },
+      {
+        "case_id": "v7-cat-05",
+        "kind": "conversation",
+        "reply": "The winding is left before it shuts off depends on the specific device and its settings. You may need to check the user "
+      },
+      {
+        "case_id": "v7-cat-06",
+        "kind": "conversation",
+        "reply": "No puedo decir cuánto sitio libre queda en el armario grande."
+      },
+      {
+        "case_id": "v7-cat-07",
+        "kind": "conversation",
+        "reply": "i don't have information on the current contents of the big cupboard. would you like me to check with you?"
+      },
+      {
+        "case_id": "v7-cat-10",
+        "kind": "conversation",
+        "reply": "¿Estás hablando de un objeto específico? Por favor, describe más detallamente qué tipo de objeto estás refiriéndote."
+      },
+      {
+        "case_id": "v7-cat-11",
+        "kind": "conversation",
+        "reply": "This is called a 'Windows PC' or a 'desktop computer'."
+      },
+      {
+        "case_id": "v7-cat-12",
+        "kind": "conversation",
+        "reply": "Estoy mirando la pantalla de tu computadora, pero no puedo ver lo que estás viendo en este instante."
+      },
+      {
+        "case_id": "v7-cat-13",
+        "kind": "conversation",
+        "reply": "You are looking at the screen of your Windows PC, which is displaying this message in English."
+      },
+      {
+        "case_id": "v7-cat-14",
+        "kind": "conversation",
+        "reply": "Estoy mirando la pantalla de la PC de la usuario, que muestra la interfaz de Windows con el nombre de usuario 'BAXY' y l"
+      },
+      {
+        "case_id": "v7-cat-15",
+        "kind": "conversation",
+        "reply": "¿Estás hablando de alguien específico? No estoy seguro de a qué te refieres. ¿Podrías aclarar un poco más?"
+      }
+    ],
+    "catalogue_controls": 15,
+    "catalogue_controls_asking": 1,
+    "catalogue_controls_reaching_an_operation": 2,
+    "contract_failures": [],
+    "control_regressions": [],
+    "controls": 6,
+    "distinct_openings": 9,
+    "distinct_replies": 9,
+    "fixed_constant_detected": false,
+    "general_knowledge_with_a_number_refused": [
+      "v7-ctl-03"
+    ],
+    "invented_spanish_infinitives": [],
+    "malformed_spanish_modals": [],
+    "requests": 12,
+    "spoken_replies": 9,
+    "unsolicited_effects": 0
+  }
+}

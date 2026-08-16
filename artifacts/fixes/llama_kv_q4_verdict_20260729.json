@@ -1,0 +1,50 @@
+{
+  "schema": "baxy.llama-kv-q4-verdict.v1",
+  "date": "2026-07-29",
+  "baseline": {
+    "kv_key": "q8_0",
+    "kv_value": "q8_0"
+  },
+  "candidate": {
+    "kv_key": "q4_0",
+    "kv_value": "q4_0"
+  },
+  "design": {
+    "fresh_servers": 4,
+    "orders": [
+      "q8-then-q4",
+      "q4-then-q8"
+    ],
+    "flash_attention": true,
+    "same_payloads": true,
+    "raw_tokens_checked": true
+  },
+  "quality": {
+    "contents_equal": false,
+    "raw_contents_equal": false,
+    "tokens_equal": false,
+    "final_decisions_equal": false
+  },
+  "latency": {
+    "q8_then_q4": {
+      "candidate_minus_baseline_structured_total_seconds": -2.897198100021342,
+      "candidate_minus_baseline_case_p50_seconds": -0.2459252499975264,
+      "candidate_minus_baseline_case_total_seconds": -1.0106276999867987
+    },
+    "q4_then_q8": {
+      "candidate_minus_baseline_structured_total_seconds": 5.04906169998867,
+      "candidate_minus_baseline_case_p50_seconds": 0.5263259999956063,
+      "candidate_minus_baseline_case_total_seconds": 3.442830599997251
+    }
+  },
+  "verdict": {
+    "exact_equivalence": false,
+    "opposite_order_improvement": false,
+    "smoke_gate_passed": false,
+    "promotion_gate_passed": false,
+    "decision": "reject",
+    "reason": "Q4 changed raw tokens, visible content, and final decisions, while its apparent speedup reversed into a regression when the execution order was inverted."
+  },
+  "production_changed": false,
+  "source_artifact": "artifacts/fixes/llama_kv_q4_ab_20260729.json"
+}

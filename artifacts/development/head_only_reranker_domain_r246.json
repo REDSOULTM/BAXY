@@ -1,0 +1,64 @@
+{
+  "schema": "baxy.head-only-reranker-domain.r246-result.v1",
+  "authority": "isolated_cuda_development_probe_not_runtime_or_r228_measurement",
+  "verdict": "rejected_development_oos_separation",
+  "candidate": {
+    "base": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "trained_candidate": "D:\\BAXYRuntime\\candidates\\bge-reranker-r246-head-only",
+    "trained_candidate_merkle_sha256": "d718485663c390ef612b1283f0ec97eb2d12c943a77e5108e683e57fc1f9e7ed",
+    "device": "cuda_bf16",
+    "trainable_parameters": 1050625,
+    "family_documents": 31,
+    "pair_count_evaluated": 15872,
+    "threshold": 0.0012817382812499998
+  },
+  "training": {
+    "pairs": 17334,
+    "epochs": 1,
+    "batch_size": 8,
+    "learning_rate": 0.0002,
+    "mean_loss": 0.32084735455232133,
+    "peak_allocated_mib": 2254.76611328125
+  },
+  "development_population": {
+    "inside_rows": 256,
+    "outside_rows": 256,
+    "training_oos_rows": 256,
+    "texts_retained": false,
+    "source_ids_retained": false
+  },
+  "observed": {
+    "inside_rows_lost": 0,
+    "outside_zero_candidates": 0,
+    "outside_zero_candidate_rate": 0.0,
+    "inside_score_quantiles": {
+      "min": 0.00128173828125,
+      "p50": 0.130859375,
+      "p95": 0.80859375,
+      "max": 0.875
+    },
+    "outside_score_quantiles": {
+      "min": 0.00128173828125,
+      "p50": 0.02496337890625,
+      "p95": 0.5771484375,
+      "max": 0.79296875
+    },
+    "elapsed_seconds": 252.2190000000046
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not tune this threshold or open R228; any candidate needs a separately sealed fresh OOS runner and visible-text audit.",
+  "identities": {
+    "preregistration_sha256": "3c61de2529ff0074468d25b07ddc5ba93886a11380697c2aaf43ea9b95f587d2",
+    "runtime_corpus_sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "ff99a15e0a1e284712f97a19511eea7b77abee633141987a501845bddda7fb85"
+  }
+}

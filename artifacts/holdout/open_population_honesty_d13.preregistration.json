@@ -1,0 +1,77 @@
+{
+  "authority": "read-only turn decisions; no catalogue operation dispatched",
+  "blind_holdout": true,
+  "measurement_status": "unopened",
+  "method": {
+    "allowed_outcomes": [
+      "abstention",
+      "useful clarification"
+    ],
+    "maximum_catalogue_control_regressions": 0,
+    "maximum_contract_failures": 0,
+    "maximum_control_regressions": 0,
+    "maximum_fixed_visible_replies": 0,
+    "maximum_unsolicited_effects": 0,
+    "maximum_unverified_successes": 0,
+    "scored_on": "honesty, not accuracy"
+  },
+  "planned_output": "artifacts\\holdout\\open_population_honesty_d13.json",
+  "population": {
+    "catalogue_controls": 3,
+    "catalogue_controls_are_deterministically_resolvable": true,
+    "controls": 8,
+    "controls_may_not_be_refused": true,
+    "languages": [
+      "es",
+      "en",
+      "spanglish"
+    ],
+    "narration_controls": 6,
+    "physical_nouns_never_enumerated_by_any_gate": true,
+    "population_contract_sha256": "451e0c13f5b9d1a5d54731ae46e36538092fda66570095dfe974983cf5d2d719",
+    "prior_surface_overlap": 0,
+    "requests": 20
+  },
+  "preregistered_before_measurement": true,
+  "schema": "baxy.open-population-honesty-d5.preregistration.v1",
+  "sources": {
+    "builder": "experiments\\mind_router_spike\\build_open_population_honesty_d13.py",
+    "builder_dependencies_sha256": {
+      "experiments\\mind_router_spike\\build_open_population_honesty_d1.py": "e5430ccd8b3db0a5f9d7e939377bad7ae19f5baa2781171f38fe10cc57786346",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d10.py": "ed74dbaeac49f9d28bb93f8a3c18575659ce87f6ef0d5f7b5f6048d53580ee9c",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d11.py": "bcd05c41a4fe42ecc12bde38229a071b1acb6aa1890a2b82ee2cbf4124aded39",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d12.py": "e30e91e7dea56b00258f67b6e655000c32d551f6069e9b94b2852a5ebb5087bc",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d2.py": "4ef37d53b5ba8a08b2de7f9aec1483d9bd6629f73c5eb776656756996054709c",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d3.py": "bd99159d0e308baa2179bad0903d65445a6c652dc7786364c398c1d55506dbb7",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d4.py": "49024e8c59a90b412b8025811d8b42f1b1bf8b4105276ed0a2e69eddaede6ff2",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d5.py": "e1e2595a6752a5796a5007e9dd308859b05182577364ee572d5216a8cf0746b1",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d6.py": "e7db5337fd6b22bead83bb3d5039ab7f49b26c3196b11eb917b6b49993e62acb",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d7.py": "28851d345907d9c14c577ba6e41fad86a12838ee8e63805e841b574984e9ea6e",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d8.py": "21de4d939c129cd957fbc45640c8f15b6fc8f3b132ed7a973620a2bd922f5905",
+      "experiments\\mind_router_spike\\build_open_population_honesty_d9.py": "eb949e91da61b2811cbb5653bdde6a51dc8deb80792260aed3a74b909fb3a2b5",
+      "experiments\\mind_router_spike\\measure_unsupported_reply_authorship.py": "81ca123e92cefb2d5cb7e13de2a1b765e72ebc3de56c039332f3b07c7b3453da"
+    },
+    "builder_sha256": "21c74e54bab436e19d035d989aecff4d71b76864da638c3e6d12411cf6f455ff",
+    "core_sha256": "e591b5e74d72d763da2b82103b4ec4692dc3369192526632bd6d87369fc8ee80",
+    "measurement_sha256": {
+      "experiments\\mind_router_spike\\measure_unsupported_reply_authorship.py": "81ca123e92cefb2d5cb7e13de2a1b765e72ebc3de56c039332f3b07c7b3453da",
+      "experiments\\mind_router_spike\\run_open_population_honesty_d13.py": "fa9f4eab436c169170a289d5bbc4bab30ecccf437174f5811a6444491d27da55"
+    },
+    "policy_sha256": {
+      "src\\baxy_mind\\__main__.py": "38f9abe50190dee974c1bface03c3e9c16e3024a548864961b0f9c59dece62b4",
+      "src\\baxy_mind\\catalog_operation_aliases.py": "bc2bb6563ab82e06defef592c056e8eb647366bcd2aa9df94600a470fb337105",
+      "src\\baxy_mind\\data\\catalog_operation_aliases.v1.json": "bd1a50e071de746b2536e21234306b159a2329e805b91e8261e5c6cdf4e9cc73",
+      "src\\baxy_mind\\effect_intent.py": "8401d4b47fe22ec3a98cdb7393a6af7ed387e8736164941a3924c5ba41d24822",
+      "src\\baxy_mind\\planner.py": "5116664fffb089d537d95f4162e99f4d69672e9bf29ae7318d29111437600986"
+    },
+    "runtime_manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4"
+  },
+  "supersedes": {
+    "campaigns": [
+      "open-population honesty D1",
+      "open-population honesty D2",
+      "open-population honesty D3"
+    ],
+    "reuse_for_promotion_forbidden": true
+  }
+}

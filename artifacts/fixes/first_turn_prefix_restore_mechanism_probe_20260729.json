@@ -1,0 +1,674 @@
+{
+  "schema": "baxy.first-turn-prefix-restore-ab.v1",
+  "arm_order": [
+    "restored",
+    "baseline"
+  ],
+  "server": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+  "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "model": "D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+  "model_sha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+  "profile": {
+    "parallel": 3,
+    "context_per_slot": 4096,
+    "cache_prompt": "llama.cpp b9980 default true",
+    "fresh_server_per_case_and_arm": true,
+    "one_real_turn_per_server": true,
+    "restore_slots": {
+      "P": 0,
+      "G": 1,
+      "L": 2
+    },
+    "real_requests_use_automatic_slot_selection": true,
+    "slot_save_path": "benchmark-owned temporary directory"
+  },
+  "safety": {
+    "production_code_changed": false,
+    "runtime_manifest_changed": false,
+    "installed_assets_changed": false,
+    "core_started": false,
+    "external_effects_executed": false,
+    "real_case_text_in_cache_files": false,
+    "temporary_cache_files_deleted_after_report": true
+  },
+  "binding": {
+    "required_before_restore": [
+      "server_sha256",
+      "model_sha256",
+      "parallel",
+      "context_per_slot",
+      "cache_type_k=q8_0",
+      "cache_type_v=q8_0",
+      "chat template and P/G/L safe-prefix SHA-256",
+      "each slot-cache file SHA-256 and byte length"
+    ],
+    "seed_files": {
+      "P": {
+        "filename": "baxy-prefix-p.slot",
+        "size_bytes": 5192260,
+        "sha256": "81be3d644a0bf9b13fcf2b3ca4bee6649a7ffe7f2558c040a1a35d6b53520649",
+        "safe_prefix_sha256": "c5d317a9f1277360c3c04188fb3f6df8418c86eefe678e2af98071974503c1e5",
+        "safe_prefix_tokens": 562
+      },
+      "G": {
+        "filename": "baxy-prefix-g.slot",
+        "size_bytes": 1512700,
+        "sha256": "e56e8facd2cdb82b14fd5eb1d18d88521f927d646e77a9f79eb43516874366ec",
+        "safe_prefix_sha256": "24342d69f5d758f547ba656201e82286d667d9474dff35f30c1512bb5cfd7f2b",
+        "safe_prefix_tokens": 154
+      },
+      "L": {
+        "filename": "baxy-prefix-l.slot",
+        "size_bytes": 2101900,
+        "sha256": "9f9fad362317e6ffe63b270c8cc9a05d417372083df466fec2f1ad0a5ccd3ada",
+        "safe_prefix_sha256": "a34f6e02600aee31c0924b2bce414ad59677fb3812ed38702aa2601e90246759",
+        "safe_prefix_tokens": 214
+      }
+    }
+  },
+  "one_time_seed": {
+    "startup_to_ready_seconds": 4.041538600002241,
+    "priming": {
+      "derive_seconds": 0.2707077999948524,
+      "inference_seconds": 0.5198023000048124,
+      "total_seconds": 0.7905100999996648,
+      "prefixes": {
+        "P": {
+          "stage": "P",
+          "lcp_tokens_before_margin": 563,
+          "safe_prefix_tokens": 562,
+          "safe_prefix_sha256": "c5d317a9f1277360c3c04188fb3f6df8418c86eefe678e2af98071974503c1e5",
+          "synthetic_prompt_token_lengths": [
+            582,
+            582,
+            584,
+            582,
+            582
+          ],
+          "synthetic_prompt_character_lengths": [
+            2904,
+            2903,
+            2904,
+            2900,
+            2902
+          ],
+          "conservative_margin_tokens": 1
+        },
+        "G": {
+          "stage": "G",
+          "lcp_tokens_before_margin": 155,
+          "safe_prefix_tokens": 154,
+          "safe_prefix_sha256": "24342d69f5d758f547ba656201e82286d667d9474dff35f30c1512bb5cfd7f2b",
+          "synthetic_prompt_token_lengths": [
+            161,
+            161,
+            163,
+            161,
+            161
+          ],
+          "synthetic_prompt_character_lengths": [
+            798,
+            797,
+            798,
+            794,
+            796
+          ],
+          "conservative_margin_tokens": 1
+        },
+        "L": {
+          "stage": "L",
+          "lcp_tokens_before_margin": 215,
+          "safe_prefix_tokens": 214,
+          "safe_prefix_sha256": "a34f6e02600aee31c0924b2bce414ad59677fb3812ed38702aa2601e90246759",
+          "synthetic_prompt_token_lengths": [
+            221,
+            221,
+            223,
+            221,
+            221
+          ],
+          "synthetic_prompt_character_lengths": [
+            970,
+            969,
+            970,
+            966,
+            968
+          ],
+          "conservative_margin_tokens": 1
+        }
+      },
+      "requests": [
+        {
+          "stage": "G",
+          "id_slot": 1,
+          "elapsed_seconds": 0.2588901999988593,
+          "safe_prefix_tokens": 154,
+          "tokens_cached": 154,
+          "tokens_evaluated": 154,
+          "cache_n": 0,
+          "prompt_n": 154,
+          "prompt_ms": 256.554,
+          "predicted_n": 1,
+          "predicted_ms": 0.001,
+          "stopped_limit": null
+        },
+        {
+          "stage": "L",
+          "id_slot": 2,
+          "elapsed_seconds": 0.48939830000017537,
+          "safe_prefix_tokens": 214,
+          "tokens_cached": 214,
+          "tokens_evaluated": 214,
+          "cache_n": 0,
+          "prompt_n": 214,
+          "prompt_ms": 399.645,
+          "predicted_n": 1,
+          "predicted_ms": 0.001,
+          "stopped_limit": null
+        },
+        {
+          "stage": "P",
+          "id_slot": 0,
+          "elapsed_seconds": 0.519188899997971,
+          "safe_prefix_tokens": 562,
+          "tokens_cached": 562,
+          "tokens_evaluated": 562,
+          "cache_n": 0,
+          "prompt_n": 562,
+          "prompt_ms": 496.585,
+          "predicted_n": 1,
+          "predicted_ms": 0.001,
+          "stopped_limit": null
+        }
+      ]
+    },
+    "save_seconds": 0.05026019999786513,
+    "save_requests": [
+      {
+        "stage": "G",
+        "id_slot": 1,
+        "filename": "baxy-prefix-g.slot",
+        "elapsed_seconds": 0.03911630000220612,
+        "n_saved": 154,
+        "n_written": 1512700,
+        "n_restored": null,
+        "n_read": null,
+        "save_ms": 8.68,
+        "restore_ms": null
+      },
+      {
+        "stage": "L",
+        "id_slot": 2,
+        "filename": "baxy-prefix-l.slot",
+        "elapsed_seconds": 0.04914029999781633,
+        "n_saved": 214,
+        "n_written": 2101900,
+        "n_restored": null,
+        "n_read": null,
+        "save_ms": 10.553,
+        "restore_ms": null
+      },
+      {
+        "stage": "P",
+        "id_slot": 0,
+        "filename": "baxy-prefix-p.slot",
+        "elapsed_seconds": 0.030685000005178154,
+        "n_saved": 562,
+        "n_written": 5192260,
+        "n_restored": null,
+        "n_read": null,
+        "save_ms": 28.917,
+        "restore_ms": null
+      }
+    ],
+    "one_time_seed_total_seconds": 4.882441000001563,
+    "files": {
+      "P": {
+        "filename": "baxy-prefix-p.slot",
+        "size_bytes": 5192260,
+        "sha256": "81be3d644a0bf9b13fcf2b3ca4bee6649a7ffe7f2558c040a1a35d6b53520649",
+        "safe_prefix_sha256": "c5d317a9f1277360c3c04188fb3f6df8418c86eefe678e2af98071974503c1e5",
+        "safe_prefix_tokens": 562
+      },
+      "G": {
+        "filename": "baxy-prefix-g.slot",
+        "size_bytes": 1512700,
+        "sha256": "e56e8facd2cdb82b14fd5eb1d18d88521f927d646e77a9f79eb43516874366ec",
+        "safe_prefix_sha256": "24342d69f5d758f547ba656201e82286d667d9474dff35f30c1512bb5cfd7f2b",
+        "safe_prefix_tokens": 154
+      },
+      "L": {
+        "filename": "baxy-prefix-l.slot",
+        "size_bytes": 2101900,
+        "sha256": "9f9fad362317e6ffe63b270c8cc9a05d417372083df466fec2f1ad0a5ccd3ada",
+        "safe_prefix_sha256": "a34f6e02600aee31c0924b2bce414ad59677fb3812ed38702aa2601e90246759",
+        "safe_prefix_tokens": 214
+      }
+    }
+  },
+  "exact_turn_outputs": true,
+  "actual_request_identity": true,
+  "actual_prompt_token_identity": true,
+  "automatic_slot_selection_preserved_restored_prefixes": false,
+  "aggregate_delta_restored_minus_baseline_seconds": {
+    "first_turn_e2e": {
+      "median": -0.08790729999600444,
+      "total": -0.08790729999600444,
+      "wins": 1,
+      "pairs": 1,
+      "minimum": -0.08790729999600444,
+      "maximum": -0.08790729999600444
+    },
+    "ready_to_first_turn_complete_including_restore": {
+      "median": -0.047471199999563396,
+      "total": -0.047471199999563396,
+      "wins": 1,
+      "pairs": 1,
+      "minimum": -0.047471199999563396,
+      "maximum": -0.047471199999563396
+    },
+    "startup_to_first_turn_complete": {
+      "median": -0.0477727000034065,
+      "total": -0.0477727000034065,
+      "wins": 1,
+      "pairs": 1,
+      "minimum": -0.0477727000034065,
+      "maximum": -0.0477727000034065
+    }
+  },
+  "pairs": [
+    {
+      "case": "knowledge_a",
+      "expected_mode": "conversation",
+      "arm_order": [
+        "restored",
+        "baseline"
+      ],
+      "exact_turn_output": true,
+      "actual_request_identity": true,
+      "actual_prompt_token_identity": true,
+      "automatic_slot_cache_match_by_stage": {
+        "P": {
+          "restored_id_slot": 0,
+          "server_selected_slot": null,
+          "baseline_cache_n": 0,
+          "restored_cache_n": 0,
+          "cache_n_increased": false
+        },
+        "G": {
+          "restored_id_slot": 1,
+          "server_selected_slot": null,
+          "baseline_cache_n": 0,
+          "restored_cache_n": 0,
+          "cache_n_increased": false
+        },
+        "L": {
+          "restored_id_slot": 2,
+          "server_selected_slot": null,
+          "baseline_cache_n": 0,
+          "restored_cache_n": 0,
+          "cache_n_increased": false
+        }
+      },
+      "automatic_slot_selection_preserved_restored_prefixes": false,
+      "delta_restored_minus_baseline_seconds": {
+        "first_turn_e2e": -0.08790729999600444,
+        "ready_to_first_turn_complete_including_restore": -0.047471199999563396,
+        "startup_to_first_turn_complete": -0.0477727000034065
+      },
+      "arms": [
+        {
+          "arm": "restored",
+          "case": "knowledge_a",
+          "startup_to_ready_seconds": 4.321692999998049,
+          "integrity_verification_seconds": 0.013467500000842847,
+          "integrity_verification": [
+            {
+              "stage": "P",
+              "filename": "baxy-prefix-p.slot",
+              "size_bytes": 5192260,
+              "sha256": "81be3d644a0bf9b13fcf2b3ca4bee6649a7ffe7f2558c040a1a35d6b53520649",
+              "matches_seed": true
+            },
+            {
+              "stage": "G",
+              "filename": "baxy-prefix-g.slot",
+              "size_bytes": 1512700,
+              "sha256": "e56e8facd2cdb82b14fd5eb1d18d88521f927d646e77a9f79eb43516874366ec",
+              "matches_seed": true
+            },
+            {
+              "stage": "L",
+              "filename": "baxy-prefix-l.slot",
+              "size_bytes": 2101900,
+              "sha256": "9f9fad362317e6ffe63b270c8cc9a05d417372083df466fec2f1ad0a5ccd3ada",
+              "matches_seed": true
+            }
+          ],
+          "restore_api_seconds": 0.026906200000667013,
+          "restore_requests": [
+            {
+              "stage": "G",
+              "id_slot": 1,
+              "filename": "baxy-prefix-g.slot",
+              "elapsed_seconds": 0.006750600005034357,
+              "n_saved": null,
+              "n_written": null,
+              "n_restored": 154,
+              "n_read": 1512700,
+              "save_ms": null,
+              "restore_ms": 5.276
+            },
+            {
+              "stage": "L",
+              "id_slot": 2,
+              "filename": "baxy-prefix-l.slot",
+              "elapsed_seconds": 0.02560730000550393,
+              "n_saved": null,
+              "n_written": null,
+              "n_restored": 214,
+              "n_read": 2101900,
+              "save_ms": null,
+              "restore_ms": 6.729
+            },
+            {
+              "stage": "P",
+              "id_slot": 0,
+              "filename": "baxy-prefix-p.slot",
+              "elapsed_seconds": 0.019566800001484808,
+              "n_saved": null,
+              "n_written": null,
+              "n_restored": 562,
+              "n_read": 5192260,
+              "save_ms": null,
+              "restore_ms": 12.192
+            }
+          ],
+          "restore_total_seconds": 0.04037370000150986,
+          "first_turn_e2e_seconds": 4.731936299998779,
+          "ready_to_first_turn_complete_seconds": 4.772373799998604,
+          "startup_to_first_turn_complete_seconds": 9.094066799996654,
+          "turn": {
+            "case": "knowledge_a",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 4.731885499997588,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+          },
+          "posts": [
+            {
+              "case": "knowledge_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "elapsed_seconds": 1.227734899999632,
+              "cache_n": 0,
+              "prompt_n": 228,
+              "prompt_ms": 750.269,
+              "predicted_n": 6,
+              "predicted_ms": 297.174,
+              "content": "{\"language\":\"es\"}",
+              "server_selected_slot": null
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "elapsed_seconds": 1.6742000999947777,
+              "cache_n": 0,
+              "prompt_n": 168,
+              "prompt_ms": 618.151,
+              "predicted_n": 19,
+              "predicted_ms": 1040.773,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}",
+              "server_selected_slot": null
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "elapsed_seconds": 2.849729599998682,
+              "cache_n": 0,
+              "prompt_n": 645,
+              "prompt_ms": 807.818,
+              "predicted_n": 71,
+              "predicted_ms": 2026.235,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"conversation\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}",
+              "server_selected_slot": null
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "elapsed_seconds": 1.8807574000020395,
+              "cache_n": 0,
+              "prompt_n": 202,
+              "prompt_ms": 145.647,
+              "predicted_n": 118,
+              "predicted_ms": 1710.234,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar.",
+              "server_selected_slot": null
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "prompt_tokens_total": 228,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "prompt_tokens_total": 168,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "prompt_tokens_total": 645,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"conversation\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "prompt_tokens_total": 202,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 645.0,
+              "prompt_ms_median": 807.818,
+              "elapsed_median_seconds": 2.849729599998682
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 168.0,
+              "prompt_ms_median": 618.151,
+              "elapsed_median_seconds": 1.6742000999947777
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 228.0,
+              "prompt_ms_median": 750.269,
+              "elapsed_median_seconds": 1.227734899999632
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 202.0,
+              "prompt_ms_median": 145.647,
+              "elapsed_median_seconds": 1.8807574000020395
+            }
+          }
+        },
+        {
+          "arm": "baseline",
+          "case": "knowledge_a",
+          "startup_to_ready_seconds": 4.3219945000018924,
+          "integrity_verification_seconds": 0.0,
+          "integrity_verification": [],
+          "restore_api_seconds": 0.0,
+          "restore_requests": [],
+          "restore_total_seconds": 0.0,
+          "first_turn_e2e_seconds": 4.819843599994783,
+          "ready_to_first_turn_complete_seconds": 4.819844999998168,
+          "startup_to_first_turn_complete_seconds": 9.14183950000006,
+          "turn": {
+            "case": "knowledge_a",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 4.8198030999992625,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+          },
+          "posts": [
+            {
+              "case": "knowledge_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "elapsed_seconds": 1.2345730000015465,
+              "cache_n": 0,
+              "prompt_n": 228,
+              "prompt_ms": 982.75,
+              "predicted_n": 6,
+              "predicted_ms": 220.275,
+              "content": "{\"language\":\"es\"}",
+              "server_selected_slot": null
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "elapsed_seconds": 1.6876016999958665,
+              "cache_n": 0,
+              "prompt_n": 168,
+              "prompt_ms": 571.745,
+              "predicted_n": 20,
+              "predicted_ms": 1107.99,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}",
+              "server_selected_slot": null
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "elapsed_seconds": 2.9210063999998965,
+              "cache_n": 0,
+              "prompt_n": 645,
+              "prompt_ms": 930.555,
+              "predicted_n": 72,
+              "predicted_ms": 1958.272,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}",
+              "server_selected_slot": null
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "elapsed_seconds": 1.8973015000010491,
+              "cache_n": 0,
+              "prompt_n": 202,
+              "prompt_ms": 146.317,
+              "predicted_n": 118,
+              "predicted_ms": 1720.909,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar.",
+              "server_selected_slot": null
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "prompt_tokens_total": 228,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "prompt_tokens_total": 168,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "prompt_tokens_total": 645,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "prompt_tokens_total": 202,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 645.0,
+              "prompt_ms_median": 930.555,
+              "elapsed_median_seconds": 2.9210063999998965
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 168.0,
+              "prompt_ms_median": 571.745,
+              "elapsed_median_seconds": 1.6876016999958665
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 228.0,
+              "prompt_ms_median": 982.75,
+              "elapsed_median_seconds": 1.2345730000015465
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 202.0,
+              "prompt_ms_median": 146.317,
+              "elapsed_median_seconds": 1.8973015000010491
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "candidate_status": "mechanism_failed",
+  "promotion_rule": "Require exact projected outputs, identical real payloads and prompt-token totals, verified model/server/profile/prefix/file bindings, increased P/G/L cache_n under automatic real-slot selection, and repeatable opposite-order gains after integrity checking plus restore are included. Seed cost remains explicit and must be amortized; no cache can enter installed assets without an attested Setup lifecycle and explicit authorization."
+}

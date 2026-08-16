@@ -1,0 +1,486 @@
+{
+  "best_validation_top_1_accuracy": 0.976246,
+  "checkpoint": {
+    "files": [
+      {
+        "bytes": 1643,
+        "name": "config.json",
+        "sha256": "bced6e582579adee6d7aedb75a7d65b194c5db7ad171425625330d79b61e82f1"
+      },
+      {
+        "bytes": 470661684,
+        "name": "model.safetensors",
+        "sha256": "69b3eb57da9e9e1b104e4b17df8a80dad6e17582ad379d88bf964c4558b878b7"
+      },
+      {
+        "bytes": 5069051,
+        "name": "sentencepiece.bpe.model",
+        "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"
+      },
+      {
+        "bytes": 1016,
+        "name": "special_tokens_map.json",
+        "sha256": "edd71739099fe63dc2f70815facad5253c70ded0e0d4df49ef883ce4511af365"
+      },
+      {
+        "bytes": 17082897,
+        "name": "tokenizer.json",
+        "sha256": "1fd0f4ba71bab673c8c77f2ada16bbaed61f7bed515388ac3b6aa5ffa9b1a2f4"
+      },
+      {
+        "bytes": 1259,
+        "name": "tokenizer_config.json",
+        "sha256": "02570132bfda62bfdd0275e04e095ecd53a1b070bb9f1ac8bc08d760594bd9ab"
+      },
+      {
+        "bytes": 571,
+        "name": "training_identity.json",
+        "sha256": "d9482918377b585255caec795ea6934b6cb46ea97c8a84eb724959b7de33fc14"
+      }
+    ],
+    "path": "D:\\BAXYRuntime\\experiments\\mtop-operation-classifier-v2-balanced"
+  },
+  "configuration": {
+    "batch_size": 64,
+    "class_weight_power": 0.5,
+    "epochs": 5,
+    "eval_batch_size": 128,
+    "label_smoothing": 0.0,
+    "learning_rate": 2e-05,
+    "max_grad_norm": 1.0,
+    "max_length": 96,
+    "mixed_precision": "fp16",
+    "seed": 20260801,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01
+  },
+  "cuda": {
+    "device": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "peak_allocated_mib": 2023.024,
+    "peak_reserved_mib": 2400.0
+  },
+  "data": {
+    "class_weights": {
+      "__none__": 0.388886,
+      "calendar.event.list": 2.411587,
+      "media.control": 3.789148,
+      "media.play.query": 1.136567,
+      "media.seek.relative": 7.144885,
+      "media.status": 3.347531,
+      "message.send": 1.331028,
+      "notification.cancel.latest": 6.894109,
+      "notification.dismiss": 3.731295,
+      "notification.schedule": 0.892336,
+      "reminder.create": 1.922307,
+      "reminder.delete": 3.041473,
+      "reminder.list": 26.251984,
+      "reminder.resolve.exact": 6.367042,
+      "web.search": 0.449689
+    },
+    "classes": 15,
+    "train_class_counts": {
+      "__none__": 9114,
+      "calendar.event.list": 237,
+      "media.control": 96,
+      "media.play.query": 1067,
+      "media.seek.relative": 27,
+      "media.status": 123,
+      "message.send": 778,
+      "notification.cancel.latest": 29,
+      "notification.dismiss": 99,
+      "notification.schedule": 1731,
+      "reminder.create": 373,
+      "reminder.delete": 149,
+      "reminder.list": 2,
+      "reminder.resolve.exact": 34,
+      "web.search": 6816
+    },
+    "train_rows": 20675,
+    "validation_class_counts": {
+      "__none__": 1326,
+      "calendar.event.list": 18,
+      "media.control": 5,
+      "media.play.query": 188,
+      "media.status": 10,
+      "message.send": 111,
+      "notification.cancel.latest": 11,
+      "notification.dismiss": 11,
+      "notification.schedule": 238,
+      "reminder.create": 59,
+      "reminder.delete": 17,
+      "reminder.resolve.exact": 4,
+      "web.search": 991
+    },
+    "validation_rows": 2989
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "learning_rate": 1.7777777777777777e-05,
+      "train_loss": 2.188138,
+      "train_seconds": 25.968,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.062594,
+        "loss": 1.122266,
+        "no_action_accuracy": 0.937406,
+        "per_class": {
+          "__none__": {
+            "accuracy": 0.937406,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.833333,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.0,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.946809,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 0.8,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 0.954955,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.995798,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.915254,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.0,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.982846,
+            "cases": 991
+          }
+        },
+        "seconds": 0.536,
+        "supported_accuracy": 0.94528,
+        "top_1_accuracy": 0.941787,
+        "top_2_accuracy": 0.978923,
+        "top_3_accuracy": 0.989294
+      }
+    },
+    {
+      "epoch": 2,
+      "learning_rate": 1.3333333333333333e-05,
+      "train_loss": 1.179422,
+      "train_seconds": 25.932,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.034691,
+        "loss": 0.503207,
+        "no_action_accuracy": 0.965309,
+        "per_class": {
+          "__none__": {
+            "accuracy": 0.965309,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.944444,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.0,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.968085,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 1.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 0.981982,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.363636,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.991597,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.966102,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.411765,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.991927,
+            "cases": 991
+          }
+        },
+        "seconds": 0.529,
+        "supported_accuracy": 0.965123,
+        "top_1_accuracy": 0.965206,
+        "top_2_accuracy": 0.987621,
+        "top_3_accuracy": 0.993978
+      }
+    },
+    {
+      "epoch": 3,
+      "learning_rate": 8.888888888888888e-06,
+      "train_loss": 0.780247,
+      "train_seconds": 25.35,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.015837,
+        "loss": 0.296494,
+        "no_action_accuracy": 0.984163,
+        "per_class": {
+          "__none__": {
+            "accuracy": 0.984163,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 0.944444,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.4,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.962766,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 1.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 1.0,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.454545,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.983193,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 0.966102,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.352941,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.990918,
+            "cases": 991
+          }
+        },
+        "seconds": 0.541,
+        "supported_accuracy": 0.965123,
+        "top_1_accuracy": 0.97357,
+        "top_2_accuracy": 0.991971,
+        "top_3_accuracy": 0.995985
+      }
+    },
+    {
+      "epoch": 4,
+      "learning_rate": 4.444444444444444e-06,
+      "train_loss": 0.594965,
+      "train_seconds": 25.522,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.0181,
+        "loss": 0.225717,
+        "no_action_accuracy": 0.9819,
+        "per_class": {
+          "__none__": {
+            "accuracy": 0.9819,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 1.0,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.4,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.962766,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 1.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 1.0,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.636364,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.983193,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 1.0,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.647059,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.991927,
+            "cases": 991
+          }
+        },
+        "seconds": 0.546,
+        "supported_accuracy": 0.971738,
+        "top_1_accuracy": 0.976246,
+        "top_2_accuracy": 0.991971,
+        "top_3_accuracy": 0.995651
+      }
+    },
+    {
+      "epoch": 5,
+      "learning_rate": 0.0,
+      "train_loss": 0.516189,
+      "train_seconds": 25.371,
+      "validation": {
+        "cases": 2989,
+        "false_supported_on_no_action": 0.019608,
+        "loss": 0.20818,
+        "no_action_accuracy": 0.980392,
+        "per_class": {
+          "__none__": {
+            "accuracy": 0.980392,
+            "cases": 1326
+          },
+          "calendar.event.list": {
+            "accuracy": 1.0,
+            "cases": 18
+          },
+          "media.control": {
+            "accuracy": 0.4,
+            "cases": 5
+          },
+          "media.play.query": {
+            "accuracy": 0.962766,
+            "cases": 188
+          },
+          "media.status": {
+            "accuracy": 1.0,
+            "cases": 10
+          },
+          "message.send": {
+            "accuracy": 1.0,
+            "cases": 111
+          },
+          "notification.cancel.latest": {
+            "accuracy": 0.0,
+            "cases": 11
+          },
+          "notification.dismiss": {
+            "accuracy": 0.636364,
+            "cases": 11
+          },
+          "notification.schedule": {
+            "accuracy": 0.983193,
+            "cases": 238
+          },
+          "reminder.create": {
+            "accuracy": 1.0,
+            "cases": 59
+          },
+          "reminder.delete": {
+            "accuracy": 0.529412,
+            "cases": 17
+          },
+          "reminder.resolve.exact": {
+            "accuracy": 0.0,
+            "cases": 4
+          },
+          "web.search": {
+            "accuracy": 0.992936,
+            "cases": 991
+          }
+        },
+        "seconds": 0.536,
+        "supported_accuracy": 0.971137,
+        "top_1_accuracy": 0.975243,
+        "top_2_accuracy": 0.991971,
+        "top_3_accuracy": 0.995651
+      }
+    }
+  ],
+  "measured_at": "2026-08-02T00:43:53.033219+00:00",
+  "schema": "baxy.mtop-operation-classifier-finetune.v1",
+  "scope": "development_only_mtop_test_remains_sealed",
+  "source": {
+    "model": "intfloat/multilingual-e5-small",
+    "mtop_development_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "mtop_manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "mtop_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "mtop_test_content_read": false,
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  },
+  "status": "rejected_below_0_99",
+  "training_seconds": 132.92
+}

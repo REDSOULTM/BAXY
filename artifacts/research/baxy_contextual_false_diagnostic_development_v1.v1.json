@@ -1,0 +1,27 @@
+{
+  "schema": "baxy.contextual-false-activation-diagnostic.v1",
+  "measuredAtUtc": "2026-08-07T21:39:15.801071+00:00",
+  "scope": "previously_opened_100h_same_view_lexical_failure_analysis",
+  "sources": {
+    "innerReportSha256": "9658fd337582654e4e265385aff5f5046554760501849092f966e1b658125d55"
+  },
+  "metrics": {
+    "decodedCaptures": 55,
+    "lexicalEvidenceCaptures": 3,
+    "distinctDecodedTranscripts": 23,
+    "distinctLexicalEvidenceTranscripts": 3,
+    "lexicalEvidenceTranscriptCounts": {
+      "basi ends as that.": 1,
+      "l basi. and from the basi 1.": 1,
+      "these front doors can be baxy.": 1
+    }
+  },
+  "developmentOnly": true,
+  "negativeCorpusPreviouslyAccessed": true,
+  "normalizedTranscriptsRetained": true,
+  "filenamesOrCorpusIdentifiersRetained": false,
+  "audioRetained": false,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "effectsExecuted": 0
+}

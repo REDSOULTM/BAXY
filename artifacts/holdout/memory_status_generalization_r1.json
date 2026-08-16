@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.8333333333333334,
+  "blind_holdout": true,
+  "cases": 360,
+  "effects_executed": 0,
+  "exact": 300,
+  "failed": 60,
+  "measured_at_utc": "2026-08-03T19:28:22.912095+00:00",
+  "one_sided_95_binomial_lower_if_zero_failures": null,
+  "schema": "baxy.memory-status-holdout-result.v1",
+  "sources": {
+    "preregistration_sha256": "467018a93e866d6904736fefe4fdc175ed57506464ef4d1c61150829d0dd6fc1",
+    "trx_sha256": "8675fbed38a2a2f4b66fdcb05e05ce100f55b6be13cc51d471a70edae72ec6d2"
+  },
+  "threshold_passed": false,
+  "unsafe_effects": 0
+}

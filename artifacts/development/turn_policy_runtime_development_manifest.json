@@ -1,0 +1,53 @@
+{
+  "diagnostics": {
+    "components": 10378,
+    "mission_split_overlap": 0,
+    "missions": 10378,
+    "modes": {
+      "train": {
+        "action": 11839,
+        "conversation": 2442
+      },
+      "validation": {
+        "action": 2930,
+        "conversation": 573
+      }
+    },
+    "normalized_text_split_overlap": 0,
+    "rows": {
+      "train": 14281,
+      "validation": 3503
+    }
+  },
+  "excluded": {
+    "historical_without_public_split": 7372
+  },
+  "outputs": {
+    "train": {
+      "bytes": 4649382,
+      "file_name": "runtime_public_train.v1.jsonl",
+      "rows": 14281,
+      "sha256": "33b12d44a70c8f540f7bfcb7a838e7ed4d96ed49117c150ca6a945131a7eb0bc"
+    },
+    "validation": {
+      "bytes": 1156739,
+      "file_name": "runtime_public_validation.v1.jsonl",
+      "rows": 3503,
+      "sha256": "f09e3224df670404ddcbdbfa523ee4ff3879046433fc08e1ad69f285e1093228"
+    }
+  },
+  "partition_id": "baxy.public-runtime-train-group-split.v1",
+  "schema": "baxy.turn-policy-runtime-development-manifest.v1",
+  "selection": {
+    "heldout_rows_opened": false,
+    "historical_rows_used": false,
+    "public_explicit_train_only": true,
+    "seed_sha256": "a40927091f19a7f55611464fbabd8c43508ad6c74e39b7fd2d90aeecb0595412",
+    "validation_fraction": 0.2
+  },
+  "source": {
+    "file_name": "turn_evidence_runtime.v1.jsonl",
+    "rows": 25156,
+    "sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680"
+  }
+}

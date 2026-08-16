@@ -1,0 +1,89 @@
+{
+  "schema": "baxy-night-audit-package-prepare-crash-repro-v1",
+  "measured_at": "2026-07-27T18:39:49.481671+00:00",
+  "core": "D:\\BAXY\\source\\src\\Baxy.Core\\bin\\Release\\net10.0-windows10.0.19041.0\\win-x64\\publish\\baxy-core.exe",
+  "winget_on_path": null,
+  "reproduced": false,
+  "runs": [
+    {
+      "attempt": 1,
+      "argument": "Microsoft.PowerToys",
+      "advertised_risk": "read_only",
+      "advertised_schema": {
+        "type": "object",
+        "properties": {
+          "packageId": {
+            "type": "string",
+            "x-maxUtf8Bytes": 256,
+            "x-nonWhitespace": true
+          },
+          "version": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "packageId"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "08b852c7-0016-4bc7-a2f9-21e0c1d5f34e",
+        "missionId": "0cf9d3b3-2c29-4a2f-b0ae-1479965d61fb",
+        "invocationId": "5d90cb9c-338c-4564-8f3a-0aa1c7a23c2d",
+        "status": "failed",
+        "message": "No pude completar la operación.",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "winget_adapter_unavailable"
+      },
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "argument": "Microsoft.PowerToys",
+      "advertised_risk": "read_only",
+      "advertised_schema": {
+        "type": "object",
+        "properties": {
+          "packageId": {
+            "type": "string",
+            "x-maxUtf8Bytes": 256,
+            "x-nonWhitespace": true
+          },
+          "version": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "packageId"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "cb531d8b-d67a-4b40-a9ea-d133d9efb7ad",
+        "missionId": "920bc709-b343-4de5-b51b-dc8bdafbb07b",
+        "invocationId": "52d8dada-2ccd-4241-bd6f-1d0bc50259fb",
+        "status": "failed",
+        "message": "No pude completar la operación.",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "winget_adapter_unavailable"
+      },
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ]
+}

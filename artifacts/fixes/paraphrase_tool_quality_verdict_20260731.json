@@ -1,0 +1,85 @@
+{
+ "schema": "baxy.paraphrase-tool-quality-verdict.v1",
+ "measured_at_utc": "2026-07-31",
+ "state": "DIAGNOSTICO, sin cambio de producto",
+ "why_this_measurement_exists": "every earlier tool-calling number in this campaign came from the 57 canonical phrasings of tests/test_effect_intent.py. Those are exactly the texts the deterministic recogniser owns, so in production they never reach the model: measuring them required suspending the recogniser, which answers `what would the model do with these texts` and not `what happens to the person when the deterministic path does not cover them`. This probe uses the second population.",
+ "corpus": {
+  "source": "the frozen 14836-row historical corpus",
+  "selection": "class user_mission, language es or en, exactly one operation family, 8..70 characters, no engineering-note markers, and NOT resolved by the deterministic recogniser",
+  "qualifying_texts": 1002,
+  "sampled": "deterministic stratified sample, 6 per family, frozen inside the artifact so a later run asks the same questions",
+  "cases": 147,
+  "turns": 294,
+  "granularity": "the corpus labels families, not leaves, so the metric is family-level and nothing finer is claimed",
+  "excluded": "memory.*, because the planner never admits it and the model could not name it"
+ },
+ "headline": {
+  "right_family_share": 0.218,
+  "family_offered_share": 0.769,
+  "note": "21.8% is after removing the oracle's own noise; the raw figure is 20.7%. The cleaning moves it by one point, so the finding does not rest on it."
+ },
+ "oracle_noise_named": {
+  "foreign_language_mislabelled_as_spanish": "12 turns of 294. The corpus labels Portuguese and French rows as `es`: `Abaixa o volume pra 30 por cento`, `Augmente le volume de 10 pour cent`, `tira uma captura de tela`. BAXY targets Spanish and English, so these are out of scope rather than model failures.",
+  "knowledge_questions_labelled_as_missions": "2 turns. `how do I take a screenshot in Windows?` is labelled `capture`; answering it conversationally is correct and the oracle is wrong.",
+  "family_granularity_overstates_wrong_vetoes": "`Borra la carpeta CarterTest` with a proposal of filesystem.folder.open counts as `right family`, yet the veto was RIGHT to stop it: opening a folder is not deleting one. Every `veto suppressed a correct proposal` count below is therefore an UPPER bound."
+ },
+ "retrieval_reality_check": {
+  "canonical_corpus": 0.947,
+  "real_paraphrases": 0.769,
+  "reading": "R19 and R20 raised retrieval to 94.7% on the corpus whose knobs they were tuned against. On the population that actually reaches the model it is 76.9%. Both changes point the right way and their paired A/B deltas stand, but their MAGNITUDE was inflated by the corpus used to choose the knobs. Recorded here rather than left to be discovered in production."
+ },
+ "where_the_effect_is_lost": {
+  "turns": 294,
+  "model_never_proposed_an_effect": 110,
+  "removed_by_the_gates_in_main": 93,
+  "effect_preserved": 91,
+  "lost_inside_decide_turn": 0,
+  "reading": "the semantic guard G and the count verifier V, which run inside llm.decide_turn, remove nothing. Every suppression happens in the gates of __main__, which narrows the target to a handful of named functions."
+ },
+ "which_gate": {
+  "apply_operation_domain_grounding_veto": {"fired": 37, "model_had_the_right_family": 22},
+  "apply_turn_action_grounding_gate": {"fired": 29, "model_had_the_right_family": 6},
+  "apply_compound_effect_conservation_veto": {"fired": 24, "model_had_the_right_family": 16},
+  "unidentified": {"fired": 3, "model_had_the_right_family": 0},
+  "reading": "the action grounding gate is mostly doing its job: 23 of its 29 fires caught a proposal that was in the wrong family. The other two suppress a majority of proposals whose family was right."
+ },
+ "correction_of_an_earlier_claim": {
+  "claim": "policy_tool_quality_verdict_20260731.json states that the post-policy machinery is not where tool calling is lost, on the evidence that it overrode a correct proposal 0-1 times in 114 turns.",
+  "status": "TRUE for that corpus and FALSE for the real population. The canonical texts are clean, single-operation phrasings the recogniser owns; real paraphrases are messier and are exactly what makes the gates fire. On 294 real turns the gates remove the effect in 93. The earlier statement is not withdrawn -- it was correct about what it measured -- but it must not be read as a statement about production."
+ },
+ "defect_1_compound_veto_fires_without_a_compound": {
+  "function": "apply_compound_effect_conservation_veto",
+  "docstring": "Prevent a semantic proposal from executing only part of a compound",
+  "behaviour": "once unresolved_compound_contract returns any contract, the veto is UNCONDITIONAL: it never compares the model's proposal against the contract. The code says so explicitly -- `Cardinality or a same-length model proposal cannot prove conservation`.",
+  "measured_offline_without_the_model": [
+   "`alarma para mañana 8am`: 1 clause, contract min=1, vetoed. Nothing compound exists.",
+   "`ponme un recordatorio en 2 minutos para tomar agua`: 1 clause, contract min=1, vetoed.",
+   "`Abre Notepad y luego cierralo`: 2 clauses, contract min=2, and the model proposed exactly [app.open, app.close] -- the correct two steps -- and was vetoed anyway."
+  ],
+  "reading": "3 of the 8 vetoed texts examined have a single clause. The rule is not about compounds at all: it is `if any positive clause has an operation identity the recogniser could not resolve, grant no physical authority`. That is a deliberate authority boundary, and its net effect is that BAXY acts only where the deterministic recogniser already agrees -- the opposite of the model carrying the long tail.",
+  "not_called_a_bug": "the behaviour matches its own internal comment, so it is a design decision with an unintended reach, not an oversight. What is wrong is the name and the docstring, which describe a conservation check that the code does not perform."
+ },
+ "defect_2_domain_grounding_rejects_a_named_domain": {
+  "function": "operation_domain_is_grounded, consumed by apply_operation_domain_grounding_veto",
+  "cases": [
+   {"text": "copia texto de Notepad al portapapeles", "operation": "clipboard.copy", "grounded": false,
+    "assessment": "the text names the clipboard explicitly. This one looks wrong."},
+   {"text": "Baja el volumen 10%", "operation": "audio.volume.adjust", "grounded": false,
+    "assessment": "defensible for the wrong reason: `10%` can read as an absolute level, which belongs to audio.volume rather than audio.volume.adjust. The veto may be right about the operation while the diagnosis `domain not grounded` is not the reason."}
+  ],
+  "method_note": "a first check of this passed the arguments in the wrong order and read `None` where the real answer is `False`. The signature is operation_domain_is_grounded(objective, operation) and the veto acts only on an explicit False; `None` means no opinion and never vetoes."
+ },
+ "what_the_next_change_must_do_and_why_it_is_not_made_here": {
+  "target": "the compound conservation veto is the better first target: 16 of its 24 fires had the right family, its rule is stated in one place, and its reach beyond actual compounds is measurable offline without the model.",
+  "why_not_now": "these two gates grant or deny PHYSICAL authority. An error here does not cost a point of accuracy: it executes something nobody asked for. Loosening them deserves its own corpus proving no wrong effect is ever granted, its own physical A/B and its own gate -- the same discipline R3 and R10 used for the recogniser, not the lighter treatment a shortlist ranking got.",
+  "required_gate": "a corpus over the frozen historical rows asserting that the loosened veto grants an effect only where the operation identity is actually determined, with zero effects granted on the adversarial families the recogniser vetoes today (hardware advice, diagnosis, past or hypothetical state, another device, application scope)."
+ },
+ "instrumentation_notes": [
+  "the first attempt recorded which gate fired inside the POST hook, which runs BEFORE the gates. It read an empty list every time -- a clean zero that would have been read as `no gate fires`, the opposite of the truth.",
+  "the second attempt only watched the gates in __main__ and would have missed a suppression inside decide_turn. Capturing decide_turn's return value separately is what proves G and V remove nothing."
+ ],
+ "probe": "experiments/mind_router_spike/probe_paraphrase_tool_quality.py",
+ "artifact": "paraphrase_tool_quality_20260731.json",
+ "effects_executed": 0,
+ "installation_touched": false
+}

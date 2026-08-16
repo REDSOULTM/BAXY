@@ -1,0 +1,1794 @@
+{
+  "authority": "opened_once_read_only_baseline_not_an_end_to_end_cut_result",
+  "execution": {
+    "decider_invoked": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "product_started": false,
+    "providers_enabled": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "aliases_sha256": "173ee58ce0854b50c5ede012b1e72f15b8634aabb233bfebccf7ca545a077d09",
+    "corpus_sha256": "1afeb27bacbe929e43c8c7b5722078de0565182af92b96d6c036470696fe590b",
+    "effect_intent_sha256": "200b548949c46730b55174f4b452947f7fd068562115252556d0554693f8038c",
+    "preregistration_sha256": "b36ea9f61b7226f1a050ec814898c2e272e424f5b8d525e41902668b77bd87be",
+    "program_sha256": "5ffb04c13af84800c1ff5d3a6283b37a53ef9758007e021b5febfc8e598fc1db"
+  },
+  "next_step": "Use this frozen population only to evaluate a separately preregistered model-path candidate; do not alter R213 text or labels from this result.",
+  "outcomes": [
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-app-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "app.installed"
+      ],
+      "family": "app",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Can you tell whether Paint is present on this workstation?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-app-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "app.installed"
+      ],
+      "family": "app",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Está instalada la calculadora en esta estación?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-app-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "app.installed"
+      ],
+      "family": "app",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Puedes decirme if Calculator is present en esta workstation?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-audio-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "family": "audio",
+      "language": "en",
+      "observed_operations": [
+        "audio.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which output is this machine using for sound?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-audio-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "family": "audio",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Por dónde está saliendo el sonido del equipo?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-audio-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "family": "audio",
+      "language": "spanglish",
+      "observed_operations": [
+        "audio.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué sound output está usando esta machine?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-backup-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "backup.list"
+      ],
+      "family": "backup",
+      "language": "en",
+      "observed_operations": [
+        "backup.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which data recovery points can I use?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-backup-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "backup.list"
+      ],
+      "family": "backup",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué puntos de recuperación de datos puedo usar?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-backup-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "backup.list"
+      ],
+      "family": "backup",
+      "language": "spanglish",
+      "observed_operations": [
+        "backup.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué data recovery points tengo available?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-bluetooth-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "family": "bluetooth",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "What nearby gear can the wireless adapter discover?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-bluetooth-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "family": "bluetooth",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué equipos cercanos detecta el adaptador inalámbrico?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-bluetooth-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "family": "bluetooth",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué nearby gear puede discover el wireless adapter?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-browser-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "family": "browser",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "List the pages I left open for browsing."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-browser-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "family": "browser",
+      "language": "es",
+      "observed_operations": [
+        "browser.tabs.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Enumera las páginas que dejé abiertas para navegar."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-browser-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "family": "browser",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "List las pages que dejé open para browsing."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-calendar-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "family": "calendar",
+      "language": "en",
+      "observed_operations": [
+        "calendar.event.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Review the commitments I have noted for tomorrow."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-calendar-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "family": "calendar",
+      "language": "es",
+      "observed_operations": [
+        "calendar.event.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Repasa los compromisos que tengo anotados para mañana."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-calendar-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "family": "calendar",
+      "language": "spanglish",
+      "observed_operations": [
+        "calendar.event.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Review los commitments que tengo noted para tomorrow."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-capture-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "family": "capture",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "I need to preserve an image of what is visible right now."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-capture-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "family": "capture",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Necesito conservar una imagen de lo que se ve ahora mismo."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-capture-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "family": "capture",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Necesito preserve una image de lo que está visible ahora."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-clipboard-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "family": "clipboard",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "What words are waiting to be inserted?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-clipboard-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "family": "clipboard",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué palabras quedaron preparadas para insertarse?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-clipboard-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "family": "clipboard",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué words quedaron waiting para insertarse?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-email-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "family": "email",
+      "language": "en",
+      "observed_operations": [
+        "email.latest.read"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Read the message that arrived last in my inbox."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-email-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "family": "email",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Lee el mensaje que llegó último a mi bandeja."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-email-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "family": "email",
+      "language": "spanglish",
+      "observed_operations": [
+        "email.latest.read"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Read el message que llegó last a mi inbox."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-filesystem-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "family": "filesystem",
+      "language": "en",
+      "observed_operations": [
+        "filesystem.known.search"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Find the file named March accounts in Documents."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-filesystem-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "family": "filesystem",
+      "language": "es",
+      "observed_operations": [
+        "filesystem.known.search"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Encuentra el archivo llamado cuentas marzo en Documentos."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-filesystem-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "family": "filesystem",
+      "language": "spanglish",
+      "observed_operations": [
+        "filesystem.known.search"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Find el file llamado March accounts en Documents."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-game-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "family": "game",
+      "language": "en",
+      "observed_operations": [
+        "game.catalog.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which games does my Steam library recognize?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-game-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "family": "game",
+      "language": "es",
+      "observed_operations": [
+        "game.catalog.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué juegos reconoce mi biblioteca de Steam?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-game-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "family": "game",
+      "language": "spanglish",
+      "observed_operations": [
+        "game.catalog.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué games reconoce mi Steam library?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-input-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "family": "input",
+      "language": "en",
+      "observed_operations": [
+        "input.keyboard.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which layout is active for typing?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-input-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "family": "input",
+      "language": "es",
+      "observed_operations": [
+        "input.keyboard.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué distribución está activa para escribir?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-input-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "family": "input",
+      "language": "spanglish",
+      "observed_operations": [
+        "input.keyboard.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué layout está active para typing?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-media-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "media.status"
+      ],
+      "family": "media",
+      "language": "en",
+      "observed_operations": [
+        "media.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which media playback is currently underway?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-media-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "media.status"
+      ],
+      "family": "media",
+      "language": "es",
+      "observed_operations": [
+        "media.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Cuál es la reproducción multimedia que está en curso?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-media-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "media.status"
+      ],
+      "family": "media",
+      "language": "spanglish",
+      "observed_operations": [
+        "media.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Cuál media playback está currently underway?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-memory-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "memory.status"
+      ],
+      "family": "memory",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Check whether your private recollection is healthy on this computer."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-memory-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "memory.status"
+      ],
+      "family": "memory",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Comprueba si tu recuerdo privado está sano en este computador."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-memory-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "memory.status"
+      ],
+      "family": "memory",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Checkea si tu private recollection está healthy en este computer."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-message-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "message.recipient.resolve"
+      ],
+      "family": "message",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Determine which saved contact corresponds to Sofia Rojas."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-message-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "message.recipient.resolve"
+      ],
+      "family": "message",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Averigua cuál contacto guardado corresponde a Sofía Rojas."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-message-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "message.recipient.resolve"
+      ],
+      "family": "message",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Determine cuál saved contact corresponde a Sofía Rojas."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-network-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "network.status"
+      ],
+      "family": "network",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Can this computer communicate with the network now?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-network-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "network.status"
+      ],
+      "family": "network",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿El computador puede comunicarse con la red ahora?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-network-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "network.status"
+      ],
+      "family": "network",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Este computer puede communicate con the network ahora?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-note-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "note.list"
+      ],
+      "family": "note",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Show the personal jottings I have saved here."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-note-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "note.list"
+      ],
+      "family": "note",
+      "language": "es",
+      "observed_operations": [
+        "note.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Muéstrame los apuntes personales que tengo guardados aquí."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-note-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "note.list"
+      ],
+      "family": "note",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Show los personal jottings que tengo saved aquí."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-notification-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "family": "notification",
+      "language": "en",
+      "observed_operations": [
+        "notification.list.due"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which notices are past their date and still pending?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-notification-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "family": "notification",
+      "language": "es",
+      "observed_operations": [
+        "notification.list.due"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué avisos ya pasaron de su fecha y siguen pendientes?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-notification-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "notification.list.due"
+      ],
+      "family": "notification",
+      "language": "spanglish",
+      "observed_operations": [
+        "notification.list.due"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué notices están past their date y still pending?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-ocr-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "family": "ocr",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Extract in writing the letters appearing on the screen."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-ocr-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "family": "ocr",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Extrae por escrito las letras que aparecen en la pantalla."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-ocr-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "family": "ocr",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Extract por escrito las letters que aparecen on screen."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-office-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "family": "office",
+      "language": "en",
+      "observed_operations": [
+        "office.document.create"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Create a Word document titled July report."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-office-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "family": "office",
+      "language": "es",
+      "observed_operations": [
+        "office.document.create"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Crea un documento de Word titulado Informe de julio."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-office-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "family": "office",
+      "language": "spanglish",
+      "observed_operations": [
+        "office.document.create"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Create un Word document titulado July report."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-package-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "package.install.prepare"
+      ],
+      "family": "package",
+      "language": "en",
+      "observed_operations": [
+        "package.install.prepare"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Prepare 7zip.7zip so that I can decide whether to install it."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-package-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "package.install.prepare"
+      ],
+      "family": "package",
+      "language": "es",
+      "observed_operations": [
+        "package.install.prepare"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Deja preparado 7zip.7zip para que yo decida instalarlo."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-package-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "package.install.prepare"
+      ],
+      "family": "package",
+      "language": "spanglish",
+      "observed_operations": [
+        "package.install.prepare"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Prepare 7zip.7zip para que yo decide whether to install it."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-peripheral-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "family": "peripheral",
+      "language": "en",
+      "observed_operations": [
+        "peripheral.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which connected physical accessories does the computer recognize?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-peripheral-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "family": "peripheral",
+      "language": "es",
+      "observed_operations": [
+        "peripheral.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué accesorios físicos reconoce el ordenador conectado?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-peripheral-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "family": "peripheral",
+      "language": "spanglish",
+      "observed_operations": [
+        "peripheral.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué connected physical accessories reconoce el computer?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-reminder-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "family": "reminder",
+      "language": "en",
+      "observed_operations": [
+        "reminder.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Review the things I asked myself to remember later."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-reminder-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "family": "reminder",
+      "language": "es",
+      "observed_operations": [
+        "reminder.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Repasa las cosas que me pedí recordar más adelante."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-reminder-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "family": "reminder",
+      "language": "spanglish",
+      "observed_operations": [
+        "reminder.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Review las things que me pedí remember later."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-routine-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "routine.list"
+      ],
+      "family": "routine",
+      "language": "en",
+      "observed_operations": [
+        "routine.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which personal automatic sequences did I configure?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-routine-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "routine.list"
+      ],
+      "family": "routine",
+      "language": "es",
+      "observed_operations": [
+        "routine.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué secuencias automáticas personales dejé configuradas?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-routine-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "routine.list"
+      ],
+      "family": "routine",
+      "language": "spanglish",
+      "observed_operations": [
+        "routine.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué personal automatic sequences dejé configured?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-streaming-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "family": "streaming",
+      "language": "en",
+      "observed_operations": [
+        "streaming.play.named"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Play the film Arrival through Netflix."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-streaming-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "family": "streaming",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Reproduce la película Arrival mediante Netflix."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-streaming-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "family": "streaming",
+      "language": "spanglish",
+      "observed_operations": [
+        "streaming.play.named"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Play la película Arrival through Netflix."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-system-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "system.status"
+      ],
+      "family": "system",
+      "language": "en",
+      "observed_operations": [
+        "system.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Tell me how this machine is doing overall."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-system-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "system.status"
+      ],
+      "family": "system",
+      "language": "es",
+      "observed_operations": [
+        "system.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Dime cómo anda en conjunto esta máquina."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-system-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "system.status"
+      ],
+      "family": "system",
+      "language": "spanglish",
+      "observed_operations": [
+        "system.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Dime how this machine está doing overall."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-task-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "task.list"
+      ],
+      "family": "task",
+      "language": "en",
+      "observed_operations": [
+        "task.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which chores do I still have recorded?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-task-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "task.list"
+      ],
+      "family": "task",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué labores aún me quedan registradas?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-task-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "task.list"
+      ],
+      "family": "task",
+      "language": "spanglish",
+      "observed_operations": [
+        "task.list"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué chores todavía tengo recorded?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-vision-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "family": "vision",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Observe the display and tell me the current scene."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-vision-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "family": "vision",
+      "language": "es",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Observa el display y cuéntame la escena actual."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-vision-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "family": "vision",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Observe el display y cuéntame the current scene."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-web-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "web.search"
+      ],
+      "family": "web",
+      "language": "en",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Look online for information about hydroponic crops."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-web-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "web.search"
+      ],
+      "family": "web",
+      "language": "es",
+      "observed_operations": [
+        "web.search"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Busca información en internet sobre cultivos hidropónicos."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-web-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "web.search"
+      ],
+      "family": "web",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Look online por información sobre hydroponic crops."
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-wifi-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "wifi.status"
+      ],
+      "family": "wifi",
+      "language": "en",
+      "observed_operations": [
+        "network.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "other",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Is this device still linked to the wireless network?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-wifi-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "wifi.status"
+      ],
+      "family": "wifi",
+      "language": "es",
+      "observed_operations": [
+        "network.status"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "other",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Sigue enlazado este equipo a la red inalámbrica?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-wifi-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "wifi.status"
+      ],
+      "family": "wifi",
+      "language": "spanglish",
+      "observed_operations": [],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "unresolved",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Este device sigue linked a la wireless network?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-window-en",
+      "execution_authority": false,
+      "expected_operations": [
+        "window.active"
+      ],
+      "family": "window",
+      "language": "en",
+      "observed_operations": [
+        "window.active"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "Which application is receiving keystrokes at this moment?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-window-es",
+      "execution_authority": false,
+      "expected_operations": [
+        "window.active"
+      ],
+      "family": "window",
+      "language": "es",
+      "observed_operations": [
+        "window.active"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué aplicación está recibiendo las teclas en este momento?"
+    },
+    {
+      "blind_holdout": true,
+      "case_id": "independent-r213-window-spanglish",
+      "execution_authority": false,
+      "expected_operations": [
+        "window.active"
+      ],
+      "family": "window",
+      "language": "spanglish",
+      "observed_operations": [
+        "window.active"
+      ],
+      "oracle_origin": "manual_semantic_specification_independent_of_recogniser",
+      "outcome": "expected",
+      "schema": "baxy.independent-cut-b.r213.v1",
+      "text": "¿Qué application está receiving keystrokes ahora?"
+    }
+  ],
+  "population": {
+    "families": 31,
+    "languages": {
+      "en": 31,
+      "es": 31,
+      "spanglish": 31
+    },
+    "rows": 93
+  },
+  "recogniser": {
+    "available_operations": 158,
+    "by_family": {
+      "app": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "audio": {
+        "expected": 2,
+        "other": 0,
+        "reach": 0.666667,
+        "rows": 3,
+        "unresolved": 1
+      },
+      "backup": {
+        "expected": 2,
+        "other": 0,
+        "reach": 0.666667,
+        "rows": 3,
+        "unresolved": 1
+      },
+      "bluetooth": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "browser": {
+        "expected": 1,
+        "other": 0,
+        "reach": 0.333333,
+        "rows": 3,
+        "unresolved": 2
+      },
+      "calendar": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "capture": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "clipboard": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "email": {
+        "expected": 2,
+        "other": 0,
+        "reach": 0.666667,
+        "rows": 3,
+        "unresolved": 1
+      },
+      "filesystem": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "game": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "input": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "media": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "memory": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "message": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "network": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "note": {
+        "expected": 1,
+        "other": 0,
+        "reach": 0.333333,
+        "rows": 3,
+        "unresolved": 2
+      },
+      "notification": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "ocr": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "office": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "package": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "peripheral": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "reminder": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "routine": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "streaming": {
+        "expected": 2,
+        "other": 0,
+        "reach": 0.666667,
+        "rows": 3,
+        "unresolved": 1
+      },
+      "system": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      },
+      "task": {
+        "expected": 2,
+        "other": 0,
+        "reach": 0.666667,
+        "rows": 3,
+        "unresolved": 1
+      },
+      "vision": {
+        "expected": 0,
+        "other": 0,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 3
+      },
+      "web": {
+        "expected": 1,
+        "other": 0,
+        "reach": 0.333333,
+        "rows": 3,
+        "unresolved": 2
+      },
+      "wifi": {
+        "expected": 0,
+        "other": 2,
+        "reach": 0.0,
+        "rows": 3,
+        "unresolved": 1
+      },
+      "window": {
+        "expected": 3,
+        "other": 0,
+        "reach": 1.0,
+        "rows": 3,
+        "unresolved": 0
+      }
+    },
+    "by_language": {
+      "en": {
+        "expected": 18,
+        "other": 1,
+        "reach": 0.580645,
+        "rows": 31,
+        "unresolved": 12
+      },
+      "es": {
+        "expected": 16,
+        "other": 1,
+        "reach": 0.516129,
+        "rows": 31,
+        "unresolved": 14
+      },
+      "spanglish": {
+        "expected": 18,
+        "other": 0,
+        "reach": 0.580645,
+        "rows": 31,
+        "unresolved": 13
+      }
+    },
+    "independent_of_recogniser_grammar": false,
+    "majority_limit": 0.5,
+    "overall": {
+      "expected": 52,
+      "other": 2,
+      "reach": 0.55914,
+      "rows": 93,
+      "unresolved": 39
+    }
+  },
+  "schema": "baxy.independent-cut-b-r213-recogniser-reach-r214.v1"
+}

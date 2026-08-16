@@ -1,0 +1,63 @@
+{
+  "schema": "baxy.situated-cut-b.bge-m3.r231-acquisition-preregistration.v1",
+  "authority": "sealed_before_external_weight_acquisition_or_model_start",
+  "candidate": {
+    "model_id": "BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "storage": "D:\\BAXYRuntime\\candidates\\BAAI--bge-m3",
+    "runtime_integration": "none",
+    "retrieval_hypothesis": "dense multilingual semantic ranking of the frozen typed catalogue documents; no lexical gate, operation authority, provider or dispatch",
+    "catalogue_document_fields": [
+      "name",
+      "description",
+      "argumentsSchema",
+      "risk"
+    ],
+    "ranking": {
+      "representation": "dense_normalized_embedding_cosine",
+      "top_k": 8,
+      "threshold": "none; ranking remains a non-authoritative shortlist"
+    }
+  },
+  "population": {
+    "r228_rows": 93,
+    "families": 31,
+    "languages": {
+      "es": 31,
+      "en": 31,
+      "spanglish": 31
+    },
+    "recogniser_reach": 0.0
+  },
+  "required_before_opening_r228": {
+    "fresh_oos_population": true,
+    "runner_preregistration": true,
+    "raw_retrieval_retained": true,
+    "raw_decision_before_veto_retained": true,
+    "visible_text_audit_retained": true,
+    "hard_zeros": [
+      "unsolicited_effects",
+      "unverified_successes",
+      "fixed_visible_replies",
+      "external_effects_executed"
+    ]
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "v9_reserved": true,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r228_corpus_sha256": "fe094331bce2045a7f2bc0afa18fdd20636678d66bafd69b569976af811cfc2a",
+    "r228_preregistration_sha256": "3c0a5c852fce87c3f9995cf9f1758c53bb357a28f37d1128fd4ab268495ec1f2",
+    "r229_reach_sha256": "2b8917700bb444f9d13077d64f9f1d6ada97165a93c4f4ac2d5bba09b569e817",
+    "catalog_snapshot_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "catalog_capabilities_sha256": "fd859ccc3258731846600be714066bfe99b99e74c6052ea1178176f6cd56de71",
+    "registered_runtime_manifest_sha256": "b6323b53e630d379bd2ed388b267fbbec11ec899e72af8f162bb64f3fbb19b9c",
+    "program_sha256": "4d854e47e03bf0002f93984b4cfb8330d392b89a3fda0cd9d57de44c7da6148b"
+  }
+}

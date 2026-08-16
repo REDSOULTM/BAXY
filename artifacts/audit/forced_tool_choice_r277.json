@@ -1,0 +1,54 @@
+{
+  "authority": "static_contract_audit_not_a_repair_and_not_a_promotion",
+  "constraints": {
+    "clinc_opened": false,
+    "effects_executed": 0,
+    "model_started": false,
+    "opened_v9": false,
+    "providers_enabled": false,
+    "public_holdout_opened": false,
+    "r228_opened": false,
+    "registered_runtime_modified": false,
+    "voice_stt_wake_exercised": false
+  },
+  "contract": {
+    "decisionFunction": "_post_native_tool_selection",
+    "declaredNoFunctionTurnClassCount": 7,
+    "declaredNoFunctionTurnClasses": [
+      "conversation",
+      "stable knowledge",
+      "advice",
+      "negated requests",
+      "hypotheticals",
+      "past events",
+      "actions aimed at another device"
+    ],
+    "emptyToolCallBranchExistsButIsUnreachable": true,
+    "modelMayDeclineToCall": false,
+    "promptAndDecoderContradict": true,
+    "toolChoice": "required"
+  },
+  "identities": {
+    "llm_source_sha256": "7d1512df81cca97401996df05d2103808b0c371a66ecba49c06c526c318527e3",
+    "policy_prompt_sha256": "58df6bafb19395af648c8bf0fa057b576130b7380a87ba4b61bf4ce9faf33e8d",
+    "v8_telemetry_sha256": "28ba0e9fe99cf27dcf94643049f1b6a6dbb3a483b3cf9c8a6bad5c73dd1d07ba"
+  },
+  "next_requirement": "This audit locates a mechanism; it does not prove causation. A successor must seal an ABBA A/B that changes only tool_choice, run it on a fresh recogniser-independent population, price the change against rows that already succeed, and name the population that could refute it. Do not tune any veto to compensate.",
+  "openPopulationPricing": {
+    "effectProposedWhileVisibleTextDeclinedTheRequest": 8,
+    "expectedOperationAbsentFromShortlist": 9,
+    "expectedOperationAbsentYetEffectProposed": 9,
+    "population": "veto_reach_v8 telemetry (already consumed, already open)",
+    "rawProposalsWithoutAnyEffect": 0,
+    "rows": 42,
+    "rowsReachingDecisionWithZeroCandidates": 0,
+    "servedRows": 12,
+    "shortlistSizeMaximum": 28,
+    "shortlistSizeMedian": 20,
+    "shortlistSizeMinimum": 5
+  },
+  "overall_goal_met": false,
+  "schema": "baxy.forced-tool-choice-audit.r277.v1",
+  "section_7_met": false,
+  "verdict": "forced_tool_choice_leaves_abstention_undecodable"
+}

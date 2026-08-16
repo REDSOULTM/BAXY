@@ -1,0 +1,144 @@
+{
+  "schema_version": 3,
+  "scope": "physical_any_installed_game_selection_launch_and_close",
+  "catalog_count": 158,
+  "cases": [
+    {
+      "operation": "game.catalog.list",
+      "arguments": {
+        "limit": 1
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "6c07000d-a7fa-4ab8-8c1e-bcedc3e445a2",
+        "missionId": "0afc0991-e20a-4829-a32f-99d274c11f53",
+        "invocationId": "71a40393-1b24-4b44-bfd1-2ea9cb23a37a",
+        "status": "completed",
+        "message": "La operación terminó correctamente.",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "version": 1,
+          "source": "steam_local_appmanifests",
+          "count": 1,
+          "games": [
+            {
+              "appId": "924970",
+              "name": "Back 4 Blood",
+              "state": "installed",
+              "manifestSha256": "077dc753fc5372daa137f40ad6959cff2b6e43d0ba93276d839e5cf375567702",
+              "bytesDownloaded": 49920716272,
+              "bytesTotal": 49920716272
+            }
+          ]
+        },
+        "errorCode": null
+      }
+    },
+    {
+      "operation": "game.launch",
+      "arguments": {
+        "appId": "924970"
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "2081ec96-9db2-465e-8be6-2d492a36aebc",
+        "missionId": "56d4d718-45bc-47ff-b5ce-1d4e93e32361",
+        "invocationId": "2420e847-8995-46bc-bfe7-ecaf08ed41dc",
+        "status": "completed",
+        "message": "La operación terminó correctamente.",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "version": 1,
+          "appId": "924970",
+          "name": "Back 4 Blood",
+          "processId": 35772,
+          "authority": "steam_manifest_process_postread"
+        },
+        "errorCode": null
+      }
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "Back4Blood",
+        "limit": 10
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "158affd3-ed87-4a49-a0bc-785d704a3a62",
+        "missionId": "299a5d0a-45c6-493d-a818-a33afec372d1",
+        "invocationId": "0e63307d-b6b6-4fee-8a2a-b0294b456314",
+        "status": "failed",
+        "message": "No pude completar la operación.",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "window_not_found"
+      }
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "start_protected_game",
+        "limit": 10
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "c59a5781-322f-4cf1-be1e-8e39a568ab4e",
+        "missionId": "ce6d641d-eb89-4e1c-bca0-9009490b11aa",
+        "invocationId": "f1cdc049-d6b9-4eff-93f4-1c6ac64ff968",
+        "status": "completed",
+        "message": "La operación terminó correctamente.",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "version": 1,
+          "windows": [
+            {
+              "windowId": "win_502fe95dfaac529b16dd5e35a23f6b8f",
+              "processId": 32516,
+              "processName": "start_protected_game",
+              "state": "normal",
+              "foreground": true,
+              "x": 300,
+              "y": 235,
+              "width": 800,
+              "height": 450
+            }
+          ],
+          "count": 1
+        },
+        "errorCode": null
+      }
+    },
+    {
+      "operation": "app.close",
+      "arguments": {
+        "windowId": "win_502fe95dfaac529b16dd5e35a23f6b8f"
+      },
+      "response": {
+        "type": "operation.response",
+        "requestId": "a36add91-627f-4cc5-83d4-04334c58b737",
+        "missionId": "1e94aba9-d7f0-4ade-8acf-3e83fe6df50b",
+        "invocationId": "ada10eb2-9199-435a-8961-5e87dce5002f",
+        "status": "failed",
+        "message": "No pude cerrar y verificar esa ventana.",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "verification_failed"
+      }
+    }
+  ],
+  "stderr": "",
+  "summary": {
+    "selection_verified": true,
+    "launch_verified": true,
+    "selected_title": "Back 4 Blood",
+    "selected_app_id": "924970",
+    "cleanup": "no_game_process_remaining_after_official_steam_stop",
+    "cleanup_attempt_was_not_part_of_launch_acceptance": true
+  }
+}

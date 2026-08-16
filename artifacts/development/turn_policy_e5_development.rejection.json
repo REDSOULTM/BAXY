@@ -1,0 +1,30 @@
+{
+  "schema": "baxy.turn-policy-development-rejection.v1",
+  "status": "rejected_not_runtime_authority",
+  "artifact": {
+    "repo_path": "artifacts/development/turn_policy_e5_development.json",
+    "sha256": "0cc671ea5a2b3094d033814462a9e5cf8e0bb489cdb2e002104421a29ee5cc5a"
+  },
+  "observed_metrics": {
+    "evaluation_groups": 1922,
+    "trigger_coverage": 0.9516129,
+    "trigger_singleton_accuracy": 0.72944849,
+    "unsafe_false_supported": 21,
+    "unsafe_false_supported_rate": 0.03811252,
+    "family_shortlist_coverage": 0.94894238,
+    "operation_shortlist_coverage": 0.9375
+  },
+  "reasons": [
+    "The observed unsafe false-supported count is non-zero.",
+    "The negative trigger class conflates conversation with unsupported out-of-domain effect requests.",
+    "Trigger evaluation used mission-mean embeddings instead of the individual-utterance inference unit used by the runtime.",
+    "The report did not measure supported-effect to conversation-shortcut errors."
+  ],
+  "constraints": {
+    "runtime_loaded": false,
+    "execution_authority": false,
+    "sealed_final_test_opened": false,
+    "mtop_official_test_opened": false,
+    "may_be_overwritten": false
+  }
+}

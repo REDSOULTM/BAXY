@@ -1,0 +1,1337 @@
+{
+  "schema_version": 1,
+  "protocol_id": "baxy-technology-tournament-v1",
+  "round": "b_integrated_system_final",
+  "weights_unchanged": true,
+  "weights": {
+    "verified_missions": 25,
+    "resources": 15,
+    "latency": 10,
+    "ux_accessibility": 10,
+    "privacy_security": 10,
+    "installation_lifecycle": 10,
+    "maintainability_testability": 10,
+    "license_maturity": 5,
+    "migration_reuse": 5
+  },
+  "rounding": "Scores and derived metrics are retained to six decimal places.",
+  "source_evidence": {
+    "generator": {
+      "path": "experiments/technology_tournament/generate_round_b_score.py",
+      "sha256": "ea84f046ee1ed24c9b344faa6e26e2b49310ffd1b25aaec4fd29169472f9dde5"
+    },
+    "protocol": {
+      "path": "artifacts/technology_tournament/protocol.json",
+      "sha256": "383a9e54cfc5a186de61f060aeb2a6cd013bab3ec21bdeb387063d935d99a892"
+    },
+    "cases": {
+      "path": "experiments/technology_tournament/cases.json",
+      "sha256": "62eb63e108256f5b91da4834d13efb8febc5aa137cb369acac966adce0dbf59d"
+    },
+    "finalists": {
+      "dotnet-wpf": {
+        "functional_runs": [
+          {
+            "path": "artifacts/technology_tournament/raw/round_b_dotnet_wpf_run01.json",
+            "sha256": "5f3d41dd3b1930816031883af89c673f49a0f6937cf18190dfcb38e86a83189b"
+          },
+          {
+            "path": "artifacts/technology_tournament/raw/round_b_dotnet_wpf_run02.json",
+            "sha256": "bd600637055872c850a221b96b93e4a7585dab169937b4a1aef8f2b67f43ae9f"
+          },
+          {
+            "path": "artifacts/technology_tournament/raw/round_b_dotnet_wpf_run03.json",
+            "sha256": "1b7f822769ea16c990546434e895e8df02ab80119414da7af8f94b4bd2b72e9b"
+          }
+        ],
+        "lifecycle": {
+          "path": "artifacts/technology_tournament/raw/round_b_lifecycle_dotnet_wpf.json",
+          "sha256": "cae72419b81743f8bacd6f6912e278c70edd1bedad99c1ac7c61c8f3f4a9a868"
+        },
+        "package_lifecycle": {
+          "path": "artifacts/technology_tournament/raw/round_b_package_dotnet_wpf.json",
+          "sha256": "bfd81e5e6f1bf4e8b662ad808a95678bcb05deee7b7fa37379329bbb1c07887a"
+        }
+      },
+      "dotnet-wpf-rust": {
+        "functional_runs": [
+          {
+            "path": "artifacts/technology_tournament/raw/round_b_dotnet_wpf_rust_run01.json",
+            "sha256": "60d3325063140ab5e223ed7746c480136a7625b5ee4564d5079e407f199a65fd"
+          },
+          {
+            "path": "artifacts/technology_tournament/raw/round_b_dotnet_wpf_rust_run02.json",
+            "sha256": "3ca22d6c1d3a22359839e7b8b2c0e882279fd841974f0240281d0821ccdb8f85"
+          },
+          {
+            "path": "artifacts/technology_tournament/raw/round_b_dotnet_wpf_rust_run03.json",
+            "sha256": "d47578573d7a45142a4b0f63de38f2aae8416de78055a6ece8786083dbfd9b9c"
+          }
+        ],
+        "lifecycle": {
+          "path": "artifacts/technology_tournament/raw/round_b_lifecycle_dotnet_wpf_rust.json",
+          "sha256": "bf4dea54a4626fe8f75a4ed738b640cdce01e05f2ddd0a465e493ac9446003be"
+        },
+        "package_lifecycle": {
+          "path": "artifacts/technology_tournament/raw/round_b_package_dotnet_wpf_rust.json",
+          "sha256": "24276c876512d8e098d48cf280c84a959ebbb9e20b49a83b79796236931689e2"
+        }
+      }
+    },
+    "supply_chain": {
+      "path": "artifacts/technology_tournament/raw/round_b_supply_chain.json",
+      "sha256": "cbc8c180fbe9b2118fc9bf87720470f18c03d76a741ad53dbef15e750591e57e"
+    },
+    "sboms": {
+      "dotnet-wpf": {
+        "path": "artifacts/technology_tournament/round_b_sbom_dotnet_wpf.cdx.json",
+        "sha256": "ea26e7c9d40450421a0629c222cbef731ee6f54b1892004b0c11c73b82695396"
+      },
+      "dotnet-wpf-rust": {
+        "path": "artifacts/technology_tournament/round_b_sbom_dotnet_wpf_rust.cdx.json",
+        "sha256": "c51876e4bb51433a139e3e03a910d7f7e4de6c81e56a8b01a921df792f04ddf6"
+      }
+    },
+    "reproducibility": {
+      "status": "passed",
+      "path": "artifacts/technology_tournament/raw/round_b_reproducibility.json",
+      "sha256": "bb69ad4e8c47321ee385e6a83a5517be87c7f3d98cbcf54f35736dd81a0c1ce1"
+    },
+    "round_a_pareto_inherited_core_metrics": {
+      "scorecard": {
+        "path": "artifacts/technology_tournament/round_a_scorecard.json",
+        "sha256": "9dd92637a9444a58a4b101eff890fda9a7aaed3df553a21870afd5a1c8172295"
+      },
+      "source_results": {
+        "path": "artifacts/technology_tournament/raw/packaging_results.json",
+        "sha256": "19d508c1510ff330c2f234e51c01b2ed77f5bc102424dbbb2f90e33a40063ce2"
+      }
+    },
+    "excluded_stale_inputs": [
+      "artifacts/technology_tournament/raw/round_b_dotnet_wpf.json",
+      "artifacts/technology_tournament/raw/round_b_dotnet_wpf_rust.json"
+    ]
+  },
+  "scores": {
+    "dotnet-wpf": {
+      "family": ".NET/Windows",
+      "architecture": ".NET 10 WPF native shell + .NET NativeAOT core",
+      "disqualified": false,
+      "hard_gates": {
+        "functional_90_percent": true,
+        "hostile_inputs_and_protected_target": true,
+        "no_sampled_network_or_listeners": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_input_redacted_and_process_survives": true,
+        "functional_cleanup": true,
+        "lifecycle": true,
+        "package_lifecycle": true,
+        "supply_chain_bound": true
+      },
+      "raw": {
+        "functional_weight_passed": 102,
+        "functional_weight_total": 102,
+        "functional_pass_ratio": 1.0,
+        "cold_start_p95_ms": 1716.69008,
+        "warm_p95_ms": 239.90772,
+        "throughput_per_second": 4.984271,
+        "idle_private_mib_median": 123.792969,
+        "peak_private_mib_median": 130.671875,
+        "peak_private_working_set_mib": 130.671875,
+        "gpu_peak_dedicated_mib_median": 16.464844,
+        "package_mib": 67.606413,
+        "artifact_mib": 67.606413,
+        "security_gate_failures": 0,
+        "lifecycle_gate_failures": 0,
+        "toolchain_count": 1,
+        "build_seconds": 4.9151058,
+        "implementation_source_lines": 575,
+        "pareto_inherited_core_id": "dotnet_native_aot"
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "criterion": "Frozen formula: 25 × passed case-weight / total case-weight across the three numbered final repetitions.",
+          "evidence": {
+            "passed_weight": 102,
+            "total_weight": 102,
+            "repetitions": 3
+          },
+          "limitations": []
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 2.821553,
+          "maximum": 3,
+          "criterion": "3 points at <=100 MiB; linear to 0 at 500 MiB. Input is the median of three final-run tree-private-byte samples.",
+          "evidence": {
+            "median_mib": 123.792969,
+            "run_mib": [
+              124.914062,
+              123.792969,
+              111.902344
+            ]
+          },
+          "limitations": []
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "criterion": "4 points at <=200 MiB; linear to 0 at 1000 MiB. Input is the median of three final-run sampled peaks.",
+          "evidence": {
+            "median_mib": 130.671875,
+            "run_mib": [
+              130.671875,
+              131.515625,
+              130.664062
+            ]
+          },
+          "limitations": []
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "criterion": "4 points at <=100 MiB; log-linear to 0 at 1000 MiB. Uses the validated offline package, not the FDD test shell.",
+          "evidence": {
+            "package_bytes": 70890462,
+            "package_mib": 67.606413
+          },
+          "limitations": []
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "criterion": "Round-B frozen curve: 4 points at <=3072 MiB, 2 at 4096 MiB, 0 above 4096 MiB.",
+          "evidence": {
+            "median_peak_dedicated_mib": 16.464844,
+            "median_peak_shared_mib": 7.679688,
+            "source": "Win32_PerfFormattedData_GPUPerformanceCounters_GPUProcessMemory"
+          },
+          "limitations": [
+            "This slice does not load an inference model; its GPU figure measures only the integrated shell/core cut."
+          ]
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 0.647566,
+          "maximum": 4,
+          "criterion": "4 points at <=250 ms; linear to 0 at 2000 ms.",
+          "evidence": {
+            "p95_ms": 1716.69008,
+            "valid_samples": 7
+          },
+          "limitations": []
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 2.311931,
+          "maximum": 4,
+          "criterion": "4 points at <=50 ms; linear to 0 at 500 ms.",
+          "evidence": {
+            "p95_ms": 239.90772,
+            "valid_samples": 30
+          },
+          "limitations": []
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 0.0,
+          "maximum": 2,
+          "criterion": "2 points at >=100 missions/s; linear from 0 at 10 missions/s.",
+          "evidence": {
+            "missions_per_second": 4.984271
+          },
+          "limitations": []
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires all natural-language cases to pass through the visible composer and honest blocked/verified states to remain visible.",
+          "evidence": {
+            "final_runs": 3,
+            "all_cases_passed": true,
+            "visible_composer_cases_per_run": 15
+          },
+          "limitations": []
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires progress announcements while raw protocol and runtime implementation names remain hidden.",
+          "evidence": {
+            "live_region_events_per_run": [
+              32,
+              32,
+              32
+            ],
+            "raw_protocol_hidden": true,
+            "technical_runtime_hidden": true
+          },
+          "limitations": []
+        },
+        "ux.keyboard_and_focus": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires named controls, a complete deterministic forward/reverse focus cycle, and keyboard submission.",
+          "evidence": {
+            "focusable_control_counts": [
+              7,
+              7,
+              7
+            ],
+            "forward_cycles_complete": [
+              true,
+              true,
+              true
+            ],
+            "reverse_cycles_complete": [
+              true,
+              true,
+              true
+            ],
+            "keyboard_submit_case": "T01_CONVERSATION"
+          },
+          "limitations": []
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for inspected UIA names and live-region events; the second requires a physical Narrator/NVDA run.",
+          "evidence": {
+            "minimum_named_nodes": 48,
+            "live_region_events_per_run": [
+              32,
+              32,
+              32
+            ]
+          },
+          "limitations": [
+            "No physical Narrator or NVDA session was executed."
+          ]
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for measured high-contrast change and containment in an equivalent 900×520 DIP work area; the second requires physical 200% DPI and reduced-motion coverage.",
+          "evidence": {
+            "contrast_change_ratio": 0.883373,
+            "equivalent_work_area": "900x520 DIPs; physical 200 percent monitor not available on this host",
+            "controls_contained": true
+          },
+          "limitations": [
+            "Physical 200% DPI hardware was unavailable.",
+            "Reduced-motion behavior was not exercised."
+          ]
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires a healthy fail-closed observer and empty TCP/UDP snapshots in all 18 UI samples, raw malformed-core recovery, and four unique installed launches.",
+          "evidence": {
+            "functional_network_samples": 54,
+            "malformed_core_network_samples": 3,
+            "package_unique_launches_checked": 4,
+            "observer_fail_closed": true,
+            "empty": true
+          },
+          "limitations": [
+            "Functional network evidence is discrete sampling, not continuous ETW tracing."
+          ]
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires traversal, absolute-path and NUL rejection in every run plus hostile junction/reparse refusal with sentinel preservation.",
+          "evidence": {
+            "cases": [
+              "T09_BLOCK_TRAVERSAL",
+              "T10_BLOCK_ABSOLUTE_PATH",
+              "T11_BLOCK_NUL"
+            ],
+            "reparse_defense": {
+              "rejected": true,
+              "external_sentinel_preserved": true
+            }
+          },
+          "limitations": []
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires protected destructive targets to remain blocked in every repetition.",
+          "evidence": {
+            "case": "T12_REFUSE_PROTECTED_DELETE",
+            "passed_repetitions": 3
+          },
+          "limitations": []
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for exact malformed-input redaction plus same-process recovery; the second requires exercised secret storage and least-privilege installation.",
+          "evidence": {
+            "malformed_case": "T16_MALFORMED_REQUEST",
+            "route": "raw_core_transport_probe",
+            "passed_repetitions": 3
+          },
+          "limitations": [
+            "This cut has no secret-storage flow.",
+            "The internal package mechanism is not a least-privilege Windows installer certification."
+          ]
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "reviewed",
+          "points": 0.0,
+          "maximum": 2,
+          "criterion": "This combined cell receives full credit only when effects and replay are verified and the durable journal has cryptographic tamper evidence.",
+          "evidence": {
+            "effects_verified": true,
+            "replay_idempotent": true,
+            "package_payload_tamper_detected": true,
+            "journal_mac_or_signature": false
+          },
+          "limitations": [
+            "The durable JSONL journal has no MAC or signature.",
+            "The package manifest detects change only while its colocated unsigned manifest remains trusted."
+          ]
+        },
+        "installation.reproducible_clean_build": {
+          "status": "measured",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point requires two isolated same-host builds with identical complete trees and unchanged inputs; the second requires a fixed native linker/Windows SDK and cross-host or clean-VM reproduction.",
+          "evidence": {
+            "reproducibility_report_present": true,
+            "same_host_all_passed": true,
+            "complete_official_wpf_tree_bound": true
+          },
+          "limitations": [
+            "MSVC link.exe and the Windows SDK were host-provided rather than pinned; no cross-host or clean-VM reproduction was executed."
+          ]
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for self-contained offline first launch with runtime lookup disabled; the second requires a genuinely clean Windows machine/VM installer run.",
+          "evidence": {
+            "runtime_lookup_disabled": true,
+            "first_launch_passed": true,
+            "bundle_cache_bytes": 0,
+            "clean_machine_claimed": false
+          },
+          "limitations": [
+            "internal offline package mechanism; not a Windows installer certification"
+          ]
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires enforced single-instance behavior and zero warm/crash/graceful orphan processes.",
+          "evidence": {
+            "single_instance": true,
+            "job_cleanup": true,
+            "orphans": []
+          },
+          "limitations": []
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires a verified effect before crash, owned-process cleanup and verified data read after restart.",
+          "evidence": {
+            "create_verified": true,
+            "crash_orphan_process_ids": [],
+            "job_cleanup_passed": true,
+            "restart_read_verified": true,
+            "graceful_restart_orphan_process_ids": []
+          },
+          "limitations": []
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires changed update payload, tamper refusal, rollback, keep-data uninstall, reinstall and purge-data uninstall.",
+          "evidence": {
+            "package_gates": {
+              "reparse_defense": true,
+              "install": true,
+              "update": true,
+              "tampered_payload_rejected": true,
+              "rollback": true,
+              "uninstall_keep_data": true,
+              "reinstall": true,
+              "uninstall_purge_data": true
+            },
+            "failed_gates": [],
+            "default_stream_tamper_rejected": true,
+            "alternate_data_stream_rejected": true
+          },
+          "limitations": [
+            "Evidence covers the internal offline package mechanism, not MSI/MSIX certification."
+          ]
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires all 15 natural-language cases through the visible UI plus the raw malformed-transport case in three integrated repetitions and lifecycle/package gates.",
+          "evidence": {
+            "visible_ui_cases": 45,
+            "raw_transport_probes": 3,
+            "functional_passed": 48,
+            "lifecycle_gates": {
+              "cold_and_warm_samples": true,
+              "single_instance": true,
+              "process_ownership_and_cleanup": true,
+              "crash_restart_and_data": true,
+              "scale_equivalent_and_contrast": true
+            },
+            "package_gates": {
+              "reparse_defense": true,
+              "install": true,
+              "update": true,
+              "tampered_payload_rejected": true,
+              "rollback": true,
+              "uninstall_keep_data": true,
+              "reinstall": true,
+              "uninstall_purge_data": true
+            }
+          },
+          "limitations": []
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for schema-versioned JSON and a typed UI bridge; the second requires a generated/centrally enforced cross-process contract.",
+          "evidence": {
+            "schema_versioned": true,
+            "typed_ui_bridge": true,
+            "malformed_transport_probe": "raw_core_transport_probe"
+          },
+          "limitations": [
+            "The process boundary is hand-maintained JSON rather than a generated IDL contract."
+          ]
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires idempotent invocation replay, truncated-journal recovery and crash/restart verification.",
+          "evidence": {
+            "T07": true,
+            "T15": true,
+            "crash_restart": true
+          },
+          "limitations": []
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "reviewed",
+          "points": 0.0,
+          "maximum": 2,
+          "criterion": "Points require a product diagnostics/observability surface, not only tournament harness telemetry.",
+          "evidence": {
+            "harness_telemetry": true,
+            "product_diagnostics_surface": false
+          },
+          "limitations": [
+            "No user-facing diagnostic export or production event pipeline was demonstrated."
+          ]
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Two points for one pinned language/toolchain across shell and core; one when a second pinned toolchain and FFI/runtime supply chain remain.",
+          "evidence": {
+            "toolchain_count": 1,
+            "shell": ".NET WPF",
+            "core": ".NET NativeAOT"
+          },
+          "limitations": []
+        },
+        "license.compatible_and_recorded": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for third-party licenses recorded in CycloneDX; the second requires a declared first-party license and complete provenance.",
+          "evidence": {
+            "first_party_license_declared": false,
+            "sbom_components": 5
+          },
+          "limitations": [
+            "First-party license is not declared.",
+            "Embedded icon provenance is not recorded."
+          ]
+        },
+        "license.maintained_supported_components": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires pinned, current toolchains and inventory of the runtime/framework components actually shipped.",
+          "evidence": {
+            "dotnet": "10.0.100",
+            "rust": null,
+            "runtime_framework_packs": 2
+          },
+          "limitations": []
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "measured",
+          "points": 1.0,
+          "maximum": 1,
+          "criterion": "Full credit requires a hash-bound CycloneDX SBOM, verified package file manifest and core import audit.",
+          "evidence": {
+            "sbom_sha256": "ea26e7c9d40450421a0629c222cbef731ee6f54b1892004b0c11c73b82695396",
+            "manifest_all_files_verified": true,
+            "core_imports": [
+              "advapi32.dll",
+              "api-ms-win-crt-convert-l1-1-0.dll",
+              "api-ms-win-crt-heap-l1-1-0.dll",
+              "api-ms-win-crt-locale-l1-1-0.dll",
+              "api-ms-win-crt-math-l1-1-0.dll",
+              "api-ms-win-crt-runtime-l1-1-0.dll",
+              "api-ms-win-crt-stdio-l1-1-0.dll",
+              "api-ms-win-crt-string-l1-1-0.dll",
+              "bcrypt.dll",
+              "kernel32.dll",
+              "ole32.dll"
+            ]
+          },
+          "limitations": [
+            "Executables and package manifests are unsigned."
+          ]
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires the same frozen corpus-derived 16-case protocol through the integrated GUI.",
+          "evidence": {
+            "protocol_id": "baxy-technology-tournament-v1",
+            "cases": 16,
+            "repetitions": 3
+          },
+          "limitations": []
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires reuse of promoted, executable Round-A behavior without importing the legacy application architecture.",
+          "evidence": {
+            "promoted_core": ".NET NativeAOT",
+            "shared_native_shell": true,
+            "legacy_runtime_inherited": false
+          },
+          "limitations": []
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 1,
+          "criterion": "The point requires the integrated change to stay within the native .NET toolchain; a second language/toolchain scores zero conservatively.",
+          "evidence": {
+            "toolchain_count": 1,
+            "integrated_cut_executed": true
+          },
+          "limitations": []
+        }
+      },
+      "category_points": {
+        "verified_missions": 25.0,
+        "resources": 14.821553,
+        "latency": 2.959497,
+        "ux_accessibility": 8.0,
+        "privacy_security": 7.0,
+        "installation_lifecycle": 8.0,
+        "maintainability_testability": 7.0,
+        "license_maturity": 4.0,
+        "migration_reuse": 5.0
+      },
+      "final_points": 81.78105,
+      "maximum_points": 100,
+      "final_normalized_100": 81.78105
+    },
+    "dotnet-wpf-rust": {
+      "family": "coherent hybrid",
+      "architecture": ".NET 10 WPF native shell + statically linked Rust core",
+      "disqualified": false,
+      "hard_gates": {
+        "functional_90_percent": true,
+        "hostile_inputs_and_protected_target": true,
+        "no_sampled_network_or_listeners": true,
+        "verified_effects": true,
+        "idempotent_replay": true,
+        "journal_tail_recovery": true,
+        "malformed_input_redacted_and_process_survives": true,
+        "functional_cleanup": true,
+        "lifecycle": true,
+        "package_lifecycle": true,
+        "supply_chain_bound": true
+      },
+      "raw": {
+        "functional_weight_passed": 102,
+        "functional_weight_total": 102,
+        "functional_pass_ratio": 1.0,
+        "cold_start_p95_ms": 1319.28004,
+        "warm_p95_ms": 263.314,
+        "throughput_per_second": 4.658544,
+        "idle_private_mib_median": 109.65625,
+        "peak_private_mib_median": 127.160156,
+        "peak_private_working_set_mib": 127.160156,
+        "gpu_peak_dedicated_mib_median": 16.464844,
+        "package_mib": 66.235809,
+        "artifact_mib": 66.235809,
+        "security_gate_failures": 0,
+        "lifecycle_gate_failures": 0,
+        "toolchain_count": 2,
+        "build_seconds": 0.0738096,
+        "implementation_source_lines": 862,
+        "pareto_inherited_core_id": "rust_native"
+      },
+      "cells": {
+        "verified_missions": {
+          "status": "measured",
+          "points": 25.0,
+          "maximum": 25,
+          "criterion": "Frozen formula: 25 × passed case-weight / total case-weight across the three numbered final repetitions.",
+          "evidence": {
+            "passed_weight": 102,
+            "total_weight": 102,
+            "repetitions": 3
+          },
+          "limitations": []
+        },
+        "resources.idle_private_working_set": {
+          "status": "measured",
+          "points": 2.927578,
+          "maximum": 3,
+          "criterion": "3 points at <=100 MiB; linear to 0 at 500 MiB. Input is the median of three final-run tree-private-byte samples.",
+          "evidence": {
+            "median_mib": 109.65625,
+            "run_mib": [
+              109.433594,
+              121.597656,
+              109.65625
+            ]
+          },
+          "limitations": []
+        },
+        "resources.peak_private_working_set": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "criterion": "4 points at <=200 MiB; linear to 0 at 1000 MiB. Input is the median of three final-run sampled peaks.",
+          "evidence": {
+            "median_mib": 127.160156,
+            "run_mib": [
+              127.160156,
+              126.523438,
+              127.4375
+            ]
+          },
+          "limitations": []
+        },
+        "resources.installed_or_self_contained_bytes": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "criterion": "4 points at <=100 MiB; log-linear to 0 at 1000 MiB. Uses the validated offline package, not the FDD test shell.",
+          "evidence": {
+            "package_bytes": 69453280,
+            "package_mib": 66.235809
+          },
+          "limitations": []
+        },
+        "resources.base_and_peak_vram": {
+          "status": "measured",
+          "points": 4.0,
+          "maximum": 4,
+          "criterion": "Round-B frozen curve: 4 points at <=3072 MiB, 2 at 4096 MiB, 0 above 4096 MiB.",
+          "evidence": {
+            "median_peak_dedicated_mib": 16.464844,
+            "median_peak_shared_mib": 7.679688,
+            "source": "Win32_PerfFormattedData_GPUPerformanceCounters_GPUProcessMemory"
+          },
+          "limitations": [
+            "This slice does not load an inference model; its GPU figure measures only the integrated shell/core cut."
+          ]
+        },
+        "latency.cold_start_p95": {
+          "status": "measured",
+          "points": 1.555931,
+          "maximum": 4,
+          "criterion": "4 points at <=250 ms; linear to 0 at 2000 ms.",
+          "evidence": {
+            "p95_ms": 1319.28004,
+            "valid_samples": 7
+          },
+          "limitations": []
+        },
+        "latency.warm_mission_p95": {
+          "status": "measured",
+          "points": 2.103876,
+          "maximum": 4,
+          "criterion": "4 points at <=50 ms; linear to 0 at 500 ms.",
+          "evidence": {
+            "p95_ms": 263.314,
+            "valid_samples": 30
+          },
+          "limitations": []
+        },
+        "latency.warm_throughput": {
+          "status": "measured",
+          "points": 0.0,
+          "maximum": 2,
+          "criterion": "2 points at >=100 missions/s; linear from 0 at 10 missions/s.",
+          "evidence": {
+            "missions_per_second": 4.658544
+          },
+          "limitations": []
+        },
+        "ux.natural_spanish_and_honest_states": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires all natural-language cases to pass through the visible composer and honest blocked/verified states to remain visible.",
+          "evidence": {
+            "final_runs": 3,
+            "all_cases_passed": true,
+            "visible_composer_cases_per_run": 15
+          },
+          "limitations": []
+        },
+        "ux.progress_without_raw_protocol": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires progress announcements while raw protocol and runtime implementation names remain hidden.",
+          "evidence": {
+            "live_region_events_per_run": [
+              32,
+              32,
+              32
+            ],
+            "raw_protocol_hidden": true,
+            "technical_runtime_hidden": true
+          },
+          "limitations": []
+        },
+        "ux.keyboard_and_focus": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires named controls, a complete deterministic forward/reverse focus cycle, and keyboard submission.",
+          "evidence": {
+            "focusable_control_counts": [
+              7,
+              7,
+              7
+            ],
+            "forward_cycles_complete": [
+              true,
+              true,
+              true
+            ],
+            "reverse_cycles_complete": [
+              true,
+              true,
+              true
+            ],
+            "keyboard_submit_case": "T01_CONVERSATION"
+          },
+          "limitations": []
+        },
+        "ux.accessible_names_live_regions_and_screen_reader": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for inspected UIA names and live-region events; the second requires a physical Narrator/NVDA run.",
+          "evidence": {
+            "minimum_named_nodes": 48,
+            "live_region_events_per_run": [
+              32,
+              32,
+              32
+            ]
+          },
+          "limitations": [
+            "No physical Narrator or NVDA session was executed."
+          ]
+        },
+        "ux.contrast_scaling_reduced_motion": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for measured high-contrast change and containment in an equivalent 900×520 DIP work area; the second requires physical 200% DPI and reduced-motion coverage.",
+          "evidence": {
+            "contrast_change_ratio": 0.883373,
+            "equivalent_work_area": "900x520 DIPs; physical 200 percent monitor not available on this host",
+            "controls_contained": true
+          },
+          "limitations": [
+            "Physical 200% DPI hardware was unavailable.",
+            "Reduced-motion behavior was not exercised."
+          ]
+        },
+        "security.offline_and_no_listeners": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires a healthy fail-closed observer and empty TCP/UDP snapshots in all 18 UI samples, raw malformed-core recovery, and four unique installed launches.",
+          "evidence": {
+            "functional_network_samples": 54,
+            "malformed_core_network_samples": 3,
+            "package_unique_launches_checked": 4,
+            "observer_fail_closed": true,
+            "empty": true
+          },
+          "limitations": [
+            "Functional network evidence is discrete sampling, not continuous ETW tracing."
+          ]
+        },
+        "security.root_containment_and_input_sanitization": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires traversal, absolute-path and NUL rejection in every run plus hostile junction/reparse refusal with sentinel preservation.",
+          "evidence": {
+            "cases": [
+              "T09_BLOCK_TRAVERSAL",
+              "T10_BLOCK_ABSOLUTE_PATH",
+              "T11_BLOCK_NUL"
+            ],
+            "reparse_defense": {
+              "rejected": true,
+              "external_sentinel_preserved": true
+            }
+          },
+          "limitations": []
+        },
+        "security.risk_authorization_and_protected_targets": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires protected destructive targets to remain blocked in every repetition.",
+          "evidence": {
+            "case": "T12_REFUSE_PROTECTED_DELETE",
+            "passed_repetitions": 3
+          },
+          "limitations": []
+        },
+        "security.redaction_secret_storage_and_least_privilege": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for exact malformed-input redaction plus same-process recovery; the second requires exercised secret storage and least-privilege installation.",
+          "evidence": {
+            "malformed_case": "T16_MALFORMED_REQUEST",
+            "route": "raw_core_transport_probe",
+            "passed_repetitions": 3
+          },
+          "limitations": [
+            "This cut has no secret-storage flow.",
+            "The internal package mechanism is not a least-privilege Windows installer certification."
+          ]
+        },
+        "security.verified_effect_idempotency_and_tamper_evidence": {
+          "status": "reviewed",
+          "points": 0.0,
+          "maximum": 2,
+          "criterion": "This combined cell receives full credit only when effects and replay are verified and the durable journal has cryptographic tamper evidence.",
+          "evidence": {
+            "effects_verified": true,
+            "replay_idempotent": true,
+            "package_payload_tamper_detected": true,
+            "journal_mac_or_signature": false
+          },
+          "limitations": [
+            "The durable JSONL journal has no MAC or signature.",
+            "The package manifest detects change only while its colocated unsigned manifest remains trusted."
+          ]
+        },
+        "installation.reproducible_clean_build": {
+          "status": "measured",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point requires two isolated same-host builds with identical complete trees and unchanged inputs; the second requires a fixed native linker/Windows SDK and cross-host or clean-VM reproduction.",
+          "evidence": {
+            "reproducibility_report_present": true,
+            "same_host_all_passed": true,
+            "complete_official_wpf_tree_bound": true
+          },
+          "limitations": [
+            "MSVC link.exe and the Windows SDK were host-provided rather than pinned; no cross-host or clean-VM reproduction was executed."
+          ]
+        },
+        "installation.offline_install_and_first_launch": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for self-contained offline first launch with runtime lookup disabled; the second requires a genuinely clean Windows machine/VM installer run.",
+          "evidence": {
+            "runtime_lookup_disabled": true,
+            "first_launch_passed": true,
+            "bundle_cache_bytes": 0,
+            "clean_machine_claimed": false
+          },
+          "limitations": [
+            "internal offline package mechanism; not a Windows installer certification"
+          ]
+        },
+        "installation.single_instance_process_ownership_and_cleanup": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires enforced single-instance behavior and zero warm/crash/graceful orphan processes.",
+          "evidence": {
+            "single_instance": true,
+            "job_cleanup": true,
+            "orphans": []
+          },
+          "limitations": []
+        },
+        "installation.crash_recovery_and_data_preservation": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires a verified effect before crash, owned-process cleanup and verified data read after restart.",
+          "evidence": {
+            "create_verified": true,
+            "crash_orphan_process_ids": [],
+            "job_cleanup_passed": true,
+            "restart_read_verified": true,
+            "graceful_restart_orphan_process_ids": []
+          },
+          "limitations": []
+        },
+        "installation.upgrade_rollback_and_uninstall": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires changed update payload, tamper refusal, rollback, keep-data uninstall, reinstall and purge-data uninstall.",
+          "evidence": {
+            "package_gates": {
+              "reparse_defense": true,
+              "install": true,
+              "update": true,
+              "tampered_payload_rejected": true,
+              "rollback": true,
+              "uninstall_keep_data": true,
+              "reinstall": true,
+              "uninstall_purge_data": true
+            },
+            "failed_gates": [],
+            "default_stream_tamper_rejected": true,
+            "alternate_data_stream_rejected": true
+          },
+          "limitations": [
+            "Evidence covers the internal offline package mechanism, not MSI/MSIX certification."
+          ]
+        },
+        "maintainability.automated_contract_and_regression_tests": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires all 15 natural-language cases through the visible UI plus the raw malformed-transport case in three integrated repetitions and lifecycle/package gates.",
+          "evidence": {
+            "visible_ui_cases": 45,
+            "raw_transport_probes": 3,
+            "functional_passed": 48,
+            "lifecycle_gates": {
+              "cold_and_warm_samples": true,
+              "single_instance": true,
+              "process_ownership_and_cleanup": true,
+              "crash_restart_and_data": true,
+              "scale_equivalent_and_contrast": true
+            },
+            "package_gates": {
+              "reparse_defense": true,
+              "install": true,
+              "update": true,
+              "tampered_payload_rejected": true,
+              "rollback": true,
+              "uninstall_keep_data": true,
+              "reinstall": true,
+              "uninstall_purge_data": true
+            }
+          },
+          "limitations": []
+        },
+        "maintainability.typed_versioned_boundaries": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for schema-versioned JSON and a typed UI bridge; the second requires a generated/centrally enforced cross-process contract.",
+          "evidence": {
+            "schema_versioned": true,
+            "typed_ui_bridge": true,
+            "malformed_transport_probe": "raw_core_transport_probe"
+          },
+          "limitations": [
+            "The process boundary is hand-maintained JSON rather than a generated IDL contract."
+          ]
+        },
+        "maintainability.fault_injection_and_deterministic_replay": {
+          "status": "measured",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires idempotent invocation replay, truncated-journal recovery and crash/restart verification.",
+          "evidence": {
+            "T07": true,
+            "T15": true,
+            "crash_restart": true
+          },
+          "limitations": []
+        },
+        "maintainability.diagnostics_and_observability": {
+          "status": "reviewed",
+          "points": 0.0,
+          "maximum": 2,
+          "criterion": "Points require a product diagnostics/observability surface, not only tournament harness telemetry.",
+          "evidence": {
+            "harness_telemetry": true,
+            "product_diagnostics_surface": false
+          },
+          "limitations": [
+            "No user-facing diagnostic export or production event pipeline was demonstrated."
+          ]
+        },
+        "maintainability.complexity_and_change_isolation_review": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "Two points for one pinned language/toolchain across shell and core; one when a second pinned toolchain and FFI/runtime supply chain remain.",
+          "evidence": {
+            "toolchain_count": 2,
+            "shell": ".NET WPF",
+            "core": "Rust static MSVC"
+          },
+          "limitations": [
+            "The hybrid adds Rust, Cargo crates and static CRT inventory to the same process boundary."
+          ]
+        },
+        "license.compatible_and_recorded": {
+          "status": "reviewed",
+          "points": 1.0,
+          "maximum": 2,
+          "criterion": "One point for third-party licenses recorded in CycloneDX; the second requires a declared first-party license and complete provenance.",
+          "evidence": {
+            "first_party_license_declared": false,
+            "sbom_components": 12
+          },
+          "limitations": [
+            "First-party license is not declared.",
+            "Embedded icon provenance is not recorded."
+          ]
+        },
+        "license.maintained_supported_components": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires pinned, current toolchains and inventory of the runtime/framework components actually shipped.",
+          "evidence": {
+            "dotnet": "10.0.100",
+            "rust": "1.97.0",
+            "runtime_framework_packs": 2
+          },
+          "limitations": []
+        },
+        "license.sbom_hashes_and_supply_chain": {
+          "status": "measured",
+          "points": 1.0,
+          "maximum": 1,
+          "criterion": "Full credit requires a hash-bound CycloneDX SBOM, verified package file manifest and core import audit.",
+          "evidence": {
+            "sbom_sha256": "c51876e4bb51433a139e3e03a910d7f7e4de6c81e56a8b01a921df792f04ddf6",
+            "manifest_all_files_verified": true,
+            "core_imports": [
+              "api-ms-win-core-synch-l1-2-0.dll",
+              "bcryptprimitives.dll",
+              "kernel32.dll",
+              "ntdll.dll"
+            ]
+          },
+          "limitations": [
+            "Executables and package manifests are unsigned."
+          ]
+        },
+        "migration.historical_corpus_and_regression_reuse": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires the same frozen corpus-derived 16-case protocol through the integrated GUI.",
+          "evidence": {
+            "protocol_id": "baxy-technology-tournament-v1",
+            "cases": 16,
+            "repetitions": 3
+          },
+          "limitations": []
+        },
+        "migration.proven_useful_component_reuse_without_legacy_inheritance": {
+          "status": "reviewed",
+          "points": 2.0,
+          "maximum": 2,
+          "criterion": "Full credit requires reuse of promoted, executable Round-A behavior without importing the legacy application architecture.",
+          "evidence": {
+            "promoted_core": "Rust static MSVC",
+            "shared_native_shell": true,
+            "legacy_runtime_inherited": false
+          },
+          "limitations": []
+        },
+        "migration.estimated_migration_effort_reproduced_by_change": {
+          "status": "reviewed",
+          "points": 0.0,
+          "maximum": 1,
+          "criterion": "The point requires the integrated change to stay within the native .NET toolchain; a second language/toolchain scores zero conservatively.",
+          "evidence": {
+            "toolchain_count": 2,
+            "integrated_cut_executed": true
+          },
+          "limitations": [
+            "No quantified evidence showed that the second Rust toolchain reduces total migration effort."
+          ]
+        }
+      },
+      "category_points": {
+        "verified_missions": 25.0,
+        "resources": 14.927578,
+        "latency": 3.659807,
+        "ux_accessibility": 8.0,
+        "privacy_security": 7.0,
+        "installation_lifecycle": 8.0,
+        "maintainability_testability": 6.0,
+        "license_maturity": 4.0,
+        "migration_reuse": 4.0
+      },
+      "final_points": 80.587385,
+      "maximum_points": 100,
+      "final_normalized_100": 80.587385
+    }
+  },
+  "pareto": {
+    "frontier": [
+      "dotnet-wpf",
+      "dotnet-wpf-rust"
+    ],
+    "orientations": {
+      "functional_weight_passed": "max",
+      "cold_start_p95_ms": "min",
+      "warm_p95_ms": "min",
+      "peak_private_working_set_mib": "min",
+      "artifact_mib": "min",
+      "build_seconds": "min",
+      "security_gate_failures": "min",
+      "lifecycle_gate_failures": "min",
+      "implementation_source_lines": "min"
+    },
+    "note": "Both native-shell finalists remain when neither is no-worse in every measured frozen dimension and strictly better in at least one.",
+    "inherited_core_dimensions": {
+      "source": "artifacts/technology_tournament/round_a_scorecard.json",
+      "dimensions": [
+        "build_seconds",
+        "implementation_source_lines"
+      ],
+      "mapping": {
+        "dotnet-wpf": {
+          "core_id": "dotnet_native_aot",
+          "build_seconds": 4.9151058,
+          "implementation_source_lines": 575
+        },
+        "dotnet-wpf-rust": {
+          "core_id": "rust_native",
+          "build_seconds": 0.0738096,
+          "implementation_source_lines": 862
+        }
+      },
+      "note": "These two frozen dimensions retain the hash-bound Round-A measurements of the exact promoted core implementations; the other seven dimensions use integrated Round-B evidence."
+    }
+  },
+  "rejected_candidates": [
+    {
+      "system_id": "dotnet-webview",
+      "disqualified": true,
+      "gate_failures": [
+        "no_network"
+      ],
+      "reason": "The measured WebView process tree exposed TCP/UDP activity; its hash cannot win without a new full-protocol repetition.",
+      "network": {
+        "tcp_records": 16,
+        "udp_records": 0
+      },
+      "idle_private_mib": 443.992188,
+      "peak_private_mib": 922.628906,
+      "hashes": {
+        "shell_sha256": "88a80875f9161ed366aa45a34d74c77dd497aff8658f8a05db17369cb2afe354",
+        "core_sha256": "e653607d0315812ed9f901e0370b66772e762dc7aee32561dae353ecc176326c",
+        "source_tree_sha256": "d2887498ba00141902685a60787ce2a131f0906df9365873bf6c23345074af7c"
+      },
+      "evidence": {
+        "path": "artifacts/technology_tournament/raw/round_b_dotnet_webview_rejected_network.json",
+        "sha256": "3095d66e3426afa67d72d48ad78e52f3dbb54879b66a7d949ed3c72fbc93de47"
+      }
+    },
+    {
+      "system_id": "tauri-rust",
+      "disqualified": true,
+      "gate_failures": [
+        "no_network"
+      ],
+      "reason": "The measured WebView process tree exposed TCP/UDP activity; its hash cannot win without a new full-protocol repetition.",
+      "network": {
+        "tcp_records": 10,
+        "udp_records": 1
+      },
+      "idle_private_mib": 370.585938,
+      "peak_private_mib": 814.519531,
+      "hashes": {
+        "shell_sha256": "76efbe5213d5159d01bbcdcfb6f598a1c2cb7a3f96588ceac7365b339ad47219",
+        "core_sha256": "d80a2eb638d68897aa6208b7a9adb33f88fc0d5f508db83fe3479e622f0aac20",
+        "source_tree_sha256": "ed9facf22d53dac8193f458c2f91539a73dc45cd7f80f5ac57798ccf9c4da0ef"
+      },
+      "evidence": {
+        "path": "artifacts/technology_tournament/raw/round_b_tauri_rust_rejected_network.json",
+        "sha256": "f3a6a6ede482967c287b1a137c34961b9f649da69bfe0ce145ad8b166e33d852"
+      }
+    }
+  ],
+  "decision": {
+    "winner_declared": true,
+    "winner_id": "dotnet-wpf",
+    "winner_architecture": ".NET 10 WPF native shell + .NET NativeAOT core",
+    "fallback_ids": [
+      "dotnet-wpf-rust"
+    ],
+    "selection_rule": "Highest final 100-point score among non-disqualified Pareto finalists; ties prefer fewer pinned implementation toolchains.",
+    "reason": "The pure .NET system preserves the same verified behavior and native WPF product evidence while avoiding the hybrid's second language, crate and static-CRT supply chain; its small resource differences do not compensate for that measured complexity and migration cost."
+  },
+  "limitations": [
+    "Network proof uses a fail-closed observer but remains discrete: 18 UI-run samples, one malformed-core sample per run and package launch snapshots, not continuous ETW.",
+    "Accessibility lacks a physical Narrator/NVDA session and physical 200% DPI run.",
+    "Package evidence is an internal offline lifecycle mechanism, not clean-VM MSI/MSIX certification.",
+    "Build identity is deterministic across two isolated source replicas on this host; MSVC/link.exe and the Windows SDK were not pinned and no cross-host reproduction was run.",
+    "The journal, package manifest and first-party executables are unsigned; journal records have no MAC."
+  ]
+}

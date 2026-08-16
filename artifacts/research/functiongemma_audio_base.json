@@ -1,0 +1,236 @@
+{
+  "adapter": null,
+  "adapter_report": null,
+  "base_model": {
+    "path": "D:\\BAXYRuntime\\assets\\models\\functiongemma-270m-it-hf",
+    "sha256": "af4f8a7c4c5eb82291759fd828720c7bcfcb92a5274556d13dde3caccf5f427b"
+  },
+  "by_language": {
+    "en": {
+      "accuracy": 0.333333,
+      "exact": 2,
+      "samples": 6
+    },
+    "es": {
+      "accuracy": 0.5,
+      "exact": 3,
+      "samples": 6
+    }
+  },
+  "candidate_operations": [
+    "audio.microphone.mute",
+    "audio.mute",
+    "audio.status",
+    "audio.volume",
+    "audio.volume.adjust"
+  ],
+  "cases_per_repeat": 12,
+  "confusions": {
+    "audio.microphone.mute->audio.mute": 2,
+    "audio.status->audio.volume": 2,
+    "audio.volume.adjust->audio.volume": 3
+  },
+  "effects_executed": 0,
+  "exact": 5,
+  "exact_accuracy": 0.416667,
+  "family": "audio",
+  "latency_seconds": {
+    "maximum": 0.713198,
+    "mean": 0.543364,
+    "p50": 0.513663,
+    "p95": 0.664262
+  },
+  "load_seconds": 0.629506,
+  "measured_at_utc": "2026-08-01T20:03:44.610554+00:00",
+  "oracle": "D:\\BAXY\\source\\experiments\\mind_router_spike\\data\\exact_operation_development.v1.jsonl",
+  "oracle_sha256": "d6162676ec59b5cf138de35ddce767f7239e3fe36f0755795321beca09df4909",
+  "peak_allocated_mib": 537.5,
+  "peak_reserved_mib": 544.0,
+  "repeats": 1,
+  "rows": [
+    {
+      "case_id": "audio-absolute-es",
+      "exact": true,
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>SET<escape>}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.638247,
+      "text": "Pon el volumen del computador al 35 por ciento."
+    },
+    {
+      "case_id": "audio-absolute-en",
+      "exact": true,
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>OBJECT<escape>}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.664262,
+      "text": "Set the computer volume to 35 percent."
+    },
+    {
+      "case_id": "audio-adjust-up-es",
+      "exact": true,
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__volume__adjust{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.volume.adjust"
+      ],
+      "repeat": 0,
+      "seconds": 0.513663,
+      "text": "Sube el volumen 10 puntos."
+    },
+    {
+      "case_id": "audio-adjust-up-en",
+      "exact": false,
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>INCREASE<escape>}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.713198,
+      "text": "Increase the volume by 10 points."
+    },
+    {
+      "case_id": "audio-adjust-down-es",
+      "exact": false,
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>OBJECT<escape>}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.662165,
+      "text": "Baja el volumen en 15 puntos."
+    },
+    {
+      "case_id": "audio-adjust-down-en",
+      "exact": false,
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__volume{type:<escape>Reduce<escape>}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.658828,
+      "text": "Lower the volume by 15 points."
+    },
+    {
+      "case_id": "audio-mute-es",
+      "exact": true,
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__mute{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.mute"
+      ],
+      "repeat": 0,
+      "seconds": 0.439136,
+      "text": "Silencia el audio del computador."
+    },
+    {
+      "case_id": "audio-mute-en",
+      "exact": true,
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__mute{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.mute"
+      ],
+      "repeat": 0,
+      "seconds": 0.453849,
+      "text": "Mute the computer speakers."
+    },
+    {
+      "case_id": "microphone-mute-es",
+      "exact": false,
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__mute{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.mute"
+      ],
+      "repeat": 0,
+      "seconds": 0.435474,
+      "text": "Silencia el micrófono."
+    },
+    {
+      "case_id": "microphone-mute-en",
+      "exact": false,
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__mute{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.mute"
+      ],
+      "repeat": 0,
+      "seconds": 0.438337,
+      "text": "Mute my microphone."
+    },
+    {
+      "case_id": "audio-status-es",
+      "exact": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__volume{}<end_function_call><start_function_response>",
+      "language": "es",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.452624,
+      "text": "¿En qué nivel está el volumen ahora?"
+    },
+    {
+      "case_id": "audio-status-en",
+      "exact": false,
+      "expected_operations": [
+        "audio.status"
+      ],
+      "generated": "<start_function_call>call:baxy_audio__volume{}<end_function_call><start_function_response>",
+      "language": "en",
+      "observed_operations": [
+        "audio.volume"
+      ],
+      "repeat": 0,
+      "seconds": 0.450585,
+      "text": "What is the current speaker volume?"
+    }
+  ],
+  "runtime_manifest_changed": false,
+  "samples": 12,
+  "schema": "baxy.functiongemma-selector-evaluation.v1",
+  "scope": "oracle-family ceiling; expected family supplies the candidate set"
+}

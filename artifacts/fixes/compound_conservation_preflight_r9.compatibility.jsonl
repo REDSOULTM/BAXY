@@ -1,0 +1,9 @@
+{"clause": "i need you to open spotify", "operation": "app.open", "batch_all_compatible": false}
+{"clause": "send lucas the message hello.", "operation": "message.send", "batch_all_compatible": false}
+{"clause": "get spotify running", "operation": "app.open", "batch_all_compatible": false}
+{"clause": "tell lucas hello on whatsapp.", "operation": "message.send", "batch_all_compatible": false}
+{"clause": "spotify needs to be open", "operation": "app.open", "batch_all_compatible": false}
+{"clause": "lucas should receive a whatsapp saying hello.", "operation": "message.send", "batch_all_compatible": false}
+{"clause": "I need you to open Spotify, then do not send Lucas anything.", "operation": "app.open", "compatible": false}
+{"clause": "Either open Spotify or send Lucas hello on WhatsApp.", "operation": "message.send", "compatible": false}
+{"clause": "I need you to open Spotify, then do the other thing.", "operation": "app.open", "compatible": false}

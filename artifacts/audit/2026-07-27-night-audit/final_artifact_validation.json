@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-07-27T12:57:00-04:00",
+  "jsonFiles": 152,
+  "validJsonFiles": 152,
+  "invalidJsonFiles": [],
+  "pythonScripts": 41,
+  "pythonCompileExitCode": 0,
+  "backlogDefects": 27,
+  "backlogEvidenceReferences": 106,
+  "missingEvidenceReferences": [],
+  "gitDiffCheckExitCode": 0
+}

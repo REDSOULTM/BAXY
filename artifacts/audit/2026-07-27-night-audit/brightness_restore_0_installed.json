@@ -1,0 +1,53 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "operation": "system.settings.set",
+  "arguments": {
+    "setting": "brightness",
+    "value": 0
+  },
+  "confirmation_followed": true,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "e2d6d0ac-52c7-4416-a75b-ff277d20a684",
+      "missionId": "44e5aa91-cff9-400e-a0f6-81b857cd19d5",
+      "invocationId": "222819bc-1663-49ae-a345-85a42903c40b",
+      "status": "pending",
+      "message": "Necesito tu confirmación antes de hacer eso.",
+      "verified": false,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "token": "RfDUCKT1r_cVmL_ij9jDWFEumHqE-PLUim-_neIGstc",
+        "expiresAtUtc": "2026-07-27T06:58:47.8336134+00:00",
+        "reconciliationRequired": false
+      },
+      "errorCode": "confirmation_required"
+    },
+    {
+      "type": "operation.response",
+      "requestId": "ad34461c-8020-46c6-997c-dc614902b460",
+      "missionId": "44e5aa91-cff9-400e-a0f6-81b857cd19d5",
+      "invocationId": "222819bc-1663-49ae-a345-85a42903c40b",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "setting": "brightness",
+        "value": 0,
+        "authority": "wmi_monitor_brightness_postread"
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 1.5659281000007468,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

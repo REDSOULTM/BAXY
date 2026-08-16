@@ -1,0 +1,418 @@
+{
+  "schema": "baxy.wake-scaf-human-localization-oracle.v1",
+  "measured_at_utc": "2026-08-06T03:07:26.395266+00:00",
+  "scope": "development_only_representation_diagnostic_not_product_policy",
+  "sources": {
+    "model_sha256": "6770713de5b213da7eafc67f13914ea862875dde8076201ed55403acf47314af",
+    "feature_manifest_sha256": "982dc455fc1f75802397a221ba485b93cf2783a5716ef0e0acc058cdcf7dd037",
+    "features_sha256": "0ddcd45d014075519e36e59ed79636f2d43d3c50e4ab14d50795ecbe1f53a305",
+    "offsets_sha256": "1b23b1793a79d8b9e86cda1d89ece8d4cca31acd608bba9f4a2b54f54c39756c"
+  },
+  "contract": {
+    "window_offset_seconds": -0.1,
+    "window_duration_seconds": 1.1,
+    "positive_queries": "ground_truth_aligned_single_window",
+    "hard_negative_queries": "ground_truth_aligned_single_window",
+    "matched_negative_queries": "all_20ms_sliding_windows",
+    "cross_validation": "leave_one_complete_speaker_or_source_group_out",
+    "fold_threshold": "nextafter_max_training_negative_query_score"
+  },
+  "metrics": {
+    "auc": 0.3796296296296296,
+    "threshold": 0.0,
+    "positive_accepted": 1,
+    "positive_total": 18,
+    "negative_false_accepts": 1,
+    "negative_total": 12,
+    "folds": [
+      {
+        "held_group": "alexey_tukay",
+        "training_negative_threshold": 0.8516892961975002,
+        "held_positive_count": 5,
+        "held_negative_count": 0,
+        "held_positive_accepted": 1,
+        "held_negative_false_accepts": 0
+      },
+      {
+        "held_group": "baxi_ferrol_welcome_narrator",
+        "training_negative_threshold": 0.8413083078885281,
+        "held_positive_count": 1,
+        "held_negative_count": 0,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 0
+      },
+      {
+        "held_group": "ecogen_narrator",
+        "training_negative_threshold": 0.8936433461266208,
+        "held_positive_count": 7,
+        "held_negative_count": 0,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 0
+      },
+      {
+        "held_group": "jesus_marcos",
+        "training_negative_threshold": 0.8621750692275583,
+        "held_positive_count": 3,
+        "held_negative_count": 4,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 0
+      },
+      {
+        "held_group": "mahesh_faxi",
+        "training_negative_threshold": 0.7924945336223258,
+        "held_positive_count": 0,
+        "held_negative_count": 1,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 1
+      },
+      {
+        "held_group": "tarang_bakshi",
+        "training_negative_threshold": 0.8394437909924027,
+        "held_positive_count": 0,
+        "held_negative_count": 1,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 0
+      },
+      {
+        "held_group": "upendra_bakshi",
+        "training_negative_threshold": 0.8394437909924027,
+        "held_positive_count": 0,
+        "held_negative_count": 1,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 0
+      },
+      {
+        "held_group": "uploader_el_ganxo",
+        "training_negative_threshold": 0.8422624447304949,
+        "held_positive_count": 1,
+        "held_negative_count": 2,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 0
+      },
+      {
+        "held_group": "uploader_hot-well_ukraine",
+        "training_negative_threshold": 0.8463584968254052,
+        "held_positive_count": 1,
+        "held_negative_count": 2,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 0
+      },
+      {
+        "held_group": "viplav_vaxi",
+        "training_negative_threshold": 0.8394437909924027,
+        "held_positive_count": 0,
+        "held_negative_count": 1,
+        "held_positive_accepted": 0,
+        "held_negative_false_accepts": 0
+      }
+    ]
+  },
+  "records": [
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "group": "ecogen_narrator",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.29100621788067726,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "group": "ecogen_narrator",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.5362655504326234,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "group": "ecogen_narrator",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.3526995292374898,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "group": "ecogen_narrator",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.49035930075330914,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "group": "ecogen_narrator",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.322716316613599,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "group": "ecogen_narrator",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.43196416825375294,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "group": "ecogen_narrator",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.4236284969580772,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "group": "jesus_marcos",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.11346520038974983,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "group": "alexey_tukay",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": 0.017996753351939843,
+      "accepted": true
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "group": "alexey_tukay",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.3389856779545567,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "group": "alexey_tukay",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.09857846560309635,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "group": "alexey_tukay",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.33030711388024714,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "group": "alexey_tukay",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.16360564150355472,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "group": "baxi_ferrol_welcome_narrator",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.09112259631697495,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "group": "tarang_bakshi",
+      "label": "negative",
+      "source_label": "hard_negative",
+      "query_kind": "ground_truth_aligned_hard_negative",
+      "speaker_held_out_margin": -0.1496396459668392,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "group": "upendra_bakshi",
+      "label": "negative",
+      "source_label": "hard_negative",
+      "query_kind": "ground_truth_aligned_hard_negative",
+      "speaker_held_out_margin": -0.1263088142318709,
+      "accepted": false
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "group": "mahesh_faxi",
+      "label": "negative",
+      "source_label": "hard_negative",
+      "query_kind": "ground_truth_aligned_hard_negative",
+      "speaker_held_out_margin": 0.046949257370076825,
+      "accepted": true
+    },
+    {
+      "corpus": "human_legacy",
+      "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "group": "viplav_vaxi",
+      "label": "negative",
+      "source_label": "hard_negative",
+      "query_kind": "ground_truth_aligned_hard_negative",
+      "speaker_held_out_margin": -0.28251684896603424,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "positive/EeLqy-j3Ji8_00_positive.wav",
+      "group": "uploader_el_ganxo",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.21171537377379102,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "matched_negative/EeLqy-j3Ji8_00_matched_negative.wav",
+      "group": "uploader_el_ganxo",
+      "label": "negative",
+      "source_label": "matched_negative",
+      "query_kind": "all_sliding_windows_matched_negative",
+      "speaker_held_out_margin": -0.13739752465934574,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "matched_negative/EeLqy-j3Ji8_01_matched_negative.wav",
+      "group": "uploader_el_ganxo",
+      "label": "negative",
+      "source_label": "matched_negative",
+      "query_kind": "all_sliding_windows_matched_negative",
+      "speaker_held_out_margin": -0.1707877778152611,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "positive/Axgc6aHutvw_00_positive.wav",
+      "group": "jesus_marcos",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.1765826637921718,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "matched_negative/Axgc6aHutvw_00_matched_negative.wav",
+      "group": "jesus_marcos",
+      "label": "negative",
+      "source_label": "matched_negative",
+      "query_kind": "all_sliding_windows_matched_negative",
+      "speaker_held_out_margin": -0.278846143115855,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "matched_negative/Axgc6aHutvw_01_matched_negative.wav",
+      "group": "jesus_marcos",
+      "label": "negative",
+      "source_label": "matched_negative",
+      "query_kind": "all_sliding_windows_matched_negative",
+      "speaker_held_out_margin": -0.37718196649598734,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "positive/Olv3YYWA7g0_00_positive.wav",
+      "group": "jesus_marcos",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.10712070950354269,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "matched_negative/Olv3YYWA7g0_00_matched_negative.wav",
+      "group": "jesus_marcos",
+      "label": "negative",
+      "source_label": "matched_negative",
+      "query_kind": "all_sliding_windows_matched_negative",
+      "speaker_held_out_margin": -0.23566334414278345,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "matched_negative/Olv3YYWA7g0_01_matched_negative.wav",
+      "group": "jesus_marcos",
+      "label": "negative",
+      "source_label": "matched_negative",
+      "query_kind": "all_sliding_windows_matched_negative",
+      "speaker_held_out_margin": -0.11224402564645175,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "positive/yRzt-fhlZ_0_00_positive.wav",
+      "group": "uploader_hot-well_ukraine",
+      "label": "positive",
+      "source_label": "positive",
+      "query_kind": "ground_truth_aligned_positive",
+      "speaker_held_out_margin": -0.12796050524053437,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "matched_negative/yRzt-fhlZ_0_00_matched_negative.wav",
+      "group": "uploader_hot-well_ukraine",
+      "label": "negative",
+      "source_label": "matched_negative",
+      "query_kind": "all_sliding_windows_matched_negative",
+      "speaker_held_out_margin": -0.13215615604131226,
+      "accepted": false
+    },
+    {
+      "corpus": "human_expanded",
+      "relative_path": "matched_negative/yRzt-fhlZ_0_01_matched_negative.wav",
+      "group": "uploader_hot-well_ukraine",
+      "label": "negative",
+      "source_label": "matched_negative",
+      "query_kind": "all_sliding_windows_matched_negative",
+      "speaker_held_out_margin": -0.16828323716013605,
+      "accepted": false
+    }
+  ],
+  "runtime_seconds": 10.166094099986367,
+  "development_only": true,
+  "candidate_frozen": false,
+  "product_operating_point": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

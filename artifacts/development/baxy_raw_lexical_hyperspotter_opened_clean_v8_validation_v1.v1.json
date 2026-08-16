@@ -1,0 +1,181 @@
+{
+  "schema": "baxy.raw-lexical-hyperspotter-wake-corpus-development.v1",
+  "measuredAtUtc": "2026-08-08T07:38:39.894140+00:00",
+  "scope": "opened_known_playback_wasapi_raw_literal_fast_wake",
+  "policy": {
+    "contextualHotwords": [
+      "baxy",
+      "baxi"
+    ],
+    "literalAliasRequired": true,
+    "hyperspotterMaximumLogitGte": 0.5
+  },
+  "models": {
+    "stt": {
+      "encoderSha256": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoderSha256": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joinerSha256": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokensSha256": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    },
+    "hyperspotter": {
+      "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+      "graphSha256": "5934226a5abe42610d4e4575f3b2ee2489dd5a6c03911bf1d1f24095b536d10e",
+      "melFiltersSha256": "94b385f1d7568735fa40099550f5d71e8210bef150a3c9d4d86f0d5f2eb86db8"
+    }
+  },
+  "corpusManifestSha256": "594b490610ee05d6e1d3870ddd8dfdfd5fdfa31fd08cd7697f1612b6f05d790a",
+  "positive": {
+    "files": 4,
+    "acceptedFiles": 0,
+    "decisionSeconds": {
+      "minimum": 0.627347500063479,
+      "p50": 0.7604024999891408,
+      "p95": 0.789964960020734,
+      "maximum": 0.7904263000236824
+    },
+    "hyperspotterMaximumLogits": {
+      "minimum": -1.5516185760498047,
+      "p50": 1.3495257198810577,
+      "p95": 3.9046228885650627,
+      "maximum": 4.183943271636963
+    },
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "694884106caed301ba0da2d37b8ec35b1def8988b08fdf364311de9035dd41f6",
+        "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": 2.321807384490967,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 1,
+        "audioSha256": "5f5ea7d43fa194f0d7b643ea7ec3bb37bd4daea09b8ddd200dbfc7a16dc2137f",
+        "transcriptSha256": "ea31a43ceb9868395a6ef57b73752d2416bc095cb371dd39093851fb976ae1ff",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": 4.183943271636963,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 2,
+        "audioSha256": "c24afa0ae7eca2fa00674ce1c113ffcb96e49ac9f61da28cd7e4b238e93784fb",
+        "transcriptSha256": "c7a11e9a55de2b146e3b2d75e9112ee6af4e5b439658e725e6afca92e93bf0bd",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": 0.3772440552711487,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 3,
+        "audioSha256": "0149981aa5ca71ab863289685af591ad13f0bb90ecfc724a1be3b4861a6d8242",
+        "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": -1.5516185760498047,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      }
+    ],
+    "transcriptTextRetained": false
+  },
+  "negative": {
+    "files": 8,
+    "acceptedFiles": 0,
+    "decisionSeconds": {
+      "minimum": 0.6536775000859052,
+      "p50": 0.719552350055892,
+      "p95": 0.7911568799405359,
+      "maximum": 0.8214910998940468
+    },
+    "hyperspotterMaximumLogits": {
+      "minimum": -3.510056495666504,
+      "p50": -2.3920536041259766,
+      "p95": -0.3257164187729364,
+      "maximum": 0.007993921637535095
+    },
+    "records": [
+      {
+        "record": 0,
+        "audioSha256": "5774c4aa17a638a71b36b261aef03f655836ca5ce86fcfe3743dda747b4f4054",
+        "transcriptSha256": "bc80677fa3f8a95385982949137ff0ade748c2797aab200e8814bfe36761ac2e",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": -2.6542272567749023,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 1,
+        "audioSha256": "15ef698a838f33f175bc7aac255256af8727ab26573095eb749aec7f38b54762",
+        "transcriptSha256": "d4efb5c0fa805e803832c351e84d54c175ec4630fbd4785b1231cf74521afdd5",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": -3.189359188079834,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 2,
+        "audioSha256": "55b00e80099ab4da7412afbc50478db7ed746cfafbc9bd70c7a98b2c18b38785",
+        "transcriptSha256": "daa6c42b764af3f6968415714213b213c500e0099cba7c449975e3b6d10b03eb",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": -2.129879951477051,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 3,
+        "audioSha256": "7bc400a5945062a037114f97fbef97e6bc1f236ddb7d17f20377bf8d86ff3add",
+        "transcriptSha256": "0c5d260d4adcd436eae1397cff99e097ea28f0e00344e52bbdf5e910930a3793",
+        "lexicalEvidence": true,
+        "hyperspotterMaximumLogit": -0.9454641938209534,
+        "accepted": false,
+        "reason": "hyperspotter_rejected"
+      },
+      {
+        "record": 4,
+        "audioSha256": "dddc7734fd627998fd15df3bcce8135461229eb84b9bd363a06581b311a3adbb",
+        "transcriptSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": -3.3239259719848633,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 5,
+        "audioSha256": "479c5a895e4d3db048fad8475c78e3a2a764394a585ba5d7a7d313254b713363",
+        "transcriptSha256": "cdb4ee2aea69cc6a83331bbe96dc2caa9a299d21329efb0336fc02a82e1839a8",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": -3.510056495666504,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 6,
+        "audioSha256": "f30995bf49d9351e46e31e24bbe0b45df9d9879232760d1a4156cc097e183c37",
+        "transcriptSha256": "c3230753494fe54e3b88e7f973d5f33f13baf93faf4120ff57ff26ac39983984",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": -1.5239897966384888,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      },
+      {
+        "record": 7,
+        "audioSha256": "2b61d54c9710d0967d37e30e004a6ff2960f2f724128b1bafc50ee39976fdc0c",
+        "transcriptSha256": "1e3dc3221ea47f7ce39d8f29cd5527cff8385b4d9c710a5a8f0747fec2ca46cd",
+        "lexicalEvidence": false,
+        "hyperspotterMaximumLogit": 0.007993921637535095,
+        "accepted": false,
+        "reason": "literal_alias_absent"
+      }
+    ],
+    "transcriptTextRetained": false
+  },
+  "elapsedWallSeconds": 9.791249000001699,
+  "openedDevelopmentPassed": false,
+  "candidateFrozen": false,
+  "blindHumanPartitionAccessed": false,
+  "promotable": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0,
+  "filenamesOrTranscriptsRetained": false
+}

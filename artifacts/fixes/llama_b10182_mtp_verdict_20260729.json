@@ -1,0 +1,19 @@
+{
+  "schema": "baxy.llama-b10182-mtp-verdict.v1",
+  "date": "2026-07-29",
+  "candidate": {
+    "runtime": "llama.cpp b10182",
+    "spec_type": "draft-mtp",
+    "spec_draft_n_max": 1
+  },
+  "result": {
+    "classification": "not_applicable",
+    "candidate_loaded": false,
+    "candidate_drafted": false,
+    "ab_completed": false,
+    "promotion_gate_passed": false
+  },
+  "reason": "b10182 rejected MTP context creation because the registered Gemma 4 E2B GGUF does not contain MTP layers. A different assistant or MTP-capable GGUF is an asset and certification change, not a neutral runtime optimization.",
+  "production_changed": false,
+  "source_artifact": "artifacts/fixes/llama_b10182_mtp_load_probe_20260729.json"
+}

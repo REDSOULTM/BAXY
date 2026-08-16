@@ -1,0 +1,96 @@
+{
+  "schema": "baxy.audit.browser-chain.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "elapsed_seconds": 1.6938862999995763,
+  "cases": [
+    {
+      "operation": "streaming.navigate",
+      "arguments": {
+        "service": "youtube",
+        "resourceUri": "https://www.youtube.com/"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "09e45335-dda7-49e5-a514-eb223fcdee0d",
+          "missionId": "86405cd8-e32b-408f-95a0-e0d9e10f6397",
+          "invocationId": "e37af42f-0d8b-426e-adb7-b6ba8412f98d",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "F7jfdHLBkH9OZj48ul7Zj0Vz6nU0SO1KShn-jgW0rFQ",
+            "expiresAtUtc": "2026-07-27T07:38:17.5270673+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "87c0e061-ebec-488e-9c49-0bec815336d0",
+          "missionId": "86405cd8-e32b-408f-95a0-e0d9e10f6397",
+          "invocationId": "e37af42f-0d8b-426e-adb7-b6ba8412f98d",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "service": "youtube",
+            "resourceUri": "https://www.youtube.com/",
+            "targetId": "B7BE073B7684545EC4A043D2ACCF90EB",
+            "authority": "authenticated_cdp_session"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 1.2931921999988845
+    },
+    {
+      "operation": "browser.page.read",
+      "arguments": {
+        "maximumCharacters": 2000
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "501e3fcf-5fd8-4db6-88b8-816e9cdde7ee",
+          "missionId": "a6a2b2da-0373-4832-ad1a-e117012b5a05",
+          "invocationId": "8b7b425b-8b12-4799-86dc-4d1e6fe44fde",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "1WYCxxaZG3s0QsjvGgoHIbU1QB_8JrMv1dQN17v2pWg",
+            "expiresAtUtc": "2026-07-27T07:38:18.8202534+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "a8659217-a880-4007-9a1c-bf95c303def6",
+          "missionId": "a6a2b2da-0373-4832-ad1a-e117012b5a05",
+          "invocationId": "8b7b425b-8b12-4799-86dc-4d1e6fe44fde",
+          "status": "failed",
+          "message": "No pude completar la operación.",
+          "verified": false,
+          "replayed": false,
+          "result": null,
+          "errorCode": "browser_page_snapshot_invalid"
+        }
+      ],
+      "elapsed_seconds": 0.09856429999854299
+    }
+  ],
+  "error": null,
+  "process_exit_code": 0,
+  "stderr": ""
+}

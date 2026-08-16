@@ -1,0 +1,121 @@
+{
+  "schema": "baxy.audit.restart-replay-chain.v1",
+  "coreVersion": "1.0.9",
+  "catalogCount": 168,
+  "elapsedSeconds": 3.250496500004374,
+  "rounds": [
+    {
+      "helloUtf8Bytes": 80981,
+      "create": {
+        "type": "operation.response",
+        "requestId": "8e150a9d-08b3-484c-8923-f0fa888eebb6",
+        "missionId": "51b8c94d-67b4-438a-9b23-0becc5ec3bb3",
+        "invocationId": "f12c22e2-a6ae-4754-9d89-4a1e4d85a25a",
+        "status": "completed",
+        "message": "Guardé la nota «BAXY durable replay audit».",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "noteId": "634bf6a2-da3b-47d3-8f09-ebdd1659a7e6",
+          "title": "BAXY durable replay audit",
+          "content": "synthetic durable marker",
+          "createdAtUtc": "2026-07-27T21:49:30.6840109+00:00",
+          "updatedAtUtc": "2026-07-27T21:49:30.6840109+00:00",
+          "trashedAtUtc": null,
+          "revision": 1,
+          "isTrashed": false
+        },
+        "errorCode": null
+      },
+      "search": {
+        "type": "operation.response",
+        "requestId": "544ead70-2a23-4d86-b5f1-a836834acc90",
+        "missionId": "f4d0d0c4-7b6f-466a-8358-7bceb4e10e45",
+        "invocationId": "744d0b82-c476-4d1d-9086-0e85735bb241",
+        "status": "completed",
+        "message": "La operación terminó correctamente.",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "notes": [
+            {
+              "noteId": "634bf6a2-da3b-47d3-8f09-ebdd1659a7e6",
+              "title": "BAXY durable replay audit",
+              "createdAtUtc": "2026-07-27T21:49:30.6840109+00:00",
+              "updatedAtUtc": "2026-07-27T21:49:30.6840109+00:00",
+              "trashedAtUtc": null,
+              "revision": 1,
+              "isTrashed": false
+            }
+          ],
+          "count": 1,
+          "totalCount": 1,
+          "scope": "search",
+          "limit": 10,
+          "offset": 0,
+          "nextOffset": null
+        },
+        "errorCode": null
+      },
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "helloUtf8Bytes": 80981,
+      "create": {
+        "type": "operation.response",
+        "requestId": "519223b8-7450-4746-aea1-d8aeee65d0b4",
+        "missionId": "51b8c94d-67b4-438a-9b23-0becc5ec3bb3",
+        "invocationId": "f12c22e2-a6ae-4754-9d89-4a1e4d85a25a",
+        "status": "completed",
+        "message": "Guardé la nota «BAXY durable replay audit».",
+        "verified": true,
+        "replayed": true,
+        "result": {
+          "noteId": "634bf6a2-da3b-47d3-8f09-ebdd1659a7e6",
+          "title": "BAXY durable replay audit",
+          "content": "synthetic durable marker",
+          "createdAtUtc": "2026-07-27T21:49:30.6840109+00:00",
+          "updatedAtUtc": "2026-07-27T21:49:30.6840109+00:00",
+          "trashedAtUtc": null,
+          "revision": 1,
+          "isTrashed": false
+        },
+        "errorCode": null
+      },
+      "search": {
+        "type": "operation.response",
+        "requestId": "30b2c0e9-152e-449a-8be1-22b10df8e229",
+        "missionId": "ceb75b3f-0e3a-44ba-a131-fe0790e1f0ed",
+        "invocationId": "8fa211f2-70d0-4fb3-86f8-e18935710bb3",
+        "status": "completed",
+        "message": "La operación terminó correctamente.",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "notes": [
+            {
+              "noteId": "634bf6a2-da3b-47d3-8f09-ebdd1659a7e6",
+              "title": "BAXY durable replay audit",
+              "createdAtUtc": "2026-07-27T21:49:30.6840109+00:00",
+              "updatedAtUtc": "2026-07-27T21:49:30.6840109+00:00",
+              "trashedAtUtc": null,
+              "revision": 1,
+              "isTrashed": false
+            }
+          ],
+          "count": 1,
+          "totalCount": 1,
+          "scope": "search",
+          "limit": 10,
+          "offset": 0,
+          "nextOffset": null
+        },
+        "errorCode": null
+      },
+      "exitCode": 0,
+      "stderr": ""
+    }
+  ],
+  "error": null
+}

@@ -1,0 +1,221 @@
+{
+  "schema": "baxy.wake-openslr-false-route-diagnostic.v1",
+  "measuredAtUtc": "2026-08-09T20:03:11.143165+00:00",
+  "sources": {
+    "cascadeManifestSha256": "fc6b08710d4062407306161c43c4d407c4de72d0b5d658bed61e77ff80941c33",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "falseReportSha256": "4f787d43692d41a10ac571bd2fd7e1ff99efc9c89254765a33d91f0c44d61846",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf"
+  },
+  "records": [
+    {
+      "audioSha256": "05719c1d277a4768a2863c1d3fad0459fc942fd87b6780fe18e7cb708a7f63c6",
+      "candidateWindows": 1,
+      "acceptedWindows": 1,
+      "acceptedRoutes": [
+        "single_alias_rescue"
+      ],
+      "maximumAcceptedScore": 3.6832056045532227,
+      "candidates": [
+        {
+          "window": 7,
+          "route": "single_alias_rescue",
+          "verifierScore": 3.6832056045532227,
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "audioSha256": "1050fbaa1a5249aad5cfd9b203cb6c86814f549341f942ed3e1a3c52c2415ab7",
+      "candidateWindows": 22,
+      "acceptedWindows": 10,
+      "acceptedRoutes": [
+        "consensus"
+      ],
+      "maximumAcceptedScore": 4.452981472015381,
+      "candidates": [
+        {
+          "window": 5,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 6,
+          "route": "consensus",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 7,
+          "route": "consensus",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 8,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 9,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 10,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 11,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 12,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 13,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 14,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 15,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 16,
+          "route": "single_alias_rescue",
+          "verifierScore": 2.466674327850342,
+          "accepted": false
+        },
+        {
+          "window": 27,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 28,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 29,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 30,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 31,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 32,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 33,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 34,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 35,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        },
+        {
+          "window": 36,
+          "route": "consensus",
+          "verifierScore": 4.452981472015381,
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "audioSha256": "3ae47002b5c5e7f790e02774a90bf49aaf183c374e03864503f5d7b58a244a49",
+      "candidateWindows": 2,
+      "acceptedWindows": 1,
+      "acceptedRoutes": [
+        "single_alias_rescue"
+      ],
+      "maximumAcceptedScore": 5.0595479011535645,
+      "candidates": [
+        {
+          "window": 15,
+          "route": "single_alias_rescue",
+          "verifierScore": 5.0595479011535645,
+          "accepted": true
+        },
+        {
+          "window": 44,
+          "route": "consensus",
+          "verifierScore": -1.8759024143218994,
+          "accepted": false
+        }
+      ]
+    },
+    {
+      "audioSha256": "ab9e65c5abc8717069221b407dc06a31b334b11a6009e400de52a3b265136a3f",
+      "candidateWindows": 2,
+      "acceptedWindows": 2,
+      "acceptedRoutes": [
+        "consensus"
+      ],
+      "maximumAcceptedScore": 4.332210540771484,
+      "candidates": [
+        {
+          "window": 5,
+          "route": "consensus",
+          "verifierScore": 4.332210540771484,
+          "accepted": true
+        },
+        {
+          "window": 6,
+          "route": "consensus",
+          "verifierScore": 4.332210540771484,
+          "accepted": true
+        }
+      ]
+    }
+  ],
+  "transcriptsOrFilenamesRetained": false,
+  "developmentOnly": true,
+  "effectsExecuted": 0
+}

@@ -1,0 +1,118 @@
+{
+  "schema": "baxy.audit.capture-ocr.v1",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "elapsed_seconds": 0.30893730000025243,
+  "capture_responses": [
+    {
+      "type": "operation.response",
+      "requestId": "3e97ca69-f42c-4172-ac67-92c46f712afd",
+      "missionId": "10760b99-7b74-44d3-a247-b819d9b9f76c",
+      "invocationId": "3df8b4bb-f9db-4d0e-af49-263e894c0085",
+      "status": "pending",
+      "message": "Necesito tu confirmación antes de hacer eso.",
+      "verified": false,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "token": "QGA3eUJUj9cUkFbkyVVJkeLwsKA02qwrtWL35fm2ZYI",
+        "expiresAtUtc": "2026-07-27T07:02:56.0585847+00:00",
+        "reconciliationRequired": false
+      },
+      "errorCode": "confirmation_required"
+    },
+    {
+      "type": "operation.response",
+      "requestId": "85e1dab8-eaec-4da2-8ec9-d25c7442860c",
+      "missionId": "10760b99-7b74-44d3-a247-b819d9b9f76c",
+      "invocationId": "3df8b4bb-f9db-4d0e-af49-263e894c0085",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "captureId": "capture_18c17ffd2ff7434097647a0ac89dddad",
+        "width": 1280,
+        "height": 720,
+        "sha256": "88b95b38388cfbb8f4b91a415a0faf1df0b5756f1bb47439ec16ea9b57936419",
+        "scope": "virtual_screen",
+        "createdAtUtc": "2026-07-27T07:00:56.1349004+00:00"
+      },
+      "errorCode": null
+    }
+  ],
+  "ocr_responses_sanitized": [
+    {
+      "type": "operation.response",
+      "requestId": "859054ec-b084-47a0-9fe1-3fc041e73e02",
+      "missionId": "9c574848-95fa-434f-b1cd-3a692742da2b",
+      "invocationId": "96cf5946-b110-4911-abb9-ce9fd6be8f31",
+      "status": "pending",
+      "message": "Necesito tu confirmación antes de hacer eso.",
+      "verified": false,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "token": "5xu-48zWcJbcKeOmcB9nmeQ1zTw5KqHXJTXO3QZ1XS8",
+        "expiresAtUtc": "2026-07-27T07:02:56.1529749+00:00",
+        "reconciliationRequired": false
+      },
+      "errorCode": "confirmation_required"
+    },
+    {
+      "type": "operation.response",
+      "requestId": "dbbf4b08-feb8-480d-85c7-e1c507ad9bab",
+      "missionId": "9c574848-95fa-434f-b1cd-3a692742da2b",
+      "invocationId": "96cf5946-b110-4911-abb9-ce9fd6be8f31",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "captureId": "capture_18c17ffd2ff7434097647a0ac89dddad",
+        "language": "es-MX",
+        "textSha256": "f304bddf7303c5b5baea9f2c77f1294107304f48547edd3791d33e5505a87296",
+        "lineCount": 32,
+        "authority": "windows_media_ocr",
+        "textCharacterCount": 1140
+      },
+      "errorCode": null
+    }
+  ],
+  "vision_responses_sanitized": [
+    {
+      "type": "operation.response",
+      "requestId": "729e70f6-dc15-46eb-a70a-96e201dce3d9",
+      "missionId": "b4b6f4a6-8662-4f5c-abda-7f1cbe2e4c32",
+      "invocationId": "2061a008-ae1b-42fe-8a5e-c8b45335b079",
+      "status": "pending",
+      "message": "Necesito tu confirmación antes de hacer eso.",
+      "verified": false,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "token": "sCDxpo0FpcavxUtF9RRLm2IMIyhiXB4aXxxTScyyEKE",
+        "expiresAtUtc": "2026-07-27T07:02:56.2863165+00:00",
+        "reconciliationRequired": false
+      },
+      "errorCode": "confirmation_required"
+    },
+    {
+      "type": "operation.response",
+      "requestId": "b9287e40-216d-4a18-a928-6bc9686ae48f",
+      "missionId": "b4b6f4a6-8662-4f5c-abda-7f1cbe2e4c32",
+      "invocationId": "2061a008-ae1b-42fe-8a5e-c8b45335b079",
+      "status": "failed",
+      "message": "No pude completar la operación.",
+      "verified": false,
+      "replayed": false,
+      "result": null,
+      "errorCode": "vision_provider_not_configured"
+    }
+  ],
+  "private_capture_deleted_with_data_root": true,
+  "process_exit_code": 0,
+  "stderr": ""
+}

@@ -1,0 +1,2 @@
+# Static-analysis tools used by the source-quality gate.
+ruff==0.15.22

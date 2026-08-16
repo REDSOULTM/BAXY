@@ -1,0 +1,31 @@
+{
+  "authority": "development_oracle_only_no_execution_authority",
+  "blind_holdout": false,
+  "catalog": {
+    "operations": 169,
+    "sha256": "67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41"
+  },
+  "output": {
+    "bytes": 98714,
+    "path": "D:\\BAXY\\source\\artifacts\\development\\current_catalog_review_development.v1.jsonl",
+    "sha256": "9dca80eafe9aff51908a677d3cc15292f480709c79a13d663039a1726640f3fa"
+  },
+  "review": {
+    "all_rows_explicitly_reviewed": true,
+    "language_metadata_corrections": 17,
+    "outcome_counts": {
+      "action": 71,
+      "clarify": 18,
+      "conversation": 16,
+      "unsupported": 47
+    },
+    "rows": 152
+  },
+  "schema": "baxy.current-catalog-development-review-manifest.v1",
+  "source": {
+    "current_catalog_extension_rows": 5,
+    "path": "artifacts\\fixes\\native_predicted_family_qwen3_20260801.json",
+    "sample_rows": 147,
+    "sample_sha256": "c8db6a7b32f2ec607edfefd731a59ffb38dc918be3705f2e2fcaeaca0bce3feb"
+  }
+}

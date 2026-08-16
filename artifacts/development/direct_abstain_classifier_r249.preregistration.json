@@ -1,0 +1,47 @@
+{
+  "schema": "baxy.direct-abstain-classifier.r249-preregistration.v1",
+  "authority": "sealed_after_r248_preexecution_rejection_before_model_import_or_training",
+  "hypothesis": {
+    "base": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "architecture": "frozen multilingual encoder with a float32 query-only 32-way classifier: one authenticated class per typed family plus an explicit abstain class",
+    "difference_from_r246": "a direct mutually exclusive abstain class replaces R246's maximum independent family relevance score; it is not a threshold adjustment or rerun",
+    "difference_from_r247": "uses all 1,479 demonstrably fresh OOS rows available after protected evaluations and inverse-frequency loss weights rather than an unavailable one-to-one OOS sample",
+    "device": "isolated_cuda_bf16_development_environment"
+  },
+  "training": {
+    "sources": [
+      "R207 positive development queries labelled by current typed family",
+      "all fresh public PRESTO/MASSIVE OOS queries labelled explicit abstain"
+    ],
+    "base_frozen": true,
+    "inverse_frequency_class_weighted_loss": true,
+    "no_r228": true,
+    "no_public_holdout": true
+  },
+  "development_evaluation": {
+    "inside": 256,
+    "outside": 256,
+    "selection": "SHA-256 ordered public rows disjoint from every R236/R241/R243/R246 train or evaluation source id",
+    "finite_scores_required": true,
+    "acceptance": {
+      "inside_rows_lost": 0,
+      "inside_family_mismatches": 0,
+      "outside_zero_candidates": 256
+    }
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r247_sha256": "19feddaf8123a731a0271b919375efcd06514cee37c68f2b54dd58f43e51123f",
+    "r248_sha256": "b8d4da1769f0278c875094fa530245e03b1691749e318ad5f4296795362d7506",
+    "runner_sha256": "37c8bbead9cc75cce27930df0253a32fdc113a9acbd1bc6cf24fa2e2d05bc838",
+    "program_sha256": "5c44ee348f955a092c1d0ae77107a964599673e714dc123b94471e045bb639c9"
+  }
+}

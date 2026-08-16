@@ -1,0 +1,745 @@
+{
+  "schema": "baxy.mdtc-livekit-verifier-human-development.v1",
+  "measured_at_utc": "2026-08-04T19:11:07.339993+00:00",
+  "partition": "development",
+  "corpus_manifest": "D:/BAXYRuntime/experiments/wakeword/ccby_wake_holdout_v1/corpus.manifest.v1.json",
+  "corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+  "livekit": {
+    "model": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_mixed_development_v4/baxy_voxcpm2_mixed_development_v4.onnx",
+    "model_sha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "proposal_threshold": 0.02
+  },
+  "student": {
+    "report": "D:/BAXYRuntime/experiments/wakeword/mdtc_livekit_student_development_v1/development_report.v1.json",
+    "report_sha256": "8f859d5676c47b843d5db037e6af3862e1ef8275d94e3275ab52b84e4876eb97",
+    "onnx": "D:/BAXYRuntime/experiments/wakeword/mdtc_livekit_student_development_v1/mdtc_livekit_verifier_student.onnx",
+    "onnx_sha256": "23359f0902eab30a758a010a6834579133c746e90f2b4b5dbd3875d1a61df45c",
+    "training_development_threshold": 0.9966456294059755
+  },
+  "metrics_at_training_development_threshold": {
+    "positive_clips": 14,
+    "hard_negative_clips": 4,
+    "stage1_positive_proposals": 14,
+    "true_positive": 4,
+    "false_negative": 10,
+    "recall": 0.2857142857142857,
+    "false_positive": 0,
+    "hard_negative_rejection": 1.0,
+    "gate_passed": false
+  },
+  "human_development_zero_false_point": {
+    "possible": false,
+    "threshold": 0.8707030415534974,
+    "maximum_negative_score": 0.8707030415534973,
+    "minimum_positive_score": 0.028113288804888725,
+    "positive_accepted": 10,
+    "positive_total": 14,
+    "recall": 0.7142857142857143,
+    "hard_negative_false_accepts": 0,
+    "score_separation": -0.8425897527486086
+  },
+  "records": [
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 1.0,
+          "livekit_score": 0.029244333505630493,
+          "student_score": 0.8302537202835083
+        },
+        {
+          "window_end_seconds": 2.0,
+          "livekit_score": 0.24007484316825867,
+          "student_score": 0.9985260367393494
+        },
+        {
+          "window_end_seconds": 2.25,
+          "livekit_score": 0.18037956953048706,
+          "student_score": 0.9593802690505981
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.04014834761619568,
+          "student_score": 0.9333709478378296
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.05322873592376709,
+          "student_score": 0.48917797207832336
+        },
+        {
+          "window_end_seconds": 3.0,
+          "livekit_score": 0.028402864933013916,
+          "student_score": 0.7562147974967957
+        },
+        {
+          "window_end_seconds": 3.25,
+          "livekit_score": 0.03794950246810913,
+          "student_score": 0.9672127366065979
+        },
+        {
+          "window_end_seconds": 4.0,
+          "livekit_score": 0.031104981899261475,
+          "student_score": 0.23492315411567688
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.0,
+        "livekit_score": 0.24007484316825867,
+        "student_score": 0.9985260367393494
+      },
+      "maximum_student_score": 0.9985260367393494,
+      "detected_at_training_threshold": true,
+      "correct_at_training_threshold": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 0.5,
+          "livekit_score": 0.026813596487045288,
+          "student_score": 0.02044629119336605
+        },
+        {
+          "window_end_seconds": 1.0,
+          "livekit_score": 0.16085341572761536,
+          "student_score": 0.41864344477653503
+        },
+        {
+          "window_end_seconds": 1.25,
+          "livekit_score": 0.08266738057136536,
+          "student_score": 0.19329607486724854
+        },
+        {
+          "window_end_seconds": 1.5,
+          "livekit_score": 0.03297588229179382,
+          "student_score": 0.8566834330558777
+        },
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.5482248067855835,
+          "student_score": 0.9789164066314697
+        },
+        {
+          "window_end_seconds": 2.0,
+          "livekit_score": 0.9724571704864502,
+          "student_score": 0.999729573726654
+        },
+        {
+          "window_end_seconds": 2.25,
+          "livekit_score": 0.9497373700141907,
+          "student_score": 0.998650848865509
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.04620775580406189,
+          "student_score": 0.3629300594329834
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.8735175132751465,
+          "student_score": 0.944788932800293
+        },
+        {
+          "window_end_seconds": 3.0,
+          "livekit_score": 0.33137011528015137,
+          "student_score": 0.8270268440246582
+        },
+        {
+          "window_end_seconds": 3.25,
+          "livekit_score": 0.2240481972694397,
+          "student_score": 0.3035660684108734
+        },
+        {
+          "window_end_seconds": 3.5,
+          "livekit_score": 0.08251342177391052,
+          "student_score": 0.11865644156932831
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.0,
+        "livekit_score": 0.9724571704864502,
+        "student_score": 0.999729573726654
+      },
+      "maximum_student_score": 0.999729573726654,
+      "detected_at_training_threshold": true,
+      "correct_at_training_threshold": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 0.5,
+          "livekit_score": 0.03363668918609619,
+          "student_score": 0.008273925632238388
+        },
+        {
+          "window_end_seconds": 2.0,
+          "livekit_score": 0.07252532243728638,
+          "student_score": 0.9959328770637512
+        },
+        {
+          "window_end_seconds": 2.25,
+          "livekit_score": 0.13198301196098328,
+          "student_score": 0.6667396426200867
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.04696398973464966,
+          "student_score": 0.9650822877883911
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.18541952967643738,
+          "student_score": 0.9213720560073853
+        },
+        {
+          "window_end_seconds": 3.0,
+          "livekit_score": 0.02293616533279419,
+          "student_score": 0.8670332431793213
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.0,
+        "livekit_score": 0.07252532243728638,
+        "student_score": 0.9959328770637512
+      },
+      "maximum_student_score": 0.9959328770637512,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 0.75,
+          "livekit_score": 0.024663299322128296,
+          "student_score": 0.24215853214263916
+        },
+        {
+          "window_end_seconds": 1.0,
+          "livekit_score": 0.034568220376968384,
+          "student_score": 0.04760371521115303
+        },
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.03200218081474304,
+          "student_score": 0.42067021131515503
+        },
+        {
+          "window_end_seconds": 2.0,
+          "livekit_score": 0.9840795397758484,
+          "student_score": 0.9999645948410034
+        },
+        {
+          "window_end_seconds": 2.25,
+          "livekit_score": 0.7987753748893738,
+          "student_score": 0.999956488609314
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.9490538835525513,
+          "student_score": 0.9889026284217834
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.13128721714019775,
+          "student_score": 0.9358070492744446
+        },
+        {
+          "window_end_seconds": 3.0,
+          "livekit_score": 0.031581878662109375,
+          "student_score": 0.763664186000824
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.0,
+        "livekit_score": 0.9840795397758484,
+        "student_score": 0.9999645948410034
+      },
+      "maximum_student_score": 0.9999645948410034,
+      "detected_at_training_threshold": true,
+      "correct_at_training_threshold": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.1003572940826416,
+          "student_score": 0.025711245834827423
+        },
+        {
+          "window_end_seconds": 2.0,
+          "livekit_score": 0.27261656522750854,
+          "student_score": 0.9646795988082886
+        },
+        {
+          "window_end_seconds": 2.25,
+          "livekit_score": 0.2304404079914093,
+          "student_score": 0.24262207746505737
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.05153822898864746,
+          "student_score": 0.9735454320907593
+        },
+        {
+          "window_end_seconds": 3.0,
+          "livekit_score": 0.02637818455696106,
+          "student_score": 0.4668431878089905
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.75,
+        "livekit_score": 0.05153822898864746,
+        "student_score": 0.9735454320907593
+      },
+      "maximum_student_score": 0.9735454320907593,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 1.0,
+          "livekit_score": 0.02687498927116394,
+          "student_score": 0.044013042002916336
+        },
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.3281131982803345,
+          "student_score": 0.7708635926246643
+        },
+        {
+          "window_end_seconds": 2.0,
+          "livekit_score": 0.90415358543396,
+          "student_score": 0.9979894161224365
+        },
+        {
+          "window_end_seconds": 2.25,
+          "livekit_score": 0.6493836045265198,
+          "student_score": 0.9269238710403442
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.34102463722229004,
+          "student_score": 0.4252479076385498
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.11121997237205505,
+          "student_score": 0.1211027204990387
+        },
+        {
+          "window_end_seconds": 3.0,
+          "livekit_score": 0.026255905628204346,
+          "student_score": 0.04162883758544922
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.0,
+        "livekit_score": 0.90415358543396,
+        "student_score": 0.9979894161224365
+      },
+      "maximum_student_score": 0.9979894161224365,
+      "detected_at_training_threshold": true,
+      "correct_at_training_threshold": true
+    },
+    {
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 0.5,
+          "livekit_score": 0.024363338947296143,
+          "student_score": 0.09455756098031998
+        },
+        {
+          "window_end_seconds": 0.75,
+          "livekit_score": 0.02391412854194641,
+          "student_score": 0.18151329457759857
+        },
+        {
+          "window_end_seconds": 1.0,
+          "livekit_score": 0.02424389123916626,
+          "student_score": 0.14899569749832153
+        },
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.39493492245674133,
+          "student_score": 0.03718161955475807
+        },
+        {
+          "window_end_seconds": 2.0,
+          "livekit_score": 0.8510631322860718,
+          "student_score": 0.9813089966773987
+        },
+        {
+          "window_end_seconds": 2.25,
+          "livekit_score": 0.7660011053085327,
+          "student_score": 0.9594288468360901
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.27670347690582275,
+          "student_score": 0.6141064763069153
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.1597442328929901,
+          "student_score": 0.9858477115631104
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.75,
+        "livekit_score": 0.1597442328929901,
+        "student_score": 0.9858477115631104
+      },
+      "maximum_student_score": 0.9858477115631104,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "LNZyJcCArhc",
+      "speaker_group": "jesus_marcos",
+      "label": "positive",
+      "output_relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.020187348127365112,
+          "student_score": 0.2855144143104553
+        },
+        {
+          "window_end_seconds": 2.0,
+          "livekit_score": 0.04213160276412964,
+          "student_score": 0.31585216522216797
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.02697896957397461,
+          "student_score": 0.4675285220146179
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.04264667630195618,
+          "student_score": 0.6542944312095642
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.75,
+        "livekit_score": 0.04264667630195618,
+        "student_score": 0.6542944312095642
+      },
+      "maximum_student_score": 0.6542944312095642,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 3.5,
+          "livekit_score": 0.02022010087966919,
+          "student_score": 0.23368825018405914
+        },
+        {
+          "window_end_seconds": 3.75,
+          "livekit_score": 0.020526617765426636,
+          "student_score": 0.19124092161655426
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 3.5,
+        "livekit_score": 0.02022010087966919,
+        "student_score": 0.23368825018405914
+      },
+      "maximum_student_score": 0.23368825018405914,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 4.0,
+          "livekit_score": 0.038324981927871704,
+          "student_score": 0.09149381518363953
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 4.0,
+        "livekit_score": 0.038324981927871704,
+        "student_score": 0.09149381518363953
+      },
+      "maximum_student_score": 0.09149381518363953,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 3.25,
+          "livekit_score": 0.02214178442955017,
+          "student_score": 0.9050310850143433
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 3.25,
+        "livekit_score": 0.02214178442955017,
+        "student_score": 0.9050310850143433
+      },
+      "maximum_student_score": 0.9050310850143433,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.028844892978668213,
+          "student_score": 0.9098612666130066
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 1.75,
+        "livekit_score": 0.028844892978668213,
+        "student_score": 0.9098612666130066
+      },
+      "maximum_student_score": 0.9098612666130066,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "output_relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 0.75,
+          "livekit_score": 0.06255283951759338,
+          "student_score": 0.26389071345329285
+        },
+        {
+          "window_end_seconds": 1.0,
+          "livekit_score": 0.14722445607185364,
+          "student_score": 0.9752793908119202
+        },
+        {
+          "window_end_seconds": 1.25,
+          "livekit_score": 0.02051413059234619,
+          "student_score": 0.7708795070648193
+        },
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.24335139989852905,
+          "student_score": 0.9746870398521423
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 1.0,
+        "livekit_score": 0.14722445607185364,
+        "student_score": 0.9752793908119202
+      },
+      "maximum_student_score": 0.9752793908119202,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "BJLgprj4ztE",
+      "speaker_group": "baxi_ferrol_welcome_narrator",
+      "label": "positive",
+      "output_relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 3.75,
+          "livekit_score": 0.020529180765151978,
+          "student_score": 0.028113288804888725
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 3.75,
+        "livekit_score": 0.020529180765151978,
+        "student_score": 0.028113288804888725
+      },
+      "maximum_student_score": 0.028113288804888725,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": false
+    },
+    {
+      "source_id": "jYChxFZPNNQ",
+      "speaker_group": "tarang_bakshi",
+      "label": "hard_negative",
+      "output_relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 1.0,
+          "livekit_score": 0.025618404150009155,
+          "student_score": 0.016232799738645554
+        },
+        {
+          "window_end_seconds": 1.5,
+          "livekit_score": 0.026427030563354492,
+          "student_score": 0.17224007844924927
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 1.5,
+        "livekit_score": 0.026427030563354492,
+        "student_score": 0.17224007844924927
+      },
+      "maximum_student_score": 0.17224007844924927,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": true
+    },
+    {
+      "source_id": "olFKsOxLG8k",
+      "speaker_group": "upendra_bakshi",
+      "label": "hard_negative",
+      "output_relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 1.5,
+          "livekit_score": 0.4009726643562317,
+          "student_score": 0.6233540773391724
+        },
+        {
+          "window_end_seconds": 1.75,
+          "livekit_score": 0.4815182685852051,
+          "student_score": 0.26662442088127136
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.20131665468215942,
+          "student_score": 0.6532195806503296
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.14415836334228516,
+          "student_score": 0.672295093536377
+        },
+        {
+          "window_end_seconds": 3.0,
+          "livekit_score": 0.2986539304256439,
+          "student_score": 0.6929810643196106
+        },
+        {
+          "window_end_seconds": 3.25,
+          "livekit_score": 0.09900277853012085,
+          "student_score": 0.2688165605068207
+        },
+        {
+          "window_end_seconds": 3.75,
+          "livekit_score": 0.0308208167552948,
+          "student_score": 0.03328325226902962
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 3.0,
+        "livekit_score": 0.2986539304256439,
+        "student_score": 0.6929810643196106
+      },
+      "maximum_student_score": 0.6929810643196106,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": true
+    },
+    {
+      "source_id": "S_7-Gxa6ANU",
+      "speaker_group": "mahesh_faxi",
+      "label": "hard_negative",
+      "output_relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 3.25,
+          "livekit_score": 0.020117878913879395,
+          "student_score": 0.5532242655754089
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 3.25,
+        "livekit_score": 0.020117878913879395,
+        "student_score": 0.5532242655754089
+      },
+      "maximum_student_score": 0.5532242655754089,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": true
+    },
+    {
+      "source_id": "PuSaeFStpwc",
+      "speaker_group": "viplav_vaxi",
+      "label": "hard_negative",
+      "output_relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "candidate_windows": [
+        {
+          "window_end_seconds": 2.25,
+          "livekit_score": 0.09408330917358398,
+          "student_score": 0.8707030415534973
+        },
+        {
+          "window_end_seconds": 2.5,
+          "livekit_score": 0.31763356924057007,
+          "student_score": 0.35363999009132385
+        },
+        {
+          "window_end_seconds": 2.75,
+          "livekit_score": 0.601586639881134,
+          "student_score": 0.845475435256958
+        },
+        {
+          "window_end_seconds": 3.0,
+          "livekit_score": 0.022342443466186523,
+          "student_score": 0.054578788578510284
+        }
+      ],
+      "best_candidate": {
+        "window_end_seconds": 2.25,
+        "livekit_score": 0.09408330917358398,
+        "student_score": 0.8707030415534973
+      },
+      "maximum_student_score": 0.8707030415534973,
+      "detected_at_training_threshold": false,
+      "correct_at_training_threshold": true
+    }
+  ],
+  "candidate_frozen": false,
+  "product_operating_point": false,
+  "blind_human_partition_accessed": false,
+  "effects_executed": 0
+}

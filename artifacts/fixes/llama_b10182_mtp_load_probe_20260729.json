@@ -1,0 +1,69 @@
+{
+  "schema": "baxy.llama-b10182-mtp-load-probe.v1",
+  "date": "2026-07-29",
+  "status": "not_applicable",
+  "runtime": {
+    "release": "b10182",
+    "commit": "afeebe1",
+    "server_sha256": "817b4134ae6086e2c27a159be2c23126f875c024c9fe57cf30c672b1980e3b0a",
+    "official_archive_sha256": "5835bbe18c8dcdbcb229a77c625916be4ec6ed378bba33241df41304a305875d",
+    "location": "temporary audit runtime",
+    "installed": false
+  },
+  "model": {
+    "name": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+    "sha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+    "role": "registered BAXY target model"
+  },
+  "profiles": {
+    "control": {
+      "spec_type": "none",
+      "server_ready": true,
+      "six_case_workload_completed": true
+    },
+    "candidate": {
+      "spec_type": "draft-mtp",
+      "spec_draft_n_max": 1,
+      "server_ready": false,
+      "exit_code": 1,
+      "failure": [
+        "context type MTP requested but model doesn't contain MTP layers",
+        "failed to create MTP context",
+        "exiting due to model loading error"
+      ]
+    }
+  },
+  "fixed_runtime_profile": {
+    "cache_type_k": "q8_0",
+    "cache_type_v": "q8_0",
+    "flash_attention": true,
+    "parallel": 3,
+    "context_per_slot": 4096
+  },
+  "measurement": {
+    "ab_comparison_available": false,
+    "reason": "The candidate cannot become ready with the registered GGUF, so no valid opposite-order latency pair exists.",
+    "contaminated_attempts_excluded": true,
+    "quiet_run_reached_candidate_load_failure": true
+  },
+  "safety": {
+    "host_quiet_before_run": true,
+    "new_assets_downloaded": false,
+    "installation_changed": false,
+    "runtime_manifest_changed": false,
+    "core_started": false,
+    "external_effects_executed": false,
+    "llama_server_remaining_after_run": false
+  },
+  "decision": {
+    "classification": "not_applicable",
+    "promotion_gate_passed": false,
+    "production_change": false,
+    "reason": "The registered target GGUF has no MTP layers. Adding an assistant or MTP-capable GGUF would change attested assets and require a separate quality and packaging certification."
+  },
+  "evidence": {
+    "control_log": "artifacts/fixes/llama_b10182_mtp_order1-none_1785359742530471600.log",
+    "candidate_log": "artifacts/fixes/llama_b10182_mtp_order1-mtp_1785359777186886200.log",
+    "harness": "experiments/mind_router_spike/benchmark_llama_b10182_mtp.py"
+  }
+}

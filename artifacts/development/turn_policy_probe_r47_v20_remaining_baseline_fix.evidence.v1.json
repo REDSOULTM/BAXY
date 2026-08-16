@@ -1,0 +1,44 @@
+{
+  "arm": "evidence",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v20_remaining_baseline_fix.evidence.v1.raw.jsonl",
+    "sha256": "90e9481e404be1ca96d5e6074c6005eb6c08ee1bf4b8fec9d59b2e4f177c0661"
+  },
+  "cases": [
+    {
+      "attempt_failures": [],
+      "case_id": "holdout:presto-v1:en-US:0a5f02e0b9714624028cf36b71f013d8c367ab2bf54131e25086591f0969460a",
+      "expected_families": [
+        "note"
+      ],
+      "expected_modes": [
+        "action"
+      ],
+      "result": {
+        "audit_request_id": "gate-evidence-fed7e271260a21e50e734b04",
+        "error": "",
+        "failure_code": "",
+        "kind": "action",
+        "latency_seconds": 0.0502,
+        "operation": "note.create",
+        "question": "",
+        "recovery_attempts": 0,
+        "reply": "",
+        "turn_attempts": 1,
+        "turn_recovery": ""
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T00:17:49.833211+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 0,
+    "cases": 1,
+    "recovery_cases": 0,
+    "runtime_errors": 0
+  }
+}

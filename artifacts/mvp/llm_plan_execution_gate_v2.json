@@ -1,0 +1,2008 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-08-11T21:15:09.609685+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "Qwen3-4B-Q4_K_M.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424,
+      "registeredCandidateWasFunctional": true
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "bytes": 2497280256
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 169,
+  "total_seconds": 22.289,
+  "cases": [
+    {
+      "case": "deterministic_file_write",
+      "planner_path": "deterministic_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "action",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "filesystem.write.text"
+      ],
+      "effect_operations": [
+        "filesystem.write.text"
+      ],
+      "decision_seconds": 1.857,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "filesystem.write.text"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "filesystem.write.text",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "relativePath",
+            "text"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "resourceId": "fs_5319a7eb265f46f6930a438a36b647e8",
+            "sha256": "1f28df57cab94afbf6b3333dc9c445e9215b2dafcbebc6651962e61bcd9e28db"
+          }
+        }
+      ],
+      "seconds": 1.961,
+      "status": "passed",
+      "dependency_positions": [
+        []
+      ]
+    },
+    {
+      "case": "llm_note_roundtrip",
+      "planner_path": "real_llm_skeleton_and_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read"
+      ],
+      "decision_seconds": 0.015,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "572bd802-1513-46ad-b25d-b6eb30c319a9",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "572bd802-1513-46ad-b25d-b6eb30c319a9",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.132,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "case": "llm_note_ordinal_dependency",
+      "planner_path": "real_llm_conserved_turn_exact_dependency_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.read"
+      ],
+      "decision_seconds": 0.008,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "32132f94-868d-432c-a68a-e2beac958735",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "004784f8-678b-4ef5-9100-dcf31594d878",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "32132f94-868d-432c-a68a-e2beac958735",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.148,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "case": "llm_note_parallel_pair_dependencies",
+      "planner_path": "real_llm_four_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "decision_seconds": 0.013,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "d4e673f1-7695-4f90-876b-0d9a735277cc",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "c629819d-5dcf-4a33-b166-73ac59093f90",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "d4e673f1-7695-4f90-876b-0d9a735277cc",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_2"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "c629819d-5dcf-4a33-b166-73ac59093f90",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.209,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [
+          0
+        ],
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "case": "llm_note_reverse_pair_dependencies",
+      "planner_path": "real_llm_four_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "decision_seconds": 0.013,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "7f3299d3-a6e5-42e9-a6b0-6737934c2bcd",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "65f556bd-8e97-45a8-905c-48cfee94d977",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_2"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "65f556bd-8e97-45a8-905c-48cfee94d977",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "7f3299d3-a6e5-42e9-a6b0-6737934c2bcd",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.192,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [
+          1
+        ],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "case": "llm_note_interleaved_pair_dependencies",
+      "planner_path": "real_llm_four_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "decision_seconds": 0.01,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "c0266928-50d4-467e-82b1-0c965bd49b1d",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "c0266928-50d4-467e-82b1-0c965bd49b1d",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "ceb0128a-66d6-490e-a525-b7d388d4a777",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_3"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "ceb0128a-66d6-490e-a525-b7d388d4a777",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.184,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ],
+        [],
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "case": "llm_note_eight_step_interleaved_dependencies",
+      "planner_path": "real_llm_eight_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "decision_seconds": 0.017,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "8587a4cf-556a-48ff-b444-263e3b4371f9",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "8587a4cf-556a-48ff-b444-263e3b4371f9",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "3ab34e98-9f1e-40c0-adf9-62d9ef1378eb",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_3"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "3ab34e98-9f1e-40c0-adf9-62d9ef1378eb",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_5",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "1dd7fa84-081b-4bf4-a8fc-536f1a19f2e1",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_6",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_5"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "1dd7fa84-081b-4bf4-a8fc-536f1a19f2e1",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_7",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "8788b40b-f2f0-43b9-9875-5fd47c09cc95",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_8",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_7"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "8788b40b-f2f0-43b9-9875-5fd47c09cc95",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.375,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ],
+        [],
+        [
+          2
+        ],
+        [],
+        [
+          4
+        ],
+        [],
+        [
+          6
+        ]
+      ]
+    },
+    {
+      "case": "llm_note_eight_step_permuted_dependencies",
+      "planner_path": "real_llm_eight_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "decision_seconds": 0.011,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "d13e2d26-f1df-4995-bff5-444e0f049342",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "2f4a50f0-aef5-4698-b53d-a07b4412cbf7",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "a785a66a-79ba-4c9a-bfff-cc53fcfd6b9b",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "b87a3982-4bb7-45d8-9cd2-c864571bec3b",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_5",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_3"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "a785a66a-79ba-4c9a-bfff-cc53fcfd6b9b",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_6",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "d13e2d26-f1df-4995-bff5-444e0f049342",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_7",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_4"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "b87a3982-4bb7-45d8-9cd2-c864571bec3b",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_8",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_2"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "2f4a50f0-aef5-4698-b53d-a07b4412cbf7",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.419,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [],
+        [],
+        [
+          2
+        ],
+        [
+          0
+        ],
+        [
+          3
+        ],
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "case": "llm_note_eight_step_permuted_dependencies_en",
+      "planner_path": "real_llm_eight_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "decision_seconds": 0.007,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.create",
+        "note.read",
+        "note.read",
+        "note.read",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "2dd18715-3c93-448d-ab48-965e715e81b7",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "23a0b60b-8964-488f-8c9d-2545d05826e1",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "b829dd7b-249b-4e2e-9892-5f56631eb92f",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "80fa59b9-9702-47a5-a77a-6c59e3ba5dc6",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_5",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_4"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "80fa59b9-9702-47a5-a77a-6c59e3ba5dc6",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_6",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_2"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "23a0b60b-8964-488f-8c9d-2545d05826e1",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_7",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "2dd18715-3c93-448d-ab48-965e715e81b7",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_8",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_3"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "b829dd7b-249b-4e2e-9892-5f56631eb92f",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.359,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [],
+        [],
+        [],
+        [
+          3
+        ],
+        [
+          1
+        ],
+        [
+          0
+        ],
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "case": "office_roundtrip",
+      "planner_path": "deterministic_skeleton_real_llm_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "effect_operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "decision_seconds": 0.006,
+      "response_type": "plan.result",
+      "kind": "clarify",
+      "operations": [],
+      "steps": [],
+      "seconds": 2.034,
+      "status": "failed",
+      "error": "¿Cuál formato se utilizará para crear el documento Word?"
+    },
+    {
+      "case": "capture_ocr_grounding",
+      "planner_path": "deterministic_skeleton_real_llm_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "effect_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "decision_seconds": 0.005,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "capture.screenshot",
+          "risk": "privacy_sensitive",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "captureId": "capture_721bf766d64443db8ea5b84b518c7c00",
+            "sha256": "0fc17c328079162d1ab8f4297bc7e2ad00a2f1af551687ffd143a6d220699dd0"
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "ocr.read",
+          "risk": "privacy_sensitive",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "captureId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "captureId": "capture_721bf766d64443db8ea5b84b518c7c00"
+          }
+        }
+      ],
+      "seconds": 0.293,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "case": "llm_steam_catalog_status",
+      "planner_path": "real_llm_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "game.catalog.list",
+        "game.install.status"
+      ],
+      "effect_operations": [
+        "game.catalog.list",
+        "game.install.status"
+      ],
+      "decision_seconds": 0.01,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "game.catalog.list",
+        "game.install.status"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "game.catalog.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "count": 16,
+            "games": [
+              {
+                "appId": "924970",
+                "name": "Back 4 Blood",
+                "state": "installed"
+              },
+              {
+                "appId": "696370",
+                "name": "BROKE PROTOCOL",
+                "state": "installed"
+              },
+              {
+                "appId": "367670",
+                "name": "Controller Companion",
+                "state": "installed"
+              },
+              {
+                "appId": "730",
+                "name": "Counter-Strike 2",
+                "state": "installed"
+              },
+              {
+                "appId": "268910",
+                "name": "Cuphead",
+                "state": "installed"
+              },
+              {
+                "appId": "227260",
+                "name": "DisplayFusion",
+                "state": "installed"
+              },
+              {
+                "appId": "1812620",
+                "name": "DSX",
+                "state": "installed"
+              },
+              {
+                "appId": "420",
+                "name": "Half-Life 2: Episode Two",
+                "state": "installed"
+              },
+              {
+                "appId": "993090",
+                "name": "Lossless Scaling",
+                "state": "installed"
+              },
+              {
+                "appId": "2767030",
+                "name": "Marvel Rivals",
+                "state": "installed"
+              },
+              {
+                "appId": "572430",
+                "name": "Party Hard 2 ",
+                "state": "installed"
+              },
+              {
+                "appId": "739630",
+                "name": "Phasmophobia",
+                "state": "installed"
+              },
+              {
+                "appId": "6060",
+                "name": "Star Wars: Battlefront 2 (Classic, 2005)",
+                "state": "installed"
+              },
+              {
+                "appId": "228980",
+                "name": "Steamworks Common Redistributables",
+                "state": "installed"
+              },
+              {
+                "appId": "4069520",
+                "name": "Super Battle Golf",
+                "state": "installed"
+              },
+              {
+                "appId": "431960",
+                "name": "Wallpaper Engine",
+                "state": "installed"
+              }
+            ]
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "game.install.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "appId"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "jobId": "steam_job_52d19b26fb6f59cf5c387cdc",
+            "appId": "945360",
+            "state": "not_installed"
+          }
+        }
+      ],
+      "seconds": 0.672,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        []
+      ]
+    },
+    {
+      "case": "web_search_and_navigation",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "effect_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "decision_seconds": 0.007,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "web.search",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "query"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "count": 5,
+            "results": [
+              {
+                "url": "https://openai.com/codex/"
+              },
+              {
+                "url": "https://openai.com/es-ES/codex/"
+              },
+              {
+                "url": "https://developers.openai.com/learn/codex"
+              },
+              {
+                "url": "https://github.com/openai/codex"
+              },
+              {
+                "url": "https://learn.chatgpt.com/docs/codex/cli"
+              }
+            ]
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "browser.navigate",
+          "risk": "external_communication",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "url"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "targetId": "CF1DAA98271FE27C81AD107D59791919"
+          }
+        }
+      ],
+      "seconds": 1.559,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        []
+      ]
+    },
+    {
+      "case": "streaming_and_search",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "effect_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "decision_seconds": 0.016,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "streaming.navigate",
+          "risk": "external_communication",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "resourceUri",
+            "service"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "resourceUri": "https://www.youtube.com/results?search_query=BAXY+planner",
+            "targetId": "CF1DAA98271FE27C81AD107D59791919"
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "web.search",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "query"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "count": 5,
+            "results": [
+              {
+                "url": "https://openai.com/codex/"
+              },
+              {
+                "url": "https://openai.com/es-ES/codex/"
+              },
+              {
+                "url": "https://developers.openai.com/learn/codex"
+              },
+              {
+                "url": "https://github.com/openai/codex"
+              },
+              {
+                "url": "https://learn.chatgpt.com/docs/codex/cli"
+              }
+            ]
+          }
+        }
+      ],
+      "seconds": 2.132,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        []
+      ]
+    },
+    {
+      "case": "llm_calendar_read",
+      "planner_path": "real_llm_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "action",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "calendar.event.list"
+      ],
+      "effect_operations": [
+        "calendar.event.list"
+      ],
+      "decision_seconds": 0.008,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "calendar.event.list"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "calendar.event.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "endUtc",
+            "startUtc"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "failed",
+          "verified": false,
+          "error": "outlook_profile_not_configured",
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 1.567,
+      "status": "environment_blocked",
+      "dependency_positions": [
+        []
+      ],
+      "environmental_precondition": "outlook_profile_not_configured"
+    },
+    {
+      "case": "spotify_exact_then_pause",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "media.play.exact",
+        "media.control"
+      ],
+      "effect_operations": [
+        "media.play.exact",
+        "media.control"
+      ],
+      "decision_seconds": 0.014,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "media.play.exact",
+        "media.control"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "media.play.exact",
+          "risk": "external_communication",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "provider",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "media.control",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "action",
+            "sourceApp"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1
+          }
+        }
+      ],
+      "seconds": 2.398,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        []
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 14,
+    "environment_blocked": 1,
+    "failed": 1,
+    "total": 16,
+    "verified_steps": 52,
+    "real_llm_plan_cases": 10,
+    "real_llm_plan_cases_passed": 9,
+    "model_grounded_steps": 21,
+    "ambiguous_effects": 0,
+    "status": "failed"
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

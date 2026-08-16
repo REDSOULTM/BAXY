@@ -1,0 +1,1952 @@
+{
+  "schema": "baxy-audit-remediation-live-turn-probe-v1",
+  "measured_at": "2026-07-27T23:49:20.103380+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    }
+  ],
+  "passed": 62,
+  "failed": 0,
+  "cases": [
+    {
+      "text": "Busca Spotify en Google",
+      "expected": {
+        "forbiddenOperations": [
+          "media.play.query",
+          "media.play.exact"
+        ]
+      },
+      "elapsed_seconds": 21.44,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "clarify",
+        "operation": null,
+        "effectOperations": [],
+        "question": "¿Qué tipo de música o artista estás buscando en Spotify?",
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": "semantic_clarification",
+        "recovery_attempts": 1,
+        "failure_code": "turn_runtime_failure"
+      },
+      "plan": null
+    },
+    {
+      "text": "Busca Spotify en Wikipedia",
+      "expected": {
+        "forbiddenOperations": [
+          "media.play.query",
+          "media.play.exact"
+        ]
+      },
+      "elapsed_seconds": 18.756,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "clarify",
+        "operation": null,
+        "effectOperations": [],
+        "question": "¿Qué información específica sobre Spotify estás buscando en Wikipedia?",
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": "semantic_clarification",
+        "recovery_attempts": 1,
+        "failure_code": "turn_runtime_failure"
+      },
+      "plan": null
+    },
+    {
+      "text": "Busca la palabra Spotify en este documento",
+      "expected": {
+        "forbiddenOperations": [
+          "media.play.query",
+          "media.play.exact"
+        ]
+      },
+      "elapsed_seconds": 9.762,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Por favor, proporciona el documento.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Sube el volumen total de ventas en 2 puntos",
+      "expected": {
+        "forbiddenOperations": [
+          "audio.volume",
+          "audio.volume.adjust",
+          "audio.status"
+        ]
+      },
+      "elapsed_seconds": 9.537,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo subir el volumen total de ventas. ¿Podrías especificar a qué te refieres exactamente?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Aumenta el volumen anual de ventas en 2 puntos",
+      "expected": {
+        "forbiddenOperations": [
+          "audio.volume",
+          "audio.volume.adjust",
+          "audio.status"
+        ]
+      },
+      "elapsed_seconds": 10.83,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-5",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿Podrías darme más contexto sobre a qué te refieres con \"aumentar el volumen anual de ventas en 2 puntos\"? ¿Es para un producto específico, un mercado, o un objetivo general?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Pon el volumen total de datos al 50%",
+      "expected": {
+        "forbiddenOperations": [
+          "audio.volume",
+          "audio.volume.adjust",
+          "audio.status"
+        ]
+      },
+      "elapsed_seconds": 9.813,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-6",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No tengo acceso a herramientas para controlar el volumen de datos.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lee la pagina actual del documento",
+      "expected": {
+        "forbiddenOperations": [
+          "browser.page.read",
+          "browser.control"
+        ]
+      },
+      "elapsed_seconds": 12.286,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-7",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo leer páginas web directamente. ¿Podrías copiar y pegar el contenido del documento aquí?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Recarga la pagina actual del documento",
+      "expected": {
+        "forbiddenOperations": [
+          "browser.page.read",
+          "browser.control"
+        ]
+      },
+      "elapsed_seconds": 10.161,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-8",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo recargar páginas de documentos. ¿Hay algo más en lo que te pueda ayudar?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Maximiza la ventana de oportunidad",
+      "expected": {
+        "forbiddenOperations": [
+          "window.active",
+          "window.maximize"
+        ]
+      },
+      "elapsed_seconds": 9.966,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-9",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿A qué te refieres exactamente con \"maximizar la ventana de oportunidad\"? ¿Estás hablando de una situación específica, un proyecto, o algo más?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Minimiza la ventana de exposicion financiera",
+      "expected": {
+        "forbiddenOperations": [
+          "window.active",
+          "window.minimize"
+        ]
+      },
+      "elapsed_seconds": 9.978,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-10",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿Te refieres a minimizar una ventana específica en tu pantalla o a reducir el tamaño de una ventana de una aplicación financiera?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lista los procesos de contratacion de la empresa",
+      "expected": {
+        "forbiddenOperations": [
+          "system.process.list"
+        ]
+      },
+      "elapsed_seconds": 10.005,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-11",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Para poder listar los procesos de contratación de la empresa, ¿podrías decirme a qué empresa te refieres?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre la puerta",
+      "expected": {
+        "forbiddenOperations": [
+          "filesystem.folder.open",
+          "app.open"
+        ]
+      },
+      "elapsed_seconds": 12.94,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-12",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-12",
+        "version": 1,
+        "kind": "clarify",
+        "question": "¿Qué aplicación específica deseas abrir?",
+        "steps": []
+      }
+    },
+    {
+      "text": "Muestra el estado de la memoria privada de BAXY",
+      "expected": {
+        "forbiddenOperations": [
+          "system.status"
+        ]
+      },
+      "elapsed_seconds": 9.294,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-13",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No tengo acceso a información sobre el estado de la memoria privada de BAXY.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Silencia el audio manana",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 8.679,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-14",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo silenciar el audio para mañana. ¿Hay algo más en lo que te pueda ayudar hoy?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Pon el volumen al 20% a las 5",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 7.881,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-15",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo controlar el volumen de tu sistema.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Haz una captura de pantalla manana",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 7.464,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-16",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo hacer capturas de pantalla.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Maximiza la ventana activa mas tarde",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 7.253,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-17",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Entendido, maximizaré la ventana activa más tarde.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Reproduce Beat It en Spotify luego",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 8.487,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-18",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo reproducir música directamente.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Pon el volumen al 8% y el brillo al 50%",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 11.811,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-19",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo realizar esa acción.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Silencia el audio y las notificaciones",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 11.231,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-20",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo silenciar el audio o las notificaciones directamente. ¿Hay algo más en lo que te pueda ayudar?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Estan instalados Half-Life 2 y Portal 2 en Steam?",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 8.954,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-21",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No tengo acceso a la información de tu biblioteca de Steam. ¿Quieres que te ayude a buscar información sobre Half-Life 2 o Portal 2?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Silencia el audio, no lo hagas",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 6.141,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-22",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo silenciar el audio porque no tengo acceso a esa función.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Silencia el audio; no lo hagas",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.872,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-23",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo silenciar el audio.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Silencia el audio. No lo hagas",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 6.036,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-24",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo silenciar el audio.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Pon el volumen al 20%, mejor no",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 8.936,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-25",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo controlar el volumen de tu sistema directamente.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Haz una captura de pantalla, en realidad no",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.227,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-26",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo hacer capturas de pantalla. ¿Hay algo más en lo que te pueda ayudar?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Maximiza la ventana activa, aunque mejor no",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 6.016,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-27",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Para maximizar la ventana activa, puedes hacer clic en el botón de maximizar (el cuadrado) en la esquina superior derecha de la ventana.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Copia la seleccion, scratch that",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 4.481,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-28",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Entendido. ¿Qué te gustaría hacer ahora?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Navega a https://example.com/, actually do not",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 5.233,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-29",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo navegar a sitios web.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea una nota, on second thought do not",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 6.098,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-30",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "Okay, no problem. What kind of note are you looking for?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea una nota Alfa y una tarea Beta",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 11.199,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-31",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿Podrías darme más detalles sobre qué tipo de nota Alfa y tarea Beta necesitas? ¿Para qué son?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Busca clima en la web y Auditoria en mis notas",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 10.988,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-32",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo buscar clima en la web ni auditar tus notas directamente. ¿Hay algo más en lo que te pueda ayudar con tu PC Windows?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Create a task then mark it done",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 13.888,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-33",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿Qué tarea quieres crear?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea una tarea y una notificacion",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 10.796,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-34",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "¿Qué tipo de tarea y notificación te gustaría crear?",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Spotify y luego cierralo",
+      "expected": {
+        "forbiddenKinds": [
+          "action",
+          "plan"
+        ]
+      },
+      "elapsed_seconds": 10.614,
+      "matches": true,
+      "observedOperations": [],
+      "result": {
+        "type": "turn.result",
+        "id": "case-35",
+        "kind": "conversation",
+        "operation": null,
+        "effectOperations": [],
+        "question": "",
+        "reply": "No puedo abrir ni cerrar aplicaciones como Spotify.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea una nota y una tarea",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "note.create",
+          "task.create"
+        ]
+      },
+      "elapsed_seconds": 9.613,
+      "matches": true,
+      "observedOperations": [
+        "note.create",
+        "task.create"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-36",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "note.create",
+          "task.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-36",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "note.create",
+            "purpose": "crea una nota y una",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "content": "crea una nota y una",
+              "title": "crea una nota y una"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "task.create",
+            "purpose": "tarea",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "title": "tarea"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Crea una tarea llamada Alfa y un recordatorio llamado Beta para manana a las 9",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "task.create",
+          "reminder.create"
+        ]
+      },
+      "elapsed_seconds": 8.428,
+      "matches": true,
+      "observedOperations": [
+        "task.create",
+        "reminder.create"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-37",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "task.create",
+          "reminder.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-37",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "task.create",
+            "purpose": "crea una tarea llamada alfa y un",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "title": "alfa"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "reminder.create",
+            "purpose": "recordatorio llamado beta para manana a las 9",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "title": "beta",
+              "dueUtc": "2026-07-28T13:00:00Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Lista mis notas y mis tareas",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "note.list",
+          "task.list"
+        ]
+      },
+      "elapsed_seconds": 9.269,
+      "matches": true,
+      "observedOperations": [
+        "note.list",
+        "task.list"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-38",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "note.list",
+          "task.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-38",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "note.list",
+            "purpose": "lista mis notas y mis",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {}
+          },
+          {
+            "id": "step_2",
+            "operation": "task.list",
+            "purpose": "tareas",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {}
+          }
+        ]
+      }
+    },
+    {
+      "text": "Busca Auditoria en mis notas y mis tareas",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "note.search",
+          "task.search"
+        ]
+      },
+      "elapsed_seconds": 9.206,
+      "matches": true,
+      "observedOperations": [
+        "note.search",
+        "task.search"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-39",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "note.search",
+          "task.search"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-39",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "note.search",
+            "purpose": "busca auditoria en mis notas y mis",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "query": "Auditoria en mis notas y mis"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "task.search",
+            "purpose": "tareas",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "query": "tareas"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Que juegos estan instalados en Steam?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "game.catalog.list"
+      },
+      "elapsed_seconds": 6.036,
+      "matches": true,
+      "observedOperations": [
+        "game.catalog.list"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-40",
+        "kind": "action",
+        "operation": "game.catalog.list",
+        "effectOperations": [
+          "game.catalog.list"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Esta instalado Steam como plataforma de juego?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.installed"
+      },
+      "elapsed_seconds": 5.814,
+      "matches": true,
+      "observedOperations": [
+        "app.installed"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-41",
+        "kind": "action",
+        "operation": "app.installed",
+        "effectOperations": [
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Lee la pagina actual del navegador",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "browser.page.read"
+      },
+      "elapsed_seconds": 5.878,
+      "matches": true,
+      "observedOperations": [
+        "browser.page.read"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-42",
+        "kind": "action",
+        "operation": "browser.page.read",
+        "effectOperations": [
+          "browser.page.read"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Recarga la pagina web actual",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "browser.control"
+      },
+      "elapsed_seconds": 5.87,
+      "matches": true,
+      "observedOperations": [
+        "browser.control"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-43",
+        "kind": "action",
+        "operation": "browser.control",
+        "effectOperations": [
+          "browser.control"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Pon el volumen de audio al 20%",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "audio.volume"
+      },
+      "elapsed_seconds": 5.806,
+      "matches": true,
+      "observedOperations": [
+        "audio.volume"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-44",
+        "kind": "action",
+        "operation": "audio.volume",
+        "effectOperations": [
+          "audio.volume"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Crea un recordatorio para manana a las 9",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "reminder.create"
+      },
+      "elapsed_seconds": 5.995,
+      "matches": true,
+      "observedOperations": [
+        "reminder.create"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-45",
+        "kind": "action",
+        "operation": "reminder.create",
+        "effectOperations": [
+          "reminder.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Play Beat It exactly on Spotify and pause afterwards",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "media.play.exact",
+          "media.control"
+        ]
+      },
+      "elapsed_seconds": 14.223,
+      "matches": true,
+      "observedOperations": [
+        "media.play.exact",
+        "media.control"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-46",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "media.play.exact",
+          "media.control"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-46",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "media.play.exact",
+            "purpose": "play beat it exactly on spotify",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "provider": "spotify",
+              "title": "Beat It"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "media.control",
+            "purpose": "pause",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "action": "pause"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Busca Beat It en Spotify",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "media.play.query"
+      },
+      "elapsed_seconds": 5.779,
+      "matches": true,
+      "observedOperations": [
+        "media.play.query"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-47",
+        "kind": "action",
+        "operation": "media.play.query",
+        "effectOperations": [
+          "media.play.query"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Spotify y reproduce Beat It",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "media.play.query"
+      },
+      "elapsed_seconds": 6.913,
+      "matches": true,
+      "observedOperations": [
+        "media.play.query"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-48",
+        "kind": "action",
+        "operation": "media.play.query",
+        "effectOperations": [
+          "media.play.query"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Paint",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 0.75,
+      "matches": true,
+      "observedOperations": [
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-49",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Visual Studio Code",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 0.363,
+      "matches": true,
+      "observedOperations": [
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-50",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre la aplicacion Spotify",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 0.474,
+      "matches": true,
+      "observedOperations": [
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-51",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Esta instalado Paint?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.installed"
+      },
+      "elapsed_seconds": 1.502,
+      "matches": true,
+      "observedOperations": [
+        "app.installed"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-52",
+        "kind": "action",
+        "operation": "app.installed",
+        "effectOperations": [
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Paint y Visual Studio Code",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.open",
+          "app.open"
+        ]
+      },
+      "elapsed_seconds": 1.213,
+      "matches": true,
+      "observedOperations": [
+        "app.open",
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-53",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.open",
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-53",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "paint",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Paint"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.open",
+            "purpose": "visual studio code",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Visual Studio Code"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Estan instalados Paint y Visual Studio Code?",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.installed",
+          "app.installed"
+        ]
+      },
+      "elapsed_seconds": 2.523,
+      "matches": true,
+      "observedOperations": [
+        "app.installed",
+        "app.installed"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-54",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.installed",
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-54",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.installed",
+            "purpose": "paint",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Paint"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.installed",
+            "purpose": "visual studio code",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Visual Studio Code"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Open Paint, Visual Studio Code, and Spotify",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.open",
+          "app.open",
+          "app.open"
+        ]
+      },
+      "elapsed_seconds": 1.368,
+      "matches": true,
+      "observedOperations": [
+        "app.open",
+        "app.open",
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-55",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.open",
+          "app.open",
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-55",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "paint",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Paint"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.open",
+            "purpose": "visual studio code",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Visual Studio Code"
+            }
+          },
+          {
+            "id": "step_3",
+            "operation": "app.open",
+            "purpose": "spotify",
+            "dependsOn": [
+              "step_2"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Spotify"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Open Paint and then Visual Studio Code",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.open",
+          "app.open"
+        ]
+      },
+      "elapsed_seconds": 1.248,
+      "matches": true,
+      "observedOperations": [
+        "app.open",
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-56",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.open",
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-56",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "paint",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Paint"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.open",
+            "purpose": "visual studio code",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Visual Studio Code"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Abre Paint y luego Visual Studio Code",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.open",
+          "app.open"
+        ]
+      },
+      "elapsed_seconds": 1.265,
+      "matches": true,
+      "observedOperations": [
+        "app.open",
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-57",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.open",
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-57",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "paint",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Paint"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.open",
+            "purpose": "visual studio code",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Visual Studio Code"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Are Paint, Visual Studio Code, and Spotify installed?",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.installed",
+          "app.installed",
+          "app.installed"
+        ]
+      },
+      "elapsed_seconds": 2.483,
+      "matches": true,
+      "observedOperations": [
+        "app.installed",
+        "app.installed",
+        "app.installed"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-58",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.installed",
+          "app.installed",
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-58",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.installed",
+            "purpose": "paint",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Paint"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.installed",
+            "purpose": "visual studio code",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Visual Studio Code"
+            }
+          },
+          {
+            "id": "step_3",
+            "operation": "app.installed",
+            "purpose": "spotify",
+            "dependsOn": [
+              "step_2"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "name": "Spotify"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Abre Configuración",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 0.345,
+      "matches": true,
+      "observedOperations": [
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-59",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Asistencia rápida",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.open"
+      },
+      "elapsed_seconds": 0.145,
+      "matches": true,
+      "observedOperations": [
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-60",
+        "kind": "action",
+        "operation": "app.open",
+        "effectOperations": [
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Está instalada Configuración?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.installed"
+      },
+      "elapsed_seconds": 1.226,
+      "matches": true,
+      "observedOperations": [
+        "app.installed"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-61",
+        "kind": "action",
+        "operation": "app.installed",
+        "effectOperations": [
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "¿Está instalada Asistencia rápida?",
+      "expected": {
+        "expectedKind": "action",
+        "expectedOperation": "app.installed"
+      },
+      "elapsed_seconds": 1.159,
+      "matches": true,
+      "observedOperations": [
+        "app.installed"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-62",
+        "kind": "action",
+        "operation": "app.installed",
+        "effectOperations": [
+          "app.installed"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    }
+  ]
+}

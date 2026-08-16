@@ -1,0 +1,49 @@
+{
+  "schema": "baxy.clean-lifecycle-environment-preflight.v1",
+  "measured_at_utc": "2026-08-11T11:49:10+00:00",
+  "status": "not_ready_no_lifecycle_attempted",
+  "current_source": {
+    "commit": "1336e199bfe56928a4a9116a77adebd45c274c0e",
+    "dirty_shared_campaign": true
+  },
+  "newest_available_attested_setup": {
+    "version": "1.0.9",
+    "source_commit": "9b96548e15de5a9291e574ea05bf1733eacafc00",
+    "path": "artifacts/setup/build/baxy-1.0.9-release-9b96548e15de/Baxy.Setup.exe",
+    "manifest_sha256": "10a9722ea79538c60a21a3007b544e0b532ea2dbc675efbeaf7b50fa4e929eaa",
+    "actual_sha256": "10a9722ea79538c60a21a3007b544e0b532ea2dbc675efbeaf7b50fa4e929eaa",
+    "manifest_matches_executable": true,
+    "source_matches_current_tree": false,
+    "eligible_for_current_tree_lifecycle": false
+  },
+  "host_isolation": {
+    "windows_product": "Windows 10 Home Single Language",
+    "windows_edition": "CoreSingleLanguage",
+    "windows_sandbox_command_available": false,
+    "hyper_v_module_available": false,
+    "current_process_has_administrator_token": false,
+    "disposable_windows_environment_available_to_this_process": false
+  },
+  "current_profile": {
+    "baxy_program_root_exists": true,
+    "baxy_data_root_exists": true,
+    "baxy_runtime_root_exists": true,
+    "registered_display_version": "1.0.9",
+    "qualifies_as_clean_disposable_profile": false,
+    "private_content_inspected": false
+  },
+  "safety": {
+    "setup_executed": false,
+    "installation_mutated": false,
+    "registry_mutated": false,
+    "data_mutated": false,
+    "processes_launched": 0
+  },
+  "required_before_execution": [
+    "Finish and freeze the current product tree.",
+    "Produce a reproducible attested predecessor and candidate Setup pair from the exact frozen source.",
+    "Provide a disposable Windows account or VM with no BAXY program/data state.",
+    "Run clean install, first visible launch, update, rollback, uninstall with keep-data, reinstall and purge through scripts/test_gate14_clean_environment.ps1."
+  ],
+  "conclusion": "The existing 1.0.9 install and Setup prove historical provenance only. They cannot certify the current dirty tree or a clean lifecycle, and no lifecycle action was attempted."
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "baxy.post-wake-repairs-receipt.v1",
+  "measuredAtUtc": "2026-08-12T07:59:01.224109+00:00",
+  "status": "passed",
+  "preregistrationSha256": "af52c6ae8c0521ff384aafb1896afcdae44e798ab30548bb6a4d317d4cf10dd9",
+  "wakeReceiptSha256": "2424832fe29dfe5028d7443b6a3311f1eb02b89d0a94f58665203300ab451d50",
+  "budgetReportSha256": "de6d4d0f886ea90312edf2552ff37ec2c763455321a2880ef982cc46b38eeedf",
+  "runtimeManifestSha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+  "sourceSha256": {
+    "scripts/measure_mind_budget.py": "48a127872c074d1486a24ef477d8eefb0b9743d9d901c8003a3d52e9b2529872",
+    "tests/test_mind_budget_gate.py": "cc00703622b4748da7f591af10af8276c77bfa1b0124302dc06308f02c719e7b",
+    "src/baxy_mind/effect_intent.py": "504c92e57cdd71895021a2f490596aa3e8433f896cf7851a100f002fdb45ebb4",
+    "tests/test_catalog_operation_aliases.py": "189f5829c6ef470c0d418402dc1de844efa050316c8a9a84105f4fa94d964cc7",
+    "tests/test_effect_intent.py": "083fdeeed01c525072f6e622c83f47c477a8809068c86b77b0e8cb6999ec232d"
+  },
+  "checks": {
+    "focusedRegressions": true,
+    "sourceQualityFast": true,
+    "gpuBudget": true,
+    "cpuBudget": true,
+    "socialClosureEquivalence": true
+  },
+  "executions": {
+    "focusedRegressions": {
+      "returnCode": 0,
+      "stdoutSha256": "fd2c5a75a393269552f9b8818a2bb0d17301b7ff6bfb8aa322289cb4ec1da985",
+      "stdoutBytes": 1622,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0,
+      "passedTests": 1398
+    },
+    "sourceQualityFast": {
+      "returnCode": 0,
+      "stdoutSha256": "cf7f7b1d4c716e8e1c7378a386402904f60e59a2cc3d207b783fc272f0bec972",
+      "stdoutBytes": 2392,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0
+    }
+  },
+  "audioPlayedOrCaptured": false,
+  "effectsExecuted": 0
+}

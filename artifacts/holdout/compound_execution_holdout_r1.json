@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-08-10T15:30:43.068070+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "Qwen3-4B-Q4_K_M.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "bytes": 2497280256
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 169,
+  "total_seconds": 15.42,
+  "cases": [
+    {
+      "case": "blind_note_dual_interleaved_es",
+      "planner_path": "blind_real_llm_interleaved_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "decision_seconds": 0.191,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read",
+        "note.create",
+        "note.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "1069d851-c1fb-4069-ab00-539b268a81b6",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "1069d851-c1fb-4069-ab00-539b268a81b6",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "14c43c9c-68ad-4756-ac7d-ac4e092642c5",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_4",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_3"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "14c43c9c-68ad-4756-ac7d-ac4e092642c5",
+            "revision": 1,
+            "isTrashed": false
+          }
+        }
+      ],
+      "seconds": 0.439,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ],
+        [],
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "case": "blind_note_three_permuted_en",
+      "planner_path": "blind_real_llm_six_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "conversation",
+      "turn_question": "",
+      "turn_reply": "I cannot complete note as requested.",
+      "intent_operations": [],
+      "effect_operations": [],
+      "decision_seconds": 0.323,
+      "response_type": null,
+      "kind": null,
+      "operations": [],
+      "steps": [],
+      "seconds": 0.323,
+      "status": "failed",
+      "error": "turn decision did not exactly cover the bounded objective"
+    },
+    {
+      "case": "blind_note_four_permuted_spanglish",
+      "planner_path": "blind_real_llm_eight_step_dependency_dag",
+      "turn_response_type": "turn.result",
+      "turn_kind": "conversation",
+      "turn_question": "",
+      "turn_reply": "No puedo completar luna tal como fue pedido.",
+      "intent_operations": [],
+      "effect_operations": [],
+      "decision_seconds": 0.259,
+      "response_type": null,
+      "kind": null,
+      "operations": [],
+      "steps": [],
+      "seconds": 0.259,
+      "status": "failed",
+      "error": "turn decision did not exactly cover the bounded objective"
+    },
+    {
+      "case": "blind_readonly_status_triad_es",
+      "planner_path": "blind_real_llm_cross_family_readonly_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "conversation",
+      "turn_question": "",
+      "turn_reply": "No puedo completar red tal como fue pedido.",
+      "intent_operations": [],
+      "effect_operations": [],
+      "decision_seconds": 3.339,
+      "response_type": null,
+      "kind": null,
+      "operations": [],
+      "steps": [],
+      "seconds": 3.339,
+      "status": "failed",
+      "error": "turn decision did not exactly cover the bounded objective"
+    },
+    {
+      "case": "blind_readonly_hardware_triad_en",
+      "planner_path": "blind_real_llm_cross_family_readonly_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "conversation",
+      "turn_question": "",
+      "turn_reply": "I cannot complete status as requested.",
+      "intent_operations": [],
+      "effect_operations": [],
+      "decision_seconds": 2.909,
+      "response_type": null,
+      "kind": null,
+      "operations": [],
+      "steps": [],
+      "seconds": 2.909,
+      "status": "failed",
+      "error": "turn decision did not exactly cover the bounded objective"
+    },
+    {
+      "case": "blind_note_read_then_system_spanglish",
+      "planner_path": "blind_real_llm_mixed_dependency_plan",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "note.create",
+        "note.read",
+        "system.status"
+      ],
+      "effect_operations": [
+        "note.create",
+        "note.read",
+        "system.status"
+      ],
+      "decision_seconds": 0.078,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "note.create",
+        "note.read",
+        "system.status"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "note.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "content",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "87498a43-ccc0-4640-bab0-3362907f4902",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "note.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "noteId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "noteId": "87498a43-ccc0-4640-bab0-3362907f4902",
+            "revision": 1,
+            "isTrashed": false
+          }
+        },
+        {
+          "id": "step_3",
+          "operation": "system.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {}
+        }
+      ],
+      "seconds": 0.444,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ],
+        []
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "environment_blocked": 0,
+    "failed": 4,
+    "total": 6,
+    "verified_steps": 7,
+    "real_llm_plan_cases": 0,
+    "real_llm_plan_cases_passed": 0,
+    "model_grounded_steps": 3,
+    "ambiguous_effects": 0,
+    "status": "failed"
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

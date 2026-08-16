@@ -1,0 +1,1672 @@
+{
+  "arms": {
+    "candidate": {
+      "conversation_share": 0.0,
+      "family_accuracy": 0.7307692307692307,
+      "kinds": {
+        "action": 8,
+        "clarify": 40,
+        "plan": 4
+      },
+      "right_family": 38,
+      "seconds_p50": 1.353431,
+      "turns": 52
+    },
+    "control": {
+      "conversation_share": 0.40384615384615385,
+      "family_accuracy": 0.4423076923076923,
+      "kinds": {
+        "action": 4,
+        "clarify": 10,
+        "conversation": 21,
+        "plan": 17
+      },
+      "right_family": 23,
+      "seconds_p50": 2.610504,
+      "turns": 52
+    }
+  },
+  "authority": "turn.decide only; no Core/provider request",
+  "candidate_minus_control_family_accuracy": 0.28846153846153844,
+  "cases_per_session": 26,
+  "effects_executed": 0,
+  "families": [
+    "app",
+    "audio",
+    "backup",
+    "bluetooth",
+    "browser",
+    "calendar",
+    "capture",
+    "clipboard",
+    "filesystem",
+    "game",
+    "media",
+    "message",
+    "note",
+    "notification",
+    "ocr",
+    "office",
+    "peripheral",
+    "reminder",
+    "routine",
+    "streaming",
+    "system",
+    "task",
+    "vision",
+    "web",
+    "wifi",
+    "window"
+  ],
+  "installation_touched": false,
+  "measured_at_utc": "2026-08-01T14:17:49.479357+00:00",
+  "order": [
+    "control",
+    "candidate",
+    "candidate",
+    "control"
+  ],
+  "runtime_manifest_changed": false,
+  "samples": [
+    {
+      "arm": "control",
+      "case_id": "app-00",
+      "family": "app",
+      "intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "kind": "conversation",
+      "label": "app.open",
+      "language": "es",
+      "right_family": false,
+      "seconds": 3.763725,
+      "session": 1,
+      "text": "Abre Epic Games Launcher"
+    },
+    {
+      "arm": "control",
+      "case_id": "audio-02",
+      "family": "audio",
+      "intent_operations": [
+        "audio.volume.adjust"
+      ],
+      "kind": "conversation",
+      "label": "audio.volume",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.632476,
+      "session": 1,
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo"
+    },
+    {
+      "arm": "control",
+      "case_id": "backup-00",
+      "family": "backup",
+      "intent_operations": [
+        "backup.create",
+        "backup.known.create"
+      ],
+      "kind": "conversation",
+      "label": "backup.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 3.034,
+      "session": 1,
+      "text": "Edita archivo y crea respaldo antes"
+    },
+    {
+      "arm": "control",
+      "case_id": "bluetooth-00",
+      "family": "bluetooth",
+      "intent_operations": [
+        "filesystem.folder.open",
+        "bluetooth.radio.set"
+      ],
+      "kind": "conversation",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.784836,
+      "session": 1,
+      "text": "abre configuración y entra a Bluetooth"
+    },
+    {
+      "arm": "control",
+      "case_id": "browser-00",
+      "family": "browser",
+      "intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "kind": "conversation",
+      "label": "browser.navigate",
+      "language": "es",
+      "right_family": false,
+      "seconds": 3.363184,
+      "session": 1,
+      "text": "Abre el navegador por defecto"
+    },
+    {
+      "arm": "control",
+      "case_id": "calendar-00",
+      "family": "calendar",
+      "intent_operations": [
+        "email.latest.reply"
+      ],
+      "kind": "action",
+      "label": "calendar.manage",
+      "language": "en",
+      "right_family": false,
+      "seconds": 4.509617,
+      "session": 1,
+      "text": "Write me an email that I cant make it to the meeting"
+    },
+    {
+      "arm": "control",
+      "case_id": "capture-00",
+      "family": "capture",
+      "intent_operations": [],
+      "kind": "clarify",
+      "label": "capture.screenshot",
+      "language": "es",
+      "right_family": false,
+      "seconds": 9.984229,
+      "session": 1,
+      "text": "Sacale una foto de captura a mi pc, que se ve?"
+    },
+    {
+      "arm": "control",
+      "case_id": "clipboard-00",
+      "family": "clipboard",
+      "intent_operations": [
+        "clipboard.paste"
+      ],
+      "kind": "action",
+      "label": "clipboard.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.036185,
+      "session": 1,
+      "text": "Pega esto en el bloc de notas"
+    },
+    {
+      "arm": "control",
+      "case_id": "filesystem-00",
+      "family": "filesystem",
+      "intent_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "kind": "conversation",
+      "label": "filesystem.read",
+      "language": "es",
+      "right_family": true,
+      "seconds": 3.048916,
+      "session": 1,
+      "text": "Abre el archivo hola.txt del escritorio"
+    },
+    {
+      "arm": "control",
+      "case_id": "game-00",
+      "family": "game",
+      "intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "kind": "conversation",
+      "label": "game.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.923954,
+      "session": 1,
+      "text": "Abre Big Picture"
+    },
+    {
+      "arm": "control",
+      "case_id": "media-00",
+      "family": "media",
+      "intent_operations": [
+        "window.active"
+      ],
+      "kind": "conversation",
+      "label": "media.play",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.877967,
+      "session": 1,
+      "text": "Active la fenêtre de Spotify"
+    },
+    {
+      "arm": "control",
+      "case_id": "message-00",
+      "family": "message",
+      "intent_operations": [
+        "input.key.press"
+      ],
+      "kind": "plan",
+      "label": "message.send",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.95393,
+      "session": 1,
+      "text": "Dile a amor en WhatsApp que la amo mucho."
+    },
+    {
+      "arm": "control",
+      "case_id": "note-00",
+      "family": "note",
+      "intent_operations": [
+        "game.purchase.prepare"
+      ],
+      "kind": "plan",
+      "label": "note.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.55182,
+      "session": 1,
+      "text": "anota que tengo que comprar pan"
+    },
+    {
+      "arm": "control",
+      "case_id": "notification-00",
+      "family": "notification",
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "kind": "clarify",
+      "label": "notification.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 3.479246,
+      "session": 1,
+      "text": "Pone una alarma para las 7 de la maniana"
+    },
+    {
+      "arm": "control",
+      "case_id": "ocr-00",
+      "family": "ocr",
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "kind": "plan",
+      "label": "ocr.read",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.030253,
+      "session": 1,
+      "text": "OCR limitado, mejor para detection"
+    },
+    {
+      "arm": "control",
+      "case_id": "office-00",
+      "family": "office",
+      "intent_operations": [
+        "office.document.create"
+      ],
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "en",
+      "right_family": true,
+      "seconds": 3.233604,
+      "session": 1,
+      "text": "Can you make me a PowerPoint?"
+    },
+    {
+      "arm": "control",
+      "case_id": "peripheral-00",
+      "family": "peripheral",
+      "intent_operations": [
+        "audio.status"
+      ],
+      "kind": "conversation",
+      "label": "peripheral.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.555185,
+      "session": 1,
+      "text": "anotá que terminé de configurar el micrófono"
+    },
+    {
+      "arm": "control",
+      "case_id": "reminder-00",
+      "family": "reminder",
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "kind": "plan",
+      "label": "reminder.create",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.115393,
+      "session": 1,
+      "text": "avisame en 20 minutos que saque la comida"
+    },
+    {
+      "arm": "control",
+      "case_id": "routine-00",
+      "family": "routine",
+      "intent_operations": [
+        "routine.delete",
+        "notification.cancel.latest"
+      ],
+      "kind": "plan",
+      "label": "routine.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.339684,
+      "session": 1,
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice"
+    },
+    {
+      "arm": "control",
+      "case_id": "streaming-00",
+      "family": "streaming",
+      "intent_operations": [
+        "media.play.youtube"
+      ],
+      "kind": "plan",
+      "label": "streaming.navigate",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.048968,
+      "session": 1,
+      "text": "Abri YouTube en el navegador"
+    },
+    {
+      "arm": "control",
+      "case_id": "system-00",
+      "family": "system",
+      "intent_operations": [
+        "system.status"
+      ],
+      "kind": "conversation",
+      "label": "system.status",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.315619,
+      "session": 1,
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)"
+    },
+    {
+      "arm": "control",
+      "case_id": "task-00",
+      "family": "task",
+      "intent_operations": [
+        "input.select.all"
+      ],
+      "kind": "plan",
+      "label": "task.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.014096,
+      "session": 1,
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede."
+    },
+    {
+      "arm": "control",
+      "case_id": "vision-00",
+      "family": "vision",
+      "intent_operations": [
+        "window.focus"
+      ],
+      "kind": "conversation",
+      "label": "vision.describe",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.59961,
+      "session": 1,
+      "text": "Abre configuración de pantalla"
+    },
+    {
+      "arm": "control",
+      "case_id": "web-00",
+      "family": "web",
+      "intent_operations": [
+        "web.search"
+      ],
+      "kind": "conversation",
+      "label": "web.search",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.601452,
+      "session": 1,
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+      "arm": "control",
+      "case_id": "wifi-00",
+      "family": "wifi",
+      "intent_operations": [
+        "wifi.connect.named",
+        "wifi.connect"
+      ],
+      "kind": "plan",
+      "label": "wifi.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.211177,
+      "session": 1,
+      "text": "Conecta no Wi-Fi de novo"
+    },
+    {
+      "arm": "control",
+      "case_id": "window-00",
+      "family": "window",
+      "intent_operations": [],
+      "kind": "clarify",
+      "label": "window.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 5.085614,
+      "session": 1,
+      "text": "Abre una ventana incógnito"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "app-00",
+      "family": "app",
+      "intent_operations": [
+        "app.open"
+      ],
+      "kind": "action",
+      "label": "app.open",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.204261,
+      "session": 2,
+      "text": "Abre Epic Games Launcher"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "audio-02",
+      "family": "audio",
+      "intent_operations": [
+        "audio.volume.adjust"
+      ],
+      "kind": "clarify",
+      "label": "audio.volume",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.447239,
+      "session": 2,
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "backup-00",
+      "family": "backup",
+      "intent_operations": [
+        "filesystem.write.text",
+        "filesystem.copy"
+      ],
+      "kind": "clarify",
+      "label": "backup.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.069462,
+      "session": 2,
+      "text": "Edita archivo y crea respaldo antes"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "bluetooth-00",
+      "family": "bluetooth",
+      "intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "kind": "clarify",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 0.930658,
+      "session": 2,
+      "text": "abre configuración y entra a Bluetooth"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "browser-00",
+      "family": "browser",
+      "intent_operations": [
+        "browser.navigate"
+      ],
+      "kind": "clarify",
+      "label": "browser.navigate",
+      "language": "es",
+      "right_family": true,
+      "seconds": 0.857665,
+      "session": 2,
+      "text": "Abre el navegador por defecto"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "calendar-00",
+      "family": "calendar",
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "kind": "clarify",
+      "label": "calendar.manage",
+      "language": "en",
+      "right_family": false,
+      "seconds": 1.57628,
+      "session": 2,
+      "text": "Write me an email that I cant make it to the meeting"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "capture-00",
+      "family": "capture",
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "kind": "clarify",
+      "label": "capture.screenshot",
+      "language": "es",
+      "right_family": false,
+      "seconds": 0.784597,
+      "session": 2,
+      "text": "Sacale una foto de captura a mi pc, que se ve?"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "clipboard-00",
+      "family": "clipboard",
+      "intent_operations": [
+        "app.open"
+      ],
+      "kind": "clarify",
+      "label": "clipboard.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.993767,
+      "session": 2,
+      "text": "Pega esto en el bloc de notas"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "filesystem-00",
+      "family": "filesystem",
+      "intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "kind": "clarify",
+      "label": "filesystem.read",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.273537,
+      "session": 2,
+      "text": "Abre el archivo hola.txt del escritorio"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "game-00",
+      "family": "game",
+      "intent_operations": [
+        "app.open"
+      ],
+      "kind": "action",
+      "label": "game.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.019637,
+      "session": 2,
+      "text": "Abre Big Picture"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "media-00",
+      "family": "media",
+      "intent_operations": [
+        "media.status"
+      ],
+      "kind": "clarify",
+      "label": "media.play",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.324109,
+      "session": 2,
+      "text": "Active la fenêtre de Spotify"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "message-00",
+      "family": "message",
+      "intent_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "kind": "plan",
+      "label": "message.send",
+      "language": "es",
+      "right_family": true,
+      "seconds": 0.709523,
+      "session": 2,
+      "text": "Dile a amor en WhatsApp que la amo mucho."
+    },
+    {
+      "arm": "candidate",
+      "case_id": "note-00",
+      "family": "note",
+      "intent_operations": [
+        "note.create"
+      ],
+      "kind": "clarify",
+      "label": "note.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.509643,
+      "session": 2,
+      "text": "anota que tengo que comprar pan"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "notification-00",
+      "family": "notification",
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "kind": "clarify",
+      "label": "notification.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.021569,
+      "session": 2,
+      "text": "Pone una alarma para las 7 de la maniana"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "ocr-00",
+      "family": "ocr",
+      "intent_operations": [
+        "ocr.read"
+      ],
+      "kind": "clarify",
+      "label": "ocr.read",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.490219,
+      "session": 2,
+      "text": "OCR limitado, mejor para detection"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "office-00",
+      "family": "office",
+      "intent_operations": [
+        "office.document.create"
+      ],
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "en",
+      "right_family": true,
+      "seconds": 1.428694,
+      "session": 2,
+      "text": "Can you make me a PowerPoint?"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "peripheral-00",
+      "family": "peripheral",
+      "intent_operations": [
+        "audio.microphone.mute"
+      ],
+      "kind": "clarify",
+      "label": "peripheral.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.342179,
+      "session": 2,
+      "text": "anotá que terminé de configurar el micrófono"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "reminder-00",
+      "family": "reminder",
+      "intent_operations": [
+        "reminder.create"
+      ],
+      "kind": "action",
+      "label": "reminder.create",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.458209,
+      "session": 2,
+      "text": "avisame en 20 minutos que saque la comida"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "routine-00",
+      "family": "routine",
+      "intent_operations": [
+        "web.search"
+      ],
+      "kind": "action",
+      "label": "routine.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.574328,
+      "session": 2,
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "streaming-00",
+      "family": "streaming",
+      "intent_operations": [
+        "streaming.navigate"
+      ],
+      "kind": "clarify",
+      "label": "streaming.navigate",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.949996,
+      "session": 2,
+      "text": "Abri YouTube en el navegador"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "system-00",
+      "family": "system",
+      "intent_operations": [
+        "system.status"
+      ],
+      "kind": "clarify",
+      "label": "system.status",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.710104,
+      "session": 2,
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "task-00",
+      "family": "task",
+      "intent_operations": [
+        "task.complete"
+      ],
+      "kind": "plan",
+      "label": "task.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 0.531302,
+      "session": 2,
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede."
+    },
+    {
+      "arm": "candidate",
+      "case_id": "vision-00",
+      "family": "vision",
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "kind": "clarify",
+      "label": "vision.describe",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.211753,
+      "session": 2,
+      "text": "Abre configuración de pantalla"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "web-00",
+      "family": "web",
+      "intent_operations": [
+        "web.search"
+      ],
+      "kind": "clarify",
+      "label": "web.search",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.314813,
+      "session": 2,
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "wifi-00",
+      "family": "wifi",
+      "intent_operations": [
+        "wifi.connect"
+      ],
+      "kind": "clarify",
+      "label": "wifi.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.060593,
+      "session": 2,
+      "text": "Conecta no Wi-Fi de novo"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "window-00",
+      "family": "window",
+      "intent_operations": [
+        "window.resolve"
+      ],
+      "kind": "clarify",
+      "label": "window.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.514447,
+      "session": 2,
+      "text": "Abre una ventana incógnito"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "app-00",
+      "family": "app",
+      "intent_operations": [
+        "app.open"
+      ],
+      "kind": "action",
+      "label": "app.open",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.185823,
+      "session": 3,
+      "text": "Abre Epic Games Launcher"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "audio-02",
+      "family": "audio",
+      "intent_operations": [
+        "audio.volume.adjust"
+      ],
+      "kind": "clarify",
+      "label": "audio.volume",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.416793,
+      "session": 3,
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "backup-00",
+      "family": "backup",
+      "intent_operations": [
+        "filesystem.write.text",
+        "filesystem.copy"
+      ],
+      "kind": "clarify",
+      "label": "backup.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.083174,
+      "session": 3,
+      "text": "Edita archivo y crea respaldo antes"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "bluetooth-00",
+      "family": "bluetooth",
+      "intent_operations": [
+        "bluetooth.radio.set"
+      ],
+      "kind": "clarify",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 0.944363,
+      "session": 3,
+      "text": "abre configuración y entra a Bluetooth"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "browser-00",
+      "family": "browser",
+      "intent_operations": [
+        "browser.navigate"
+      ],
+      "kind": "clarify",
+      "label": "browser.navigate",
+      "language": "es",
+      "right_family": true,
+      "seconds": 0.868446,
+      "session": 3,
+      "text": "Abre el navegador por defecto"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "calendar-00",
+      "family": "calendar",
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "kind": "clarify",
+      "label": "calendar.manage",
+      "language": "en",
+      "right_family": false,
+      "seconds": 1.674229,
+      "session": 3,
+      "text": "Write me an email that I cant make it to the meeting"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "capture-00",
+      "family": "capture",
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "kind": "clarify",
+      "label": "capture.screenshot",
+      "language": "es",
+      "right_family": false,
+      "seconds": 0.861981,
+      "session": 3,
+      "text": "Sacale una foto de captura a mi pc, que se ve?"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "clipboard-00",
+      "family": "clipboard",
+      "intent_operations": [
+        "app.open"
+      ],
+      "kind": "clarify",
+      "label": "clipboard.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.131884,
+      "session": 3,
+      "text": "Pega esto en el bloc de notas"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "filesystem-00",
+      "family": "filesystem",
+      "intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "kind": "clarify",
+      "label": "filesystem.read",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.360074,
+      "session": 3,
+      "text": "Abre el archivo hola.txt del escritorio"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "game-00",
+      "family": "game",
+      "intent_operations": [
+        "app.open"
+      ],
+      "kind": "action",
+      "label": "game.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.055804,
+      "session": 3,
+      "text": "Abre Big Picture"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "media-00",
+      "family": "media",
+      "intent_operations": [
+        "media.status"
+      ],
+      "kind": "clarify",
+      "label": "media.play",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.346788,
+      "session": 3,
+      "text": "Active la fenêtre de Spotify"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "message-00",
+      "family": "message",
+      "intent_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "kind": "plan",
+      "label": "message.send",
+      "language": "es",
+      "right_family": true,
+      "seconds": 0.697247,
+      "session": 3,
+      "text": "Dile a amor en WhatsApp que la amo mucho."
+    },
+    {
+      "arm": "candidate",
+      "case_id": "note-00",
+      "family": "note",
+      "intent_operations": [
+        "note.create"
+      ],
+      "kind": "clarify",
+      "label": "note.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.332967,
+      "session": 3,
+      "text": "anota que tengo que comprar pan"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "notification-00",
+      "family": "notification",
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "kind": "clarify",
+      "label": "notification.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.010491,
+      "session": 3,
+      "text": "Pone una alarma para las 7 de la maniana"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "ocr-00",
+      "family": "ocr",
+      "intent_operations": [
+        "ocr.read"
+      ],
+      "kind": "clarify",
+      "label": "ocr.read",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.49468,
+      "session": 3,
+      "text": "OCR limitado, mejor para detection"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "office-00",
+      "family": "office",
+      "intent_operations": [
+        "office.document.create"
+      ],
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "en",
+      "right_family": true,
+      "seconds": 1.475081,
+      "session": 3,
+      "text": "Can you make me a PowerPoint?"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "peripheral-00",
+      "family": "peripheral",
+      "intent_operations": [
+        "audio.microphone.mute"
+      ],
+      "kind": "clarify",
+      "label": "peripheral.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.29806,
+      "session": 3,
+      "text": "anotá que terminé de configurar el micrófono"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "reminder-00",
+      "family": "reminder",
+      "intent_operations": [
+        "reminder.create"
+      ],
+      "kind": "action",
+      "label": "reminder.create",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.484815,
+      "session": 3,
+      "text": "avisame en 20 minutos que saque la comida"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "routine-00",
+      "family": "routine",
+      "intent_operations": [
+        "web.search"
+      ],
+      "kind": "action",
+      "label": "routine.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.60414,
+      "session": 3,
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "streaming-00",
+      "family": "streaming",
+      "intent_operations": [
+        "streaming.navigate"
+      ],
+      "kind": "clarify",
+      "label": "streaming.navigate",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.038471,
+      "session": 3,
+      "text": "Abri YouTube en el navegador"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "system-00",
+      "family": "system",
+      "intent_operations": [
+        "system.status"
+      ],
+      "kind": "clarify",
+      "label": "system.status",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.774165,
+      "session": 3,
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "task-00",
+      "family": "task",
+      "intent_operations": [
+        "task.complete"
+      ],
+      "kind": "plan",
+      "label": "task.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 0.532392,
+      "session": 3,
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede."
+    },
+    {
+      "arm": "candidate",
+      "case_id": "vision-00",
+      "family": "vision",
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "kind": "clarify",
+      "label": "vision.describe",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.175566,
+      "session": 3,
+      "text": "Abre configuración de pantalla"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "web-00",
+      "family": "web",
+      "intent_operations": [
+        "web.search"
+      ],
+      "kind": "clarify",
+      "label": "web.search",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.290001,
+      "session": 3,
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "wifi-00",
+      "family": "wifi",
+      "intent_operations": [
+        "wifi.connect"
+      ],
+      "kind": "clarify",
+      "label": "wifi.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.048313,
+      "session": 3,
+      "text": "Conecta no Wi-Fi de novo"
+    },
+    {
+      "arm": "candidate",
+      "case_id": "window-00",
+      "family": "window",
+      "intent_operations": [
+        "window.resolve"
+      ],
+      "kind": "clarify",
+      "label": "window.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.548414,
+      "session": 3,
+      "text": "Abre una ventana incógnito"
+    },
+    {
+      "arm": "control",
+      "case_id": "app-00",
+      "family": "app",
+      "intent_operations": [
+        "filesystem.known.search"
+      ],
+      "kind": "clarify",
+      "label": "app.open",
+      "language": "es",
+      "right_family": false,
+      "seconds": 3.765349,
+      "session": 4,
+      "text": "Abre Epic Games Launcher"
+    },
+    {
+      "arm": "control",
+      "case_id": "audio-02",
+      "family": "audio",
+      "intent_operations": [
+        "audio.volume.adjust"
+      ],
+      "kind": "conversation",
+      "label": "audio.volume",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.568402,
+      "session": 4,
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo"
+    },
+    {
+      "arm": "control",
+      "case_id": "backup-00",
+      "family": "backup",
+      "intent_operations": [
+        "backup.create",
+        "backup.known.create"
+      ],
+      "kind": "conversation",
+      "label": "backup.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 3.034211,
+      "session": 4,
+      "text": "Edita archivo y crea respaldo antes"
+    },
+    {
+      "arm": "control",
+      "case_id": "bluetooth-00",
+      "family": "bluetooth",
+      "intent_operations": [
+        "filesystem.folder.open",
+        "bluetooth.radio.set"
+      ],
+      "kind": "conversation",
+      "label": "bluetooth.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.752132,
+      "session": 4,
+      "text": "abre configuración y entra a Bluetooth"
+    },
+    {
+      "arm": "control",
+      "case_id": "browser-00",
+      "family": "browser",
+      "intent_operations": [],
+      "kind": "clarify",
+      "label": "browser.navigate",
+      "language": "es",
+      "right_family": false,
+      "seconds": 7.612581,
+      "session": 4,
+      "text": "Abre el navegador por defecto"
+    },
+    {
+      "arm": "control",
+      "case_id": "calendar-00",
+      "family": "calendar",
+      "intent_operations": [
+        "email.latest.reply"
+      ],
+      "kind": "action",
+      "label": "calendar.manage",
+      "language": "en",
+      "right_family": false,
+      "seconds": 5.14273,
+      "session": 4,
+      "text": "Write me an email that I cant make it to the meeting"
+    },
+    {
+      "arm": "control",
+      "case_id": "capture-00",
+      "family": "capture",
+      "intent_operations": [
+        "capture.screenshot"
+      ],
+      "kind": "conversation",
+      "label": "capture.screenshot",
+      "language": "es",
+      "right_family": true,
+      "seconds": 5.486094,
+      "session": 4,
+      "text": "Sacale una foto de captura a mi pc, que se ve?"
+    },
+    {
+      "arm": "control",
+      "case_id": "clipboard-00",
+      "family": "clipboard",
+      "intent_operations": [
+        "clipboard.paste"
+      ],
+      "kind": "action",
+      "label": "clipboard.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 1.780068,
+      "session": 4,
+      "text": "Pega esto en el bloc de notas"
+    },
+    {
+      "arm": "control",
+      "case_id": "filesystem-00",
+      "family": "filesystem",
+      "intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "kind": "clarify",
+      "label": "filesystem.read",
+      "language": "es",
+      "right_family": true,
+      "seconds": 3.13696,
+      "session": 4,
+      "text": "Abre el archivo hola.txt del escritorio"
+    },
+    {
+      "arm": "control",
+      "case_id": "game-00",
+      "family": "game",
+      "intent_operations": [
+        "filesystem.folder.open"
+      ],
+      "kind": "conversation",
+      "label": "game.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.866587,
+      "session": 4,
+      "text": "Abre Big Picture"
+    },
+    {
+      "arm": "control",
+      "case_id": "media-00",
+      "family": "media",
+      "intent_operations": [
+        "window.active"
+      ],
+      "kind": "conversation",
+      "label": "media.play",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.619556,
+      "session": 4,
+      "text": "Active la fenêtre de Spotify"
+    },
+    {
+      "arm": "control",
+      "case_id": "message-00",
+      "family": "message",
+      "intent_operations": [
+        "input.key.press"
+      ],
+      "kind": "plan",
+      "label": "message.send",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.895028,
+      "session": 4,
+      "text": "Dile a amor en WhatsApp que la amo mucho."
+    },
+    {
+      "arm": "control",
+      "case_id": "note-00",
+      "family": "note",
+      "intent_operations": [
+        "game.purchase.prepare"
+      ],
+      "kind": "plan",
+      "label": "note.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.375302,
+      "session": 4,
+      "text": "anota que tengo que comprar pan"
+    },
+    {
+      "arm": "control",
+      "case_id": "notification-00",
+      "family": "notification",
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "kind": "clarify",
+      "label": "notification.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 3.332514,
+      "session": 4,
+      "text": "Pone una alarma para las 7 de la maniana"
+    },
+    {
+      "arm": "control",
+      "case_id": "ocr-00",
+      "family": "ocr",
+      "intent_operations": [
+        "vision.describe"
+      ],
+      "kind": "plan",
+      "label": "ocr.read",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.183288,
+      "session": 4,
+      "text": "OCR limitado, mejor para detection"
+    },
+    {
+      "arm": "control",
+      "case_id": "office-00",
+      "family": "office",
+      "intent_operations": [
+        "office.document.create"
+      ],
+      "kind": "clarify",
+      "label": "office.document",
+      "language": "en",
+      "right_family": true,
+      "seconds": 3.407387,
+      "session": 4,
+      "text": "Can you make me a PowerPoint?"
+    },
+    {
+      "arm": "control",
+      "case_id": "peripheral-00",
+      "family": "peripheral",
+      "intent_operations": [
+        "audio.status"
+      ],
+      "kind": "conversation",
+      "label": "peripheral.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.757198,
+      "session": 4,
+      "text": "anotá que terminé de configurar el micrófono"
+    },
+    {
+      "arm": "control",
+      "case_id": "reminder-00",
+      "family": "reminder",
+      "intent_operations": [
+        "notification.schedule"
+      ],
+      "kind": "plan",
+      "label": "reminder.create",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.443949,
+      "session": 4,
+      "text": "avisame en 20 minutos que saque la comida"
+    },
+    {
+      "arm": "control",
+      "case_id": "routine-00",
+      "family": "routine",
+      "intent_operations": [
+        "routine.delete",
+        "notification.cancel.latest"
+      ],
+      "kind": "plan",
+      "label": "routine.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.354744,
+      "session": 4,
+      "text": "armá el hábito de salir a correr y marcá que ya lo hice"
+    },
+    {
+      "arm": "control",
+      "case_id": "streaming-00",
+      "family": "streaming",
+      "intent_operations": [
+        "input.keyboard.open"
+      ],
+      "kind": "plan",
+      "label": "streaming.navigate",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.236179,
+      "session": 4,
+      "text": "Abri YouTube en el navegador"
+    },
+    {
+      "arm": "control",
+      "case_id": "system-00",
+      "family": "system",
+      "intent_operations": [
+        "system.status"
+      ],
+      "kind": "conversation",
+      "label": "system.status",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.540818,
+      "session": 4,
+      "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)"
+    },
+    {
+      "arm": "control",
+      "case_id": "task-00",
+      "family": "task",
+      "intent_operations": [
+        "input.select.all"
+      ],
+      "kind": "plan",
+      "label": "task.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 1.995111,
+      "session": 4,
+      "text": "**3-5 s máx**. Todo lo de arriba lo excede."
+    },
+    {
+      "arm": "control",
+      "case_id": "vision-00",
+      "family": "vision",
+      "intent_operations": [
+        "input.keyboard.open"
+      ],
+      "kind": "plan",
+      "label": "vision.describe",
+      "language": "es",
+      "right_family": false,
+      "seconds": 2.164905,
+      "session": 4,
+      "text": "Abre configuración de pantalla"
+    },
+    {
+      "arm": "control",
+      "case_id": "web-00",
+      "family": "web",
+      "intent_operations": [
+        "web.search"
+      ],
+      "kind": "conversation",
+      "label": "web.search",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.506551,
+      "session": 4,
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+    },
+    {
+      "arm": "control",
+      "case_id": "wifi-00",
+      "family": "wifi",
+      "intent_operations": [
+        "wifi.connect.named"
+      ],
+      "kind": "plan",
+      "label": "wifi.manage",
+      "language": "es",
+      "right_family": true,
+      "seconds": 2.215499,
+      "session": 4,
+      "text": "Conecta no Wi-Fi de novo"
+    },
+    {
+      "arm": "control",
+      "case_id": "window-00",
+      "family": "window",
+      "intent_operations": [],
+      "kind": "clarify",
+      "label": "window.manage",
+      "language": "es",
+      "right_family": false,
+      "seconds": 5.152491,
+      "session": 4,
+      "text": "Abre una ventana incógnito"
+    }
+  ],
+  "schema": "baxy.presentable-policy-abba.v1",
+  "structural_activation": [
+    {
+      "arm": "control",
+      "models": {
+        "llm": "Qwen3-4B-Q4_K_M.gguf",
+        "router": "intfloat/multilingual-e5-small"
+      },
+      "session": 1
+    },
+    {
+      "arm": "candidate",
+      "models": {
+        "family_classifier": "baxy.family-classifier-manifest.v1",
+        "llm": "Qwen3-4B-Q4_K_M.gguf",
+        "router": "intfloat/multilingual-e5-small"
+      },
+      "session": 2
+    },
+    {
+      "arm": "candidate",
+      "models": {
+        "family_classifier": "baxy.family-classifier-manifest.v1",
+        "llm": "Qwen3-4B-Q4_K_M.gguf",
+        "router": "intfloat/multilingual-e5-small"
+      },
+      "session": 3
+    },
+    {
+      "arm": "control",
+      "models": {
+        "llm": "Qwen3-4B-Q4_K_M.gguf",
+        "router": "intfloat/multilingual-e5-small"
+      },
+      "session": 4
+    }
+  ]
+}

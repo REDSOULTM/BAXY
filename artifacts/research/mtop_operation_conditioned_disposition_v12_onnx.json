@@ -1,0 +1,15 @@
+{
+  "schema": "baxy.sequence-classifier-onnx-export.v1",
+  "scope": "development_only_not_promoted",
+  "authority": "offline_classification_only_no_core_plan_or_provider",
+  "checkpoint": "D:\\BAXYRuntime\\experiments\\mtop-operation-conditioned-disposition-v12",
+  "checkpoint_config_sha256": "6c7658b3fa7600a12c4125f9f1de8d1207955430e63830faafc6a161953f2c1d",
+  "model": "D:\\BAXYRuntime\\experiments\\mtop-operation-conditioned-disposition-v12-onnx\\model.fp32.onnx",
+  "model_bytes": 1116288232,
+  "model_sha256": "ff8e27cfee27bb61f97ce88299993599bde6633fcb9225c55e167b4cf254fc54",
+  "opset": 17,
+  "export_seconds": 13.291945,
+  "onnx_version": "1.22.0",
+  "effects_executed": 0,
+  "blind_holdout_opened": false
+}

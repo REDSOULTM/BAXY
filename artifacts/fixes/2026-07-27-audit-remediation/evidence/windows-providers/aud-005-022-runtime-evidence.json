@@ -1,0 +1,291 @@
+{
+  "schema": "baxy.audit-remediation.windows-providers.v1",
+  "recordedAtUtc": "2026-07-27T19:18:18.4544859Z",
+  "repository": "D:/BAXY/source",
+  "sourceCommit": "f23b23f064211154e954d82883ba6bee5c2c466c",
+  "branch": "codex/baxy-rebuild-v3",
+  "scope": [
+    "BAXY-AUD-005",
+    "BAXY-AUD-010",
+    "BAXY-AUD-011",
+    "BAXY-AUD-015",
+    "BAXY-AUD-016",
+    "BAXY-AUD-020",
+    "BAXY-AUD-021",
+    "BAXY-AUD-022"
+  ],
+  "sanitization": {
+    "rawTemporaryReportsRetained": false,
+    "userDocumentContentIncluded": false,
+    "ephemeralProcessIdsIncluded": false,
+    "windowHandlesIncluded": false,
+    "privateEndpointIdentityIncluded": false,
+    "note": "This record contains terminal outcomes, bounded counts, runtime identities, and restoration postconditions only."
+  },
+  "runtimes": {
+    "developmentCore": {
+      "path": "src/Baxy.Core/bin/Debug/net10.0-windows10.0.19041.0/baxy-core.exe",
+      "coreVersionObserved": "1.0.0",
+      "catalogCountObserved": 168,
+      "catalogUtf8BytesObserved": {
+        "minimum": 74282,
+        "maximum": 74283
+      },
+      "sha256AtEvidenceRecord": "9a3867f1ebfd3d835c20c6b357c97241fcd74a95f10aed9959d1e93a7ade8d78",
+      "providersAssembly": {
+        "path": "src/Baxy.Core/bin/Debug/net10.0-windows10.0.19041.0/Baxy.Providers.Windows.dll",
+        "sha256AtEvidenceRecord": "c429c1abf5097b3b7125e605b530d52979cd93fc3ff10d74ad088de49837bf2e"
+      },
+      "identityNote": "Physical probes bound the canonical path, core version, hello catalog, process identity, and operation receipts. The hashes bind the final workspace build after focused automated validation."
+    },
+    "productAppOpenGateBuild": {
+      "path": "artifacts/product/build/local-win-x64/app/core/baxy-core.exe",
+      "coreVersionObserved": "1.0.0",
+      "catalogUtf8BytesObserved": 73493,
+      "sha256": "5842697785079336f97223d054a364d9fee7d1b1c982a9399def896933229004",
+      "lastWriteTimeUtc": "2026-07-22T16:29:23.0566657Z"
+    }
+  },
+  "physicalReproductions": {
+    "BAXY-AUD-005": {
+      "target": "Windows Calculator hosted ApplicationFrameWindow",
+      "precondition": {
+        "calculatorProcesses": 0,
+        "sharedApplicationFrameHostCount": 1
+      },
+      "controlObservation": {
+        "systemCloseCommandAccepted": true,
+        "windowDisappeared": true
+      },
+      "finalBaxyChain": {
+        "appOpenVerified": true,
+        "hostedFrameResolvedByExactOwnerStartAndBounds": true,
+        "exactMatches": 1,
+        "appCloseStatus": "completed",
+        "appCloseVerified": true,
+        "windowDisappeared": true,
+        "remainingCalculatorProcesses": 0,
+        "preexistingSharedHostPreserved": true,
+        "outOfBandCleanupRequired": false
+      },
+      "intermediateDiagnostic": {
+        "observation": "An initial diagnostic deliberately followed the transient Calculator CoreWindow instead of the hosted frame and received verification_failed.",
+        "recoveredByExactHostedFrameSystemClose": true,
+        "sharedHostTerminated": false
+      }
+    },
+    "BAXY-AUD-010": {
+      "gate": "scripts/test_app_open.ps1",
+      "build": "artifacts/product/build/local-win-x64",
+      "jsonLineBoundBytes": {
+        "before": 65536,
+        "after": 1048576,
+        "helloObserved": 73493
+      },
+      "remediationSequence": [
+        {
+          "stage": "catalog_bound_increased",
+          "terminal": "failed",
+          "error": "Core did not emit an operation.response.",
+          "rootCauseObserved": "Windows PowerShell 5.1 inserted an EFBBBF UTF-8 BOM on redirected stdin.",
+          "externalEffectObserved": false
+        },
+        {
+          "stage": "bom_suppressed",
+          "terminal": "failed",
+          "error": "Protected WindowsApps component could not be enumerated.",
+          "notepadCreatedByGate": true,
+          "exactCreatedNotepadClosed": true,
+          "forcedTerminationUsed": false
+        },
+        {
+          "stage": "native_nontraversing_path_attributes_added",
+          "terminal": "passed",
+          "coreProtocol": "baxy.local.v1",
+          "appOpenVerified": true,
+          "visibleForegroundWindow": true,
+          "packageIdentityVerified": true,
+          "replayVerified": true,
+          "replayUsedSameProcess": true,
+          "newProcessIdentitiesOnReplay": 0,
+          "gateNotepadExited": true,
+          "coreExited": true,
+          "jobClosed": true,
+          "ownedProductProcessesRemaining": 0,
+          "dataRootRemoved": true,
+          "stderrBytes": 0
+        }
+      ],
+      "reparsePointVerifierDisabled": false,
+      "unionPathPolicyRelaxed": false
+    },
+    "BAXY-AUD-011": {
+      "operation": "app.open",
+      "applicationId": "windows.notepad",
+      "attempts": 7,
+      "completed": 7,
+      "verified": 7,
+      "failed": 0,
+      "createdProcessIdentitiesPerAttempt": 1,
+      "remainingCreatedProcessesPerAttempt": 0,
+      "coreExitCodePerAttempt": 0,
+      "catalogUtf8BytesByAttempt": [
+        74283,
+        74283,
+        74282,
+        74283,
+        74283,
+        74283,
+        74283
+      ],
+      "verifiedBehavior": "A converged main HWND was accepted only after the exact PID, creation time, executable, and package identity remained bound."
+    },
+    "BAXY-AUD-015": {
+      "operation": "audio.volume",
+      "baseline": {
+        "volumePercent": 3,
+        "muted": false
+      },
+      "bridge": {
+        "requestedPercent": 5,
+        "finalPercent": 5,
+        "applied": true
+      },
+      "exactToleranceCase": {
+        "requestedPercent": 3,
+        "baselinePercent": 5,
+        "differencePoints": 2,
+        "applied": true,
+        "finalPercent": 3
+      },
+      "restorationPostread": {
+        "volumePercent": 3,
+        "muted": false,
+        "endpointUnchanged": true
+      }
+    },
+    "BAXY-AUD-016": {
+      "operation": "web.search",
+      "externalEffects": "HTTPS reads only",
+      "uniqueTokenQuery": {
+        "status": "failed",
+        "verified": false,
+        "errorCode": "web_search_results_irrelevant",
+        "result": null,
+        "elapsedSeconds": 1.1013981
+      },
+      "relatedQuery": {
+        "queryClass": "Windows 11 calculator",
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "resultCount": 5,
+        "elapsedSeconds": 1.0569133
+      }
+    },
+    "BAXY-AUD-020": {
+      "operation": "input.select.all",
+      "winFormsBeforeFinalFallback": {
+        "inputEventsAccepted": 4,
+        "terminal": "select_all_postcondition_not_verified",
+        "selectionConverged": false
+      },
+      "winFormsAfter": {
+        "ok": true,
+        "effectObserved": true,
+        "authority": "win32_edit_selection_postread",
+        "exactFocusedNativeControlPreserved": true
+      },
+      "wpfAfter": {
+        "ok": true,
+        "effectObserved": true,
+        "acceptedEvents": 4,
+        "expectedEvents": 4,
+        "authority": "uia_textpattern_selection_postread"
+      },
+      "syntheticTargetsRemaining": 0
+    },
+    "BAXY-AUD-021": {
+      "target": "Synthetic WPF text window",
+      "sharedPhysicalChain": {
+        "terminalCases": 25,
+        "verifiedCases": 25,
+        "error": null
+      },
+      "windowActionsVerified": [
+        "focus",
+        "maximize",
+        "restore",
+        "move",
+        "resize",
+        "minimize",
+        "restore",
+        "focus"
+      ],
+      "lateFailureRecoveries": 0,
+      "targetExitCode": 0,
+      "cursorRestored": true
+    },
+    "BAXY-AUD-022": {
+      "chain": [
+        "input.keyboard.open",
+        "window.resolve",
+        "app.close"
+      ],
+      "openedKeyboardVerified": true,
+      "resolvedExactOpenedKeyboard": true,
+      "appCloseStatus": "completed",
+      "appCloseVerified": true,
+      "remainingProbeOskProcesses": 0
+    }
+  },
+  "automatedValidation": {
+    "providersWindowsFull": {
+      "passed": 392,
+      "failed": 0,
+      "skipped": 4,
+      "total": 396
+    },
+    "providersWindowsFocusedFinal": {
+      "passed": 169,
+      "failed": 0,
+      "skipped": 0,
+      "total": 169
+    },
+    "pythonPackagingAndDeferredGates": {
+      "passed": 30,
+      "failed": 0,
+      "subtestsPassed": 5
+    },
+    "coreBuild": {
+      "status": "passed",
+      "errors": 0,
+      "warnings": 0,
+      "note": "The first attempt encountered a transient external baxy-core file lock; the uncontended retry passed."
+    },
+    "powershellParsers": {
+      "testAppOpen": "passed",
+      "desktopSelectAll": "passed"
+    },
+    "gitDiffCheck": "passed"
+  },
+  "restoration": {
+    "finalAudio": {
+      "volumePercent": 3,
+      "muted": false
+    },
+    "notepadProcessesCreatedByThisProbeRemaining": 0,
+    "calculatorProcessesCreatedByThisProbeRemaining": 0,
+    "oskProcessesCreatedByThisProbeRemaining": 0,
+    "syntheticTextTargetsRemaining": 0,
+    "baxyCoreProcessesOwnedByThisProbeRemaining": 0,
+    "preexistingSharedApplicationFrameHostPreserved": true,
+    "cursorRestored": true,
+    "persistentKeyboardLayoutChange": false,
+    "temporaryDataRootsRemaining": 0,
+    "temporaryReportsRemaining": 0,
+    "forcedTerminationOfUserOrProductApplications": false,
+    "syntheticProbeProcessesTerminatedByHarness": true,
+    "unrelatedConcurrentProcessesExcludedFromCleanup": true
+  }
+}

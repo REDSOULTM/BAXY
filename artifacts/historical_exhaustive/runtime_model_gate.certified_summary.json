@@ -1,0 +1,32 @@
+{
+  "base_exhaustive_evidence": {
+    "completed_cases": 14845,
+    "hard_failures_before_revalidation": 9,
+    "input_sha256": "b086b65f9927fe22e0401b7d328d0ca939509963860522dcea4fe404f5df77f0",
+    "path": "artifacts/historical_exhaustive/runtime_model_gate.final24.merged.jsonl",
+    "runtime_fingerprint": "8ea3ca8c6edb7227c1330c5c8f2e1b70c16db5f482c6ec74f1cd99999dc4c5dd",
+    "runtime_occurrences_covered": 331258
+  },
+  "certified_result": {
+    "all_14845_base_cases_completed": true,
+    "all_9_base_hard_failures_revalidated_as_pass_operation_family": true,
+    "all_331258_runtime_occurrences_covered": true,
+    "remaining_hard_failures": 0,
+    "tools_executed": 0
+  },
+  "generated_at_utc": "2026-07-21T00:57:25.599359+00:00",
+  "schema_version": 2,
+  "scope": "layered_exhaustive_model_gate_with_targeted_failure_revalidation_no_effect",
+  "targeted_revalidation": {
+    "all_base_hard_failures_revalidated": true,
+    "cases_replayed": 9,
+    "input_sha256": "5b1d501f4e3555738bfe8bda8abd84bf2d88c2045d4007475c52a4742c5179d2",
+    "path": "artifacts/historical_exhaustive/runtime_model_gate.final24cert.jsonl",
+    "runtime_fingerprint": "4735477bbb6e31b4fe1050d67a2f2da8eb13897cdc5dac122f7875f5abb31682",
+    "source_oracle_sha256": "0d4cd92271aad99ec6037870d41d456c393c2b8ba989aa9feecdabc38dc95dba",
+    "status_counts": {
+      "pass_operation_family": 9
+    },
+    "unresolved_hard_failures": 0
+  }
+}

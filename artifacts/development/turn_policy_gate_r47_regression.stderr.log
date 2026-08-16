@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "D:\BAXY\source\scripts\run_turn_policy_gate.py", line 2825, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\BAXY\source\scripts\run_turn_policy_gate.py", line 2818, in main
+    report = run_gate(parse_args())
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\BAXY\source\scripts\run_turn_policy_gate.py", line 2406, in run_gate
+    else core_capabilities(args.core)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\BAXY\source\scripts\run_turn_policy_gate.py", line 1635, in core_capabilities
+    raise RuntimeError("el core no emitió hello: " + stderr[-2000:])
+RuntimeError: el core no emitió hello: You must install or update .NET to run this application.
+
+App: D:\BAXY\source\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.exe
+Architecture: x64
+Framework: 'Microsoft.NETCore.App', version '10.0.0' (x64)
+.NET location: C:\Program Files\dotnet
+
+The following frameworks were found:
+  6.0.16 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  6.0.36 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  7.0.20 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.6 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.11 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.19 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.21 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  8.0.29 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  9.0.0 at [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+
+Learn more:
+https://aka.ms/dotnet/app-launch-failed
+
+To install missing framework, download:
+https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=10.0.0&arch=x64&rid=win-x64&os=win10
+

@@ -1,0 +1,22 @@
+{
+  "all_cases_accounted": true,
+  "basis_counts": {
+    "conservative_target_unless_confidently_excluded": 11527,
+    "high_confidence_non_target_language_audit": 3142,
+    "manual_non_es_en_spanglish_audit": 81,
+    "reviewed_portuguese_definite_article_command": 87,
+    "reviewed_portuguese_infinitive_command": 2,
+    "reviewed_portuguese_modal_command": 6
+  },
+  "policy": "acceptance_backlog_is_es_en_spanglish_only",
+  "runtime_occurrence_counts": {
+    "out_of_scope_language": 15623,
+    "target": 315635
+  },
+  "schema_version": 1,
+  "scope_counts": {
+    "out_of_scope_language": 3318,
+    "target": 11527
+  },
+  "unique_runtime_cases": 14845
+}

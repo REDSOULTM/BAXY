@@ -1,0 +1,60 @@
+{
+  "schema": "baxy.mtop-source-map.v1",
+  "policy": {
+    "candidate_is_advisory_only": true,
+    "execution_authority": false,
+    "require_independent_llm_selection": true,
+    "require_contract_grounding_and_verification": true,
+    "development_must_explicitly_classify_every_observed_intent": true
+  },
+  "intents": {
+    "IN:GET_TIME": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "current_time",
+          "operations": ["system.time"]
+        }
+      ]
+    },
+    "IN:GREET": {
+      "disposition": "conversation",
+      "variants": [
+        {
+          "id": "natural_greeting",
+          "operations": []
+        }
+      ]
+    },
+    "IN:OPEN_APP": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "named_app",
+          "operations": ["app.open"]
+        }
+      ]
+    },
+    "IN:SEND_MESSAGE": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "grounded_message",
+          "operations": ["mail.send"]
+        }
+      ]
+    },
+    "IN:SET_ALARM": {
+      "disposition": "candidate",
+      "variants": [
+        {
+          "id": "dated_alarm",
+          "operations": ["notification.schedule"]
+        }
+      ]
+    }
+  },
+  "ood_intents": [
+    "IN:PLAY_GAME"
+  ]
+}

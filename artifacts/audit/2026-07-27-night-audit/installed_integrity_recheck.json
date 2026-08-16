@@ -1,0 +1,12 @@
+{
+  "schema": "baxy.audit.installed-integrity-recheck.v1",
+  "checked_at_utc": "2026-07-27T16:54:50.4586415Z",
+  "repository_head": "f23b23f064211154e954d82883ba6bee5c2c466c",
+  "remote_branch_head": "f23b23f064211154e954d82883ba6bee5c2c466c",
+  "installed_version": "1.0.8",
+  "installed_content_id": "52bf2752b9d1d5c191790b54dd1bf2131611896c713ac7fd0f29d48e7257c78f",
+  "sha256_manifest_entries": 36,
+  "verified_entries": 36,
+  "mismatches": [],
+  "missing": []
+}

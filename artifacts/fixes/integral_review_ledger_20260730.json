@@ -1,0 +1,195 @@
+{
+  "schema": "baxy.integral-review-ledger.v1",
+  "measured_at_utc": "2026-07-30",
+  "scope": "integral architecture/quality/latency review, closing pass of the 2026-07-30 campaign; map in documentacion/01_ARQUITECTURA/MAPA_TURNO_END_TO_END_20260730.md",
+  "entries": [
+    {
+      "id": "R1",
+      "component": "baxy_mind/router.py ProcessIntentRouter._launch_and_read",
+      "type": "arquitectura/latencia",
+      "problem": "E5 worker spawn deferred 6s by default, extending the degraded lexical-decision window",
+      "evidence": "router_delay_{6,0,3}_{a,b}_20260730.json; standalone worker floor 19.05s",
+      "impact": "degraded window -1.7/-3.9s with first turn at-or-below baseline in both orders",
+      "risk": "low: env override preserved; delay only defers an advisory worker",
+      "state": "promovido",
+      "tests": "tests/test_router.py + test_turn_policy.py focal; Full gate after change",
+      "artifact": "router.py default 6->3 with rationale comment",
+      "rollback": "restore default '6' (single line)"
+    },
+    {
+      "id": "R2",
+      "component": "scripts/measure_mind_budget.py sidecar_environment (and turn-policy/e2e/v5 gates)",
+      "type": "calidad",
+      "problem": "canonical gates forced BAXY_MIND_ROUTER_START_DELAY=0, certifying a startup interleaving different from the production default",
+      "resolution": "certification now exercises the production default (3s); an explicit stress hook sidecar_environment(router_start_stress=True) preserves the delay=0 contention scenario",
+      "state": "promovido",
+      "tests": "Full gate green after the change",
+      "rollback": "restore the four hardcoded '0' assignments"
+    },
+    {
+      "id": "R3",
+      "component": "baxy_mind/effect_intent.py deterministic state/effect recognizer; scripts/detect_promotion_boundary_decisions.py",
+      "type": "arquitectura/calidad/latencia",
+      "problem": "same text could receive a different contractual decision depending on the lexical->semantic promotion instant; the state-query families were not owned by the deterministic resolver, so they crossed the model and drained",
+      "resolution": "deterministic coverage extended to the whole machine-state family (battery/charge, cpu/cores, ram/memory, disk/space, gpu/vram, windows version, summary), the audio level and mute-state questions, and the global-mute synonyms. The speech-act gate now accepts quantity interrogatives, verbless nominal openings and a leading vocative. Authority boundary held by explicit vetoes: hardware knowledge, purchase/price advice, causal diagnosis, temperature, per-process or per-model attribution, sustained monitoring, another device, past/hypothetical/future state, application scope, microphone, assistant private memory, engineering/config notes, data the catalog does not measure, and scope combinations the enum cannot read at once.",
+      "state": "promovido",
+      "evidence": {
+        "regime_stability": "r3_regime_stability_verdict_20260730.json - 22 frozen turns x 4 physical passes (cold/settled x order 1/2): identical contractual decision in all four, 1 attempt everywhere, 0 validation errors, max 5.84s. turn-04/turn-24 -> audio.status and turn-00/06/23 -> system.status in 0.001-0.038s",
+        "boundary_quantification": "promotion_boundary_decisions_20260730.json - 330 unique corpus texts: 107 now decided deterministically (regime-independent by construction), 223 still model-decided and every one of them sees a different candidate set between regimes; 0 cache-state instability inside the semantic regime",
+        "drain_removal": "the 14-19.5s clarify tails of turn-04/06/23 no longer occur in any regime",
+        "corpora": "router_bank_sources POSITIVE/ABSTAIN pools (330 texts) and the frozen 14836-message historical corpus; 15 real false positives found in the historical corpus were fixed and frozen as regressions"
+      },
+      "tests": "tests/test_effect_intent.py (526) + tests/test_effect_intent_state_corpus.py (415, 2 sanctioned skips)",
+      "residual": "223 model-decided texts keep a regime-dependent candidate set. This is the two-phase design itself; the only variant that removes it is V-A (block intake until readiness), rejected by product decision for its startup SLA cost. Quantified and documented, not silently carried.",
+      "rollback": "revert src/baxy_mind/effect_intent.py and the two test files"
+    },
+    {
+      "id": "R4",
+      "component": "llm.py P retry pipeline",
+      "type": "latencia/calidad",
+      "problem": "14-19.5s clarify tails from deterministic Gemma thinking drain under the evidence-preferred shortlist",
+      "evidence": "turn_retry_root_cause_verdict_20260730.json (frequency 30/30, 27/30, 15/30; all internal corrections rejected with evidence)",
+      "state": "rechazado físicamente (toda la familia de correcciones internas)",
+      "next": "upstream llama.cpp reasoning-drain fix or authorized contract/shortlist recertification. R3 removed the drain from the state-query turns by keeping them out of the model entirely; the mechanism itself is unchanged for the turns that still need the model."
+    },
+    {
+      "id": "R5",
+      "component": "model/runtime assets",
+      "type": "latencia",
+      "problem": "candidate assets for faster decode",
+      "evidence": "b9553_mtp_assistant_verdict_20260730.json (28.3% acceptance, chat +33%, outputs changed); ministral_phase2_ab_v2_20260730.json (decode -29%, P +51%, +968 MiB)",
+      "state": "rechazado físicamente",
+      "next": "reopen only on a new checkpoint or official fixed runtime"
+    },
+    {
+      "id": "R6",
+      "component": "equivalent overhead / transport",
+      "type": "latencia",
+      "problem": "hypothesis that BAXY adds material overhead over the isolated model",
+      "evidence": "equivalent_overhead_ab_20260730.json (delta p50 -6ms, CI +/-80ms, p=1.0); non-LLM JSONL path 1-2ms; pooled POST overhead 6.6ms vs 6.4ms bare",
+      "state": "no aplicable (overhead no separable de cero; nada que optimizar)"
+    },
+    {
+      "id": "R7",
+      "component": "llama-server concurrency/cancellation/backpressure",
+      "type": "estabilidad",
+      "problem": "unverified scheduling behavior under contention and client cancel",
+      "evidence": "architecture_scenarios_audit_20260730.json (2.05x effective, bounded 4th-request queue, +87ms cancel recovery, 120-turn soak 0 errors no VRAM leak)",
+      "state": "no aplicable (verificado sano)"
+    },
+    {
+      "id": "R8",
+      "component": "App/WPF/WebView2 visible-response path; FieldUi render",
+      "type": "latencia percibida",
+      "problem": "no honest early feedback for a slow turn, no instrumentation of the visible path, and startup serialized WebView2 initialization before the local engine",
+      "state": "promovido; el bloqueo por sesión interactiva fue retractado y el tramo DOM/paint está medido",
+      "resolution": {
+        "early_feedback": "the bridge now publishes an honest progress indication over the historical boot_stage socket event that the sealed FieldUi dist already interprets, so no reader can misread it and no dist byte changes. The vocabulary is closed (starting/understanding/preparing_steps/acting/working/awaiting_reply/unavailable + a terminal ready), the text is natural, it never anticipates success, never shows JSON, schemas or internal state, is deduplicated, is recomputed (never replayed) on socket reconnection, and is retired when the turn ends. src/Baxy.App/FieldBridgeContract.cs additionally defines the versioned minReader rule for any future revision-2 envelope: an old reader keeps revision-1 messages byte-identical and a newer envelope is withheld rather than reinterpreted.",
+          "streaming_decision": "token streaming of model prose is NOT promoted: the visible text must be formulated under BAXY's contracts and an action may never show anticipated success, so publishing partial prose before the decision and the provider verification would break both invariants. The promoted alternative is honest staged progress, which reaches the person immediately and costs nothing in total time.",
+        "instrumentation": "src/Baxy.App/ShellTrace.cs - off unless BAXY_APP_TRACE points at a file; monotonic Stopwatch timestamps, per-request correlation id, closed label vocabulary, bounded record count, and a sanitizer that makes user text or model prose impossible to write. Wired at startup (begin/field/shell/ready/failed), at the bridge (submit received, bridge crossed, response final) and in the turn (queue end, decision start/ready, visible indication, visible text, cancelled, error, final).",
+        "startup": "MainWindow.OnLoaded now starts the local engine concurrently with the WebView2 initialization instead of strictly after it, keeping every failure observation and the shutdown cancellation path."
+      },
+      "evidence": "VisibleResponsePathMeasurementTests over the real Core process measures ONLY the shell segment: first honest visible indication p50 0.278 ms / p95 457 ms, and text published into the conversation p50 66.97 ms / p95 578.8 ms. CORRECTION 2026-07-30: those numbers are NOT productive end-to-end latency. The integration assembly sets UserMessagePolicy.BypassLlmCompositionForTests=true in TestAssemblySetup, so the final text came from the deterministic template instead of message.compose, which is the real LLM composition in production; the decision also came from a test resolver rather than P/G/L/V/C, and WebView2->DOM->paint is excluded. What the test does certify is the property the change was made for: the honest indication precedes the text instead of replacing or delaying it.",
+      "productive_end_to_end": "MEASURED on 2026-07-30 in a real interactive desktop session with the running product (real mind, real Core, real message.compose), driven by a physical click plus keystrokes on the FieldUi input and ending at the frame the compositor delivered. n=7. Enter->paint p50 2035 ms / p95 4798 ms. Action route: decision 1.9-4.9 ms (56.9 ms on the cold first turn) and 503-2081 ms in Core+provider+verification+LLM composition. Conversation route: 4.1-4.7 s in the decision itself, with ~0 composition because the mind already formulated the text. Transport is not the bottleneck: App->DOM p50 16.9 ms and DOM->first paint p50 19.4 ms. Artifact: app_visible_path_endtoend_20260730.json. The deterministic templates remain draft/fallback and were NOT promoted into the main answer to gain latency.",
+      "tests": "tests/Baxy.Integration.Tests/FieldProgressContractTests.cs (11), ShellTraceTests.cs (8, including a 4-thread barrier test for interleaving), VisibleResponsePathMeasurementTests.cs (1 physical)",
+      "retracted_blocker": {
+        "claim": "the WebView2 -> DOM -> first paint segment requires an external interactive desktop session",
+        "verdict": "RETRACTED as incorrect on 2026-07-30. The session is interactive (UserInteractive=True, SessionId=1, one 1280x720 screen, console user present). The real cause of the failed launches was that Baxy.exe is framework-dependent on .NET 10, which only exists in the private D:\\BAXYRuntime\\tools\\dotnet-10.0.100; without DOTNET_ROOT in the launched process the apphost showed its 'must install .NET' window, which is what was mistaken for a WPF window whose Loaded never fires. PowerShell Start-Process also launches through ShellExecute and does not carry a modified process environment, which hid BAXY_APP_TRACE. Launching with ProcessStartInfo.UseShellExecute=false and an explicit environment starts the real product.",
+        "instrumentation_added": "App.OnStartup now records process.start / process.yielded / window.created / window.shown so a startup diagnostic can tell 'did not start' from 'yielded to the single-instance mutex'. An opt-in document observer (injected only when the trace is active) reports two closed-vocabulary marks, dom.applied and paint.observed, over a new receive-only trace_mark bridge kind; it reads no content and leaves src/Baxy.FieldUi/dist untouched."
+      },
+      "final_decomposition_20260730": {
+        "artifact": "app_keystroke_to_paint_v2_20260730.json",
+        "scope": "the person's real Enter keypress, marked in the document on keydown before the view handles it, through to the frame the compositor delivered; 12 turns in ABBA order, 6 action and 6 conversation, warm runtime, running product with real mind, real Core and real message.compose",
+        "action_route_p50_ms": {
+          "keystroke_to_submit": 0.905,
+          "bridge_crossing": 0.075,
+          "dispatch": 1.481,
+          "first_honest_indication": 2.881,
+          "decision": 2.41,
+          "arguments_grounding": 1371.376,
+          "core_provider_and_verification": 188.937,
+          "llm_composition": 460.414,
+          "publish_to_dom": 20.675,
+          "dom_to_first_paint": 20.174,
+          "keystroke_to_paint": 2200.497
+        },
+        "conversation_route_p50_ms": {
+          "decision": 5048.86,
+          "keystroke_to_paint": 5105.622
+        },
+        "bottleneck": "argument grounding dominates the action route at 1.37 s p50, well above Core+provider+verification (189 ms) and the final composition (460 ms). It only appears when the operation has a schema with properties: system.time uses EmptySchema, skips grounding entirely and lands at 1.56 s end to end.",
+        "measured_candidate_not_promoted": "the deterministic recognizer already computes the system.status scope (_machine_status_scope), so supplying it could remove most of that 1.37 s. It is NOT promoted here: it would move argument selection into the deterministic path, which changes an authority boundary and requires the full argument corpus plus the canonical gates before any promotion. Recorded as a measured candidate with a concrete expected value, not as a pending task.",
+        "statistical_honesty": "six samples per route; individual values are published alongside the medians and no p95 from this sample is treated as a robust conclusion"
+      },
+      "rollback": "revert FieldUiBridge.cs, MainWindow.xaml.cs, MainWindowViewModel.cs, CoreProcessClient.cs and MindSidecarClient.cs trace calls; delete ShellTrace.cs, FieldBridgeContract.cs and the three test files"
+    },
+    {
+      "id": "R9",
+      "component": "Contracts/Core/Providers line-level quality audit and deterministic race tests",
+      "type": "calidad/seguridad",
+      "state": "promovido (parcial) + bloqueado por autoridad externa",
+      "resolution": [
+        "Baxy.Contracts/ProtocolJson.SerializeBoundedToUtf8Bytes: an operation response whose evidence payload alone exceeds the protocol line limit is re-serialized without Result so the decision, its stable error code and EffectMayHaveOccurred still reach the shell. Writing an oversized line would have left an already executed effect without a correlated answer. Wired in Baxy.Core/Program.cs and covered in tests/Baxy.Contracts.Tests/ProtocolContractTests.cs.",
+        "Providers.Windows/ExternalProcessRunner: stdout/stderr are now read in bounded chunks and the child is terminated as soon as a bound is exceeded, instead of materialising the whole output before checking it and leaving a child blocked on an undrained pipe. Termination is also guaranteed on any non-completing path.",
+        "Providers.Windows/WindowsExternalCapabilityProvider.Dispose: disposes exactly once and no longer strands the remaining adapters when one throws; failures are aggregated."
+      ],
+      "kernel_security_setup_sweep_20260730": {
+        "surfaces_audited": [
+          "MissionEngine: execution gate, idempotency by fingerprint, started/completed journal ordering, confirmation binding, retryable contract, terminal commit ordering",
+          "RequestFingerprint: canonical ordered JSON + SHA-256; numbers keep their raw text, which is the conservative choice because two textually different payloads can never be merged into one replay",
+          "JournalHmacAuthenticator: domain-separated HMAC with a zero separator, validated domain alphabet, key zeroed on dispose",
+          "PrivateOperationBoundary: envelope shape, purpose binding to operation/mission/invocation, closed failure-code allowlist, replay re-authentication",
+          "InMemoryConfirmationAuthority: all mutations under one lock, random derivation key plus nonce, CryptographicOperations.FixedTimeEquals comparison, expiry sweep, token redacted in ToString",
+          "FileInvocationJournal: WriteThrough plus Flush(flushToDisk), compaction verified by reopening and comparing every started/completed entry before an atomic File.Replace",
+          "Security.Windows: ProtectedPayloadPathPolicy rejects non-fixed drives, stray volume separators, oversized UTF-8 paths and reparse points along the whole chain; WindowsPrivateStorage validates the opened handle (final path, trusted owner, protected DACL) rather than the path string, which is what makes the check resistant to a swap between check and use",
+          "Setup: install/rollback is a phased journaled transaction over current/current.previous/current.rollback pointers with 8 injectable fault points and about 41 crash/recovery tests"
+        ],
+        "defects_found_and_fixed": [
+          "PrivateOperationBoundary.NormalizeOutcome discarded EffectMayHaveOccurred when reducing a private failure to the closed error-code allowlist. No memory handler produces an ambiguous outcome today, so it was a latent hazard rather than a live defect, but the reduction turned 'the effect may have happened' into 'it did not happen', which is exactly what invites repeating a half-applied private operation. The boolean is now preserved; CauseCode is still discarded because it is free-form handler text that could leak private detail. Covered by PrivateOperationAmbiguityTests (4 tests, red before the change)."
+        ],
+        "investigated_and_retracted": [
+          "MissionEngine throwing OperationCanceledException after committing the terminal record looked like 'effect performed, response lost'. It is a deliberate, already-characterized contract: the terminal is journaled BEFORE the cancellation propagates, and the cancelled caller recovers the exact response (including EffectMayHaveOccurred and CauseCode) by replaying the same invocationId. The attempted change was reverted and the contract is now also characterized by MissionEngineCancellationTests (4 tests)."
+        ],
+        "observed_not_changed": [
+          "FileInvocationJournal.ReplaceFileWithRetry blocks up to 2 s synchronously (200 attempts x 10 ms) during compaction. It is a retry against a real sharing violation on a rare path; a sleep-retry is the standard remedy and no change was promoted."
+        ],
+        "coverage_honesty": "this pass audited the highest-risk surfaces named above and their contracts; it is not a literal line-by-line reading of every one of the ~9000 lines across the three projects"
+      },
+      "tests": "Contracts 54, Kernel 109/2, Providers 429/5, Setup 464/8, Integration 1216/3 - all green in Release",
+      "second_defect_found_and_fixed_20260730": {
+        "defect": "PrivateOperationBoundary.NormalizeReplay rebuilt a failed private response through the positional constructor without passing response.EffectMayHaveOccurred, so the parameter fell back to its false default. The first execution could correctly report 'the effect may have occurred', the journal preserved it, and the replay of the same invocationId then implicitly reported that it did not - the exact dangerous condition the earlier NormalizeOutcome fix was meant to remove. The first fix was therefore incomplete.",
+        "reproduction": "PrivateReplayAmbiguityTests: an ambiguous non-retryable private operation, then the same invocationId with a new requestId. Red before the change on both the in-memory journal and a real FileInvocationJournal round trip across a simulated process restart.",
+        "fix": "NormalizeReplay now carries response.EffectMayHaveOccurred into both the narrated outcome and the rebuilt response. CauseCode stays discarded because it is free-form handler text.",
+        "verified_end_to_end": "the App consumes the flag: MindPlanBoundary.MustRetainAmbiguousEffect keeps an ambiguous effect from being replanned or retried, and the ViewModel branches its visible message on it",
+        "audit_of_the_same_class": "all three OperationResponse construction sites in Kernel and Core were checked. MissionEngine.ToResponse already forwards both EffectMayHaveOccurred and CauseCode; the private success path correctly reports no ambiguity for a verified success."
+      },
+      "webview2_orphan_finding": {
+        "claim": "a forced kill of Baxy.exe leaves msedgewebview2 host processes behind",
+        "verdict": "REJECTED PHYSICALLY on 2026-07-30. The earlier observation counted every msedgewebview2 process on a machine that runs other WebView2 hosts. A controlled reproduction that counts only processes whose command line carries BAXY's own user data folder (webview2-field) measured: 0 before launch, 6 while running, 0 at 20 s after a forced Stop-Process of Baxy.exe, and 0 at 60 s. No orphan survives.",
+        "primary_source": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/process-model - the WebView2 process group is owned by its single browser process ('All additional processes will be managed by the lifetime of that browser process') and the supported shutdown is CoreWebView2Controller.Close, which the WPF control performs on Dispose from MainWindow.OnClosing. The document specifies no Job Object contract.",
+        "decision": "no change promoted. Assigning Baxy.exe or the WebView2 group to a Job Object was considered and rejected: it is unnecessary (no orphan exists) and would introduce nested-job assumptions the runtime does not document.",
+        "reproduction": "scratchpad webview_orphans.ps1 pattern: filter Win32_Process by Name='msedgewebview2.exe' and CommandLine like the app's user data folder, sampling before, during and after a forced kill"
+      }
+    }
+  ],
+  "gates_after_promotion": "Release build 0 warnings / 0 errors; .NET and Python suites re-run at the end of this pass; counts recorded in the maintainability register entry of this pass",
+  "closure_note": "THE MISSION IS NOT CLOSED. R1/R2/R3/R8 are promoted with physical evidence; R4/R5 are physically rejected; R6/R7 are demonstrated correct. R9 is explicitly PARTIAL: two real defects were found and fixed in PrivateOperationBoundary (NormalizeOutcome and then NormalizeReplay, the second one because the first fix was incomplete), the highest-risk surfaces are audited, but a literal line-by-line reading of the three projects and several of the required deterministic race families are still missing. The earlier claim that 'R9 is finished' contradicted this same ledger and is retracted.",
+  "R10_deterministic_system_status_scope": {
+    "state": "PROMOVIDO 2026-07-30",
+    "change": "baxy_mind/__main__._explicit_system_status_scope, reached from _explicit_arguments_from_evidence through the sanctioned _ground_explicit_arguments seam. It supplies system.status.scope only when the text names exactly one scope of the closed catalog enum, or a pair the enum measures in one reading (cpu_memory, os_memory).",
+    "authority": "unchanged. The value crosses normalize_objective_arguments and every Core schema, risk, confirmation and verification gate. Core remains the only authority; no default is invented and nothing is guessed.",
+    "abstains_and_keeps_current_grounding_on": "two scopes the enum cannot measure at once, a GPU request that does not say whether it asks identity or usage, and the whole adversarial family (temperature, process or model attribution, past/future/hypothetical, another device, knowledge/advice/purchase/diagnosis, application scope)",
+    "corpus": "deterministic_scope_wired_20260730.json - 52 cases across battery/charge, cpu/cores, ram, disk/space, gpu identity vs usage, windows, summary, representable and unrepresentable combinations, every adversarial class and es/en/spanglish. Supplies a scope in 37, ZERO wrong scopes, ZERO unexpected abstentions.",
+    "physical_ab": "scope_abba_same_session_20260731.json - BOTH ARMS IN ONE PHYSICAL SESSION, alternating baseline and candidate in ABBA order with identical prompts, warmup, runtime and thermal state; the baseline arm disables the shortcut for that single request. Baseline 1.0126 s p50 vs candidate 0.0006 s p50, delta -1.012 s, 6 samples per arm, and arguments_all_equal=true so the saving does not come from deciding differently. The earlier deterministic_scope_ab_20260730.json compared against a trace captured hours earlier in another process and thermal state; it is NOT an A/B and it overstated the saving as 1.37 s. The honest figure is about 1.01 s.",
+    "regression": "tests/test_system_status_scope_grounding.py (41) and tests/test_machine_status_scope.py (31); the whole Python suite stayed green with no decision change",
+    "known_gap_it_exposes": "the canonical ARGUMENT_CASES corpus does not cover system.status at all, a gap opened by the R3 change that made it an explicit action",
+    "rollback": "delete _explicit_system_status_scope and its dispatch line in _explicit_arguments_from_evidence"
+  },
+  "open_work_not_yet_done": [
+    "R9: literal line-by-line sweep of Kernel/Security.Windows/Setup with a reviewed-file inventory, plus deterministic tests for crash between effect/verification/journal/response, shutdown during spawn and during a request, File.Replace sharing-violation windows, DPAPI/ACL/reparse/TOCTOU, every Setup fault point, double-dispose and late callbacks",
+    "R9: the deterministic race families still missing deterministic tests (crash between effect/verification/journal/response, shutdown during spawn and during a request, File.Replace sharing-violation windows, DPAPI/ACL/reparse/TOCTOU on the private store, every Setup fault point, double-dispose and late callbacks)",
+    "P/G/L/V/C: the byte-identical direct-replay arm against the same llama-server in both ABBA orders. The per-component decomposition itself is DONE and correct in policy_pipeline_20260731.json (51 calls, 51 attributed by request identity, 0 orphan): P 646.2 ms prefill / 3024.3 ms decode p50, G 506.8/1078.7 with one call per model turn, L 523.5/272.6, V 177.0/1072.0, C 263.0/337.6. The first attempt, pglvc_pipeline_20260731.json, is RETRACTED inside its own file: it correlated by wall-clock window and gave a 0.0015 s deterministic turn 5.647 s of inference",
+    "model funnel: a real five-month window survey with a candidate table and a documented reason to advance or discard each one; the current artifact only confirms the MTP blocker and the release feed",
+    "UI measurement: a versioned reproducible harness with stable scenario IDs and fixture hashes, cold and warm runs, repeated ABBA orders and enough repetitions; and paint.observed must be labelled a post-mutation double-rAF proxy rather than an OS compositor confirmation"
+  ]
+}

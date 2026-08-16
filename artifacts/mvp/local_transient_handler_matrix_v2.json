@@ -1,0 +1,155 @@
+{
+  "schema": "baxy.mvp-local-transient-handler-matrix.v1",
+  "measuredAtUtc": "2026-08-11T20:50:42.6921702\u002B00:00",
+  "scope": "all_local_transient_handlers_with_safe_effect_simulation",
+  "actualUserEffectsExecuted": 0,
+  "metrics": {
+    "operations": 17,
+    "verified": 17,
+    "possibleEffects": 0,
+    "realReadOnlyProviders": 1,
+    "safeContractSimulations": 16,
+    "failed": 0
+  },
+  "coreAssemblySha256": "a6ffe8bbc5293bf8f480d029a7c3b91c7feb630ffbdda7d6e01dd91085c352f2",
+  "testAssemblySha256": "f5401971fe74e277dfc73b38063cb9e5793c3b2fd4a881df6c138c6735be0cbb",
+  "rows": [
+    {
+      "Operation": "app.open",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "application_launch_receipt_plus_window_identity",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "audio.mute",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "endpoint_hash_and_exact_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "audio.volume",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "endpoint_hash_and_tolerant_exact_postread",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "capture.screenshot",
+      "EvidenceKind": "safe_sensitive_contract_simulation",
+      "Verifier": "opaque_capture_id_dimensions_and_sha256",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "capture.active.window",
+      "EvidenceKind": "safe_sensitive_contract_simulation",
+      "Verifier": "opaque_capture_id_dimensions_and_sha256",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "clipboard.read.text",
+      "EvidenceKind": "safe_sensitive_contract_simulation",
+      "Verifier": "bounded_private_snapshot",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "clipboard.write.text",
+      "EvidenceKind": "safe_sensitive_contract_simulation",
+      "Verifier": "sequence_and_character_count_receipt",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "network.ip.list",
+      "EvidenceKind": "real_read_only_provider",
+      "Verifier": "two_equal_normalized_windows_reads",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "app.close",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "independent_window_absence_receipt",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "window.active",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "post_action_window_state_or_exact_bounds",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "window.focus",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "post_action_window_state_or_exact_bounds",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "window.maximize",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "post_action_window_state_or_exact_bounds",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "window.minimize",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "post_action_window_state_or_exact_bounds",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "window.move",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "post_action_window_state_or_exact_bounds",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "window.resize",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "post_action_window_state_or_exact_bounds",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "window.resolve",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "post_action_window_state_or_exact_bounds",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "window.restore",
+      "EvidenceKind": "safe_verified_contract_simulation",
+      "Verifier": "post_action_window_state_or_exact_bounds",
+      "Verified": true,
+      "EffectMayHaveOccurred": false,
+      "ActualUserEffectsExecuted": 0
+    }
+  ],
+  "gatePassed": true
+}

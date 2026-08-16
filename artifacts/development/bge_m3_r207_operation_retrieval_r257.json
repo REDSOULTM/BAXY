@@ -1,0 +1,1469 @@
+{
+  "schema": "baxy.bge-m3-r207-operation-retrieval.r257-result.v1",
+  "authority": "isolated_cuda_development_probe_not_runtime_oos_or_blind_holdout_measurement",
+  "verdict": "development_retrieval_signal_only_catalogue_coverage_incomplete",
+  "candidate": {
+    "base": "BAAI/bge-m3@5617a9f61b028005a4858fdac845db406aefb181",
+    "device": "cuda_bf16",
+    "ranking": "maximum cosine against query-disjoint positive R207 exemplars per typed operation",
+    "threshold_or_domain_gate": null
+  },
+  "development_population": {
+    "source": "R207 typed positive rows only",
+    "training_queries": 4426,
+    "evaluation_queries": 256,
+    "catalogue_operations": 174,
+    "operations_with_r207_exemplars": 168,
+    "catalogue_operations_without_r207_exemplar": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "source_positive_operations_excluded_as_not_typed_catalogue_operations": [
+      "__no_action__",
+      "notification.cancel.at"
+    ],
+    "query_disjoint": true,
+    "texts_retained": false,
+    "source_ids_retained": false
+  },
+  "observed": {
+    "recall_top_1": 0.98828125,
+    "recall_top_2": 1.0,
+    "recall_top_5": 1.0,
+    "recall_top_8": 1.0,
+    "per_operation_coverage": {
+      "app.close": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "app.installed": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "app.open": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "audio.microphone.mute": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "audio.mute": {
+        "evaluation_queries": 1,
+        "recall_top_1": 0.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "audio.status": {
+        "evaluation_queries": 2,
+        "recall_top_1": 0.5,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "audio.volume": {
+        "evaluation_queries": 8,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "audio.volume.adjust": {
+        "evaluation_queries": 4,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup.create": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup.known.create": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup.known.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup.known.restore.latest": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup.known.verify.latest": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup.restore": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup.verify": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "bluetooth.device.list": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "bluetooth.device.pair": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "bluetooth.radio.set": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "browser.control": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "browser.navigate": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "browser.navigate.named": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "browser.page.read": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "browser.tabs.list": {
+        "evaluation_queries": 5,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "calendar.event.create": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "calendar.event.list": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "capture.active.window": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "capture.screenshot": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "clipboard.copy": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "clipboard.paste": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "clipboard.read.text": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "clipboard.write.text": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "email.latest.read": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "email.latest.reply": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.copy": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.create.directory": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.file.open.latest": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.folder.open": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.hash": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.known.duplicates": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.known.search": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.known.trash.named": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.move": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.path.ensure.absent": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.read.text": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.sandbox.append.named": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.sandbox.diff.named": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.sandbox.move.named": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.search": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.trash.commit": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.trash.prepare": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.trash.restore": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem.write.text": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.catalog.list": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.install.cancel": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.install.cancel.active": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.install.commit": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.install.named": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.install.prepare": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.install.status": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.installed.named": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.launch": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.purchase.commit": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game.purchase.prepare": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input.key.press": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input.keyboard.layout": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input.keyboard.open": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input.keyboard.status": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input.pointer.control": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input.select.all": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input.text.type": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input.visible.click": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "media.control": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "media.play.exact": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "media.play.query": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "media.play.youtube": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "media.seek.relative": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "media.status": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.correct": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.disable": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.enable": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.export": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.forget": {
+        "evaluation_queries": 5,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.list": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.recall": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.save": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.sensitive.save": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.session.clear": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory.status": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "message.recipient.resolve": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "message.send": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "network.dns.status": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "network.ip.list": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "network.ping": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "network.port.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "network.status": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "note.create": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "note.list": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "note.read": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "note.restore": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "note.search": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "note.trash": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "note.update": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "notification.cancel.latest": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "notification.diagnose": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "notification.dismiss": {
+        "evaluation_queries": 4,
+        "recall_top_1": 0.75,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "notification.list.due": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "notification.schedule": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "ocr.read": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "office.document.create": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "office.document.read": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "package.install.commit": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "package.install.prepare": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "peripheral.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "peripheral.print": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "peripheral.scan": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "reminder.create": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "reminder.delete": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "reminder.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "reminder.resolve.exact": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "reminder.restore": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "routine.delete": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "routine.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "routine.phrase.create": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "routine.read": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "routine.resolve.exact": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "routine.restore": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "routine.set.enabled": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "streaming.navigate": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "streaming.play.named": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.application.crash.diagnose": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.identity": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.power": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.process.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.process.terminate.named": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.recyclebin.empty": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.settings.adjust": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.settings.set": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.settings.status": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.status": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system.time": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.complete": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.create": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.delete": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.reopen": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.resolve.exact": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.restore": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.search": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task.update": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "vision.describe": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "web.search": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "wifi.connect": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "wifi.connect.named": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "wifi.disconnect": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "wifi.ensure.connected": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "wifi.profile.list": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "wifi.status": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.active": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.application.status": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.focus": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.maximize": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.minimize": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.move": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.resize": {
+        "evaluation_queries": 5,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.resolve": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window.restore": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      }
+    },
+    "per_family_coverage": {
+      "app": {
+        "evaluation_queries": 4,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "audio": {
+        "evaluation_queries": 17,
+        "recall_top_1": 0.8823529411764706,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "backup": {
+        "evaluation_queries": 12,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "bluetooth": {
+        "evaluation_queries": 4,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "browser": {
+        "evaluation_queries": 10,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "calendar": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "capture": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "clipboard": {
+        "evaluation_queries": 6,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "email": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "filesystem": {
+        "evaluation_queries": 29,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "game": {
+        "evaluation_queries": 13,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "input": {
+        "evaluation_queries": 13,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "media": {
+        "evaluation_queries": 14,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "memory": {
+        "evaluation_queries": 18,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "message": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "network": {
+        "evaluation_queries": 8,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "note": {
+        "evaluation_queries": 10,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "notification": {
+        "evaluation_queries": 12,
+        "recall_top_1": 0.9166666666666666,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "ocr": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "office": {
+        "evaluation_queries": 4,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "package": {
+        "evaluation_queries": 4,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "peripheral": {
+        "evaluation_queries": 3,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "reminder": {
+        "evaluation_queries": 6,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "routine": {
+        "evaluation_queries": 7,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "streaming": {
+        "evaluation_queries": 2,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "system": {
+        "evaluation_queries": 13,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "task": {
+        "evaluation_queries": 10,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "vision": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "web": {
+        "evaluation_queries": 1,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "wifi": {
+        "evaluation_queries": 10,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      },
+      "window": {
+        "evaluation_queries": 14,
+        "recall_top_1": 1.0,
+        "recall_top_2": 1.0,
+        "recall_top_5": 1.0,
+        "recall_top_8": 1.0
+      }
+    },
+    "operations_with_all_evaluation_queries_in_top_8": 168,
+    "families_with_all_evaluation_queries_in_top_8": 31,
+    "minimum_useful_comparison": {
+      "top_8_supports_no_loss_necessary_condition_on_covered_population": true,
+      "top_2_supports_no_loss_necessary_condition_on_covered_population": true,
+      "global_catalogue_shortlist_supported": false,
+      "reason_global_catalogue_shortlist_not_supported": "R207 has no positive exemplar for every typed catalogue operation and this probe does not measure OOS, decision, vetoes, visible text or the blind path."
+    }
+  },
+  "latency_gpu": {
+    "model_load_seconds": 3.0780000000013388,
+    "embedding_training_seconds": 6.625,
+    "embedding_evaluation_seconds": 0.35899999999674037,
+    "ranking_seconds": 0.031000000002677552,
+    "peak_allocated_mib": 2221.35107421875,
+    "batch_size": 16
+  },
+  "constraints": {
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "A result cannot be integrated or used to shorten the runtime shortlist. A failure rejects this raw retrieval architecture; a covered-population pass still needs complete catalogue exemplars plus separately sealed OOS, raw-decision, veto, visible-text and blind full-path evidence.",
+  "identities": {
+    "preregistration_sha256": "951fbc5b8e7547329771494b115f4fc656bafefa29156dbc8c2e5f9a8371e776",
+    "r207_sha256": "6be518643a188bc5402c4ced73e4da3049d43ed0dbd3a0d8114f6130784fa8b0",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "53cdacf026c8af46416f06bf16a1044b2d63a0ea6cf1526c5c45bdd793a4ae22"
+  }
+}

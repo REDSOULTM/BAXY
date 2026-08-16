@@ -1,0 +1,45 @@
+{
+  "schema": "baxy.bge-reranker.r240-preregistration.v1",
+  "authority": "sealed_before_reranker_import_or_development_run",
+  "candidate": {
+    "model": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "device": "cuda_gpu_development_probe",
+    "score": "sigmoid cross-encoder relevance query-to-typed-family-document",
+    "document": "one deterministic typed document per catalogue family",
+    "abstention": "zero candidates below nextafter below the minimum selected inside score"
+  },
+  "development_population": {
+    "inside": 256,
+    "outside": 256,
+    "sources": [
+      "PRESTO v1",
+      "MASSIVE v1.1"
+    ],
+    "selection": "deterministic SHA-256 ordering with one initial row per family",
+    "r228_used": false,
+    "public_holdout_used": false
+  },
+  "acceptance": {
+    "inside_rows_lost": 0,
+    "outside_rows_with_zero_candidates": 256,
+    "aggregate_scores_only": true,
+    "runtime_integration": false,
+    "latency_measurement": "reported as GPU development telemetry only; no product claim"
+  },
+  "constraints": {
+    "r228_opened": false,
+    "public_holdout_opened": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r239_sha256": "efbdd1f70a2e2ee1159ac3696fd13c97e7185b62009479abb580f715d6ef4d2a",
+    "r238_sha256": "9e148c026438c242d8c96dfc8c21af801997f53da6ebad3d74d58121d900c5cb",
+    "r234_sha256": "10ebd512df812aacc1db458ef4c7771076b861af26810a9568e8f9ef4c8f2bab",
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "runner_sha256": "05017c401ad36e0ee746e32fbdf19097c3522822f106ded30cfcbe03989ecb61",
+    "program_sha256": "aa9b3d1e151650c9608f61b748ab801fcdb2e475feca25deeb67cb6b1a949c04"
+  }
+}

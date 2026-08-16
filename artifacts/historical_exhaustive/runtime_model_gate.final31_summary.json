@@ -1,0 +1,42 @@
+{
+  "all_cases_completed": true,
+  "completed_cases": 14845,
+  "generated_at_utc": "2026-07-22T03:41:05.333412+00:00",
+  "hard_failure_cases": [
+    "case_2a42cebf96fe301a83abf56a",
+    "case_63dd4d7a622c4bc7b68a6200",
+    "case_bb20f5f6beccfcab223abbb2",
+    "case_daa2f36a2bcf07ae50a23dd6"
+  ],
+  "hard_failures": 4,
+  "latency_seconds": {
+    "maximum": 58.25,
+    "p50": 0.062,
+    "p95": 30.172
+  },
+  "out_of_scope_language_cases": 3318,
+  "remaining_cases": 0,
+  "runtime_fingerprint": "cc11efb5bb0a09f918f9adb5ad5b17e4323d1a67d5cd7ad071c214975a5e52b5",
+  "runtime_occurrences_covered": 331258,
+  "schema_version": 1,
+  "scope": "every_exact_runtime_message_real_desktop_route_and_persistent_sidecar_no_effect",
+  "shards_merged": 16,
+  "source_case_sha256": "561f67ce527fba5544eafbca79dec2aacc2be8f8a248ffca145cacf9f7f4a6d6",
+  "source_language_scope_sha256": "28b683054fe6eaaec3ba98a35e96366a52b5e8b7f6d09a03939fe500292a760c",
+  "source_oracle_sha256": "e666bc07e8731a2bf90a09b14542f4b18a18f8b92be884770ffd7d4b7e49affb",
+  "status_counts": {
+    "false_effect": 1,
+    "missed_operation": 2,
+    "out_of_scope_language": 3318,
+    "pass_app_direct_operation_family": 534,
+    "pass_no_effect": 4242,
+    "pass_operation_family": 3811,
+    "pass_safe_clarification": 974,
+    "review_clarification": 1517,
+    "review_unresolved_oracle": 445,
+    "wrong_operation": 1
+  },
+  "target_language_cases": 11527,
+  "tools_executed": 0,
+  "unique_runtime_cases": 14845
+}

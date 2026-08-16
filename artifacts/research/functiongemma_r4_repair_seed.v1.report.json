@@ -1,0 +1,27 @@
+{
+  "effects_executed": 0,
+  "exact_text_overlap": 0,
+  "heldouts": [
+    {
+      "path": "D:\\BAXY\\source\\experiments\\mind_router_spike\\data\\exact_operation_development.v1.jsonl",
+      "sha256": "d6162676ec59b5cf138de35ddce767f7239e3fe36f0755795321beca09df4909"
+    },
+    {
+      "path": "D:\\BAXY\\source\\artifacts\\development\\current_catalog_review_development.v1.jsonl",
+      "sha256": "090e4b41939a6d355b44791afad978fe78249abf8cc886125a4969caa30c933a"
+    }
+  ],
+  "operations": {
+    "media.control": 10,
+    "media.play.query": 10,
+    "notification.cancel.latest": 20,
+    "notification.dismiss": 20,
+    "notification.schedule": 10
+  },
+  "output": "D:\\BAXY\\source\\artifacts\\research\\functiongemma_r4_repair_seed.v1.jsonl",
+  "output_sha256": "5e79fd48c08feb1bbb355a1de502d4ead0338432c6e1c01767088ec41df611bb",
+  "r4_selected_identity_sha256": "031d6173f29e1055b71fbd0da6e3fe13395fbc275c708f059a34ae788cb07f2d",
+  "rows": 70,
+  "schema": "baxy.functiongemma-r4-repair-seed.v1",
+  "scope": "opened_development_repair_not_blind"
+}

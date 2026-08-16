@@ -1,0 +1,24 @@
+{
+  "authority": "development_only_deterministic_positive_negative_pairs",
+  "constraints": {
+    "human_audited_training": false,
+    "opened_v9": false,
+    "r186_evaluation_only": true,
+    "runtime_modified": false
+  },
+  "counts": {
+    "evaluation_overlap_claimed": 0,
+    "labels": 170,
+    "negative_pairs": 18960,
+    "pairs": 23700,
+    "positive_pairs": 4740
+  },
+  "identities": {
+    "catalog_sha256": "2d5a257c9c2986b22a1f3159ffd30b4d658045d3cb7e15982abc42819651e376",
+    "pairs_sha256": "404a7cf3f2f5e3e4a1a027dd1ece5eebb5f6cf77e6e633cda52611250f81ed31",
+    "program_sha256": "3f0330fe92a81a2712bd37c9914c540c61f63cf897db3d8f8c44f578be58f42b",
+    "r186_sha256": "e03c8266cb4382ed9dac0a421fcbdc128bd2aaf14d2f71628c059facfbf9954d",
+    "source_sha256": "c9614655bee3fd4e173f11800c8a3ac0bd068b27bce1fa2a42aa16b2eaa5360f"
+  },
+  "schema": "baxy.r207-cross-encoder-pairs-admission.v1"
+}

@@ -1,0 +1,3067 @@
+{
+  "schema": "baxy.hyperspotter-open-vocabulary-wake-pilot-development.v1",
+  "measuredAtUtc": "2026-08-11T18:17:50.781464+00:00",
+  "architecture": "whisper_hyper",
+  "role": "research_pilot_only",
+  "inputsSha256": {
+    "program": "3a860ee0e9efda1940510a8d3fb613fa8af8e423265f69a92b643bbb45f4e5fd",
+    "binding": "f4b5d8724c916ba9dda6af041f7e5f601932d16f91e60d0fdfc01a8de54e1739",
+    "preregistration": "d59a455671be79aa6a761e7f70f0555475f59b5f484058e556400386fa2bcd89",
+    "sourceArchive": "c85f06fb85546b7b44ac2cd2a00ec73e9bf9867306ea7f7cb8b8d74c75989baa",
+    "sourceTree": "847c7daae16669ad78dc0a5c63c6bc3f42602b1fc63d60507ee8f991c445b793",
+    "checkpoint": "cfde3bd683f4f136dba56c6c03dbb089dd0fb13b80a4fb7ab65b9e1efdf46b6e"
+  },
+  "contract": {
+    "keyword": "baxy",
+    "threshold": 0.5,
+    "device": "cpu",
+    "batchSize": 16,
+    "torchThreads": 8,
+    "physicalV17Read": false,
+    "retainTranscriptText": false,
+    "retainFilenames": false,
+    "modifyRuntime": false,
+    "retrain": false
+  },
+  "runtime": {
+    "python": "3.12.10",
+    "packages": {
+      "einops": "0.7.0",
+      "lightning-utilities": "0.10.1",
+      "numpy": "1.26.4",
+      "omegaconf": "2.3.0",
+      "openai-whisper": "20231117",
+      "prettytable": "3.10.0",
+      "pytorch-lightning": "2.2.1",
+      "torch": "2.13.0",
+      "torchaudio": "2.11.0",
+      "torchmetrics": "1.3.2",
+      "wandb": "0.16.4"
+    },
+    "modelLoadSeconds": 8.16877350001596,
+    "evaluationSeconds": 198.17358200001763
+  },
+  "checkpoint": {
+    "stateTensorCount": 284,
+    "stateElementCount": 13252883,
+    "checkpointEpoch": 248,
+    "checkpointGlobalStep": 370263,
+    "checkpointLightningVersion": "2.1.3",
+    "checkpointLoadedWeightsOnly": true,
+    "unsafeGlobalsObserved": [
+      "builtins.dict",
+      "collections.defaultdict",
+      "omegaconf.base.ContainerMetadata",
+      "omegaconf.base.Metadata",
+      "omegaconf.dictconfig.DictConfig",
+      "omegaconf.nodes.AnyNode",
+      "typing.Any"
+    ],
+    "unexpectedUnsafeGlobals": []
+  },
+  "corpora": [
+    {
+      "label": "endpoint_confusable",
+      "manifestSha256": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+      "requiredPositiveAcceptedFiles": 16,
+      "positive": {
+        "files": 24,
+        "acceptedFiles": 19,
+        "probability": {
+          "minimum": 0.08791769295930862,
+          "p50": 0.878466784954071,
+          "p95": 0.9804691582918167,
+          "maximum": 0.9874523282051086
+        },
+        "runtimeSeconds": {
+          "minimum": 0.462575800025661,
+          "p50": 0.5174233749894483,
+          "p95": 0.5184934550321486,
+          "maximum": 0.5221821749910305
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "90cba8054ef8813e98d95bb340ffb9c26c57e3af907b6a00a0ddc9b669fbc480",
+            "probability": 0.9499942660331726,
+            "accepted": true,
+            "runtimeSeconds": 0.5221821749910305
+          },
+          {
+            "record": 1,
+            "audioSha256": "9ae3a2e8dd18137cfbaf1f80666438f071a27b59d379ed4b1d581690533e584b",
+            "probability": 0.46236440539360046,
+            "accepted": false,
+            "runtimeSeconds": 0.5175162750274467
+          },
+          {
+            "record": 2,
+            "audioSha256": "4c047628582aa96b5add09c5fb404dbc4750f831e9fb07b75e4de87449393fb2",
+            "probability": 0.7859317064285278,
+            "accepted": true,
+            "runtimeSeconds": 0.5174534750149178
+          },
+          {
+            "record": 3,
+            "audioSha256": "60f98152326f32828f28109ca44a75f3659ce22946acdd5f6d646055221df442",
+            "probability": 0.08791769295930862,
+            "accepted": false,
+            "runtimeSeconds": 0.5177168749833072
+          },
+          {
+            "record": 4,
+            "audioSha256": "3d77ce2b9816edbb6f92d84051a77d207c6a772dab767f5dc6c560c4e58db43a",
+            "probability": 0.7833091616630554,
+            "accepted": true,
+            "runtimeSeconds": 0.5175931750309246
+          },
+          {
+            "record": 5,
+            "audioSha256": "1dd20f4cccc6a78cbc41de9d228b8ec507bda8424fe5ac84d853b11aef4f57e8",
+            "probability": 0.960910439491272,
+            "accepted": true,
+            "runtimeSeconds": 0.5177572749998944
+          },
+          {
+            "record": 6,
+            "audioSha256": "facce206d91376faa4f84f81b20fd8d811e35c3143a8cf6486f85c64d9fc3b02",
+            "probability": 0.3935427665710449,
+            "accepted": false,
+            "runtimeSeconds": 0.5175411749842169
+          },
+          {
+            "record": 7,
+            "audioSha256": "b2afcf74d387c17785c0c77c8cd098c91e459828a3d387b88e84d101ce2e3748",
+            "probability": 0.963769257068634,
+            "accepted": true,
+            "runtimeSeconds": 0.517666175004706
+          },
+          {
+            "record": 8,
+            "audioSha256": "37891ce5861dea9a1d0e6cb907cd7a95d969d0cf50af2d4520fda84c6afa133a",
+            "probability": 0.8849539756774902,
+            "accepted": true,
+            "runtimeSeconds": 0.5185331750290061
+          },
+          {
+            "record": 9,
+            "audioSha256": "6a1b4c3400012d5bfa948ba18e704e3b00e26e57133470912fa2afd38f3bb350",
+            "probability": 0.9633586406707764,
+            "accepted": true,
+            "runtimeSeconds": 0.5182683750499564
+          },
+          {
+            "record": 10,
+            "audioSha256": "53cb3b2313491d34f2c30a699849d46d9674b2c3638fd49c2e570a37ad2b762d",
+            "probability": 0.6222196817398071,
+            "accepted": true,
+            "runtimeSeconds": 0.5175564749843033
+          },
+          {
+            "record": 11,
+            "audioSha256": "c11149faf11f64066cbbbeafc94266297aab003fde296d32bb0e4298a70afab2",
+            "probability": 0.9275087714195251,
+            "accepted": true,
+            "runtimeSeconds": 0.5173932749639789
+          },
+          {
+            "record": 12,
+            "audioSha256": "d27e3901d674e20e85c838d9fe3b5d0f9124da4e43b381ffb5cc1888068ee10f",
+            "probability": 0.3213999569416046,
+            "accepted": false,
+            "runtimeSeconds": 0.5175687749615463
+          },
+          {
+            "record": 13,
+            "audioSha256": "754e0e507899a9d6403ca46208241dd5bfff2e3ec511e58feb3e92b8fbe19541",
+            "probability": 0.9679405093193054,
+            "accepted": true,
+            "runtimeSeconds": 0.5171068749950791
+          },
+          {
+            "record": 14,
+            "audioSha256": "a6b35d0d152e78314039e98df146dd89c1d4650c090f26238e670ef73abf0ec0",
+            "probability": 0.6858426332473755,
+            "accepted": true,
+            "runtimeSeconds": 0.517267274994083
+          },
+          {
+            "record": 15,
+            "audioSha256": "4ded547d882e372e208e6b76e69e3e99c5864af5e24d61fa5bcae80e5a73f9fe",
+            "probability": 0.9772863984107971,
+            "accepted": true,
+            "runtimeSeconds": 0.5171674749908561
+          },
+          {
+            "record": 16,
+            "audioSha256": "df1e9e984ebd0f80515de81f38e821214b574ee94aa6c60a97577898f5c8e82f",
+            "probability": 0.6943959593772888,
+            "accepted": true,
+            "runtimeSeconds": 0.4642505000301753
+          },
+          {
+            "record": 17,
+            "audioSha256": "2ef1ce76aaf5123ad3d1f691f5379072342cccb1e99ef3ac5ee6d0913fc85663",
+            "probability": 0.8764234185218811,
+            "accepted": true,
+            "runtimeSeconds": 0.4627630999966641
+          },
+          {
+            "record": 18,
+            "audioSha256": "cb122f38f6f9c4631ec3871c52ed552a8a208355ce12458d9af653af042a8529",
+            "probability": 0.3686090111732483,
+            "accepted": false,
+            "runtimeSeconds": 0.46277140000165673
+          },
+          {
+            "record": 19,
+            "audioSha256": "a32211436f3938e38cec1d111973e35cc89193d02b0def236751d78c116bb68f",
+            "probability": 0.880510151386261,
+            "accepted": true,
+            "runtimeSeconds": 0.46274860000266926
+          },
+          {
+            "record": 20,
+            "audioSha256": "4861eb91bc06aebb77fd7ae64e8b049a2141b9052443afef54b30724f75f7a0b",
+            "probability": 0.5430538654327393,
+            "accepted": true,
+            "runtimeSeconds": 0.46296199999778764
+          },
+          {
+            "record": 21,
+            "audioSha256": "41908efedee79e777c541aeec522e1c47ff9d034b5a9391b09e7ae57c28707fc",
+            "probability": 0.8863849639892578,
+            "accepted": true,
+            "runtimeSeconds": 0.4626544000420836
+          },
+          {
+            "record": 22,
+            "audioSha256": "2077313c718fe54d5c955d0d2d200cbee1e567c54c61b5cbc4eb9649c877b0ac",
+            "probability": 0.9874523282051086,
+            "accepted": true,
+            "runtimeSeconds": 0.462575800025661
+          },
+          {
+            "record": 23,
+            "audioSha256": "fe52a5b6a3806d6e25098ad635488cb1f6d1829285675f97904373fb7adc11de",
+            "probability": 0.9810308218002319,
+            "accepted": true,
+            "runtimeSeconds": 0.46280190000106813
+          }
+        ],
+        "filenamesRetained": false,
+        "transcriptTextRetained": false
+      },
+      "negative": {
+        "files": 96,
+        "acceptedFiles": 25,
+        "probability": {
+          "minimum": 0.000939143996220082,
+          "p50": 0.2205752730369568,
+          "p95": 0.9341634660959244,
+          "maximum": 0.980420708656311
+        },
+        "runtimeSeconds": {
+          "minimum": 0.4848836874625704,
+          "p50": 0.490036293726007,
+          "p95": 0.4970192000218958,
+          "maximum": 0.4983776250046503
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "51dde973d436e8b4089989536bd3674fbe7f233d9cf913953f6c1beebcdd87c1",
+            "probability": 0.09275741130113602,
+            "accepted": false,
+            "runtimeSeconds": 0.49172276251920266
+          },
+          {
+            "record": 1,
+            "audioSha256": "339d337cf61e6ddb975692d3c4a4c1312e4e04db902b227c49b9ccfe68e08262",
+            "probability": 0.9211293458938599,
+            "accepted": true,
+            "runtimeSeconds": 0.49156206251791446
+          },
+          {
+            "record": 2,
+            "audioSha256": "a2760eda17a943c5614cd7065a8f91c2b9896458a2feca12f806125ece93d473",
+            "probability": 0.23527543246746063,
+            "accepted": false,
+            "runtimeSeconds": 0.49121596250188304
+          },
+          {
+            "record": 3,
+            "audioSha256": "964a1b75346558ca9aa68be14fe0cc157efa12f5a7a04f0dce8c142205d0697f",
+            "probability": 0.08663355559110641,
+            "accepted": false,
+            "runtimeSeconds": 0.49157126252976013
+          },
+          {
+            "record": 4,
+            "audioSha256": "2e961e4efd438270c741dc17ad31677fd71b5b6b78d5e09c7c416cd23535ce56",
+            "probability": 0.11002027988433838,
+            "accepted": false,
+            "runtimeSeconds": 0.4911276625280152
+          },
+          {
+            "record": 5,
+            "audioSha256": "6f85079022fbd1b87c3fb0e57de5fe0a05d5b508b79d7c95b7b8f5d9a5f1ba2f",
+            "probability": 0.4844489097595215,
+            "accepted": false,
+            "runtimeSeconds": 0.4912941625152598
+          },
+          {
+            "record": 6,
+            "audioSha256": "b7ca010f38216fc6688bd6f111be125a3d35a1b2452cbc5266d6ed76cc4f83ed",
+            "probability": 0.2274167239665985,
+            "accepted": false,
+            "runtimeSeconds": 0.49098786251124693
+          },
+          {
+            "record": 7,
+            "audioSha256": "8bfd7cf1617f2e04c9521a945170a351443cd75460b8b74131d83cf9b5f9202f",
+            "probability": 0.05403147637844086,
+            "accepted": false,
+            "runtimeSeconds": 0.4910838624855387
+          },
+          {
+            "record": 8,
+            "audioSha256": "09c9c4d7cbc75775fdba71ea8e2f594143dc79b775d942e0b9d5af5c676c24f6",
+            "probability": 0.7188869118690491,
+            "accepted": true,
+            "runtimeSeconds": 0.49086246248771204
+          },
+          {
+            "record": 9,
+            "audioSha256": "309ee939a0574a6583ccf8ccf5f07a2f0bf7cc709880e21ce90d71467b40afba",
+            "probability": 0.24729853868484497,
+            "accepted": false,
+            "runtimeSeconds": 0.49136126250232337
+          },
+          {
+            "record": 10,
+            "audioSha256": "11b7cd1d0d9dec3844d58d08fbe513769be3fe99918a0743f26a90dd4c17038d",
+            "probability": 0.19798137247562408,
+            "accepted": false,
+            "runtimeSeconds": 0.4912189625247265
+          },
+          {
+            "record": 11,
+            "audioSha256": "23ed7f0d283cbeb6ecb04fb6d470234b9cfedb9b5865a2cf20d70075e7589712",
+            "probability": 0.3010496497154236,
+            "accepted": false,
+            "runtimeSeconds": 0.49117666249367176
+          },
+          {
+            "record": 12,
+            "audioSha256": "5731389fe8a4018e020bc911bde1c4673bafae6bc721f78dd7dc41aab0d1f761",
+            "probability": 0.08809705078601837,
+            "accepted": false,
+            "runtimeSeconds": 0.4909705624959315
+          },
+          {
+            "record": 13,
+            "audioSha256": "89c138044b75d42978c316d75a80a26abd33d749b137df16c6d60cda61e494f9",
+            "probability": 0.12319298088550568,
+            "accepted": false,
+            "runtimeSeconds": 0.4915520624999772
+          },
+          {
+            "record": 14,
+            "audioSha256": "9cd0eb9c9e4e70962e36e1367831386735deb5937b4f726db5218f33588f1942",
+            "probability": 0.6661136746406555,
+            "accepted": true,
+            "runtimeSeconds": 0.49128336249123095
+          },
+          {
+            "record": 15,
+            "audioSha256": "7e925a52864eb6a6015fe6cee2cbd6b076143db00b76c183fe03e6a1511efdfc",
+            "probability": 0.1415589302778244,
+            "accepted": false,
+            "runtimeSeconds": 0.49094306246115593
+          },
+          {
+            "record": 16,
+            "audioSha256": "41f4887cd7d18869cdf425c0e5626e6d83fb5952989915aa75e5b248d1ed1185",
+            "probability": 0.6216733455657959,
+            "accepted": true,
+            "runtimeSeconds": 0.498046524986421
+          },
+          {
+            "record": 17,
+            "audioSha256": "3f2788443d16a743b90a02385790d6b16fecf35fa82287a0a07ffb11c8b0f9c4",
+            "probability": 0.16914182901382446,
+            "accepted": false,
+            "runtimeSeconds": 0.49696582502292586
+          },
+          {
+            "record": 18,
+            "audioSha256": "8ce24ff035c46d116d1a697f8fe19e182d623b115b61ee43ba9549c14e6c92d4",
+            "probability": 0.12464223802089691,
+            "accepted": false,
+            "runtimeSeconds": 0.49781612497827155
+          },
+          {
+            "record": 19,
+            "audioSha256": "fb32420e98493c5c138f5dbd78ef1ab4aec1fe037d5b308aa94ffaaff5fb00aa",
+            "probability": 0.026547333225607872,
+            "accepted": false,
+            "runtimeSeconds": 0.4983776250046503
+          },
+          {
+            "record": 20,
+            "audioSha256": "9df2372ceed3c9f67720ec1fad15a0e289b6a6bcb8474ae32c65d06392c5fdef",
+            "probability": 0.415381520986557,
+            "accepted": false,
+            "runtimeSeconds": 0.4965828249587503
+          },
+          {
+            "record": 21,
+            "audioSha256": "740b1cf249a7e5451567c529cb14ff70f55181c8c31efe2a1b27896e8e93f2cc",
+            "probability": 0.3918062150478363,
+            "accepted": false,
+            "runtimeSeconds": 0.4971793250188057
+          },
+          {
+            "record": 22,
+            "audioSha256": "f0b3f571da930966d80bf04ae6a07072d2af6ae1472d05460cd0606d46243b3f",
+            "probability": 0.9208093285560608,
+            "accepted": true,
+            "runtimeSeconds": 0.49770882497614366
+          },
+          {
+            "record": 23,
+            "audioSha256": "a71be79fef4412ca334f0f899ec12fa5706e1d2997ae1c6b7fae496c92eae0fd",
+            "probability": 0.9153746962547302,
+            "accepted": true,
+            "runtimeSeconds": 0.4966966250103724
+          },
+          {
+            "record": 24,
+            "audioSha256": "f37d471bf3d62e65c75c8003474d414be870668ae124e1d2e59b14f53eaf5e74",
+            "probability": 0.11488702893257141,
+            "accepted": false,
+            "runtimeSeconds": 0.4964081249672745
+          },
+          {
+            "record": 25,
+            "audioSha256": "661a1429eca10da46236d531fa102ebab84d665ba313f9a28cf71105e45cd9f0",
+            "probability": 0.15708279609680176,
+            "accepted": false,
+            "runtimeSeconds": 0.49634812503427383
+          },
+          {
+            "record": 26,
+            "audioSha256": "a44e70ee967db4d6ad8f8d502e8c30f97e834eea823fa2378f101bc74d0851ff",
+            "probability": 0.07872572541236877,
+            "accepted": false,
+            "runtimeSeconds": 0.49655412497304496
+          },
+          {
+            "record": 27,
+            "audioSha256": "025bf250fb17519ac24d195273660e39cae361b398ae8125645cbb06adf66800",
+            "probability": 0.0452527217566967,
+            "accepted": false,
+            "runtimeSeconds": 0.4963734249940899
+          },
+          {
+            "record": 28,
+            "audioSha256": "6f870ee2a7e445f08d9b946882b11da44713009bd3e7d4f34c1f2f73e04bd916",
+            "probability": 0.6011584997177124,
+            "accepted": true,
+            "runtimeSeconds": 0.4966967250111338
+          },
+          {
+            "record": 29,
+            "audioSha256": "4b7bd37f788b8627bfcad3a82b7b6659ba4de84e8128cb5eaefec14c787d98fc",
+            "probability": 0.09128256142139435,
+            "accepted": false,
+            "runtimeSeconds": 0.4967524249695998
+          },
+          {
+            "record": 30,
+            "audioSha256": "9862efe7316f3cc7c95d94ba0332e42dc3b8ff3f72a88d9beefa54ec14012c09",
+            "probability": 0.27198025584220886,
+            "accepted": false,
+            "runtimeSeconds": 0.4966658250086766
+          },
+          {
+            "record": 31,
+            "audioSha256": "af7a32fe4b3770e0204c9779fdf7ca9f555e4d1fd6927fe2dee0da9b7318514e",
+            "probability": 0.15817701816558838,
+            "accepted": false,
+            "runtimeSeconds": 0.4964328249807295
+          },
+          {
+            "record": 32,
+            "audioSha256": "ddb72d429618778ac8bec0a321749fd116c0b9d061eb64a4a664e67a14a3704b",
+            "probability": 0.5883457660675049,
+            "accepted": true,
+            "runtimeSeconds": 0.4870286874975136
+          },
+          {
+            "record": 33,
+            "audioSha256": "a2d4873dc198347ae8b29419170b3802ef84993de54df25357659649e02bb294",
+            "probability": 0.21320472657680511,
+            "accepted": false,
+            "runtimeSeconds": 0.4860691875255725
+          },
+          {
+            "record": 34,
+            "audioSha256": "df9b66ffea206968b18f4fd031d04ebaebb176c46d68f26a9eb972cc9f439f29",
+            "probability": 0.4349013566970825,
+            "accepted": false,
+            "runtimeSeconds": 0.4860536874657555
+          },
+          {
+            "record": 35,
+            "audioSha256": "94d82f6cbd879b78eead997f76adb66978153ca6ca90f9132812833c79d68766",
+            "probability": 0.01977715641260147,
+            "accepted": false,
+            "runtimeSeconds": 0.4870813874913438
+          },
+          {
+            "record": 36,
+            "audioSha256": "7e307d3c622b2a6a7fd6d2d62be75d423db9a9802cc7972dfe20dcc4742fd116",
+            "probability": 0.27914002537727356,
+            "accepted": false,
+            "runtimeSeconds": 0.48667578754611895
+          },
+          {
+            "record": 37,
+            "audioSha256": "dae472d6bf0918c1233e85086a00981b404bc1122fe7c0a89edbc5649c7d8c35",
+            "probability": 0.0011344834929332137,
+            "accepted": false,
+            "runtimeSeconds": 0.48618078750223503
+          },
+          {
+            "record": 38,
+            "audioSha256": "72c03ce70f5b9a0445e025722a2f57ec38f1f08bb44a4d13da6b52283128e63c",
+            "probability": 0.12287227064371109,
+            "accepted": false,
+            "runtimeSeconds": 0.48715488746893243
+          },
+          {
+            "record": 39,
+            "audioSha256": "5d6be82eaf2f3b3bc9ce168cecd28c79e46809bcbe9bdaed979a0d418c555be1",
+            "probability": 0.40811818838119507,
+            "accepted": false,
+            "runtimeSeconds": 0.4862976875192544
+          },
+          {
+            "record": 40,
+            "audioSha256": "463fc24e1cc47c017c4bcd9e9206235727198156739fcfe2bdc5a8596abb3f24",
+            "probability": 0.5154604911804199,
+            "accepted": true,
+            "runtimeSeconds": 0.4848836874625704
+          },
+          {
+            "record": 41,
+            "audioSha256": "71e12778c80d46e73e891b455faaacade755dcee375714e02c5860525440da8d",
+            "probability": 0.3121000826358795,
+            "accepted": false,
+            "runtimeSeconds": 0.4857849875152169
+          },
+          {
+            "record": 42,
+            "audioSha256": "2ad129de17448e543c7b2604d7ad62d2a011fffd945bde29cb7ca7bbafb7b582",
+            "probability": 0.053767915815114975,
+            "accepted": false,
+            "runtimeSeconds": 0.48578538746005506
+          },
+          {
+            "record": 43,
+            "audioSha256": "5e1b9ea06d97bd87fa149d1af5dc719534c0359c7f0eefb515879c8f3d3c14cc",
+            "probability": 0.184684619307518,
+            "accepted": false,
+            "runtimeSeconds": 0.4867931875087379
+          },
+          {
+            "record": 44,
+            "audioSha256": "dcde4af5497592b1f50260d9bb6b6e3ddb96f4d22fc6e81051a8d662bb359872",
+            "probability": 0.7623011469841003,
+            "accepted": true,
+            "runtimeSeconds": 0.4883737874952203
+          },
+          {
+            "record": 45,
+            "audioSha256": "3764b7dc48786efd8a88d9bd45c399babe4509ee5cc0d524356f7e94e93c8dd8",
+            "probability": 0.29265955090522766,
+            "accepted": false,
+            "runtimeSeconds": 0.4856939874625823
+          },
+          {
+            "record": 46,
+            "audioSha256": "9a9c5969e45c33591a07474496cdf4e9bc69b51b20ef2b8f531a542cd73db7e9",
+            "probability": 0.1410289704799652,
+            "accepted": false,
+            "runtimeSeconds": 0.4856669875480293
+          },
+          {
+            "record": 47,
+            "audioSha256": "db610acbeb7e8609816bf7b02474cfb3f37b18349857fabf744e7ea64ac35df7",
+            "probability": 0.4541984796524048,
+            "accepted": false,
+            "runtimeSeconds": 0.484909187482117
+          },
+          {
+            "record": 48,
+            "audioSha256": "7a2e7861f2d60267d5a4a76600682d94d322eeef775bfc3a4c2b7ec6fbc48b52",
+            "probability": 0.9751999974250793,
+            "accepted": true,
+            "runtimeSeconds": 0.4892098499913118
+          },
+          {
+            "record": 49,
+            "audioSha256": "365c27f2b1386aff8a3239967656f324a76da900b1e8893eacb8dce442620be6",
+            "probability": 0.1476259082555771,
+            "accepted": false,
+            "runtimeSeconds": 0.48911664998013293
+          },
+          {
+            "record": 50,
+            "audioSha256": "1d270cfa52749d6975399103c4d9415f2d619a5ead8a62038edc1253a2666ee6",
+            "probability": 0.7420359253883362,
+            "accepted": true,
+            "runtimeSeconds": 0.4887832500025979
+          },
+          {
+            "record": 51,
+            "audioSha256": "71c8f2ba5a0c9c7dfdf6670f530fb4d70008d23e0574573f0dcc8d95907ecb59",
+            "probability": 0.6179186701774597,
+            "accepted": true,
+            "runtimeSeconds": 0.4882128500248655
+          },
+          {
+            "record": 52,
+            "audioSha256": "9e335cdd84d9cc2bfac5b0680ecc768d2df0842fa6575bd4fd6162bfe480f954",
+            "probability": 0.42023414373397827,
+            "accepted": false,
+            "runtimeSeconds": 0.4878000500248163
+          },
+          {
+            "record": 53,
+            "audioSha256": "37f2645dfd9bdef9f1c08ad49859e1a6a5911c5c6b2da08f99f0c7fe3045d398",
+            "probability": 0.06496625393629074,
+            "accepted": false,
+            "runtimeSeconds": 0.4884556500110193
+          },
+          {
+            "record": 54,
+            "audioSha256": "0418648f43b7b5480015055386e0cb668b45f2ebef4e1c9b16ae902b3689badc",
+            "probability": 0.38463839888572693,
+            "accepted": false,
+            "runtimeSeconds": 0.4889017500318005
+          },
+          {
+            "record": 55,
+            "audioSha256": "2d5a94ddcf364797b0d2ba41b69dba28a280a3bcb76623d138bec976b738c8f8",
+            "probability": 0.24138787388801575,
+            "accepted": false,
+            "runtimeSeconds": 0.48794534996704897
+          },
+          {
+            "record": 56,
+            "audioSha256": "48c3372910754c6a27bdac6d605e54d19a9a7e0b55ff3a1c863dcf38560a70b1",
+            "probability": 0.10184261947870255,
+            "accepted": false,
+            "runtimeSeconds": 0.4881732499561622
+          },
+          {
+            "record": 57,
+            "audioSha256": "dc5a721bda780167746213f7cb2a4d0dd4b0161be8be083f70d824af5babdf10",
+            "probability": 0.9460088610649109,
+            "accepted": true,
+            "runtimeSeconds": 0.48835894997318974
+          },
+          {
+            "record": 58,
+            "audioSha256": "56746bb13c016e91aae85d8d66fcc26c1d54be66d9eac3b8bdb188bb494032d8",
+            "probability": 0.5064282417297363,
+            "accepted": true,
+            "runtimeSeconds": 0.4884601499870769
+          },
+          {
+            "record": 59,
+            "audioSha256": "e2dbd8ec6345230c8f3ee26aec084b1e0d864b50c015a68d4a2efbdd2e059f21",
+            "probability": 0.1800815612077713,
+            "accepted": false,
+            "runtimeSeconds": 0.4883270500213257
+          },
+          {
+            "record": 60,
+            "audioSha256": "c43e5836d3c0bae98120784184a71a96839af7346ba35498ef397cbddedbc2ac",
+            "probability": 0.980420708656311,
+            "accepted": true,
+            "runtimeSeconds": 0.487921850020939
+          },
+          {
+            "record": 61,
+            "audioSha256": "93f9c197e988255ed47d659ed47ad7f4e57c07bf33376d9406ca027b23021a2a",
+            "probability": 0.036226388067007065,
+            "accepted": false,
+            "runtimeSeconds": 0.4887432499890565
+          },
+          {
+            "record": 62,
+            "audioSha256": "f532e3030f04caa7666e33a70e4f813ddc34aff4189c8f76ce24464c9f772f59",
+            "probability": 0.15147925913333893,
+            "accepted": false,
+            "runtimeSeconds": 0.4884168500066153
+          },
+          {
+            "record": 63,
+            "audioSha256": "66c1a5eb0ceb510d6976eb560d6b2617c51db391833138769a4f3a49c37fe296",
+            "probability": 0.03185735642910004,
+            "accepted": false,
+            "runtimeSeconds": 0.4884287499808124
+          },
+          {
+            "record": 64,
+            "audioSha256": "404b2b58b5bbc82e7be93ecacd7eea0bc490776e35270dd3d42817292a7d82c1",
+            "probability": 0.3374808728694916,
+            "accepted": false,
+            "runtimeSeconds": 0.49640435002947925
+          },
+          {
+            "record": 65,
+            "audioSha256": "370d603b3e19b75de8a232fcf9085adca833d8c918118ee0fc771cae70b4f108",
+            "probability": 0.9182230830192566,
+            "accepted": true,
+            "runtimeSeconds": 0.4954376500027138
+          },
+          {
+            "record": 66,
+            "audioSha256": "95a8ece5a101b21cb86419998eb27a0aa0e28c5e609e314a9e9b37fa69762800",
+            "probability": 0.0069837672635912895,
+            "accepted": false,
+            "runtimeSeconds": 0.4946809500033851
+          },
+          {
+            "record": 67,
+            "audioSha256": "e7d4e353c1da68bf9bc067e01459c1a81867671594e25019a7809fd527a0e413",
+            "probability": 0.11328823864459991,
+            "accepted": false,
+            "runtimeSeconds": 0.49442814999929396
+          },
+          {
+            "record": 68,
+            "audioSha256": "270fe1fc39f6dc60fee86babc216e970d39c7eb5461e72b1419b7e989b996fb3",
+            "probability": 0.38015809655189514,
+            "accepted": false,
+            "runtimeSeconds": 0.49450615001114784
+          },
+          {
+            "record": 69,
+            "audioSha256": "1b417cc0011d9d2d737a16fa71dd858c4621b1efdc6497d4d3592ff09df7a8ab",
+            "probability": 0.21373382210731506,
+            "accepted": false,
+            "runtimeSeconds": 0.49444134998338996
+          },
+          {
+            "record": 70,
+            "audioSha256": "9ca5aeb264194418de296983bd25d7f5b6e0fb77f0bc2bf2a4dc3797748bc31d",
+            "probability": 0.4093422293663025,
+            "accepted": false,
+            "runtimeSeconds": 0.49435475002246676
+          },
+          {
+            "record": 71,
+            "audioSha256": "0a697b42fb5f14a0cd802544ffc6f06e7044f4677570233b764dec226d408c97",
+            "probability": 0.9302150011062622,
+            "accepted": true,
+            "runtimeSeconds": 0.49470805003511487
+          },
+          {
+            "record": 72,
+            "audioSha256": "77357353b238cc4c972b14122056dd33ab31cc2fff3455bd6455c61c1a842004",
+            "probability": 0.5210838317871094,
+            "accepted": true,
+            "runtimeSeconds": 0.4946651499994914
+          },
+          {
+            "record": 73,
+            "audioSha256": "9034faca1dadf4e15d404b18835d9dd5508ee4623ad764b4950430d1d47b995f",
+            "probability": 0.0102411899715662,
+            "accepted": false,
+            "runtimeSeconds": 0.4942769499539281
+          },
+          {
+            "record": 74,
+            "audioSha256": "c98a76a629e45ea83560aebccd44cb1d041b4c5dce5ea1153936b9cebebbe4d3",
+            "probability": 0.08698354661464691,
+            "accepted": false,
+            "runtimeSeconds": 0.4941475500163506
+          },
+          {
+            "record": 75,
+            "audioSha256": "7f4480976a507260ce7ecc66857ef9bdb024582b1b05b795dc58f204e8c70eb4",
+            "probability": 0.5801709294319153,
+            "accepted": true,
+            "runtimeSeconds": 0.49431125004048226
+          },
+          {
+            "record": 76,
+            "audioSha256": "fafa16692afdea7a5067a024543910647a7df3ad19214584bfff09b3b9815a61",
+            "probability": 0.011554042808711529,
+            "accepted": false,
+            "runtimeSeconds": 0.49424074996932177
+          },
+          {
+            "record": 77,
+            "audioSha256": "7b5b88637c04a5ff6a0940bcceac4127994f1432c1a160d8e0c45bac1d715764",
+            "probability": 0.10351751744747162,
+            "accepted": false,
+            "runtimeSeconds": 0.49434144997940166
+          },
+          {
+            "record": 78,
+            "audioSha256": "daa532c0c7e1e4fed76418e21e075d44fb4ba87b3ec91ffac7901f0f60c2d9c0",
+            "probability": 0.09109930694103241,
+            "accepted": false,
+            "runtimeSeconds": 0.4947500500056776
+          },
+          {
+            "record": 79,
+            "audioSha256": "76d314e8d3810c2b7f6c8a76aae88a270887be5e4f890b9306aaea99ad1bfeda",
+            "probability": 0.000939143996220082,
+            "accepted": false,
+            "runtimeSeconds": 0.4944370500088553
+          },
+          {
+            "record": 80,
+            "audioSha256": "0104a44cdf5944e3336317d685c526fcb476531617a89b0cf6fe2dc7777b0412",
+            "probability": 0.02671613171696663,
+            "accepted": false,
+            "runtimeSeconds": 0.48921012496430194
+          },
+          {
+            "record": 81,
+            "audioSha256": "53ede88eaa52cad251709523337949c51a731979e754e50edbc35b74ff25cb7e",
+            "probability": 0.9255971908569336,
+            "accepted": true,
+            "runtimeSeconds": 0.4889392249970115
+          },
+          {
+            "record": 82,
+            "audioSha256": "468abe8957e7c22656daad87acdc9f414a341342c1f424c209023ea6cfca40da",
+            "probability": 0.11796507984399796,
+            "accepted": false,
+            "runtimeSeconds": 0.48894722499971977
+          },
+          {
+            "record": 83,
+            "audioSha256": "259c388bd0fdbad9813210d0f7608056d577720f4108d4fd4e6325c37defb905",
+            "probability": 0.17027924954891205,
+            "accepted": false,
+            "runtimeSeconds": 0.4883530249571777
+          },
+          {
+            "record": 84,
+            "audioSha256": "307f3bd16057d786334ed13cc10d4e7dfb36e9121cb598f5d933e2e7647a0ccc",
+            "probability": 0.39143964648246765,
+            "accepted": false,
+            "runtimeSeconds": 0.48866112497489667
+          },
+          {
+            "record": 85,
+            "audioSha256": "ed07e33371eb15c8d746bcf82da6d340c91cb894b5624da1be88f8d6b432476c",
+            "probability": 0.8794575929641724,
+            "accepted": true,
+            "runtimeSeconds": 0.4885011249789386
+          },
+          {
+            "record": 86,
+            "audioSha256": "62dca70722764966abaa98f62975e81cf45f6c6c6e25f299051ea07c2fe6d2e5",
+            "probability": 0.9701859354972839,
+            "accepted": true,
+            "runtimeSeconds": 0.4887426249551936
+          },
+          {
+            "record": 87,
+            "audioSha256": "1b093b246414f46d64056df089566cc9abe30cb7e021ba5199535e25a7bd567c",
+            "probability": 0.32871103286743164,
+            "accepted": false,
+            "runtimeSeconds": 0.48824362499726703
+          },
+          {
+            "record": 88,
+            "audioSha256": "81eb38e950473dc771aab1337f38d3dd5d97968c34a5c92cd2be7fd489484a59",
+            "probability": 0.10173852741718292,
+            "accepted": false,
+            "runtimeSeconds": 0.4883160250246874
+          },
+          {
+            "record": 89,
+            "audioSha256": "c32dfcb41ba4e525b7e145f1d999426f9f4d48f25e74f2cafda2ba220ad8692b",
+            "probability": 0.4883759021759033,
+            "accepted": false,
+            "runtimeSeconds": 0.4884535249657347
+          },
+          {
+            "record": 90,
+            "audioSha256": "74eca2219a1c69a497276a49623f039bda1408ec63bd46699bfbd2779387cd3d",
+            "probability": 0.04281440004706383,
+            "accepted": false,
+            "runtimeSeconds": 0.48810932502237847
+          },
+          {
+            "record": 91,
+            "audioSha256": "35530ee09bf35f8320930ee303641d20b3fa993c67b1ccaabdb824b416c33305",
+            "probability": 0.7020312547683716,
+            "accepted": true,
+            "runtimeSeconds": 0.4882651250445633
+          },
+          {
+            "record": 92,
+            "audioSha256": "f8274e2744d99f598658283fa09bc3688b4a3e90b63ca843632ea8180d6c5666",
+            "probability": 0.9776909351348877,
+            "accepted": true,
+            "runtimeSeconds": 0.4881972249932005
+          },
+          {
+            "record": 93,
+            "audioSha256": "77bb3863558da34c1549cd47a5e6957266b19bac0481b481592bb530b76639f5",
+            "probability": 0.04629407823085785,
+            "accepted": false,
+            "runtimeSeconds": 0.4880814249845571
+          },
+          {
+            "record": 94,
+            "audioSha256": "135a1a2169d574d2b614185d1cd7208b5504bd6574f54a582425d89c0490e79a",
+            "probability": 0.06312482059001923,
+            "accepted": false,
+            "runtimeSeconds": 0.4882313250200241
+          },
+          {
+            "record": 95,
+            "audioSha256": "011bb939956e8ffff56266c8cd6ad53a3ed6f6e591be8bacf9488b277bc7af2f",
+            "probability": 0.07831576466560364,
+            "accepted": false,
+            "runtimeSeconds": 0.4886355250127963
+          }
+        ],
+        "filenamesRetained": false,
+        "transcriptTextRetained": false
+      },
+      "positiveCoveragePreserved": true,
+      "zeroNegativeFalseActivations": false
+    },
+    {
+      "label": "physical_v20",
+      "manifestSha256": "a18e19dcf175994418f3f838c69032f17a1666fb61cfc2076075719ff3fdfbc6",
+      "requiredPositiveAcceptedFiles": 48,
+      "positive": {
+        "files": 48,
+        "acceptedFiles": 36,
+        "probability": {
+          "minimum": 0.1619332879781723,
+          "p50": 0.874678373336792,
+          "p95": 0.9807906597852707,
+          "maximum": 0.9841246604919434
+        },
+        "runtimeSeconds": {
+          "minimum": 0.4795761312634568,
+          "p50": 0.48076165002930793,
+          "p95": 0.4825749328279926,
+          "maximum": 0.48436759372634697
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "856540a5f0557f3c9e21c5ea6bf322f536b5585463085f165fec813f99eff99d",
+            "probability": 0.8571559190750122,
+            "accepted": true,
+            "runtimeSeconds": 0.48436759372634697
+          },
+          {
+            "record": 1,
+            "audioSha256": "d5c49af3cae11bad06023d30114548542c875917cbfa47f2699b2f614d7cadcb",
+            "probability": 0.8922008275985718,
+            "accepted": true,
+            "runtimeSeconds": 0.4815550937310036
+          },
+          {
+            "record": 2,
+            "audioSha256": "edb126e70b033c990ecc233a8160e6659b5d956b830661cc3047af735cefbc9d",
+            "probability": 0.9161565899848938,
+            "accepted": true,
+            "runtimeSeconds": 0.48128609377818066
+          },
+          {
+            "record": 3,
+            "audioSha256": "9aea13a5bd7cb97b61afe93e7abb7f02bc7bf0a5b2fc98df5a20299cb564c1c7",
+            "probability": 0.9043060541152954,
+            "accepted": true,
+            "runtimeSeconds": 0.48204719375280547
+          },
+          {
+            "record": 4,
+            "audioSha256": "ad87f33554045d0cd45b6065fab7491962587bcf2c7d33e166f5725a578423d8",
+            "probability": 0.2851414978504181,
+            "accepted": false,
+            "runtimeSeconds": 0.4814085937796335
+          },
+          {
+            "record": 5,
+            "audioSha256": "6bdcd06692941ee6d3260550c9736c35080963303f6f5a8e8577e88b87d3500c",
+            "probability": 0.9808247685432434,
+            "accepted": true,
+            "runtimeSeconds": 0.48119279376624036
+          },
+          {
+            "record": 6,
+            "audioSha256": "28c0b7b92dd7c3f4e567b06dae25298bb4badccc8c38875f0eddbb38461bacab",
+            "probability": 0.9680010676383972,
+            "accepted": true,
+            "runtimeSeconds": 0.48102099373863894
+          },
+          {
+            "record": 7,
+            "audioSha256": "1f538159b47bf0f3fc690d7db44dbd30c511e8b16ce9c3743774afc0a229ee4e",
+            "probability": 0.95383220911026,
+            "accepted": true,
+            "runtimeSeconds": 0.4814078937160957
+          },
+          {
+            "record": 8,
+            "audioSha256": "d5f51d75ef419f13fc68b3b084bb60aa172da1cbe5c7f5b1fbb63b5b62b5ea5d",
+            "probability": 0.8338651061058044,
+            "accepted": true,
+            "runtimeSeconds": 0.481823393736704
+          },
+          {
+            "record": 9,
+            "audioSha256": "252a9feb9cc5580d12b048aabf4cc892a30f1f77cc96fad5af7f654bf98fc5eb",
+            "probability": 0.7553990483283997,
+            "accepted": true,
+            "runtimeSeconds": 0.4812969937447633
+          },
+          {
+            "record": 10,
+            "audioSha256": "7b1483a5db68de4dedf5f47b7528da76e39dfd953224dd9e3e1fbcbb663856b7",
+            "probability": 0.9811474084854126,
+            "accepted": true,
+            "runtimeSeconds": 0.4810028937172319
+          },
+          {
+            "record": 11,
+            "audioSha256": "3df15bc63acc2df27842436addcbc93a0668de7ae225c5740cc4357d20a09b81",
+            "probability": 0.3605201542377472,
+            "accepted": false,
+            "runtimeSeconds": 0.48098629370724666
+          },
+          {
+            "record": 12,
+            "audioSha256": "85d8d804266082140b21cdf821893eefe5fa130a2aa1b99d0d2e3d1805086c02",
+            "probability": 0.9739510416984558,
+            "accepted": true,
+            "runtimeSeconds": 0.48122669379154104
+          },
+          {
+            "record": 13,
+            "audioSha256": "3787d16239acd643ed3a7e847b7d949a8ac262dc6efb4394ccff2acb3011cc7f",
+            "probability": 0.48132896423339844,
+            "accepted": false,
+            "runtimeSeconds": 0.4817101937478583
+          },
+          {
+            "record": 14,
+            "audioSha256": "9191aee23a62547386fde9de38ecb4677adba288936c78aff90e4f71e2941c40",
+            "probability": 0.9795571565628052,
+            "accepted": true,
+            "runtimeSeconds": 0.48124159378858167
+          },
+          {
+            "record": 15,
+            "audioSha256": "36d475467c394dadd005c3ca64c774f9a30acd62094b2191524530a3f82f4d5d",
+            "probability": 0.9049497246742249,
+            "accepted": true,
+            "runtimeSeconds": 0.4810407937729906
+          },
+          {
+            "record": 16,
+            "audioSha256": "179ee793c76f1b7b230ee3734eee4c218dcfe6c01de046f75c0403e56415dc8e",
+            "probability": 0.7075291275978088,
+            "accepted": true,
+            "runtimeSeconds": 0.4836076312858495
+          },
+          {
+            "record": 17,
+            "audioSha256": "ae892977f26355cdf02f94523dd55c764f00790c4c81579a51eb98528ced38ff",
+            "probability": 0.1619332879781723,
+            "accepted": false,
+            "runtimeSeconds": 0.48104033123672707
+          },
+          {
+            "record": 18,
+            "audioSha256": "94681fe56cc8fafcdd09300da8fc9da3dc9be61686aa3638306f1695d5b3a493",
+            "probability": 0.7014744281768799,
+            "accepted": true,
+            "runtimeSeconds": 0.4804658312277752
+          },
+          {
+            "record": 19,
+            "audioSha256": "9b48ed8c18438d01b6e183d66ae0d5f4e81f5d190e488adb327d0852af8bfc7e",
+            "probability": 0.9488723874092102,
+            "accepted": true,
+            "runtimeSeconds": 0.4802106312054093
+          },
+          {
+            "record": 20,
+            "audioSha256": "00cb349343c7e86634363f273a0d1990a5b356f5b9810db7bf0ababc2b15ecec",
+            "probability": 0.38491499423980713,
+            "accepted": false,
+            "runtimeSeconds": 0.47995723125495715
+          },
+          {
+            "record": 21,
+            "audioSha256": "498491993e90645d798d4772af0af2f901a76d0b9795bdc940453ad537042b3d",
+            "probability": 0.977001965045929,
+            "accepted": true,
+            "runtimeSeconds": 0.4798207312633167
+          },
+          {
+            "record": 22,
+            "audioSha256": "43a404e83bf558bc4235a19be91ba655d271eddde1fed993b2895530a0bad79c",
+            "probability": 0.6788583397865295,
+            "accepted": true,
+            "runtimeSeconds": 0.479748931240465
+          },
+          {
+            "record": 23,
+            "audioSha256": "60af4f80da4d463c5fb5e2a9154a9ad1e4d1f57520c68995029cab6d95a6d5e6",
+            "probability": 0.3246100842952728,
+            "accepted": false,
+            "runtimeSeconds": 0.479775631269149
+          },
+          {
+            "record": 24,
+            "audioSha256": "0ef2caa81a212278e0d0437db0456fd475be0430dc35741f4b54495ffbeb0395",
+            "probability": 0.9305205345153809,
+            "accepted": true,
+            "runtimeSeconds": 0.47976143127743853
+          },
+          {
+            "record": 25,
+            "audioSha256": "c1dbbbdeb51d5f636ff80257724bfc497756a23348f7637e5b49df50a221f97b",
+            "probability": 0.9780803918838501,
+            "accepted": true,
+            "runtimeSeconds": 0.4797360312586534
+          },
+          {
+            "record": 26,
+            "audioSha256": "8b6c64c6e03ce6531490e43d94b682767354a4c6a6601732a68a6400db5db5cf",
+            "probability": 0.9064143300056458,
+            "accepted": true,
+            "runtimeSeconds": 0.479839931234892
+          },
+          {
+            "record": 27,
+            "audioSha256": "df46937dff88ca9b470abd803bc8a579a33188a35c6ed2f482c84a66d0a52b8a",
+            "probability": 0.546730101108551,
+            "accepted": true,
+            "runtimeSeconds": 0.4797238312821719
+          },
+          {
+            "record": 28,
+            "audioSha256": "73c3d2c2070e54286a95c2665cb21114228f9b029bea61695370b92b8a1f64ed",
+            "probability": 0.9294319748878479,
+            "accepted": true,
+            "runtimeSeconds": 0.47961733122792793
+          },
+          {
+            "record": 29,
+            "audioSha256": "0aefcdcd042916853942accb1ecbd078603f76916e9b9fd7a459e789d68eb4ce",
+            "probability": 0.4758259057998657,
+            "accepted": false,
+            "runtimeSeconds": 0.4797043312501046
+          },
+          {
+            "record": 30,
+            "audioSha256": "11453cca6c36f349aa0fd29e5ebf5360364160bfc726020bd9b472ba5de16386",
+            "probability": 0.9782746434211731,
+            "accepted": true,
+            "runtimeSeconds": 0.4795761312634568
+          },
+          {
+            "record": 31,
+            "audioSha256": "73aae1380104d4757dbb2d15a8b8df666093589ce5b6a568099301c4b713725b",
+            "probability": 0.9807273149490356,
+            "accepted": true,
+            "runtimeSeconds": 0.47967143129062606
+          },
+          {
+            "record": 32,
+            "audioSha256": "164664c6501adfba5304c565917342e933608a931fa12a373d8d0a7976325e12",
+            "probability": 0.9561484456062317,
+            "accepted": true,
+            "runtimeSeconds": 0.48285910002232413
+          },
+          {
+            "record": 33,
+            "audioSha256": "da43f02dc348703c4b5e3c6b53b16027f77e096ee1b45efdec6befaef88d09f5",
+            "probability": 0.9681748747825623,
+            "accepted": true,
+            "runtimeSeconds": 0.48118610003075446
+          },
+          {
+            "record": 34,
+            "audioSha256": "75358961c5e0d61cb32f79526d2652e22a1da225cf48743800446c6314f8e409",
+            "probability": 0.9784345030784607,
+            "accepted": true,
+            "runtimeSeconds": 0.48032699995019357
+          },
+          {
+            "record": 35,
+            "audioSha256": "fc64bcd2367a6f2d651545aecf4dd0a18cb0a87dee7a4f976b4ce66106621e24",
+            "probability": 0.363920122385025,
+            "accepted": false,
+            "runtimeSeconds": 0.4804758999780461
+          },
+          {
+            "record": 36,
+            "audioSha256": "c93c1eeac684fe50ac1c2377302d744ebd2110f10110c72c18586e65bdf49665",
+            "probability": 0.29013538360595703,
+            "accepted": false,
+            "runtimeSeconds": 0.4804714000019885
+          },
+          {
+            "record": 37,
+            "audioSha256": "d3a0ba35344daa99d1f15865d30f473071e0a4e220ed0498b90ebc940b150c1e",
+            "probability": 0.9716023802757263,
+            "accepted": true,
+            "runtimeSeconds": 0.4808120000343479
+          },
+          {
+            "record": 38,
+            "audioSha256": "46da556f904a26af2044b89516ec19a83e4833212cf54e31a71e1a2de9137a82",
+            "probability": 0.464346706867218,
+            "accepted": false,
+            "runtimeSeconds": 0.4804899999689951
+          },
+          {
+            "record": 39,
+            "audioSha256": "c742a887ccfeb783a183067e6d1e2395de6cb66013b6bce28781266588a30124",
+            "probability": 0.8374100923538208,
+            "accepted": true,
+            "runtimeSeconds": 0.480711300024268
+          },
+          {
+            "record": 40,
+            "audioSha256": "f3518071438db3e5012a2a67cbc35b7c6856c3678985615c6db2c54460d9de18",
+            "probability": 0.9747110605239868,
+            "accepted": true,
+            "runtimeSeconds": 0.4808935000146448
+          },
+          {
+            "record": 41,
+            "audioSha256": "8811b1ffedd8b38e85e5c33e3785e3718d58c67f749cfaf817b6d1f9968ac812",
+            "probability": 0.5055350065231323,
+            "accepted": true,
+            "runtimeSeconds": 0.4803358000172011
+          },
+          {
+            "record": 42,
+            "audioSha256": "60cd4bf5992b5ed2f098c818e0c8d23a254f4724e5be8c57a3c399b8af89e8a3",
+            "probability": 0.5369982719421387,
+            "accepted": true,
+            "runtimeSeconds": 0.48044860000300105
+          },
+          {
+            "record": 43,
+            "audioSha256": "3258355bfb1fb7bfa4e2b35355149762ab4357a943d5af9e53c48c51d08fdfdd",
+            "probability": 0.7695411443710327,
+            "accepted": true,
+            "runtimeSeconds": 0.4808219999940775
+          },
+          {
+            "record": 44,
+            "audioSha256": "fb23fab8d5e7b22dddd75105bef6afe06e0a12e8010343b70aa3b832571dbe14",
+            "probability": 0.9841246604919434,
+            "accepted": true,
+            "runtimeSeconds": 0.4808360999850265
+          },
+          {
+            "record": 45,
+            "audioSha256": "691dfcf5712679cf83eb5f5f36ae7e985413219224920edfc5950f4c8d18020f",
+            "probability": 0.5121199488639832,
+            "accepted": true,
+            "runtimeSeconds": 0.48054669999328326
+          },
+          {
+            "record": 46,
+            "audioSha256": "1c48704bc763f7f2e59256a06d1afa718658ebb2460b51bd4895cb32601e79eb",
+            "probability": 0.26468607783317566,
+            "accepted": false,
+            "runtimeSeconds": 0.4802303000287793
+          },
+          {
+            "record": 47,
+            "audioSha256": "b6848f833b1229ad2401d5ae9874316ce5ef78023e454b2db800f448d60717ef",
+            "probability": 0.3440394997596741,
+            "accepted": false,
+            "runtimeSeconds": 0.4803090999885171
+          }
+        ],
+        "filenamesRetained": false,
+        "transcriptTextRetained": false
+      },
+      "negative": {
+        "files": 96,
+        "acceptedFiles": 18,
+        "probability": {
+          "minimum": 0.00048033433267846704,
+          "p50": 0.189795084297657,
+          "p95": 0.8056741207838058,
+          "maximum": 0.9899656772613525
+        },
+        "runtimeSeconds": {
+          "minimum": 0.47273749379019137,
+          "p50": 0.47983218747685896,
+          "p95": 0.49654605624527903,
+          "maximum": 0.49940655625687214
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "5193a662b29712c4a1494a6d995d1da2353a88c97f530b089b3014e0f8cba64a",
+            "probability": 0.42609235644340515,
+            "accepted": false,
+            "runtimeSeconds": 0.49042261875001714
+          },
+          {
+            "record": 1,
+            "audioSha256": "e7b883ba69b8485b2f0513dc6aab5fb825897fbf88fd6712a10993b00a4b57a1",
+            "probability": 0.029655255377292633,
+            "accepted": false,
+            "runtimeSeconds": 0.4895515187527053
+          },
+          {
+            "record": 2,
+            "audioSha256": "590beceedfd2be8f104ee86ed72a20100eaa12e1a4c1e5f8a35bc5efb35ada9d",
+            "probability": 0.1336691826581955,
+            "accepted": false,
+            "runtimeSeconds": 0.48958311876049265
+          },
+          {
+            "record": 3,
+            "audioSha256": "e5d6ca0b1bf74d05b0a4b057d00f5c155527ddc39f9d8446845656253f4d2d24",
+            "probability": 0.05181526020169258,
+            "accepted": false,
+            "runtimeSeconds": 0.4874499187571928
+          },
+          {
+            "record": 4,
+            "audioSha256": "eef4f5cc7cc1c202131ba8640c783ad7b3b31b3ff507c9138cf5290f6a43851f",
+            "probability": 0.013456970453262329,
+            "accepted": false,
+            "runtimeSeconds": 0.4875071187852882
+          },
+          {
+            "record": 5,
+            "audioSha256": "6399cefebee760289f0a40449420304204fd0db4d23d5e1dca8e0b7db5293b79",
+            "probability": 0.8116375207901001,
+            "accepted": true,
+            "runtimeSeconds": 0.48732331878272817
+          },
+          {
+            "record": 6,
+            "audioSha256": "63cabdb9df34eb8cb3ec26cd59fd939ad2fa2fb486b86aa51146d0be5c9715a5",
+            "probability": 0.27871596813201904,
+            "accepted": false,
+            "runtimeSeconds": 0.487370818736963
+          },
+          {
+            "record": 7,
+            "audioSha256": "37068bf80e408be06f623c315a62fe08f604cc542fe7fda264f9fe2d4e5d4177",
+            "probability": 0.554980456829071,
+            "accepted": true,
+            "runtimeSeconds": 0.4876108187600039
+          },
+          {
+            "record": 8,
+            "audioSha256": "e9d523162f4b1e6dac2615187d19b3770d40735464bf8bf0fc1dd7b6653ec8fd",
+            "probability": 0.4453856348991394,
+            "accepted": false,
+            "runtimeSeconds": 0.48732681875117123
+          },
+          {
+            "record": 9,
+            "audioSha256": "f9156c0008d874c332deff440f950b5223ee468f6ce8c657b7d7ab7acb538643",
+            "probability": 0.14154593646526337,
+            "accepted": false,
+            "runtimeSeconds": 0.4874270187574439
+          },
+          {
+            "record": 10,
+            "audioSha256": "f5818fe9ce8909ec8a7d562f0fb0292251b4a7960f01ad46f00da9a7b63ef99e",
+            "probability": 0.2795993983745575,
+            "accepted": false,
+            "runtimeSeconds": 0.48754531872691587
+          },
+          {
+            "record": 11,
+            "audioSha256": "a52a08c8b8a842e74701439b2b20ca2bb379550a5b01ed5c74ee38b80ce97e26",
+            "probability": 0.2714862823486328,
+            "accepted": false,
+            "runtimeSeconds": 0.4877664187224582
+          },
+          {
+            "record": 12,
+            "audioSha256": "2c0601d2d3afb7ee484e4e4ac8809c6371067e4da0eaedd3b82de11f880140b8",
+            "probability": 0.6063066720962524,
+            "accepted": true,
+            "runtimeSeconds": 0.48737481876742095
+          },
+          {
+            "record": 13,
+            "audioSha256": "949c6389576cface965b024062d85398eea617a50a2a4ec3aaf6c1fa28e56617",
+            "probability": 0.029331643134355545,
+            "accepted": false,
+            "runtimeSeconds": 0.4873544187285006
+          },
+          {
+            "record": 14,
+            "audioSha256": "4194807ff1b770f99e9a4aff4a756147f60e903930db3df85e2f9b1fa5a0140c",
+            "probability": 0.32444652915000916,
+            "accepted": false,
+            "runtimeSeconds": 0.48722321877721697
+          },
+          {
+            "record": 15,
+            "audioSha256": "92239a30b0ac6bff533602d15445e1aef34cd51733732c1f636427c6c1b62df0",
+            "probability": 0.03248118236660957,
+            "accepted": false,
+            "runtimeSeconds": 0.48789601877797395
+          },
+          {
+            "record": 16,
+            "audioSha256": "8bf41c013ba49bd904ff267e45f95247cb91d283569d007aec0456e1baf9a977",
+            "probability": 0.535641074180603,
+            "accepted": true,
+            "runtimeSeconds": 0.4807561874986277
+          },
+          {
+            "record": 17,
+            "audioSha256": "31527786aee02b9563b294295964a93e69c391b43c46a81b8fed01c0ecf488d0",
+            "probability": 0.6998082995414734,
+            "accepted": true,
+            "runtimeSeconds": 0.4801132874927134
+          },
+          {
+            "record": 18,
+            "audioSha256": "e6049163e7758adb8de9cebaf732f508a0fed6c7a406e104e0936715dbabbdb2",
+            "probability": 0.770828902721405,
+            "accepted": true,
+            "runtimeSeconds": 0.4798393875025795
+          },
+          {
+            "record": 19,
+            "audioSha256": "a41be58c84ef238316e52959c4888390fccca977450388bcae14079bfa73ce08",
+            "probability": 0.0033527156338095665,
+            "accepted": false,
+            "runtimeSeconds": 0.4797248875038349
+          },
+          {
+            "record": 20,
+            "audioSha256": "76669d7316536b468c5ed87fccdc35bd0af04e5cfdfcf2fc9fd6f6006620e215",
+            "probability": 0.1710725724697113,
+            "accepted": false,
+            "runtimeSeconds": 0.4799025874599465
+          },
+          {
+            "record": 21,
+            "audioSha256": "7fda4736fd657545367c1f9e7d698cfcba4f3d0d6440f560a7d15ef581bbc47d",
+            "probability": 0.20451483130455017,
+            "accepted": false,
+            "runtimeSeconds": 0.47971958752168575
+          },
+          {
+            "record": 22,
+            "audioSha256": "491cf3f8d1212cefd575147bc3c50f6f0bcc6974ccfac25eaac2ffb406a8629f",
+            "probability": 0.01580437459051609,
+            "accepted": false,
+            "runtimeSeconds": 0.4796582875205786
+          },
+          {
+            "record": 23,
+            "audioSha256": "82d6f3e896c20881cf1bbb528d66d3128bbd800e9cd7bbb2e7a472a1dad1aa10",
+            "probability": 0.9899656772613525,
+            "accepted": true,
+            "runtimeSeconds": 0.47968628750095377
+          },
+          {
+            "record": 24,
+            "audioSha256": "d872bfadcd92bc7066b854a685125502fd70f4e9ef909a4eba68406aaa871406",
+            "probability": 0.07197485864162445,
+            "accepted": false,
+            "runtimeSeconds": 0.4797296874821768
+          },
+          {
+            "record": 25,
+            "audioSha256": "67d2d88e6e24e18ddca444e2b431c75f0eb95dd6afbeb68957d00d80965fc505",
+            "probability": 0.3488985002040863,
+            "accepted": false,
+            "runtimeSeconds": 0.47975118747126544
+          },
+          {
+            "record": 26,
+            "audioSha256": "784ea5f778ef8d1d12bc7214c62e2deaec5dc2e595a2b1a2af849d60360bdd99",
+            "probability": 0.003732401179149747,
+            "accepted": false,
+            "runtimeSeconds": 0.4798283874770277
+          },
+          {
+            "record": 27,
+            "audioSha256": "899e1116bbec1ba626f83f94f665359d2b0dd7414ff9eaa576aa39559306faf1",
+            "probability": 0.8036863207817078,
+            "accepted": true,
+            "runtimeSeconds": 0.4798359874766902
+          },
+          {
+            "record": 28,
+            "audioSha256": "92d8b6ae484d2199fa2b201888952ba9c269aa3020ece6aa34ebec87545fbabc",
+            "probability": 0.06464269012212753,
+            "accepted": false,
+            "runtimeSeconds": 0.4798702875050367
+          },
+          {
+            "record": 29,
+            "audioSha256": "436af8e2357322f6ead389738810067e75078828088a710f19e2b16fda7e3bf0",
+            "probability": 0.5382731556892395,
+            "accepted": true,
+            "runtimeSeconds": 0.48018638752546394
+          },
+          {
+            "record": 30,
+            "audioSha256": "4438950e7ea5a55d57095b7a68ebbff26b63d169fd4832ffd04165de23ef0794",
+            "probability": 0.9476478099822998,
+            "accepted": true,
+            "runtimeSeconds": 0.4800441874904209
+          },
+          {
+            "record": 31,
+            "audioSha256": "1a2777369292939841d82938dd170c00dd1dcf32faee0b0572a87abfc7fdbb4e",
+            "probability": 0.06489406526088715,
+            "accepted": false,
+            "runtimeSeconds": 0.4797783875037567
+          },
+          {
+            "record": 32,
+            "audioSha256": "897bb933fed9babc6cc57120a13f6f72db19043266213b5f74827611e6a479f4",
+            "probability": 0.011375520378351212,
+            "accepted": false,
+            "runtimeSeconds": 0.4821494500101835
+          },
+          {
+            "record": 33,
+            "audioSha256": "f95e83a15bdf0104e333438abe5ca78116f7d41d993e8fa04a1923e5abea87cc",
+            "probability": 0.9322285056114197,
+            "accepted": true,
+            "runtimeSeconds": 0.4805191500527144
+          },
+          {
+            "record": 34,
+            "audioSha256": "23e4c0d74626b7cb229f64506e078fa82ce917d83910e095322974eeb746857a",
+            "probability": 0.05170608311891556,
+            "accepted": false,
+            "runtimeSeconds": 0.47992765003073146
+          },
+          {
+            "record": 35,
+            "audioSha256": "9237a63111214bfa5ecd477b4b0efeeaa8f892ae3fac5226edc1bdc283176dec",
+            "probability": 0.04148535430431366,
+            "accepted": false,
+            "runtimeSeconds": 0.4796372500313737
+          },
+          {
+            "record": 36,
+            "audioSha256": "99aa14a123e218f37d5eedacf41da52a473c4658fe805e3fdfc07a9b9ad3ce77",
+            "probability": 0.37939193844795227,
+            "accepted": false,
+            "runtimeSeconds": 0.4796388500435569
+          },
+          {
+            "record": 37,
+            "audioSha256": "600a83e3fa344933ea791d38bda9e6c5b3a5f7bc6ad265fa4c8392774fbfcd4e",
+            "probability": 0.08400353044271469,
+            "accepted": false,
+            "runtimeSeconds": 0.47965574999761884
+          },
+          {
+            "record": 38,
+            "audioSha256": "af35329529a820534f9fe7aacffbf657759fe68d5a2cd720b36fb0b973d23620",
+            "probability": 0.15906476974487305,
+            "accepted": false,
+            "runtimeSeconds": 0.4797489500087977
+          },
+          {
+            "record": 39,
+            "audioSha256": "323d4e5e372a60a2b6b64b98e4a47b2cfcb218ded51bc30df62a42f648baf8cf",
+            "probability": 0.08261355012655258,
+            "accepted": false,
+            "runtimeSeconds": 0.47971224996217643
+          },
+          {
+            "record": 40,
+            "audioSha256": "672335fa346607f9e739ddad292a17bf45ff8f276fca159d676ec7db838a824c",
+            "probability": 0.6678820252418518,
+            "accepted": true,
+            "runtimeSeconds": 0.4799836499914818
+          },
+          {
+            "record": 41,
+            "audioSha256": "84be084f9e03726ec67c87b291e73b341f80c34171019b4f9356bf22baced505",
+            "probability": 0.2342182695865631,
+            "accepted": false,
+            "runtimeSeconds": 0.47994624999773805
+          },
+          {
+            "record": 42,
+            "audioSha256": "6ecbeb4a94643787c46e6ca8467af019a2f31a7d6c028544035ab855ecb53207",
+            "probability": 0.6157202124595642,
+            "accepted": true,
+            "runtimeSeconds": 0.47981065001295065
+          },
+          {
+            "record": 43,
+            "audioSha256": "a36bf61c0e44755730a2890f6faef8a5b47b43998413b119f82b5818fbafd43c",
+            "probability": 0.0939536839723587,
+            "accepted": false,
+            "runtimeSeconds": 0.4798684499874071
+          },
+          {
+            "record": 44,
+            "audioSha256": "557757cc0391382f03b9e1f6b38c711435b1d88e9245bc446301bf9ad585309d",
+            "probability": 0.17599008977413177,
+            "accepted": false,
+            "runtimeSeconds": 0.48019505002957885
+          },
+          {
+            "record": 45,
+            "audioSha256": "2d4c3ada6cb7ac446e4af2d74458b69a047710c1b66852d01719f61042041b03",
+            "probability": 0.16364942491054535,
+            "accepted": false,
+            "runtimeSeconds": 0.47976824998113443
+          },
+          {
+            "record": 46,
+            "audioSha256": "58fc5313a8ed3210b4fe2229b7acbbe50e21678409dba8a2ec237f54c7bd4738",
+            "probability": 0.06268897652626038,
+            "accepted": false,
+            "runtimeSeconds": 0.4797852499941655
+          },
+          {
+            "record": 47,
+            "audioSha256": "dfb240507ea4f83bbc66833f3aee66562032885e6c4664d2544a3482a362e73d",
+            "probability": 0.05429478734731674,
+            "accepted": false,
+            "runtimeSeconds": 0.48028835004151915
+          },
+          {
+            "record": 48,
+            "audioSha256": "0ca7117930d2f20cd290e8e51a01278a5c6aee4d9c27b05eafc76bdfe1f37d88",
+            "probability": 0.16583560407161713,
+            "accepted": false,
+            "runtimeSeconds": 0.47946429999137763
+          },
+          {
+            "record": 49,
+            "audioSha256": "8e498d92d7a5e541b73080a729aa9e8ce7992aeeb3cabe0ecab988437bcfa932",
+            "probability": 0.0004964122199453413,
+            "accepted": false,
+            "runtimeSeconds": 0.4782199000037508
+          },
+          {
+            "record": 50,
+            "audioSha256": "948e24e5ca03dd855810d8a0271981fadc89f1fb0365acaca3cd71786d664a7c",
+            "probability": 0.08522260189056396,
+            "accepted": false,
+            "runtimeSeconds": 0.4789926000084961
+          },
+          {
+            "record": 51,
+            "audioSha256": "835742bcb9301d578ff5c999c83b094f86d4a3d971e0defddee54b7a0a836d14",
+            "probability": 0.04313373193144798,
+            "accepted": false,
+            "runtimeSeconds": 0.4783808000065619
+          },
+          {
+            "record": 52,
+            "audioSha256": "fe69748735089031ff4d86ab34f66dd0e269f1af757703299c52e9ed4507aa44",
+            "probability": 0.09688707441091537,
+            "accepted": false,
+            "runtimeSeconds": 0.4786486000084551
+          },
+          {
+            "record": 53,
+            "audioSha256": "23ecc6f28a61f766d49fe8125905062b886289a4f8b410b1e78912ac7692254e",
+            "probability": 0.001747599453665316,
+            "accepted": false,
+            "runtimeSeconds": 0.4790697000134969
+          },
+          {
+            "record": 54,
+            "audioSha256": "e6b45d68ed83b55d6e262ef7aa469e078ac594502cd4de067eaf80a3339737c5",
+            "probability": 0.09888311475515366,
+            "accepted": false,
+            "runtimeSeconds": 0.4781124000001
+          },
+          {
+            "record": 55,
+            "audioSha256": "74387f5d2d7e8677bc514bb047d14c7ff49241753d40d09f5654889a79845c40",
+            "probability": 0.15113617479801178,
+            "accepted": false,
+            "runtimeSeconds": 0.4782177000452066
+          },
+          {
+            "record": 56,
+            "audioSha256": "122f9aa2981e4a52bc5749ea273745c19f8397cf38735df53a3075f2d2f7a177",
+            "probability": 0.4419885277748108,
+            "accepted": false,
+            "runtimeSeconds": 0.47911730002670083
+          },
+          {
+            "record": 57,
+            "audioSha256": "1ab9d9b12370d372243ffc9b038ed5c33393a02a7ee06b3a303bd3bccb7b89bc",
+            "probability": 0.013902182690799236,
+            "accepted": false,
+            "runtimeSeconds": 0.47851899995293934
+          },
+          {
+            "record": 58,
+            "audioSha256": "bdd97f2e59b60d62f7642e7a1c10dc65cc5dfd939e532dfb1d5d3591f1298ea0",
+            "probability": 0.01018983218818903,
+            "accepted": false,
+            "runtimeSeconds": 0.4781110999902012
+          },
+          {
+            "record": 59,
+            "audioSha256": "432b685d4c992f7b635f241ee3359d9ea6daebe5abfe9227ceccf1787bf98cf3",
+            "probability": 0.00048033433267846704,
+            "accepted": false,
+            "runtimeSeconds": 0.4781739000027301
+          },
+          {
+            "record": 60,
+            "audioSha256": "15f741c85c7a696f417ea72cb1de972bd6d28cbcbfc506f820c227a8d7b01c57",
+            "probability": 0.016515633091330528,
+            "accepted": false,
+            "runtimeSeconds": 0.47782980000192765
+          },
+          {
+            "record": 61,
+            "audioSha256": "cdb895be83d13fcd7c7b33ccb10103395000378be4458102d47cbc06206983ab",
+            "probability": 0.5914310216903687,
+            "accepted": true,
+            "runtimeSeconds": 0.4785153999837348
+          },
+          {
+            "record": 62,
+            "audioSha256": "4e5285e61e6a690472d5f9239c4c71eb1def6d4f6aa47c3a884c699f07052404",
+            "probability": 0.6200042963027954,
+            "accepted": true,
+            "runtimeSeconds": 0.4784912999748485
+          },
+          {
+            "record": 63,
+            "audioSha256": "8a8ea623a7d227c016f08b476ae91706204a613132ad747351620137406e907f",
+            "probability": 0.12876607477664948,
+            "accepted": false,
+            "runtimeSeconds": 0.47764990002906416
+          },
+          {
+            "record": 64,
+            "audioSha256": "10b2b030a1f71a7e3826831619c358c9a699bf897287cfe102adc13bc96c3a37",
+            "probability": 0.4194645583629608,
+            "accepted": false,
+            "runtimeSeconds": 0.49940655625687214
+          },
+          {
+            "record": 65,
+            "audioSha256": "b9e36b0b47fc011c2800b42d71b1849d7e61be0197966517b99441f56f5bcde8",
+            "probability": 0.05742611363530159,
+            "accepted": false,
+            "runtimeSeconds": 0.49637535622605355
+          },
+          {
+            "record": 66,
+            "audioSha256": "d6babd51d7d3a2da5d88f5a4872e09dc6145cc1b2707752345edbdb0c02abaff",
+            "probability": 0.4878084659576416,
+            "accepted": false,
+            "runtimeSeconds": 0.49616815627814503
+          },
+          {
+            "record": 67,
+            "audioSha256": "7c4eac7ed9ee568661f33df699de55b957d3b83346105b09dea476bae447d6e2",
+            "probability": 0.3019094467163086,
+            "accepted": false,
+            "runtimeSeconds": 0.49675775628566043
+          },
+          {
+            "record": 68,
+            "audioSha256": "dcdb14a4e483eb2cd7228c1c560a3b2e00a1985710e54952bc9aede5e81be903",
+            "probability": 0.02513800375163555,
+            "accepted": false,
+            "runtimeSeconds": 0.49657485628995346
+          },
+          {
+            "record": 69,
+            "audioSha256": "2c80be5a675260638aa7041c2bb3a0b4ebd32982af59f9bce7ccccd19bf894b7",
+            "probability": 0.0012723100371658802,
+            "accepted": false,
+            "runtimeSeconds": 0.4962207562130061
+          },
+          {
+            "record": 70,
+            "audioSha256": "24301697d587d6dd69415622cadb6c2e21456d556cf359cf77adb1b30816d9e1",
+            "probability": 0.1750599890947342,
+            "accepted": false,
+            "runtimeSeconds": 0.4962029562520911
+          },
+          {
+            "record": 71,
+            "audioSha256": "4202766e61321edf1b10fe1d04bfd97a6512438cbf2ac4d5635f0317f9800ab5",
+            "probability": 0.12246746569871902,
+            "accepted": false,
+            "runtimeSeconds": 0.4967295562455547
+          },
+          {
+            "record": 72,
+            "audioSha256": "3801a1e53fc83308dccccad14287a213a3da330f431d61952bb5ab9b02a54754",
+            "probability": 0.8757549524307251,
+            "accepted": true,
+            "runtimeSeconds": 0.4978835563015309
+          },
+          {
+            "record": 73,
+            "audioSha256": "ec4aae5fb68b2d21a32de93a1ad52b47b822cda38bc77e966c54201598e1c806",
+            "probability": 0.3496876060962677,
+            "accepted": false,
+            "runtimeSeconds": 0.49613845622661756
+          },
+          {
+            "record": 74,
+            "audioSha256": "ea830a7f7e718ccc6722823be0eef85de6ec3f6ba08c9b71099b39e52d103a73",
+            "probability": 0.31476959586143494,
+            "accepted": false,
+            "runtimeSeconds": 0.4959445562053588
+          },
+          {
+            "record": 75,
+            "audioSha256": "56bc86c4af5e7cd00a0d866a16f0508ce1a4f223723d372439c14c2438598e89",
+            "probability": 0.46310335397720337,
+            "accepted": false,
+            "runtimeSeconds": 0.49593745626771124
+          },
+          {
+            "record": 76,
+            "audioSha256": "e3c79b5fb6977dad8a1df3c949faafc0b90bd8fe1a3f080282ef6afec668c492",
+            "probability": 0.032374486327171326,
+            "accepted": false,
+            "runtimeSeconds": 0.49653645623038756
+          },
+          {
+            "record": 77,
+            "audioSha256": "fa53271d295e1933b0ab5805d2eeff8470ca609fb748e925ee5f004ae7c5b3b1",
+            "probability": 0.2337108552455902,
+            "accepted": false,
+            "runtimeSeconds": 0.4959933562859078
+          },
+          {
+            "record": 78,
+            "audioSha256": "fdddd14ab4072d6878229eb10500311066b538a6b8d71983d43f31ca1fd6f70f",
+            "probability": 0.39208415150642395,
+            "accepted": false,
+            "runtimeSeconds": 0.49614125624793814
+          },
+          {
+            "record": 79,
+            "audioSha256": "4eb385e41e6c939d63677954944f65f847be4dc030dc7eb486d34646b406f637",
+            "probability": 0.27804118394851685,
+            "accepted": false,
+            "runtimeSeconds": 0.4960941562385415
+          },
+          {
+            "record": 80,
+            "audioSha256": "8f1061263d8516fa969fe51e238ced7dfb814038ec5a7977c9a5b2e749beb66c",
+            "probability": 0.21231994032859802,
+            "accepted": false,
+            "runtimeSeconds": 0.4742295937430754
+          },
+          {
+            "record": 81,
+            "audioSha256": "83010461f2791796b6909bb5c9d573c72cff1041af3f0f31487f19696d122089",
+            "probability": 0.20360007882118225,
+            "accepted": false,
+            "runtimeSeconds": 0.473072593780671
+          },
+          {
+            "record": 82,
+            "audioSha256": "b0062310d80823adb2bc996f7afaa6fec466e5e39859e9d9be360ae51b02453b",
+            "probability": 0.31558844447135925,
+            "accepted": false,
+            "runtimeSeconds": 0.4754767937520228
+          },
+          {
+            "record": 83,
+            "audioSha256": "265c42d39ae0c32c82e68abc1572befdab043cd45ddbd35bd99fbf71cee9d68b",
+            "probability": 0.3530591130256653,
+            "accepted": false,
+            "runtimeSeconds": 0.4749012937354564
+          },
+          {
+            "record": 84,
+            "audioSha256": "3e38be7c5f923a166ca0579c850c95cb1c113307495eeaf5fad87743f8780ce1",
+            "probability": 0.3453269600868225,
+            "accepted": false,
+            "runtimeSeconds": 0.4736238937875896
+          },
+          {
+            "record": 85,
+            "audioSha256": "045ac5fca43df0cc4c20e50f9905690ade596274474cab0aee7665bf630f4c5d",
+            "probability": 0.28657016158103943,
+            "accepted": false,
+            "runtimeSeconds": 0.4733784937816381
+          },
+          {
+            "record": 86,
+            "audioSha256": "0086b57d7785c065022efac0f71e73e2cf971c475778167801dce7fc5c812af5",
+            "probability": 0.02987889014184475,
+            "accepted": false,
+            "runtimeSeconds": 0.4728614937448583
+          },
+          {
+            "record": 87,
+            "audioSha256": "c125c1c3d0b94ab8521a734d9b7595719f0ecd399f8d835d87bfea90923a9d3b",
+            "probability": 0.3064422607421875,
+            "accepted": false,
+            "runtimeSeconds": 0.4729077937481634
+          },
+          {
+            "record": 88,
+            "audioSha256": "8b0b8346ca9a874ea882c63821adc8221f91ac11da1625a1f97c21c55e0631ee",
+            "probability": 0.24336928129196167,
+            "accepted": false,
+            "runtimeSeconds": 0.4728223937381699
+          },
+          {
+            "record": 89,
+            "audioSha256": "a95bdc056ce48aff9613181d02bf29f02ecbbc203f2c6cd1290d91ab4844ded0",
+            "probability": 0.587108314037323,
+            "accepted": true,
+            "runtimeSeconds": 0.4728257937640592
+          },
+          {
+            "record": 90,
+            "audioSha256": "3b800eeda6db45db240c8dde8819a91ac5e558302436164b9c3e4c332a1aa02c",
+            "probability": 0.49404269456863403,
+            "accepted": false,
+            "runtimeSeconds": 0.4732783937761269
+          },
+          {
+            "record": 91,
+            "audioSha256": "ed11ada8b126b37fb175cb0b2ba6d82bbf048b2cf33750d1fb608b00818b1c37",
+            "probability": 0.14264729619026184,
+            "accepted": false,
+            "runtimeSeconds": 0.47329069375336985
+          },
+          {
+            "record": 92,
+            "audioSha256": "81a3a5318a19e834371ede7676c156183a3566552789060825b09e3e0c98a39e",
+            "probability": 0.735179603099823,
+            "accepted": true,
+            "runtimeSeconds": 0.4730393937607005
+          },
+          {
+            "record": 93,
+            "audioSha256": "848aa3df94b07eab0974a5425790dd33b00fb9095f6b96f5b1cdb3cfbfc99f68",
+            "probability": 0.24917958676815033,
+            "accepted": false,
+            "runtimeSeconds": 0.4728568937680393
+          },
+          {
+            "record": 94,
+            "audioSha256": "9635bb6dc5a76dbeb9846dbf46710942c415a51a0fdd41695d59368e6ead8d85",
+            "probability": 0.000805266376119107,
+            "accepted": false,
+            "runtimeSeconds": 0.472822193736647
+          },
+          {
+            "record": 95,
+            "audioSha256": "093b2b579547ed25086c0f9a8d883693c5036051100c01528348932d1c743b74",
+            "probability": 0.03633302450180054,
+            "accepted": false,
+            "runtimeSeconds": 0.47273749379019137
+          }
+        ],
+        "filenamesRetained": false,
+        "transcriptTextRetained": false
+      },
+      "positiveCoveragePreserved": false,
+      "zeroNegativeFalseActivations": false
+    },
+    {
+      "label": "human_v14",
+      "manifestSha256": "d98078c60c0a13027c5c3c5d3e0bdd53bf787dc0db8245cc5abb53dde2735805",
+      "requiredPositiveAcceptedFiles": 48,
+      "positive": {
+        "files": 48,
+        "acceptedFiles": 42,
+        "probability": {
+          "minimum": 0.10202863812446594,
+          "p50": 0.9478352069854736,
+          "p95": 0.9821165472269058,
+          "maximum": 0.9867745637893677
+        },
+        "runtimeSeconds": {
+          "minimum": 0.47308323123070295,
+          "p50": 0.48140316874560085,
+          "p95": 0.5104920487392519,
+          "maximum": 0.5113461437758815
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "5c300446d6053e4bf7b9a7250800a3421913f0ad03fe727335f0b4377b587609",
+            "probability": 0.9701288342475891,
+            "accepted": true,
+            "runtimeSeconds": 0.47750623120737146
+          },
+          {
+            "record": 1,
+            "audioSha256": "097f4872ad27a56a4dced7daf5bdd477d223dbb96e6ee073fc2fb7b1e307e3ce",
+            "probability": 0.9318716526031494,
+            "accepted": true,
+            "runtimeSeconds": 0.47547233126169886
+          },
+          {
+            "record": 2,
+            "audioSha256": "dce2547f9dbd5934e2f18ce80a6225ce9eb693ab452d89fdb48db1f29dcf80a7",
+            "probability": 0.967309296131134,
+            "accepted": true,
+            "runtimeSeconds": 0.4737941312305338
+          },
+          {
+            "record": 3,
+            "audioSha256": "ff67e699fe902a13bd1fe164aafca481732b2965b4e4a544defd6ec0148e7e33",
+            "probability": 0.667795717716217,
+            "accepted": true,
+            "runtimeSeconds": 0.47339803124123137
+          },
+          {
+            "record": 4,
+            "audioSha256": "5b964619b964c0844a41aa9c78d3aaaf2e02768e5048653bc6af58b64354a13a",
+            "probability": 0.8991866707801819,
+            "accepted": true,
+            "runtimeSeconds": 0.47369613124101306
+          },
+          {
+            "record": 5,
+            "audioSha256": "53cf4afc9ce5ed874c8cd2fe291176aeb55ead3a928aa6c0d1c0700f4af240b9",
+            "probability": 0.9479151964187622,
+            "accepted": true,
+            "runtimeSeconds": 0.4735946312248416
+          },
+          {
+            "record": 6,
+            "audioSha256": "15cd44b8c86b4a50c7704048826b90b7bd40edb091515f0b871253020b9c4ab7",
+            "probability": 0.9394974112510681,
+            "accepted": true,
+            "runtimeSeconds": 0.47343433122659917
+          },
+          {
+            "record": 7,
+            "audioSha256": "7a5484cb5bc1ace395aa0f9316bc17ebb125d2194e29c5514b6b4769983be13e",
+            "probability": 0.9508845210075378,
+            "accepted": true,
+            "runtimeSeconds": 0.47336913125400315
+          },
+          {
+            "record": 8,
+            "audioSha256": "d0d81ca445938111f935de104a5556b39ab22e8b629c56022a02d93b9e2f940e",
+            "probability": 0.9583728909492493,
+            "accepted": true,
+            "runtimeSeconds": 0.4736348312399059
+          },
+          {
+            "record": 9,
+            "audioSha256": "85dc58ea71a9962df287770eba062d1629b59a528308266b402ec0979e60aaf6",
+            "probability": 0.9459537267684937,
+            "accepted": true,
+            "runtimeSeconds": 0.4733257312727801
+          },
+          {
+            "record": 10,
+            "audioSha256": "eb02042be2aa2ea98c46aba1b8fab5c86a9c9e6188b06c57b3b96e178c6e4f7a",
+            "probability": 0.9477552175521851,
+            "accepted": true,
+            "runtimeSeconds": 0.4733086312589876
+          },
+          {
+            "record": 11,
+            "audioSha256": "394a992af86c3a3e0ad94b8a6ad728984b7cef5547f2d7b3755207b5b7f7b28b",
+            "probability": 0.9719274044036865,
+            "accepted": true,
+            "runtimeSeconds": 0.47308323123070295
+          },
+          {
+            "record": 12,
+            "audioSha256": "d08bed2b8fe08febe7796cf8bc3b27298dc25d52fa7b9ea90dd1202c6c0e20b0",
+            "probability": 0.9634706974029541,
+            "accepted": true,
+            "runtimeSeconds": 0.47337533124300535
+          },
+          {
+            "record": 13,
+            "audioSha256": "fbf117e39da7ace9989f9a94ab520f2862bbe04c546f7c4b6cc41557034c076c",
+            "probability": 0.9754904508590698,
+            "accepted": true,
+            "runtimeSeconds": 0.473200731252291
+          },
+          {
+            "record": 14,
+            "audioSha256": "5b4d90f3a367b9e1db93a380acc668ebb471f4094e541815da6613ca9a8e3475",
+            "probability": 0.9674056768417358,
+            "accepted": true,
+            "runtimeSeconds": 0.47337713125671144
+          },
+          {
+            "record": 15,
+            "audioSha256": "401de76e359f6a48460cab45c9e0763426a9e95e144325065947d425f64b5ea4",
+            "probability": 0.9493762850761414,
+            "accepted": true,
+            "runtimeSeconds": 0.4732476312019571
+          },
+          {
+            "record": 16,
+            "audioSha256": "637cae4517d8fca4f2c9108a98d2f98de4ab400ad2e37a7a265873c2e025e267",
+            "probability": 0.9606297612190247,
+            "accepted": true,
+            "runtimeSeconds": 0.4829040187942155
+          },
+          {
+            "record": 17,
+            "audioSha256": "994bb204873fdeaae209caa7c92070af3b066e9d4b1dbdb08d9441c5ee3dd143",
+            "probability": 0.9490571618080139,
+            "accepted": true,
+            "runtimeSeconds": 0.48171041878595133
+          },
+          {
+            "record": 18,
+            "audioSha256": "663bfd94db86de4c01a044b82f1221c93d807c709d948e8c51e90adbd48cffd1",
+            "probability": 0.9468274116516113,
+            "accepted": true,
+            "runtimeSeconds": 0.4815261187213764
+          },
+          {
+            "record": 19,
+            "audioSha256": "c90c0e1fedcddf24751e5cd09b9b0f305a6ffaf920bf72f8772d825ded994cb9",
+            "probability": 0.9684516191482544,
+            "accepted": true,
+            "runtimeSeconds": 0.48126071879596566
+          },
+          {
+            "record": 20,
+            "audioSha256": "9b0b1d1f12595eb793de90c2f35ca964c9492eedcfb3edfd7ae77eaf914a6f99",
+            "probability": 0.7703617811203003,
+            "accepted": true,
+            "runtimeSeconds": 0.4815033187805966
+          },
+          {
+            "record": 21,
+            "audioSha256": "04ec1c3fa87a86098bec20083922f373e9cf63b2217ed0ff860d03fa25b46464",
+            "probability": 0.619614839553833,
+            "accepted": true,
+            "runtimeSeconds": 0.48126711878649076
+          },
+          {
+            "record": 22,
+            "audioSha256": "949255a19800e0961090fb709dcb1296fd402baec897f9ae45ac5c5e8dc13c21",
+            "probability": 0.95089191198349,
+            "accepted": true,
+            "runtimeSeconds": 0.4811647187634662
+          },
+          {
+            "record": 23,
+            "audioSha256": "b0762d1749c6aae3c5a818068e1e4b98f118659e85483e42aea43a44456c67cb",
+            "probability": 0.9125288724899292,
+            "accepted": true,
+            "runtimeSeconds": 0.48123311870222096
+          },
+          {
+            "record": 24,
+            "audioSha256": "19bbf30f29c4431f1985f282625fe6c8a8fc9819b7d968c18ebaec37c9261f9f",
+            "probability": 0.9643281698226929,
+            "accepted": true,
+            "runtimeSeconds": 0.4813896187879436
+          },
+          {
+            "record": 25,
+            "audioSha256": "25f2324a977cef3043db162195277b45159aaaef001d594515330ba4686f0005",
+            "probability": 0.9528127312660217,
+            "accepted": true,
+            "runtimeSeconds": 0.4815868187761225
+          },
+          {
+            "record": 26,
+            "audioSha256": "1c3a95c07d4ca0b85c7adfec7c5849f441415be4f96729bb40d87773bbeabd66",
+            "probability": 0.9639084339141846,
+            "accepted": true,
+            "runtimeSeconds": 0.48133161875375663
+          },
+          {
+            "record": 27,
+            "audioSha256": "2e9b2b5632eeba2729e8d06c559e4bf4227c0c0e66893df7c7479f2a534e25d3",
+            "probability": 0.982529878616333,
+            "accepted": true,
+            "runtimeSeconds": 0.4814167187032581
+          },
+          {
+            "record": 28,
+            "audioSha256": "273e9a224a5f8cb415a42b45576d64bb991e7453b4ae6725d0f5ddbd85a30836",
+            "probability": 0.9694070816040039,
+            "accepted": true,
+            "runtimeSeconds": 0.4812972187246487
+          },
+          {
+            "record": 29,
+            "audioSha256": "b27f6fd8a1284fbb713e873670a40d851b55baba674566245c1b67523fcdac03",
+            "probability": 0.9867745637893677,
+            "accepted": true,
+            "runtimeSeconds": 0.48131401873615687
+          },
+          {
+            "record": 30,
+            "audioSha256": "9859e134fdeeefda8fc98f0e6943fef6cabd74066a1e34f70f6e3c304186f8b1",
+            "probability": 0.9270191192626953,
+            "accepted": true,
+            "runtimeSeconds": 0.48145441875749384
+          },
+          {
+            "record": 31,
+            "audioSha256": "22c6e3fd035b9fffc73c4b9c89e75c8d4842f77ff6de247eda5f7765008e3713",
+            "probability": 0.9158461689949036,
+            "accepted": true,
+            "runtimeSeconds": 0.4821025187447958
+          },
+          {
+            "record": 32,
+            "audioSha256": "8ef4e6f6bf73b06741053051ff5307045c1d181d97d67bbdef8fa4ccb744730c",
+            "probability": 0.9186116456985474,
+            "accepted": true,
+            "runtimeSeconds": 0.5113461437758815
+          },
+          {
+            "record": 33,
+            "audioSha256": "5b556499c93a10e2bf06d28fb6f364b5691e643dcce3f899ce5bebf330f4c607",
+            "probability": 0.9852712154388428,
+            "accepted": true,
+            "runtimeSeconds": 0.5104597437202756
+          },
+          {
+            "record": 34,
+            "audioSha256": "4c971414918f5a17834d308b5cd7c61f6958a06c1078e71c1b8a4ae229a19fe7",
+            "probability": 0.6167802214622498,
+            "accepted": true,
+            "runtimeSeconds": 0.5101942437358957
+          },
+          {
+            "record": 35,
+            "audioSha256": "540123d8cf940b1c7ac0a6fe79ad3ad9099ff61bc41e75cec533c7fdd0ee8062",
+            "probability": 0.8114767670631409,
+            "accepted": true,
+            "runtimeSeconds": 0.5103732437601138
+          },
+          {
+            "record": 36,
+            "audioSha256": "4ece9b49e45dcb9ca17f0feeff34888eb1681105c09fff5992befbe61037be80",
+            "probability": 0.4263463318347931,
+            "accepted": false,
+            "runtimeSeconds": 0.5102092437919055
+          },
+          {
+            "record": 37,
+            "audioSha256": "9ae28a1d51f7eac354f613d8c1894a435694d220d5661edb1c21227027a56b67",
+            "probability": 0.14200252294540405,
+            "accepted": false,
+            "runtimeSeconds": 0.5100924437174399
+          },
+          {
+            "record": 38,
+            "audioSha256": "7c61285fd861e5c680e9d62d3863ec1fd623458e6a98db6f367915494d794b69",
+            "probability": 0.20866644382476807,
+            "accepted": false,
+            "runtimeSeconds": 0.5101562437375833
+          },
+          {
+            "record": 39,
+            "audioSha256": "5b306ca8642760db92f990dd6e8e9ab4e97c8b64aa96567ab6c5ea2661644bc3",
+            "probability": 0.10202863812446594,
+            "accepted": false,
+            "runtimeSeconds": 0.5101802437457081
+          },
+          {
+            "record": 40,
+            "audioSha256": "6b96acc1afe9958c783a9b2eb5badb47f291582a6ca5d80c78b52704b3c0f86c",
+            "probability": 0.23854650557041168,
+            "accepted": false,
+            "runtimeSeconds": 0.5102810437565495
+          },
+          {
+            "record": 41,
+            "audioSha256": "01483a44e95ede9c80f8b2b5de33843f61e97a255d8849afc3375e4f6ccd4387",
+            "probability": 0.5224339365959167,
+            "accepted": true,
+            "runtimeSeconds": 0.5105978437240992
+          },
+          {
+            "record": 42,
+            "audioSha256": "0c95e7c565e1150f946739d2369ffad9301b0068ee51e1f31d66d7de9261eb2c",
+            "probability": 0.16917721927165985,
+            "accepted": false,
+            "runtimeSeconds": 0.510254243727104
+          },
+          {
+            "record": 43,
+            "audioSha256": "286ce613396c951a17ee6d7a7096b05d1c2019df53c3de091f8a6edb26eb0869",
+            "probability": 0.9813489317893982,
+            "accepted": true,
+            "runtimeSeconds": 0.5103990437237371
+          },
+          {
+            "record": 44,
+            "audioSha256": "a91acb24ec4bf2fc4ab4c8051dbc8dead5a55a63a0bed56aa9dd1b6e5f42381b",
+            "probability": 0.9785985946655273,
+            "accepted": true,
+            "runtimeSeconds": 0.5102729437530797
+          },
+          {
+            "record": 45,
+            "audioSha256": "b49230f8ded3cea469b9f033a17e9eaedf72d911dbf333071e3cf772ab113bd1",
+            "probability": 0.9643969535827637,
+            "accepted": true,
+            "runtimeSeconds": 0.5105094437494699
+          },
+          {
+            "record": 46,
+            "audioSha256": "c2ecac5ba952061124da4406a4d53982c1b4f635376ded4ad293406bd348cd48",
+            "probability": 0.947218120098114,
+            "accepted": true,
+            "runtimeSeconds": 0.5103100437445391
+          },
+          {
+            "record": 47,
+            "audioSha256": "787f7a2b69551ed0b6dba678c8f1cd73a62c231cdc2a2db24b0801ed1cc3a6a2",
+            "probability": 0.9373805522918701,
+            "accepted": true,
+            "runtimeSeconds": 0.5100713437896047
+          }
+        ],
+        "filenamesRetained": false,
+        "transcriptTextRetained": false
+      },
+      "negative": {
+        "files": 96,
+        "acceptedFiles": 32,
+        "probability": {
+          "minimum": 0.00020585033053066581,
+          "p50": 0.16685495525598526,
+          "p95": 0.9194612503051758,
+          "maximum": 0.9520792961120605
+        },
+        "runtimeSeconds": {
+          "minimum": 0.46991425624946714,
+          "p50": 0.47855739375881967,
+          "p95": 0.4914838312288339,
+          "maximum": 0.492157756267261
+        },
+        "records": [
+          {
+            "record": 0,
+            "audioSha256": "667df7074c75c2fc2e3a678603d8e4e5578acf41e24896220dd393b1d7493434",
+            "probability": 0.0441557802259922,
+            "accepted": false,
+            "runtimeSeconds": 0.47363762503300677
+          },
+          {
+            "record": 1,
+            "audioSha256": "652831188704a8b34f3654b50849ad285511970b855c1f8349f57c7819aca082",
+            "probability": 0.7218602895736694,
+            "accepted": true,
+            "runtimeSeconds": 0.4725790250049613
+          },
+          {
+            "record": 2,
+            "audioSha256": "14bf896a75abc6a3b0511d6e3eeb63740ce33161db10d731197186b863007963",
+            "probability": 0.6900275945663452,
+            "accepted": true,
+            "runtimeSeconds": 0.4724334250022366
+          },
+          {
+            "record": 3,
+            "audioSha256": "51fd4778cb1ddddefd8eff92b092bdcb9313af9a5f06f058195d9c54670d8987",
+            "probability": 0.018725113943219185,
+            "accepted": false,
+            "runtimeSeconds": 0.47229332504139165
+          },
+          {
+            "record": 4,
+            "audioSha256": "bbaacadf3a80c574be84ae5058760e99093b8f1fd89562054c7bcbfeee10497f",
+            "probability": 0.17881786823272705,
+            "accepted": false,
+            "runtimeSeconds": 0.4724364250250801
+          },
+          {
+            "record": 5,
+            "audioSha256": "5d432c934f2321653ea7730d5c64946df2711e5a3e9d7f8102d9621017674e4f",
+            "probability": 0.01531250774860382,
+            "accepted": false,
+            "runtimeSeconds": 0.47229712501211907
+          },
+          {
+            "record": 6,
+            "audioSha256": "c737e251f7522cfc8d5430efb52360ab1a3fff84ad31192243499e8a5579ec05",
+            "probability": 0.0019858689047396183,
+            "accepted": false,
+            "runtimeSeconds": 0.47236692501974176
+          },
+          {
+            "record": 7,
+            "audioSha256": "c4a99a8d34e9006fa0aeaac4ae5e888a8ee0338ae062ae5b6091cf9f7462a08a",
+            "probability": 0.16645030677318573,
+            "accepted": false,
+            "runtimeSeconds": 0.47225432497725706
+          },
+          {
+            "record": 8,
+            "audioSha256": "08d5bd4f11fea7cb881c96a8cbd9d2099b1b8ef19abc42f478ea34cffddee804",
+            "probability": 0.9158616065979004,
+            "accepted": true,
+            "runtimeSeconds": 0.4722986250235408
+          },
+          {
+            "record": 9,
+            "audioSha256": "b194c7080a9e49eaed675f7dce2ee745b6cb30b46e9b1950089059e981b33c12",
+            "probability": 0.003032189328223467,
+            "accepted": false,
+            "runtimeSeconds": 0.4722990250265866
+          },
+          {
+            "record": 10,
+            "audioSha256": "9030936eedd9c650de85a9edbd9fbb890303c5a63d577e76d03af60ca4cc78a2",
+            "probability": 0.5244453549385071,
+            "accepted": true,
+            "runtimeSeconds": 0.47242362498582224
+          },
+          {
+            "record": 11,
+            "audioSha256": "3139e35370cd093e162b662be8b9e8574e242ed54d76a39a8c2649be31946860",
+            "probability": 0.011852987110614777,
+            "accepted": false,
+            "runtimeSeconds": 0.47235002500747214
+          },
+          {
+            "record": 12,
+            "audioSha256": "40d697f77d9d36866a7a4436645244c9d2bb166a8debf27aed5a23ee9053f647",
+            "probability": 0.8267855048179626,
+            "accepted": true,
+            "runtimeSeconds": 0.4722994250296324
+          },
+          {
+            "record": 13,
+            "audioSha256": "fe169956d8293e52fe63b290b0d80b4401379f6e145f6172f826c7c048598edc",
+            "probability": 0.07002172619104385,
+            "accepted": false,
+            "runtimeSeconds": 0.4722183249941736
+          },
+          {
+            "record": 14,
+            "audioSha256": "3f83e54ead4c4242ac4371283be3b33d937d3494c1a86468b0c67c0a2f0acb19",
+            "probability": 0.010889850556850433,
+            "accepted": false,
+            "runtimeSeconds": 0.47215752505508135
+          },
+          {
+            "record": 15,
+            "audioSha256": "1d9482a0da804ef3e72618912f28e17a709b1f64f271a7903b705b82f1b9f27b",
+            "probability": 0.024818573147058487,
+            "accepted": false,
+            "runtimeSeconds": 0.4722592250145681
+          },
+          {
+            "record": 16,
+            "audioSha256": "5f24c61d2ad5913a19df9594c7cc40a593cbcee2db465566c85bef0cc84421be",
+            "probability": 0.5131100416183472,
+            "accepted": true,
+            "runtimeSeconds": 0.47111535625663237
+          },
+          {
+            "record": 17,
+            "audioSha256": "06de677aeea905ac7c56ac9885e1f4e61a4d7924dbf13381eb3f3398d2f534f0",
+            "probability": 0.0954938754439354,
+            "accepted": false,
+            "runtimeSeconds": 0.4702750562610163
+          },
+          {
+            "record": 18,
+            "audioSha256": "a8b0412e260bb9dff323935249f2323ec0e71248946db82747cfc12fc64485b6",
+            "probability": 0.05534956976771355,
+            "accepted": false,
+            "runtimeSeconds": 0.47072335629854933
+          },
+          {
+            "record": 19,
+            "audioSha256": "b71477e752f027400d896fb7c203f0f7528949e4c332a7f49490430b6bf34f71",
+            "probability": 0.6756327748298645,
+            "accepted": true,
+            "runtimeSeconds": 0.47009235620862455
+          },
+          {
+            "record": 20,
+            "audioSha256": "5d4aa086c09cbf6cd807b729edfd04400f421b5f5cdb9c66c245609a9533b1b7",
+            "probability": 0.41266554594039917,
+            "accepted": false,
+            "runtimeSeconds": 0.4699776562083571
+          },
+          {
+            "record": 21,
+            "audioSha256": "f737eba951bc30fc7132d91405d58ee25ced70c33c8432a24f568d0aadcfd513",
+            "probability": 0.5875515937805176,
+            "accepted": true,
+            "runtimeSeconds": 0.470163656227669
+          },
+          {
+            "record": 22,
+            "audioSha256": "329408a78f5358ab3f4050b7413d0d115058d1b02d443bf7d7b477bd50f323e7",
+            "probability": 0.1684071272611618,
+            "accepted": false,
+            "runtimeSeconds": 0.47019215627005906
+          },
+          {
+            "record": 23,
+            "audioSha256": "71fb2a2e9eb4d2b07121ec785d4006e7dca9527befc50964f94ef8ff84ef9bb9",
+            "probability": 0.18421991169452667,
+            "accepted": false,
+            "runtimeSeconds": 0.4701470562758914
+          },
+          {
+            "record": 24,
+            "audioSha256": "fe693acc5a39433de4347b292224f7ed504c62dd014d0e3e029210c2fe174e76",
+            "probability": 0.10684093087911606,
+            "accepted": false,
+            "runtimeSeconds": 0.47001575626563863
+          },
+          {
+            "record": 25,
+            "audioSha256": "bd7267084c1988a1c0e2d568024fc578dfde832587597cc696738f599ac5f310",
+            "probability": 0.3810957372188568,
+            "accepted": false,
+            "runtimeSeconds": 0.4701007562725863
+          },
+          {
+            "record": 26,
+            "audioSha256": "3a19fd228168edd9055dfd0b19fcc79528f8a8695811b402b4c454fe3addad1e",
+            "probability": 0.6556086540222168,
+            "accepted": true,
+            "runtimeSeconds": 0.4700080562652147
+          },
+          {
+            "record": 27,
+            "audioSha256": "db7d96ade33e34e707b0e0381832d98d71e835dc94392bdaffed507782cd2499",
+            "probability": 0.5811102390289307,
+            "accepted": true,
+            "runtimeSeconds": 0.4699414562819584
+          },
+          {
+            "record": 28,
+            "audioSha256": "8a11321192e5005adacc1b9ff8c4f081d1754c4462bca6e257e1844f2cdcf868",
+            "probability": 0.8641818761825562,
+            "accepted": true,
+            "runtimeSeconds": 0.46991425624946714
+          },
+          {
+            "record": 29,
+            "audioSha256": "baf932d84e973ce57082467d1b1324b842a8c59bd488b7a949e631246848549e",
+            "probability": 0.8871951699256897,
+            "accepted": true,
+            "runtimeSeconds": 0.46999505622443394
+          },
+          {
+            "record": 30,
+            "audioSha256": "c6e2cd3ad2b52632c13dacd0d63136afb535b64798ff542297fa62aed5960c4d",
+            "probability": 0.019526394084095955,
+            "accepted": false,
+            "runtimeSeconds": 0.46993675624617026
+          },
+          {
+            "record": 31,
+            "audioSha256": "7be8ba8f96ee34cd6feaad079e63ec3a6470fc6bc5042b7ed2a5ad6a18d4f7e6",
+            "probability": 0.7374507784843445,
+            "accepted": true,
+            "runtimeSeconds": 0.4699409562199435
+          },
+          {
+            "record": 32,
+            "audioSha256": "e77bae2c5d4bf107e7a28f5cc390c082974c85d383b345e3ee44855e78217a83",
+            "probability": 0.21873313188552856,
+            "accepted": false,
+            "runtimeSeconds": 0.47566409374485374
+          },
+          {
+            "record": 33,
+            "audioSha256": "bb82d500d7c016834ea4bf11d9ddfbd3e8d3258d6cdeed6da7eb8174ea5bdee7",
+            "probability": 0.09864483773708344,
+            "accepted": false,
+            "runtimeSeconds": 0.4743036937470606
+          },
+          {
+            "record": 34,
+            "audioSha256": "216da4b20a3098f1380e802fd3bc773cd958940f8d5aa593e06abaf112242968",
+            "probability": 0.025729643180966377,
+            "accepted": false,
+            "runtimeSeconds": 0.4746800937609805
+          },
+          {
+            "record": 35,
+            "audioSha256": "a0a5ee038da2304248d713a32b4cf88d60856232b52ae9e92ff31a445410b18b",
+            "probability": 0.07941769808530807,
+            "accepted": false,
+            "runtimeSeconds": 0.47529699374354095
+          },
+          {
+            "record": 36,
+            "audioSha256": "fe96a13b5ab090d1f0f47b0e55f475c06e5f92dfce01a3ca6391bf3e9f7d6256",
+            "probability": 0.008954456076025963,
+            "accepted": false,
+            "runtimeSeconds": 0.4734183937580383
+          },
+          {
+            "record": 37,
+            "audioSha256": "f626c82254972cf7edfa2709208e80cc63755313fee43f1c7999a625ad5bb2de",
+            "probability": 0.007106471341103315,
+            "accepted": false,
+            "runtimeSeconds": 0.4734177937534696
+          },
+          {
+            "record": 38,
+            "audioSha256": "439d9f6c9a4d3f816ccd7a497ea82ebc1e00c786786f682cff00db7554f082f8",
+            "probability": 0.00020585033053066581,
+            "accepted": false,
+            "runtimeSeconds": 0.4733956937598123
+          },
+          {
+            "record": 39,
+            "audioSha256": "b6d2f187bde71d473146993f0684bc1e224f22cdd8e9d414498589358a31b5e0",
+            "probability": 0.08278906345367432,
+            "accepted": false,
+            "runtimeSeconds": 0.4734167937458551
+          },
+          {
+            "record": 40,
+            "audioSha256": "dfb28cd89a694cdc9e9fe7b805477fb350b2088f53311224788dcb193a77bb11",
+            "probability": 0.11430158466100693,
+            "accepted": false,
+            "runtimeSeconds": 0.47339699371150346
+          },
+          {
+            "record": 41,
+            "audioSha256": "48379e2a4066f1d035d6194cb918ab1a04fdf50d3529232c5db47dbac1a0d5ac",
+            "probability": 0.02546643279492855,
+            "accepted": false,
+            "runtimeSeconds": 0.4734799937614298
+          },
+          {
+            "record": 42,
+            "audioSha256": "353aa493c376f9396fd7af3b80b416c11b8104f94e4947cd14160fb806d8e795",
+            "probability": 0.7846959233283997,
+            "accepted": true,
+            "runtimeSeconds": 0.4732689937845862
+          },
+          {
+            "record": 43,
+            "audioSha256": "0d067b1e6d8f927e27d821ef52f1713669c38d32ff47353cc342138a7a661c7b",
+            "probability": 0.03659543767571449,
+            "accepted": false,
+            "runtimeSeconds": 0.4732566937491356
+          },
+          {
+            "record": 44,
+            "audioSha256": "58ad279b9ffc7256c0f7d08d544a72415e9103bb3b7caab08edce46411a66116",
+            "probability": 0.04313819855451584,
+            "accepted": false,
+            "runtimeSeconds": 0.47324469371596933
+          },
+          {
+            "record": 45,
+            "audioSha256": "7b1a9be712556a90122477459aa65ff60ca045c7f5f9e7a48e83248f533c1e9f",
+            "probability": 0.9492992162704468,
+            "accepted": true,
+            "runtimeSeconds": 0.47335069376640604
+          },
+          {
+            "record": 46,
+            "audioSha256": "e9d19d09cfa06412c6133200eae6c78978c550fbf46edf73dd2fa0de966a63bd",
+            "probability": 0.930260181427002,
+            "accepted": true,
+            "runtimeSeconds": 0.47336309374441043
+          },
+          {
+            "record": 47,
+            "audioSha256": "19c1183bef845b6b10e8c89fa5d01f8256a333ff95da3ba485f093ee9031cc4a",
+            "probability": 0.19294969737529755,
+            "accepted": false,
+            "runtimeSeconds": 0.4733268937598041
+          },
+          {
+            "record": 48,
+            "audioSha256": "435c5d63d838b84cb17b36afe131b45fc1bb3094cfacaa5d297adb7c048b1d31",
+            "probability": 0.0025029582902789116,
+            "accepted": false,
+            "runtimeSeconds": 0.492157756267261
+          },
+          {
+            "record": 49,
+            "audioSha256": "0cacbd6ddf28e4193c5be759a45636ee6682f1454f5f7a18edb48a8be6de84ef",
+            "probability": 0.5866734385490417,
+            "accepted": true,
+            "runtimeSeconds": 0.49158505621380755
+          },
+          {
+            "record": 50,
+            "audioSha256": "d1a3d0bb8d4bf0bf945b0ec03670c11c915ce8c3d120efca9c5e26dbc5950ffa",
+            "probability": 0.5567975044250488,
+            "accepted": true,
+            "runtimeSeconds": 0.4914097562759707
+          },
+          {
+            "record": 51,
+            "audioSha256": "cd9d5c90420d68d69f5d1c5266c2d9caac3f433d7f1ce76d40afea4926544991",
+            "probability": 0.3680879473686218,
+            "accepted": false,
+            "runtimeSeconds": 0.4918676562701876
+          },
+          {
+            "record": 52,
+            "audioSha256": "b5ba3b915aa26dcebc4e88075d127f14d37c16ab46c5b393b7c57b5428e2425e",
+            "probability": 0.40041056275367737,
+            "accepted": false,
+            "runtimeSeconds": 0.49147015627022483
+          },
+          {
+            "record": 53,
+            "audioSha256": "318627911da794f8b45991db18c45380781e0b7195c956b3d164ce1824f446c7",
+            "probability": 0.17004747688770294,
+            "accepted": false,
+            "runtimeSeconds": 0.4913108562795969
+          },
+          {
+            "record": 54,
+            "audioSha256": "2ac4de3b677507689dd854391cda0abf36256d871e729d8b963be67ccc24ff52",
+            "probability": 0.22512966394424438,
+            "accepted": false,
+            "runtimeSeconds": 0.4914206562425534
+          },
+          {
+            "record": 55,
+            "audioSha256": "c73167887efc17fc241ffe1ee2a955086a61e8222b58400fcedf560c0bdbbd6e",
+            "probability": 0.004057957325130701,
+            "accepted": false,
+            "runtimeSeconds": 0.49152095624958747
+          },
+          {
+            "record": 56,
+            "audioSha256": "81cac2a6d69d10ed31006c93f71bed42b9b9c59ccc010c199ecff51e0003e7d6",
+            "probability": 0.0037009057123214006,
+            "accepted": false,
+            "runtimeSeconds": 0.49146195626599365
+          },
+          {
+            "record": 57,
+            "audioSha256": "45f3962a4238cbc44c59a96398ed2db8e3f393187e293274b54c4e48d1fe6d0d",
+            "probability": 0.9095575213432312,
+            "accepted": true,
+            "runtimeSeconds": 0.4914367562487314
+          },
+          {
+            "record": 58,
+            "audioSha256": "01c79a0b3c649079ad12368e8a34ed4ca54590282b1aa65e72e063ad38455d5d",
+            "probability": 0.7932683229446411,
+            "accepted": true,
+            "runtimeSeconds": 0.4915813562438416
+          },
+          {
+            "record": 59,
+            "audioSha256": "9458767387396f1c32741b39d1e88639a40e3318787ade8918fcad89a28f3713",
+            "probability": 0.051624298095703125,
+            "accepted": false,
+            "runtimeSeconds": 0.491433556224365
+          },
+          {
+            "record": 60,
+            "audioSha256": "c6a783acd544b799f11dfbfcc9851915ff8af52a6de94c100e36284a04fa9bc0",
+            "probability": 0.9520792961120605,
+            "accepted": true,
+            "runtimeSeconds": 0.4912116562227311
+          },
+          {
+            "record": 61,
+            "audioSha256": "82eef1ff7381895c376fe8ea7706a1b8356c3eb83c38f3b544399bdbee722837",
+            "probability": 0.5283663868904114,
+            "accepted": true,
+            "runtimeSeconds": 0.4913176562731678
+          },
+          {
+            "record": 62,
+            "audioSha256": "3b5d4e61abbe2ec0b613a69499ca783ea391b1287a1852910c064dae273057c9",
+            "probability": 0.014901665970683098,
+            "accepted": false,
+            "runtimeSeconds": 0.49137185622021207
+          },
+          {
+            "record": 63,
+            "audioSha256": "08ba7baf74772b27a1d1b1fd19b1ea902ee334e75d39ba51ba1b673ba20bf449",
+            "probability": 0.5566173791885376,
+            "accepted": true,
+            "runtimeSeconds": 0.491471456221916
+          },
+          {
+            "record": 64,
+            "audioSha256": "99ca237282debc1ff7dba128ab1958fe4a86900393b842c77f2a2e61c07fc04c",
+            "probability": 0.6106282472610474,
+            "accepted": true,
+            "runtimeSeconds": 0.4825580937649647
+          },
+          {
+            "record": 65,
+            "audioSha256": "652baf8b05c312b00a404413d9b2f0823cb12ff43a61cadc4e7f6eb453e44659",
+            "probability": 0.9467406868934631,
+            "accepted": true,
+            "runtimeSeconds": 0.48165599376443424
+          },
+          {
+            "record": 66,
+            "audioSha256": "210359d12fcd53b9f633d4372a52fbe06dc1444e73287d91512c8d2fa1120708",
+            "probability": 0.8602017164230347,
+            "accepted": true,
+            "runtimeSeconds": 0.4814506937727856
+          },
+          {
+            "record": 67,
+            "audioSha256": "e796e5531c02ada13c7cd3e286b3b6e244b5dd628e5d32091222d3cfd7dd161a",
+            "probability": 0.5444391369819641,
+            "accepted": true,
+            "runtimeSeconds": 0.48180509379380965
+          },
+          {
+            "record": 68,
+            "audioSha256": "97261e575f63cb137f2fb73066ac5834adcad6bed2e70336bf039d7a76376279",
+            "probability": 0.9319165945053101,
+            "accepted": true,
+            "runtimeSeconds": 0.4824263937516662
+          },
+          {
+            "record": 69,
+            "audioSha256": "899a0cce7bf9ece4733aa521f8a22ff3a5487545da4af09b4900bd132957f1b8",
+            "probability": 0.000556228042114526,
+            "accepted": false,
+            "runtimeSeconds": 0.48198599377428764
+          },
+          {
+            "record": 70,
+            "audioSha256": "9136776b615d302c51875311ee6cbaf86c18ddbd002642406fa0a4eb6c6214ee",
+            "probability": 0.029925616458058357,
+            "accepted": false,
+            "runtimeSeconds": 0.481590893734392
+          },
+          {
+            "record": 71,
+            "audioSha256": "6152e575e2d689a1de4b609cf0933f0bac42b173cba148f34e379b0ee6634ebc",
+            "probability": 0.429263174533844,
+            "accepted": false,
+            "runtimeSeconds": 0.48159939374090754
+          },
+          {
+            "record": 72,
+            "audioSha256": "10390d6b22126b8776828f1d4680cf5c0cf12aa25d7bc85fbd3298401493000d",
+            "probability": 0.0005318180192261934,
+            "accepted": false,
+            "runtimeSeconds": 0.48159299375038245
+          },
+          {
+            "record": 73,
+            "audioSha256": "9462cf2f86f6743c87de5317491204d19d08beb09db1d1e225f054285f7e88d9",
+            "probability": 0.005736398044973612,
+            "accepted": false,
+            "runtimeSeconds": 0.4821672937578114
+          },
+          {
+            "record": 74,
+            "audioSha256": "d200ff1483fb4827b22470f3654b09d9e83752c2725e429627d81972077aede5",
+            "probability": 0.006167840212583542,
+            "accepted": false,
+            "runtimeSeconds": 0.48221929374631145
+          },
+          {
+            "record": 75,
+            "audioSha256": "de7754dfdf7ba759409af3b2ffeb15097ee557b68148e58bc704d7d12623e600",
+            "probability": 0.4501044452190399,
+            "accepted": false,
+            "runtimeSeconds": 0.48191859372673207
+          },
+          {
+            "record": 76,
+            "audioSha256": "e5d63cd957f5b61361643a284547780c322c60957865e5d76b351ac84b2ab620",
+            "probability": 0.045681294053792953,
+            "accepted": false,
+            "runtimeSeconds": 0.4818869937189447
+          },
+          {
+            "record": 77,
+            "audioSha256": "b9e9fbc583514d705f9b641a43e5b3de92b15bb61f9b551877191a2273db19bb",
+            "probability": 0.032550111413002014,
+            "accepted": false,
+            "runtimeSeconds": 0.4825096937456692
+          },
+          {
+            "record": 78,
+            "audioSha256": "4f5cbd10175a545b6be536d8ab0a45e7f08ec460e3ae594fb8742da41342d1d7",
+            "probability": 0.5113850235939026,
+            "accepted": true,
+            "runtimeSeconds": 0.48256189373569214
+          },
+          {
+            "record": 79,
+            "audioSha256": "c24e5dd2c091fe6abb5a9fa23c5fd31d7036bd94d24b9667078ebd9a8f61b633",
+            "probability": 0.09447503089904785,
+            "accepted": false,
+            "runtimeSeconds": 0.48225339371492737
+          },
+          {
+            "record": 80,
+            "audioSha256": "b46d67fd414be4ab536e517c86f18f149beb9976af369e72ce1f72142aacd8eb",
+            "probability": 0.09130355715751648,
+            "accepted": false,
+            "runtimeSeconds": 0.4863517437479459
+          },
+          {
+            "record": 81,
+            "audioSha256": "0620e2302acb16d4eaeb323b6bfc918a6b845c4bf855f1807d9241f762856ff3",
+            "probability": 0.1672596037387848,
+            "accepted": false,
+            "runtimeSeconds": 0.4837176437722519
+          },
+          {
+            "record": 82,
+            "audioSha256": "30a151357ed6a28ea839bc60e3675141621dffa161f5afadb7a2fe800c81fc44",
+            "probability": 0.028022192418575287,
+            "accepted": false,
+            "runtimeSeconds": 0.4830554437940009
+          },
+          {
+            "record": 83,
+            "audioSha256": "365dd29b968865fb2fcfd8846bb8445ceb60abf7ceffd01a3e23ad367a8fb549",
+            "probability": 0.03765518218278885,
+            "accepted": false,
+            "runtimeSeconds": 0.48311534378444776
+          },
+          {
+            "record": 84,
+            "audioSha256": "4f7226620b098198f7c1aaab57ffcbec076d9a3dfbc61880631b05a41d50b7aa",
+            "probability": 0.5909695625305176,
+            "accepted": true,
+            "runtimeSeconds": 0.4832780437427573
+          },
+          {
+            "record": 85,
+            "audioSha256": "afd162e4fd0a9aa9a4c726c423b2d21ce12e25796dbb3e97c3893f39807d413a",
+            "probability": 0.26917868852615356,
+            "accepted": false,
+            "runtimeSeconds": 0.4830229437793605
+          },
+          {
+            "record": 86,
+            "audioSha256": "328a3e0a003290718625081aaeceab0ffe90ea6115a8abdd7ecc63d3e54497f4",
+            "probability": 0.0225592739880085,
+            "accepted": false,
+            "runtimeSeconds": 0.48283694370184094
+          },
+          {
+            "record": 87,
+            "audioSha256": "73d253ae388911c8ccfe6662a59e334f7d9889b3c89921b42441b4f8399d4055",
+            "probability": 0.07945514470338821,
+            "accepted": false,
+            "runtimeSeconds": 0.48287354374770075
+          },
+          {
+            "record": 88,
+            "audioSha256": "b06f2ab7e31ac7e2c3df5987c7f36394c7ebb746c20c649c7bdf16ec905fa5e9",
+            "probability": 0.552241861820221,
+            "accepted": true,
+            "runtimeSeconds": 0.4827246437780559
+          },
+          {
+            "record": 89,
+            "audioSha256": "f0efa944eec3895e175220f0477840be1d304f7e42ac96106ba224420d251e91",
+            "probability": 0.06792350113391876,
+            "accepted": false,
+            "runtimeSeconds": 0.48299174377461895
+          },
+          {
+            "record": 90,
+            "audioSha256": "09619e09ffeef55379a713a8ac13dac639f5e1521104c0564acb9e4e7c13a881",
+            "probability": 0.018982058390975,
+            "accepted": false,
+            "runtimeSeconds": 0.48448624374577776
+          },
+          {
+            "record": 91,
+            "audioSha256": "5f4e4e3a23f3b91af1389858d9f9038d54e2e2980ad846574af573f2eaa17084",
+            "probability": 0.8686104416847229,
+            "accepted": true,
+            "runtimeSeconds": 0.48442504374543205
+          },
+          {
+            "record": 92,
+            "audioSha256": "33c39252558e393f2d2290522e8f40e9af0b629487682b3da9093980562c02b9",
+            "probability": 0.06229682266712189,
+            "accepted": false,
+            "runtimeSeconds": 0.4845179436961189
+          },
+          {
+            "record": 93,
+            "audioSha256": "b505caef95f10aa1a49f8b3ec4b341eb2550d38136875e94cd27f0a9fb4f1d7a",
+            "probability": 0.25040218234062195,
+            "accepted": false,
+            "runtimeSeconds": 0.4838591438019648
+          },
+          {
+            "record": 94,
+            "audioSha256": "200b9232b0ea194c0b56773630a7a82da75f7db6ed272f6215b3162b69449a09",
+            "probability": 0.053446218371391296,
+            "accepted": false,
+            "runtimeSeconds": 0.48379014374222606
+          },
+          {
+            "record": 95,
+            "audioSha256": "91ae00fda0806605e952b608222aca1f04c19b0abc5457d00c3b1f68f34f7b15",
+            "probability": 0.13185560703277588,
+            "accepted": false,
+            "runtimeSeconds": 0.48395344376331195
+          }
+        ],
+        "filenamesRetained": false,
+        "transcriptTextRetained": false
+      },
+      "positiveCoveragePreserved": false,
+      "zeroNegativeFalseActivations": false
+    }
+  ],
+  "developmentPassed": false,
+  "candidateRuntimeModified": false,
+  "promotionEligible": false,
+  "blindHumanPartitionAccessed": false,
+  "filenamesOrTranscriptsRetained": false,
+  "effectsExecuted": 0
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "role": "assistant",
+    "content": "Hola. Estoy lista para ayudarte con este equipo."
+  },
+  {
+    "role": "assistant",
+    "content": "Hay una misión multipaso pendiente de una sesión anterior. Di «continuar» para reanudarla desde el último checkpoint o «cancelar» para detener sus pasos restantes."
+  },
+  {
+    "role": "user",
+    "content": "cancelar"
+  },
+  {
+    "role": "assistant",
+    "content": "Cancelé los pasos restantes de la misión."
+  },
+  {
+    "role": "user",
+    "content": "Abre Opera y navega a https://example.com/"
+  },
+  {
+    "role": "assistant",
+    "content": "No pude abrir Opera y navegar a https://example.com/."
+  }
+]

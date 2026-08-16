@@ -1,0 +1,17 @@
+{
+  "schema": "baxy.situated-cut-b.model-path.r225-consumption.v1",
+  "measurement_status": "consumed",
+  "opened_exactly_once": true,
+  "retry_allowed": false,
+  "status": "failed",
+  "effects_executed": 0,
+  "providers_enabled": false,
+  "hashes": {
+    "corpus_sha256": "de66e6d2c1c439b6575bf1ea89a60d8f657aad36bed922fbea8918693066afa3",
+    "preregistration_sha256": "4879797b570a6692564dd4ef703e9cc61fe440c42b46326504c46bfc9bdca03e",
+    "result_sha256": "13cbe4154c5ed9e8ac95a6e5e4c1b99e53107d458172d1e3acfc410a741b05d7",
+    "telemetry_sha256": "837293a404225b16455afc2942b7a75b9531e0c8973069bdf5b24b3184cf108c",
+    "turn_audit_sha256": "2e6f9a0c7c9ea0f61dd0dc0445306429aa530d0a3d31cb9c5ce07b5d56226ea3",
+    "runner_sha256": "7a94aedd32b71a42cedd957fb8aacfb8ad7a159debb393974224e144544f1463"
+  }
+}

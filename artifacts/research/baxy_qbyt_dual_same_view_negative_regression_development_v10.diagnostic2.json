@@ -1,0 +1,137 @@
+{
+  "schema": "baxy.qbyt-dual-same-view-negative-regression.v10",
+  "measuredAtUtc": "2026-08-07T22:01:39.427747+00:00",
+  "scope": "previously_opened_100h_qbyt_or_dual_same_view_regression",
+  "sources": {
+    "fusionManifestSha256": "87dd1534fdf9d513b5fc4ae58f4fc4dc8a4489452c554f362285e615a700b77d",
+    "ctcVerifierManifestSha256": "a0d699db419dc00ec5d7bf81090953081db3fdca6abaec8b22bce073af87710a",
+    "cudaParityReportSha256": "4a3602b15b0e695b3c2fa7d78849dcb0e3c5aecb479e526de915e026c72c3a79",
+    "teacherWeightsSha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "priorHoldoutReportSha256": "3177273095ac8c7c4400a63ab5f4ddf9a6770520295ee25779fbe0f586ecb132",
+    "priorStage1ScanSha256": "d3a1dd8458324b1e646167de43d426db0012439b8a97585e78c6421b08c040a1",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "stage1ModelSha256": "dadb657e6ea0ea0241bc38130123b50bc63f08e6b99431393adc00b4eeb28921",
+    "actualFfmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "sentinelThreshold": "0.01",
+    "fixedViewStarts": "40000,64000",
+    "stage1ExactBoundaryGuard": "0.0001",
+    "contextualViewPolicy": "same_exact_fusion_view",
+    "expectedSentinelCandidates": "20962",
+    "stt:encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+    "stt:decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+    "stt:joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+    "stt:tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d",
+    "qbytCandidateSha256": "4fb8519351decf74c958256c7fe5b48af2872ce4a89f8a1441d9e4ab05660781",
+    "qbytHumanEvidenceSha256": "585bd7d5f0569287bfd7a5623f3339dfda1cb5efbfdc987b5f4fe7ed9fb520f8",
+    "qbytDualGuardVersion": "v1",
+    "screeningCacheSha256": "374d19d4381d3b573a82749851d1760c6cc581b55c052c84166750428fa5de34"
+  },
+  "contract": {
+    "observedMaximumNormalizedScoreDrift": 0.001852023889695456,
+    "cpuRescoringBelt": 0.25,
+    "empiricalSafetyMultiplier": 134.9874596062093,
+    "priorStage1MaximaReusedForSafePrefilterOnly": true,
+    "sentinelPopulationBoundToCompleteStage1AndCorpusRecords": true,
+    "reusableScreeningCacheRetained": true,
+    "expectedSentinelCandidates": 20962,
+    "everySentinelCandidateRescannedAtRuntimeSchedule": true,
+    "firstSentinelCrossingUsedForCapture": true,
+    "stage1OverlapScreenExactBoundaryGuard": 0.0001,
+    "stage1BoundaryViewsRescoredByOriginalCpuPath": true,
+    "fixedFusionViewStarts": [
+      40000,
+      64000
+    ],
+    "everyFusionViewWithinBeltRescoredByExactCpuOnnx": true,
+    "contextualAsrRestrictedToExactAcousticFalseCandidates": true,
+    "contextualViewPolicy": "same_exact_fusion_view",
+    "contextualEvidenceMustShareExactFusionView": true,
+    "secondaryViewGuard": {
+      "name": "exact_confusable_veto_then_qbyt_or_plain_same_view",
+      "exactConfusableVeto": true,
+      "qbytOrPlainDecode": true,
+      "sameExactCpuFusionView": true,
+      "selectedOnOpenedHumanDevelopment": true
+    },
+    "secondaryViewGuardRestrictedToSameExactCpuFusionView": true,
+    "contextualHotwordScore": 5.0,
+    "contextualAsrRestrictedToSecondaryGuardPassingCandidates": true,
+    "priorEstablishedCtcFalseActivations": 0,
+    "priorEvidenceAuthority": "opened_development_regression",
+    "freshHoldoutClaimSupported": false,
+    "farCertificationSupported": false,
+    "qbytCandidateSha256": "4fb8519351decf74c958256c7fe5b48af2872ce4a89f8a1441d9e4ab05660781",
+    "humanEvidenceSha256": "585bd7d5f0569287bfd7a5623f3339dfda1cb5efbfdc987b5f4fe7ed9fb520f8",
+    "humanDevelopmentGatePassed": true,
+    "selectedAfterOpened100hFailureAnalysis": true
+  },
+  "metrics": {
+    "descriptiveExposureHours": 100.59087964444444,
+    "corpusUtterances": 28539,
+    "sentinelCandidates": 20962,
+    "verificationViews": 41924,
+    "cpuRescoredViews": 64,
+    "rawFusionFalseActivations": 45,
+    "secondaryGuardPassingRawFusionFalseActivations": 10,
+    "contextualLexicalEvidenceAmongRawFalse": 1,
+    "contextualLexicalEvidenceAmongSecondaryGuard": 1,
+    "contextualDecodedCaptures": 11,
+    "guardedNegativeFalseActivations": 1,
+    "guardedDescriptivePointFalseActivationsPerHour": 0.009941259123438129,
+    "maximumCudaScreenDecisionMargin": 6.005094842082992,
+    "maximumCpuRescoredDecisionMargin": 6.0050719244635085,
+    "minimumCpuRescoredDecisionMargin": -0.2398983007822042
+  },
+  "runtime": {
+    "cudaDevice": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "torch": "2.10.0+cu130",
+    "onnxruntime": "1.28.0",
+    "cudaBatchSize": 32,
+    "recordBatchSize": 64,
+    "stage1Workers": 16,
+    "screeningSeconds": 11692.776080099982,
+    "cpuRescoreSeconds": 37.22372860042378,
+    "contextualDecodeSeconds": 5.247904799995013,
+    "decodeMillisecondsPerCandidate": {
+      "p50": 1234.5898500061594,
+      "p95": 3558.549179969123,
+      "maximum": 6645.533400005661,
+      "mean": 1425.1668989023042
+    },
+    "hyperMillisecondsPerView": {
+      "p50": 25.046850030776113,
+      "p95": 37.98203492187895,
+      "maximum": 147.09829993080348,
+      "mean": 25.404476607702662
+    },
+    "cudaCtcMillisecondsPerView": {
+      "p50": 22.902150001755217,
+      "p95": 24.066790625511203,
+      "maximum": 41.53670000960119,
+      "mean": 22.19518323157145
+    },
+    "cpuCtcMillisecondsPerRescoredView": {
+      "p50": 579.2652000673115,
+      "p95": 624.7316300927196,
+      "maximum": 642.8267000010237,
+      "mean": 581.6207593816216
+    }
+  },
+  "regressionPassed": false,
+  "candidateDevelopmentUse": true,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "negativeCorpusPreviouslyAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "recordsTranscriptsOrFilenamesRetained": false,
+  "effectsExecuted": 0,
+  "secondaryDiagnostics": {
+    "confusableRejectedViews": 1,
+    "qbytAcceptedViews": 11,
+    "plainDecodedViews": 44,
+    "plainAcceptedViews": 0,
+    "contextualEvidenceQbyTScores": [
+      0.017727714031934738
+    ]
+  }
+}

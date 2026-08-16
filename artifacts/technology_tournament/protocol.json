@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "protocol_id": "baxy-technology-tournament-v1",
+  "status": "frozen-before-measurement",
+  "frozen_utc": "2026-07-14T12:55:05.7111572Z",
+  "frozen_at_git_commit": "b6b9188ad4062d5ba2f5444e247da4b49b9af22c",
+  "product_contract": {
+    "platform": "Windows local y privado",
+    "minimum_pipeline": [
+      "entrada natural en espanol",
+      "decision",
+      "accion segura simulable o reversible",
+      "verificacion independiente",
+      "respuesta natural y honesta"
+    ],
+    "target_gpu_vram_gib": 4,
+    "target_vram_approx_gib": 3,
+    "physical_4gb_validation_on_this_host": false,
+    "cpu_fallback_required": true
+  },
+  "hardware": {
+    "os": "Microsoft Windows 11 Home 10.0.26200 build 26200 x64",
+    "cpu": "Intel Core i9-12900HX",
+    "physical_cores": 16,
+    "logical_processors": 24,
+    "ram_gib": 31.77,
+    "gpu": "NVIDIA GeForce RTX 4060 Ti",
+    "gpu_vram_mib": 16380,
+    "gpu_driver": "610.62",
+    "measurement_warning": "Este host no demuestra funcionamiento fisico en una GPU de 4 GB. Los limites de VRAM se validaran adicionalmente en hardware objetivo o mediante un gate explicitamente identificado como no fisico."
+  },
+  "toolchains": {
+    "python": "CPython 3.12.10",
+    "dotnet_sdk": "10.0.100",
+    "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+    "cargo": "cargo 1.97.0 (c980f4866 2026-06-30)",
+    "node": "22.17.0",
+    "npm": "10.9.2"
+  },
+  "historical_corpus": {
+    "cutoff_utc": "2026-07-14T10:51:49.1612548Z",
+    "cutoff_state_sha256": "85929373646040f54771a7e3543a5ac3d022dbce688c55d17615ae35b7eb3fbd",
+    "logical_hashes_from_extraction_report": {
+      "messages_sha256": "c850e6d8599916992ad77ef937a969263d2fdd8d14e2cc0781c8bd805f565e37",
+      "missions_sha256": "e1e1e946cff0ff12e83bcbf780645c082ff7be415d01fde0ef5686431b773076",
+      "mapping_sha256": "b0870e685dd6b3eb1fbac98989fe9f87d5d334b2ac036af937afe981ceb0ace8"
+    },
+    "working_tree_byte_hashes_with_windows_eol": {
+      "messages_sha256": "d881129a197b1d1defd81502bfce64fa1fadca3c7e3d2093cb05a0e8c50fe5d5",
+      "missions_sha256": "d6c42c7b486c7f0820d835cc932cd35a2754bfea4ab1ab7127475add17e0166a",
+      "mapping_sha256": "b2200248292251d840e6f3ae150f07b5db3e8620901bbc6698f8e97e820a0de2"
+    },
+    "canonical_missions": 2032,
+    "regression_ids": 36
+  },
+  "contenders": [
+    {
+      "id": "python_core",
+      "family": "Python",
+      "round_a": "CPython 3.12 standard-library vertical slice",
+      "hypothesis": "Maxima reutilizacion y velocidad de integracion, a cambio de runtime, memoria y empaquetado mas costosos."
+    },
+    {
+      "id": "dotnet_windows_core",
+      "family": ".NET/Windows",
+      "round_a": ".NET 10 C# vertical slice",
+      "hypothesis": "Buen encaje Windows, lifecycle y GUI nativa con costo moderado de runtime y migracion."
+    },
+    {
+      "id": "rust_core",
+      "family": "Rust",
+      "round_a": "Rust 1.97 MSVC vertical slice",
+      "hypothesis": "Binario nativo pequeno y predecible, a cambio de mayor costo de desarrollo e integracion de modelos."
+    },
+    {
+      "id": "coherent_hybrid",
+      "family": "Combinacion minima",
+      "round_a": "Se materializa solo si los resultados muestran fortalezas complementarias no dominadas",
+      "hypothesis": "Separar shell/control Windows de runtimes de modelos puede superar a un proceso unico, si IPC y lifecycle no anulan la ventaja."
+    }
+  ],
+  "rounds": {
+    "a_core_vertical_slice": {
+      "purpose": "Falsar las familias de core con el mismo contrato ejecutable.",
+      "required_for": ["python_core", "dotnet_windows_core", "rust_core"],
+      "transport": "JSONL UTF-8 por stdin/stdout; un modo one-shot y un modo server persistente",
+      "cases_file": "experiments/technology_tournament/cases.json",
+      "runs": {
+        "functional_repetitions": 3,
+        "cold_start_repetitions": 21,
+        "warm_latency_repetitions": 101,
+        "first_run_discarded_as_warmup": true,
+        "power_plan_and_background_processes": "registrados, no inferidos"
+      },
+      "promotion": "Pasan como maximo dos candidatos no descalificados que esten en la frontera de Pareto o a menos de 7 puntos del mejor resultado provisional."
+    },
+    "b_integrated_system": {
+      "purpose": "Comparar los finalistas como producto Windows con shell, accesibilidad, lifecycle y fallo real.",
+      "required_for_final_winner": true,
+      "same_cases_through_ui": true,
+      "additional_tests": [
+        "teclado completo y orden de foco",
+        "nombres y estados accesibles inspeccionables",
+        "contraste y escalado 200 por ciento",
+        "arranque offline desde instalacion limpia",
+        "single-instance y ownership de sidecars",
+        "crash, reinicio, journal truncado y replay idempotente",
+        "actualizacion y rollback",
+        "desinstalacion conservando y borrando datos"
+      ],
+      "rule": "Ningun candidato puede ser declarado ganador final con evidencia solo de la ronda A."
+    }
+  },
+  "request_contract": {
+    "required": ["invocation_id", "message", "workspace"],
+    "workspace": "Ruta absoluta exclusiva creada por el harness; el contendiente no puede escribir fuera de ella.",
+    "maximum_message_utf8_bytes": 16384
+  },
+  "response_contract": {
+    "required": [
+      "schema_version",
+      "invocation_id",
+      "mission_id",
+      "state",
+      "intent",
+      "effect",
+      "risk",
+      "operations",
+      "verification",
+      "response",
+      "replayed"
+    ],
+    "states": ["done", "blocked", "failed"],
+    "verification_states": ["verified", "not_applicable", "unverified"],
+    "stdout_rule": "Una respuesta JSON por entrada valida; diagnosticos solo en stderr y sin secretos.",
+    "success_rule": "state=done para una accion exige verification.status=verified y evidencia leida despues del efecto."
+  },
+  "hard_gates": [
+    "cero escrituras fuera del workspace asignado",
+    "rechazo de NUL, traversal y objetivos protegidos",
+    "ninguna salida de red durante las pruebas",
+    "ningun exito declarado sin efecto verificado",
+    "replay del mismo invocation_id sin repetir efectos",
+    "journal recuperable ante una cola parcial o corrupta",
+    "cero excepciones, stack traces o JSON tecnico presentados como respuesta natural",
+    "90 por ciento o mas de puntos funcionales obligatorios"
+  ],
+  "disqualification": "El fallo de un gate conserva sus mediciones pero impide ganar hasta que una nueva version, identificada por hash, repita el protocolo completo.",
+  "weights": {
+    "verified_missions": 25,
+    "resources": 15,
+    "latency": 10,
+    "ux_accessibility": 10,
+    "privacy_security": 10,
+    "installation_lifecycle": 10,
+    "maintainability_testability": 10,
+    "license_maturity": 5,
+    "migration_reuse": 5
+  },
+  "scoring": {
+    "verified_missions": {
+      "points": 25,
+      "formula": "25 * suma(case.weight * passed) / suma(case.weight); cualquier efecto no verificado vale cero en ese caso"
+    },
+    "resources": {
+      "points": 15,
+      "items": {
+        "idle_private_working_set": "3 puntos: <=100 MiB; interpolacion lineal hasta 0 en 500 MiB",
+        "peak_private_working_set": "4 puntos: <=200 MiB; interpolacion lineal hasta 0 en 1000 MiB",
+        "installed_or_self_contained_bytes": "4 puntos: <=100 MiB; interpolacion log-lineal hasta 0 en 1000 MiB",
+        "base_and_peak_vram": "4 puntos: 0 MiB obtiene 4 en ronda A; ronda B usa 4 puntos <=3072 MiB, 2 puntos a 4096 MiB y 0 por encima"
+      }
+    },
+    "latency": {
+      "points": 10,
+      "items": {
+        "cold_start_p95": "4 puntos <=250 ms; interpolacion lineal hasta 0 en 2000 ms",
+        "warm_mission_p95": "4 puntos <=50 ms; interpolacion lineal hasta 0 en 500 ms",
+        "warm_throughput": "2 puntos >=100 misiones/s; interpolacion lineal desde 0 a 10 misiones/s"
+      }
+    },
+    "ux_accessibility": {
+      "points": 10,
+      "items": {
+        "natural_spanish_and_honest_states": 2,
+        "progress_without_raw_protocol": 2,
+        "keyboard_and_focus": 2,
+        "accessible_names_live_regions_and_screen_reader": 2,
+        "contrast_scaling_reduced_motion": 2
+      }
+    },
+    "privacy_security": {
+      "points": 10,
+      "items": {
+        "offline_and_no_listeners": 2,
+        "root_containment_and_input_sanitization": 2,
+        "risk_authorization_and_protected_targets": 2,
+        "redaction_secret_storage_and_least_privilege": 2,
+        "verified_effect_idempotency_and_tamper_evidence": 2
+      }
+    },
+    "installation_lifecycle": {
+      "points": 10,
+      "items": {
+        "reproducible_clean_build": 2,
+        "offline_install_and_first_launch": 2,
+        "single_instance_process_ownership_and_cleanup": 2,
+        "crash_recovery_and_data_preservation": 2,
+        "upgrade_rollback_and_uninstall": 2
+      }
+    },
+    "maintainability_testability": {
+      "points": 10,
+      "items": {
+        "automated_contract_and_regression_tests": 2,
+        "typed_versioned_boundaries": 2,
+        "fault_injection_and_deterministic_replay": 2,
+        "diagnostics_and_observability": 2,
+        "complexity_and_change_isolation_review": 2
+      }
+    },
+    "license_maturity": {
+      "points": 5,
+      "items": {
+        "license_compatible_and_recorded": 2,
+        "maintained_supported_components": 2,
+        "sbom_hashes_and_supply_chain": 1
+      }
+    },
+    "migration_reuse": {
+      "points": 5,
+      "items": {
+        "historical_corpus_and_regression_reuse": 2,
+        "proven_useful_component_reuse_without_legacy_inheritance": 2,
+        "estimated_migration_effort_reproduced_by_change": 1
+      }
+    },
+    "unmeasured_rule": "En ronda A, las celdas exclusivas de ronda B se marcan NE y no como cero. La puntuacion provisional se normaliza solo sobre el maximo identico medido para todos. El resultado final usa los 100 puntos sin NE.",
+    "rounding": "Los valores se conservan con seis decimales; solo la tabla de presentacion redondea a dos."
+  },
+  "pareto_dimensions": [
+    "functional_weight_passed",
+    "cold_start_p95_ms",
+    "warm_p95_ms",
+    "peak_private_working_set_mib",
+    "artifact_mib",
+    "build_seconds",
+    "security_gate_failures",
+    "lifecycle_gate_failures",
+    "implementation_source_lines"
+  ],
+  "reproducibility": {
+    "raw_output_directory": "artifacts/technology_tournament/raw",
+    "required_per_run": [
+      "contender source tree sha256",
+      "binary or bundle sha256",
+      "exact command and cwd",
+      "environment allowlist",
+      "timestamps UTC",
+      "per-sample latency and memory",
+      "stdout, stderr and exit code",
+      "filesystem before and after",
+      "network listener and connection snapshots",
+      "all failures including harness failures"
+    ],
+    "winner_rule": "Mayor puntuacion final entre candidatos no descalificados, sujeto a frontera de Pareto y coherencia del sistema. Una excepcion requiere ADR previo, evidencia ejecutable y no puede cambiar pesos."
+  }
+}

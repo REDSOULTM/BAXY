@@ -1,0 +1,55 @@
+# Second-stage feasibility run using the official general-speech negatives.
+# It reuses the frozen feature tensors from livekit_baxy_feasibility.yaml;
+# synthetic audio remains research-only and cannot certify the physical gate.
+model_name: baxy_acav_feasibility
+target_phrases:
+  - "baxy"
+  - "hey baxy"
+  - "oye baxy"
+
+n_samples: 1000
+n_samples_val: 200
+n_background_samples: 200
+n_background_samples_val: 40
+tts_batch_size: 10
+
+custom_negative_phrases:
+  - "taxi"
+  - "maxi"
+  - "Betsy"
+  - "Baxter"
+  - "Paxi"
+  - "back seat"
+  - "back soon"
+  - "backs easy"
+  - "hey Betsy"
+  - "oye taxi"
+  - "hola Maxi"
+
+data_dir: D:/BAXYRuntime/experiments/wakeword/livekit_data
+output_dir: ./output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 8
+  rounds: 3
+  background_paths: []
+  rir_paths: []
+
+model:
+  model_type: conv_attention
+  model_size: medium
+
+# These are the upstream production defaults, scaled only in total steps.
+steps: 30000
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.05
+max_negative_weight: 3000
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 50
+  adversarial_negative: 50
+  ACAV100M_sample: 1024
+  background_noise: 50

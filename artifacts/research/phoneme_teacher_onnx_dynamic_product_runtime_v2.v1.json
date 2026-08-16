@@ -1,0 +1,600 @@
+{
+  "schema": "baxy.phoneme-teacher-onnx-benchmark.v1",
+  "measured_at_utc": "2026-08-04T23:31:16.342881+00:00",
+  "sources": {
+    "teacher_directory": "D:/BAXYRuntime/experiments/wakeword/phoneme_audit/facebook-wav2vec2-lv-60-espeak-cv-ft-ae45363b",
+    "teacher_weights_sha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "onnx": "D:/BAXYRuntime/experiments/wakeword/phoneme_teacher_onnx_fp32_dynamic_v1/wav2vec2-phoneme-ctc-fp32-dynamic.onnx",
+    "onnx_sha256": "09df6e49b65346db0fc7702c9831199ac72128db34234de291425b5a0b4d3847",
+    "onnx_data_sha256": "8d1d14ee28b9ee197d221661f46300137522b38128649119f385101baba49fd5",
+    "corpus_manifest": "D:/BAXYRuntime/experiments/wakeword/ccby_wake_holdout_v1/corpus.manifest.v1.json",
+    "corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+    "teacher_report": "D:/BAXY/source/artifacts/research/livekit_wakeword_ccby_development_ctc_cascade_v3.v1.json",
+    "teacher_report_sha256": "dd47b3ceb03d9ad168edf18838dd5fcbcc5c8a3d45479457f07a9f45ced7e709"
+  },
+  "contract": {
+    "sample_rate": 16000,
+    "window_samples": 48000,
+    "locator": "product_ctc_exact_with_exact_lexical_anchor_fallback",
+    "broad_threshold": 0.02,
+    "strong_threshold": 0.05,
+    "decision_margin_gte": 0.5
+  },
+  "torch_fp32": {
+    "model_load_seconds": 0.3522808999987319,
+    "development": {
+      "positive_accepted": 14,
+      "positive_total": 14,
+      "hard_negative_false_accepts": 0,
+      "hard_negative_total": 4,
+      "gate_passed": true,
+      "clips": [
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 4.140617696306084,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 0.8974542115969508,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 4.4225406255545305,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 1.9268875863205635,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 5.586124767824348,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.859838947523359,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.4059491691046766,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 1.9797224032249225,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.3943555102666068,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 4.25993856952735,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.0371465228325576,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.4751271423659595,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 2.515382285953269,
+          "method": "ctc_lexical_anchor",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 2.0714114700466446,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": false,
+          "proposal_source": null,
+          "margin": null,
+          "method": "rejected",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": null,
+          "method": "rejected",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": -3.172563607019498,
+          "method": "ctc_lexical_anchor",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": -0.5027219971417685,
+          "method": "rejected",
+          "detected": false
+        }
+      ]
+    },
+    "latency": {
+      "iterations": 10,
+      "median_milliseconds": 477.87365000112914,
+      "p95_milliseconds": 575.7607049861689,
+      "p99_milliseconds": 610.5155009886948,
+      "maximum_milliseconds": 619.2041999893263,
+      "mean_milliseconds": 480.5442099983338
+    }
+  },
+  "onnx_fp32": {
+    "session_load_seconds": 1.7388378000468947,
+    "providers": [
+      "CPUExecutionProvider"
+    ],
+    "development": {
+      "positive_accepted": 14,
+      "positive_total": 14,
+      "hard_negative_false_accepts": 0,
+      "hard_negative_total": 4,
+      "gate_passed": true,
+      "clips": [
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 4.140612926124298,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 0.8975829462486846,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 4.422547879284092,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 1.9268965864324858,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 5.586123904872917,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.8598851766169577,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.4060006524816586,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 1.9797532903014776,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.3943803713493352,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 4.259954218826795,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.0371685211212878,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.4751466948881493,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 2.515385918891951,
+          "method": "ctc_lexical_anchor",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 2.071654840167202,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": false,
+          "proposal_source": null,
+          "margin": null,
+          "method": "rejected",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": null,
+          "method": "rejected",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": -3.1725636934462784,
+          "method": "ctc_lexical_anchor",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": -0.5028415291140629,
+          "method": "rejected",
+          "detected": false
+        }
+      ]
+    },
+    "latency": {
+      "iterations": 10,
+      "median_milliseconds": 335.8806999749504,
+      "p95_milliseconds": 374.1597750020446,
+      "p99_milliseconds": 374.57395499164704,
+      "maximum_milliseconds": 374.67749998904765,
+      "mean_milliseconds": 337.24810000276193
+    }
+  },
+  "onnx_product_runtime_class": {
+    "development": {
+      "positive_accepted": 14,
+      "positive_total": 14,
+      "hard_negative_false_accepts": 0,
+      "hard_negative_total": 4,
+      "gate_passed": true,
+      "clips": [
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 4.140612926124298,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 0.8975829462486846,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 4.422547879284092,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": 1.9268965864324858,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 5.586123904872917,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.8598851766169577,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.4060006524816586,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 1.9797532903014776,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.3943803713493352,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 4.259954218826795,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.0371685211212878,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 3.4751466948881493,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 2.515385918891951,
+          "method": "ctc_lexical_anchor",
+          "detected": true
+        },
+        {
+          "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+          "label": "positive",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": 2.071654840167202,
+          "method": "ctc_exact",
+          "detected": true
+        },
+        {
+          "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": false,
+          "proposal_source": null,
+          "margin": null,
+          "method": "stage1_rejected",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": null,
+          "method": "rejected",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_broad_threshold",
+          "margin": -3.1725636934462784,
+          "method": "ctc_lexical_anchor",
+          "detected": false
+        },
+        {
+          "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+          "label": "hard_negative",
+          "stage1_proposed": true,
+          "proposal_source": "livekit_primary_threshold",
+          "margin": -0.5028415291140629,
+          "method": "rejected",
+          "detected": false
+        }
+      ]
+    }
+  },
+  "equivalence": {
+    "maximum_category_probability_absolute_difference": 0.00036841630935668945,
+    "greedy_frame_disagreements": 0,
+    "frames": 2682,
+    "greedy_frame_disagreement_rate": 0.0,
+    "decisions_identical": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "all_decisions_identical": true
+  },
+  "runtime": {
+    "torch": "2.13.0+cpu",
+    "transformers": "5.14.1",
+    "onnxruntime": "1.27.0",
+    "torch_threads": 8
+  },
+  "candidate_frozen": false,
+  "product_operating_point": false,
+  "blind_human_partition_accessed": false,
+  "effects_executed": 0
+}

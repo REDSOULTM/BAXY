@@ -1,0 +1,24 @@
+{
+  "schema": "baxy.bge-reranker.r238-attestation.v1",
+  "authority": "weights_attested_without_model_import",
+  "candidate": {
+    "model": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "files": 13,
+    "bytes": 2293567489,
+    "merkle_sha256": "50d52ffd408e81baf7d0aa55b1ecbd8be05d7f4091773f1b71833b852e3c4249"
+  },
+  "constraints": {
+    "model_imported": false,
+    "model_started": false,
+    "r228_opened": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r237_sha256": "2e8e62c40fccf1418f9c901caa0fa346a61ac44b5e4fb9b9630553a9e4ad4de9",
+    "program_sha256": "05d93e1ee5f133f5981b46553c6f1640557a436ad70d97056b96a8ea2e9f7c7f"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "baxy.mvp-validate-only-receipt.v1",
+  "measuredAtLocal": "2026-08-11T10:36:47-04:00",
+  "command": "run_mvp.ps1 -ValidateOnly",
+  "exitCode": 0,
+  "mandatoryAssetsAndRuntimeValid": true,
+  "mvpWakeCandidate": {
+    "family": "routed cascade v25a",
+    "available": true,
+    "manifestSha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "historicalOptionalWakeManifestExplainedBeforeInventory": true
+  },
+  "available": [
+    "UI/Core",
+    "local Mind",
+    "Qwen3-4B",
+    "llama.cpp",
+    "Parakeet final STT",
+    "Nemotron partial STT",
+    "mpv",
+    "Vulkan",
+    "yt-dlp",
+    "wake cascade v25a"
+  ],
+  "source": {
+    "run_mvp.ps1": "4c973731b7234839ff1385d1365c899cddfc0db75901adf0008e372d783d5066",
+    "tests/test_mvp_launcher.py": "cd0414188956fc28cd3785aac3e93a73c219b5eb0efcfddadb73b405c65f9045"
+  },
+  "focusedTests": {
+    "command": "python -X utf8 -m pytest tests/test_mvp_launcher.py -q",
+    "passed": 4,
+    "failed": 0,
+    "seconds": 0.14
+  },
+  "sourceQualityFast": {
+    "command": "& .\\scripts\\test_source_quality.ps1 -Mode Fast",
+    "stagesPassed": 8,
+    "stagesFailed": 0,
+    "seconds": 65.2,
+    "releaseWarnings": 0,
+    "releaseErrors": 0
+  },
+  "discardedInvocation": {
+    "command": "pwsh -NoProfile -File scripts/test_source_quality.ps1 -Mode Fast",
+    "classification": "pre-test environment invocation error",
+    "cause": "pwsh is not installed in this Windows PowerShell session",
+    "productTestsExecuted": 0,
+    "replacementCommandDocumented": true
+  },
+  "wakeProgramTree": {
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "ownedProcessesRemaining": 0,
+  "applicationStarted": false,
+  "audioPlayedOrCaptured": false,
+  "effectsExecuted": 0,
+  "status": "passed"
+}

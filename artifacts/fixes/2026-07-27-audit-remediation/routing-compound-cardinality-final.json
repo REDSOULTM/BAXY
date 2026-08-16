@@ -1,0 +1,535 @@
+{
+  "schema": "baxy-audit-remediation-live-turn-probe-v1",
+  "measured_at": "2026-07-27T19:29:52.453035+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    }
+  ],
+  "passed": 8,
+  "failed": 0,
+  "cases": [
+    {
+      "text": "Abre calculadora y abre Spotify",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.open",
+          "app.open"
+        ]
+      },
+      "elapsed_seconds": 1.398,
+      "matches": true,
+      "observedOperations": [
+        "app.open",
+        "app.open"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.open",
+          "app.open"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-1",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "abre calculadora",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "calculadora"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "app.open",
+            "purpose": "abre spotify",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "spotify"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Maximiza y luego minimiza la ventana activa",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "window.active",
+          "window.maximize",
+          "window.minimize"
+        ]
+      },
+      "elapsed_seconds": 0.029,
+      "matches": true,
+      "observedOperations": [
+        "window.active",
+        "window.maximize",
+        "window.minimize"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "window.active",
+          "window.maximize",
+          "window.minimize"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-2",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "window.active",
+            "purpose": "maximiza",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {}
+          },
+          {
+            "id": "step_2",
+            "operation": "window.maximize",
+            "purpose": "maximiza",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "after_dependencies",
+            "arguments": null
+          },
+          {
+            "id": "step_3",
+            "operation": "window.minimize",
+            "purpose": "minimiza la ventana activa",
+            "dependsOn": [
+              "step_2",
+              "step_1"
+            ],
+            "argumentsMode": "after_dependencies",
+            "arguments": null
+          }
+        ]
+      }
+    },
+    {
+      "text": "Navega a https://example.com y luego navega a https://example.org",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "browser.navigate",
+          "browser.navigate"
+        ]
+      },
+      "elapsed_seconds": 1.167,
+      "matches": true,
+      "observedOperations": [
+        "browser.navigate",
+        "browser.navigate"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "browser.navigate",
+          "browser.navigate"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-3",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "browser.navigate",
+            "purpose": "navega a https://example.com",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "url": "https://example.com"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "browser.navigate",
+            "purpose": "navega a https://example.org",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "url": "https://example.org"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Crea una nota A con contenido uno y luego crea una nota B con contenido dos",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "note.create",
+          "note.create"
+        ]
+      },
+      "elapsed_seconds": 1.554,
+      "matches": true,
+      "observedOperations": [
+        "note.create",
+        "note.create"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "note.create",
+          "note.create"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-4",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "note.create",
+            "purpose": "crea una nota a con contenido uno",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "content": "uno",
+              "title": "nota a"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "note.create",
+            "purpose": "crea una nota b con contenido dos",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "content": "dos",
+              "title": "nota b"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Busca BAXY en mis notas y luego busca clima en la web",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "note.search",
+          "web.search"
+        ]
+      },
+      "elapsed_seconds": 1.162,
+      "matches": true,
+      "observedOperations": [
+        "note.search",
+        "web.search"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-5",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "note.search",
+          "web.search"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-5",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "note.search",
+            "purpose": "busca baxy en mis notas",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "query": "baxy"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "web.search",
+            "purpose": "busca clima en la web",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "query": "clima"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Abre Spotify y busca clima en la web",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "app.open",
+          "web.search"
+        ]
+      },
+      "elapsed_seconds": 1.54,
+      "matches": true,
+      "observedOperations": [
+        "app.open",
+        "web.search"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-6",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "app.open",
+          "web.search"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-6",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "abre spotify",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "spotify"
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "web.search",
+            "purpose": "busca clima en la web",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "query": "clima"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Pon el volumen al 8 por ciento y luego sube el volumen en 2 puntos",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "audio.volume",
+          "audio.volume.adjust"
+        ]
+      },
+      "elapsed_seconds": 0.043,
+      "matches": true,
+      "observedOperations": [
+        "audio.volume",
+        "audio.volume.adjust"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-7",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "audio.volume",
+          "audio.volume.adjust"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-7",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "audio.volume",
+            "purpose": "pon el volumen al 8 por ciento",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "level": 8
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "audio.volume.adjust",
+            "purpose": "sube el volumen en 2 puntos",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "amount": 2,
+              "direction": "up"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Mute audio and then unmute audio",
+      "expected": {
+        "expectedKind": "plan",
+        "expectedPlanOperations": [
+          "audio.mute",
+          "audio.mute"
+        ]
+      },
+      "elapsed_seconds": 0.021,
+      "matches": true,
+      "observedOperations": [
+        "audio.mute",
+        "audio.mute"
+      ],
+      "result": {
+        "type": "turn.result",
+        "id": "case-8",
+        "kind": "plan",
+        "operation": null,
+        "effectOperations": [
+          "audio.mute",
+          "audio.mute"
+        ],
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-8",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "audio.mute",
+            "purpose": "mute audio",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "state": true
+            }
+          },
+          {
+            "id": "step_2",
+            "operation": "audio.mute",
+            "purpose": "unmute audio",
+            "dependsOn": [
+              "step_1"
+            ],
+            "argumentsMode": "literal",
+            "arguments": {
+              "state": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

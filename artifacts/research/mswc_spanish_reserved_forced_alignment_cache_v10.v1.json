@@ -1,0 +1,42 @@
+{
+  "schema": "baxy.mswc-whisper-forced-alignment-score-cache-build.v10",
+  "measured_at_utc": "2026-08-06T09:15:33.006529+00:00",
+  "scope": "reserved_forced_alignment_cache_without_label_metrics",
+  "sources": {
+    "corpus_manifest_sha256": "b0030e3eea08d139a567a7ea987aa6f00b67433c5388993c8767466fec2eb6a0",
+    "model_tree_sha256": "4c38e9e79ccb0a6aae7cb9d964e596bb16ff78adf327f80096a340124f27fcc4",
+    "score_cache_sha256": "e4d8f633bb470f7a25e700708418b2c605d93fd3493cfaab31d7b34121b54c73",
+    "candidate_mask_cache_sha256": "f04db9ba8baa53fca98a9fe585dd85f93d22436d375612266638349649b8d228"
+  },
+  "contract": {
+    "split_seed": 6501,
+    "word_set": "reserved",
+    "word_classes": 200,
+    "query_examples_per_word": 6,
+    "hard_negative_candidates_per_query": 40,
+    "token_prefix": "leading_space",
+    "include_eot": false,
+    "length_power_grid": [
+      0.0,
+      0.5,
+      1.0
+    ],
+    "shortlist_depth_per_signal": 3,
+    "label_metrics_computed": false
+  },
+  "queries_cached": 1200,
+  "accepted": false,
+  "runtime": {
+    "load_seconds": 13.680162300006486,
+    "inference_seconds": 511.5848422999843,
+    "encode_seconds": 260.0019198002992,
+    "align_seconds": 226.46372390002944,
+    "total_seconds": 531.9281871999847
+  },
+  "individual_examples_exported": true,
+  "research_tuning_examples_scored": false,
+  "research_reserved_examples_scored": true,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

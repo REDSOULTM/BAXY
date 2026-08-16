@@ -1,0 +1,144 @@
+{
+  "schema": "baxy.sherpa-open-vocabulary-wake-feasibility.v1",
+  "measured_at_utc": "2026-08-04T02:19:35.924176+00:00",
+  "candidate": "sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20 chunk8 int8",
+  "method": "SAPI es/en, rates -2/0/2, clean/20/10 dB positives, phonetic negatives",
+  "positive_clips": 108,
+  "negative_clips": 216,
+  "negative_audio_seconds": 459.653,
+  "measurements": [
+    {
+      "score": 1.0,
+      "threshold": 0.2,
+      "positive_hits": 83,
+      "recall": 0.7685185185185185,
+      "negative_hits": 34,
+      "negative_clip_false_positive_rate": 0.1574074074074074,
+      "inference_p50_seconds": 0.099209,
+      "inference_p95_seconds": 0.240896
+    },
+    {
+      "score": 1.0,
+      "threshold": 0.25,
+      "positive_hits": 83,
+      "recall": 0.7685185185185185,
+      "negative_hits": 34,
+      "negative_clip_false_positive_rate": 0.1574074074074074,
+      "inference_p50_seconds": 0.103117,
+      "inference_p95_seconds": 0.240066
+    },
+    {
+      "score": 1.0,
+      "threshold": 0.35,
+      "positive_hits": 80,
+      "recall": 0.7407407407407407,
+      "negative_hits": 33,
+      "negative_clip_false_positive_rate": 0.1527777777777778,
+      "inference_p50_seconds": 0.097713,
+      "inference_p95_seconds": 0.233091
+    },
+    {
+      "score": 1.0,
+      "threshold": 0.45,
+      "positive_hits": 67,
+      "recall": 0.6203703703703703,
+      "negative_hits": 27,
+      "negative_clip_false_positive_rate": 0.125,
+      "inference_p50_seconds": 0.09319,
+      "inference_p95_seconds": 0.215782
+    },
+    {
+      "score": 1.5,
+      "threshold": 0.2,
+      "positive_hits": 83,
+      "recall": 0.7685185185185185,
+      "negative_hits": 46,
+      "negative_clip_false_positive_rate": 0.21296296296296297,
+      "inference_p50_seconds": 0.092343,
+      "inference_p95_seconds": 0.226487
+    },
+    {
+      "score": 1.5,
+      "threshold": 0.25,
+      "positive_hits": 82,
+      "recall": 0.7592592592592593,
+      "negative_hits": 46,
+      "negative_clip_false_positive_rate": 0.21296296296296297,
+      "inference_p50_seconds": 0.090857,
+      "inference_p95_seconds": 0.220114
+    },
+    {
+      "score": 1.5,
+      "threshold": 0.35,
+      "positive_hits": 74,
+      "recall": 0.6851851851851852,
+      "negative_hits": 37,
+      "negative_clip_false_positive_rate": 0.1712962962962963,
+      "inference_p50_seconds": 0.096432,
+      "inference_p95_seconds": 0.264246
+    },
+    {
+      "score": 1.5,
+      "threshold": 0.45,
+      "positive_hits": 59,
+      "recall": 0.5462962962962963,
+      "negative_hits": 27,
+      "negative_clip_false_positive_rate": 0.125,
+      "inference_p50_seconds": 0.099261,
+      "inference_p95_seconds": 0.21514
+    },
+    {
+      "score": 2.0,
+      "threshold": 0.2,
+      "positive_hits": 82,
+      "recall": 0.7592592592592593,
+      "negative_hits": 46,
+      "negative_clip_false_positive_rate": 0.21296296296296297,
+      "inference_p50_seconds": 0.093649,
+      "inference_p95_seconds": 0.222799
+    },
+    {
+      "score": 2.0,
+      "threshold": 0.25,
+      "positive_hits": 82,
+      "recall": 0.7592592592592593,
+      "negative_hits": 46,
+      "negative_clip_false_positive_rate": 0.21296296296296297,
+      "inference_p50_seconds": 0.094889,
+      "inference_p95_seconds": 0.219889
+    },
+    {
+      "score": 2.0,
+      "threshold": 0.35,
+      "positive_hits": 71,
+      "recall": 0.6574074074074074,
+      "negative_hits": 30,
+      "negative_clip_false_positive_rate": 0.1388888888888889,
+      "inference_p50_seconds": 0.092242,
+      "inference_p95_seconds": 0.217373
+    },
+    {
+      "score": 2.0,
+      "threshold": 0.45,
+      "positive_hits": 48,
+      "recall": 0.4444444444444444,
+      "negative_hits": 20,
+      "negative_clip_false_positive_rate": 0.09259259259259259,
+      "inference_p50_seconds": 0.094006,
+      "inference_p95_seconds": 0.215743
+    }
+  ],
+  "best_observed": {
+    "score": 2.0,
+    "threshold": 0.45,
+    "positive_hits": 48,
+    "recall": 0.4444444444444444,
+    "negative_hits": 20,
+    "negative_clip_false_positive_rate": 0.09259259259259259,
+    "inference_p50_seconds": 0.094006,
+    "inference_p95_seconds": 0.215743
+  },
+  "promotable": false,
+  "promotion_block": "synthetic_audio_is_not_a_held_out_physical_microphone_corpus",
+  "effects_executed": 0
+}

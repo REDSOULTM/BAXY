@@ -1,0 +1,55 @@
+{
+  "arm": "baseline",
+  "audit": {
+    "contains_input_text": false,
+    "path": "artifacts/development/turn_policy_probe_r47_v20_context_retry_v2.baseline.v1.raw.jsonl",
+    "sha256": "3f7884a7c621310590d17c90475674f3a6b6029f8d198821cd3245ae9522cd34"
+  },
+  "cases": [
+    {
+      "attempt_failures": [
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "conversation_reply"
+        },
+        {
+          "error_type": "ValueError",
+          "failure_kind": "runtime",
+          "failure_reason": "",
+          "failure_stage": "conversation_reply"
+        }
+      ],
+      "case_id": "critical:why_after_failure",
+      "expected_families": [],
+      "expected_modes": [
+        "conversation"
+      ],
+      "result": {
+        "audit_request_id": "gate-baseline-438587b83f0ad776c27b47f4",
+        "error": "",
+        "failure_code": "turn_runtime_failure",
+        "kind": "clarify",
+        "latency_seconds": 3.6692,
+        "operation": null,
+        "question": "¿Por qué te dijeron que no pude completar esa acción?",
+        "recovery_attempts": 1,
+        "reply": "",
+        "turn_attempts": 2,
+        "turn_recovery": "semantic_clarification"
+      }
+    }
+  ],
+  "effects_executed": 0,
+  "measured_at": "2026-08-09T00:44:54.189189+00:00",
+  "schema": "baxy.turn-policy-case-probe.v1",
+  "scope": "turn.decide_only_no_core_operations_or_provider_effects",
+  "status": "diagnostic_completed",
+  "summary": {
+    "attempt_failures": 2,
+    "cases": 1,
+    "recovery_cases": 1,
+    "runtime_errors": 0
+  }
+}

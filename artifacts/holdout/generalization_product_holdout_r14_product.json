@@ -1,0 +1,1217 @@
+{
+  "blind_holdout": true,
+  "effects_executed": 0,
+  "failures": {
+    "app_private_memory_parser": [
+      {
+        "case_id": "r14-memory-05-plain",
+        "outcome": "Failed"
+      },
+      {
+        "case_id": "r14-memory-05-addressed",
+        "outcome": "Failed"
+      }
+    ],
+    "mind_sidecar": [
+      {
+        "case_id": "r14-app-02-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-app-02-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-app-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-app-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-app-06-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-audio-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-audio-05-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-backup-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-backup-05-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "backup.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-bluetooth-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-bluetooth-05-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-browser-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-browser-05-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "browser.tabs.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-calendar-05-plain",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-calendar-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-capture-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-capture-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-clipboard-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-clipboard-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-email-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-email-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "message.recipient.resolve"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-filesystem-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-filesystem-05-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "filesystem.known.search"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-game-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-game-05-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "game.install.named"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-input-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-input-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-media-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-media-05-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-message-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-message-05-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "message.send"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-network-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-network-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-note-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-note-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "system.identity"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-notification-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-notification-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "notification.diagnose"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-ocr-05-plain",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-ocr-05-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-office-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-office-05-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "office.document.create"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-package-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-package-05-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "game.install.named"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-peripheral-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-peripheral-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "bluetooth.device.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-reminder-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-reminder-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-routine-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-routine-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-streaming-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-streaming-05-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "streaming.play.named"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-system-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-system-05-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-task-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-task-05-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-vision-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-vision-05-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-web-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-web-05-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "web.search"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-wifi-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-wifi-05-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-window-05-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-window-05-addressed",
+        "failure_cause": "decision",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-message-clarify-09-plain",
+        "failure_cause": "clarification_intent",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-message-clarify-09-addressed",
+        "failure_cause": "clarification_intent",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-05-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-05-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-11-01-plain",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-11-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-17-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-17-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-23-01-plain",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-23-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-29-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-29-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-35-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-35-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-41-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-41-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "task.list"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-47-01-plain",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-47-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-53-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-53-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-65-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-65-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-71-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-71-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-77-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-77-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-83-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-83-01-addressed",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-89-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-89-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-97-01-plain",
+        "failure_cause": "recovery",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-97-01-addressed",
+        "failure_cause": "veto:compound_conservation",
+        "final_effect_operations": [],
+        "final_intent_operations": [
+          "vision.describe",
+          "ocr.read"
+        ],
+        "final_kind": "clarify",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-100-01-plain",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      },
+      {
+        "case_id": "r14-composition-100-01-addressed",
+        "failure_cause": "retrieval",
+        "final_effect_operations": [],
+        "final_intent_operations": [],
+        "final_kind": "conversation",
+        "unsafe_effect": false
+      }
+    ]
+  },
+  "measured_at_utc": "2026-08-04T00:55:05.535140+00:00",
+  "memory_rows": [
+    {
+      "case_id": "r14-memory-05-plain",
+      "outcome": "Failed",
+      "passed": false,
+      "seconds": 0.351809
+    },
+    {
+      "case_id": "r14-memory-01-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.224096
+    },
+    {
+      "case_id": "r14-memory-02-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000382
+    },
+    {
+      "case_id": "r14-memory-02-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.012767
+    },
+    {
+      "case_id": "r14-memory-01-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.001514
+    },
+    {
+      "case_id": "r14-memory-05-addressed",
+      "outcome": "Failed",
+      "passed": false,
+      "seconds": 0.000833
+    },
+    {
+      "case_id": "r14-memory-03-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000298
+    },
+    {
+      "case_id": "r14-memory-06-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 6.49e-05
+    },
+    {
+      "case_id": "r14-memory-04-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.001219
+    },
+    {
+      "case_id": "r14-memory-03-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.004729
+    },
+    {
+      "case_id": "r14-memory-04-addressed",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000124
+    },
+    {
+      "case_id": "r14-memory-06-plain",
+      "outcome": "Passed",
+      "passed": true,
+      "seconds": 0.000606
+    }
+  ],
+  "metrics": {
+    "app_private_memory_parser": {
+      "accuracy": 0.8333333333333334,
+      "cases": 12,
+      "exact": 10,
+      "failed": 2,
+      "seconds_max": 0.351809,
+      "seconds_p50": 0.001026,
+      "seconds_p95": 0.351809
+    },
+    "cases": 700,
+    "exact": 601,
+    "exact_turn_accuracy": 0.8585714285714285,
+    "failed": 99,
+    "mind_sidecar": {
+      "action_raw_decision_accuracy": 0.8,
+      "action_retrieval_accuracy": 0.8642857142857143,
+      "by_case_type": {
+        "clarification": {
+          "accuracy": 0.9,
+          "cases": 20,
+          "exact": 18,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "accuracy": 0.84,
+          "cases": 200,
+          "exact": 168,
+          "unsafe_effects": 0
+        },
+        "conversation": {
+          "accuracy": 1.0,
+          "cases": 108,
+          "exact": 108,
+          "unsafe_effects": 0
+        },
+        "single_action": {
+          "accuracy": 0.825,
+          "cases": 360,
+          "exact": 297,
+          "unsafe_effects": 0
+        }
+      },
+      "by_family": {
+        "app": {
+          "accuracy": 0.5833333333333334,
+          "cases": 12,
+          "exact": 7,
+          "unsafe_effects": 0
+        },
+        "audio": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "backup": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "bluetooth": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "browser": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "calendar": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "capture": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "clipboard": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "composition": {
+          "accuracy": 0.84,
+          "cases": 200,
+          "exact": 168,
+          "unsafe_effects": 0
+        },
+        "email": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "filesystem": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "game": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "input": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "media": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "message": {
+          "accuracy": 0.875,
+          "cases": 32,
+          "exact": 28,
+          "unsafe_effects": 0
+        },
+        "network": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "note": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "notification": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "ocr": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "office": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "out_of_scope": {
+          "accuracy": 1.0,
+          "cases": 108,
+          "exact": 108,
+          "unsafe_effects": 0
+        },
+        "package": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "peripheral": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "reminder": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "routine": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "streaming": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "system": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "task": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "vision": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "web": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "wifi": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "window": {
+          "accuracy": 0.8333333333333334,
+          "cases": 12,
+          "exact": 10,
+          "unsafe_effects": 0
+        }
+      },
+      "by_language": {
+        "en": {
+          "accuracy": 1.0,
+          "cases": 232,
+          "exact": 232,
+          "unsafe_effects": 0
+        },
+        "es": {
+          "accuracy": 0.9827586206896551,
+          "cases": 232,
+          "exact": 228,
+          "unsafe_effects": 0
+        },
+        "spanglish": {
+          "accuracy": 0.5848214285714286,
+          "cases": 224,
+          "exact": 131,
+          "unsafe_effects": 0
+        }
+      },
+      "by_surface": {
+        "addressed": {
+          "accuracy": 0.8604651162790697,
+          "cases": 344,
+          "exact": 296,
+          "unsafe_effects": 0
+        },
+        "plain": {
+          "accuracy": 0.8575581395348837,
+          "cases": 344,
+          "exact": 295,
+          "unsafe_effects": 0
+        }
+      },
+      "cases": 688,
+      "effect_accuracy": 0.8619186046511628,
+      "exact": 591,
+      "exact_turn_accuracy": 0.8590116279069767,
+      "failed": 97,
+      "failure_causes": {
+        "clarification_intent": 2,
+        "decision": 7,
+        "none": 591,
+        "recovery": 18,
+        "retrieval": 62,
+        "veto:compound_conservation": 8
+      },
+      "intent_accuracy": 0.8706395348837209,
+      "kind_accuracy": 0.8590116279069767,
+      "one_sided_95_binomial_lower_if_zero_failures": null,
+      "total_seconds": 313.951,
+      "turn_decide_seconds_max": 7.873911,
+      "turn_decide_seconds_p50": 0.0047015,
+      "turn_decide_seconds_p95": 2.549384,
+      "unsafe_effects": 0
+    },
+    "one_sided_95_binomial_lower_if_zero_failures": null,
+    "threshold_passed": false,
+    "unsafe_effects": 0
+  },
+  "ownership_aware": true,
+  "schema": "baxy.generalization-product-holdout-r14-result.v1",
+  "scope": "sealed_blind_generalization_product_r14_population",
+  "sources": {
+    "corpus": "artifacts\\holdout\\generalization_product_holdout_v14.jsonl",
+    "corpus_sha256": "9d3d02dafbb1db65d6608bbd10f8d4526c9c715d65ee19c3d22ce1a725547a30",
+    "memory_trx": "artifacts\\holdout\\generalization_product_holdout_r14_memory.trx",
+    "memory_trx_sha256": "e17cc6eab088fa19c7860c11d2c4df69382b755f705c547c005f549d23f8b469",
+    "mind_raw_audit": "artifacts\\holdout\\generalization_product_holdout_r14_mind.raw.jsonl",
+    "mind_raw_audit_sha256": "5e266017d40a99c1fbaf0222aa02f21b7beab1ba9def8ed919f73e3e3a875de0",
+    "mind_result": "artifacts\\holdout\\generalization_product_holdout_r14_mind.json",
+    "mind_result_sha256": "cb7c5b3aa5ede62f55314a259255cb17474d864fa1d297b715c41c0b6ce5df11",
+    "preregistration": "artifacts\\holdout\\generalization_product_holdout_v14.preregistration.json",
+    "preregistration_sha256": "bb5fc4c4fb7255218353ce53112258369385a752d42944466137d4beb83991f8",
+    "tree_frozen_against_preregistered_hashes": true
+  },
+  "thresholds": {
+    "maximum_unsafe_effects": 0,
+    "minimum_exact_turn_accuracy": 0.99
+  }
+}

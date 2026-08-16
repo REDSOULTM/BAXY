@@ -1,0 +1,73 @@
+{
+  "schema_version": "baxy.post-wake-repairs-preregistration.v1",
+  "created_at_local": "2026-08-11T10:21:40-04:00",
+  "branch": "codex/baxy-portable-structure",
+  "authority": "development-only; not a product promotion or physical-wake authority",
+  "physical_wake_dependency": {
+    "must_finish_first": true,
+    "required_receipt": "artifacts/holdout/baxy_wake_v25a_physical_v17_combined_receipt_v2.json",
+    "required_promotion_eligible": true,
+    "frozen_before_receipt": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ]
+  },
+  "source_identity": [
+    {
+      "path": "scripts/measure_mind_budget.py",
+      "sha256": "4fa3e8af0707e5045e8b919714d61dbc6fc699ac45df8f3f934974ada8650b0b"
+    },
+    {
+      "path": "tests/test_mind_budget_gate.py",
+      "sha256": "0d99772a3a6ca433e9a6c43798072112bd628deecacd75b061e8c21267cec256"
+    },
+    {
+      "path": "src/baxy_mind/effect_intent.py",
+      "sha256": "26b1ffd4681883e1788901c3e022fe3b7242acf017ec638ad51a3c68861fa462"
+    },
+    {
+      "path": "tests/test_catalog_operation_aliases.py",
+      "sha256": "90205eb47ce9c4fd45bd758993dca5a1b6119a972dd8d2f944124ea7d28e21f8"
+    },
+    {
+      "path": "experiments/mind_router_spike/build_catalog_surface_current_tree_r2.py",
+      "sha256": "cd8a181fb9faca4a7624f4cc30dcff32e87ad83ae53725048650367e916590f4"
+    },
+    {
+      "path": "experiments/mind_router_spike/probe_catalog_surface_current_tree_r2.py",
+      "sha256": "d820e3b0f4926d6b611f6b36cabb419def61d2c20117da072939f918dc992999"
+    },
+    {
+      "path": "experiments/mind_router_spike/analyze_catalog_surface_current_tree_r2.py",
+      "sha256": "eddac1bfae05884928208bb23933b207a0d4bdca1566961376d39e1dc9d42f0d"
+    }
+  ],
+  "repairs": [
+    {
+      "id": "cpu-fallback-real-http-timeout",
+      "cause": "The CPU product profile permits a 120-second local LLM request, while the measurement harness currently aborts its HTTP request at 19 seconds.",
+      "edit": "Keep gpu.llm_http at 19.0 seconds and set cpu_fallback.llm_http to 120.0 seconds. Keep the outer turn.decide, arguments and narrate deadlines unchanged.",
+      "focused_test": "Update the existing profile-deadline contract so shared outer deadlines remain equal, gpu.llm_http is 19.0 and cpu_fallback.llm_http is 120.0.",
+      "acceptance": "The complete GPU and CPU budget campaigns finish with truthful per-profile timeout configuration and no new functional failure."
+    },
+    {
+      "id": "bounded-social-closure-equivalence",
+      "cause": "The bounded request-envelope grammar recognizes older courtesy closures but not semantically equivalent conclude/complete/end closures after an explicit comma or semicolon.",
+      "edit": "Extend only the trailing social-closure alternation to cover conclude, complete, end, finish and Spanish equivalents, while preserving the mandatory comma-or-semicolon boundary and end anchoring.",
+      "focused_test": "Add development-only metamorphic examples across every exact catalog alias and retain negative literal-content tests without a separator.",
+      "acceptance": "Focused alias tests pass, the prepared R2 corpus remains unopened until after the fix, and the official fresh R2 run passes without tuning from its result."
+    }
+  ],
+  "forbidden_actions": [
+    "audio capture or playback before the physical wake window",
+    "threshold adjustment",
+    "wake retraining",
+    "installation",
+    "promotion",
+    "runtime registration",
+    "using an opened R2 result to tune the repair"
+  ],
+  "effects_performed": 0,
+  "audio_performed": false
+}

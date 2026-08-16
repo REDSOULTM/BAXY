@@ -1,0 +1,24 @@
+{
+  "schema": "baxy.audit.voice-clip-diagnostic.v1",
+  "source_rate": 22050,
+  "channels": 1,
+  "duration_seconds": 1.7892063492063492,
+  "correction_terms_include_spotify": true,
+  "raw": {
+    "sha256": "3a0dc1c91db532a3f4c39fb4f6c37cffaf919b93f3654741a5d877c51e0ed1e7",
+    "character_count": 10,
+    "token_count": 2,
+    "contains_spotify": false,
+    "best_spotify_edit_distance": 3,
+    "nearest_token_length": 5
+  },
+  "corrected": {
+    "sha256": "3a0dc1c91db532a3f4c39fb4f6c37cffaf919b93f3654741a5d877c51e0ed1e7",
+    "character_count": 10,
+    "token_count": 2,
+    "contains_spotify": false,
+    "best_spotify_edit_distance": 3,
+    "nearest_token_length": 5
+  },
+  "transcript_redacted": true
+}

@@ -1,0 +1,5863 @@
+{
+  "acceptance": {
+    "all_pairs_exact": false,
+    "runtime_manifest_unchanged": true,
+    "zero_effects_executed": true
+  },
+  "authority": "turn.decide_only_no_plan_or_operation_dispatched",
+  "effects_executed": 0,
+  "measured_at_utc": "2026-08-03T00:50:21.785082+00:00",
+  "metrics": {
+    "exact": 0,
+    "exact_accuracy": 0.0,
+    "total": 70,
+    "turn_decide_seconds_p50": 0.355368,
+    "turn_decide_seconds_p95": 2.819108,
+    "unsafe_effects": 0
+  },
+  "rows": [
+    {
+      "accepted_effect_operations": [
+        [
+          "app.open",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-app-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-app-00",
+      "seconds": 0.432272,
+      "source_case_id": "app-00",
+      "text": "Abre Epic Games Launcher. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "app.open",
+          "app.close",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-app-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-app-01",
+      "seconds": 0.242824,
+      "source_case_id": "app-01",
+      "text": "Abre Notepad y luego cierralo. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "app.open",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-app-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-app-02",
+      "seconds": 0.327923,
+      "source_case_id": "app-02",
+      "text": "Abre Steam con máximo 2 intentos. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "app.open",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-app-03",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-app-03",
+      "seconds": 0.28371,
+      "source_case_id": "app-03",
+      "text": "Abre steam 0. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "app.open",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-app-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-app-04",
+      "seconds": 0.292224,
+      "source_case_id": "app-04",
+      "text": "Abre steam 1. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "app.open",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-app-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-app-05",
+      "seconds": 0.306502,
+      "source_case_id": "app-05",
+      "text": "Abre steam 2. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "audio.volume.adjust",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-audio-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-audio-02",
+      "seconds": 0.321323,
+      "source_case_id": "audio-02",
+      "text": "Baja el volumen 1 punto y dime si pudiste verificarlo. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "audio.volume.adjust",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-audio-03",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-audio-03",
+      "seconds": 0.350616,
+      "source_case_id": "audio-03",
+      "text": "Baja el volumen 10%. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "audio.volume",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-audio-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-audio-05",
+      "seconds": 0.340011,
+      "source_case_id": "audio-05",
+      "text": "Cambia el volumen a 10. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "bluetooth.radio.set",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-bluetooth-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-bluetooth-01",
+      "seconds": 0.284441,
+      "source_case_id": "bluetooth-01",
+      "text": "activa el bluetooth. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "bluetooth.radio.set",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-bluetooth-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-bluetooth-02",
+      "seconds": 0.285937,
+      "source_case_id": "bluetooth-02",
+      "text": "apagá el bluetooth. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "bluetooth.radio.set",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-bluetooth-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-bluetooth-04",
+      "seconds": 0.301101,
+      "source_case_id": "bluetooth-04",
+      "text": "desactivá el bluetooth. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "bluetooth.radio.set",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-bluetooth-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-bluetooth-05",
+      "seconds": 0.275171,
+      "source_case_id": "bluetooth-05",
+      "text": "prendé el bluetooth. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "browser.navigate",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-browser-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-browser-01",
+      "seconds": 0.263056,
+      "source_case_id": "browser-01",
+      "text": "Abre github.com. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "browser.navigate",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-browser-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "clarify",
+      "policy_stages": [
+        {
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "clarify",
+          "name": "total_recovery",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-browser-02",
+      "seconds": 2.506727,
+      "source_case_id": "browser-02",
+      "text": "Abre la página de Steam de Marvel Rivals. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "browser.navigate",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-browser-03",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-browser-03",
+      "seconds": 0.986919,
+      "source_case_id": "browser-03",
+      "text": "Abre la página de descargas de Python. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "browser.navigate",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-browser-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "clarify",
+      "policy_stages": [
+        {
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "clarify",
+          "name": "total_recovery",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-browser-04",
+      "seconds": 2.382726,
+      "source_case_id": "browser-04",
+      "text": "Abre la página oficial de OpenAI. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "app.open",
+          "input.text.type",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-calendar-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-calendar-01",
+      "seconds": 0.389217,
+      "source_case_id": "calendar-01",
+      "text": "abrí el bloc de notas y escribí reunion manana. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "capture.screenshot",
+          "vision.describe",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-capture-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-capture-00",
+      "seconds": 1.159663,
+      "source_case_id": "capture-00",
+      "text": "Sacale una foto de captura a mi pc, que se ve. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "capture.screenshot",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-capture-03",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-capture-03",
+      "seconds": 0.332896,
+      "source_case_id": "capture-03",
+      "text": "toma screenshot, guárdalo y dime el path. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "clipboard.paste",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-clipboard-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-clipboard-00",
+      "seconds": 0.340726,
+      "source_case_id": "clipboard-00",
+      "text": "Pega esto en el bloc de notas. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "clipboard.copy",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-clipboard-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-clipboard-01",
+      "seconds": 0.397267,
+      "source_case_id": "clipboard-01",
+      "text": "copia texto de Notepad al portapapeles. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "app.open",
+          "clipboard.paste",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-clipboard-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-clipboard-04",
+      "seconds": 0.383275,
+      "source_case_id": "clipboard-04",
+      "text": "pega texto en un archivo nuevo de Notepad. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "clipboard.read.text",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-clipboard-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-clipboard-05",
+      "seconds": 0.363415,
+      "source_case_id": "clipboard-05",
+      "text": "que hay en el portapapeles. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "filesystem.file.open.latest",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-filesystem-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-filesystem-01",
+      "seconds": 0.346924,
+      "source_case_id": "filesystem-01",
+      "text": "Abre el archivo más reciente de Descargas. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "filesystem.file.open.latest",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-filesystem-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-filesystem-02",
+      "seconds": 0.322479,
+      "source_case_id": "filesystem-02",
+      "text": "Abre el último archivo que descargué. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "game.launch",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-game-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-game-01",
+      "seconds": 0.281471,
+      "source_case_id": "game-01",
+      "text": "Abre Counter Strike. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "game.catalog.list",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-game-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "clarify",
+      "policy_stages": [
+        {
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "clarify",
+          "name": "total_recovery",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-game-05",
+      "seconds": 3.112157,
+      "source_case_id": "game-05",
+      "text": "Abre mi biblioteca de Steam. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "message.send",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-message-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-message-00",
+      "seconds": 0.48756,
+      "source_case_id": "message-00",
+      "text": "Dile a amor en WhatsApp que la amo mucho. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "message.send",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-message-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-message-01",
+      "seconds": 1.335274,
+      "source_case_id": "message-01",
+      "text": "Dile a amor en wsp que la amo. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "message.send",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-message-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-message-02",
+      "seconds": 0.440234,
+      "source_case_id": "message-02",
+      "text": "Dile a amor que la amo demasiado en wsp. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "message.send",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-message-03",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-message-03",
+      "seconds": 0.312969,
+      "source_case_id": "message-03",
+      "text": "Dile a amor que la amo en wsp. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "message.send",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-message-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-message-04",
+      "seconds": 0.285632,
+      "source_case_id": "message-04",
+      "text": "Dile a amor que la amo muchisimo en wsp. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "message.send",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-message-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-message-05",
+      "seconds": 0.3118,
+      "source_case_id": "message-05",
+      "text": "Dile a enmanuel que es una increible persona en wsp. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "note.create",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-note-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-note-00",
+      "seconds": 0.381014,
+      "source_case_id": "note-00",
+      "text": "anota que tengo que comprar pan. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "note.create",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-note-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-note-01",
+      "seconds": 0.426428,
+      "source_case_id": "note-01",
+      "text": "anota que tengo que llamar al medico manana. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-notification-00",
+      "seconds": 0.448964,
+      "source_case_id": "notification-00",
+      "text": "Pone una alarma para las 7 de la maniana. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-notification-01",
+      "seconds": 0.456654,
+      "source_case_id": "notification-01",
+      "text": "alarma para mañana 8am. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-notification-02",
+      "seconds": 0.426089,
+      "source_case_id": "notification-02",
+      "text": "arranca un temporizador de 10 minutos. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-notification-04",
+      "seconds": 0.419618,
+      "source_case_id": "notification-04",
+      "text": "pone un timer de 5 minutos. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-notification-05",
+      "seconds": 0.403228,
+      "source_case_id": "notification-05",
+      "text": "ponme un temporizador de diez minutos. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.cancel.at",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-clock-00",
+      "exact": false,
+      "language": "en",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "clarify",
+      "policy_stages": [
+        {
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "clarify",
+          "name": "total_recovery",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "en"
+      },
+      "request_id": "pair-notification-clock-00",
+      "seconds": 5.00364,
+      "source_case_id": "notification-clock-00",
+      "text": "Get rid of the five p.m. alarm. Then tell me the local time."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.cancel.at",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-clock-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-notification-clock-01",
+      "seconds": 0.519427,
+      "source_case_id": "notification-clock-01",
+      "text": "Quita la alarma de las cinco de la tarde. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.cancel.at",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-clock-02",
+      "exact": false,
+      "language": "spanglish",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "clarify",
+      "policy_stages": [
+        {
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "clarify",
+          "name": "total_recovery",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "mixed"
+      },
+      "request_id": "pair-notification-clock-02",
+      "seconds": 3.263961,
+      "source_case_id": "notification-clock-02",
+      "text": "Quita my five p.m. alarm. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.cancel.at",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-clock-03",
+      "exact": false,
+      "language": "en",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "en"
+      },
+      "request_id": "pair-notification-clock-03",
+      "seconds": 0.361003,
+      "source_case_id": "notification-clock-03",
+      "text": "Remove the 17:30 alarm. Then tell me the local time."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "notification.cancel.latest",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-notification-clock-04",
+      "exact": false,
+      "language": "en",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "en"
+      },
+      "request_id": "pair-notification-clock-04",
+      "seconds": 0.251202,
+      "source_case_id": "notification-clock-04",
+      "text": "Cancel the latest alarm. Then tell me the local time."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "note.create",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-peripheral-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-peripheral-00",
+      "seconds": 0.394761,
+      "source_case_id": "peripheral-00",
+      "text": "anotá que terminé de configurar el micrófono. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "audio.microphone.mute",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-peripheral-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-peripheral-04",
+      "seconds": 0.318732,
+      "source_case_id": "peripheral-04",
+      "text": "silenciame el micrófono. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "reminder.create",
+          "system.time"
+        ],
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-reminder-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-reminder-00",
+      "seconds": 0.407375,
+      "source_case_id": "reminder-00",
+      "text": "avisame en 20 minutos que saque la comida. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "reminder.create",
+          "system.time"
+        ],
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-reminder-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-reminder-01",
+      "seconds": 0.312899,
+      "source_case_id": "reminder-01",
+      "text": "avisame en una hora que salgo. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "reminder.create",
+          "system.time"
+        ],
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-reminder-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-reminder-02",
+      "seconds": 0.356801,
+      "source_case_id": "reminder-02",
+      "text": "ponme un recordatorio en 2 minutos para tomar agua. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "reminder.create",
+          "system.time"
+        ],
+        [
+          "notification.schedule",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-reminder-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-reminder-05",
+      "seconds": 0.353935,
+      "source_case_id": "reminder-05",
+      "text": "recordatorio de tomar agua en 1 hora. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "browser.navigate",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-streaming-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-streaming-00",
+      "seconds": 0.250247,
+      "source_case_id": "streaming-00",
+      "text": "Abri YouTube en el navegador. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-streaming-03",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-streaming-03",
+      "seconds": 1.328311,
+      "source_case_id": "streaming-03",
+      "text": "Donde puedo ver la pelicula de superman que salio el ano pasado?. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-streaming-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-streaming-05",
+      "seconds": 0.268448,
+      "source_case_id": "streaming-05",
+      "text": "Hablame de emilia perez la pelicula es buena. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "input.text.type",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-vision-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-vision-02",
+      "seconds": 0.347765,
+      "source_case_id": "vision-02",
+      "text": "Escribe Batman en la búsqueda que ves. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "capture.screenshot",
+          "ocr.read",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-vision-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-vision-04",
+      "seconds": 0.80993,
+      "source_case_id": "vision-04",
+      "text": "Lee el mensaje de error de la pantalla. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "capture.screenshot",
+          "ocr.read",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-vision-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-vision-05",
+      "seconds": 0.329284,
+      "source_case_id": "vision-05",
+      "text": "Lee lo que hay en pantalla. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "browser.navigate.named",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-web-00",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-web-00",
+      "seconds": 0.423177,
+      "source_case_id": "web-00",
+      "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "browser.navigate",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "case_id": "pair-web-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "observed_intent_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "observed_kind": "plan",
+      "policy_stages": [
+        {
+          "conversation_kind": "",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "",
+        "effect_count": "multiple",
+        "effect_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "effect_verification": "multiple",
+        "mode": "plan",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-web-01",
+      "seconds": 0.005877,
+      "source_case_id": "web-01",
+      "text": "Abre Wikipedia y busca Alan Turing. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "browser.navigate.named",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-web-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-web-02",
+      "seconds": 0.250748,
+      "source_case_id": "web-02",
+      "text": "Abre opera gx y busca flash. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "filesystem.known.search",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-web-03",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-web-03",
+      "seconds": 0.361721,
+      "source_case_id": "web-03",
+      "text": "Busca archivos que contengan la palabra “Batman. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "web.search",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-web-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-web-04",
+      "seconds": 0.38229,
+      "source_case_id": "web-04",
+      "text": "Busca el App ID de Doom Eternal en Steam usando la API publica. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "input.visible.click",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-web-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-web-05",
+      "seconds": 0.275215,
+      "source_case_id": "web-05",
+      "text": "Busca el botón Guardar y presiónalo. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "wifi.status",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-wifi-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "clarify",
+      "policy_stages": [
+        {
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "clarify",
+          "name": "total_recovery",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-wifi-01",
+      "seconds": 2.688442,
+      "source_case_id": "wifi-01",
+      "text": "a qué wifi estoy conectado. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "wifi.disconnect",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-wifi-02",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-wifi-02",
+      "seconds": 0.325336,
+      "source_case_id": "wifi-02",
+      "text": "apagá el wifi. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "wifi.connect.named",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-wifi-03",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-wifi-03",
+      "seconds": 0.31445,
+      "source_case_id": "wifi-03",
+      "text": "cambia el wifi a EV 2. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "wifi.ensure.connected",
+          "email.latest.read",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-wifi-04",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "clarify",
+      "policy_stages": [
+        {
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "clarify",
+          "name": "total_recovery",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-wifi-04",
+      "seconds": 2.819108,
+      "source_case_id": "wifi-04",
+      "text": "conecta el wifi, abre el correo y leeme el ultimo mensaje. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "wifi.connect.named",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-wifi-05",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-wifi-05",
+      "seconds": 1.027516,
+      "source_case_id": "wifi-05",
+      "text": "conectame a la red wifi de la familia. Después dime la hora local."
+    },
+    {
+      "accepted_effect_operations": [
+        [
+          "app.close",
+          "system.time"
+        ]
+      ],
+      "candidate_operations": [],
+      "case_id": "pair-window-01",
+      "exact": false,
+      "language": "es",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [],
+      "observed_kind": "conversation",
+      "policy_stages": [
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "validated_raw",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "explicit_contract",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "domain_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "compound_conservation",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_relevance",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "action_grounding",
+          "operation": null
+        },
+        {
+          "conversation_kind": "unsupported",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "mode": "conversation",
+          "name": "conversation_presentation",
+          "operation": null
+        }
+      ],
+      "raw_decision": {
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "mode": "conversation",
+        "operation": null,
+        "question": "",
+        "response_language": "es"
+      },
+      "request_id": "pair-window-01",
+      "seconds": 0.341376,
+      "source_case_id": "window-01",
+      "text": "Cerra la ventana activa. Después dime la hora local."
+    }
+  ],
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "schema": "baxy.catalog-pairwise-composition-development.v1",
+  "scope": "reviewed_leaf_to_independent_time_pair_not_blind",
+  "source": {
+    "audit": "artifacts/fixes/catalog_pairwise_composition_r1.raw.jsonl",
+    "audit_sha256": "81b5f3a64241b232fc2c179335158d4ddb322ec183669fb05408427d8ae3d0ce",
+    "base_report": "artifacts/fixes/current_catalog_review_product_probe_r26_dependencies.json",
+    "base_report_sha256": "dbb997e49c5af5720f3993ff087234dad41c397128d7971fd51da9ee03cdac2c",
+    "corpus": "artifacts/development/current_catalog_review_development.v1.jsonl",
+    "corpus_sha256": "9dca80eafe9aff51908a677d3cc15292f480709c79a13d663039a1726640f3fa",
+    "probe_sha256": "04ca48333689bb1461e7eb8f3718ff019708af76ea45e1c31829d74ac6bb5af1"
+  }
+}

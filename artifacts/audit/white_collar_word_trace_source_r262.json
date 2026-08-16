@@ -1,0 +1,78 @@
+{
+  "schema": "baxy.white-collar-word-trace-source.r262.v1",
+  "authority": "external_source_identity_and_semantic_admission_audit_not_model_training",
+  "verdict": "rejected_preexecution_technical_trace_without_request_or_full_lifecycle_coverage",
+  "source": {
+    "repository": "https://github.com/tangemicioglu/white-collar.git",
+    "commit": "6c1c9056e800bc357eb07bfc66963c6462b927a4",
+    "license": "MIT",
+    "license_sha256": "c7b5dafe3eb6b572966bad465470ea244d2189c772d789b6b910aa3bdfd6a71a",
+    "semantic_source_files": 12,
+    "source_files_merkle_sha256": "7d68b885c86ea221ff3cdc822a9c584e260664ec356bc207eda8250a7bdb6579",
+    "published_machine_plan_files": 5,
+    "machine_plan_paths": [
+      "examples/slides-create.plan.json",
+      "examples/word-create.plan.json",
+      "examples/word-save-as.plan.json",
+      "tests/fixtures/word-remove-watermark-plan.json",
+      "tests/fixtures/word-replace-plan.json"
+    ],
+    "machine_plan_top_level_keys": [
+      "app",
+      "operations",
+      "policy",
+      "schema",
+      "target",
+      "write"
+    ],
+    "machine_plan_request_fields": [],
+    "machine_plan_texts_retained": false,
+    "machine_plan_identifiers_retained": false
+  },
+  "observed_surface": {
+    "source_native_baxy_operation_labels": false,
+    "word_execution_backend": "Microsoft Word COM finite semantic adapter",
+    "real_word_matrix_case_rows": 72,
+    "real_word_matrix_distinct_operations": 63,
+    "word_com_public_operation_count": 64,
+    "word_com_close_operation_present": false,
+    "word_com_discard_operation_present": false,
+    "real_word_witnesses": {
+      "append_like_insert_text": true,
+      "save_asserts_document_saved": true,
+      "create_document": true,
+      "status_reads_active_document_saved": true
+    },
+    "internal_close_savechanges_false_is_not_a_plan_operation": true,
+    "published_plan_binds_discard_to_confirmation": false
+  },
+  "admission": {
+    "required_baxy_operations": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "required_application_and_verification": "Published user requests directly tied to Microsoft Word COM traces, including active-document Saved/Dirty state and confirmation-bound discard, for all six missing typed operations",
+    "admitted_baxy_operations": [],
+    "reason": "white-collar provides authentic Microsoft Word COM implementation and real-Word technical tests, including an insert, save and Saved-state witness. Its five published JSON inputs are bounded machine plans with no request-language field or BAXY labels, however, and its 64-operation plan vocabulary contains neither close nor discard. Close(SaveChanges=False) appears only as internal adapter/test lifecycle management, not as a requested, confirmation-bound public operation. Mapping those plans or technical tests to BAXY user utterances would invent labels and leaves two of the six required lifecycle operations uncovered."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not reuse white-collar plans or technical tests to fill R207. Search only for a published source that binds human request text to native Microsoft Word COM lifecycle traces and state-sensitive verifiers, including confirmation-bound unsaved discard, for all six missing typed operations.",
+  "identities": {
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "33ba58aee4a97ab462b3e29714579f80c3266696eee06058947adfd2ea00d111"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "authority": "versioned_expectation_of_the_local_runtime_not_a_promotion",
+  "constraints": {
+    "effects_executed": 0,
+    "model_started": false,
+    "opened_v9": false,
+    "providers_enabled": false,
+    "registered_runtime_modified": false,
+    "voice_stt_wake_exercised": false
+  },
+  "expected": {
+    "ggufName": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+    "ggufSha256": "cd4526493dccbfd6791bee8822e37e30340074d1d4d9aada52ce09afefd6a33a",
+    "gpuLayers": 99,
+    "llamaServerName": "llama-server.exe",
+    "llamaServerSha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+    "nativeToolPolicyEnabled": false,
+    "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "wakeOnStart": false
+  },
+  "manifestIsVersioned": false,
+  "manifestPresent": true,
+  "overall_goal_met": false,
+  "schema": "baxy.registered-runtime-expectation.r281.v1",
+  "section_7_met": false,
+  "whyThisExists": "R280 found the meta document claiming Qwen3-4B while the machine ran Gemma-4, and the decision path differs between them. Recording the identity here turns a silent model swap into a red gate."
+}

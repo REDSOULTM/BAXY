@@ -1,0 +1,206 @@
+{
+  "schema": "baxy.audit.visible-click-chain.v1",
+  "coreVersion": "1.0.8",
+  "catalogCount": 168,
+  "elapsedSeconds": 1.4693729000009625,
+  "cases": [
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "e171b877-dfdc-426f-adbf-fa6a35b2aaa3",
+          "missionId": "45c1af2c-9054-4c33-85e1-c817490ce097",
+          "invocationId": "494807a0-63b1-4647-b88d-ec13be271620",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_641aa039bb45b41c9afc5f356b12f9d7",
+                "processId": 4532,
+                "processName": "powershell",
+                "state": "normal",
+                "foreground": true,
+                "x": 220,
+                "y": 180,
+                "width": 520,
+                "height": 320
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ]
+    },
+    {
+      "operation": "window.focus",
+      "arguments": {
+        "windowId": "win_641aa039bb45b41c9afc5f356b12f9d7"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "23e0aa2a-76ae-426d-8913-d599e30dee31",
+          "missionId": "e75a5156-8d1c-4f97-b02f-4a4b1448375d",
+          "invocationId": "dcec9f1c-fbb4-4863-b610-d6057f053291",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "window": {
+              "windowId": "win_eba3f33acfc9dead3bd4b1e59db21332",
+              "processId": 4532,
+              "processName": "powershell",
+              "state": "normal",
+              "foreground": true,
+              "x": 220,
+              "y": 180,
+              "width": 520,
+              "height": 320
+            }
+          },
+          "errorCode": null
+        }
+      ]
+    },
+    {
+      "operation": "input.visible.click",
+      "arguments": {
+        "label": "BAXY audit button"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "21464117-8188-4dff-a385-15e553e3696e",
+          "missionId": "906fe4d8-7555-4ab4-9ea8-a553ad26c1f7",
+          "invocationId": "63126730-d54b-4507-83df-549f4c0a6798",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "SkGy0-VRe9fjqQQk0YlPN4ANn-5the00j2U8p6PqZKk",
+            "expiresAtUtc": "2026-07-27T06:56:31.9110120+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "98255a21-d6d5-4425-b3e3-90d75a840813",
+          "missionId": "906fe4d8-7555-4ab4-9ea8-a553ad26c1f7",
+          "invocationId": "63126730-d54b-4507-83df-549f4c0a6798",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "error": "",
+            "name": "BAXY audit button",
+            "controlIdentity": "7.4532.57401043",
+            "absentOrDisabled": true,
+            "authority": "windows_uia_or_win32_button_postread"
+          },
+          "errorCode": null
+        }
+      ]
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "0c4f8296-d997-4af8-bcb4-906c47d3ace1",
+          "missionId": "3eaddbaa-821d-48ba-93f3-a9096f3f2bac",
+          "invocationId": "00b6f72d-a709-4961-b462-b8fc6e3017b9",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_55d6146520acb3e1e810cbb3af743e29",
+                "processId": 4532,
+                "processName": "powershell",
+                "state": "normal",
+                "foreground": true,
+                "x": 220,
+                "y": 180,
+                "width": 520,
+                "height": 320
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ]
+    },
+    {
+      "operation": "app.close",
+      "arguments": {
+        "windowId": "win_55d6146520acb3e1e810cbb3af743e29"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "e0056440-96d9-43fd-8dc1-888a477a318b",
+          "missionId": "b7c3532e-234b-486b-84e7-deb03384b1d4",
+          "invocationId": "a7fe792a-41ea-4407-9cbb-f9a214191929",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "J92rVi38BNMFwhWowoCkRU2El1G_5pGaqYwKYnFcjJk",
+            "expiresAtUtc": "2026-07-27T06:56:33.0785153+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "2c6b95f7-504c-46e0-a600-b70223b85354",
+          "missionId": "b7c3532e-234b-486b-84e7-deb03384b1d4",
+          "invocationId": "a7fe792a-41ea-4407-9cbb-f9a214191929",
+          "status": "completed",
+          "message": "Listo, cerré la ventana.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "processId": 4532,
+            "windowClosed": true
+          },
+          "errorCode": null
+        }
+      ]
+    }
+  ],
+  "error": null,
+  "targetExitCode": 0,
+  "coreExitCode": 0,
+  "stderr": ""
+}

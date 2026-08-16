@@ -1,0 +1,75 @@
+{
+  "schema": "baxy.stt-qwen3-asr-onnx-development-verdict.v1",
+  "publishedAtUtc": "2026-08-11T04:40:42.823857+00:00",
+  "status": "rejected",
+  "candidate": {
+    "name": "Qwen3-ASR-0.6B int8",
+    "runtime": "sherpa-onnx 1.13.4 CPU",
+    "threads": 8
+  },
+  "evidence": {
+    "audioArenaQwen": {
+      "path": "artifacts/development/stt_audio_arena_qwen3_asr_onnx_cpu_development_v1.json",
+      "sha256": "70bc670175f969e5f09b1ea5835b6f4dc0f406f4eca56e1211ab2edfc57204b0"
+    },
+    "minds14Qwen": {
+      "path": "artifacts/development/stt_minds14_qwen3_asr_onnx_cpu_development_v1.json",
+      "sha256": "1c218b74f8aeccae98166c98237a8be147e7b2fd89a845387337a700ec9b4131"
+    },
+    "minds14Parakeet": {
+      "path": "artifacts/development/stt_minds14_parakeet_greedy_development_v2.json",
+      "sha256": "05e99f99ff6f7ee129a083acd11a6ad6c3a4fef13b701cc696851a55471651d8"
+    },
+    "minds14Nemotron": {
+      "path": "artifacts/development/stt_minds14_nemotron_auto_development_v3.json",
+      "sha256": "a41bc2d2f6de29e8b33dd17086b340ce1a8cf3e854a9b9e4b9ef8f5408715cbd"
+    }
+  },
+  "results": {
+    "audioArena": {
+      "cases": 12,
+      "corpusWer": 0.08125,
+      "criticalAnchors": 18,
+      "criticalAnchorsPreserved": 16,
+      "criticalAnchorRecall": 0.888889,
+      "latencyP95Seconds": 5.608085
+    },
+    "minds14": {
+      "cases": 84,
+      "transcriptIntentAccuracy": 0.97619,
+      "intentSemanticPreservation": 0.988095,
+      "finalizationLatencyP95Seconds": 9.092449,
+      "realTimeFactorP95": 0.512096,
+      "peakRssBytesObserved": 2711912448,
+      "uniqueIntentRescuesBeyondNemotron": [],
+      "confirmedNemotronRescues": [
+        "minds14-en-US-0192",
+        "minds14-en-US-0196",
+        "minds14-en-US-0399",
+        "minds14-es-ES-0103",
+        "minds14-es-ES-0261",
+        "minds14-es-ES-0347",
+        "minds14-es-ES-0370",
+        "minds14-es-ES-0421"
+      ]
+    }
+  },
+  "decision": {
+    "primaryEngine": "rejected",
+    "fallbackEngine": "rejected",
+    "candidatePromoted": false,
+    "reasons": [
+      "audio_arena_critical_anchor_recall_below_0_99",
+      "audio_arena_latency_p95_above_2_seconds",
+      "minds14_semantic_preservation_below_0_99",
+      "minds14_finalization_latency_p95_above_1_5_seconds",
+      "no_unique_minds14_intent_rescue_beyond_nemotron"
+    ],
+    "nextArchitecture": "smaller multilingual ASR with a non-generative or bounded decoder"
+  },
+  "developmentOnly": true,
+  "blindHoldoutOpened": false,
+  "thresholdsChanged": false,
+  "wakeProgramTreeSha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0",
+  "effectsExecuted": 0
+}

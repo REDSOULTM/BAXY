@@ -1,0 +1,246 @@
+{
+  "schema": "baxy.openwakeword-raw-corpus-development.v1",
+  "measured_at_utc": "2026-08-08T09:25:46.940424+00:00",
+  "scope": "controlled_raw_closed_set_wake_diagnostic",
+  "sources": {
+    "physical_manifest_sha256": "594b490610ee05d6e1d3870ddd8dfdfd5fdfa31fd08cd7697f1612b6f05d790a",
+    "openwakeword_commit": "368c03716d1e92591906a84949bc477f3a834455",
+    "melspectrogram_model_sha256": "ba2b0e0f8b7b875369a2c89cb13360ff53bac436f2895cced9f479fa65eb176f",
+    "embedding_model_sha256": "70d164290c1d095d1d4ee149bc5e00543250a7316b59f31d056cff7bd3075c1f",
+    "classifiers": {
+      "conv": {
+        "path": "D:\\BAXYRuntime\\experiments\\wakeword\\baxy_openwakeword_closed_set_convgru_s9701_v1\\baxy-openwakeword-closed-set-v1.onnx",
+        "sha256": "7a88c9eba2f4770b6eaf05069da27482c640ca7e6a94412411bf00310996ecaa"
+      },
+      "dnn": {
+        "path": "D:\\BAXYRuntime\\experiments\\wakeword\\baxy_openwakeword_closed_set_dnn_s9701_v1\\baxy-openwakeword-closed-set-v1.onnx",
+        "sha256": "98ec53864dcfebf551c486c39a640ef432e1224d51cc85336847226f30d99c33"
+      },
+      "lstm": {
+        "path": "D:\\BAXYRuntime\\experiments\\wakeword\\baxy_openwakeword_closed_set_lstm_s9701_v1\\baxy-openwakeword-closed-set-v1.onnx",
+        "sha256": "e43abb0900f47cf879622c5dbcc1a306b4ae85d440bc7b03484f9bcbbf0d88c0"
+      }
+    }
+  },
+  "contract": {
+    "runtime_window_samples": 48000,
+    "side_padding_samples": 16000,
+    "hop_samples": 4000,
+    "source_score_reduction": "maximum_runtime_window_logit",
+    "decision_threshold_selected": false
+  },
+  "counts": {
+    "positive": 4,
+    "adversarial_negative": 8,
+    "sources": 12,
+    "runtime_windows": 108
+  },
+  "metrics": {
+    "conv": {
+      "auc": 0.5625,
+      "equal_error_rate": 0.4375,
+      "equal_error_threshold": 4.0860371589660645,
+      "positive_examples": 4,
+      "negative_examples": 8,
+      "zero_false_threshold": 5.098953247070313,
+      "positive_accepted_at_zero_false": 0,
+      "zero_false_positive_recall": 0.0,
+      "positive_score_mean": 2.7202678322792053,
+      "negative_score_mean": 2.5320489946752787
+    },
+    "dnn": {
+      "auc": 0.59375,
+      "equal_error_rate": 0.5,
+      "equal_error_threshold": 1.446521282196045,
+      "positive_examples": 4,
+      "negative_examples": 8,
+      "zero_false_threshold": 4.145434379577638,
+      "positive_accepted_at_zero_false": 1,
+      "zero_false_positive_recall": 0.25,
+      "positive_score_mean": 1.1826781928539276,
+      "negative_score_mean": -0.0202507171779871
+    },
+    "lstm": {
+      "auc": 0.46875,
+      "equal_error_rate": 0.5,
+      "equal_error_threshold": 4.263985633850098,
+      "positive_examples": 4,
+      "negative_examples": 8,
+      "zero_false_threshold": 7.384953498840333,
+      "positive_accepted_at_zero_false": 0,
+      "zero_false_positive_recall": 0.0,
+      "positive_score_mean": 2.887182131409645,
+      "negative_score_mean": 3.244052469730377
+    }
+  },
+  "timing": {
+    "feature_total_seconds": 1.327039900003001,
+    "feature_seconds_per_window": 0.012287406481509269,
+    "classifier_total_seconds": {
+      "conv": 0.023571099969558418,
+      "dnn": 0.003279999946244061,
+      "lstm": 0.026214699959382415
+    }
+  },
+  "records": [
+    {
+      "label": "positive",
+      "record_id": "positive/000000",
+      "relative_path": "positive/clip_000000_r0.wav",
+      "audio_sha256": "694884106caed301ba0da2d37b8ec35b1def8988b08fdf364311de9035dd41f6",
+      "source_audio_sha256": "0d54d6c96a8854d921eb440bf0db30714012b4a856081650687c13f8b1a583ee",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 4.396402359008789,
+        "dnn": 2.8592541217803955,
+        "lstm": 0.9395480751991272
+      }
+    },
+    {
+      "label": "positive",
+      "record_id": "positive/000001",
+      "relative_path": "positive/clip_000001_r0.wav",
+      "audio_sha256": "5f5ea7d43fa194f0d7b643ea7ec3bb37bd4daea09b8ddd200dbfc7a16dc2137f",
+      "source_audio_sha256": "3f27d8e180fc231f1903a55b7e51a66de9fb7b3824715f38007d5285a8fe4ba7",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 4.780354022979736,
+        "dnn": 4.913561820983887,
+        "lstm": 6.611461639404297
+      }
+    },
+    {
+      "label": "positive",
+      "record_id": "positive/000002",
+      "relative_path": "positive/clip_000002_r0.wav",
+      "audio_sha256": "c24afa0ae7eca2fa00674ce1c113ffcb96e49ac9f61da28cd7e4b238e93784fb",
+      "source_audio_sha256": "e975cfdc9a52ca018b55b72aae93d5f3ea15a6dc95068fdd941508a6ce01ebb5",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": -2.3336522579193115,
+        "dnn": -0.7628687620162964,
+        "lstm": -1.1111674308776855
+      }
+    },
+    {
+      "label": "positive",
+      "record_id": "positive/000003",
+      "relative_path": "positive/clip_000003_r0.wav",
+      "audio_sha256": "0149981aa5ca71ab863289685af591ad13f0bb90ecfc724a1be3b4861a6d8242",
+      "source_audio_sha256": "0f61a39771584fcb227831e32cb7b5d6dfb5e56a5129d1e8d042e54bebddf8f1",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 4.037967205047607,
+        "dnn": -2.2792344093322754,
+        "lstm": 5.108886241912842
+      }
+    },
+    {
+      "label": "adversarial_negative",
+      "record_id": "negative/000000",
+      "relative_path": "negative/clip_000000_r0.wav",
+      "audio_sha256": "5774c4aa17a638a71b36b261aef03f655836ca5ce86fcfe3743dda747b4f4054",
+      "source_audio_sha256": "042850dea71a7dfa8a4eac4a7de4c895fce8201305b199a4458c5ec2fa606cb3",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 4.0860371589660645,
+        "dnn": 0.045715972781181335,
+        "lstm": 7.384953498840332
+      }
+    },
+    {
+      "label": "adversarial_negative",
+      "record_id": "negative/000001",
+      "relative_path": "negative/clip_000001_r0.wav",
+      "audio_sha256": "15ef698a838f33f175bc7aac255256af8727ab26573095eb749aec7f38b54762",
+      "source_audio_sha256": "4302c7b22083f76c469c9b3f1a9b4e9d4dbc975da25af34115f00d97e14705eb",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 2.060030698776245,
+        "dnn": -2.2180593013763428,
+        "lstm": 2.9577066898345947
+      }
+    },
+    {
+      "label": "adversarial_negative",
+      "record_id": "negative/000002",
+      "relative_path": "negative/clip_000002_r0.wav",
+      "audio_sha256": "55b00e80099ab4da7412afbc50478db7ed746cfafbc9bd70c7a98b2c18b38785",
+      "source_audio_sha256": "7fe34d826dfacf4a2b568a4e61317a10fa89ddd7d4a2d1781a89fd453cb7f9e5",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 3.9721016883850098,
+        "dnn": 4.145434379577637,
+        "lstm": 5.13054084777832
+      }
+    },
+    {
+      "label": "adversarial_negative",
+      "record_id": "negative/000003",
+      "relative_path": "negative/clip_000003_r0.wav",
+      "audio_sha256": "7bc400a5945062a037114f97fbef97e6bc1f236ddb7d17f20377bf8d86ff3add",
+      "source_audio_sha256": "bec9e2647876d858199942a39dad2ca698f1551c65dc775e2da3925c16231287",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 4.800938129425049,
+        "dnn": 1.446521282196045,
+        "lstm": 4.263985633850098
+      }
+    },
+    {
+      "label": "adversarial_negative",
+      "record_id": "negative/000004",
+      "relative_path": "negative/clip_000004_r0.wav",
+      "audio_sha256": "dddc7734fd627998fd15df3bcce8135461229eb84b9bd363a06581b311a3adbb",
+      "source_audio_sha256": "df17873c4f8d3f95894ec8955ee73fa2965c12f450fe13930cd24876ee47cf06",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 2.879385232925415,
+        "dnn": 2.9261474609375,
+        "lstm": 4.059174537658691
+      }
+    },
+    {
+      "label": "adversarial_negative",
+      "record_id": "negative/000005",
+      "relative_path": "negative/clip_000005_r0.wav",
+      "audio_sha256": "479c5a895e4d3db048fad8475c78e3a2a764394a585ba5d7a7d313254b713363",
+      "source_audio_sha256": "b2b2aad9289819073314900bbf4eb11c2749be0002a18b76c9afd573e234a804",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": -2.823949098587036,
+        "dnn": -5.135120391845703,
+        "lstm": -2.7280142307281494
+      }
+    },
+    {
+      "label": "adversarial_negative",
+      "record_id": "negative/000006",
+      "relative_path": "negative/clip_000006_r0.wav",
+      "audio_sha256": "f30995bf49d9351e46e31e24bbe0b45df9d9879232760d1a4156cc097e183c37",
+      "source_audio_sha256": "ed63dd6d72cfe1d0d14ad0eed002f52602a79dc5be7f958914c15aa72d003eb9",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 5.0989532470703125,
+        "dnn": 2.1639044284820557,
+        "lstm": 7.025942325592041
+      }
+    },
+    {
+      "label": "adversarial_negative",
+      "record_id": "negative/000007",
+      "relative_path": "negative/clip_000007_r0.wav",
+      "audio_sha256": "2b61d54c9710d0967d37e30e004a6ff2960f2f724128b1bafc50ee39976fdc0c",
+      "source_audio_sha256": "18cab85739d4840b634cdbfca37e768fd29244952f8fdf223614f1ad33c295b3",
+      "runtime_windows": 9,
+      "scores": {
+        "conv": 0.18289490044116974,
+        "dnn": -3.5365495681762695,
+        "lstm": -2.14186954498291
+      }
+    }
+  ],
+  "blind_human_partition_accessed": false,
+  "development_only": true,
+  "effects_executed": 0
+}

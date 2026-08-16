@@ -1,0 +1,60 @@
+{
+  "schema": "baxy.local-model-candidate-verdict.v1",
+  "measured_at_local": "2026-08-11T08:16:48.5815694-04:00",
+  "preregistration": "artifacts/research/phi4_mini_candidate_preregistration_20260811.json",
+  "preregistration_sha256": "e9b115dd898eebf9e40bf4a910c324766872fd9c79d371142fe6325647c12412",
+  "candidate": {
+    "model": "microsoft_Phi-4-mini-instruct-Q4_K_M.gguf",
+    "bytes": 2491874688,
+    "sha256": "01999f17c39cc3074afae5e9c539bc82d45f2dd7faa3917c66cbef76fce8c0c2",
+    "llama_cpp_build": "b9980-8014d2cf9",
+    "initial_startup_seconds": 5.629,
+    "initial_health": "ok",
+    "initial_process_vram_mib": 2999.6
+  },
+  "frozen_development_workload": {
+    "requests_per_profile": 45,
+    "effects_executed": 0,
+    "gpu": {
+      "requests_completed": 45,
+      "errors": 3,
+      "exact_contracts": 42,
+      "process_tree_vram_peak_mib": 3005.6,
+      "tree_ram_peak_mib": 3226.8,
+      "turn_p50_seconds": 0.005,
+      "arguments_p50_seconds": 0.001,
+      "narrate_p50_seconds": 0.276
+    },
+    "cpu": {
+      "requests_completed": 45,
+      "errors": 4,
+      "exact_contracts": 41,
+      "tree_ram_peak_mib": 5300.7,
+      "turn_p50_seconds": 0.007,
+      "arguments_p50_seconds": 0.003,
+      "narrate_p50_seconds": 4.257
+    },
+    "report": "artifacts/product/mind_budget_gate_phi4_mini_candidate_development_20260811.json",
+    "report_sha256": "5b7fcb7401a40f9b262f7a8a9359195047929dc8350177ce452d4478d3dd9552"
+  },
+  "active_qwen3_comparator": {
+    "gpu_requests_completed": 45,
+    "gpu_errors": 0,
+    "gpu_process_tree_vram_peak_mib": 3065.6,
+    "gpu_narrate_p50_seconds": 0.236,
+    "cpu_requests_completed": 45,
+    "cpu_errors": 1,
+    "cpu_error_is_known_19_second_gate_timeout": true,
+    "report": "artifacts/product/mind_budget_gate_qwen_current_tree_20260811.json",
+    "report_sha256": "1e5a6eaa06945a93b82fec036fee3a35c5a87c5b8509600efd34a1f5225c14b2a"
+  },
+  "verdict": {
+    "status": "rejected",
+    "reason": "Phi-4-mini saved about 60 MiB of GPU memory but regressed argument contract accuracy in both profiles and narrated more slowly than active Qwen3 on GPU.",
+    "promotion_eligible": false,
+    "blind_holdout_opened": false,
+    "active_manifest_changed": false,
+    "active_model_after_experiment": "D:/BAXYRuntime/assets/models/Qwen3-4B-Q4_K_M.gguf",
+    "candidate_file_retained_only_under_experiments": true
+  }
+}

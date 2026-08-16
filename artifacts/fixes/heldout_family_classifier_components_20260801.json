@@ -1,0 +1,1351 @@
+{
+  "authority": "The classifier produces a family hint only. It does not select a leaf, satisfy arguments, bypass grounding, or grant an effect.",
+  "effects_executed": 0,
+  "holdout": {
+    "accuracy": 0.7687,
+    "by_family": {
+      "app": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 97
+      },
+      "audio": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 160
+      },
+      "backup": {
+        "cases": 5,
+        "right": 0,
+        "training_rows": 16
+      },
+      "bluetooth": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 8
+      },
+      "browser": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 56
+      },
+      "calendar": {
+        "cases": 6,
+        "right": 2,
+        "training_rows": 11
+      },
+      "capture": {
+        "cases": 6,
+        "right": 5,
+        "training_rows": 11
+      },
+      "clipboard": {
+        "cases": 6,
+        "right": 3,
+        "training_rows": 11
+      },
+      "filesystem": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 84
+      },
+      "game": {
+        "cases": 6,
+        "right": 3,
+        "training_rows": 98
+      },
+      "media": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 209
+      },
+      "message": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 25
+      },
+      "note": {
+        "cases": 6,
+        "right": 3,
+        "training_rows": 24
+      },
+      "notification": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 15
+      },
+      "ocr": {
+        "cases": 1,
+        "right": 0,
+        "training_rows": 2
+      },
+      "office": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 33
+      },
+      "peripheral": {
+        "cases": 5,
+        "right": 0,
+        "training_rows": 6
+      },
+      "reminder": {
+        "cases": 6,
+        "right": 3,
+        "training_rows": 16
+      },
+      "routine": {
+        "cases": 4,
+        "right": 1,
+        "training_rows": 14
+      },
+      "streaming": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 36
+      },
+      "system": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 104
+      },
+      "task": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 64
+      },
+      "vision": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 76
+      },
+      "web": {
+        "cases": 6,
+        "right": 4,
+        "training_rows": 60
+      },
+      "wifi": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 28
+      },
+      "window": {
+        "cases": 6,
+        "right": 5,
+        "training_rows": 53
+      }
+    },
+    "cases": 147,
+    "component_accuracy": {
+      "lexical": 0.8503,
+      "selected_blend": 0.7687,
+      "semantic_e5": 0.0476
+    },
+    "predictions": [
+      {
+        "case_id": "app-00",
+        "expected_family": "app",
+        "margin": 1.508511,
+        "predicted_family": "app",
+        "right": true,
+        "text": "Abre Epic Games Launcher"
+      },
+      {
+        "case_id": "app-01",
+        "expected_family": "app",
+        "margin": 2.116455,
+        "predicted_family": "app",
+        "right": true,
+        "text": "Abre Notepad y luego cierralo"
+      },
+      {
+        "case_id": "app-02",
+        "expected_family": "app",
+        "margin": 2.120245,
+        "predicted_family": "app",
+        "right": true,
+        "text": "Abre Steam con máximo 2 intentos"
+      },
+      {
+        "case_id": "app-03",
+        "expected_family": "app",
+        "margin": 2.159005,
+        "predicted_family": "app",
+        "right": true,
+        "text": "Abre steam 0"
+      },
+      {
+        "case_id": "app-04",
+        "expected_family": "app",
+        "margin": 2.669141,
+        "predicted_family": "app",
+        "right": true,
+        "text": "Abre steam 1"
+      },
+      {
+        "case_id": "app-05",
+        "expected_family": "app",
+        "margin": 2.526108,
+        "predicted_family": "app",
+        "right": true,
+        "text": "Abre steam 2"
+      },
+      {
+        "case_id": "audio-00",
+        "expected_family": "audio",
+        "margin": 2.269995,
+        "predicted_family": "audio",
+        "right": true,
+        "text": "Abaixa o volume pra 30 por cento"
+      },
+      {
+        "case_id": "audio-01",
+        "expected_family": "audio",
+        "margin": 2.419469,
+        "predicted_family": "audio",
+        "right": true,
+        "text": "Augmente le volume de 10 pour cent"
+      },
+      {
+        "case_id": "audio-02",
+        "expected_family": "audio",
+        "margin": 2.080099,
+        "predicted_family": "audio",
+        "right": true,
+        "text": "Baja el volumen 1 punto y dime si pudiste verificarlo"
+      },
+      {
+        "case_id": "audio-03",
+        "expected_family": "audio",
+        "margin": 2.616563,
+        "predicted_family": "audio",
+        "right": true,
+        "text": "Baja el volumen 10%"
+      },
+      {
+        "case_id": "audio-04",
+        "expected_family": "audio",
+        "margin": 2.263496,
+        "predicted_family": "audio",
+        "right": true,
+        "text": "Bota o volume em 40 por cento"
+      },
+      {
+        "case_id": "audio-05",
+        "expected_family": "audio",
+        "margin": 2.065346,
+        "predicted_family": "audio",
+        "right": true,
+        "text": "Cambia el volumen a 10"
+      },
+      {
+        "case_id": "backup-00",
+        "expected_family": "backup",
+        "margin": 2.613698,
+        "predicted_family": "filesystem",
+        "right": false,
+        "text": "Edita archivo y crea respaldo antes"
+      },
+      {
+        "case_id": "backup-01",
+        "expected_family": "backup",
+        "margin": 0.24975,
+        "predicted_family": "vision",
+        "right": false,
+        "text": "cambia .env para usar ollama, pero solo con backup y confirmación"
+      },
+      {
+        "case_id": "backup-02",
+        "expected_family": "backup",
+        "margin": 0.495528,
+        "predicted_family": "media",
+        "right": false,
+        "text": "faz um backup do registro antes de mexer em algo"
+      },
+      {
+        "case_id": "backup-03",
+        "expected_family": "backup",
+        "margin": 0.633768,
+        "predicted_family": "office",
+        "right": false,
+        "text": "hace un backup de mis documentos a un pendrive"
+      },
+      {
+        "case_id": "backup-04",
+        "expected_family": "backup",
+        "margin": 0.546571,
+        "predicted_family": "browser",
+        "right": false,
+        "text": "show me the log of the backup job"
+      },
+      {
+        "case_id": "bluetooth-00",
+        "expected_family": "bluetooth",
+        "margin": 0.221438,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "text": "abre configuración y entra a Bluetooth"
+      },
+      {
+        "case_id": "bluetooth-01",
+        "expected_family": "bluetooth",
+        "margin": 1.939528,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "text": "activa el bluetooth"
+      },
+      {
+        "case_id": "bluetooth-02",
+        "expected_family": "bluetooth",
+        "margin": 1.013597,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "text": "apagá el bluetooth"
+      },
+      {
+        "case_id": "bluetooth-03",
+        "expected_family": "bluetooth",
+        "margin": 1.855098,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "text": "conecta el bluetooth"
+      },
+      {
+        "case_id": "bluetooth-04",
+        "expected_family": "bluetooth",
+        "margin": 1.820963,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "text": "desactivá el bluetooth"
+      },
+      {
+        "case_id": "bluetooth-05",
+        "expected_family": "bluetooth",
+        "margin": 2.276141,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "text": "prendé el bluetooth"
+      },
+      {
+        "case_id": "browser-00",
+        "expected_family": "browser",
+        "margin": 2.098692,
+        "predicted_family": "browser",
+        "right": true,
+        "text": "Abre el navegador por defecto"
+      },
+      {
+        "case_id": "browser-01",
+        "expected_family": "browser",
+        "margin": 1.67813,
+        "predicted_family": "browser",
+        "right": true,
+        "text": "Abre github.com"
+      },
+      {
+        "case_id": "browser-02",
+        "expected_family": "browser",
+        "margin": 1.582317,
+        "predicted_family": "browser",
+        "right": true,
+        "text": "Abre la página de Steam de Marvel Rivals"
+      },
+      {
+        "case_id": "browser-03",
+        "expected_family": "browser",
+        "margin": 1.434361,
+        "predicted_family": "browser",
+        "right": true,
+        "text": "Abre la página de descargas de Python"
+      },
+      {
+        "case_id": "browser-04",
+        "expected_family": "browser",
+        "margin": 1.337807,
+        "predicted_family": "browser",
+        "right": true,
+        "text": "Abre la página oficial de OpenAI"
+      },
+      {
+        "case_id": "browser-05",
+        "expected_family": "browser",
+        "margin": 1.635338,
+        "predicted_family": "browser",
+        "right": true,
+        "text": "Abre o Google no navegador"
+      },
+      {
+        "case_id": "calendar-00",
+        "expected_family": "calendar",
+        "margin": 0.651704,
+        "predicted_family": "vision",
+        "right": false,
+        "text": "Write me an email that I cant make it to the meeting"
+      },
+      {
+        "case_id": "calendar-01",
+        "expected_family": "calendar",
+        "margin": 0.164033,
+        "predicted_family": "app",
+        "right": false,
+        "text": "abrí el bloc de notas y escribí reunion manana"
+      },
+      {
+        "case_id": "calendar-02",
+        "expected_family": "calendar",
+        "margin": 0.55341,
+        "predicted_family": "calendar",
+        "right": true,
+        "text": "agenda una reunion el viernes a las cinco"
+      },
+      {
+        "case_id": "calendar-03",
+        "expected_family": "calendar",
+        "margin": 0.307907,
+        "predicted_family": "calendar",
+        "right": true,
+        "text": "agendá una reunión el viernes a las 3"
+      },
+      {
+        "case_id": "calendar-04",
+        "expected_family": "calendar",
+        "margin": 0.197922,
+        "predicted_family": "web",
+        "right": false,
+        "text": "crea un evento el viernes a las 4"
+      },
+      {
+        "case_id": "calendar-05",
+        "expected_family": "calendar",
+        "margin": 0.281772,
+        "predicted_family": "message",
+        "right": false,
+        "text": "escribile un email a juan con el asunto reunion diciendo nos vemos"
+      },
+      {
+        "case_id": "capture-00",
+        "expected_family": "capture",
+        "margin": 1.518359,
+        "predicted_family": "vision",
+        "right": false,
+        "text": "Sacale una foto de captura a mi pc, que se ve?"
+      },
+      {
+        "case_id": "capture-01",
+        "expected_family": "capture",
+        "margin": 1.284479,
+        "predicted_family": "capture",
+        "right": true,
+        "text": "how do I take a screenshot in Windows?"
+      },
+      {
+        "case_id": "capture-02",
+        "expected_family": "capture",
+        "margin": 0.991771,
+        "predicted_family": "capture",
+        "right": true,
+        "text": "tira uma captura de tela"
+      },
+      {
+        "case_id": "capture-03",
+        "expected_family": "capture",
+        "margin": 1.705887,
+        "predicted_family": "capture",
+        "right": true,
+        "text": "toma screenshot, guárdalo y dime el path"
+      },
+      {
+        "case_id": "capture-04",
+        "expected_family": "capture",
+        "margin": 1.783885,
+        "predicted_family": "capture",
+        "right": true,
+        "text": "toma una captura y guardala en el escritorio"
+      },
+      {
+        "case_id": "capture-05",
+        "expected_family": "capture",
+        "margin": 1.184746,
+        "predicted_family": "capture",
+        "right": true,
+        "text": "toma una captura, guardala en el escritorio y abre el explorador ahi"
+      },
+      {
+        "case_id": "clipboard-00",
+        "expected_family": "clipboard",
+        "margin": 1.801157,
+        "predicted_family": "app",
+        "right": false,
+        "text": "Pega esto en el bloc de notas"
+      },
+      {
+        "case_id": "clipboard-01",
+        "expected_family": "clipboard",
+        "margin": 0.058397,
+        "predicted_family": "app",
+        "right": false,
+        "text": "copia texto de Notepad al portapapeles"
+      },
+      {
+        "case_id": "clipboard-02",
+        "expected_family": "clipboard",
+        "margin": 1.129523,
+        "predicted_family": "clipboard",
+        "right": true,
+        "text": "copiame este texto al portapapeles que lo necesito pegar"
+      },
+      {
+        "case_id": "clipboard-03",
+        "expected_family": "clipboard",
+        "margin": 0.859389,
+        "predicted_family": "clipboard",
+        "right": true,
+        "text": "copy my email address to the clipboard so I can paste it"
+      },
+      {
+        "case_id": "clipboard-04",
+        "expected_family": "clipboard",
+        "margin": 2.315576,
+        "predicted_family": "filesystem",
+        "right": false,
+        "text": "pega texto en un archivo nuevo de Notepad"
+      },
+      {
+        "case_id": "clipboard-05",
+        "expected_family": "clipboard",
+        "margin": 0.853866,
+        "predicted_family": "clipboard",
+        "right": true,
+        "text": "que hay en el portapapeles"
+      },
+      {
+        "case_id": "filesystem-00",
+        "expected_family": "filesystem",
+        "margin": 2.213444,
+        "predicted_family": "filesystem",
+        "right": true,
+        "text": "Abre el archivo hola.txt del escritorio"
+      },
+      {
+        "case_id": "filesystem-01",
+        "expected_family": "filesystem",
+        "margin": 2.554921,
+        "predicted_family": "filesystem",
+        "right": true,
+        "text": "Abre el archivo más reciente de Descargas"
+      },
+      {
+        "case_id": "filesystem-02",
+        "expected_family": "filesystem",
+        "margin": 1.682841,
+        "predicted_family": "filesystem",
+        "right": true,
+        "text": "Abre el último archivo que descargué"
+      },
+      {
+        "case_id": "filesystem-03",
+        "expected_family": "filesystem",
+        "margin": 2.676404,
+        "predicted_family": "filesystem",
+        "right": true,
+        "text": "Borra la carpeta CarterTest del escritorio"
+      },
+      {
+        "case_id": "filesystem-04",
+        "expected_family": "filesystem",
+        "margin": 2.510533,
+        "predicted_family": "filesystem",
+        "right": true,
+        "text": "Crea un archivo de texto en el escritorio que diga prueba Carter"
+      },
+      {
+        "case_id": "filesystem-05",
+        "expected_family": "filesystem",
+        "margin": 2.53538,
+        "predicted_family": "filesystem",
+        "right": true,
+        "text": "Crea una carpeta en el escritorio llamada CarterTest"
+      },
+      {
+        "case_id": "game-00",
+        "expected_family": "game",
+        "margin": 1.708179,
+        "predicted_family": "app",
+        "right": false,
+        "text": "Abre Big Picture"
+      },
+      {
+        "case_id": "game-01",
+        "expected_family": "game",
+        "margin": 2.091235,
+        "predicted_family": "app",
+        "right": false,
+        "text": "Abre Counter Strike"
+      },
+      {
+        "case_id": "game-02",
+        "expected_family": "game",
+        "margin": 0.0805,
+        "predicted_family": "game",
+        "right": true,
+        "text": "Abre Portal desde Steam"
+      },
+      {
+        "case_id": "game-03",
+        "expected_family": "game",
+        "margin": 1.324048,
+        "predicted_family": "app",
+        "right": false,
+        "text": "Abre a Loja do Steam"
+      },
+      {
+        "case_id": "game-04",
+        "expected_family": "game",
+        "margin": 0.975585,
+        "predicted_family": "game",
+        "right": true,
+        "text": "Abre capturas de Steam"
+      },
+      {
+        "case_id": "game-05",
+        "expected_family": "game",
+        "margin": 1.863061,
+        "predicted_family": "game",
+        "right": true,
+        "text": "Abre mi biblioteca de Steam"
+      },
+      {
+        "case_id": "media-00",
+        "expected_family": "media",
+        "margin": 2.33672,
+        "predicted_family": "media",
+        "right": true,
+        "text": "Active la fenêtre de Spotify"
+      },
+      {
+        "case_id": "media-01",
+        "expected_family": "media",
+        "margin": 2.00306,
+        "predicted_family": "media",
+        "right": true,
+        "text": "Affiche la fenêtre de Spotify par-dessus les autres"
+      },
+      {
+        "case_id": "media-02",
+        "expected_family": "media",
+        "margin": 1.610396,
+        "predicted_family": "media",
+        "right": true,
+        "text": "Ahora estoy poniendo musica en  mi pc, lo quieres probar?"
+      },
+      {
+        "case_id": "media-03",
+        "expected_family": "media",
+        "margin": 2.28156,
+        "predicted_family": "media",
+        "right": true,
+        "text": "Apri Spotify e fai partire la musica"
+      },
+      {
+        "case_id": "media-04",
+        "expected_family": "media",
+        "margin": 2.68299,
+        "predicted_family": "media",
+        "right": true,
+        "text": "Baxy, pon música”."
+      },
+      {
+        "case_id": "media-05",
+        "expected_family": "media",
+        "margin": 1.598153,
+        "predicted_family": "media",
+        "right": true,
+        "text": "Can you play tic tac toe with me?"
+      },
+      {
+        "case_id": "message-00",
+        "expected_family": "message",
+        "margin": 1.691269,
+        "predicted_family": "message",
+        "right": true,
+        "text": "Dile a amor en WhatsApp que la amo mucho."
+      },
+      {
+        "case_id": "message-01",
+        "expected_family": "message",
+        "margin": 1.848619,
+        "predicted_family": "message",
+        "right": true,
+        "text": "Dile a amor en wsp que la amo"
+      },
+      {
+        "case_id": "message-02",
+        "expected_family": "message",
+        "margin": 2.176396,
+        "predicted_family": "message",
+        "right": true,
+        "text": "Dile a amor que la amo demasiado en wsp"
+      },
+      {
+        "case_id": "message-03",
+        "expected_family": "message",
+        "margin": 1.984125,
+        "predicted_family": "message",
+        "right": true,
+        "text": "Dile a amor que la amo en wsp"
+      },
+      {
+        "case_id": "message-04",
+        "expected_family": "message",
+        "margin": 1.959208,
+        "predicted_family": "message",
+        "right": true,
+        "text": "Dile a amor que la amo muchisimo en wsp"
+      },
+      {
+        "case_id": "message-05",
+        "expected_family": "message",
+        "margin": 2.131868,
+        "predicted_family": "message",
+        "right": true,
+        "text": "Dile a enmanuel que es una increible persona en wsp"
+      },
+      {
+        "case_id": "note-00",
+        "expected_family": "note",
+        "margin": 0.025614,
+        "predicted_family": "note",
+        "right": true,
+        "text": "anota que tengo que comprar pan"
+      },
+      {
+        "case_id": "note-01",
+        "expected_family": "note",
+        "margin": 0.35064,
+        "predicted_family": "system",
+        "right": false,
+        "text": "anota que tengo que llamar al medico manana"
+      },
+      {
+        "case_id": "note-02",
+        "expected_family": "note",
+        "margin": 1.33782,
+        "predicted_family": "note",
+        "right": true,
+        "text": "apri il blocco note e scrivi la lista della spesa"
+      },
+      {
+        "case_id": "note-03",
+        "expected_family": "note",
+        "margin": 0.7368,
+        "predicted_family": "note",
+        "right": true,
+        "text": "apri il blocco note, scrivi la lista e salvala"
+      },
+      {
+        "case_id": "note-04",
+        "expected_family": "note",
+        "margin": 0.769666,
+        "predicted_family": "game",
+        "right": false,
+        "text": "apri la finestra Salva con nome nel Blocco note"
+      },
+      {
+        "case_id": "note-05",
+        "expected_family": "note",
+        "margin": 2.264781,
+        "predicted_family": "filesystem",
+        "right": false,
+        "text": "convierte nota.txt a mayúsculas en un archivo nuevo"
+      },
+      {
+        "case_id": "notification-00",
+        "expected_family": "notification",
+        "margin": 1.069618,
+        "predicted_family": "notification",
+        "right": true,
+        "text": "Pone una alarma para las 7 de la maniana"
+      },
+      {
+        "case_id": "notification-01",
+        "expected_family": "notification",
+        "margin": 1.162983,
+        "predicted_family": "notification",
+        "right": true,
+        "text": "alarma para mañana 8am"
+      },
+      {
+        "case_id": "notification-02",
+        "expected_family": "notification",
+        "margin": 1.240728,
+        "predicted_family": "notification",
+        "right": true,
+        "text": "arranca un temporizador de 10 minutos"
+      },
+      {
+        "case_id": "notification-03",
+        "expected_family": "notification",
+        "margin": 1.74215,
+        "predicted_family": "notification",
+        "right": true,
+        "text": "cancelá la alarma"
+      },
+      {
+        "case_id": "notification-04",
+        "expected_family": "notification",
+        "margin": 1.977268,
+        "predicted_family": "notification",
+        "right": true,
+        "text": "pone un timer de 5 minutos"
+      },
+      {
+        "case_id": "notification-05",
+        "expected_family": "notification",
+        "margin": 0.95999,
+        "predicted_family": "notification",
+        "right": true,
+        "text": "ponme un temporizador de diez minutos"
+      },
+      {
+        "case_id": "ocr-00",
+        "expected_family": "ocr",
+        "margin": 0.000991,
+        "predicted_family": "task",
+        "right": false,
+        "text": "OCR limitado, mejor para detection"
+      },
+      {
+        "case_id": "office-00",
+        "expected_family": "office",
+        "margin": 1.780568,
+        "predicted_family": "office",
+        "right": true,
+        "text": "Can you make me a PowerPoint?"
+      },
+      {
+        "case_id": "office-01",
+        "expected_family": "office",
+        "margin": 1.69211,
+        "predicted_family": "office",
+        "right": true,
+        "text": "Cierre de Word podía perder trabajo"
+      },
+      {
+        "case_id": "office-02",
+        "expected_family": "office",
+        "margin": 2.295879,
+        "predicted_family": "office",
+        "right": true,
+        "text": "Donde dejaste el Powerpoint? Que me hiciste"
+      },
+      {
+        "case_id": "office-03",
+        "expected_family": "office",
+        "margin": 1.376083,
+        "predicted_family": "office",
+        "right": true,
+        "text": "Fecha tudo que tá aberto do Word"
+      },
+      {
+        "case_id": "office-04",
+        "expected_family": "office",
+        "margin": 2.365938,
+        "predicted_family": "office",
+        "right": true,
+        "text": "Haz un powerpoint hablando de amor de 6 diapositivas"
+      },
+      {
+        "case_id": "office-05",
+        "expected_family": "office",
+        "margin": 2.184908,
+        "predicted_family": "office",
+        "right": true,
+        "text": "Hazme un PowerPoint de siete diapositivas que hable de los dinosaurios"
+      },
+      {
+        "case_id": "peripheral-00",
+        "expected_family": "peripheral",
+        "margin": 0.725175,
+        "predicted_family": "audio",
+        "right": false,
+        "text": "anotá que terminé de configurar el micrófono"
+      },
+      {
+        "case_id": "peripheral-01",
+        "expected_family": "peripheral",
+        "margin": 0.135685,
+        "predicted_family": "audio",
+        "right": false,
+        "text": "cambia el microfono por defecto"
+      },
+      {
+        "case_id": "peripheral-02",
+        "expected_family": "peripheral",
+        "margin": 0.463682,
+        "predicted_family": "audio",
+        "right": false,
+        "text": "mutea el micrófono en discord"
+      },
+      {
+        "case_id": "peripheral-03",
+        "expected_family": "peripheral",
+        "margin": 0.028252,
+        "predicted_family": "system",
+        "right": false,
+        "text": "set the HP LaserJet as my default printer"
+      },
+      {
+        "case_id": "peripheral-04",
+        "expected_family": "peripheral",
+        "margin": 1.61515,
+        "predicted_family": "audio",
+        "right": false,
+        "text": "silenciame el micrófono"
+      },
+      {
+        "case_id": "reminder-00",
+        "expected_family": "reminder",
+        "margin": 0.127978,
+        "predicted_family": "system",
+        "right": false,
+        "text": "avisame en 20 minutos que saque la comida"
+      },
+      {
+        "case_id": "reminder-01",
+        "expected_family": "reminder",
+        "margin": 1.032404,
+        "predicted_family": "system",
+        "right": false,
+        "text": "avisame en una hora que salgo"
+      },
+      {
+        "case_id": "reminder-02",
+        "expected_family": "reminder",
+        "margin": 1.017237,
+        "predicted_family": "reminder",
+        "right": true,
+        "text": "ponme un recordatorio en 2 minutos para tomar agua"
+      },
+      {
+        "case_id": "reminder-03",
+        "expected_family": "reminder",
+        "margin": 1.574884,
+        "predicted_family": "reminder",
+        "right": true,
+        "text": "ponme un recordatorio para las 3 de la tarde"
+      },
+      {
+        "case_id": "reminder-04",
+        "expected_family": "reminder",
+        "margin": 1.695948,
+        "predicted_family": "reminder",
+        "right": true,
+        "text": "ponme un recordatorio para llamar al dentista"
+      },
+      {
+        "case_id": "reminder-05",
+        "expected_family": "reminder",
+        "margin": 0.060894,
+        "predicted_family": "system",
+        "right": false,
+        "text": "recordatorio de tomar agua en 1 hora"
+      },
+      {
+        "case_id": "routine-00",
+        "expected_family": "routine",
+        "margin": 0.170077,
+        "predicted_family": "task",
+        "right": false,
+        "text": "armá el hábito de salir a correr y marcá que ya lo hice"
+      },
+      {
+        "case_id": "routine-01",
+        "expected_family": "routine",
+        "margin": 0.623822,
+        "predicted_family": "routine",
+        "right": true,
+        "text": "crea una rutina que cada manana me de la hora"
+      },
+      {
+        "case_id": "routine-02",
+        "expected_family": "routine",
+        "margin": 0.340802,
+        "predicted_family": "task",
+        "right": false,
+        "text": "creá el hábito de leer y registrá que lo hice hoy"
+      },
+      {
+        "case_id": "routine-03",
+        "expected_family": "routine",
+        "margin": 0.190913,
+        "predicted_family": "media",
+        "right": false,
+        "text": "cria o hábito de ler e regista que já o fiz hoje"
+      },
+      {
+        "case_id": "streaming-00",
+        "expected_family": "streaming",
+        "margin": 0.974136,
+        "predicted_family": "streaming",
+        "right": true,
+        "text": "Abri YouTube en el navegador"
+      },
+      {
+        "case_id": "streaming-01",
+        "expected_family": "streaming",
+        "margin": 0.75675,
+        "predicted_family": "streaming",
+        "right": true,
+        "text": "Acabas de reanudar el video youtube , pero yo queria de opera gx"
+      },
+      {
+        "case_id": "streaming-02",
+        "expected_family": "streaming",
+        "margin": 1.851049,
+        "predicted_family": "streaming",
+        "right": true,
+        "text": "Antes de seguir quiero ver como pones una serie en disney y en netflix"
+      },
+      {
+        "case_id": "streaming-03",
+        "expected_family": "streaming",
+        "margin": 1.265315,
+        "predicted_family": "streaming",
+        "right": true,
+        "text": "Donde puedo ver la pelicula de superman que salio el ano pasado??"
+      },
+      {
+        "case_id": "streaming-04",
+        "expected_family": "streaming",
+        "margin": 0.983004,
+        "predicted_family": "streaming",
+        "right": true,
+        "text": "Elige el primer resultado de YouTube"
+      },
+      {
+        "case_id": "streaming-05",
+        "expected_family": "streaming",
+        "margin": 1.672762,
+        "predicted_family": "streaming",
+        "right": true,
+        "text": "Hablame de emilia perez la pelicula es buena?"
+      },
+      {
+        "case_id": "system-00",
+        "expected_family": "system",
+        "margin": 2.707814,
+        "predicted_family": "system",
+        "right": true,
+        "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)"
+      },
+      {
+        "case_id": "system-01",
+        "expected_family": "system",
+        "margin": 1.975687,
+        "predicted_family": "system",
+        "right": true,
+        "text": "1. No ya usamos mucha ram para baxy\n2. si intentalo"
+      },
+      {
+        "case_id": "system-02",
+        "expected_family": "system",
+        "margin": 1.291545,
+        "predicted_family": "system",
+        "right": true,
+        "text": "En latencia quien gana}? en consumo de recursos quien? ram?"
+      },
+      {
+        "case_id": "system-03",
+        "expected_family": "system",
+        "margin": 1.138068,
+        "predicted_family": "system",
+        "right": true,
+        "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU"
+      },
+      {
+        "case_id": "system-04",
+        "expected_family": "system",
+        "margin": 1.450202,
+        "predicted_family": "system",
+        "right": true,
+        "text": "Hay algo mas que use gpu??"
+      },
+      {
+        "case_id": "system-05",
+        "expected_family": "system",
+        "margin": 2.083688,
+        "predicted_family": "system",
+        "right": true,
+        "text": "Listoo la gpu dejo de usarseee"
+      },
+      {
+        "case_id": "task-00",
+        "expected_family": "task",
+        "margin": 2.058926,
+        "predicted_family": "task",
+        "right": true,
+        "text": "**3-5 s máx**. Todo lo de arriba lo excede."
+      },
+      {
+        "case_id": "task-01",
+        "expected_family": "task",
+        "margin": 0.016191,
+        "predicted_family": "task",
+        "right": true,
+        "text": "And which of those would you personally use for the required task?"
+      },
+      {
+        "case_id": "task-02",
+        "expected_family": "task",
+        "margin": 2.699404,
+        "predicted_family": "task",
+        "right": true,
+        "text": "Bien hay una nueva sesion, verifica todo , lo que salio mal y bien"
+      },
+      {
+        "case_id": "task-03",
+        "expected_family": "task",
+        "margin": 2.183261,
+        "predicted_family": "task",
+        "right": true,
+        "text": "Cuanto tiempo hasta que tengas todo listo? , como ha ido el progreso?"
+      },
+      {
+        "case_id": "task-04",
+        "expected_family": "task",
+        "margin": 2.069511,
+        "predicted_family": "task",
+        "right": true,
+        "text": "Deja todo lo que suma activado"
+      },
+      {
+        "case_id": "task-05",
+        "expected_family": "task",
+        "margin": 2.25785,
+        "predicted_family": "task",
+        "right": true,
+        "text": "Empieza de cero esta tarea"
+      },
+      {
+        "case_id": "vision-00",
+        "expected_family": "vision",
+        "margin": 1.061143,
+        "predicted_family": "vision",
+        "right": true,
+        "text": "Abre configuración de pantalla"
+      },
+      {
+        "case_id": "vision-01",
+        "expected_family": "vision",
+        "margin": 1.101944,
+        "predicted_family": "vision",
+        "right": true,
+        "text": "Activa cámara y mira qué hay"
+      },
+      {
+        "case_id": "vision-02",
+        "expected_family": "vision",
+        "margin": 0.232472,
+        "predicted_family": "vision",
+        "right": true,
+        "text": "Escribe Batman en la búsqueda que ves"
+      },
+      {
+        "case_id": "vision-03",
+        "expected_family": "vision",
+        "margin": 1.823463,
+        "predicted_family": "vision",
+        "right": true,
+        "text": "Graba la pantalla"
+      },
+      {
+        "case_id": "vision-04",
+        "expected_family": "vision",
+        "margin": 0.888004,
+        "predicted_family": "vision",
+        "right": true,
+        "text": "Lee el mensaje de error de la pantalla"
+      },
+      {
+        "case_id": "vision-05",
+        "expected_family": "vision",
+        "margin": 0.944242,
+        "predicted_family": "vision",
+        "right": true,
+        "text": "Lee lo que hay en pantalla"
+      },
+      {
+        "case_id": "web-00",
+        "expected_family": "web",
+        "margin": 1.529305,
+        "predicted_family": "web",
+        "right": true,
+        "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+      },
+      {
+        "case_id": "web-01",
+        "expected_family": "web",
+        "margin": 1.171149,
+        "predicted_family": "web",
+        "right": true,
+        "text": "Abre Wikipedia y busca Alan Turing"
+      },
+      {
+        "case_id": "web-02",
+        "expected_family": "web",
+        "margin": 1.207234,
+        "predicted_family": "web",
+        "right": true,
+        "text": "Abre opera gx y busca flash"
+      },
+      {
+        "case_id": "web-03",
+        "expected_family": "web",
+        "margin": 0.105312,
+        "predicted_family": "filesystem",
+        "right": false,
+        "text": "Busca archivos que contengan la palabra “Batman"
+      },
+      {
+        "case_id": "web-04",
+        "expected_family": "web",
+        "margin": 0.979548,
+        "predicted_family": "game",
+        "right": false,
+        "text": "Busca el App ID de Doom Eternal en Steam usando la API publica"
+      },
+      {
+        "case_id": "web-05",
+        "expected_family": "web",
+        "margin": 2.096328,
+        "predicted_family": "web",
+        "right": true,
+        "text": "Busca el botón Guardar y presiónalo"
+      },
+      {
+        "case_id": "wifi-00",
+        "expected_family": "wifi",
+        "margin": 0.710327,
+        "predicted_family": "wifi",
+        "right": true,
+        "text": "Conecta no Wi-Fi de novo"
+      },
+      {
+        "case_id": "wifi-01",
+        "expected_family": "wifi",
+        "margin": 1.508353,
+        "predicted_family": "wifi",
+        "right": true,
+        "text": "a qué wifi estoy conectado"
+      },
+      {
+        "case_id": "wifi-02",
+        "expected_family": "wifi",
+        "margin": 0.430356,
+        "predicted_family": "wifi",
+        "right": true,
+        "text": "apagá el wifi"
+      },
+      {
+        "case_id": "wifi-03",
+        "expected_family": "wifi",
+        "margin": 0.749063,
+        "predicted_family": "wifi",
+        "right": true,
+        "text": "cambia el wifi a EV 2"
+      },
+      {
+        "case_id": "wifi-04",
+        "expected_family": "wifi",
+        "margin": 1.096766,
+        "predicted_family": "wifi",
+        "right": true,
+        "text": "conecta el wifi, abre el correo y leeme el ultimo mensaje"
+      },
+      {
+        "case_id": "wifi-05",
+        "expected_family": "wifi",
+        "margin": 1.069507,
+        "predicted_family": "wifi",
+        "right": true,
+        "text": "conectame a la red wifi de la familia"
+      },
+      {
+        "case_id": "window-00",
+        "expected_family": "window",
+        "margin": 2.331689,
+        "predicted_family": "window",
+        "right": true,
+        "text": "Abre una ventana incógnito"
+      },
+      {
+        "case_id": "window-01",
+        "expected_family": "window",
+        "margin": 2.419503,
+        "predicted_family": "window",
+        "right": true,
+        "text": "Cerra la ventana activa"
+      },
+      {
+        "case_id": "window-02",
+        "expected_family": "window",
+        "margin": 0.401516,
+        "predicted_family": "window",
+        "right": true,
+        "text": "Minimiza tudo e mostra a área de trabalho"
+      },
+      {
+        "case_id": "window-03",
+        "expected_family": "window",
+        "margin": 1.716834,
+        "predicted_family": "window",
+        "right": true,
+        "text": "abre la ventana"
+      },
+      {
+        "case_id": "window-04",
+        "expected_family": "window",
+        "margin": 0.949808,
+        "predicted_family": "filesystem",
+        "right": false,
+        "text": "arrastra este archivo a esa ventana"
+      },
+      {
+        "case_id": "window-05",
+        "expected_family": "window",
+        "margin": 2.562102,
+        "predicted_family": "window",
+        "right": true,
+        "text": "arrastra una ventana liviana a la derecha"
+      }
+    ],
+    "right": 113,
+    "target_met": true,
+    "target_right": 103
+  },
+  "installation_touched": false,
+  "measured_at_utc": "2026-08-01T13:34:20.039645+00:00",
+  "method": "A class-balanced LinearSVC over word+character TF-IDF is blended with a class-balanced LinearSVC over the attested multilingual E5 embeddings. C values and blend weight are selected on a deterministic per-family development split. Training includes the other long-tail rows plus other historical single-family missions, including the recogniser-owned canonical phrasings needed to represent four absent classes, plus authenticated capability descriptions so every current family is represented. Normalised duplicates of all 147 frozen gate texts are removed before every fit and the gate is opened only after selection.",
+  "population": {
+    "authenticated_catalogue_seeds_before_deduplication": 336,
+    "broader_historical_support_before_deduplication": 1037,
+    "development_fit": 1227,
+    "development_validation": 146,
+    "frozen_holdout": 147,
+    "qualifying": 976,
+    "qualifying_training_after_holdout_removal": 829,
+    "text_overlap_between_training_and_holdout": 0,
+    "training_after_holdout_removal": 1373
+  },
+  "runtime_manifest_changed": false,
+  "schema": "baxy.heldout-family-classifier.v1",
+  "selection": {
+    "accuracy": 0.9863013698630136,
+    "candidate_configurations": 80,
+    "chosen_only_from_development_validation": true,
+    "lexical_c": 1.0,
+    "mean_margin": 3.4823805516658,
+    "semantic_c": 3.0,
+    "semantic_weight": 0.5
+  }
+}

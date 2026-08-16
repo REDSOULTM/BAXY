@@ -1,0 +1,32 @@
+{
+  "schema": "baxy-mind-shell-core-attestation-v1",
+  "journal_integrity_validated": true,
+  "journal_authentication": "hmac-sha256",
+  "journal_sha256": "9c32ff6200846f9b6a403473be780918fa23e98ce94d05aef817e96f9b5e16be",
+  "anchor_sha256": "30da3bc7d6138054ccf4841400e4ce6c11344b5fa5f291353c9210fe2ec2c479",
+  "journal_records": 2,
+  "started_records": 1,
+  "completed_records": 1,
+  "journal_structure_valid": true,
+  "invocation_pairs_valid": true,
+  "started_operations_match_completed": true,
+  "expected_read_only_operations_observed": false,
+  "operation_counts": {
+    "memory_status": 1,
+    "system_time": 0,
+    "system_status": 0,
+    "system_process_list": 0,
+    "task_list": 0,
+    "note_list": 0
+  },
+  "completions": [
+    {
+      "sequence": 2,
+      "operation": "memory.status",
+      "status": "completed",
+      "verified": true,
+      "replayed": false,
+      "effect_may_have_occurred": false
+    }
+  ]
+}

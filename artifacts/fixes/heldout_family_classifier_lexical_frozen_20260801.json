@@ -1,0 +1,1776 @@
+{
+  "authority": "The classifier produces a family hint only. It does not select a leaf, satisfy arguments, bypass grounding, or grant an effect.",
+  "effects_executed": 0,
+  "holdout": {
+    "accuracy": 0.8435,
+    "by_family": {
+      "app": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 96
+      },
+      "audio": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 159
+      },
+      "backup": {
+        "cases": 5,
+        "right": 4,
+        "training_rows": 16
+      },
+      "bluetooth": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 7
+      },
+      "browser": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 55
+      },
+      "calendar": {
+        "cases": 6,
+        "right": 5,
+        "training_rows": 10
+      },
+      "capture": {
+        "cases": 6,
+        "right": 4,
+        "training_rows": 10
+      },
+      "clipboard": {
+        "cases": 6,
+        "right": 4,
+        "training_rows": 10
+      },
+      "filesystem": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 83
+      },
+      "game": {
+        "cases": 6,
+        "right": 2,
+        "training_rows": 97
+      },
+      "media": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 208
+      },
+      "message": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 24
+      },
+      "note": {
+        "cases": 6,
+        "right": 4,
+        "training_rows": 23
+      },
+      "notification": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 14
+      },
+      "ocr": {
+        "cases": 1,
+        "right": 1,
+        "training_rows": 2
+      },
+      "office": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 32
+      },
+      "peripheral": {
+        "cases": 5,
+        "right": 0,
+        "training_rows": 6
+      },
+      "reminder": {
+        "cases": 6,
+        "right": 5,
+        "training_rows": 15
+      },
+      "routine": {
+        "cases": 4,
+        "right": 1,
+        "training_rows": 14
+      },
+      "streaming": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 35
+      },
+      "system": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 103
+      },
+      "task": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 63
+      },
+      "vision": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 75
+      },
+      "web": {
+        "cases": 6,
+        "right": 5,
+        "training_rows": 59
+      },
+      "wifi": {
+        "cases": 6,
+        "right": 6,
+        "training_rows": 28
+      },
+      "window": {
+        "cases": 6,
+        "right": 5,
+        "training_rows": 53
+      }
+    },
+    "cases": 147,
+    "component_accuracy": {
+      "lexical": 0.8503,
+      "selected_blend": 0.8435,
+      "semantic_e5": 0.0476
+    },
+    "predictions": [
+      {
+        "case_id": "app-00",
+        "expected_family": "app",
+        "lexical_predicted_family": "app",
+        "margin": 3.641887,
+        "predicted_family": "app",
+        "right": true,
+        "semantic_predicted_family": "message",
+        "text": "Abre Epic Games Launcher"
+      },
+      {
+        "case_id": "app-01",
+        "expected_family": "app",
+        "lexical_predicted_family": "app",
+        "margin": 3.859325,
+        "predicted_family": "app",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "Abre Notepad y luego cierralo"
+      },
+      {
+        "case_id": "app-02",
+        "expected_family": "app",
+        "lexical_predicted_family": "app",
+        "margin": 3.417229,
+        "predicted_family": "app",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Abre Steam con máximo 2 intentos"
+      },
+      {
+        "case_id": "app-03",
+        "expected_family": "app",
+        "lexical_predicted_family": "app",
+        "margin": 3.463715,
+        "predicted_family": "app",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "Abre steam 0"
+      },
+      {
+        "case_id": "app-04",
+        "expected_family": "app",
+        "lexical_predicted_family": "app",
+        "margin": 3.619115,
+        "predicted_family": "app",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "Abre steam 1"
+      },
+      {
+        "case_id": "app-05",
+        "expected_family": "app",
+        "lexical_predicted_family": "app",
+        "margin": 3.427341,
+        "predicted_family": "app",
+        "right": true,
+        "semantic_predicted_family": "message",
+        "text": "Abre steam 2"
+      },
+      {
+        "case_id": "audio-00",
+        "expected_family": "audio",
+        "lexical_predicted_family": "audio",
+        "margin": 4.057687,
+        "predicted_family": "audio",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "Abaixa o volume pra 30 por cento"
+      },
+      {
+        "case_id": "audio-01",
+        "expected_family": "audio",
+        "lexical_predicted_family": "audio",
+        "margin": 3.83273,
+        "predicted_family": "audio",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "Augmente le volume de 10 pour cent"
+      },
+      {
+        "case_id": "audio-02",
+        "expected_family": "audio",
+        "lexical_predicted_family": "audio",
+        "margin": 3.453977,
+        "predicted_family": "audio",
+        "right": true,
+        "semantic_predicted_family": "streaming",
+        "text": "Baja el volumen 1 punto y dime si pudiste verificarlo"
+      },
+      {
+        "case_id": "audio-03",
+        "expected_family": "audio",
+        "lexical_predicted_family": "audio",
+        "margin": 3.886417,
+        "predicted_family": "audio",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "Baja el volumen 10%"
+      },
+      {
+        "case_id": "audio-04",
+        "expected_family": "audio",
+        "lexical_predicted_family": "audio",
+        "margin": 3.804776,
+        "predicted_family": "audio",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "Bota o volume em 40 por cento"
+      },
+      {
+        "case_id": "audio-05",
+        "expected_family": "audio",
+        "lexical_predicted_family": "audio",
+        "margin": 3.357499,
+        "predicted_family": "audio",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "Cambia el volumen a 10"
+      },
+      {
+        "case_id": "backup-00",
+        "expected_family": "backup",
+        "lexical_predicted_family": "filesystem",
+        "margin": 3.659043,
+        "predicted_family": "filesystem",
+        "right": false,
+        "semantic_predicted_family": "vision",
+        "text": "Edita archivo y crea respaldo antes"
+      },
+      {
+        "case_id": "backup-01",
+        "expected_family": "backup",
+        "lexical_predicted_family": "backup",
+        "margin": 0.885912,
+        "predicted_family": "backup",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "cambia .env para usar ollama, pero solo con backup y confirmación"
+      },
+      {
+        "case_id": "backup-02",
+        "expected_family": "backup",
+        "lexical_predicted_family": "backup",
+        "margin": 0.718982,
+        "predicted_family": "backup",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "faz um backup do registro antes de mexer em algo"
+      },
+      {
+        "case_id": "backup-03",
+        "expected_family": "backup",
+        "lexical_predicted_family": "backup",
+        "margin": 0.617341,
+        "predicted_family": "backup",
+        "right": true,
+        "semantic_predicted_family": "streaming",
+        "text": "hace un backup de mis documentos a un pendrive"
+      },
+      {
+        "case_id": "backup-04",
+        "expected_family": "backup",
+        "lexical_predicted_family": "backup",
+        "margin": 0.830766,
+        "predicted_family": "backup",
+        "right": true,
+        "semantic_predicted_family": "app",
+        "text": "show me the log of the backup job"
+      },
+      {
+        "case_id": "bluetooth-00",
+        "expected_family": "bluetooth",
+        "lexical_predicted_family": "bluetooth",
+        "margin": 1.223222,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "semantic_predicted_family": "notification",
+        "text": "abre configuración y entra a Bluetooth"
+      },
+      {
+        "case_id": "bluetooth-01",
+        "expected_family": "bluetooth",
+        "lexical_predicted_family": "bluetooth",
+        "margin": 3.445208,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "activa el bluetooth"
+      },
+      {
+        "case_id": "bluetooth-02",
+        "expected_family": "bluetooth",
+        "lexical_predicted_family": "bluetooth",
+        "margin": 1.328098,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "apagá el bluetooth"
+      },
+      {
+        "case_id": "bluetooth-03",
+        "expected_family": "bluetooth",
+        "lexical_predicted_family": "bluetooth",
+        "margin": 2.034292,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "conecta el bluetooth"
+      },
+      {
+        "case_id": "bluetooth-04",
+        "expected_family": "bluetooth",
+        "lexical_predicted_family": "bluetooth",
+        "margin": 3.116988,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "semantic_predicted_family": "window",
+        "text": "desactivá el bluetooth"
+      },
+      {
+        "case_id": "bluetooth-05",
+        "expected_family": "bluetooth",
+        "lexical_predicted_family": "bluetooth",
+        "margin": 3.418015,
+        "predicted_family": "bluetooth",
+        "right": true,
+        "semantic_predicted_family": "streaming",
+        "text": "prendé el bluetooth"
+      },
+      {
+        "case_id": "browser-00",
+        "expected_family": "browser",
+        "lexical_predicted_family": "browser",
+        "margin": 3.648704,
+        "predicted_family": "browser",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Abre el navegador por defecto"
+      },
+      {
+        "case_id": "browser-01",
+        "expected_family": "browser",
+        "lexical_predicted_family": "browser",
+        "margin": 3.386635,
+        "predicted_family": "browser",
+        "right": true,
+        "semantic_predicted_family": "ocr",
+        "text": "Abre github.com"
+      },
+      {
+        "case_id": "browser-02",
+        "expected_family": "browser",
+        "lexical_predicted_family": "browser",
+        "margin": 3.428928,
+        "predicted_family": "browser",
+        "right": true,
+        "semantic_predicted_family": "notification",
+        "text": "Abre la página de Steam de Marvel Rivals"
+      },
+      {
+        "case_id": "browser-03",
+        "expected_family": "browser",
+        "lexical_predicted_family": "browser",
+        "margin": 2.095627,
+        "predicted_family": "browser",
+        "right": true,
+        "semantic_predicted_family": "notification",
+        "text": "Abre la página de descargas de Python"
+      },
+      {
+        "case_id": "browser-04",
+        "expected_family": "browser",
+        "lexical_predicted_family": "browser",
+        "margin": 2.4334,
+        "predicted_family": "browser",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Abre la página oficial de OpenAI"
+      },
+      {
+        "case_id": "browser-05",
+        "expected_family": "browser",
+        "lexical_predicted_family": "browser",
+        "margin": 2.876388,
+        "predicted_family": "browser",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Abre o Google no navegador"
+      },
+      {
+        "case_id": "calendar-00",
+        "expected_family": "calendar",
+        "lexical_predicted_family": "vision",
+        "margin": 0.952947,
+        "predicted_family": "vision",
+        "right": false,
+        "semantic_predicted_family": "web",
+        "text": "Write me an email that I cant make it to the meeting"
+      },
+      {
+        "case_id": "calendar-01",
+        "expected_family": "calendar",
+        "lexical_predicted_family": "calendar",
+        "margin": 0.572546,
+        "predicted_family": "calendar",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "abrí el bloc de notas y escribí reunion manana"
+      },
+      {
+        "case_id": "calendar-02",
+        "expected_family": "calendar",
+        "lexical_predicted_family": "calendar",
+        "margin": 2.124912,
+        "predicted_family": "calendar",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "agenda una reunion el viernes a las cinco"
+      },
+      {
+        "case_id": "calendar-03",
+        "expected_family": "calendar",
+        "lexical_predicted_family": "calendar",
+        "margin": 2.128707,
+        "predicted_family": "calendar",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "agendá una reunión el viernes a las 3"
+      },
+      {
+        "case_id": "calendar-04",
+        "expected_family": "calendar",
+        "lexical_predicted_family": "calendar",
+        "margin": 1.459519,
+        "predicted_family": "calendar",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "crea un evento el viernes a las 4"
+      },
+      {
+        "case_id": "calendar-05",
+        "expected_family": "calendar",
+        "lexical_predicted_family": "calendar",
+        "margin": 0.432151,
+        "predicted_family": "calendar",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "escribile un email a juan con el asunto reunion diciendo nos vemos"
+      },
+      {
+        "case_id": "capture-00",
+        "expected_family": "capture",
+        "lexical_predicted_family": "vision",
+        "margin": 2.539153,
+        "predicted_family": "vision",
+        "right": false,
+        "semantic_predicted_family": "backup",
+        "text": "Sacale una foto de captura a mi pc, que se ve?"
+      },
+      {
+        "case_id": "capture-01",
+        "expected_family": "capture",
+        "lexical_predicted_family": "capture",
+        "margin": 2.844722,
+        "predicted_family": "capture",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "how do I take a screenshot in Windows?"
+      },
+      {
+        "case_id": "capture-02",
+        "expected_family": "capture",
+        "lexical_predicted_family": "capture",
+        "margin": 1.237348,
+        "predicted_family": "capture",
+        "right": true,
+        "semantic_predicted_family": "capture",
+        "text": "tira uma captura de tela"
+      },
+      {
+        "case_id": "capture-03",
+        "expected_family": "capture",
+        "lexical_predicted_family": "capture",
+        "margin": 3.123075,
+        "predicted_family": "capture",
+        "right": true,
+        "semantic_predicted_family": "message",
+        "text": "toma screenshot, guárdalo y dime el path"
+      },
+      {
+        "case_id": "capture-04",
+        "expected_family": "capture",
+        "lexical_predicted_family": "capture",
+        "margin": 0.97821,
+        "predicted_family": "capture",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "toma una captura y guardala en el escritorio"
+      },
+      {
+        "case_id": "capture-05",
+        "expected_family": "capture",
+        "lexical_predicted_family": "capture",
+        "margin": 0.120608,
+        "predicted_family": "filesystem",
+        "right": false,
+        "semantic_predicted_family": "message",
+        "text": "toma una captura, guardala en el escritorio y abre el explorador ahi"
+      },
+      {
+        "case_id": "clipboard-00",
+        "expected_family": "clipboard",
+        "lexical_predicted_family": "app",
+        "margin": 2.129053,
+        "predicted_family": "app",
+        "right": false,
+        "semantic_predicted_family": "system",
+        "text": "Pega esto en el bloc de notas"
+      },
+      {
+        "case_id": "clipboard-01",
+        "expected_family": "clipboard",
+        "lexical_predicted_family": "clipboard",
+        "margin": 1.372238,
+        "predicted_family": "clipboard",
+        "right": true,
+        "semantic_predicted_family": "window",
+        "text": "copia texto de Notepad al portapapeles"
+      },
+      {
+        "case_id": "clipboard-02",
+        "expected_family": "clipboard",
+        "lexical_predicted_family": "clipboard",
+        "margin": 2.467533,
+        "predicted_family": "clipboard",
+        "right": true,
+        "semantic_predicted_family": "window",
+        "text": "copiame este texto al portapapeles que lo necesito pegar"
+      },
+      {
+        "case_id": "clipboard-03",
+        "expected_family": "clipboard",
+        "lexical_predicted_family": "clipboard",
+        "margin": 1.828686,
+        "predicted_family": "clipboard",
+        "right": true,
+        "semantic_predicted_family": "package",
+        "text": "copy my email address to the clipboard so I can paste it"
+      },
+      {
+        "case_id": "clipboard-04",
+        "expected_family": "clipboard",
+        "lexical_predicted_family": "filesystem",
+        "margin": 2.89478,
+        "predicted_family": "filesystem",
+        "right": false,
+        "semantic_predicted_family": "notification",
+        "text": "pega texto en un archivo nuevo de Notepad"
+      },
+      {
+        "case_id": "clipboard-05",
+        "expected_family": "clipboard",
+        "lexical_predicted_family": "clipboard",
+        "margin": 2.757109,
+        "predicted_family": "clipboard",
+        "right": true,
+        "semantic_predicted_family": "package",
+        "text": "que hay en el portapapeles"
+      },
+      {
+        "case_id": "filesystem-00",
+        "expected_family": "filesystem",
+        "lexical_predicted_family": "filesystem",
+        "margin": 3.593326,
+        "predicted_family": "filesystem",
+        "right": true,
+        "semantic_predicted_family": "reminder",
+        "text": "Abre el archivo hola.txt del escritorio"
+      },
+      {
+        "case_id": "filesystem-01",
+        "expected_family": "filesystem",
+        "lexical_predicted_family": "filesystem",
+        "margin": 3.050343,
+        "predicted_family": "filesystem",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Abre el archivo más reciente de Descargas"
+      },
+      {
+        "case_id": "filesystem-02",
+        "expected_family": "filesystem",
+        "lexical_predicted_family": "filesystem",
+        "margin": 2.590591,
+        "predicted_family": "filesystem",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Abre el último archivo que descargué"
+      },
+      {
+        "case_id": "filesystem-03",
+        "expected_family": "filesystem",
+        "lexical_predicted_family": "filesystem",
+        "margin": 3.888951,
+        "predicted_family": "filesystem",
+        "right": true,
+        "semantic_predicted_family": "wifi",
+        "text": "Borra la carpeta CarterTest del escritorio"
+      },
+      {
+        "case_id": "filesystem-04",
+        "expected_family": "filesystem",
+        "lexical_predicted_family": "filesystem",
+        "margin": 3.804765,
+        "predicted_family": "filesystem",
+        "right": true,
+        "semantic_predicted_family": "wifi",
+        "text": "Crea un archivo de texto en el escritorio que diga prueba Carter"
+      },
+      {
+        "case_id": "filesystem-05",
+        "expected_family": "filesystem",
+        "lexical_predicted_family": "filesystem",
+        "margin": 3.865404,
+        "predicted_family": "filesystem",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "Crea una carpeta en el escritorio llamada CarterTest"
+      },
+      {
+        "case_id": "game-00",
+        "expected_family": "game",
+        "lexical_predicted_family": "app",
+        "margin": 2.16734,
+        "predicted_family": "app",
+        "right": false,
+        "semantic_predicted_family": "app",
+        "text": "Abre Big Picture"
+      },
+      {
+        "case_id": "game-01",
+        "expected_family": "game",
+        "lexical_predicted_family": "app",
+        "margin": 2.306603,
+        "predicted_family": "app",
+        "right": false,
+        "semantic_predicted_family": "message",
+        "text": "Abre Counter Strike"
+      },
+      {
+        "case_id": "game-02",
+        "expected_family": "game",
+        "lexical_predicted_family": "app",
+        "margin": 0.209483,
+        "predicted_family": "app",
+        "right": false,
+        "semantic_predicted_family": "office",
+        "text": "Abre Portal desde Steam"
+      },
+      {
+        "case_id": "game-03",
+        "expected_family": "game",
+        "lexical_predicted_family": "app",
+        "margin": 1.634907,
+        "predicted_family": "app",
+        "right": false,
+        "semantic_predicted_family": "message",
+        "text": "Abre a Loja do Steam"
+      },
+      {
+        "case_id": "game-04",
+        "expected_family": "game",
+        "lexical_predicted_family": "game",
+        "margin": 0.800836,
+        "predicted_family": "game",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "Abre capturas de Steam"
+      },
+      {
+        "case_id": "game-05",
+        "expected_family": "game",
+        "lexical_predicted_family": "game",
+        "margin": 2.646942,
+        "predicted_family": "game",
+        "right": true,
+        "semantic_predicted_family": "vision",
+        "text": "Abre mi biblioteca de Steam"
+      },
+      {
+        "case_id": "media-00",
+        "expected_family": "media",
+        "lexical_predicted_family": "media",
+        "margin": 2.789474,
+        "predicted_family": "media",
+        "right": true,
+        "semantic_predicted_family": "wifi",
+        "text": "Active la fenêtre de Spotify"
+      },
+      {
+        "case_id": "media-01",
+        "expected_family": "media",
+        "lexical_predicted_family": "media",
+        "margin": 2.796154,
+        "predicted_family": "media",
+        "right": true,
+        "semantic_predicted_family": "memory",
+        "text": "Affiche la fenêtre de Spotify par-dessus les autres"
+      },
+      {
+        "case_id": "media-02",
+        "expected_family": "media",
+        "lexical_predicted_family": "media",
+        "margin": 2.244197,
+        "predicted_family": "media",
+        "right": true,
+        "semantic_predicted_family": "routine",
+        "text": "Ahora estoy poniendo musica en  mi pc, lo quieres probar?"
+      },
+      {
+        "case_id": "media-03",
+        "expected_family": "media",
+        "lexical_predicted_family": "media",
+        "margin": 4.044035,
+        "predicted_family": "media",
+        "right": true,
+        "semantic_predicted_family": "routine",
+        "text": "Apri Spotify e fai partire la musica"
+      },
+      {
+        "case_id": "media-04",
+        "expected_family": "media",
+        "lexical_predicted_family": "media",
+        "margin": 3.815821,
+        "predicted_family": "media",
+        "right": true,
+        "semantic_predicted_family": "media",
+        "text": "Baxy, pon música”."
+      },
+      {
+        "case_id": "media-05",
+        "expected_family": "media",
+        "lexical_predicted_family": "media",
+        "margin": 2.837093,
+        "predicted_family": "media",
+        "right": true,
+        "semantic_predicted_family": "window",
+        "text": "Can you play tic tac toe with me?"
+      },
+      {
+        "case_id": "message-00",
+        "expected_family": "message",
+        "lexical_predicted_family": "message",
+        "margin": 3.490591,
+        "predicted_family": "message",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Dile a amor en WhatsApp que la amo mucho."
+      },
+      {
+        "case_id": "message-01",
+        "expected_family": "message",
+        "lexical_predicted_family": "message",
+        "margin": 3.714581,
+        "predicted_family": "message",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Dile a amor en wsp que la amo"
+      },
+      {
+        "case_id": "message-02",
+        "expected_family": "message",
+        "lexical_predicted_family": "message",
+        "margin": 3.659269,
+        "predicted_family": "message",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Dile a amor que la amo demasiado en wsp"
+      },
+      {
+        "case_id": "message-03",
+        "expected_family": "message",
+        "lexical_predicted_family": "message",
+        "margin": 3.717295,
+        "predicted_family": "message",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Dile a amor que la amo en wsp"
+      },
+      {
+        "case_id": "message-04",
+        "expected_family": "message",
+        "lexical_predicted_family": "message",
+        "margin": 3.08532,
+        "predicted_family": "message",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Dile a amor que la amo muchisimo en wsp"
+      },
+      {
+        "case_id": "message-05",
+        "expected_family": "message",
+        "lexical_predicted_family": "message",
+        "margin": 3.421168,
+        "predicted_family": "message",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "Dile a enmanuel que es una increible persona en wsp"
+      },
+      {
+        "case_id": "note-00",
+        "expected_family": "note",
+        "lexical_predicted_family": "note",
+        "margin": 1.261076,
+        "predicted_family": "note",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "anota que tengo que comprar pan"
+      },
+      {
+        "case_id": "note-01",
+        "expected_family": "note",
+        "lexical_predicted_family": "vision",
+        "margin": 0.48737,
+        "predicted_family": "vision",
+        "right": false,
+        "semantic_predicted_family": "audio",
+        "text": "anota que tengo que llamar al medico manana"
+      },
+      {
+        "case_id": "note-02",
+        "expected_family": "note",
+        "lexical_predicted_family": "note",
+        "margin": 2.784544,
+        "predicted_family": "note",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "apri il blocco note e scrivi la lista della spesa"
+      },
+      {
+        "case_id": "note-03",
+        "expected_family": "note",
+        "lexical_predicted_family": "note",
+        "margin": 2.002478,
+        "predicted_family": "note",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "apri il blocco note, scrivi la lista e salvala"
+      },
+      {
+        "case_id": "note-04",
+        "expected_family": "note",
+        "lexical_predicted_family": "note",
+        "margin": 0.731197,
+        "predicted_family": "note",
+        "right": true,
+        "semantic_predicted_family": "media",
+        "text": "apri la finestra Salva con nome nel Blocco note"
+      },
+      {
+        "case_id": "note-05",
+        "expected_family": "note",
+        "lexical_predicted_family": "filesystem",
+        "margin": 2.573306,
+        "predicted_family": "filesystem",
+        "right": false,
+        "semantic_predicted_family": "media",
+        "text": "convierte nota.txt a mayúsculas en un archivo nuevo"
+      },
+      {
+        "case_id": "notification-00",
+        "expected_family": "notification",
+        "lexical_predicted_family": "notification",
+        "margin": 3.412477,
+        "predicted_family": "notification",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "Pone una alarma para las 7 de la maniana"
+      },
+      {
+        "case_id": "notification-01",
+        "expected_family": "notification",
+        "lexical_predicted_family": "notification",
+        "margin": 2.814422,
+        "predicted_family": "notification",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "alarma para mañana 8am"
+      },
+      {
+        "case_id": "notification-02",
+        "expected_family": "notification",
+        "lexical_predicted_family": "notification",
+        "margin": 1.638455,
+        "predicted_family": "notification",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "arranca un temporizador de 10 minutos"
+      },
+      {
+        "case_id": "notification-03",
+        "expected_family": "notification",
+        "lexical_predicted_family": "notification",
+        "margin": 2.439771,
+        "predicted_family": "notification",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "cancelá la alarma"
+      },
+      {
+        "case_id": "notification-04",
+        "expected_family": "notification",
+        "lexical_predicted_family": "notification",
+        "margin": 3.840928,
+        "predicted_family": "notification",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "pone un timer de 5 minutos"
+      },
+      {
+        "case_id": "notification-05",
+        "expected_family": "notification",
+        "lexical_predicted_family": "notification",
+        "margin": 1.812704,
+        "predicted_family": "notification",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "ponme un temporizador de diez minutos"
+      },
+      {
+        "case_id": "ocr-00",
+        "expected_family": "ocr",
+        "lexical_predicted_family": "ocr",
+        "margin": 0.301115,
+        "predicted_family": "ocr",
+        "right": true,
+        "semantic_predicted_family": "backup",
+        "text": "OCR limitado, mejor para detection"
+      },
+      {
+        "case_id": "office-00",
+        "expected_family": "office",
+        "lexical_predicted_family": "office",
+        "margin": 1.628654,
+        "predicted_family": "office",
+        "right": true,
+        "semantic_predicted_family": "vision",
+        "text": "Can you make me a PowerPoint?"
+      },
+      {
+        "case_id": "office-01",
+        "expected_family": "office",
+        "lexical_predicted_family": "office",
+        "margin": 2.773069,
+        "predicted_family": "office",
+        "right": true,
+        "semantic_predicted_family": "app",
+        "text": "Cierre de Word podía perder trabajo"
+      },
+      {
+        "case_id": "office-02",
+        "expected_family": "office",
+        "lexical_predicted_family": "office",
+        "margin": 3.041453,
+        "predicted_family": "office",
+        "right": true,
+        "semantic_predicted_family": "window",
+        "text": "Donde dejaste el Powerpoint? Que me hiciste"
+      },
+      {
+        "case_id": "office-03",
+        "expected_family": "office",
+        "lexical_predicted_family": "office",
+        "margin": 3.305233,
+        "predicted_family": "office",
+        "right": true,
+        "semantic_predicted_family": "web",
+        "text": "Fecha tudo que tá aberto do Word"
+      },
+      {
+        "case_id": "office-04",
+        "expected_family": "office",
+        "lexical_predicted_family": "office",
+        "margin": 3.868718,
+        "predicted_family": "office",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Haz un powerpoint hablando de amor de 6 diapositivas"
+      },
+      {
+        "case_id": "office-05",
+        "expected_family": "office",
+        "lexical_predicted_family": "office",
+        "margin": 3.511752,
+        "predicted_family": "office",
+        "right": true,
+        "semantic_predicted_family": "office",
+        "text": "Hazme un PowerPoint de siete diapositivas que hable de los dinosaurios"
+      },
+      {
+        "case_id": "peripheral-00",
+        "expected_family": "peripheral",
+        "lexical_predicted_family": "audio",
+        "margin": 0.999356,
+        "predicted_family": "audio",
+        "right": false,
+        "semantic_predicted_family": "backup",
+        "text": "anotá que terminé de configurar el micrófono"
+      },
+      {
+        "case_id": "peripheral-01",
+        "expected_family": "peripheral",
+        "lexical_predicted_family": "audio",
+        "margin": 0.541992,
+        "predicted_family": "audio",
+        "right": false,
+        "semantic_predicted_family": "window",
+        "text": "cambia el microfono por defecto"
+      },
+      {
+        "case_id": "peripheral-02",
+        "expected_family": "peripheral",
+        "lexical_predicted_family": "app",
+        "margin": 0.251894,
+        "predicted_family": "audio",
+        "right": false,
+        "semantic_predicted_family": "note",
+        "text": "mutea el micrófono en discord"
+      },
+      {
+        "case_id": "peripheral-03",
+        "expected_family": "peripheral",
+        "lexical_predicted_family": "browser",
+        "margin": 0.118572,
+        "predicted_family": "browser",
+        "right": false,
+        "semantic_predicted_family": "vision",
+        "text": "set the HP LaserJet as my default printer"
+      },
+      {
+        "case_id": "peripheral-04",
+        "expected_family": "peripheral",
+        "lexical_predicted_family": "audio",
+        "margin": 2.564498,
+        "predicted_family": "audio",
+        "right": false,
+        "semantic_predicted_family": "game",
+        "text": "silenciame el micrófono"
+      },
+      {
+        "case_id": "reminder-00",
+        "expected_family": "reminder",
+        "lexical_predicted_family": "reminder",
+        "margin": 1.854297,
+        "predicted_family": "reminder",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "avisame en 20 minutos que saque la comida"
+      },
+      {
+        "case_id": "reminder-01",
+        "expected_family": "reminder",
+        "lexical_predicted_family": "system",
+        "margin": 0.949788,
+        "predicted_family": "system",
+        "right": false,
+        "semantic_predicted_family": "clipboard",
+        "text": "avisame en una hora que salgo"
+      },
+      {
+        "case_id": "reminder-02",
+        "expected_family": "reminder",
+        "lexical_predicted_family": "reminder",
+        "margin": 2.426559,
+        "predicted_family": "reminder",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "ponme un recordatorio en 2 minutos para tomar agua"
+      },
+      {
+        "case_id": "reminder-03",
+        "expected_family": "reminder",
+        "lexical_predicted_family": "reminder",
+        "margin": 1.977242,
+        "predicted_family": "reminder",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "ponme un recordatorio para las 3 de la tarde"
+      },
+      {
+        "case_id": "reminder-04",
+        "expected_family": "reminder",
+        "lexical_predicted_family": "reminder",
+        "margin": 3.294454,
+        "predicted_family": "reminder",
+        "right": true,
+        "semantic_predicted_family": "browser",
+        "text": "ponme un recordatorio para llamar al dentista"
+      },
+      {
+        "case_id": "reminder-05",
+        "expected_family": "reminder",
+        "lexical_predicted_family": "reminder",
+        "margin": 1.865283,
+        "predicted_family": "reminder",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "recordatorio de tomar agua en 1 hora"
+      },
+      {
+        "case_id": "routine-00",
+        "expected_family": "routine",
+        "lexical_predicted_family": "web",
+        "margin": 0.171776,
+        "predicted_family": "web",
+        "right": false,
+        "semantic_predicted_family": "filesystem",
+        "text": "armá el hábito de salir a correr y marcá que ya lo hice"
+      },
+      {
+        "case_id": "routine-01",
+        "expected_family": "routine",
+        "lexical_predicted_family": "routine",
+        "margin": 2.040207,
+        "predicted_family": "routine",
+        "right": true,
+        "semantic_predicted_family": "vision",
+        "text": "crea una rutina que cada manana me de la hora"
+      },
+      {
+        "case_id": "routine-02",
+        "expected_family": "routine",
+        "lexical_predicted_family": "filesystem",
+        "margin": 0.291666,
+        "predicted_family": "task",
+        "right": false,
+        "semantic_predicted_family": "browser",
+        "text": "creá el hábito de leer y registrá que lo hice hoy"
+      },
+      {
+        "case_id": "routine-03",
+        "expected_family": "routine",
+        "lexical_predicted_family": "message",
+        "margin": 0.551404,
+        "predicted_family": "message",
+        "right": false,
+        "semantic_predicted_family": "browser",
+        "text": "cria o hábito de ler e regista que já o fiz hoje"
+      },
+      {
+        "case_id": "streaming-00",
+        "expected_family": "streaming",
+        "lexical_predicted_family": "streaming",
+        "margin": 1.2774,
+        "predicted_family": "streaming",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Abri YouTube en el navegador"
+      },
+      {
+        "case_id": "streaming-01",
+        "expected_family": "streaming",
+        "lexical_predicted_family": "streaming",
+        "margin": 2.151303,
+        "predicted_family": "streaming",
+        "right": true,
+        "semantic_predicted_family": "streaming",
+        "text": "Acabas de reanudar el video youtube , pero yo queria de opera gx"
+      },
+      {
+        "case_id": "streaming-02",
+        "expected_family": "streaming",
+        "lexical_predicted_family": "streaming",
+        "margin": 3.979908,
+        "predicted_family": "streaming",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "Antes de seguir quiero ver como pones una serie en disney y en netflix"
+      },
+      {
+        "case_id": "streaming-03",
+        "expected_family": "streaming",
+        "lexical_predicted_family": "streaming",
+        "margin": 2.837549,
+        "predicted_family": "streaming",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "Donde puedo ver la pelicula de superman que salio el ano pasado??"
+      },
+      {
+        "case_id": "streaming-04",
+        "expected_family": "streaming",
+        "lexical_predicted_family": "streaming",
+        "margin": 2.618996,
+        "predicted_family": "streaming",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "Elige el primer resultado de YouTube"
+      },
+      {
+        "case_id": "streaming-05",
+        "expected_family": "streaming",
+        "lexical_predicted_family": "streaming",
+        "margin": 3.80592,
+        "predicted_family": "streaming",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "Hablame de emilia perez la pelicula es buena?"
+      },
+      {
+        "case_id": "system-00",
+        "expected_family": "system",
+        "lexical_predicted_family": "system",
+        "margin": 3.748745,
+        "predicted_family": "system",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "0 (Windows + 6 GB; evitar uso de RAM como cache de prompt)"
+      },
+      {
+        "case_id": "system-01",
+        "expected_family": "system",
+        "lexical_predicted_family": "system",
+        "margin": 2.984127,
+        "predicted_family": "system",
+        "right": true,
+        "semantic_predicted_family": "system",
+        "text": "1. No ya usamos mucha ram para baxy\n2. si intentalo"
+      },
+      {
+        "case_id": "system-02",
+        "expected_family": "system",
+        "lexical_predicted_family": "system",
+        "margin": 0.853049,
+        "predicted_family": "system",
+        "right": true,
+        "semantic_predicted_family": "backup",
+        "text": "En latencia quien gana}? en consumo de recursos quien? ram?"
+      },
+      {
+        "case_id": "system-03",
+        "expected_family": "system",
+        "lexical_predicted_family": "system",
+        "margin": 1.991063,
+        "predicted_family": "system",
+        "right": true,
+        "semantic_predicted_family": "audio",
+        "text": "Explícame en 8 líneas por qué un LLM local puede usar GPU"
+      },
+      {
+        "case_id": "system-04",
+        "expected_family": "system",
+        "lexical_predicted_family": "system",
+        "margin": 2.275488,
+        "predicted_family": "system",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Hay algo mas que use gpu??"
+      },
+      {
+        "case_id": "system-05",
+        "expected_family": "system",
+        "lexical_predicted_family": "system",
+        "margin": 3.807989,
+        "predicted_family": "system",
+        "right": true,
+        "semantic_predicted_family": "vision",
+        "text": "Listoo la gpu dejo de usarseee"
+      },
+      {
+        "case_id": "task-00",
+        "expected_family": "task",
+        "lexical_predicted_family": "task",
+        "margin": 3.702751,
+        "predicted_family": "task",
+        "right": true,
+        "semantic_predicted_family": "backup",
+        "text": "**3-5 s máx**. Todo lo de arriba lo excede."
+      },
+      {
+        "case_id": "task-01",
+        "expected_family": "task",
+        "lexical_predicted_family": "task",
+        "margin": 0.888609,
+        "predicted_family": "task",
+        "right": true,
+        "semantic_predicted_family": "vision",
+        "text": "And which of those would you personally use for the required task?"
+      },
+      {
+        "case_id": "task-02",
+        "expected_family": "task",
+        "lexical_predicted_family": "task",
+        "margin": 3.772044,
+        "predicted_family": "task",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "Bien hay una nueva sesion, verifica todo , lo que salio mal y bien"
+      },
+      {
+        "case_id": "task-03",
+        "expected_family": "task",
+        "lexical_predicted_family": "task",
+        "margin": 3.08708,
+        "predicted_family": "task",
+        "right": true,
+        "semantic_predicted_family": "routine",
+        "text": "Cuanto tiempo hasta que tengas todo listo? , como ha ido el progreso?"
+      },
+      {
+        "case_id": "task-04",
+        "expected_family": "task",
+        "lexical_predicted_family": "task",
+        "margin": 3.798185,
+        "predicted_family": "task",
+        "right": true,
+        "semantic_predicted_family": "note",
+        "text": "Deja todo lo que suma activado"
+      },
+      {
+        "case_id": "task-05",
+        "expected_family": "task",
+        "lexical_predicted_family": "task",
+        "margin": 3.37048,
+        "predicted_family": "task",
+        "right": true,
+        "semantic_predicted_family": "media",
+        "text": "Empieza de cero esta tarea"
+      },
+      {
+        "case_id": "vision-00",
+        "expected_family": "vision",
+        "lexical_predicted_family": "vision",
+        "margin": 1.938166,
+        "predicted_family": "vision",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "Abre configuración de pantalla"
+      },
+      {
+        "case_id": "vision-01",
+        "expected_family": "vision",
+        "lexical_predicted_family": "vision",
+        "margin": 2.934656,
+        "predicted_family": "vision",
+        "right": true,
+        "semantic_predicted_family": "bluetooth",
+        "text": "Activa cámara y mira qué hay"
+      },
+      {
+        "case_id": "vision-02",
+        "expected_family": "vision",
+        "lexical_predicted_family": "vision",
+        "margin": 0.36953,
+        "predicted_family": "vision",
+        "right": true,
+        "semantic_predicted_family": "office",
+        "text": "Escribe Batman en la búsqueda que ves"
+      },
+      {
+        "case_id": "vision-03",
+        "expected_family": "vision",
+        "lexical_predicted_family": "vision",
+        "margin": 3.991158,
+        "predicted_family": "vision",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "Graba la pantalla"
+      },
+      {
+        "case_id": "vision-04",
+        "expected_family": "vision",
+        "lexical_predicted_family": "vision",
+        "margin": 2.775344,
+        "predicted_family": "vision",
+        "right": true,
+        "semantic_predicted_family": "calendar",
+        "text": "Lee el mensaje de error de la pantalla"
+      },
+      {
+        "case_id": "vision-05",
+        "expected_family": "vision",
+        "lexical_predicted_family": "vision",
+        "margin": 3.828705,
+        "predicted_family": "vision",
+        "right": true,
+        "semantic_predicted_family": "clipboard",
+        "text": "Lee lo que hay en pantalla"
+      },
+      {
+        "case_id": "web-00",
+        "expected_family": "web",
+        "lexical_predicted_family": "web",
+        "margin": 3.726736,
+        "predicted_family": "web",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026"
+      },
+      {
+        "case_id": "web-01",
+        "expected_family": "web",
+        "lexical_predicted_family": "web",
+        "margin": 2.274626,
+        "predicted_family": "web",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Abre Wikipedia y busca Alan Turing"
+      },
+      {
+        "case_id": "web-02",
+        "expected_family": "web",
+        "lexical_predicted_family": "web",
+        "margin": 3.065709,
+        "predicted_family": "web",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Abre opera gx y busca flash"
+      },
+      {
+        "case_id": "web-03",
+        "expected_family": "web",
+        "lexical_predicted_family": "web",
+        "margin": 0.194207,
+        "predicted_family": "web",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Busca archivos que contengan la palabra “Batman"
+      },
+      {
+        "case_id": "web-04",
+        "expected_family": "web",
+        "lexical_predicted_family": "game",
+        "margin": 1.487053,
+        "predicted_family": "game",
+        "right": false,
+        "semantic_predicted_family": "game",
+        "text": "Busca el App ID de Doom Eternal en Steam usando la API publica"
+      },
+      {
+        "case_id": "web-05",
+        "expected_family": "web",
+        "lexical_predicted_family": "web",
+        "margin": 3.216237,
+        "predicted_family": "web",
+        "right": true,
+        "semantic_predicted_family": "filesystem",
+        "text": "Busca el botón Guardar y presiónalo"
+      },
+      {
+        "case_id": "wifi-00",
+        "expected_family": "wifi",
+        "lexical_predicted_family": "wifi",
+        "margin": 3.463453,
+        "predicted_family": "wifi",
+        "right": true,
+        "semantic_predicted_family": "input",
+        "text": "Conecta no Wi-Fi de novo"
+      },
+      {
+        "case_id": "wifi-01",
+        "expected_family": "wifi",
+        "lexical_predicted_family": "wifi",
+        "margin": 3.426149,
+        "predicted_family": "wifi",
+        "right": true,
+        "semantic_predicted_family": "input",
+        "text": "a qué wifi estoy conectado"
+      },
+      {
+        "case_id": "wifi-02",
+        "expected_family": "wifi",
+        "lexical_predicted_family": "wifi",
+        "margin": 1.407912,
+        "predicted_family": "wifi",
+        "right": true,
+        "semantic_predicted_family": "input",
+        "text": "apagá el wifi"
+      },
+      {
+        "case_id": "wifi-03",
+        "expected_family": "wifi",
+        "lexical_predicted_family": "wifi",
+        "margin": 3.126656,
+        "predicted_family": "wifi",
+        "right": true,
+        "semantic_predicted_family": "input",
+        "text": "cambia el wifi a EV 2"
+      },
+      {
+        "case_id": "wifi-04",
+        "expected_family": "wifi",
+        "lexical_predicted_family": "wifi",
+        "margin": 3.261894,
+        "predicted_family": "wifi",
+        "right": true,
+        "semantic_predicted_family": "input",
+        "text": "conecta el wifi, abre el correo y leeme el ultimo mensaje"
+      },
+      {
+        "case_id": "wifi-05",
+        "expected_family": "wifi",
+        "lexical_predicted_family": "wifi",
+        "margin": 3.321709,
+        "predicted_family": "wifi",
+        "right": true,
+        "semantic_predicted_family": "input",
+        "text": "conectame a la red wifi de la familia"
+      },
+      {
+        "case_id": "window-00",
+        "expected_family": "window",
+        "lexical_predicted_family": "window",
+        "margin": 2.365528,
+        "predicted_family": "window",
+        "right": true,
+        "semantic_predicted_family": "backup",
+        "text": "Abre una ventana incógnito"
+      },
+      {
+        "case_id": "window-01",
+        "expected_family": "window",
+        "lexical_predicted_family": "window",
+        "margin": 3.749323,
+        "predicted_family": "window",
+        "right": true,
+        "semantic_predicted_family": "network",
+        "text": "Cerra la ventana activa"
+      },
+      {
+        "case_id": "window-02",
+        "expected_family": "window",
+        "lexical_predicted_family": "window",
+        "margin": 0.851563,
+        "predicted_family": "window",
+        "right": true,
+        "semantic_predicted_family": "task",
+        "text": "Minimiza tudo e mostra a área de trabalho"
+      },
+      {
+        "case_id": "window-03",
+        "expected_family": "window",
+        "lexical_predicted_family": "window",
+        "margin": 3.04307,
+        "predicted_family": "window",
+        "right": true,
+        "semantic_predicted_family": "network",
+        "text": "abre la ventana"
+      },
+      {
+        "case_id": "window-04",
+        "expected_family": "window",
+        "lexical_predicted_family": "filesystem",
+        "margin": 0.147247,
+        "predicted_family": "filesystem",
+        "right": false,
+        "semantic_predicted_family": "network",
+        "text": "arrastra este archivo a esa ventana"
+      },
+      {
+        "case_id": "window-05",
+        "expected_family": "window",
+        "lexical_predicted_family": "window",
+        "margin": 3.598394,
+        "predicted_family": "window",
+        "right": true,
+        "semantic_predicted_family": "memory",
+        "text": "arrastra una ventana liviana a la derecha"
+      }
+    ],
+    "right": 124,
+    "target_met": true,
+    "target_right": 103
+  },
+  "installation_touched": false,
+  "measured_at_utc": "2026-08-01T13:36:23.573107+00:00",
+  "method": "A class-balanced LinearSVC over word+character TF-IDF is blended with a class-balanced LinearSVC over the attested multilingual E5 embeddings. C values and blend weight are selected on a deterministic per-family development split. Training includes the other long-tail rows plus other historical single-family missions, including the recogniser-owned canonical phrasings needed to represent four absent classes, plus authenticated capability descriptions so every current family is represented. Normalised duplicates of all 147 frozen gate texts are removed before every fit and the gate is opened only after selection.",
+  "population": {
+    "authenticated_catalogue_seeds_before_deduplication": 336,
+    "broader_historical_support_before_deduplication": 1037,
+    "development_fit": 1209,
+    "development_validation": 144,
+    "frozen_holdout": 147,
+    "qualifying": 976,
+    "qualifying_training_after_holdout_removal": 809,
+    "text_overlap_between_training_and_holdout": 0,
+    "text_overlap_between_training_and_universal_holdout": 0,
+    "training_after_holdout_removal": 1353,
+    "universal_holdout": 20
+  },
+  "runtime_manifest_changed": false,
+  "schema": "baxy.heldout-family-classifier.v1",
+  "selection": {
+    "accuracy": 0.9930555555555556,
+    "candidate_configurations": 80,
+    "chosen_only_from_development_validation": true,
+    "lexical_c": 0.3,
+    "mean_margin": 3.8813854810921,
+    "semantic_c": 3.0,
+    "semantic_weight": 0.25
+  },
+  "universal_holdout": {
+    "cases": 20,
+    "families": 20,
+    "lexical_accuracy": 0.9,
+    "lexical_right": 18,
+    "rows": [
+      {
+        "expected_family": "app",
+        "lexical_predicted_family": "app",
+        "right": true,
+        "text": "open Notepad and Calculator side by side"
+      },
+      {
+        "expected_family": "audio",
+        "lexical_predicted_family": "audio",
+        "right": true,
+        "text": "sube el volumen del compu a 10."
+      },
+      {
+        "expected_family": "bluetooth",
+        "lexical_predicted_family": "bluetooth",
+        "right": true,
+        "text": "tengo el bluetooth encendido"
+      },
+      {
+        "expected_family": "browser",
+        "lexical_predicted_family": "browser",
+        "right": true,
+        "text": "abre o site github.com"
+      },
+      {
+        "expected_family": "calendar",
+        "lexical_predicted_family": "vision",
+        "right": false,
+        "text": "qué tengo en la agenda"
+      },
+      {
+        "expected_family": "capture",
+        "lexical_predicted_family": "capture",
+        "right": true,
+        "text": "toma una captura, recortala y guardala en el escritorio"
+      },
+      {
+        "expected_family": "clipboard",
+        "lexical_predicted_family": "clipboard",
+        "right": true,
+        "text": "qué hay en el portapapeles"
+      },
+      {
+        "expected_family": "filesystem",
+        "lexical_predicted_family": "filesystem",
+        "right": true,
+        "text": "elimina solo archivo temporal tmp.txt"
+      },
+      {
+        "expected_family": "game",
+        "lexical_predicted_family": "game",
+        "right": true,
+        "text": "limpia el texto de búsqueda de biblioteca"
+      },
+      {
+        "expected_family": "media",
+        "lexical_predicted_family": "media",
+        "right": true,
+        "text": "Fai partire la musica"
+      },
+      {
+        "expected_family": "message",
+        "lexical_predicted_family": "message",
+        "right": true,
+        "text": "envía un correo por mí"
+      },
+      {
+        "expected_family": "note",
+        "lexical_predicted_family": "note",
+        "right": true,
+        "text": "tomá nota de que compre pan"
+      },
+      {
+        "expected_family": "notification",
+        "lexical_predicted_family": "notification",
+        "right": true,
+        "text": "timer de 10 minutos"
+      },
+      {
+        "expected_family": "office",
+        "lexical_predicted_family": "office",
+        "right": true,
+        "text": "imprime esse documento que esta na pasta de downloads"
+      },
+      {
+        "expected_family": "reminder",
+        "lexical_predicted_family": "reminder",
+        "right": true,
+        "text": "remind me to take out the trash tomorrow"
+      },
+      {
+        "expected_family": "streaming",
+        "lexical_predicted_family": "streaming",
+        "right": true,
+        "text": "Va sur la chaîne YouTube de Mr Beast"
+      },
+      {
+        "expected_family": "system",
+        "lexical_predicted_family": "system",
+        "right": true,
+        "text": "tengo el brillo al máximo"
+      },
+      {
+        "expected_family": "task",
+        "lexical_predicted_family": "task",
+        "right": true,
+        "text": "Hazlo tu porfavor, mata todo lo que no sea el training"
+      },
+      {
+        "expected_family": "vision",
+        "lexical_predicted_family": "vision",
+        "right": true,
+        "text": "[external unsupported block: image]\n\nQue hago aquii??"
+      },
+      {
+        "expected_family": "web",
+        "lexical_predicted_family": "game",
+        "right": false,
+        "text": "Busca juegos de Batman"
+      }
+    ],
+    "semantic_e5_accuracy": 0.1
+  }
+}

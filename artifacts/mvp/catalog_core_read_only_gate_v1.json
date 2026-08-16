@@ -1,0 +1,3016 @@
+{
+  "schema": "baxy.mvp-core-provider-matrix.v1",
+  "measuredAtUtc": "2026-08-11T20:17:52.449195+00:00",
+  "scope": "all_contracts_and_non_memory_read_only_real_providers_no_effects",
+  "programSha256": "daa4259fecc60247e31a75e5e2db457deeed52f3db04015646b710a804c735df",
+  "core": "D:\\BAXY\\source\\src\\Baxy.Core\\bin\\Release\\net10.0-windows10.0.19041.0\\win-x64\\publish\\baxy-core.exe",
+  "coreSha256": "35ea35ee1d22be95159cc285acf1649c0f05eb30c861e4a0c6b9b0d91c64d3f8",
+  "coreVersion": "1.0.0",
+  "effectsExecuted": 0,
+  "seconds": 121.238,
+  "summary": {
+    "catalogOperations": 169,
+    "contractsPassed": 169,
+    "readOnlyProvidersAttempted": 56,
+    "readOnlyProvidersPassed": 56,
+    "appMemoryBoundaryRows": 11,
+    "failed": 0
+  },
+  "separateRequiredEvidence": {
+    "appMemoryGate": "RoutesEveryReviewedCatalogMemoryOperation",
+    "effectfulProviderSimulations": "pending"
+  },
+  "rows": [
+    {
+      "index": 1,
+      "operation": "app.close",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 2,
+      "operation": "app.installed",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "name"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 3,
+      "operation": "app.open",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 4,
+      "operation": "audio.microphone.mute",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 5,
+      "operation": "audio.mute",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 6,
+      "operation": "audio.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 7,
+      "operation": "audio.volume",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 8,
+      "operation": "audio.volume.adjust",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 9,
+      "operation": "backup.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 10,
+      "operation": "backup.known.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 11,
+      "operation": "backup.known.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 12,
+      "operation": "backup.known.restore.latest",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 13,
+      "operation": "backup.known.verify.latest",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "folder"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "known_backup_not_found",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 14,
+      "operation": "backup.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 15,
+      "operation": "backup.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 16,
+      "operation": "backup.verify",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "backupId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_backup_id",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 17,
+      "operation": "bluetooth.device.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 18,
+      "operation": "bluetooth.device.pair",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 19,
+      "operation": "bluetooth.radio.set",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 20,
+      "operation": "browser.control",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 21,
+      "operation": "browser.navigate",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 22,
+      "operation": "browser.navigate.named",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 23,
+      "operation": "browser.page.read",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 24,
+      "operation": "browser.tabs.list",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 25,
+      "operation": "calendar.event.create",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 26,
+      "operation": "calendar.event.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "endUtc",
+          "startUtc"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "outlook_profile_not_configured",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 27,
+      "operation": "capture.active.window",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 28,
+      "operation": "capture.screenshot",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 29,
+      "operation": "clipboard.copy",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 30,
+      "operation": "clipboard.paste",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 31,
+      "operation": "clipboard.read.text",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 32,
+      "operation": "clipboard.write.text",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 33,
+      "operation": "email.latest.read",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 34,
+      "operation": "email.latest.reply",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 35,
+      "operation": "filesystem.copy",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 36,
+      "operation": "filesystem.create.directory",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 37,
+      "operation": "filesystem.file.open.latest",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 38,
+      "operation": "filesystem.folder.open",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 39,
+      "operation": "filesystem.hash",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "resourceId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_resource_id",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 40,
+      "operation": "filesystem.known.duplicates",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "folder"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 41,
+      "operation": "filesystem.known.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "folder",
+          "query"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 42,
+      "operation": "filesystem.known.trash.named",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 43,
+      "operation": "filesystem.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 44,
+      "operation": "filesystem.move",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 45,
+      "operation": "filesystem.path.ensure.absent",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 46,
+      "operation": "filesystem.read.text",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "resourceId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_resource_id",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 47,
+      "operation": "filesystem.sandbox.append.named",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 48,
+      "operation": "filesystem.sandbox.diff.named",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "leftQuery",
+          "rightQuery"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "sandbox_named_file_not_found",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 49,
+      "operation": "filesystem.sandbox.move.named",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 50,
+      "operation": "filesystem.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "query"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 51,
+      "operation": "filesystem.trash.commit",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 52,
+      "operation": "filesystem.trash.prepare",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "resourceId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_resource_id",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 53,
+      "operation": "filesystem.trash.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 54,
+      "operation": "filesystem.write.text",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 55,
+      "operation": "game.catalog.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 56,
+      "operation": "game.install.cancel",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 57,
+      "operation": "game.install.cancel.active",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 58,
+      "operation": "game.install.commit",
+      "risk": "installation",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 59,
+      "operation": "game.install.named",
+      "risk": "installation",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 60,
+      "operation": "game.install.prepare",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "appId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "steam_app_id_invalid",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 61,
+      "operation": "game.install.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "appId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "steam_app_id_invalid",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 62,
+      "operation": "game.installed.named",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "provider",
+          "title"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 63,
+      "operation": "game.launch",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 64,
+      "operation": "game.purchase.commit",
+      "risk": "monetary",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 65,
+      "operation": "game.purchase.prepare",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "appId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "steam_price_authority_required",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 66,
+      "operation": "input.key.press",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 67,
+      "operation": "input.keyboard.layout",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 68,
+      "operation": "input.keyboard.open",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 69,
+      "operation": "input.keyboard.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 70,
+      "operation": "input.pointer.control",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 71,
+      "operation": "input.select.all",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 72,
+      "operation": "input.text.type",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 73,
+      "operation": "input.visible.click",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 74,
+      "operation": "media.control",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 75,
+      "operation": "media.play.exact",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 76,
+      "operation": "media.play.query",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 77,
+      "operation": "media.play.youtube",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 78,
+      "operation": "media.seek.relative",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 79,
+      "operation": "media.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "media_session_not_found",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 80,
+      "operation": "memory.correct",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 81,
+      "operation": "memory.disable",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 82,
+      "operation": "memory.enable",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 83,
+      "operation": "memory.export",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 84,
+      "operation": "memory.forget",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 85,
+      "operation": "memory.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 86,
+      "operation": "memory.recall",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 87,
+      "operation": "memory.save",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 88,
+      "operation": "memory.sensitive.save",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 89,
+      "operation": "memory.session.clear",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 90,
+      "operation": "memory.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "rejected",
+        "verified": false,
+        "errorCode": "invalid_private_envelope",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": true
+    },
+    {
+      "index": 91,
+      "operation": "message.recipient.resolve",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "channel",
+          "recipient"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "discord_client_not_running",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 92,
+      "operation": "message.send",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 93,
+      "operation": "network.dns.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 94,
+      "operation": "network.ip.list",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 95,
+      "operation": "network.ping",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "host"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 96,
+      "operation": "network.port.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 97,
+      "operation": "network.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 98,
+      "operation": "note.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 99,
+      "operation": "note.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 100,
+      "operation": "note.read",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 101,
+      "operation": "note.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 102,
+      "operation": "note.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "query"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 103,
+      "operation": "note.trash",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 104,
+      "operation": "note.update",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 105,
+      "operation": "notification.cancel.at",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 106,
+      "operation": "notification.cancel.latest",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 107,
+      "operation": "notification.diagnose",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 108,
+      "operation": "notification.dismiss",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 109,
+      "operation": "notification.list.due",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 110,
+      "operation": "notification.schedule",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 111,
+      "operation": "ocr.read",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 112,
+      "operation": "office.document.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 113,
+      "operation": "office.document.read",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "documentId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "office_document_not_resolved",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 114,
+      "operation": "package.install.commit",
+      "risk": "installation",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 115,
+      "operation": "package.install.prepare",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "packageId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "winget_adapter_unavailable",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 116,
+      "operation": "peripheral.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 117,
+      "operation": "peripheral.print",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 118,
+      "operation": "peripheral.scan",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 119,
+      "operation": "reminder.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 120,
+      "operation": "reminder.delete",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 121,
+      "operation": "reminder.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 122,
+      "operation": "reminder.resolve.exact",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "title"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "reminder_not_found",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 123,
+      "operation": "reminder.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 124,
+      "operation": "routine.delete",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 125,
+      "operation": "routine.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 126,
+      "operation": "routine.phrase.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 127,
+      "operation": "routine.read",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "routineId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 128,
+      "operation": "routine.resolve.exact",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "name"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "routine_not_found",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 129,
+      "operation": "routine.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 130,
+      "operation": "routine.set.enabled",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 131,
+      "operation": "streaming.navigate",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 132,
+      "operation": "streaming.play.named",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 133,
+      "operation": "system.application.crash.diagnose",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 134,
+      "operation": "system.identity",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 135,
+      "operation": "system.power",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 136,
+      "operation": "system.process.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 137,
+      "operation": "system.process.terminate.named",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 138,
+      "operation": "system.recyclebin.empty",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 139,
+      "operation": "system.settings.adjust",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 140,
+      "operation": "system.settings.set",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 141,
+      "operation": "system.settings.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "setting"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 142,
+      "operation": "system.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 143,
+      "operation": "system.time",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 144,
+      "operation": "task.complete",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 145,
+      "operation": "task.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 146,
+      "operation": "task.delete",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 147,
+      "operation": "task.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 148,
+      "operation": "task.reopen",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 149,
+      "operation": "task.resolve.exact",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "title"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "task_not_found",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 150,
+      "operation": "task.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 151,
+      "operation": "task.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "query"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 152,
+      "operation": "task.update",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 153,
+      "operation": "vision.describe",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 154,
+      "operation": "web.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "query"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "web_search_results_irrelevant",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 155,
+      "operation": "wifi.connect",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 156,
+      "operation": "wifi.connect.named",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 157,
+      "operation": "wifi.disconnect",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 158,
+      "operation": "wifi.ensure.connected",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "wifi_saved_profile_required",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 159,
+      "operation": "wifi.profile.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 160,
+      "operation": "wifi.status",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 161,
+      "operation": "window.active",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 162,
+      "operation": "window.application.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "name"
+        ],
+        "status": "completed",
+        "verified": true,
+        "errorCode": null,
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 163,
+      "operation": "window.focus",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 164,
+      "operation": "window.maximize",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 165,
+      "operation": "window.minimize",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 166,
+      "operation": "window.move",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 167,
+      "operation": "window.resize",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 168,
+      "operation": "window.resolve",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": {
+        "passed": true,
+        "argumentKeys": [
+          "process"
+        ],
+        "status": "failed",
+        "verified": false,
+        "errorCode": "window_not_found",
+        "effectMayHaveOccurred": false,
+        "coreExitCode": 0,
+        "stderr": "",
+        "timedOut": false
+      },
+      "separateAppMemoryGateRequired": false
+    },
+    {
+      "index": 169,
+      "operation": "window.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "errorCode": "invalid_arguments",
+        "effectMayHaveOccurred": false
+      },
+      "readOnlyProvider": null,
+      "separateAppMemoryGateRequired": false
+    }
+  ],
+  "coreStderr": "",
+  "gatePassed": true
+}

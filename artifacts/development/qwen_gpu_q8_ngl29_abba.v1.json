@@ -1,0 +1,3502 @@
+{
+  "catalog_operations": 169,
+  "checks": {
+    "all_contract_projections_identical": false,
+    "all_four_runs_completed": true,
+    "candidate_reduces_vram_both_orders": true,
+    "candidate_turn_p95_not_over_120_percent": false,
+    "candidate_under_3072_mib_both_orders": true,
+    "zero_contract_errors": true
+  },
+  "comparison": {
+    "candidate_turn_p95_seconds_median": 10.948,
+    "candidate_vram_peak_mib_median": 2881.6,
+    "common_cases": 45,
+    "complete_replies_identical": 37,
+    "contract_projections_identical": 44,
+    "control_turn_p95_seconds_median": 3.463,
+    "control_vram_peak_mib_median": 3517.6
+  },
+  "measured_at_utc": "2026-08-03T21:01:38.645416+00:00",
+  "profiles": {
+    "candidate": {
+      "batch": 2048,
+      "gpu_layers": 29,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "ubatch": 512
+    },
+    "control": {
+      "batch": 2048,
+      "gpu_layers": 99,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "ubatch": 512
+    }
+  },
+  "runs": [
+    {
+      "aborted": false,
+      "arm": "control",
+      "batch": 2048,
+      "checks": {
+        "all_requests_completed": true,
+        "gpu_telemetry_available": true,
+        "process_gpu_telemetry_available": true,
+        "startup_within_shell_handshake": true,
+        "vram_within_budget": false,
+        "zero_errors": true
+      },
+      "errors": [],
+      "gpu_layers": 99,
+      "gpu_telemetry_available": true,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "latency_seconds": {
+        "arguments": {
+          "count": 10,
+          "max": 0.846,
+          "p50": 0.621,
+          "p95": 0.846
+        },
+        "narrate": {
+          "count": 5,
+          "max": 0.288,
+          "p50": 0.196,
+          "p95": 0.288
+        },
+        "turn.decide": {
+          "count": 30,
+          "max": 5.816,
+          "p50": 0.159,
+          "p95": 3.179
+        }
+      },
+      "process_gpu_telemetry_available": true,
+      "process_tree_vram_peak_mib": 3517.6,
+      "requests_completed": 45,
+      "requests_expected": 45,
+      "requests_skipped_after_abort": 0,
+      "response_signatures": [
+        {
+          "case_id": "turn-00",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-01",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-02",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-03",
+          "complete_reply_sha256": "d8068f0c2a0152dae026d0c5384bd6e994e8338bb1a5406f8482e14362b7fc3d",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.mute"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.mute"
+            ],
+            "kind": "action",
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "1cc19fbccf1b05dea2fbe21712d673b4b53e743cb3112e67d7572ad59eb11b02",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-04",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-05",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-06",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-07",
+          "complete_reply_sha256": "f3acbb69bf9f4bc6a80f86b41f84e6d254673fa69f36439194f5775b2c3e003b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-08",
+          "complete_reply_sha256": "2a87b45052d6e0090b8d70ec74c7bd78335d38d5bf36e8cedee537c5e4389082",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-09",
+          "complete_reply_sha256": "92f14655a98135e61361edfb56ce766570ec3d414716be5d85733e53d70b3097",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-10",
+          "complete_reply_sha256": "7e839b45fc3c9f66eca12c4d67c123ab61d5a84c89be68cb98706d8b569bdb4d",
+          "contract_projection": {
+            "effect_operations": [
+              "wifi.disconnect"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "wifi.disconnect"
+            ],
+            "kind": "action",
+            "operation": "wifi.disconnect",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "ea431884a6b74f88a1b05dfd6d61424f5dd212eda0ad949c0c36aa89310db2cb",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-11",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-12",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-13",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-14",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-15",
+          "complete_reply_sha256": "0f516704876f40de9b4c44e5732838fef99f15005094149dcf2eec5fb5486b0e",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": "turn_runtime_failure",
+            "intent_operations": [],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": "semantic_clarification",
+            "type": "turn.result"
+          },
+          "contract_sha256": "d85b041bae8d02cf0a45634b12f5e91187963b0a8ddf37ae2e18543a003eec0b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-16",
+          "complete_reply_sha256": "f3986cef8986c5ea2b6e9a22f5ed6fa63d71791b2eb2d4ad2910a9186d8fd51d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-17",
+          "complete_reply_sha256": "db21efd1a242134334c8efba7ec7323b11d94fd8a9e6499359f67bce30a589e1",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-18",
+          "complete_reply_sha256": "cb0d68e11df68875c1c974b9d57b43bd3863fc2033de448c3dc4bc99109bb185",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume.adjust"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "18c4c928d430104b0737f1e7a61662834abc7dd8b417b64e58bc14aa8e875789",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-19",
+          "complete_reply_sha256": "3eff1c2455c50b35e63ed5534365ba0252461a5d941147025d17cc19300cfb9b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-20",
+          "complete_reply_sha256": "616a538b668c1ffccb78d6fbe7f481dff05d1513fbe984d95ebd8afc0fb70d50",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-21",
+          "complete_reply_sha256": "71a716a9e96ca53a0f99a8d085ca017ae076b090c2796cdf12ac9639188ff68d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-22",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-23",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-24",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-25",
+          "complete_reply_sha256": "1c6b4c5fde4cc96cb3ce2aa32090c43898d583466aa6b0bee09876d01a5012f7",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-26",
+          "complete_reply_sha256": "47841895689d68da9f06a0e0e1d833f0cb8de6edc3bfd807ce7b7242ab837742",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-27",
+          "complete_reply_sha256": "776e72e9b7d875db5a68744ecb77bccd9af204c3a81025b57dc3b195119dc844",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-28",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-29",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "arguments-00",
+          "complete_reply_sha256": "d98affafadcda1dda57753b3f5ac3c639fb54a36bdcc8bb6bccf1193827c4b35",
+          "contract_projection": {
+            "arguments": {
+              "level": 30
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "3e61372097a1fc3c82ea438a51108fc0e22f49d96d37218466c87003b689c07a",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-01",
+          "complete_reply_sha256": "0abf7747242e77ac1851fdc01dca23c0a10f858a5c96c411f912e0b4a6e46316",
+          "contract_projection": {
+            "arguments": {
+              "level": 75
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9268b37c63e8c52b762a26c27a96d1e2962c6cace268800ea00652ecaa5b4d98",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-02",
+          "complete_reply_sha256": "f408853717b726ca9c6377c977c3d459e41c8c8203c44e7b7bc48952f6818101",
+          "contract_projection": {
+            "arguments": {
+              "state": true
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "f8d2f2e806cff88a5796d4e86306badb0cce898072bf50fe87964c681520a443",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-03",
+          "complete_reply_sha256": "7388749fe26ce6938483c5af12337aacb4b673ad0db6c8408896bca68c1956ce",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "audio.mute",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "718c1eeaedd8baa8b46d7837889563a7c35b759c304299f68a1fb92388ff72f1",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-04",
+          "complete_reply_sha256": "c60d3309c38da4c975e02d91276c547c340e2d34dea00438af3fdbb45b42a510",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-05",
+          "complete_reply_sha256": "bb76ec675a8cd932816d4dc9a5b54677fe094b52cabad520ba1a15be10126c6f",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-06",
+          "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+          "contract_projection": {
+            "arguments": {
+              "appId": "calculadora"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "app.open",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-07",
+          "complete_reply_sha256": "168c68475ae8d2bc6c108fa33bfb6d7eedb64acaa5989f916273c6fad034b3d3",
+          "contract_projection": {
+            "arguments": {
+              "host": "example.com"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "network.ping",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "e7ed7ed667cd7d4767d9d536704a2c072c5d7028d5e449a7081f892d91717156",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-08",
+          "complete_reply_sha256": "fb320862c2003721243befc8472fc727ee092dea6def68613be39db2eab14275",
+          "contract_projection": {
+            "arguments": {
+              "action": "pause",
+              "sourceApp": "spotify"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "media.control",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "93746a9b481b01943588b98d8dff5cfa65b7aeaec2aa30ee942b29c4bc21a99f",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-09",
+          "complete_reply_sha256": "d5c22dd15ffb73ce9281079164c873737ea475dc5fb544913fc416e21f693ea0",
+          "contract_projection": {
+            "arguments": {
+              "setting": "brightness",
+              "value": 40
+            },
+            "code": null,
+            "ok": true,
+            "operation": "system.settings.set",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a2022e70c145d5161798b5ce18a9095b0dfb2bcc137b7de5929361f4d6fc8f88",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "narrate-00",
+          "complete_reply_sha256": "c7761063b81904e08f659ca022a3b6aeafe5989487b344c56ac1357b75479f4c",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-01",
+          "complete_reply_sha256": "0cee4cd0af2ab98cd9c87cbc514fbc040784b734cd48d4cfe07a9f440c60de9f",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-02",
+          "complete_reply_sha256": "677a5779b033ca04c205f926a7bff76af27a592a8341af43a5e40c6f67a8e6f9",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-03",
+          "complete_reply_sha256": "d2f5494fdb331db47a839c085d572736d3aecd9f67395f4c648418b1677250da",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-04",
+          "complete_reply_sha256": "4f249ff0d7eaf5dba9b7e695121f9138dc4f92e54f7f2577dd121e853468e625",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        }
+      ],
+      "sequence": 1,
+      "startup": {
+        "catalog_ready_seconds": 3.25,
+        "hello_seconds": 2.465
+      },
+      "status": "failed",
+      "timeouts_seconds": {
+        "arguments": 20.0,
+        "handshake": 120.0,
+        "llm_http": 19.0,
+        "narrate": 20.0,
+        "turn.decide": 22.0
+      },
+      "tree_ram_peak_mib": 4608.2,
+      "ubatch": 512,
+      "vram_baseline_total_mib": 337,
+      "vram_delta_mib": 3517,
+      "vram_peak_total_mib": 3854
+    },
+    {
+      "aborted": false,
+      "arm": "candidate",
+      "batch": 2048,
+      "checks": {
+        "all_requests_completed": true,
+        "gpu_telemetry_available": true,
+        "process_gpu_telemetry_available": true,
+        "startup_within_shell_handshake": true,
+        "vram_within_budget": true,
+        "zero_errors": true
+      },
+      "errors": [],
+      "gpu_layers": 29,
+      "gpu_telemetry_available": true,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "latency_seconds": {
+        "arguments": {
+          "count": 10,
+          "max": 2.871,
+          "p50": 2.24,
+          "p95": 2.871
+        },
+        "narrate": {
+          "count": 5,
+          "max": 1.008,
+          "p50": 0.724,
+          "p95": 1.008
+        },
+        "turn.decide": {
+          "count": 30,
+          "max": 19.416,
+          "p50": 0.436,
+          "p95": 11.659
+        }
+      },
+      "process_gpu_telemetry_available": true,
+      "process_tree_vram_peak_mib": 2881.6,
+      "requests_completed": 45,
+      "requests_expected": 45,
+      "requests_skipped_after_abort": 0,
+      "response_signatures": [
+        {
+          "case_id": "turn-00",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-01",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-02",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-03",
+          "complete_reply_sha256": "d8068f0c2a0152dae026d0c5384bd6e994e8338bb1a5406f8482e14362b7fc3d",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.mute"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.mute"
+            ],
+            "kind": "action",
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "1cc19fbccf1b05dea2fbe21712d673b4b53e743cb3112e67d7572ad59eb11b02",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-04",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-05",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-06",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-07",
+          "complete_reply_sha256": "f3acbb69bf9f4bc6a80f86b41f84e6d254673fa69f36439194f5775b2c3e003b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-08",
+          "complete_reply_sha256": "2a87b45052d6e0090b8d70ec74c7bd78335d38d5bf36e8cedee537c5e4389082",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-09",
+          "complete_reply_sha256": "92f14655a98135e61361edfb56ce766570ec3d414716be5d85733e53d70b3097",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-10",
+          "complete_reply_sha256": "7e839b45fc3c9f66eca12c4d67c123ab61d5a84c89be68cb98706d8b569bdb4d",
+          "contract_projection": {
+            "effect_operations": [
+              "wifi.disconnect"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "wifi.disconnect"
+            ],
+            "kind": "action",
+            "operation": "wifi.disconnect",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "ea431884a6b74f88a1b05dfd6d61424f5dd212eda0ad949c0c36aa89310db2cb",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-11",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-12",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-13",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-14",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-15",
+          "complete_reply_sha256": "0f516704876f40de9b4c44e5732838fef99f15005094149dcf2eec5fb5486b0e",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": "turn_runtime_failure",
+            "intent_operations": [],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": "semantic_clarification",
+            "type": "turn.result"
+          },
+          "contract_sha256": "d85b041bae8d02cf0a45634b12f5e91187963b0a8ddf37ae2e18543a003eec0b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-16",
+          "complete_reply_sha256": "5db26b9d8d8dde59d01f721b075cf92b73dbed63ab6703d9ed97ea30a708c512",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-17",
+          "complete_reply_sha256": "b17828edd9a89525034f646eab48464168d5faa7813bcf4e1648de0e4d9ef754",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "media.control"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "441dfc62a27b5eb14980b260971a8a0b7547474449a5e7ed4bbe8fd48d927d17",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-18",
+          "complete_reply_sha256": "cb0d68e11df68875c1c974b9d57b43bd3863fc2033de448c3dc4bc99109bb185",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume.adjust"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "18c4c928d430104b0737f1e7a61662834abc7dd8b417b64e58bc14aa8e875789",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-19",
+          "complete_reply_sha256": "b8b6d65384e4844328e86911b605d6776e6be1a2cfcafd6ec7575465d32008a5",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-20",
+          "complete_reply_sha256": "b2fc7db020f5cbdbbb6a0f9a02357a69a32f85aa0c2b81db3a465a787749a3f6",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-21",
+          "complete_reply_sha256": "71a716a9e96ca53a0f99a8d085ca017ae076b090c2796cdf12ac9639188ff68d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-22",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-23",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-24",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-25",
+          "complete_reply_sha256": "1c6b4c5fde4cc96cb3ce2aa32090c43898d583466aa6b0bee09876d01a5012f7",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-26",
+          "complete_reply_sha256": "cd5cd7fab0b6d514bc9ac990b853447020b273a68906dea2c0e92296d5ed6cbd",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-27",
+          "complete_reply_sha256": "776e72e9b7d875db5a68744ecb77bccd9af204c3a81025b57dc3b195119dc844",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-28",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-29",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "arguments-00",
+          "complete_reply_sha256": "d98affafadcda1dda57753b3f5ac3c639fb54a36bdcc8bb6bccf1193827c4b35",
+          "contract_projection": {
+            "arguments": {
+              "level": 30
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "3e61372097a1fc3c82ea438a51108fc0e22f49d96d37218466c87003b689c07a",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-01",
+          "complete_reply_sha256": "0abf7747242e77ac1851fdc01dca23c0a10f858a5c96c411f912e0b4a6e46316",
+          "contract_projection": {
+            "arguments": {
+              "level": 75
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9268b37c63e8c52b762a26c27a96d1e2962c6cace268800ea00652ecaa5b4d98",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-02",
+          "complete_reply_sha256": "f408853717b726ca9c6377c977c3d459e41c8c8203c44e7b7bc48952f6818101",
+          "contract_projection": {
+            "arguments": {
+              "state": true
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "f8d2f2e806cff88a5796d4e86306badb0cce898072bf50fe87964c681520a443",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-03",
+          "complete_reply_sha256": "7388749fe26ce6938483c5af12337aacb4b673ad0db6c8408896bca68c1956ce",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "audio.mute",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "718c1eeaedd8baa8b46d7837889563a7c35b759c304299f68a1fb92388ff72f1",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-04",
+          "complete_reply_sha256": "c60d3309c38da4c975e02d91276c547c340e2d34dea00438af3fdbb45b42a510",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-05",
+          "complete_reply_sha256": "bb76ec675a8cd932816d4dc9a5b54677fe094b52cabad520ba1a15be10126c6f",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-06",
+          "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+          "contract_projection": {
+            "arguments": {
+              "appId": "calculadora"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "app.open",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-07",
+          "complete_reply_sha256": "168c68475ae8d2bc6c108fa33bfb6d7eedb64acaa5989f916273c6fad034b3d3",
+          "contract_projection": {
+            "arguments": {
+              "host": "example.com"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "network.ping",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "e7ed7ed667cd7d4767d9d536704a2c072c5d7028d5e449a7081f892d91717156",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-08",
+          "complete_reply_sha256": "fb320862c2003721243befc8472fc727ee092dea6def68613be39db2eab14275",
+          "contract_projection": {
+            "arguments": {
+              "action": "pause",
+              "sourceApp": "spotify"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "media.control",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "93746a9b481b01943588b98d8dff5cfa65b7aeaec2aa30ee942b29c4bc21a99f",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-09",
+          "complete_reply_sha256": "d5c22dd15ffb73ce9281079164c873737ea475dc5fb544913fc416e21f693ea0",
+          "contract_projection": {
+            "arguments": {
+              "setting": "brightness",
+              "value": 40
+            },
+            "code": null,
+            "ok": true,
+            "operation": "system.settings.set",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a2022e70c145d5161798b5ce18a9095b0dfb2bcc137b7de5929361f4d6fc8f88",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "narrate-00",
+          "complete_reply_sha256": "c7761063b81904e08f659ca022a3b6aeafe5989487b344c56ac1357b75479f4c",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-01",
+          "complete_reply_sha256": "a8bc3a3c11cb235a433c41d9cd330433dcba4b3676d1f1b45554f49f46129616",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-02",
+          "complete_reply_sha256": "677a5779b033ca04c205f926a7bff76af27a592a8341af43a5e40c6f67a8e6f9",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-03",
+          "complete_reply_sha256": "d2f5494fdb331db47a839c085d572736d3aecd9f67395f4c648418b1677250da",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-04",
+          "complete_reply_sha256": "4f249ff0d7eaf5dba9b7e695121f9138dc4f92e54f7f2577dd121e853468e625",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        }
+      ],
+      "sequence": 2,
+      "startup": {
+        "catalog_ready_seconds": 2.824,
+        "hello_seconds": 1.51
+      },
+      "status": "passed",
+      "timeouts_seconds": {
+        "arguments": 20.0,
+        "handshake": 120.0,
+        "llm_http": 19.0,
+        "narrate": 20.0,
+        "turn.decide": 22.0
+      },
+      "tree_ram_peak_mib": 4889.3,
+      "ubatch": 512,
+      "vram_baseline_total_mib": 337,
+      "vram_delta_mib": 2881,
+      "vram_peak_total_mib": 3218
+    },
+    {
+      "aborted": false,
+      "arm": "candidate",
+      "batch": 2048,
+      "checks": {
+        "all_requests_completed": true,
+        "gpu_telemetry_available": true,
+        "process_gpu_telemetry_available": true,
+        "startup_within_shell_handshake": true,
+        "vram_within_budget": true,
+        "zero_errors": true
+      },
+      "errors": [],
+      "gpu_layers": 29,
+      "gpu_telemetry_available": true,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "latency_seconds": {
+        "arguments": {
+          "count": 10,
+          "max": 2.779,
+          "p50": 2.007,
+          "p95": 2.779
+        },
+        "narrate": {
+          "count": 5,
+          "max": 1.022,
+          "p50": 0.673,
+          "p95": 1.022
+        },
+        "turn.decide": {
+          "count": 30,
+          "max": 19.045,
+          "p50": 0.449,
+          "p95": 10.237
+        }
+      },
+      "process_gpu_telemetry_available": true,
+      "process_tree_vram_peak_mib": 2881.6,
+      "requests_completed": 45,
+      "requests_expected": 45,
+      "requests_skipped_after_abort": 0,
+      "response_signatures": [
+        {
+          "case_id": "turn-00",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-01",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-02",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-03",
+          "complete_reply_sha256": "d8068f0c2a0152dae026d0c5384bd6e994e8338bb1a5406f8482e14362b7fc3d",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.mute"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.mute"
+            ],
+            "kind": "action",
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "1cc19fbccf1b05dea2fbe21712d673b4b53e743cb3112e67d7572ad59eb11b02",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-04",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-05",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-06",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-07",
+          "complete_reply_sha256": "f3acbb69bf9f4bc6a80f86b41f84e6d254673fa69f36439194f5775b2c3e003b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-08",
+          "complete_reply_sha256": "2a87b45052d6e0090b8d70ec74c7bd78335d38d5bf36e8cedee537c5e4389082",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-09",
+          "complete_reply_sha256": "92f14655a98135e61361edfb56ce766570ec3d414716be5d85733e53d70b3097",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-10",
+          "complete_reply_sha256": "7e839b45fc3c9f66eca12c4d67c123ab61d5a84c89be68cb98706d8b569bdb4d",
+          "contract_projection": {
+            "effect_operations": [
+              "wifi.disconnect"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "wifi.disconnect"
+            ],
+            "kind": "action",
+            "operation": "wifi.disconnect",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "ea431884a6b74f88a1b05dfd6d61424f5dd212eda0ad949c0c36aa89310db2cb",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-11",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-12",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-13",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-14",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-15",
+          "complete_reply_sha256": "0916fda1f1c5bef025b927ca03f4040d4f5baf9e3468a916b81f61af4f033182",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": "turn_runtime_failure",
+            "intent_operations": [],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": "semantic_clarification",
+            "type": "turn.result"
+          },
+          "contract_sha256": "d85b041bae8d02cf0a45634b12f5e91187963b0a8ddf37ae2e18543a003eec0b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-16",
+          "complete_reply_sha256": "b02c99438a97bf1fbf1505d2a6d52324c3d1887a0838ff6141462136b9047dbd",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-17",
+          "complete_reply_sha256": "aca766a69d550cf3173239e759a3956c85a90acb07df6ccc3a9a733d2347fa09",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "media.control"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "441dfc62a27b5eb14980b260971a8a0b7547474449a5e7ed4bbe8fd48d927d17",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-18",
+          "complete_reply_sha256": "cb0d68e11df68875c1c974b9d57b43bd3863fc2033de448c3dc4bc99109bb185",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume.adjust"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "18c4c928d430104b0737f1e7a61662834abc7dd8b417b64e58bc14aa8e875789",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-19",
+          "complete_reply_sha256": "cb70f5f3f8f61f0e646b2fe9e18f59817be9ba31f7293e9950264f135bf529d4",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-20",
+          "complete_reply_sha256": "2ed342cf1602cd38be13b16eef40c8be6b9e31c37d9fa137accf87e75889d327",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-21",
+          "complete_reply_sha256": "71a716a9e96ca53a0f99a8d085ca017ae076b090c2796cdf12ac9639188ff68d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-22",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-23",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-24",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-25",
+          "complete_reply_sha256": "1c6b4c5fde4cc96cb3ce2aa32090c43898d583466aa6b0bee09876d01a5012f7",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-26",
+          "complete_reply_sha256": "cd5cd7fab0b6d514bc9ac990b853447020b273a68906dea2c0e92296d5ed6cbd",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-27",
+          "complete_reply_sha256": "776e72e9b7d875db5a68744ecb77bccd9af204c3a81025b57dc3b195119dc844",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-28",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-29",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "arguments-00",
+          "complete_reply_sha256": "d98affafadcda1dda57753b3f5ac3c639fb54a36bdcc8bb6bccf1193827c4b35",
+          "contract_projection": {
+            "arguments": {
+              "level": 30
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "3e61372097a1fc3c82ea438a51108fc0e22f49d96d37218466c87003b689c07a",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-01",
+          "complete_reply_sha256": "0abf7747242e77ac1851fdc01dca23c0a10f858a5c96c411f912e0b4a6e46316",
+          "contract_projection": {
+            "arguments": {
+              "level": 75
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9268b37c63e8c52b762a26c27a96d1e2962c6cace268800ea00652ecaa5b4d98",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-02",
+          "complete_reply_sha256": "f408853717b726ca9c6377c977c3d459e41c8c8203c44e7b7bc48952f6818101",
+          "contract_projection": {
+            "arguments": {
+              "state": true
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "f8d2f2e806cff88a5796d4e86306badb0cce898072bf50fe87964c681520a443",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-03",
+          "complete_reply_sha256": "7388749fe26ce6938483c5af12337aacb4b673ad0db6c8408896bca68c1956ce",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "audio.mute",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "718c1eeaedd8baa8b46d7837889563a7c35b759c304299f68a1fb92388ff72f1",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-04",
+          "complete_reply_sha256": "c60d3309c38da4c975e02d91276c547c340e2d34dea00438af3fdbb45b42a510",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-05",
+          "complete_reply_sha256": "bb76ec675a8cd932816d4dc9a5b54677fe094b52cabad520ba1a15be10126c6f",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-06",
+          "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+          "contract_projection": {
+            "arguments": {
+              "appId": "calculadora"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "app.open",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-07",
+          "complete_reply_sha256": "168c68475ae8d2bc6c108fa33bfb6d7eedb64acaa5989f916273c6fad034b3d3",
+          "contract_projection": {
+            "arguments": {
+              "host": "example.com"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "network.ping",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "e7ed7ed667cd7d4767d9d536704a2c072c5d7028d5e449a7081f892d91717156",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-08",
+          "complete_reply_sha256": "fb320862c2003721243befc8472fc727ee092dea6def68613be39db2eab14275",
+          "contract_projection": {
+            "arguments": {
+              "action": "pause",
+              "sourceApp": "spotify"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "media.control",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "93746a9b481b01943588b98d8dff5cfa65b7aeaec2aa30ee942b29c4bc21a99f",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-09",
+          "complete_reply_sha256": "d5c22dd15ffb73ce9281079164c873737ea475dc5fb544913fc416e21f693ea0",
+          "contract_projection": {
+            "arguments": {
+              "setting": "brightness",
+              "value": 40
+            },
+            "code": null,
+            "ok": true,
+            "operation": "system.settings.set",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a2022e70c145d5161798b5ce18a9095b0dfb2bcc137b7de5929361f4d6fc8f88",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "narrate-00",
+          "complete_reply_sha256": "c7761063b81904e08f659ca022a3b6aeafe5989487b344c56ac1357b75479f4c",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-01",
+          "complete_reply_sha256": "2d4c7f0e33dcde3ddc08b407d9ffeb6e8f25ecdb60a54f20020413963013afeb",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-02",
+          "complete_reply_sha256": "677a5779b033ca04c205f926a7bff76af27a592a8341af43a5e40c6f67a8e6f9",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-03",
+          "complete_reply_sha256": "d2f5494fdb331db47a839c085d572736d3aecd9f67395f4c648418b1677250da",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-04",
+          "complete_reply_sha256": "4f249ff0d7eaf5dba9b7e695121f9138dc4f92e54f7f2577dd121e853468e625",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        }
+      ],
+      "sequence": 3,
+      "startup": {
+        "catalog_ready_seconds": 2.822,
+        "hello_seconds": 1.534
+      },
+      "status": "passed",
+      "timeouts_seconds": {
+        "arguments": 20.0,
+        "handshake": 120.0,
+        "llm_http": 19.0,
+        "narrate": 20.0,
+        "turn.decide": 22.0
+      },
+      "tree_ram_peak_mib": 4950.0,
+      "ubatch": 512,
+      "vram_baseline_total_mib": 337,
+      "vram_delta_mib": 2881,
+      "vram_peak_total_mib": 3218
+    },
+    {
+      "aborted": false,
+      "arm": "control",
+      "batch": 2048,
+      "checks": {
+        "all_requests_completed": true,
+        "gpu_telemetry_available": true,
+        "process_gpu_telemetry_available": true,
+        "startup_within_shell_handshake": true,
+        "vram_within_budget": false,
+        "zero_errors": true
+      },
+      "errors": [],
+      "gpu_layers": 99,
+      "gpu_telemetry_available": true,
+      "kv_cache_type": "q8_0",
+      "kv_offload": "on",
+      "latency_seconds": {
+        "arguments": {
+          "count": 10,
+          "max": 0.836,
+          "p50": 0.61,
+          "p95": 0.836
+        },
+        "narrate": {
+          "count": 5,
+          "max": 0.29,
+          "p50": 0.208,
+          "p95": 0.29
+        },
+        "turn.decide": {
+          "count": 30,
+          "max": 6.044,
+          "p50": 0.161,
+          "p95": 3.748
+        }
+      },
+      "process_gpu_telemetry_available": true,
+      "process_tree_vram_peak_mib": 3517.6,
+      "requests_completed": 45,
+      "requests_expected": 45,
+      "requests_skipped_after_abort": 0,
+      "response_signatures": [
+        {
+          "case_id": "turn-00",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-01",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-02",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-03",
+          "complete_reply_sha256": "d8068f0c2a0152dae026d0c5384bd6e994e8338bb1a5406f8482e14362b7fc3d",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.mute"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.mute"
+            ],
+            "kind": "action",
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "1cc19fbccf1b05dea2fbe21712d673b4b53e743cb3112e67d7572ad59eb11b02",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-04",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-05",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-06",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-07",
+          "complete_reply_sha256": "f3acbb69bf9f4bc6a80f86b41f84e6d254673fa69f36439194f5775b2c3e003b",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-08",
+          "complete_reply_sha256": "2a87b45052d6e0090b8d70ec74c7bd78335d38d5bf36e8cedee537c5e4389082",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-09",
+          "complete_reply_sha256": "92f14655a98135e61361edfb56ce766570ec3d414716be5d85733e53d70b3097",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-10",
+          "complete_reply_sha256": "7e839b45fc3c9f66eca12c4d67c123ab61d5a84c89be68cb98706d8b569bdb4d",
+          "contract_projection": {
+            "effect_operations": [
+              "wifi.disconnect"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "wifi.disconnect"
+            ],
+            "kind": "action",
+            "operation": "wifi.disconnect",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "ea431884a6b74f88a1b05dfd6d61424f5dd212eda0ad949c0c36aa89310db2cb",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-11",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-12",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-13",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-14",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-15",
+          "complete_reply_sha256": "0f516704876f40de9b4c44e5732838fef99f15005094149dcf2eec5fb5486b0e",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": "turn_runtime_failure",
+            "intent_operations": [],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": "semantic_clarification",
+            "type": "turn.result"
+          },
+          "contract_sha256": "d85b041bae8d02cf0a45634b12f5e91187963b0a8ddf37ae2e18543a003eec0b",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-16",
+          "complete_reply_sha256": "f3986cef8986c5ea2b6e9a22f5ed6fa63d71791b2eb2d4ad2910a9186d8fd51d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-17",
+          "complete_reply_sha256": "db21efd1a242134334c8efba7ec7323b11d94fd8a9e6499359f67bce30a589e1",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-18",
+          "complete_reply_sha256": "cb0d68e11df68875c1c974b9d57b43bd3863fc2033de448c3dc4bc99109bb185",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume.adjust"
+            ],
+            "kind": "clarify",
+            "operation": null,
+            "question_nonempty": true,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "18c4c928d430104b0737f1e7a61662834abc7dd8b417b64e58bc14aa8e875789",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-19",
+          "complete_reply_sha256": "a9564a8fa661a2cb3546bfb5ec1b18ac2bfc93460758058823fa70782bb653c9",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-20",
+          "complete_reply_sha256": "b2fc7db020f5cbdbbb6a0f9a02357a69a32f85aa0c2b81db3a465a787749a3f6",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-21",
+          "complete_reply_sha256": "71a716a9e96ca53a0f99a8d085ca017ae076b090c2796cdf12ac9639188ff68d",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-22",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-23",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-24",
+          "complete_reply_sha256": "bcb7ced69bb3b8f023c929a76e0aae6b83e18647c5b57c976c0ef982c8c4f98e",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.status"
+            ],
+            "kind": "action",
+            "operation": "audio.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "c0d82bd5750881e6a9da0959d06f6f0c2ba5d04b90ea2a8890515348bf37a943",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-25",
+          "complete_reply_sha256": "1c6b4c5fde4cc96cb3ce2aa32090c43898d583466aa6b0bee09876d01a5012f7",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-26",
+          "complete_reply_sha256": "cd5cd7fab0b6d514bc9ac990b853447020b273a68906dea2c0e92296d5ed6cbd",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-27",
+          "complete_reply_sha256": "776e72e9b7d875db5a68744ecb77bccd9af204c3a81025b57dc3b195119dc844",
+          "contract_projection": {
+            "effect_operations": [],
+            "failure_code": null,
+            "intent_operations": [],
+            "kind": "conversation",
+            "operation": null,
+            "question_nonempty": false,
+            "reply_nonempty": true,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "b5240330fa59644b735f447b22eb971f7a8ba0731c04da976af9fbfc220b0791",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-28",
+          "complete_reply_sha256": "0ae865f04b3f721e90b8d652fffb9e8f0e2ee9de99eaf7f2b0fedaff1048d0d2",
+          "contract_projection": {
+            "effect_operations": [
+              "audio.volume"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "audio.volume"
+            ],
+            "kind": "action",
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "7c4757fdcc85bb13e3d976e394319f1c8c79c0a005bceabd46f17e60ae5baf23",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "turn-29",
+          "complete_reply_sha256": "cb36165a4a8dd3e9f801a8a72510cc0038ad2ddcc188a579a52f14fc81e4898b",
+          "contract_projection": {
+            "effect_operations": [
+              "system.status"
+            ],
+            "failure_code": null,
+            "intent_operations": [
+              "system.status"
+            ],
+            "kind": "action",
+            "operation": "system.status",
+            "question_nonempty": false,
+            "reply_nonempty": false,
+            "turn_recovery": null,
+            "type": "turn.result"
+          },
+          "contract_sha256": "748d4e174eb347e537bc15c2f6c5ccc28e48c5f06d38ad80f71ebcc97c710cc5",
+          "request_type": "turn.decide"
+        },
+        {
+          "case_id": "arguments-00",
+          "complete_reply_sha256": "d98affafadcda1dda57753b3f5ac3c639fb54a36bdcc8bb6bccf1193827c4b35",
+          "contract_projection": {
+            "arguments": {
+              "level": 30
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "3e61372097a1fc3c82ea438a51108fc0e22f49d96d37218466c87003b689c07a",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-01",
+          "complete_reply_sha256": "0abf7747242e77ac1851fdc01dca23c0a10f858a5c96c411f912e0b4a6e46316",
+          "contract_projection": {
+            "arguments": {
+              "level": 75
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.volume",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9268b37c63e8c52b762a26c27a96d1e2962c6cace268800ea00652ecaa5b4d98",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-02",
+          "complete_reply_sha256": "f408853717b726ca9c6377c977c3d459e41c8c8203c44e7b7bc48952f6818101",
+          "contract_projection": {
+            "arguments": {
+              "state": true
+            },
+            "code": null,
+            "ok": true,
+            "operation": "audio.mute",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "f8d2f2e806cff88a5796d4e86306badb0cce898072bf50fe87964c681520a443",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-03",
+          "complete_reply_sha256": "7388749fe26ce6938483c5af12337aacb4b673ad0db6c8408896bca68c1956ce",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "audio.mute",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "718c1eeaedd8baa8b46d7837889563a7c35b759c304299f68a1fb92388ff72f1",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-04",
+          "complete_reply_sha256": "c60d3309c38da4c975e02d91276c547c340e2d34dea00438af3fdbb45b42a510",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-05",
+          "complete_reply_sha256": "bb76ec675a8cd932816d4dc9a5b54677fe094b52cabad520ba1a15be10126c6f",
+          "contract_projection": {
+            "arguments": null,
+            "code": null,
+            "ok": false,
+            "operation": "note.create",
+            "question_nonempty": true,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a7c2da002cace9b8097402f96a760a0fda749abd32f1a49deea93c53b808cdb9",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-06",
+          "complete_reply_sha256": "e247bafb654b833428d8a8e577f7c349092c95bbd1289462aeefb6edc1deb3cd",
+          "contract_projection": {
+            "arguments": {
+              "appId": "calculadora"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "app.open",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "9e53c6eefed95f7348ad8cfb964841620fc235699b02eff982c64a5f15eb5c0c",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-07",
+          "complete_reply_sha256": "168c68475ae8d2bc6c108fa33bfb6d7eedb64acaa5989f916273c6fad034b3d3",
+          "contract_projection": {
+            "arguments": {
+              "host": "example.com"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "network.ping",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "e7ed7ed667cd7d4767d9d536704a2c072c5d7028d5e449a7081f892d91717156",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-08",
+          "complete_reply_sha256": "fb320862c2003721243befc8472fc727ee092dea6def68613be39db2eab14275",
+          "contract_projection": {
+            "arguments": {
+              "action": "pause",
+              "sourceApp": "spotify"
+            },
+            "code": null,
+            "ok": true,
+            "operation": "media.control",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "93746a9b481b01943588b98d8dff5cfa65b7aeaec2aa30ee942b29c4bc21a99f",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "arguments-09",
+          "complete_reply_sha256": "d5c22dd15ffb73ce9281079164c873737ea475dc5fb544913fc416e21f693ea0",
+          "contract_projection": {
+            "arguments": {
+              "setting": "brightness",
+              "value": 40
+            },
+            "code": null,
+            "ok": true,
+            "operation": "system.settings.set",
+            "question_nonempty": false,
+            "type": "arguments.result"
+          },
+          "contract_sha256": "a2022e70c145d5161798b5ce18a9095b0dfb2bcc137b7de5929361f4d6fc8f88",
+          "request_type": "arguments"
+        },
+        {
+          "case_id": "narrate-00",
+          "complete_reply_sha256": "c7761063b81904e08f659ca022a3b6aeafe5989487b344c56ac1357b75479f4c",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-01",
+          "complete_reply_sha256": "a8bc3a3c11cb235a433c41d9cd330433dcba4b3676d1f1b45554f49f46129616",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-02",
+          "complete_reply_sha256": "677a5779b033ca04c205f926a7bff76af27a592a8341af43a5e40c6f67a8e6f9",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-03",
+          "complete_reply_sha256": "d2f5494fdb331db47a839c085d572736d3aecd9f67395f4c648418b1677250da",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        },
+        {
+          "case_id": "narrate-04",
+          "complete_reply_sha256": "b0cbf4a53155e66055a148e4ec11332e779041f06eaadf85d1d86d08936d2bac",
+          "contract_projection": {
+            "code": null,
+            "text_nonempty": true,
+            "type": "narrate.result"
+          },
+          "contract_sha256": "adbfff978345d3bf87775a172eb6679b2fbb134d6d70ba2f04a264187a176e49",
+          "request_type": "narrate"
+        }
+      ],
+      "sequence": 4,
+      "startup": {
+        "catalog_ready_seconds": 2.951,
+        "hello_seconds": 1.615
+      },
+      "status": "failed",
+      "timeouts_seconds": {
+        "arguments": 20.0,
+        "handshake": 120.0,
+        "llm_http": 19.0,
+        "narrate": 20.0,
+        "turn.decide": 22.0
+      },
+      "tree_ram_peak_mib": 4637.5,
+      "ubatch": 512,
+      "vram_baseline_total_mib": 337,
+      "vram_delta_mib": 3517,
+      "vram_peak_total_mib": 3854
+    }
+  ],
+  "runtime": {
+    "gguf": {
+      "bytes": 2497280256,
+      "name": "Qwen3-4B-Q4_K_M.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "schema": "baxy.qwen-gpu-prefill-abba.v1",
+  "scope": {
+    "changed_variable": "llama.cpp prefill buffers, KV format/placement and GPU layers",
+    "context_tokens_per_slot": 4096,
+    "effects_executed": 0,
+    "order": [
+      "control",
+      "candidate",
+      "candidate",
+      "control"
+    ],
+    "parallel_slots": 3,
+    "tree_frozen_during_measurement": true
+  },
+  "source": {
+    "budget_gate_sha256": "62547931787746268c8d90f996d5b7480823e5075b237ee48e55219f0d1cb6dc",
+    "experiment_sha256": "7a39c64d1ce01aa14e18bf0eae0a5ad854067acb9fc8e1e3979c7928b62e91c6",
+    "llm_py_sha256": "d0a2aae87bf215cc6d410289bc5451f18414e20624aa99b859424a67a1c5c697"
+  },
+  "status": "failed"
+}

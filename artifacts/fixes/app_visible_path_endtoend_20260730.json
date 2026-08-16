@@ -1,0 +1,159 @@
+{
+  "caveats": [
+    "sample count is small and every measured turn resolved to an action; a conversation-route sample set is not included here",
+    "first_honest_indication is measured from the bridge receiving the submit, which is after the person's keystroke reached the document",
+    "dom_to_first_paint uses the second requestAnimationFrame after the mutation, which is the frame the compositor delivered"
+  ],
+  "clock": "Stopwatch monotonic milliseconds since ShellTrace creation",
+  "drive_method": "real mouse click on the FieldUi input followed by keystrokes and Enter; WebView2 exposes no UIA Edit control, so the input is reached by pointer rather than by automation pattern",
+  "effects_executed": 0,
+  "measured_at_utc": "2026-07-31T01:29:40.865697+00:00",
+  "raw_trace": "artifacts/fixes/app_visible_path_trace_20260730.jsonl",
+  "schema": "baxy.app-endtoend-visible-path.v1",
+  "segment_summary": {
+    "bridge_crossing_ms": {
+      "max_ms": 0.587,
+      "min_ms": 0.106,
+      "p50_ms": 0.123,
+      "p95_ms": 0.587,
+      "samples": 7
+    },
+    "bridge_publish_to_dom_ms": {
+      "max_ms": 28.35,
+      "min_ms": 12.502,
+      "p50_ms": 16.927,
+      "p95_ms": 28.35,
+      "samples": 7
+    },
+    "core_provider_verify_and_llm_composition_ms": {
+      "max_ms": 2081.454,
+      "min_ms": 0.193,
+      "p50_ms": 647.193,
+      "p95_ms": 2081.454,
+      "samples": 7
+    },
+    "decision_ms": {
+      "max_ms": 4726.433,
+      "min_ms": 1.92,
+      "p50_ms": 4.871,
+      "p95_ms": 4726.433,
+      "samples": 7
+    },
+    "dispatch_to_turn_start_ms": {
+      "max_ms": 504.269,
+      "min_ms": 0.595,
+      "p50_ms": 1.589,
+      "p95_ms": 504.269,
+      "samples": 7
+    },
+    "dom_to_first_paint_ms": {
+      "max_ms": 48.844,
+      "min_ms": 16.978,
+      "p50_ms": 19.405,
+      "p95_ms": 48.844,
+      "samples": 7
+    },
+    "end_to_end_submit_to_paint_ms": {
+      "max_ms": 4797.867,
+      "min_ms": 537.007,
+      "p50_ms": 2035.285,
+      "p95_ms": 4797.867,
+      "samples": 7
+    },
+    "first_honest_indication_ms": {
+      "max_ms": 505.616,
+      "min_ms": 1.134,
+      "p50_ms": 2.156,
+      "p95_ms": 505.616,
+      "samples": 7
+    }
+  },
+  "session": "interactive desktop session, SessionId 1, single 1280x720 screen, console user present; warm runtime (engine ready before the first measured turn)",
+  "turns": [
+    {
+      "bridge_crossing_ms": 0.587,
+      "bridge_publish_to_dom_ms": 15.486,
+      "core_provider_verify_and_llm_composition_ms": 647.193,
+      "decision_kind": "action",
+      "decision_ms": 56.898,
+      "dispatch_to_turn_start_ms": 504.269,
+      "dom_to_first_paint_ms": 48.844,
+      "end_to_end_submit_to_paint_ms": 1383.735,
+      "first_honest_indication_ms": 505.616,
+      "turn": "t1"
+    },
+    {
+      "bridge_crossing_ms": 0.144,
+      "bridge_publish_to_dom_ms": 12.502,
+      "core_provider_verify_and_llm_composition_ms": 503.201,
+      "decision_kind": "action",
+      "decision_ms": 2.768,
+      "dispatch_to_turn_start_ms": 0.637,
+      "dom_to_first_paint_ms": 16.978,
+      "end_to_end_submit_to_paint_ms": 537.007,
+      "first_honest_indication_ms": 1.375,
+      "turn": "t2"
+    },
+    {
+      "bridge_crossing_ms": 0.118,
+      "bridge_publish_to_dom_ms": 23.971,
+      "core_provider_verify_and_llm_composition_ms": 2081.454,
+      "decision_kind": "action",
+      "decision_ms": 4.871,
+      "dispatch_to_turn_start_ms": 1.821,
+      "dom_to_first_paint_ms": 19.182,
+      "end_to_end_submit_to_paint_ms": 2132.215,
+      "first_honest_indication_ms": 2.42,
+      "turn": "t3"
+    },
+    {
+      "bridge_crossing_ms": 0.123,
+      "bridge_publish_to_dom_ms": 16.927,
+      "core_provider_verify_and_llm_composition_ms": 1930.107,
+      "decision_kind": "action",
+      "decision_ms": 1.92,
+      "dispatch_to_turn_start_ms": 3.251,
+      "dom_to_first_paint_ms": 18.009,
+      "end_to_end_submit_to_paint_ms": 1970.934,
+      "first_honest_indication_ms": 3.818,
+      "turn": "t4"
+    },
+    {
+      "bridge_crossing_ms": 0.106,
+      "bridge_publish_to_dom_ms": 23.877,
+      "core_provider_verify_and_llm_composition_ms": 1987.612,
+      "decision_kind": "action",
+      "decision_ms": 2.133,
+      "dispatch_to_turn_start_ms": 1.589,
+      "dom_to_first_paint_ms": 19.405,
+      "end_to_end_submit_to_paint_ms": 2035.285,
+      "first_honest_indication_ms": 2.156,
+      "turn": "t5"
+    },
+    {
+      "bridge_crossing_ms": 0.136,
+      "bridge_publish_to_dom_ms": 28.35,
+      "core_provider_verify_and_llm_composition_ms": 7.059,
+      "decision_kind": "conversation",
+      "decision_ms": 4726.433,
+      "dispatch_to_turn_start_ms": 0.595,
+      "dom_to_first_paint_ms": 34.75,
+      "end_to_end_submit_to_paint_ms": 4797.867,
+      "first_honest_indication_ms": 1.134,
+      "turn": "t6"
+    },
+    {
+      "bridge_crossing_ms": 0.121,
+      "bridge_publish_to_dom_ms": 14.971,
+      "core_provider_verify_and_llm_composition_ms": 0.193,
+      "decision_kind": "conversation",
+      "decision_ms": 4106.795,
+      "dispatch_to_turn_start_ms": 0.904,
+      "dom_to_first_paint_ms": 20.461,
+      "end_to_end_submit_to_paint_ms": 4144.463,
+      "first_honest_indication_ms": 1.725,
+      "turn": "t7"
+    }
+  ],
+  "what_this_is": "one physical keystroke in the real product through to the frame the compositor delivered, with the real mind sidecar, the real Core and the real LLM composition (message.compose). The integration-test bypass of LLM composition is NOT active here: this is the running product, not a test host."
+}

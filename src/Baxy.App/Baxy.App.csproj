@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(BaxyWindowsTargetFramework)</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Baxy</AssemblyName>
+    <RootNamespace>Baxy.App</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" />
+    <ProjectReference Include="..\Baxy.Core\Baxy.Core.csproj"
+                      ReferenceOutputAssembly="false"
+                      Private="false" />
+    <ProjectReference Include="..\Baxy.Contracts\Baxy.Contracts.csproj" />
+    <ProjectReference Include="..\Baxy.Kernel\Baxy.Kernel.csproj" />
+    <ProjectReference Include="..\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj" />
+    <ProjectReference Include="..\Baxy.Security.Windows\Baxy.Security.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Baxy.FieldUi\dist\**\*">
+      <Link>FieldUi\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\field-native-bridge.js">
+      <Link>FieldUiHost\field-native-bridge.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Target Name="CopyDevelopmentCore"
+          AfterTargets="Build"
+          Condition="'$(DesignTimeBuild)' != 'true' and '$(RuntimeIdentifier)' == ''">
+    <ItemGroup>
+      <_BaxyDevelopmentCore Include="$(MSBuildProjectDirectory)\..\Baxy.Core\bin\$(Configuration)\$(TargetFramework)\baxy-core.*" />
+    </ItemGroup>
+    <Error Condition="'@(_BaxyDevelopmentCore)' == ''"
+           Text="The BAXY development core was not produced." />
+    <Copy SourceFiles="@(_BaxyDevelopmentCore)"
+          DestinationFolder="$(TargetDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
+</Project>

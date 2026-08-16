@@ -1,0 +1,123 @@
+{
+    "schema":  "baxy-mind-shell-e2e-gate-v1",
+    "status":  "failed",
+    "started_utc":  "2026-08-10T05:10:17.3992579+00:00",
+    "completed_utc":  "2026-08-10T05:17:35.5280221+00:00",
+    "duration_seconds":  437.869,
+    "source":  {
+                   "commit":  "1336e199bfe56928a4a9116a77adebd45c274c0e",
+                   "dirty":  true
+               },
+    "runtime":  {
+                    "manifest_sha256":  "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+                    "python_sha256":  "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+                    "gguf_name":  "Qwen3-4B-Q4_K_M.gguf",
+                    "gguf_sha256":  "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+                    "llama_server_sha256":  "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+                    "dotnet_sdk":  "10.0.100",
+                    "gpu_layers":  0,
+                    "corpus_sha256":  "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680"
+                },
+    "boundary":  {
+                     "path":  "MainWindowViewModel -\u003e MindSidecarClient -\u003e baxy_mind turn.decide/plan -\u003e CoreProcessClient -\u003e core",
+                     "observed_operations":  [
+                                                 "memory.status",
+                                                 "system.time",
+                                                 "system.time",
+                                                 "system.status",
+                                                 "system.time",
+                                                 "system.status",
+                                                 "system.process.list"
+                                             ],
+                     "operation_counts":  {
+                                              "memory.status":  1,
+                                              "system.time":  3,
+                                              "system.status":  2,
+                                              "system.process.list":  1,
+                                              "task.list":  0,
+                                              "note.list":  0
+                                          },
+                     "external_effects":  false,
+                     "installed_application_launched":  false
+                 },
+    "evidence":  {
+                     "attestation_schema":  "baxy-mind-shell-core-attestation-v1",
+                     "journal_integrity_validated":  true,
+                     "journal_authentication":  "hmac-sha256",
+                     "journal_sha256":  "7da719f0a038189fbb3cd6b656775cca52c53d64812e5cab11ef341555e9b610",
+                     "anchor_sha256":  "11c5cfe65ab7a9028cbdfd90b8a2fa891647a67fcc40539d255168a2acaec136",
+                     "attestation_sha256":  "a89209545cb6e38ef11830bd4eb519d007579da6580943e6f720baf29ab7ff4a",
+                     "failure":  null
+                 },
+    "test":  {
+                 "selection_filter":  "FullyQualifiedName~Baxy.Integration.Tests.MindShellEndToEndTests",
+                 "exact_execution_filter":  "FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations",
+                 "discovery_expected_tests":  [
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.ClarificationFragmentPreservesAndResumesTheObjective",
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.ContextualConversationAndClarificationCrossTheMindProcessBoundary",
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.GenericPlanWithoutPreservedEffectsStillReachesPlanner",
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations",
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.PriorUserFactCrossesTheMindBoundaryAndIsUsedForRecall",
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.ReadOnlyCompositePlanTraversesPlannerAndRealCoreWithoutEffects",
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.SafeArgumentFreeActionTraversesTurnDecisionAndRealCore",
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.SelfContainedOrdersSupersedePendingTurnClarification",
+                                                  "Baxy.Integration.Tests.MindShellEndToEndTests.SimpleMindActionPreservesCoreConfirmationInsteadOfClaimingSuccess"
+                                              ],
+                 "selected_tests":  [
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations"
+                                    ],
+                 "executed_tests":  [
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations"
+                                    ],
+                 "test_assembly":  "baxy.integration.tests.dll",
+                 "test_assembly_sha256":  "bceb549ab91ec3434b7d9e8285a58a75a19abe96adecaef6e77e09087ca74e1f",
+                 "selection_exit_code":  0,
+                 "selection_counters":  {
+                                            "total":  8,
+                                            "executed":  8,
+                                            "passed":  8,
+                                            "failed":  0,
+                                            "error":  0,
+                                            "timeout":  0,
+                                            "aborted":  0,
+                                            "inconclusive":  0,
+                                            "not_executed":  0
+                                        },
+                 "selection_result_outcomes":  {
+                                                   "passed":  8,
+                                                   "not_executed":  0,
+                                                   "unexpected":  0
+                                               },
+                 "selection_not_executed_tests":  [
+
+                                                  ],
+                 "exit_code":  1,
+                 "counters":  {
+                                  "total":  1,
+                                  "executed":  1,
+                                  "passed":  0,
+                                  "failed":  1,
+                                  "error":  0,
+                                  "timeout":  0,
+                                  "aborted":  0,
+                                  "inconclusive":  0,
+                                  "not_executed":  0
+                              },
+                 "failure":  null
+             },
+    "checks":  {
+                   "selection_probe_exit_zero":  true,
+                   "selection_probe_complete":  true,
+                   "selected_test_set_matches_execution":  true,
+                   "test_assembly_unchanged":  true,
+                   "dotnet_exit_zero":  false,
+                   "trx_exists":  true,
+                   "all_selected_tests_executed":  true,
+                   "all_selected_tests_passed":  false,
+                   "no_test_failed_or_skipped":  false,
+                   "authenticated_journal_attestation_valid":  false,
+                   "exact_read_only_core_operations":  false,
+                   "all_core_results_completed_and_verified":  true,
+                   "no_core_effect_may_have_occurred":  true
+               }
+}

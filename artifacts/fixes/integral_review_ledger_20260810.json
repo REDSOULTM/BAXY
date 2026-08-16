@@ -1,0 +1,158 @@
+{
+  "schema": "baxy.integral-review-ledger.v1",
+  "measured_at_utc": "2026-08-11T04:08:13+00:00",
+  "supersedes": {
+    "path": "artifacts/fixes/integral_review_ledger_20260731.json",
+    "sha256": "05d7f60c15d6fb0a526a65745192c70993144b66832e5581beb0526d4de0794f"
+  },
+  "scope": {
+    "commit": "1336e199bfe56928a4a9116a77adebd45c274c0e",
+    "branch": "codex/baxy-portable-structure",
+    "dirty_shared_campaign": true,
+    "catalog_operations": 169,
+    "runtime_model": "Qwen3-4B-Q4_K_M.gguf"
+  },
+  "closed_previous_debt": [
+    "R16 request-prefix and named-browser residuals were closed by the systemic language and surface work culminating in the fresh R16 product holdout; simple Mind actions passed 360/360.",
+    "Absolute audio volume and Spotify sibling discrimination were closed by the reviewed current-catalogue and fresh generalization campaigns recorded in R25-R46.",
+    "Compound conservation and explicit-domain veto defects were closed by the metamorphic R19-R22 matrices and the later two-to-eight-step composition suites, with adversarial authority remaining zero.",
+    "Historical corpus conflicts were retired as authority by the reviewed catalogue oracle and replaced for generalization claims by fresh preregistered product holdouts R6-R16.",
+    "The R24 exact-operation authority debt was bounded and then superseded by the fresh R16 product oracle; no holdout probe executed effects.",
+    "Calendar without an Outlook profile remains an external environmental prerequisite, not a successful read and not a code defect; Core reports effectMayHaveOccurred=false."
+  ],
+  "known_defects_open": [
+    "Post-wake transcription on independent real speech does not yet preserve critical command anchors at the required rate: the consumed blind Audio Arena partition reached 88/100 critical anchors against the preregistered 99% minimum, and the MInDS14 fusion preserved intent semantics in 190/196 cases against the preregistered 99% minimum. The candidate was rejected and the defect remains open until a different approach passes a fresh independent holdout."
+  ],
+  "gates_after_repairs": {
+    "source_quality_full": {
+      "status": "passed",
+      "duration_seconds": 770.2,
+      "dotnet_discovered": 3762,
+      "dotnet_passed": 3762,
+      "dotnet_skipped_environmental": 0,
+      "python_passed": 7765,
+      "python_subtests_passed": 443,
+      "release_warnings": 0,
+      "release_errors": 0,
+      "artifact": "artifacts/development/baxy_endpoint_v25a_source_quality_full_v1.log",
+      "sha256": "93f27f3554c085375508239cbf000b81f84b3630a97fc3fee67e667e81663486"
+    },
+    "catalog_surface_r26": {
+      "status": "passed",
+      "operations_exact": "169/169",
+      "families": 31,
+      "unsafe_effects": 0,
+      "artifact": "artifacts/holdout/catalog_surface_holdout_r26_product.json",
+      "sha256": "18c71674bdc93069a0804f2886be9b53e28824bd6ff277f8554767bbfa764090"
+    },
+    "compound_execution_r3": {
+      "status": "passed",
+      "cases": "6/6",
+      "steps_completed_and_verified": "27/27",
+      "real_llm_plan_cases": "6/6",
+      "model_grounded_steps": 10,
+      "ambiguous_effects": 0,
+      "artifact": "artifacts/holdout/compound_execution_holdout_r3.json",
+      "sha256": "d2cf7e5fe9d4fe0a0a48a0a01650d2bee58491590fd343b1a35164e9a9efac74"
+    },
+    "shell_core_cpu": {
+      "status": "passed",
+      "operations_completed_and_verified": 15,
+      "selection_tests_passed": 8,
+      "external_effects": false,
+      "artifact": "artifacts/product/mind_shell_e2e_gate_r51_cpu_grounded_intro_b1.json",
+      "sha256": "688e9301452be4052c6a415a573796e35b4a86d02542ad60b04e40ed671c881e"
+    },
+    "shell_core_gpu": {
+      "status": "passed",
+      "operations_completed_and_verified": 15,
+      "selection_tests_passed": 8,
+      "external_effects": false,
+      "artifact": "artifacts/product/mind_shell_e2e_gate_r52_gpu_final.json",
+      "sha256": "15c10b1743d123dc4d2a395a869cd63fce5417eb55845a28c6802a17bc074221"
+    },
+    "mind_budget": {
+      "status": "passed",
+      "gpu_requests": "45/45",
+      "gpu_process_tree_vram_peak_mib": 3065.6,
+      "cpu_requests": "45/45",
+      "cpu_process_tree_ram_peak_mib": 5848.6,
+      "errors": 0,
+      "artifact": "artifacts/product/mind_budget_gate_r52.json",
+      "sha256": "7289d359dcecf2da4478518820939c32250e187e69baec7dc1131c908f691c5f"
+    },
+    "stt_real_audio_blind_v1": {
+      "status": "failed",
+      "candidate_promoted": false,
+      "blind_partitions_consumed": true,
+      "blind_results_allowed_for_tuning": false,
+      "minds14_cases": 196,
+      "minds14_transcript_intent_accuracy": 0.964286,
+      "minds14_intent_semantic_preservation": 0.969388,
+      "minds14_required_semantic_preservation": 0.99,
+      "audio_arena_cases": 50,
+      "audio_arena_corpus_wer": 0.07125,
+      "audio_arena_critical_anchors": "88/100",
+      "audio_arena_required_critical_anchor_recall": 0.99,
+      "decode_errors": 0,
+      "effects_executed": 0,
+      "artifact": "artifacts/validation/stt_blind_campaign_verdict_v1.json",
+      "sha256": "ce1ae54fd1370916b1c1ef731ed928d6de0437b460085260e45d84d21c6ddfea"
+    },
+    "stt_fresh_source_audit_v1": {
+      "status": "ready_pending_authenticated_acquisition",
+      "selected_source": "Common Voice Spontaneous Speech 4.0",
+      "snapshot": "sps-corpus-4.0-2026-06-12",
+      "published_at_utc": "2026-06-17",
+      "english_clips": 5679,
+      "english_validated_clips": 2305,
+      "spanish_clips": 403,
+      "spanish_validated_clips": 37,
+      "datasheet_sample_hashes_reserved_for_exclusion": 20,
+      "audio_archives_downloaded": false,
+      "audio_decoded": false,
+      "reference_transcripts_opened": false,
+      "candidate_promoted": false,
+      "effects_executed": 0,
+      "artifact": "artifacts/research/fresh_postweight_stt_source_audit_v1.json",
+      "sha256": "3adf2651b88fade3762f3444ef28f025965d41178cbfd96450b87990cc7f7793"
+    }
+  },
+  "accuracy_state": {
+    "cut_a": "Source Full is green and the fresh catalogue-surface R26 seal passed 169/169 operations across 31 families with zero unsafe effects; one final untouched oracle remains required because the later compound repair changed policy source.",
+    "cut_b": "The official broad R21 product holdout passed 700/700 with zero unsafe decisions; the final exact-tree seal remains pending after later parser repairs.",
+    "cut_c": "Fresh compound-execution R3 passed 6/6 missions and 27/27 independently verified steps through real LLM plans, with zero ambiguous effects; physical end-to-end text and voice missions remain required.",
+    "cut_d": "Current source gates, GPU/CPU shell gates and holdouts report zero unsafe effects or unverified successes; open-population physical closure remains required."
+  },
+  "wake_validation": {
+    "candidate_manifest_sha256": "a9a3a9fb2a98eee6d903df6afbc59bfa02d0111e9e7bd6de626ade441585001d",
+    "development_regression": "48/48 opened human positives, 0/384 aggregate false activations; endpoint-confusable and new-command physical development sets also green",
+    "openslr_negative_hours": 100.59087965,
+    "openslr_false_activations": 0,
+    "approved": false,
+    "preregistration": "artifacts/development/baxy_wake_routed_cascade_v25a_reserved_physical_v17_preregistration_v1.json",
+    "preregistration_sha256": "73c561c0e9861958ecfa62779ec16ff79b74352e663ef501d0defb876c21c958",
+    "program_tree_sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0",
+    "blind_human_partition_accessed": false,
+    "effects_executed": 0
+  },
+  "open_work_not_yet_done": [
+    "Execute the preregistered blind physical wake v17 gate only between 12:30 and 20:00 America/Santiago; require 48/48 positives and 0/96 false activations before promotion.",
+    "Acquire the audited Common Voice Spontaneous Speech 4.0 English and Spanish archives through an authenticated Mozilla Data Collective session, hash them, and reserve speaker-disjoint validated rows before any model decode. Exclude all 20 datasheet sample hashes. Add a separate real-human spanglish/accent holdout; the 37 validated Spanish clips are insufficient alone. The consumed MInDS14 and Audio Arena blind partitions may not be inspected case-by-case, reused for tuning, or presented as fresh evidence.",
+    "Generate and open a fresh preregistered current-tree oracle for cuts A-D; report recovery, decision and veto failures separately.",
+    "Execute complete dependent missions end-to-end through text and voice on the physical machine, with every step independently verified and visible progress at most every three seconds.",
+    "Run clean install, first start, update/rollback where applicable, and purge in a disposable account or VM using an attested Baxy.Setup.exe; repository policy still requires explicit authorization for a real install or uninstall.",
+    "Run the remaining opt-in physical gates whose preconditions can be established safely, and name each strictly environmental limitation. Outlook calendar remains blocked until a real profile exists."
+  ],
+  "final_validation": {
+    "source_gates_green": true,
+    "gpu_profile_green": true,
+    "cpu_profile_green": true,
+    "physical_wake_v17_green": false,
+    "physical_post_wake_stt_green": false,
+    "fresh_current_tree_cuts_a_to_d_green": false,
+    "physical_text_and_voice_compounds_green": false,
+    "clean_install_first_start_purge_green": false
+  },
+  "closure": "not_complete"
+}

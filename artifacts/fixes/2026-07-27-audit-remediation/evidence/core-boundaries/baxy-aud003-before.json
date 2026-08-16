@@ -1,0 +1,26 @@
+{
+  "schema": "baxy-night-audit-bluetooth-list-timeout-repro-v1",
+  "measured_at": "2026-07-27T18:22:51.660981+00:00",
+  "core": "D:\\BAXY\\source\\artifacts\\product\\build\\local-win-x64\\app\\core\\baxy-core.exe",
+  "reproduced": true,
+  "runs": [
+    {
+      "attempt": 1,
+      "timeout_seconds": 10.0,
+      "elapsed_seconds": 10.013,
+      "timed_out": true,
+      "response": null,
+      "exit_code": 1,
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "timeout_seconds": 10.0,
+      "elapsed_seconds": 10.008,
+      "timed_out": true,
+      "response": null,
+      "exit_code": 1,
+      "stderr": ""
+    }
+  ]
+}

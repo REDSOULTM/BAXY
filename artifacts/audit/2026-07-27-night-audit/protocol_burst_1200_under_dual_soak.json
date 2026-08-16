@@ -1,0 +1,20 @@
+{
+  "schema": "baxy.audit.protocol-burst-stress.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "requests": 1200,
+  "responses": 1200,
+  "elapsed_seconds": 60.688212699998985,
+  "responses_per_second": 19.773197242304352,
+  "statuses": {
+    "completed": 1200
+  },
+  "missing_count": 0,
+  "missing_request_ids": [],
+  "mismatches": [],
+  "writer_errors": [],
+  "reader_error": null,
+  "process_exit_code": 0,
+  "stderr": ""
+}

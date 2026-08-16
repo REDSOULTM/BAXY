@@ -1,0 +1,398 @@
+{
+  "schema": "baxy.audit.process-terminate-chain.v1",
+  "coreVersion": "1.0.8",
+  "catalogCount": 168,
+  "targetPid": 19296,
+  "elapsedSeconds": 4.18747859999894,
+  "cases": [
+    {
+      "operation": "system.process.list",
+      "arguments": {
+        "sort": "name",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "eda4143f-5d8c-46ea-a27c-9bc2523e21b5",
+          "missionId": "92b50793-ab0a-4bd1-bd19-bbb59e62ba7f",
+          "invocationId": "c611dc0a-edca-4595-a718-f5440930e6ca",
+          "status": "completed",
+          "message": "Procesos verificados por nombre: AacAmbientLighting (PID 28740), AcPowerNotification (PID 13924), AMDRSServ (PID 27524), AMDRSSrcExt (PID 3152), AppActions (PID 20104), ApplicationFrameHost (PID 14760), ArmouryCrate.DenoiseAI (PID 16668), ArmouryCrate.UserSessionHelper (PID 12328), ArmouryHtmlDebugServer (PID 24168), ArmourySocketServer (PID 24316), AsusOptimizationStartupTask (PID 11308), AsusOSD (PID 26152), ASUSSmartDisplayControl (PID 13624), AsusSoftwareManagerAgent (PID 7864), asus_framework (PID 10552), asus_framework (PID 15588), asus_framework (PID 24596), audiodg (PID 10984), baxy-core (PID 3876), baxy-core (PID 12040), baxy-core (PID 22520), BrCcUxSys (PID 6252), BrCtrlCntr (PID 19616), BrLogRx (PID 24236), CefSharp.BrowserSubprocess (PID 4444), CefSharp.BrowserSubprocess (PID 13720), CefSharp.BrowserSubprocess (PID 21556), CefSharp.BrowserSubprocess (PID 24964), ChatGPT (PID 8468), ChatGPT (PID 11620), ChatGPT (PID 18704), ChatGPT (PID 19772), ChatGPT (PID 19912), ChatGPT (PID 22864), ChatGPT (PID 25116), ChatGPT (PID 25364), ChatGPT (PID 25808), ChatGPT (PID 25816), cmd (PID 22400), cncmd (PID 27236), codex (PID 14068), codex-code-mode-host (PID 7108), conhost (PID 4816), conhost (PID 5444), conhost (PID 6368), conhost (PID 12336), conhost (PID 17788), CPUMetricsServer (PID 3312), crashpad_handler (PID 24444), CrossDeviceResume (PID 16224).",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "sort": "name",
+            "observedProcessCount": 153,
+            "processes": [
+              {
+                "processId": 28740,
+                "name": "AacAmbientLighting",
+                "workingSetBytes": 44933120,
+                "totalProcessorSeconds": 0.546875
+              },
+              {
+                "processId": 13924,
+                "name": "AcPowerNotification",
+                "workingSetBytes": 18235392,
+                "totalProcessorSeconds": 21.328125
+              },
+              {
+                "processId": 27524,
+                "name": "AMDRSServ",
+                "workingSetBytes": 86298624,
+                "totalProcessorSeconds": 12.625
+              },
+              {
+                "processId": 3152,
+                "name": "AMDRSSrcExt",
+                "workingSetBytes": 74412032,
+                "totalProcessorSeconds": 7.515625
+              },
+              {
+                "processId": 20104,
+                "name": "AppActions",
+                "workingSetBytes": 41439232,
+                "totalProcessorSeconds": 1.34375
+              },
+              {
+                "processId": 14760,
+                "name": "ApplicationFrameHost",
+                "workingSetBytes": 49111040,
+                "totalProcessorSeconds": 2.125
+              },
+              {
+                "processId": 16668,
+                "name": "ArmouryCrate.DenoiseAI",
+                "workingSetBytes": 11083776,
+                "totalProcessorSeconds": 1.140625
+              },
+              {
+                "processId": 12328,
+                "name": "ArmouryCrate.UserSessionHelper",
+                "workingSetBytes": 95940608,
+                "totalProcessorSeconds": 29.921875
+              },
+              {
+                "processId": 24168,
+                "name": "ArmouryHtmlDebugServer",
+                "workingSetBytes": 1138688,
+                "totalProcessorSeconds": 0.015625
+              },
+              {
+                "processId": 24316,
+                "name": "ArmourySocketServer",
+                "workingSetBytes": 1159168,
+                "totalProcessorSeconds": 0.53125
+              },
+              {
+                "processId": 11308,
+                "name": "AsusOptimizationStartupTask",
+                "workingSetBytes": 20205568,
+                "totalProcessorSeconds": 0.09375
+              },
+              {
+                "processId": 26152,
+                "name": "AsusOSD",
+                "workingSetBytes": 22040576,
+                "totalProcessorSeconds": 0.171875
+              },
+              {
+                "processId": 13624,
+                "name": "ASUSSmartDisplayControl",
+                "workingSetBytes": 3203072,
+                "totalProcessorSeconds": 0.3125
+              },
+              {
+                "processId": 7864,
+                "name": "AsusSoftwareManagerAgent",
+                "workingSetBytes": 47616000,
+                "totalProcessorSeconds": 1.375
+              },
+              {
+                "processId": 10552,
+                "name": "asus_framework",
+                "workingSetBytes": 11915264,
+                "totalProcessorSeconds": 0.3125
+              },
+              {
+                "processId": 15588,
+                "name": "asus_framework",
+                "workingSetBytes": 7950336,
+                "totalProcessorSeconds": 0.671875
+              },
+              {
+                "processId": 24596,
+                "name": "asus_framework",
+                "workingSetBytes": 28139520,
+                "totalProcessorSeconds": 7.984375
+              },
+              {
+                "processId": 10984,
+                "name": "audiodg",
+                "workingSetBytes": 45453312,
+                "totalProcessorSeconds": 41.4375
+              },
+              {
+                "processId": 3876,
+                "name": "baxy-core",
+                "workingSetBytes": 33968128,
+                "totalProcessorSeconds": 4.140625
+              },
+              {
+                "processId": 12040,
+                "name": "baxy-core",
+                "workingSetBytes": 24031232,
+                "totalProcessorSeconds": 0.15625
+              },
+              {
+                "processId": 22520,
+                "name": "baxy-core",
+                "workingSetBytes": 50462720,
+                "totalProcessorSeconds": 19.453125
+              },
+              {
+                "processId": 6252,
+                "name": "BrCcUxSys",
+                "workingSetBytes": 14864384,
+                "totalProcessorSeconds": 0.609375
+              },
+              {
+                "processId": 19616,
+                "name": "BrCtrlCntr",
+                "workingSetBytes": 14069760,
+                "totalProcessorSeconds": 0.609375
+              },
+              {
+                "processId": 24236,
+                "name": "BrLogRx",
+                "workingSetBytes": 13365248,
+                "totalProcessorSeconds": 0.1875
+              },
+              {
+                "processId": 4444,
+                "name": "CefSharp.BrowserSubprocess",
+                "workingSetBytes": 26378240,
+                "totalProcessorSeconds": 0.46875
+              },
+              {
+                "processId": 13720,
+                "name": "CefSharp.BrowserSubprocess",
+                "workingSetBytes": 37548032,
+                "totalProcessorSeconds": 1.109375
+              },
+              {
+                "processId": 21556,
+                "name": "CefSharp.BrowserSubprocess",
+                "workingSetBytes": 19357696,
+                "totalProcessorSeconds": 0.125
+              },
+              {
+                "processId": 24964,
+                "name": "CefSharp.BrowserSubprocess",
+                "workingSetBytes": 37122048,
+                "totalProcessorSeconds": 0.71875
+              },
+              {
+                "processId": 8468,
+                "name": "ChatGPT",
+                "workingSetBytes": 28110848,
+                "totalProcessorSeconds": 0.140625
+              },
+              {
+                "processId": 11620,
+                "name": "ChatGPT",
+                "workingSetBytes": 26906624,
+                "totalProcessorSeconds": 2.71875
+              },
+              {
+                "processId": 18704,
+                "name": "ChatGPT",
+                "workingSetBytes": 131473408,
+                "totalProcessorSeconds": 13.984375
+              },
+              {
+                "processId": 19772,
+                "name": "ChatGPT",
+                "workingSetBytes": 317083648,
+                "totalProcessorSeconds": 453.546875
+              },
+              {
+                "processId": 19912,
+                "name": "ChatGPT",
+                "workingSetBytes": 25546752,
+                "totalProcessorSeconds": 3.984375
+              },
+              {
+                "processId": 22864,
+                "name": "ChatGPT",
+                "workingSetBytes": 173735936,
+                "totalProcessorSeconds": 1478.3125
+              },
+              {
+                "processId": 25116,
+                "name": "ChatGPT",
+                "workingSetBytes": 48791552,
+                "totalProcessorSeconds": 9.5
+              },
+              {
+                "processId": 25364,
+                "name": "ChatGPT",
+                "workingSetBytes": 10014720,
+                "totalProcessorSeconds": 0.125
+              },
+              {
+                "processId": 25808,
+                "name": "ChatGPT",
+                "workingSetBytes": 550477824,
+                "totalProcessorSeconds": 1811.578125
+              },
+              {
+                "processId": 25816,
+                "name": "ChatGPT",
+                "workingSetBytes": 226832384,
+                "totalProcessorSeconds": 82.1875
+              },
+              {
+                "processId": 22400,
+                "name": "cmd",
+                "workingSetBytes": 3227648,
+                "totalProcessorSeconds": 0.140625
+              },
+              {
+                "processId": 27236,
+                "name": "cncmd",
+                "workingSetBytes": 1429504,
+                "totalProcessorSeconds": 0.015625
+              },
+              {
+                "processId": 14068,
+                "name": "codex",
+                "workingSetBytes": 178200576,
+                "totalProcessorSeconds": 235.84375
+              },
+              {
+                "processId": 7108,
+                "name": "codex-code-mode-host",
+                "workingSetBytes": 25976832,
+                "totalProcessorSeconds": 4.21875
+              },
+              {
+                "processId": 4816,
+                "name": "conhost",
+                "workingSetBytes": 7823360,
+                "totalProcessorSeconds": 0.015625
+              },
+              {
+                "processId": 5444,
+                "name": "conhost",
+                "workingSetBytes": 8101888,
+                "totalProcessorSeconds": 0.015625
+              },
+              {
+                "processId": 6368,
+                "name": "conhost",
+                "workingSetBytes": 7610368,
+                "totalProcessorSeconds": 1.78125
+              },
+              {
+                "processId": 12336,
+                "name": "conhost",
+                "workingSetBytes": 6991872,
+                "totalProcessorSeconds": 0.28125
+              },
+              {
+                "processId": 17788,
+                "name": "conhost",
+                "workingSetBytes": 2187264,
+                "totalProcessorSeconds": 0.015625
+              },
+              {
+                "processId": 3312,
+                "name": "CPUMetricsServer",
+                "workingSetBytes": 5300224,
+                "totalProcessorSeconds": 0.0625
+              },
+              {
+                "processId": 24444,
+                "name": "crashpad_handler",
+                "workingSetBytes": 7753728,
+                "totalProcessorSeconds": 0.078125
+              },
+              {
+                "processId": 16224,
+                "name": "CrossDeviceResume",
+                "workingSetBytes": 63234048,
+                "totalProcessorSeconds": 1
+              }
+            ]
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsedSeconds": 4.048634299999321
+    },
+    {
+      "operation": "system.process.terminate.named",
+      "arguments": {
+        "name": "ping"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "127c82c7-05db-439e-ad9e-a6cbe7aee58f",
+          "missionId": "58212872-3547-486a-a027-14da11eb9ba1",
+          "invocationId": "d0d1fa28-0896-4885-a8ce-86e8d7bc2652",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "quiq6nEoNRHGAb5HMlyk4Qmotbms1xF93nUwov2l0C0",
+            "expiresAtUtc": "2026-07-27T07:00:07.2586380+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "50790de9-239a-444d-bcf0-23aab5e2db74",
+          "missionId": "58212872-3547-486a-a027-14da11eb9ba1",
+          "invocationId": "d0d1fa28-0896-4885-a8ce-86e8d7bc2652",
+          "status": "completed",
+          "message": "Listo, forcé el cierre del proceso y verifiqué que ya no está ejecutándose.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "processName": "ping",
+            "beforeCount": 1,
+            "terminatedCount": 1,
+            "afterCount": 0,
+            "originalIdentitiesAbsent": true,
+            "replacementCount": 0,
+            "identities": [
+              {
+                "processId": 19296,
+                "startTimeUtcTicks": 639207322824148766
+              }
+            ],
+            "replacementIdentities": [],
+            "authority": "windows_process_original_identity_absence_postread"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsedSeconds": 0.06719460000022082
+    }
+  ],
+  "error": "RuntimeError: termination receipt did not bind exactly one process",
+  "cleanup": {
+    "targetTerminatedByHarness": false,
+    "remainingPingPids": []
+  },
+  "coreExitCode": 0,
+  "stderr": ""
+}

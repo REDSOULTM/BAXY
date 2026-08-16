@@ -1,0 +1,41 @@
+# Development candidate 3: multilingual, short-context positives selected by
+# exact target subsequence, with the same voice-disjoint test personas used by
+# candidates 1 and 2.  The human blind partition remains inaccessible.
+model_name: baxy_voxcpm2_context_development_v3
+target_phrases:
+  - "Baxy"
+tts_backend: voxcpm
+
+n_samples: 900
+n_samples_val: 250
+n_background_samples: 0
+n_background_samples_val: 0
+
+data_dir: D:/BAXYRuntime/experiments/wakeword/livekit_data
+output_dir: D:/BAXYRuntime/experiments/wakeword/livekit_output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 16
+  rounds: 3
+  background_paths:
+    - D:/BAXYRuntime/experiments/wakeword/livekit_data/backgrounds
+  rir_paths:
+    - D:/BAXYRuntime/experiments/wakeword/livekit_data/rirs
+
+model:
+  model_type: conv_attention
+  model_size: medium
+
+steps: 10000
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.03
+max_negative_weight: 500
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 96
+  adversarial_negative: 96
+  ACAV100M_sample: 384
+  background_noise: 0

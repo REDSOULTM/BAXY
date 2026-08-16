@@ -1,0 +1,1066 @@
+{
+    "schema_version":  1,
+    "generated_utc":  "2026-07-19T03:20:21.3731167Z",
+    "evidence_id":  "round_b_reproducibility",
+    "provenance":  {
+                       "harness":  {
+                                       "path":  "experiments/technology_tournament/round_b/reproducibility_harness.ps1",
+                                       "bytes":  41655,
+                                       "sha256":  "efd518e59d7af41a3309140811138f6363874bfe79606ee507908a5e81fdd7e3"
+                                   }
+                   },
+    "scope":  {
+                  "statement":  "Two exact source replicas execute the Round B recipe in separate processes and output roots on one host with shared global caches; complete output trees and per-file SHA-256 values are compared.",
+                  "classification":  "same_host_isolated_source_replicas_shared_caches",
+                  "source_replicas_isolated":  true,
+                  "output_roots_isolated":  true,
+                  "process_runs_separate":  true,
+                  "host_shared":  true,
+                  "global_caches_shared":  true,
+                  "clean_environment":  false,
+                  "cross_host":  false,
+                  "cache_state_reset_between_runs":  false,
+                  "limitation":  "This is not clean-environment or cross-host reproduction. NuGet, Cargo, rustup, SDK, MSVC, and Windows SDK state are shared host state.",
+                  "official_packaging_artifacts_modified":  false,
+                  "build_root":  "artifacts/technology_tournament/build/rb",
+                  "evidence_path":  "artifacts/technology_tournament/raw/round_b_reproducibility.json"
+              },
+    "gate_semantics":  {
+                           "toolchains_pinned":  "Compatibility alias for repository_sdk_toolchains_pinned. Repository pins cover the .NET SDK and Rust compiler/toolchain target only; this gate explicitly excludes host MSVC link.exe and the Windows SDK.",
+                           "repository_sdk_toolchains_pinned":  "The repository pins the .NET SDK and Rust compiler/toolchain target used by both runs.",
+                           "host_native_toolchain_observed":  "The actual same-host MSVC linker identity and vcvarsall-selected Windows SDK were discovered and recorded, but are not repository-pinned.",
+                           "independent_builds_succeeded":  "Compatibility name retained: the runs are separate processes with separate exact source replicas and output roots on the same host; they share global caches and are neither clean-host nor cross-host builds."
+                       },
+    "recipe":  {
+                   "path":  "experiments/technology_tournament/round_b/build_round_b.ps1",
+                   "sha256":  "c65d0e4d5ce935c6ff32a1a4e25a09a6f8f6184e2cf9b5f1701e2bca2313404f"
+               },
+    "toolchains":  {
+                       "pinning_scope":  {
+                                             "repository_pinned":  [
+                                                                       ".NET SDK",
+                                                                       "Rust compiler channel",
+                                                                       "Rust target",
+                                                                       "Rust linker flags"
+                                                                   ],
+                                             "host_observed_not_pinned":  [
+                                                                              "MSVC link.exe",
+                                                                              "MSVC tools",
+                                                                              "Windows SDK",
+                                                                              "native library search paths"
+                                                                          ]
+                                         },
+                       "dotnet":  {
+                                      "pin_file":  "global.json",
+                                      "pin_sha256":  "0aa4b85ae248d59bbc4138f346d952b7fae4fe18cc701d921fa1c003211be777",
+                                      "expected_sdk":  "10.0.100",
+                                      "expected_roll_forward":  "disable",
+                                      "actual_sdk":  "10.0.100",
+                                      "pin_valid":  true,
+                                      "passed":  true
+                                  },
+                       "rust":  {
+                                    "pin_file":  "experiments/technology_tournament/rust_core/rust-toolchain.toml",
+                                    "pin_sha256":  "d75946e625349a847423d70b9570a96e80997d711baa8978f5d7f398af0a16f9",
+                                    "expected_channel":  "1.97.0",
+                                    "expected_target":  "x86_64-pc-windows-msvc",
+                                    "rustc_actual":  "rustc 1.97.0 (2d8144b78 2026-07-07)",
+                                    "cargo_actual":  "cargo 1.97.0 (c980f4866 2026-06-30)",
+                                    "active_toolchain":  "1.97.0-x86_64-pc-windows-msvc (overridden by \u0027D:\\BAXY\\source\\experiments\\technology_tournament\\rust_core\\rust-toolchain.toml\u0027)",
+                                    "target_installed":  true,
+                                    "pin_valid":  true,
+                                    "passed":  true
+                                },
+                       "rust_static_crt_configuration":  {
+                                                             "path":  "experiments/technology_tournament/rust_core/.cargo/config.toml",
+                                                             "sha256":  "f2513596c6fa1b07a4322ff110855fe6dca8b5aa6496157be2bf6ac65dcd29b6",
+                                                             "configured":  true,
+                                                             "deterministic_link_configured":  true
+                                                         },
+                       "host_native":  {
+                                           "classification":  "observed_same_host_native_toolchain",
+                                           "repository_pinned":  false,
+                                           "discovery":  "vswhere latest Visual Studio C++ instance plus vcvarsall x64 environment",
+                                           "path_hash_scheme":  "sha256(utf8(lower-invariant(full-path)))",
+                                           "usage_binding":  {
+                                                                 "dotnet_native_aot":  "NativeAOT Windows targets use the same latest-vswhere/vcvarsall selection recorded here.",
+                                                                 "rust":  "The build sets CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER to this exact link.exe path and LIB to the recorded vcvarsall native-library paths."
+                                                             },
+                                           "visual_studio_installation":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community",
+                                           "vc_environment_architecture":  "amd64",
+                                           "msvc_tools_version":  "14.42.34433",
+                                           "linker":  {
+                                                          "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe",
+                                                          "path_sha256":  "66cea8990a8be3600c369088862baf1dfb3f984214cf7a96f6ff69dabfe76826",
+                                                          "file_sha256":  "f627ee8b9983af24d4b5ab6efab25f4a3be7a02bb09253aa2f5abab3c1fb2c6b",
+                                                          "file_version":  "14.42.34435.0",
+                                                          "product_version":  "14.42.34435.0",
+                                                          "banner":  "Microsoft (R) Incremental Linker Version 14.42.34435.0"
+                                                      },
+                                           "windows_sdk":  {
+                                                               "discovered":  true,
+                                                               "directory":  "C:\\Program Files (x86)\\Windows Kits\\10\\",
+                                                               "directory_path_sha256":  "f5030745459c6140f59cd4880f6b5e5c127a544d2b656ca337fe51dc49c389d6",
+                                                               "version":  "10.0.22621.0",
+                                                               "ucrt_version":  "10.0.22621.0",
+                                                               "native_library_paths":  [
+                                                                                            {
+                                                                                                "ordinal":  0,
+                                                                                                "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64",
+                                                                                                "path_sha256":  "dd7ef2166dccea949af72911458561dcfa255ac870f48a3de102138e2b673ea8",
+                                                                                                "exists":  true
+                                                                                            },
+                                                                                            {
+                                                                                                "ordinal":  1,
+                                                                                                "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64",
+                                                                                                "path_sha256":  "cf252e817ff5e1037b28961c18142da94e09cb7ff6304956e9940e805539c432",
+                                                                                                "exists":  true
+                                                                                            },
+                                                                                            {
+                                                                                                "ordinal":  2,
+                                                                                                "path":  "C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64",
+                                                                                                "path_sha256":  "958e0e4c4b40a6ceddb0873a813cda04a0a056cffe8e32cae33fcbf6ff9cad1b",
+                                                                                                "exists":  true
+                                                                                            },
+                                                                                            {
+                                                                                                "ordinal":  3,
+                                                                                                "path":  "C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.22621.0\\ucrt\\x64",
+                                                                                                "path_sha256":  "946cbd270c1cc2f7c7f5249828558e3ff182836fdbe0e72b10c5d16a66544024",
+                                                                                                "exists":  true
+                                                                                            },
+                                                                                            {
+                                                                                                "ordinal":  4,
+                                                                                                "path":  "C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.22621.0\\um\\x64",
+                                                                                                "path_sha256":  "ca503df89c176050b725e36e9d66f7ff1b2740d92b073413c44b2420398f2cec",
+                                                                                                "exists":  true
+                                                                                            }
+                                                                                        ],
+                                                               "lib_environment_sha256":  "48fb53101176bb390cc0256cac99f3d071b2f5131dba96d58e91fcecbf107fe6"
+                                                           },
+                                           "passed":  true
+                                       },
+                       "host_native_build_binding":  {
+                                                         "identity_sha256":  "9769dd2b0c80707063663be2a5ba980fb046e78247e6a756647307305de3b450",
+                                                         "both_builds_captured_identity":  true,
+                                                         "run_01_identity_sha256":  "9769dd2b0c80707063663be2a5ba980fb046e78247e6a756647307305de3b450",
+                                                         "run_02_identity_sha256":  "9769dd2b0c80707063663be2a5ba980fb046e78247e6a756647307305de3b450",
+                                                         "both_runs_match_observed_identity":  true,
+                                                         "passed":  true
+                                                     }
+                   },
+    "input_snapshots":  {
+                            "before_run_01":  {
+                                                  "tree_sha256":  "0bdb22cf7f78f4d628343dcb71742a1597c289a285c86365fd3048fa773e2993",
+                                                  "file_count":  19,
+                                                  "total_bytes":  118874,
+                                                  "files":  [
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/dotnet_windows_core/BaxySlice.csproj",
+                                                                    "bytes":  665,
+                                                                    "sha256":  "2affecd515599d348e293335504c2cbd0998a6a3e19bb1a773aab15ff5d5a125"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/dotnet_windows_core/Program.cs",
+                                                                    "bytes":  22474,
+                                                                    "sha256":  "37dd78acf38058aed046b2276688c5e25373dc4e234a8cabae89649c5a5a18c1"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/dotnet_windows_core/README.md",
+                                                                    "bytes":  367,
+                                                                    "sha256":  "b2df4c049c2aed0fc719401a66cb57ad01f3662db6bb6c61814828d040e2bbb2"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/build_round_b.ps1",
+                                                                    "bytes":  16152,
+                                                                    "sha256":  "c65d0e4d5ce935c6ff32a1a4e25a09a6f8f6184e2cf9b5f1701e2bca2313404f"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/dotnet_webview/CoreBridge.cs",
+                                                                    "bytes":  9016,
+                                                                    "sha256":  "13de567b6d24f8f284a61b771285e008865b9fae3bf4a4db2df9c157c62dd35d"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml",
+                                                                    "bytes":  2884,
+                                                                    "sha256":  "99679f1389829000b7e2e65d61c667ec4e34e0fdd70f94090b46f78cf2da3508"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml.cs",
+                                                                    "bytes":  931,
+                                                                    "sha256":  "57cb8b57803ceb61aa0b2a5b63bd3fc5fa44a50cbb9c938cabd0936f7722649d"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/native_wpf/BaxyNativeWpf.csproj",
+                                                                    "bytes":  637,
+                                                                    "sha256":  "656f92e3a2077808e6085d6bb6f1b518f8ae9d41f9adf23a94e84d4363f51928"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml",
+                                                                    "bytes":  12874,
+                                                                    "sha256":  "8821271cd5780a70971af00620ddddbeddc555b1fec584abf01e8ef2ffdf8bc3"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml.cs",
+                                                                    "bytes":  14669,
+                                                                    "sha256":  "e85c4953e24bd69680cbff0fa62cc5b74e4cea476760100028397447c08ec7d6"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/native_wpf/README.md",
+                                                                    "bytes":  439,
+                                                                    "sha256":  "7ab3ce15fdb929c7fae0161a861a04d00c18c35b6fe020a4a75bd6f3b0f8110f"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/round_b/tauri_rust/src-tauri/icons/icon.ico",
+                                                                    "bytes":  9392,
+                                                                    "sha256":  "66fd8f58bbf2268123461b7637325e8471ea1ffe1a8114b252331bef3a50a8f3"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/rust_core/.cargo/config.toml",
+                                                                    "bytes":  107,
+                                                                    "sha256":  "f2513596c6fa1b07a4322ff110855fe6dca8b5aa6496157be2bf6ac65dcd29b6"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/rust_core/Cargo.lock",
+                                                                    "bytes":  2647,
+                                                                    "sha256":  "9587a3e22873eccb6677dfd98c689d7e857115bedb06dbc2c7f275a0c45ff5ff"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/rust_core/Cargo.toml",
+                                                                    "bytes":  235,
+                                                                    "sha256":  "67e3c470a7c94f6c810e433fc9f4037f60c7c75085367414fe347c5ab9e8787a"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/rust_core/README.md",
+                                                                    "bytes":  539,
+                                                                    "sha256":  "fa7ed38bdc9db5080500439c86cf7e1fcef25aa5e2d421d23188c076998ef3ce"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/rust_core/rust-toolchain.toml",
+                                                                    "bytes":  88,
+                                                                    "sha256":  "d75946e625349a847423d70b9570a96e80997d711baa8978f5d7f398af0a16f9"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "experiments/technology_tournament/rust_core/src/main.rs",
+                                                                    "bytes":  24653,
+                                                                    "sha256":  "da31d55ffea6630e8420682713cce5db0adc894f181702b254a7201c1ed671ce"
+                                                                },
+                                                                {
+                                                                    "relative_path":  "global.json",
+                                                                    "bytes":  105,
+                                                                    "sha256":  "0aa4b85ae248d59bbc4138f346d952b7fae4fe18cc701d921fa1c003211be777"
+                                                                }
+                                                            ]
+                                              },
+                            "between_runs":  {
+                                                 "tree_sha256":  "0bdb22cf7f78f4d628343dcb71742a1597c289a285c86365fd3048fa773e2993",
+                                                 "file_count":  19,
+                                                 "total_bytes":  118874,
+                                                 "files":  [
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/dotnet_windows_core/BaxySlice.csproj",
+                                                                   "bytes":  665,
+                                                                   "sha256":  "2affecd515599d348e293335504c2cbd0998a6a3e19bb1a773aab15ff5d5a125"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/dotnet_windows_core/Program.cs",
+                                                                   "bytes":  22474,
+                                                                   "sha256":  "37dd78acf38058aed046b2276688c5e25373dc4e234a8cabae89649c5a5a18c1"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/dotnet_windows_core/README.md",
+                                                                   "bytes":  367,
+                                                                   "sha256":  "b2df4c049c2aed0fc719401a66cb57ad01f3662db6bb6c61814828d040e2bbb2"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/build_round_b.ps1",
+                                                                   "bytes":  16152,
+                                                                   "sha256":  "c65d0e4d5ce935c6ff32a1a4e25a09a6f8f6184e2cf9b5f1701e2bca2313404f"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/dotnet_webview/CoreBridge.cs",
+                                                                   "bytes":  9016,
+                                                                   "sha256":  "13de567b6d24f8f284a61b771285e008865b9fae3bf4a4db2df9c157c62dd35d"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml",
+                                                                   "bytes":  2884,
+                                                                   "sha256":  "99679f1389829000b7e2e65d61c667ec4e34e0fdd70f94090b46f78cf2da3508"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml.cs",
+                                                                   "bytes":  931,
+                                                                   "sha256":  "57cb8b57803ceb61aa0b2a5b63bd3fc5fa44a50cbb9c938cabd0936f7722649d"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/BaxyNativeWpf.csproj",
+                                                                   "bytes":  637,
+                                                                   "sha256":  "656f92e3a2077808e6085d6bb6f1b518f8ae9d41f9adf23a94e84d4363f51928"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml",
+                                                                   "bytes":  12874,
+                                                                   "sha256":  "8821271cd5780a70971af00620ddddbeddc555b1fec584abf01e8ef2ffdf8bc3"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml.cs",
+                                                                   "bytes":  14669,
+                                                                   "sha256":  "e85c4953e24bd69680cbff0fa62cc5b74e4cea476760100028397447c08ec7d6"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/README.md",
+                                                                   "bytes":  439,
+                                                                   "sha256":  "7ab3ce15fdb929c7fae0161a861a04d00c18c35b6fe020a4a75bd6f3b0f8110f"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/tauri_rust/src-tauri/icons/icon.ico",
+                                                                   "bytes":  9392,
+                                                                   "sha256":  "66fd8f58bbf2268123461b7637325e8471ea1ffe1a8114b252331bef3a50a8f3"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/.cargo/config.toml",
+                                                                   "bytes":  107,
+                                                                   "sha256":  "f2513596c6fa1b07a4322ff110855fe6dca8b5aa6496157be2bf6ac65dcd29b6"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/Cargo.lock",
+                                                                   "bytes":  2647,
+                                                                   "sha256":  "9587a3e22873eccb6677dfd98c689d7e857115bedb06dbc2c7f275a0c45ff5ff"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/Cargo.toml",
+                                                                   "bytes":  235,
+                                                                   "sha256":  "67e3c470a7c94f6c810e433fc9f4037f60c7c75085367414fe347c5ab9e8787a"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/README.md",
+                                                                   "bytes":  539,
+                                                                   "sha256":  "fa7ed38bdc9db5080500439c86cf7e1fcef25aa5e2d421d23188c076998ef3ce"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/rust-toolchain.toml",
+                                                                   "bytes":  88,
+                                                                   "sha256":  "d75946e625349a847423d70b9570a96e80997d711baa8978f5d7f398af0a16f9"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/src/main.rs",
+                                                                   "bytes":  24653,
+                                                                   "sha256":  "da31d55ffea6630e8420682713cce5db0adc894f181702b254a7201c1ed671ce"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "global.json",
+                                                                   "bytes":  105,
+                                                                   "sha256":  "0aa4b85ae248d59bbc4138f346d952b7fae4fe18cc701d921fa1c003211be777"
+                                                               }
+                                                           ]
+                                             },
+                            "after_run_02":  {
+                                                 "tree_sha256":  "0bdb22cf7f78f4d628343dcb71742a1597c289a285c86365fd3048fa773e2993",
+                                                 "file_count":  19,
+                                                 "total_bytes":  118874,
+                                                 "files":  [
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/dotnet_windows_core/BaxySlice.csproj",
+                                                                   "bytes":  665,
+                                                                   "sha256":  "2affecd515599d348e293335504c2cbd0998a6a3e19bb1a773aab15ff5d5a125"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/dotnet_windows_core/Program.cs",
+                                                                   "bytes":  22474,
+                                                                   "sha256":  "37dd78acf38058aed046b2276688c5e25373dc4e234a8cabae89649c5a5a18c1"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/dotnet_windows_core/README.md",
+                                                                   "bytes":  367,
+                                                                   "sha256":  "b2df4c049c2aed0fc719401a66cb57ad01f3662db6bb6c61814828d040e2bbb2"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/build_round_b.ps1",
+                                                                   "bytes":  16152,
+                                                                   "sha256":  "c65d0e4d5ce935c6ff32a1a4e25a09a6f8f6184e2cf9b5f1701e2bca2313404f"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/dotnet_webview/CoreBridge.cs",
+                                                                   "bytes":  9016,
+                                                                   "sha256":  "13de567b6d24f8f284a61b771285e008865b9fae3bf4a4db2df9c157c62dd35d"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml",
+                                                                   "bytes":  2884,
+                                                                   "sha256":  "99679f1389829000b7e2e65d61c667ec4e34e0fdd70f94090b46f78cf2da3508"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml.cs",
+                                                                   "bytes":  931,
+                                                                   "sha256":  "57cb8b57803ceb61aa0b2a5b63bd3fc5fa44a50cbb9c938cabd0936f7722649d"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/BaxyNativeWpf.csproj",
+                                                                   "bytes":  637,
+                                                                   "sha256":  "656f92e3a2077808e6085d6bb6f1b518f8ae9d41f9adf23a94e84d4363f51928"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml",
+                                                                   "bytes":  12874,
+                                                                   "sha256":  "8821271cd5780a70971af00620ddddbeddc555b1fec584abf01e8ef2ffdf8bc3"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml.cs",
+                                                                   "bytes":  14669,
+                                                                   "sha256":  "e85c4953e24bd69680cbff0fa62cc5b74e4cea476760100028397447c08ec7d6"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/native_wpf/README.md",
+                                                                   "bytes":  439,
+                                                                   "sha256":  "7ab3ce15fdb929c7fae0161a861a04d00c18c35b6fe020a4a75bd6f3b0f8110f"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/round_b/tauri_rust/src-tauri/icons/icon.ico",
+                                                                   "bytes":  9392,
+                                                                   "sha256":  "66fd8f58bbf2268123461b7637325e8471ea1ffe1a8114b252331bef3a50a8f3"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/.cargo/config.toml",
+                                                                   "bytes":  107,
+                                                                   "sha256":  "f2513596c6fa1b07a4322ff110855fe6dca8b5aa6496157be2bf6ac65dcd29b6"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/Cargo.lock",
+                                                                   "bytes":  2647,
+                                                                   "sha256":  "9587a3e22873eccb6677dfd98c689d7e857115bedb06dbc2c7f275a0c45ff5ff"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/Cargo.toml",
+                                                                   "bytes":  235,
+                                                                   "sha256":  "67e3c470a7c94f6c810e433fc9f4037f60c7c75085367414fe347c5ab9e8787a"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/README.md",
+                                                                   "bytes":  539,
+                                                                   "sha256":  "fa7ed38bdc9db5080500439c86cf7e1fcef25aa5e2d421d23188c076998ef3ce"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/rust-toolchain.toml",
+                                                                   "bytes":  88,
+                                                                   "sha256":  "d75946e625349a847423d70b9570a96e80997d711baa8978f5d7f398af0a16f9"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "experiments/technology_tournament/rust_core/src/main.rs",
+                                                                   "bytes":  24653,
+                                                                   "sha256":  "da31d55ffea6630e8420682713cce5db0adc894f181702b254a7201c1ed671ce"
+                                                               },
+                                                               {
+                                                                   "relative_path":  "global.json",
+                                                                   "bytes":  105,
+                                                                   "sha256":  "0aa4b85ae248d59bbc4138f346d952b7fae4fe18cc701d921fa1c003211be777"
+                                                               }
+                                                           ]
+                                             },
+                            "run_01_replica":  {
+                                                   "tree_sha256":  "0bdb22cf7f78f4d628343dcb71742a1597c289a285c86365fd3048fa773e2993",
+                                                   "file_count":  19,
+                                                   "total_bytes":  118874,
+                                                   "files":  [
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/dotnet_windows_core/BaxySlice.csproj",
+                                                                     "bytes":  665,
+                                                                     "sha256":  "2affecd515599d348e293335504c2cbd0998a6a3e19bb1a773aab15ff5d5a125"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/dotnet_windows_core/Program.cs",
+                                                                     "bytes":  22474,
+                                                                     "sha256":  "37dd78acf38058aed046b2276688c5e25373dc4e234a8cabae89649c5a5a18c1"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/dotnet_windows_core/README.md",
+                                                                     "bytes":  367,
+                                                                     "sha256":  "b2df4c049c2aed0fc719401a66cb57ad01f3662db6bb6c61814828d040e2bbb2"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/build_round_b.ps1",
+                                                                     "bytes":  16152,
+                                                                     "sha256":  "c65d0e4d5ce935c6ff32a1a4e25a09a6f8f6184e2cf9b5f1701e2bca2313404f"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/dotnet_webview/CoreBridge.cs",
+                                                                     "bytes":  9016,
+                                                                     "sha256":  "13de567b6d24f8f284a61b771285e008865b9fae3bf4a4db2df9c157c62dd35d"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml",
+                                                                     "bytes":  2884,
+                                                                     "sha256":  "99679f1389829000b7e2e65d61c667ec4e34e0fdd70f94090b46f78cf2da3508"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml.cs",
+                                                                     "bytes":  931,
+                                                                     "sha256":  "57cb8b57803ceb61aa0b2a5b63bd3fc5fa44a50cbb9c938cabd0936f7722649d"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/BaxyNativeWpf.csproj",
+                                                                     "bytes":  637,
+                                                                     "sha256":  "656f92e3a2077808e6085d6bb6f1b518f8ae9d41f9adf23a94e84d4363f51928"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml",
+                                                                     "bytes":  12874,
+                                                                     "sha256":  "8821271cd5780a70971af00620ddddbeddc555b1fec584abf01e8ef2ffdf8bc3"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml.cs",
+                                                                     "bytes":  14669,
+                                                                     "sha256":  "e85c4953e24bd69680cbff0fa62cc5b74e4cea476760100028397447c08ec7d6"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/README.md",
+                                                                     "bytes":  439,
+                                                                     "sha256":  "7ab3ce15fdb929c7fae0161a861a04d00c18c35b6fe020a4a75bd6f3b0f8110f"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/tauri_rust/src-tauri/icons/icon.ico",
+                                                                     "bytes":  9392,
+                                                                     "sha256":  "66fd8f58bbf2268123461b7637325e8471ea1ffe1a8114b252331bef3a50a8f3"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/.cargo/config.toml",
+                                                                     "bytes":  107,
+                                                                     "sha256":  "f2513596c6fa1b07a4322ff110855fe6dca8b5aa6496157be2bf6ac65dcd29b6"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/Cargo.lock",
+                                                                     "bytes":  2647,
+                                                                     "sha256":  "9587a3e22873eccb6677dfd98c689d7e857115bedb06dbc2c7f275a0c45ff5ff"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/Cargo.toml",
+                                                                     "bytes":  235,
+                                                                     "sha256":  "67e3c470a7c94f6c810e433fc9f4037f60c7c75085367414fe347c5ab9e8787a"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/README.md",
+                                                                     "bytes":  539,
+                                                                     "sha256":  "fa7ed38bdc9db5080500439c86cf7e1fcef25aa5e2d421d23188c076998ef3ce"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/rust-toolchain.toml",
+                                                                     "bytes":  88,
+                                                                     "sha256":  "d75946e625349a847423d70b9570a96e80997d711baa8978f5d7f398af0a16f9"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/src/main.rs",
+                                                                     "bytes":  24653,
+                                                                     "sha256":  "da31d55ffea6630e8420682713cce5db0adc894f181702b254a7201c1ed671ce"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "global.json",
+                                                                     "bytes":  105,
+                                                                     "sha256":  "0aa4b85ae248d59bbc4138f346d952b7fae4fe18cc701d921fa1c003211be777"
+                                                                 }
+                                                             ]
+                                               },
+                            "run_02_replica":  {
+                                                   "tree_sha256":  "0bdb22cf7f78f4d628343dcb71742a1597c289a285c86365fd3048fa773e2993",
+                                                   "file_count":  19,
+                                                   "total_bytes":  118874,
+                                                   "files":  [
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/dotnet_windows_core/BaxySlice.csproj",
+                                                                     "bytes":  665,
+                                                                     "sha256":  "2affecd515599d348e293335504c2cbd0998a6a3e19bb1a773aab15ff5d5a125"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/dotnet_windows_core/Program.cs",
+                                                                     "bytes":  22474,
+                                                                     "sha256":  "37dd78acf38058aed046b2276688c5e25373dc4e234a8cabae89649c5a5a18c1"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/dotnet_windows_core/README.md",
+                                                                     "bytes":  367,
+                                                                     "sha256":  "b2df4c049c2aed0fc719401a66cb57ad01f3662db6bb6c61814828d040e2bbb2"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/build_round_b.ps1",
+                                                                     "bytes":  16152,
+                                                                     "sha256":  "c65d0e4d5ce935c6ff32a1a4e25a09a6f8f6184e2cf9b5f1701e2bca2313404f"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/dotnet_webview/CoreBridge.cs",
+                                                                     "bytes":  9016,
+                                                                     "sha256":  "13de567b6d24f8f284a61b771285e008865b9fae3bf4a4db2df9c157c62dd35d"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml",
+                                                                     "bytes":  2884,
+                                                                     "sha256":  "99679f1389829000b7e2e65d61c667ec4e34e0fdd70f94090b46f78cf2da3508"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/App.xaml.cs",
+                                                                     "bytes":  931,
+                                                                     "sha256":  "57cb8b57803ceb61aa0b2a5b63bd3fc5fa44a50cbb9c938cabd0936f7722649d"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/BaxyNativeWpf.csproj",
+                                                                     "bytes":  637,
+                                                                     "sha256":  "656f92e3a2077808e6085d6bb6f1b518f8ae9d41f9adf23a94e84d4363f51928"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml",
+                                                                     "bytes":  12874,
+                                                                     "sha256":  "8821271cd5780a70971af00620ddddbeddc555b1fec584abf01e8ef2ffdf8bc3"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/MainWindow.xaml.cs",
+                                                                     "bytes":  14669,
+                                                                     "sha256":  "e85c4953e24bd69680cbff0fa62cc5b74e4cea476760100028397447c08ec7d6"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/native_wpf/README.md",
+                                                                     "bytes":  439,
+                                                                     "sha256":  "7ab3ce15fdb929c7fae0161a861a04d00c18c35b6fe020a4a75bd6f3b0f8110f"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/round_b/tauri_rust/src-tauri/icons/icon.ico",
+                                                                     "bytes":  9392,
+                                                                     "sha256":  "66fd8f58bbf2268123461b7637325e8471ea1ffe1a8114b252331bef3a50a8f3"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/.cargo/config.toml",
+                                                                     "bytes":  107,
+                                                                     "sha256":  "f2513596c6fa1b07a4322ff110855fe6dca8b5aa6496157be2bf6ac65dcd29b6"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/Cargo.lock",
+                                                                     "bytes":  2647,
+                                                                     "sha256":  "9587a3e22873eccb6677dfd98c689d7e857115bedb06dbc2c7f275a0c45ff5ff"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/Cargo.toml",
+                                                                     "bytes":  235,
+                                                                     "sha256":  "67e3c470a7c94f6c810e433fc9f4037f60c7c75085367414fe347c5ab9e8787a"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/README.md",
+                                                                     "bytes":  539,
+                                                                     "sha256":  "fa7ed38bdc9db5080500439c86cf7e1fcef25aa5e2d421d23188c076998ef3ce"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/rust-toolchain.toml",
+                                                                     "bytes":  88,
+                                                                     "sha256":  "d75946e625349a847423d70b9570a96e80997d711baa8978f5d7f398af0a16f9"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "experiments/technology_tournament/rust_core/src/main.rs",
+                                                                     "bytes":  24653,
+                                                                     "sha256":  "da31d55ffea6630e8420682713cce5db0adc894f181702b254a7201c1ed671ce"
+                                                                 },
+                                                                 {
+                                                                     "relative_path":  "global.json",
+                                                                     "bytes":  105,
+                                                                     "sha256":  "0aa4b85ae248d59bbc4138f346d952b7fae4fe18cc701d921fa1c003211be777"
+                                                                 }
+                                                             ]
+                                               },
+                            "unchanged":  true,
+                            "replicas_exact":  true
+                        },
+    "builds":  [
+                   {
+                       "run_id":  "run_01",
+                       "source_isolation":  "separate_exact_source_replica",
+                       "host_scope":  "same_host_as_other_run",
+                       "global_package_caches":  "shared_between_runs",
+                       "clean_environment":  false,
+                       "cross_host":  false,
+                       "output_root":  "artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o",
+                       "stdout_log":  "artifacts/technology_tournament/build/rb/l/run_01.stdout.log",
+                       "stdout_sha256":  "bf260527b3ec60665e79f0793e5e79d8fb43da6370eb19944d57b6f731e647e0",
+                       "stderr_log":  "artifacts/technology_tournament/build/rb/l/run_01.stderr.log",
+                       "stderr_sha256":  "c4e88b48615fd2aa105de35b88e94753682d110d5626d2cedbea35ae48cc609e",
+                       "stderr_tail":  "   Compiling serde_core v1.0.228\n   Compiling zmij v1.0.23\n   Compiling serde_json v1.0.150\n   Compiling memchr v2.8.3\n   Compiling itoa v1.0.18\n   Compiling baxy-rust-slice v0.1.0 (D:\\BAXY\\source\\artifacts\\technology_tournament\\build\\rb\\a\\experiments\\technology_tournament\\rust_core)\n    Finished `release` profile [optimized] target(s) in 11.14s\n",
+                       "build_metadata_captured":  true,
+                       "build_metadata_error":  null,
+                       "build_reported_dotnet_sdk":  "10.0.100",
+                       "build_reported_rustc":  "rustc 1.97.0 (2d8144b78 2026-07-07)",
+                       "build_reported_reproduction_classification":  {
+                                                                          "host_scope":  "single_host",
+                                                                          "output_root_isolated":  true,
+                                                                          "source_replica_isolation":  "provided_by_reproducibility_harness",
+                                                                          "global_package_caches":  "shared_host_caches",
+                                                                          "clean_environment":  false,
+                                                                          "cross_host":  false
+                                                                      },
+                       "native_link_toolchain":  {
+                                                     "classification":  "observed_same_host_native_toolchain",
+                                                     "repository_pinned":  false,
+                                                     "discovery":  "vswhere latest Visual Studio C++ instance plus vcvarsall x64 environment",
+                                                     "path_hash_scheme":  "sha256(utf8(lower-invariant(full-path)))",
+                                                     "usage_binding":  {
+                                                                           "dotnet_native_aot":  "NativeAOT Windows targets use the same latest-vswhere/vcvarsall selection recorded here.",
+                                                                           "rust":  "The build sets CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER to this exact link.exe path and LIB to the recorded vcvarsall native-library paths."
+                                                                       },
+                                                     "visual_studio_installation":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community",
+                                                     "vc_environment_architecture":  "amd64",
+                                                     "msvc_tools_version":  "14.42.34433",
+                                                     "linker":  {
+                                                                    "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe",
+                                                                    "path_sha256":  "66cea8990a8be3600c369088862baf1dfb3f984214cf7a96f6ff69dabfe76826",
+                                                                    "file_sha256":  "f627ee8b9983af24d4b5ab6efab25f4a3be7a02bb09253aa2f5abab3c1fb2c6b",
+                                                                    "file_version":  "14.42.34435.0",
+                                                                    "product_version":  "14.42.34435.0",
+                                                                    "banner":  "Microsoft (R) Incremental Linker Version 14.42.34435.0"
+                                                                },
+                                                     "windows_sdk":  {
+                                                                         "discovered":  true,
+                                                                         "directory":  "C:\\Program Files (x86)\\Windows Kits\\10\\",
+                                                                         "directory_path_sha256":  "f5030745459c6140f59cd4880f6b5e5c127a544d2b656ca337fe51dc49c389d6",
+                                                                         "version":  "10.0.22621.0",
+                                                                         "ucrt_version":  "10.0.22621.0",
+                                                                         "native_library_paths":  [
+                                                                                                      {
+                                                                                                          "ordinal":  0,
+                                                                                                          "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64",
+                                                                                                          "path_sha256":  "dd7ef2166dccea949af72911458561dcfa255ac870f48a3de102138e2b673ea8",
+                                                                                                          "exists":  true
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "ordinal":  1,
+                                                                                                          "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64",
+                                                                                                          "path_sha256":  "cf252e817ff5e1037b28961c18142da94e09cb7ff6304956e9940e805539c432",
+                                                                                                          "exists":  true
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "ordinal":  2,
+                                                                                                          "path":  "C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64",
+                                                                                                          "path_sha256":  "958e0e4c4b40a6ceddb0873a813cda04a0a056cffe8e32cae33fcbf6ff9cad1b",
+                                                                                                          "exists":  true
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "ordinal":  3,
+                                                                                                          "path":  "C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.22621.0\\ucrt\\x64",
+                                                                                                          "path_sha256":  "946cbd270c1cc2f7c7f5249828558e3ff182836fdbe0e72b10c5d16a66544024",
+                                                                                                          "exists":  true
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "ordinal":  4,
+                                                                                                          "path":  "C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.22621.0\\um\\x64",
+                                                                                                          "path_sha256":  "ca503df89c176050b725e36e9d66f7ff1b2740d92b073413c44b2420398f2cec",
+                                                                                                          "exists":  true
+                                                                                                      }
+                                                                                                  ],
+                                                                         "lib_environment_sha256":  "48fb53101176bb390cc0256cac99f3d071b2f5131dba96d58e91fcecbf107fe6"
+                                                                     },
+                                                     "passed":  true
+                                                 },
+                       "native_link_toolchain_sha256":  "9769dd2b0c80707063663be2a5ba980fb046e78247e6a756647307305de3b450",
+                       "exit_code":  0,
+                       "duration_ms":  32841.477,
+                       "passed":  true
+                   },
+                   {
+                       "run_id":  "run_02",
+                       "source_isolation":  "separate_exact_source_replica",
+                       "host_scope":  "same_host_as_other_run",
+                       "global_package_caches":  "shared_between_runs",
+                       "clean_environment":  false,
+                       "cross_host":  false,
+                       "output_root":  "artifacts/technology_tournament/build/rb/b/artifacts/technology_tournament/build/o",
+                       "stdout_log":  "artifacts/technology_tournament/build/rb/l/run_02.stdout.log",
+                       "stdout_sha256":  "384cf3db604670451d46c6ef29008942487603677d8888e24394769d01ae8aa3",
+                       "stderr_log":  "artifacts/technology_tournament/build/rb/l/run_02.stderr.log",
+                       "stderr_sha256":  "aeb2ba05de9436cbe72f48d4fbf408f436926e1d4781e0acefb7dce4f0c25a5b",
+                       "stderr_tail":  "   Compiling zmij v1.0.23\n   Compiling serde_core v1.0.228\n   Compiling serde_json v1.0.150\n   Compiling itoa v1.0.18\n   Compiling memchr v2.8.3\n   Compiling baxy-rust-slice v0.1.0 (D:\\BAXY\\source\\artifacts\\technology_tournament\\build\\rb\\b\\experiments\\technology_tournament\\rust_core)\n    Finished `release` profile [optimized] target(s) in 10.71s\n",
+                       "build_metadata_captured":  true,
+                       "build_metadata_error":  null,
+                       "build_reported_dotnet_sdk":  "10.0.100",
+                       "build_reported_rustc":  "rustc 1.97.0 (2d8144b78 2026-07-07)",
+                       "build_reported_reproduction_classification":  {
+                                                                          "host_scope":  "single_host",
+                                                                          "output_root_isolated":  true,
+                                                                          "source_replica_isolation":  "provided_by_reproducibility_harness",
+                                                                          "global_package_caches":  "shared_host_caches",
+                                                                          "clean_environment":  false,
+                                                                          "cross_host":  false
+                                                                      },
+                       "native_link_toolchain":  {
+                                                     "classification":  "observed_same_host_native_toolchain",
+                                                     "repository_pinned":  false,
+                                                     "discovery":  "vswhere latest Visual Studio C++ instance plus vcvarsall x64 environment",
+                                                     "path_hash_scheme":  "sha256(utf8(lower-invariant(full-path)))",
+                                                     "usage_binding":  {
+                                                                           "dotnet_native_aot":  "NativeAOT Windows targets use the same latest-vswhere/vcvarsall selection recorded here.",
+                                                                           "rust":  "The build sets CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER to this exact link.exe path and LIB to the recorded vcvarsall native-library paths."
+                                                                       },
+                                                     "visual_studio_installation":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community",
+                                                     "vc_environment_architecture":  "amd64",
+                                                     "msvc_tools_version":  "14.42.34433",
+                                                     "linker":  {
+                                                                    "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\link.exe",
+                                                                    "path_sha256":  "66cea8990a8be3600c369088862baf1dfb3f984214cf7a96f6ff69dabfe76826",
+                                                                    "file_sha256":  "f627ee8b9983af24d4b5ab6efab25f4a3be7a02bb09253aa2f5abab3c1fb2c6b",
+                                                                    "file_version":  "14.42.34435.0",
+                                                                    "product_version":  "14.42.34435.0",
+                                                                    "banner":  "Microsoft (R) Incremental Linker Version 14.42.34435.0"
+                                                                },
+                                                     "windows_sdk":  {
+                                                                         "discovered":  true,
+                                                                         "directory":  "C:\\Program Files (x86)\\Windows Kits\\10\\",
+                                                                         "directory_path_sha256":  "f5030745459c6140f59cd4880f6b5e5c127a544d2b656ca337fe51dc49c389d6",
+                                                                         "version":  "10.0.22621.0",
+                                                                         "ucrt_version":  "10.0.22621.0",
+                                                                         "native_library_paths":  [
+                                                                                                      {
+                                                                                                          "ordinal":  0,
+                                                                                                          "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64",
+                                                                                                          "path_sha256":  "dd7ef2166dccea949af72911458561dcfa255ac870f48a3de102138e2b673ea8",
+                                                                                                          "exists":  true
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "ordinal":  1,
+                                                                                                          "path":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64",
+                                                                                                          "path_sha256":  "cf252e817ff5e1037b28961c18142da94e09cb7ff6304956e9940e805539c432",
+                                                                                                          "exists":  true
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "ordinal":  2,
+                                                                                                          "path":  "C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64",
+                                                                                                          "path_sha256":  "958e0e4c4b40a6ceddb0873a813cda04a0a056cffe8e32cae33fcbf6ff9cad1b",
+                                                                                                          "exists":  true
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "ordinal":  3,
+                                                                                                          "path":  "C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.22621.0\\ucrt\\x64",
+                                                                                                          "path_sha256":  "946cbd270c1cc2f7c7f5249828558e3ff182836fdbe0e72b10c5d16a66544024",
+                                                                                                          "exists":  true
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "ordinal":  4,
+                                                                                                          "path":  "C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.22621.0\\um\\x64",
+                                                                                                          "path_sha256":  "ca503df89c176050b725e36e9d66f7ff1b2740d92b073413c44b2420398f2cec",
+                                                                                                          "exists":  true
+                                                                                                      }
+                                                                                                  ],
+                                                                         "lib_environment_sha256":  "48fb53101176bb390cc0256cac99f3d071b2f5131dba96d58e91fcecbf107fe6"
+                                                                     },
+                                                     "passed":  true
+                                                 },
+                       "native_link_toolchain_sha256":  "9769dd2b0c80707063663be2a5ba980fb046e78247e6a756647307305de3b450",
+                       "exit_code":  0,
+                       "duration_ms":  32355.003,
+                       "passed":  true
+                   }
+               ],
+    "comparisons":  {
+                        "wpf_self_contained":  {
+                                                   "id":  "wpf_self_contained",
+                                                   "primary_artifact":  {
+                                                                            "relative_path":  "baxy-dotnet-wpf-slice.exe",
+                                                                            "run_01_sha256":  "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47",
+                                                                            "run_02_sha256":  "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47",
+                                                                            "equal":  true
+                                                                        },
+                                                   "run_01":  {
+                                                                  "tree_sha256":  "7d431e98b12df977669e5382e06c5ab568ead3cc9938dbe9c3283c1f116bdbc2",
+                                                                  "file_count":  6,
+                                                                  "total_bytes":  69036968,
+                                                                  "files":  [
+                                                                                {
+                                                                                    "relative_path":  "baxy-dotnet-wpf-slice.exe",
+                                                                                    "bytes":  60650360,
+                                                                                    "sha256":  "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "D3DCompiler_47_cor3.dll",
+                                                                                    "bytes":  4916840,
+                                                                                    "sha256":  "a05d04a270f68c8c6d6ea2d23bebf8cd1d5453b26b5442fa54965f90f1c62082"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "PenImc_cor3.dll",
+                                                                                    "bytes":  157968,
+                                                                                    "sha256":  "2a32eab48b9f44c3ff2ea8018c60779d60b98e36d86d4386945596549f962b07"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "PresentationNative_cor3.dll",
+                                                                                    "bytes":  1235720,
+                                                                                    "sha256":  "2ab47a53c7bb6c7ec37d7a2392bae99efe99e8bcf506948f1628f1bb577295ed"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "vcruntime140_cor3.dll",
+                                                                                    "bytes":  124544,
+                                                                                    "sha256":  "d5e4d9a3e835fa679450145d6a7d94e36573a509317111904d9b3712c30d9066"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "wpfgfx_cor3.dll",
+                                                                                    "bytes":  1951536,
+                                                                                    "sha256":  "c1c3eda8e20903d94a6d118813695637d360973a902b181ed086f971a1269ac8"
+                                                                                }
+                                                                            ]
+                                                              },
+                                                   "run_02":  {
+                                                                  "tree_sha256":  "7d431e98b12df977669e5382e06c5ab568ead3cc9938dbe9c3283c1f116bdbc2",
+                                                                  "file_count":  6,
+                                                                  "total_bytes":  69036968,
+                                                                  "files":  [
+                                                                                {
+                                                                                    "relative_path":  "baxy-dotnet-wpf-slice.exe",
+                                                                                    "bytes":  60650360,
+                                                                                    "sha256":  "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "D3DCompiler_47_cor3.dll",
+                                                                                    "bytes":  4916840,
+                                                                                    "sha256":  "a05d04a270f68c8c6d6ea2d23bebf8cd1d5453b26b5442fa54965f90f1c62082"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "PenImc_cor3.dll",
+                                                                                    "bytes":  157968,
+                                                                                    "sha256":  "2a32eab48b9f44c3ff2ea8018c60779d60b98e36d86d4386945596549f962b07"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "PresentationNative_cor3.dll",
+                                                                                    "bytes":  1235720,
+                                                                                    "sha256":  "2ab47a53c7bb6c7ec37d7a2392bae99efe99e8bcf506948f1628f1bb577295ed"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "vcruntime140_cor3.dll",
+                                                                                    "bytes":  124544,
+                                                                                    "sha256":  "d5e4d9a3e835fa679450145d6a7d94e36573a509317111904d9b3712c30d9066"
+                                                                                },
+                                                                                {
+                                                                                    "relative_path":  "wpfgfx_cor3.dll",
+                                                                                    "bytes":  1951536,
+                                                                                    "sha256":  "c1c3eda8e20903d94a6d118813695637d360973a902b181ed086f971a1269ac8"
+                                                                                }
+                                                                            ]
+                                                              },
+                                                   "same_file_set":  true,
+                                                   "artifact_hashes_equal":  true,
+                                                   "tree_hash_equal":  true,
+                                                   "passed":  true
+                                               },
+                        "dotnet_native_aot":  {
+                                                  "id":  "dotnet_native_aot",
+                                                  "primary_artifact":  {
+                                                                           "relative_path":  "baxy-dotnet-slice.exe",
+                                                                           "run_01_sha256":  "27d566f7cdeb4f8bdd0cd7f1cadf4b89f8244aabc6f6e87b8174ee5e33bd403e",
+                                                                           "run_02_sha256":  "27d566f7cdeb4f8bdd0cd7f1cadf4b89f8244aabc6f6e87b8174ee5e33bd403e",
+                                                                           "equal":  true
+                                                                       },
+                                                  "run_01":  {
+                                                                 "tree_sha256":  "8fa354ff8c5f6d91d0061d6ff40bf299d8bf29eb071e17b8b677cc8cf3a6f954",
+                                                                 "file_count":  1,
+                                                                 "total_bytes":  1850880,
+                                                                 "files":  [
+                                                                               {
+                                                                                   "relative_path":  "baxy-dotnet-slice.exe",
+                                                                                   "bytes":  1850880,
+                                                                                   "sha256":  "27d566f7cdeb4f8bdd0cd7f1cadf4b89f8244aabc6f6e87b8174ee5e33bd403e"
+                                                                               }
+                                                                           ]
+                                                             },
+                                                  "run_02":  {
+                                                                 "tree_sha256":  "8fa354ff8c5f6d91d0061d6ff40bf299d8bf29eb071e17b8b677cc8cf3a6f954",
+                                                                 "file_count":  1,
+                                                                 "total_bytes":  1850880,
+                                                                 "files":  [
+                                                                               {
+                                                                                   "relative_path":  "baxy-dotnet-slice.exe",
+                                                                                   "bytes":  1850880,
+                                                                                   "sha256":  "27d566f7cdeb4f8bdd0cd7f1cadf4b89f8244aabc6f6e87b8174ee5e33bd403e"
+                                                                               }
+                                                                           ]
+                                                             },
+                                                  "same_file_set":  true,
+                                                  "artifact_hashes_equal":  true,
+                                                  "tree_hash_equal":  true,
+                                                  "passed":  true
+                                              },
+                        "rust_static":  {
+                                            "id":  "rust_static",
+                                            "primary_artifact":  {
+                                                                     "relative_path":  "baxy-rust-slice.exe",
+                                                                     "run_01_sha256":  "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063",
+                                                                     "run_02_sha256":  "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063",
+                                                                     "equal":  true
+                                                                 },
+                                            "run_01":  {
+                                                           "tree_sha256":  "c527d5f061c02be431d16724f5e73a756dfc6cd26032e4754e47a24ded671b18",
+                                                           "file_count":  1,
+                                                           "total_bytes":  413696,
+                                                           "files":  [
+                                                                         {
+                                                                             "relative_path":  "baxy-rust-slice.exe",
+                                                                             "bytes":  413696,
+                                                                             "sha256":  "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063"
+                                                                         }
+                                                                     ]
+                                                       },
+                                            "run_02":  {
+                                                           "tree_sha256":  "c527d5f061c02be431d16724f5e73a756dfc6cd26032e4754e47a24ded671b18",
+                                                           "file_count":  1,
+                                                           "total_bytes":  413696,
+                                                           "files":  [
+                                                                         {
+                                                                             "relative_path":  "baxy-rust-slice.exe",
+                                                                             "bytes":  413696,
+                                                                             "sha256":  "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063"
+                                                                         }
+                                                                     ]
+                                                       },
+                                            "same_file_set":  true,
+                                            "artifact_hashes_equal":  true,
+                                            "tree_hash_equal":  true,
+                                            "passed":  true
+                                        }
+                    },
+    "rust_static_runtime":  {
+                                "analyzer":  "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\Hostx64\\x64\\dumpbin.exe",
+                                "imports_equal":  true,
+                                "runs":  [
+                                             {
+                                                 "run_id":  "run_01",
+                                                 "executable_sha256":  "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063",
+                                                 "imports":  [
+                                                                 "api-ms-win-core-synch-l1-2-0.dll",
+                                                                 "bcryptprimitives.dll",
+                                                                 "kernel32.dll",
+                                                                 "ntdll.dll"
+                                                             ],
+                                                 "forbidden_imports":  [
+
+                                                                       ],
+                                                 "dumpbin_exit_code":  0,
+                                                 "passed":  true
+                                             },
+                                             {
+                                                 "run_id":  "run_02",
+                                                 "executable_sha256":  "5f31e847fee9f8a19b97c93482b3a1dc7ed1cd3119bfc2390c2944c307261063",
+                                                 "imports":  [
+                                                                 "api-ms-win-core-synch-l1-2-0.dll",
+                                                                 "bcryptprimitives.dll",
+                                                                 "kernel32.dll",
+                                                                 "ntdll.dll"
+                                                             ],
+                                                 "forbidden_imports":  [
+
+                                                                       ],
+                                                 "dumpbin_exit_code":  0,
+                                                 "passed":  true
+                                             }
+                                         ],
+                                "passed":  true
+                            },
+    "gates":  {
+                  "toolchains_pinned":  true,
+                  "repository_sdk_toolchains_pinned":  true,
+                  "host_native_toolchain_observed":  true,
+                  "build_directories_ignored":  true,
+                  "inputs_unchanged":  true,
+                  "input_replicas_exact":  true,
+                  "independent_builds_succeeded":  true,
+                  "wpf_self_contained_reproducible":  true,
+                  "dotnet_native_aot_reproducible":  true,
+                  "rust_static_reproducible":  true,
+                  "rust_static_crt":  true,
+                  "all_passed":  true
+              },
+    "passed":  true
+}

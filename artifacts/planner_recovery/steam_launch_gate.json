@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-07-16T13:31:04.115255+00:00",
+  "scope": "authorized_exact_installed_steam_launch",
+  "catalog_target_present": true,
+  "launch": {
+    "status": "completed",
+    "verified": true,
+    "error": null,
+    "effect_may_have_occurred": false,
+    "authority": "steam_manifest_process_postread",
+    "process_observed": true,
+    "cleanup_requested": true,
+    "cleanup_verified": true,
+    "reason": null
+  },
+  "stderr": ""
+}

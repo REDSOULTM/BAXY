@@ -1,0 +1,67 @@
+{
+  "c": 3.0,
+  "classes": [
+    "app",
+    "audio",
+    "backup",
+    "bluetooth",
+    "browser",
+    "calendar",
+    "capture",
+    "clipboard",
+    "email",
+    "filesystem",
+    "game",
+    "input",
+    "media",
+    "memory",
+    "message",
+    "network",
+    "note",
+    "notification",
+    "ocr",
+    "office",
+    "package",
+    "peripheral",
+    "reminder",
+    "routine",
+    "streaming",
+    "system",
+    "task",
+    "vision",
+    "web",
+    "wifi",
+    "window"
+  ],
+  "classifier": "class-balanced LinearSVC over attested multilingual-e5-small embeddings",
+  "dimensions": 384,
+  "encoder": {
+    "file_count": 10,
+    "manifest_algorithm": "sha256(UTF-8/LF/final-LF lines: model, revision, then every file sorted by relative POSIX path UTF-8 bytes as path<TAB>size<TAB>sha256)",
+    "manifest_sha256": "e1ab2f71784b5129f89096ef377e9f573fa06d0f11c64f897560486524fd4940",
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+    "weights": {
+      "path": "model.safetensors",
+      "sha256": "1a55775f53449dac10a2bcbc312469fac40b96d53198c407081a831f81c98477"
+    }
+  },
+  "schema": "baxy.semantic-family-arbiter-manifest.v1",
+  "selection_evidence": "artifacts/research/family_arbiter_internal_validation.v1.json",
+  "training_corpus_sha256": "b27e871a49aacd0f1e527235422547a21ceb0fabcb01505a4f687ad3ed51ba18",
+  "training_rows": 1892,
+  "weights": {
+    "arrays": {
+      "coefficients": [
+        31,
+        384
+      ],
+      "intercept": [
+        31
+      ]
+    },
+    "bytes": 44819,
+    "file": "semantic_family_arbiter.v1.weights.npz",
+    "sha256": "56b1342f831705027b5af903c23dd7447e3e226af163c601f40a8e53409dd92e"
+  }
+}

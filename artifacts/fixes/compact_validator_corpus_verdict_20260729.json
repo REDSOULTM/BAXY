@@ -1,0 +1,138 @@
+{
+  "schema": "baxy.compact-validator-corpus-verdict.v1",
+  "date": "2026-07-29",
+  "inputs": [
+    "artifacts/fixes/compact_validator_corpus_ab_20260729.json",
+    "artifacts/fixes/compact_validator_corpus_ab_reverse_20260729.json"
+  ],
+  "experiment": "experiments/mind_router_spike/benchmark_compact_validator_corpus.py",
+  "corpus": {
+    "path": "tests/data/historical_messages.jsonl",
+    "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+    "rows": 14836,
+    "selected_cases": 40,
+    "selection_identical_between_replicas": true,
+    "V_cases_per_replica": {
+      "zero": 8,
+      "one": 8,
+      "multiple": 8
+    },
+    "C_cases_per_replica": {
+      "expected_true": 8,
+      "expected_false": 8
+    }
+  },
+  "control": {
+    "arm_orders": [
+      [
+        "compact",
+        "schema"
+      ],
+      [
+        "schema",
+        "compact"
+      ]
+    ],
+    "fresh_server_per_arm": true,
+    "llama_server_pids": [
+      30208,
+      28988,
+      3356,
+      32444
+    ],
+    "concurrent_llama_server_detected": false,
+    "external_effects_executed": false,
+    "schema_baseline_disabled_only": [
+      "baxy_effect_count_verification",
+      "baxy_operation_compatibility"
+    ],
+    "compact_arm": "unmodified production compactor"
+  },
+  "quality": {
+    "exact_normalized_outputs_in_both_replicas": false,
+    "divergences_per_replica": 8,
+    "same_divergences_in_opposite_order": true,
+    "V": {
+      "schema_matches_corpus_expectation": 22,
+      "schema_cases": 48,
+      "schema_accuracy": 0.4583333333333333,
+      "compact_matches_corpus_expectation": 30,
+      "compact_cases": 48,
+      "compact_accuracy": 0.625,
+      "correct_to_incorrect_regressions": [],
+      "incorrect_to_correct_improvements": [
+        "V-zero-06",
+        "V-one-03",
+        "V-one-05",
+        "V-multiple-08"
+      ],
+      "incorrect_to_different_incorrect": [
+        "V-one-02",
+        "V-one-04"
+      ],
+      "assessment": "No sampled correct-to-incorrect regression, but output equivalence was not established."
+    },
+    "C": {
+      "schema_matches_corpus_expectation": 26,
+      "schema_cases": 32,
+      "schema_accuracy": 0.8125,
+      "compact_matches_corpus_expectation": 22,
+      "compact_cases": 32,
+      "compact_accuracy": 0.6875,
+      "correct_to_incorrect_regressions": [
+        {
+          "case_id": "C-true-05",
+          "message": "olvida mis preferencias de estilo",
+          "operation": "memory.forget",
+          "schema": true,
+          "compact": false
+        },
+        {
+          "case_id": "C-true-08",
+          "message": "abre marvel rivals",
+          "operation": "game.launch",
+          "schema": true,
+          "compact": false
+        }
+      ],
+      "incorrect_to_correct_improvements": [],
+      "assessment": "Stable quality regression reproduced in both arm orders."
+    }
+  },
+  "latency": {
+    "V": {
+      "schema_p50_seconds_median_of_replicas": 1.0324283499994635,
+      "compact_p50_seconds_median_of_replicas": 0.7245455000002039,
+      "compact_minus_schema_p50_seconds": -0.30788284999925963,
+      "compact_minus_schema_p50_percent": -29.821231662170035,
+      "schema_p95_seconds_median_of_replicas": 1.340293020000172,
+      "compact_p95_seconds_median_of_replicas": 0.9324078000017832,
+      "schema_total_seconds": 53.80924760000926,
+      "compact_total_seconds": 35.154889500019635,
+      "schema_wire_calls": 50,
+      "compact_wire_calls": 48,
+      "schema_predicted_tokens_p50": 22.0,
+      "compact_predicted_tokens_p50": 10.5
+    },
+    "C": {
+      "schema_p50_seconds_median_of_replicas": 0.6421019250001336,
+      "compact_p50_seconds_median_of_replicas": 0.4974362499988274,
+      "compact_minus_schema_p50_seconds": -0.14466567500130623,
+      "compact_minus_schema_p50_percent": -22.53001733350607,
+      "schema_p95_seconds_median_of_replicas": 0.9856978624998192,
+      "compact_p95_seconds_median_of_replicas": 0.5831777625003269,
+      "schema_total_seconds": 21.082313699993392,
+      "compact_total_seconds": 16.188432699997065,
+      "schema_wire_calls": 32,
+      "compact_wire_calls": 32,
+      "schema_predicted_tokens_p50": 18.0,
+      "compact_predicted_tokens_p50": 9.0
+    }
+  },
+  "verdict": {
+    "joint_candidate": "rejected",
+    "V_compaction": "not independently proven output-equivalent by this gate",
+    "C_compaction": "rejected_due_to_repeated_quality_regression",
+    "reason": "Latency improvement cannot override stable correct-to-incorrect C decisions when the product requirement forbids quality loss."
+  }
+}

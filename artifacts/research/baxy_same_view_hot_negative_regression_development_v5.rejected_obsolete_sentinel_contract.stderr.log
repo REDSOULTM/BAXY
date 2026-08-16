@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_baxy_contextual_fusion_negative_regression_v2.py", line 892, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_baxy_contextual_fusion_negative_regression_v2.py", line 868, in main
+    report = evaluate(
+             ^^^^^^^^^
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_baxy_contextual_fusion_negative_regression_v2.py", line 378, in evaluate
+    raise ValueError("baxy_contextual_negative_sentinel_count_invalid")
+ValueError: baxy_contextual_negative_sentinel_count_invalid

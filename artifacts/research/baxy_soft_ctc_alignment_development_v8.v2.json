@@ -1,0 +1,833 @@
+{
+  "schema": "baxy.soft-ctc-alignment-development.v8",
+  "measuredAtUtc": "2026-08-06T22:39:49.188712+00:00",
+  "scope": "opened_human_development_soft_local_ctc_selection",
+  "sources": {
+    "expandedCorpusManifestSha256": "8c505d4abbf092404f71aa9c313ff2b4054a8c15f68721bbb4ccdae076a9c2b2",
+    "stage1ModelSha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "ctcVerifierManifestSha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+    "priorContextualDevelopmentSha256": "2cdde35d554f088e6becbf76ea264deb4e7d66ca2453df4e1dd1a6704d32382c",
+    "failedNegativeRegressionSha256": "eaf6d578e8ce6e1ec8a1c3a039da4e808ca99fc2bade099922cb5223fff5a741",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "failedStrengthRegressionSha256": "e767016b307419235891e6423c34ef3767f3a63eba566db419efe3c7eacfa294"
+  },
+  "policy": {
+    "sentinelStage1Threshold": 0.01,
+    "fusionViewStartSamples": [
+      40000,
+      64000
+    ],
+    "contextualWakeTerms": [
+      "baxy",
+      "baxi",
+      "basi",
+      "bakse"
+    ],
+    "contextualHotwordScore": 4.0,
+    "failedRegressionUsedForAggregateSelection": true,
+    "softCtcAlignment": "bounded_local_length_normalized_viterbi_target_minus_confusable",
+    "guardRequiresSameFusionPassingView": true,
+    "minimumAlignmentFrames": 8,
+    "maximumAlignmentFrames": 40,
+    "thresholdGrid": [
+      -4.0,
+      -3.75,
+      -3.5,
+      -3.25,
+      -3.0,
+      -2.75,
+      -2.5,
+      -2.25,
+      -2.0,
+      -1.75,
+      -1.5,
+      -1.25,
+      -1.0,
+      -0.75,
+      -0.5,
+      -0.25,
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      1.75,
+      2.0,
+      2.25,
+      2.5,
+      2.75,
+      3.0,
+      3.25,
+      3.5,
+      3.75,
+      4.0,
+      4.25,
+      4.5,
+      4.75,
+      5.0,
+      5.25,
+      5.5,
+      5.75,
+      6.0,
+      6.25,
+      6.5,
+      6.75,
+      7.0,
+      7.25,
+      7.5,
+      7.75,
+      8.0
+    ],
+    "selectionPerformedBeforeAnyNewLongNegativeRegression": true
+  },
+  "policySummaries": {
+    "currentFullHot": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "fullDualDecode": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "sameViewHot": {
+      "positiveHits": 1,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "fullAndSameViewHot": {
+      "positiveHits": 1,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "sameViewDualDecode": {
+      "positiveHits": 1,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "twoViewHotConsensus": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_m0400": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0400": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0375": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0375": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0350": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0350": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0325": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0325": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0300": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0300": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0275": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0275": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0250": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0250": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0225": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0225": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0200": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0200": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0175": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0175": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0150": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0150": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0125": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0125": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0100": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0100": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0075": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0075": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0050": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0050": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_m0025": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "guardedSoftLocal_m0025": {
+      "positiveHits": 4,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": true
+    },
+    "softLocalOnly_p0000": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0000": {
+      "positiveHits": 3,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0025": {
+      "positiveHits": 1,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0025": {
+      "positiveHits": 1,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0050": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0050": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0075": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0075": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0100": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0100": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0125": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0125": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0150": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0150": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0175": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0175": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0200": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0200": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0225": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0225": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0250": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0250": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0275": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0275": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0300": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0300": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0325": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0325": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0350": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0350": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0375": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0375": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0400": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0400": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0425": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0425": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0450": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0450": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0475": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0475": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0500": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0500": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0525": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0525": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0550": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0550": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0575": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0575": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0600": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0600": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0625": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0625": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0650": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0650": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0675": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0675": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0700": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0700": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0725": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0725": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0750": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0750": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0775": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0775": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "softLocalOnly_p0800": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    },
+    "guardedSoftLocal_p0800": {
+      "positiveHits": 0,
+      "positiveTotal": 4,
+      "falseHits": 0,
+      "negativeTotal": 8,
+      "gatePassed": false
+    }
+  },
+  "developmentEligiblePolicies": [
+    "guardedSoftLocal_m0025"
+  ],
+  "runtimeSeconds": 64.771248700039,
+  "expandedHumanDevelopmentAudioAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "audioTranscriptsOrFilenamesRetained": false,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "effectsExecuted": 0,
+  "selectedSoftCtcPolicy": {
+    "rule": "maximum_grid_threshold_with_4_of_4_positive_and_0_of_8_negative_for_local_and_guarded_policies",
+    "threshold": -0.25,
+    "localPolicy": "softLocalOnly_m0025",
+    "guardedPolicy": "guardedSoftLocal_m0025"
+  },
+  "softCtcDevelopmentGatePassed": true
+}

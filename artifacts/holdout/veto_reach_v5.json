@@ -1,0 +1,557 @@
+{
+  "records": [
+    {
+      "case_id": "v5-req-01",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "- ¿qué significa 'cuece las alcachofas para la cena'?",
+      "reply_text": "",
+      "request_text": "Cuece las alcachofas para la cena.",
+      "role": "request",
+      "seconds": 6.446
+    },
+    {
+      "case_id": "v5-req-02",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Estás diciendo que vierte aceite en una aceitera?",
+      "reply_text": "",
+      "request_text": "Vierte el aceite en la aceitera.",
+      "role": "request",
+      "seconds": 3.91
+    },
+    {
+      "case_id": "v5-req-03",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Estás indicando que quieres tender las sabanas en el tendedero o que alguien te está pidiendo que lo hagas?",
+      "reply_text": "",
+      "request_text": "Tiende las sabanas en el tendedero.",
+      "role": "request",
+      "seconds": 4.728
+    },
+    {
+      "case_id": "v5-req-04",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Puedes mover el sofá hacia la ventana?",
+      "reply_text": "",
+      "request_text": "Mueve el sofa hacia la ventana.",
+      "role": "request",
+      "seconds": 4.106
+    },
+    {
+      "case_id": "v5-req-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo colgar el cuadro sobre la chimenea.",
+      "request_text": "Cuelga el cuadro sobre la chimenea.",
+      "role": "request",
+      "seconds": 1.229
+    },
+    {
+      "case_id": "v5-req-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo encender la chimenea del salon.",
+      "request_text": "Enciende la chimenea del salon.",
+      "role": "request",
+      "seconds": 2.883
+    },
+    {
+      "case_id": "v5-req-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer el riego de los geranios del balcon.",
+      "request_text": "Riega los geranios del balcon.",
+      "role": "request",
+      "seconds": 3.309
+    },
+    {
+      "case_id": "v5-req-08",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "operation": null,
+      "question": "¿Te refieres a calentar la sopa que quedó de ayer o a hacer algo relacionado con ella?",
+      "reply_text": "",
+      "request_text": "Calienta la sopa que quedo de ayer.",
+      "role": "request",
+      "seconds": 2.926
+    },
+    {
+      "case_id": "v5-req-09",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo doblar el alambre para el gancho.",
+      "request_text": "Tuerce el alambre para el gancho.",
+      "role": "request",
+      "seconds": 2.268
+    },
+    {
+      "case_id": "v5-req-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo moler la pimienta para el guiso.",
+      "request_text": "Muele la pimienta para el guiso.",
+      "role": "request",
+      "seconds": 4.607
+    },
+    {
+      "case_id": "v5-req-11",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo soltar la cuerda del columpio.",
+      "request_text": "Suelta la cuerda del columpio.",
+      "role": "request",
+      "seconds": 2.853
+    },
+    {
+      "case_id": "v5-req-12",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo cerrar el grifo del jardin.",
+      "request_text": "Cierra el grifo del jardin.",
+      "role": "request",
+      "seconds": 2.5
+    },
+    {
+      "case_id": "v5-req-13",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo sentir a un niño en la trona.",
+      "request_text": "Sienta al nino en la trona.",
+      "role": "request",
+      "seconds": 1.475
+    },
+    {
+      "case_id": "v5-req-14",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer la masa del pan manana.",
+      "request_text": "Empieza la masa del pan manana.",
+      "role": "request",
+      "seconds": 5.369
+    },
+    {
+      "case_id": "v5-req-15",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo probar la salsa antes de servirla.",
+      "request_text": "Prueba la salsa antes de servirla.",
+      "role": "request",
+      "seconds": 3.368
+    },
+    {
+      "case_id": "v5-req-16",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "spanglish",
+      "operation": null,
+      "question": "¿Qué significa 'cuece las artichokes para la cena'?",
+      "reply_text": "",
+      "request_text": "Cuece las artichokes para la cena.",
+      "role": "request",
+      "seconds": 8.762
+    },
+    {
+      "case_id": "v5-req-17",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "spanglish",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo hacer tiende las sheets en el tendedero.",
+      "request_text": "Tiende las sheets en el tendedero.",
+      "role": "request",
+      "seconds": 4.796
+    },
+    {
+      "case_id": "v5-req-18",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "spanglish",
+      "operation": null,
+      "question": "¿Qué significa 'rieja los geraniums del balcon'?",
+      "reply_text": "",
+      "request_text": "Riega los geraniums del balcon.",
+      "role": "request",
+      "seconds": 8.296
+    },
+    {
+      "case_id": "v5-req-19",
+      "effect_operations": [
+        "reminder.create"
+      ],
+      "kind": "plan",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "",
+      "request_text": "Boil the artichokes for dinner.",
+      "role": "request",
+      "seconds": 1.547
+    },
+    {
+      "case_id": "v5-req-20",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I cannot hang the picture over the fireplace.",
+      "request_text": "Hang the picture over the fireplace.",
+      "role": "request",
+      "seconds": 4.969
+    },
+    {
+      "case_id": "v5-ctl-01",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "El cocinar a fuego lento es una técnica tradicional que permite preservar los sabores y texturas de los ingredientes. Es ideal para carnes, mariscos y vegetales, y requiere paciencia y control de la temperatura. Es una forma de cocina que valoro por su sabor y su proceso.",
+      "request_text": "Que opinas de cocinar a fuego lento?",
+      "role": "control",
+      "seconds": 1.26
+    },
+    {
+      "case_id": "v5-ctl-02",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "Clotheslines are often used to dry clothes, but they can also be used to dry other items like towels or even as a temporary storage for items that need to air dry.",
+      "request_text": "Tell me something odd about clotheslines.",
+      "role": "control",
+      "seconds": 3.296
+    },
+    {
+      "case_id": "v5-ctl-03",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "Entiendo que mencionas que cocer las alcachofas nos llevó media hora.",
+      "request_text": "Cocer las alcachofas nos llevo media hora.",
+      "role": "control",
+      "seconds": 2.064
+    },
+    {
+      "case_id": "v5-ctl-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I notice you're referring to the picture hanging as something that took two people.",
+      "request_text": "Hanging that picture took two of us.",
+      "role": "control",
+      "seconds": 3.481
+    },
+    {
+      "case_id": "v5-cat-01",
+      "effect_operations": [
+        "network.status"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "network.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "sigue en pie el amarre a la red de casa",
+      "role": "catalogue_control",
+      "seconds": 0.004
+    },
+    {
+      "case_id": "v5-cat-02",
+      "effect_operations": [],
+      "kind": "clarify",
+      "language": "en",
+      "operation": null,
+      "question": "Does the connection to the home network still exist?",
+      "reply_text": "",
+      "request_text": "does the tie to the home network still hold",
+      "role": "catalogue_control",
+      "seconds": 4.713
+    },
+    {
+      "case_id": "v5-cat-03",
+      "effect_operations": [
+        "network.status"
+      ],
+      "kind": "action",
+      "language": "spanglish",
+      "operation": "network.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "sigue en pie el amarre a la home network",
+      "role": "catalogue_control",
+      "seconds": 0.003
+    },
+    {
+      "case_id": "v5-cat-04",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "¿Qué tipo de máquina estás refiriéndote? No está claro a qué te refieres exactamente.",
+      "request_text": "que tal lleva la maquina la carga de hoy",
+      "role": "catalogue_control",
+      "seconds": 2.652
+    },
+    {
+      "case_id": "v5-cat-05",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The box is holding up under today's load.",
+      "request_text": "how is the box holding up under today load",
+      "role": "catalogue_control",
+      "seconds": 1.866
+    },
+    {
+      "case_id": "v5-cat-06",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No entiendo completamente la pregunta. ¿Estás refiriéndote a un dispositivo o a algo específico que esté \"prendido\" o activo? Si es un equipo o dispositivo, ¿qué tipo de actividad o ruido está sucediendo?",
+      "request_text": "que chismes van prendidos a este cacharro",
+      "role": "catalogue_control",
+      "seconds": 2.328
+    },
+    {
+      "case_id": "v5-cat-07",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The question is unclear. Could you please specify what \"this rig\" refers to?",
+      "request_text": "which widgets sit attached to this rig",
+      "role": "catalogue_control",
+      "seconds": 1.819
+    },
+    {
+      "case_id": "v5-cat-08",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo atrapar lo que se ve en la lamina.",
+      "request_text": "atrapame lo que se ve en la lamina",
+      "role": "catalogue_control",
+      "seconds": 2.644
+    },
+    {
+      "case_id": "v5-cat-09",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I understand you're asking what is displayed on the pane for you.",
+      "request_text": "catch what is shown on the pane for me",
+      "role": "catalogue_control",
+      "seconds": 1.547
+    },
+    {
+      "case_id": "v5-cat-10",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No puedo decirte qué llevo en el bolsillo porque no tengo acceso a esa información.",
+      "request_text": "que llevo en el bolsillo para soltar despues",
+      "role": "catalogue_control",
+      "seconds": 1.657
+    },
+    {
+      "case_id": "v5-cat-11",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "The item that sits in your pocket to be released later is the key to the safe.",
+      "request_text": "what sits in my pocket to release later",
+      "role": "catalogue_control",
+      "seconds": 0.822
+    },
+    {
+      "case_id": "v5-cat-12",
+      "effect_operations": [
+        "audio.status"
+      ],
+      "kind": "action",
+      "language": "es",
+      "operation": "audio.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "por donde brota el sonido y con que empuje",
+      "role": "catalogue_control",
+      "seconds": 0.84
+    },
+    {
+      "case_id": "v5-cat-13",
+      "effect_operations": [
+        "audio.status"
+      ],
+      "kind": "action",
+      "language": "en",
+      "operation": "audio.status",
+      "question": "",
+      "reply_text": "",
+      "request_text": "where does the sound spring from and how hard",
+      "role": "catalogue_control",
+      "seconds": 1.919
+    },
+    {
+      "case_id": "v5-cat-14",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "operation": null,
+      "question": "",
+      "reply_text": "No entiendo la pregunta. ¿Estás hablando de algo específico?",
+      "request_text": "quien trajina alla al fondo sin asomarse",
+      "role": "catalogue_control",
+      "seconds": 1.632
+    },
+    {
+      "case_id": "v5-cat-15",
+      "effect_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "operation": null,
+      "question": "",
+      "reply_text": "I don't know the specific reference or context for that statement.",
+      "request_text": "who bustles back there without showing up",
+      "role": "catalogue_control",
+      "seconds": 4.552
+    }
+  ],
+  "schema": "baxy.veto-reach-result.v5",
+  "scope": "sealed_blind_population_that_reaches_the_domain_veto",
+  "status": "failed",
+  "summary": {
+    "all_replies_distinct": true,
+    "catalogue_control_regressions": [
+      {
+        "case_id": "v5-cat-04",
+        "kind": "conversation",
+        "reply": "¿Qué tipo de máquina estás refiriéndote? No está claro a qué te refieres exactamente."
+      },
+      {
+        "case_id": "v5-cat-05",
+        "kind": "conversation",
+        "reply": "The box is holding up under today's load."
+      },
+      {
+        "case_id": "v5-cat-06",
+        "kind": "conversation",
+        "reply": "No entiendo completamente la pregunta. ¿Estás refiriéndote a un dispositivo o a algo específico que esté \"prendido\" o ac"
+      },
+      {
+        "case_id": "v5-cat-07",
+        "kind": "conversation",
+        "reply": "The question is unclear. Could you please specify what \"this rig\" refers to?"
+      },
+      {
+        "case_id": "v5-cat-08",
+        "kind": "conversation",
+        "reply": "No puedo atrapar lo que se ve en la lamina."
+      },
+      {
+        "case_id": "v5-cat-09",
+        "kind": "conversation",
+        "reply": "I understand you're asking what is displayed on the pane for you."
+      },
+      {
+        "case_id": "v5-cat-10",
+        "kind": "conversation",
+        "reply": "No puedo decirte qué llevo en el bolsillo porque no tengo acceso a esa información."
+      },
+      {
+        "case_id": "v5-cat-11",
+        "kind": "conversation",
+        "reply": "The item that sits in your pocket to be released later is the key to the safe."
+      },
+      {
+        "case_id": "v5-cat-14",
+        "kind": "conversation",
+        "reply": "No entiendo la pregunta. ¿Estás hablando de algo específico?"
+      },
+      {
+        "case_id": "v5-cat-15",
+        "kind": "conversation",
+        "reply": "I don't know the specific reference or context for that statement."
+      }
+    ],
+    "catalogue_controls": 15,
+    "catalogue_controls_asking": 1,
+    "catalogue_controls_reaching_an_operation": 4,
+    "contract_failures": [
+      {
+        "case_id": "v5-req-19",
+        "reason": "empty_reply"
+      }
+    ],
+    "control_regressions": [],
+    "controls": 4,
+    "distinct_openings": 12,
+    "distinct_replies": 12,
+    "fixed_constant_detected": false,
+    "requests": 20,
+    "spoken_replies": 12,
+    "unsolicited_effects": 1
+  }
+}

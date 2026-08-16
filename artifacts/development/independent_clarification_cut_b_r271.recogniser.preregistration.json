@@ -1,0 +1,50 @@
+{
+  "schema": "baxy.independent-clarification-cut-b-recogniser-r271-preregistration.v1",
+  "authority": "sealed_before_first_r270_recogniser_measurement",
+  "source": {
+    "r270_rows": 93,
+    "r270_semantic_cases": 31,
+    "r270_corpus_sha256": "a38ab784be38a159935e5b1500b3187e94aac9e7a3ad791080323bc9a8387d99",
+    "r270_preregistration_sha256": "c26fddc31a2d4d29a521e80ef8cbfb7b40e230246e9d66153909e92cc5d987c1",
+    "catalogue_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be"
+  },
+  "scoring": {
+    "runner": "experiments/mind_router_spike/run_independent_clarification_cut_b_recogniser_r272.py",
+    "runner_sha256": "cb15c663a16267af423ff0f13fe6ae4f862fe1be16e518a759de9b2e913ab8d6",
+    "recogniser": "baxy_mind.effect_intent.resolve_explicit_effects",
+    "available_operations": "all_current_r219_catalogue_operation_names",
+    "outcomes": [
+      "resolved_any",
+      "resolved_intended",
+      "resolved_other",
+      "unresolved"
+    ],
+    "recogniser_effect_reach": "resolved_any / rows",
+    "recogniser_effect_reach_limit": 0.5,
+    "cuts": [
+      "overall",
+      "family",
+      "language",
+      "intended_operation"
+    ],
+    "request_texts_retained": false,
+    "request_identifiers_retained": false,
+    "runner_hash_location_validated": "scoring.runner_sha256"
+  },
+  "constraints": {
+    "recogniser_measured": false,
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_step": "Commit this R271 scorer and preregistration unchanged, freeze the worktree, then invoke the R272 runner exactly once.",
+  "identities": {
+    "program_sha256": "f2dd8a72d765a5f32a5b598a0c25f7fb2c1f1c6259222ea932abbb7b8922ed8d"
+  }
+}

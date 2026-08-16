@@ -1,0 +1,99 @@
+{
+  "checks": {
+    "actionable_coverage_lower_passes": true,
+    "conversation_precision_lower_passes": true,
+    "conversation_recall_lower_passes": true,
+    "false_action_upper_passes": true,
+    "family_precision_lower_passes": true,
+    "family_recall_lower_passes": true,
+    "one_sided_never_emits_actionable": true,
+    "raw_family_recall_at_selected_k_passes": true,
+    "sealed_list_and_hash_match": true
+  },
+  "family_knn_diagnostic": {
+    "authority": "diagnostic_only_not_sent_as_action_to_llm",
+    "raw_recall_at_k": 0.99067,
+    "selected_k_from_validation": 7,
+    "selective": {
+      "actionable_coverage": 0.815522,
+      "actionable_coverage_wilson": {
+        "lower": 0.802024,
+        "upper": 0.828296
+      },
+      "family_precision": 0.96,
+      "family_precision_wilson": {
+        "lower": 0.952041,
+        "upper": 0.966685
+      },
+      "family_recall": 0.793893,
+      "family_recall_wilson": {
+        "lower": 0.779858,
+        "upper": 0.807255
+      },
+      "family_rows": 2358,
+      "selected_family_rows": 1923,
+      "selected_rows": 2128
+    },
+    "thresholds_from_validation": {
+      "maximum_family_entropy": 0.9129006918745063,
+      "minimum_family_agreement": 0.5706471637715529,
+      "minimum_score_margin": 0.0008915101422538759,
+      "minimum_top1_score": 0.8820093338622322
+    }
+  },
+  "historical_usage": {
+    "probe_training_rows": 0,
+    "reason": "weak_or_noisy_labels",
+    "role": "index_and_family_retrieval_only",
+    "rows": 7372,
+    "text_sent_to_llm": false
+  },
+  "policy_published": true,
+  "probe": {
+    "full_coverage_comparator": {
+      "accuracy": 0.916422,
+      "conversation_predicted_action_rate": 0.121622,
+      "macro_f1": 0.845258,
+      "rows": 2728
+    },
+    "one_sided": {
+      "actionable_signals_emitted": 0,
+      "authority": "conversation_signal_or_abstain_only",
+      "conversation_false_action_wilson": {
+        "lower": 0.0,
+        "successes": 0,
+        "trials": 370,
+        "upper": 0.007259
+      },
+      "conversation_recall": 0.435135,
+      "conversation_recall_wilson": {
+        "lower": 0.393363,
+        "upper": 0.477849
+      },
+      "correct_conversation_rows": 161,
+      "selected_rows": 164,
+      "signal_precision": 0.981707,
+      "signal_precision_wilson": {
+        "lower": 0.955113,
+        "upper": 0.992666
+      }
+    }
+  },
+  "runtime": {
+    "index_rows": 25156,
+    "repo_path": "tests/data/turn_evidence_runtime.v1.jsonl",
+    "sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680"
+  },
+  "schema": "baxy.turn-linear-probe-final-gate.v1",
+  "scope": "single_evaluation_of_hash_sealed_final_subset",
+  "seal": {
+    "repo_path": "tests/data/turn_evidence_final_seal.v1.json",
+    "rows": 2728,
+    "single_use_output_guard": true,
+    "source_ids_sha256": "0422d8265014073accebbd292f76eb48bbd8d92dfb9a358d32090bb214cb3233"
+  },
+  "status": "passed",
+  "timing": {
+    "final_encode_seconds": 22.5651
+  }
+}

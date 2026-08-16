@@ -1,0 +1,587 @@
+{
+  "schema_version": 1,
+  "oracle_id": "baxy.memory.explicit-local.v1",
+  "corpus": {
+    "path": "tests/data/historical_messages.jsonl",
+    "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e"
+  },
+  "normalization": {
+    "unicode": "NFC",
+    "whitespace": "collapse every Unicode whitespace run to one ASCII space, then trim",
+    "case": "Unicode casefold",
+    "order": [
+      "unicode_nfc",
+      "collapse_whitespace",
+      "trim",
+      "unicode_casefold"
+    ]
+  },
+  "digest_contract": {
+    "ids": "Sort unique message IDs ordinally; encode each ID followed by LF as UTF-8; SHA-256.",
+    "records": "Sort records ordinally by message ID; encode message_id + TAB + normalized text_literal + LF as UTF-8; SHA-256."
+  },
+  "groups": {
+    "save": {
+      "operation": "memory.save",
+      "count": 59,
+      "normalized_literal_count": 32,
+      "mission_count": 5,
+      "source_count": 11,
+      "ids_sha256": "dfaf98dccac4d804c48714254a0fe78eda8205ee6636c9037305190928319b21",
+      "records_sha256": "1520d0c0af522b0727cfedaeeda5627882639557112726a92c36581a2a7412f7",
+      "ids": [
+        "msg_41a3d08a53321e3396e4",
+        "msg_bcc96fd35a8afaa2bd2f",
+        "msg_3424074fcc5d047c4d88",
+        "msg_92252f43aadc5f29006f",
+        "msg_c8c0708b4b178e6c6dce",
+        "msg_8455189c4235df099c4f",
+        "msg_55e839aadebc8f48ea57",
+        "msg_cb6be18d2b2217606200",
+        "msg_0379dfb8bce9fb08bbd0",
+        "msg_313080d51b89f145ccc7",
+        "msg_aa15a46e27aab43ea870",
+        "msg_e033ac7f39430222e9a6",
+        "msg_bc3204deb99f79653bd4",
+        "msg_d9488045282cb9d28f4d",
+        "msg_5a76d8cc59b580f4b31d",
+        "msg_c82dabc8b039a3a504dd",
+        "msg_03315557fd09848d16ca",
+        "msg_b74c4d864d9ddb16eeae",
+        "msg_982f7f951ae7a4fc5184",
+        "msg_f619ef1009e1304e66b1",
+        "msg_6621eeec3b690106bd19",
+        "msg_d73e7d461f769c041ca0",
+        "msg_e36ae74e58815331a02d",
+        "msg_3d93b750a663115ac1ff",
+        "msg_f2a51a5456e1ea45cf09",
+        "msg_5b35f2b19c8439807725",
+        "msg_c11ea2cfff04bb993165",
+        "msg_458ffbea77c8d0761f64",
+        "msg_ec07e3adfec11402ac3e",
+        "msg_850213b2d5a018a82e77",
+        "msg_856fc78f70087a498598",
+        "msg_3157f9c5211f08c02990",
+        "msg_e7204df6f274527dfbd7",
+        "msg_617c4de1c5433f6f0529",
+        "msg_a5daff50d07d7ca9fd2e",
+        "msg_09a11d4eb4763eecb34e",
+        "msg_2ad2661acc7b840c913f",
+        "msg_c4522785266f2b8a9052",
+        "msg_f9dbcadb5e872d5d7b9c",
+        "msg_124adfb41e8c88ac0614",
+        "msg_28d3c4d65d0deddb4c72",
+        "msg_67c534980edcf1f23fdb",
+        "msg_22f81537419c47fd913e",
+        "msg_3b2ec5fd40b8facc5f18",
+        "msg_0a2be6557a4637c1c77b",
+        "msg_85859ee8ca08c9398830",
+        "msg_1b112eec8823d6b030bc",
+        "msg_29a3145f3817179bc7da",
+        "msg_b8daaa7f59adf680b807",
+        "msg_bccc948333d76cbb44ea",
+        "msg_30099a4ea5af21afe0cf",
+        "msg_d6c5259944a1815fac1a",
+        "msg_54196b947f5b77b1e251",
+        "msg_7a2eb677c775bd4f3676",
+        "msg_bad17e5dfd059d6cc23c",
+        "msg_4b91b6c0340cee3dcb7a",
+        "msg_6d8350ff24d0c26a183f",
+        "msg_e5e907d0aa8d34518921",
+        "msg_6d12eff26f0c24128e65"
+      ]
+    },
+    "recall": {
+      "operation": "memory.recall",
+      "count": 19,
+      "normalized_literal_count": 15,
+      "mission_count": 4,
+      "source_count": 7,
+      "ids_sha256": "f12874133e043b16afa529d476d7545864ef3f951edf00375600d2e49c4e1dcf",
+      "records_sha256": "879ee64edd018c9281dbaab504d1d2515b1d1c007427aab2824d88cd8df31480",
+      "ids": [
+        "msg_583b9cc04d56a7b95615",
+        "msg_d2c07aeefde693a70874",
+        "msg_463665b13c5640c6a63c",
+        "msg_1c64dd6ffc7f9aa27a78",
+        "msg_c265be29e6c86c3777d7",
+        "msg_38623a463c289393f1d3",
+        "msg_0141e00d26eaeb21ff4d",
+        "msg_4ad23f075477181e6a59",
+        "msg_87737b5a8c440eefd026",
+        "msg_4c63714b1d80135e933d",
+        "msg_4cf9512dd22f5632c611",
+        "msg_b3a514ed1d4d4d7d4372",
+        "msg_8523d99e149d44472278",
+        "msg_a6ef9343a8d0f05cdf03",
+        "msg_a9c2565f2cc621e56851",
+        "msg_dbc7e6844a9a281f136d",
+        "msg_4df104e0dc7b5bd5f289",
+        "msg_ec44602bbb738d79c540",
+        "msg_693d5db133942324eb62"
+      ]
+    },
+    "forget": {
+      "operation": "memory.forget",
+      "count": 22,
+      "normalized_literal_count": 13,
+      "mission_count": 6,
+      "source_count": 5,
+      "ids_sha256": "0631b9f80c184c6d48f8fd46950693dcf90378c6c979758ef7a71477313abd52",
+      "records_sha256": "a4611fed6ede725f9395ee49b978e6e42633bf9019b8f8d623f9b3917fd872f0",
+      "ids": [
+        "msg_117b165804492dd6054c",
+        "msg_8e85dc63397324d57bda",
+        "msg_40766c8345dcd2d0e20b",
+        "msg_27c9cdbb7324a576c9ad",
+        "msg_c9e92fb12ce1a7377255",
+        "msg_f134ccd31bff2005a116",
+        "msg_fef46876346ae1ddf7d3",
+        "msg_584474717f59a066f8b1",
+        "msg_d380f45502734dc26fbf",
+        "msg_5163d9d9c14b37924a82",
+        "msg_ffaa9d353f16a184c903",
+        "msg_d813ef10de83ee364b05",
+        "msg_6c24855a84f7fb731155",
+        "msg_a02d10dddef5b1ef0dd3",
+        "msg_ddd7e942ea46ad3c901e",
+        "msg_d32466f73b05eae9fee2",
+        "msg_ebf66a788cdc12514183",
+        "msg_1b6a3ace43016ca0f24f",
+        "msg_8be0a10a1ac10ae9ba1a",
+        "msg_89ead63a11b6cd061fa2",
+        "msg_f912cab240c13faecc97",
+        "msg_d0a98c174ee63402e96f"
+      ]
+    },
+    "positive_union": {
+      "members": [
+        "save",
+        "recall",
+        "forget"
+      ],
+      "count": 100,
+      "normalized_literal_count": 60,
+      "ids_sha256": "5e4a1d981a4f909aafb58670421a0f4b5db51cdaa9a6e8036544c44510e63ff5",
+      "records_sha256": "996ad8b25af253bf5e06a19b17886826880a0ae7c9fcc3e097878bba71f9a182"
+    },
+    "correct": {
+      "operation": "memory.correct",
+      "count": 5,
+      "normalized_literal_count": 2,
+      "mission_count": 2,
+      "source_count": 2,
+      "ids_sha256": "c84d4cbcad1ced1dcb4a51d09b86c1275e688135e2df40fe82a54eab5c06d2a9",
+      "records_sha256": "9fc7e785d89825edc26e2f3a3ddcbb99371e41c6b2daed2d4f8764a6ce235745",
+      "ids": [
+        "msg_c63e16f388e9c514103b",
+        "msg_d72e015e9e5a6c80347c",
+        "msg_5aa39b6d909e0b8d4bf3",
+        "msg_804c29f3b35735387760",
+        "msg_f98a7dee0392ad997fd5"
+      ]
+    },
+    "hard_negative": {
+      "operation": null,
+      "count": 34,
+      "normalized_literal_count": 34,
+      "mission_count": 15,
+      "source_count": 15,
+      "ids_sha256": "ccb317011dd5abad31f091be29efd7aa040101ea2ba66799b50686ef30ecf318",
+      "records_sha256": "536c08d3d4d64fd964fccaa54f3bb958a9d6c1c4e4107c4f85db3ceb273615b0",
+      "ids": [
+        "msg_2ccb599c7fe700c1d85a",
+        "msg_5309236d37a921dd31cd",
+        "msg_06dc31173f813eca2067",
+        "msg_f15a5d00c9a2401647fb",
+        "msg_e1b3c726d96b4badb772",
+        "msg_4594a82b765fa92d6ea8",
+        "msg_57a9b7321627e4be23e4",
+        "msg_a37421555e5dd3b82421",
+        "msg_f556a521f6308b126482",
+        "msg_ef50d934428963e064cf",
+        "msg_a228e9ac719168a17689",
+        "msg_301a498bbf248f62e97f",
+        "msg_5eea09675f3417719b9b",
+        "msg_e8c40ef827ad8cbb2e16",
+        "msg_b71ef917a8549bfc44ff",
+        "msg_5e4586f3dc3275a3e08d",
+        "msg_f35ed30ae6a0865555b7",
+        "msg_91a6508c2667bf4fdaea",
+        "msg_c64d8fe7a33aed3b8c38",
+        "msg_345e256e4dbdb0f60078",
+        "msg_467944b8d5acec6a89bb",
+        "msg_5d223b923fdad6292dda",
+        "msg_59e3103344680e96edf7",
+        "msg_5c6402de9a1ad5dfdf2b",
+        "msg_b7d59617a32e63aca567",
+        "msg_45deb5e3915a1e08ca10",
+        "msg_3b7a1f7f4903688105f0",
+        "msg_bcfcd3ea373d67dd0afd",
+        "msg_0a08d2b8c978ce816a1e",
+        "msg_23f41284d743c52f2bce",
+        "msg_f98a7dee0392ad997fd5",
+        "msg_34a13386c85018291719",
+        "msg_9e9c0758dff233fa0831",
+        "msg_e804361813b290d0e042"
+      ]
+    }
+  },
+  "canonical_cases": [
+    {
+      "operation": "memory.save",
+      "ids": ["msg_41a3d08a53321e3396e4", "msg_bcc96fd35a8afaa2bd2f", "msg_6621eeec3b690106bd19", "msg_d73e7d461f769c041ca0", "msg_e36ae74e58815331a02d"],
+      "arguments": {"selector": "favorite_color", "value": "azul", "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_3424074fcc5d047c4d88", "msg_92252f43aadc5f29006f", "msg_c8c0708b4b178e6c6dce"],
+      "arguments": {"selector": "carter_heavy_games_in_tests", "value": false, "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_8455189c4235df099c4f"],
+      "arguments": {"selector": "coffee", "value": "sin azúcar", "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_55e839aadebc8f48ea57", "msg_cb6be18d2b2217606200"],
+      "arguments": {"selector": "project_name", "value": "Carter", "kind": "context", "retention": "session", "expires": "session_end"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_0379dfb8bce9fb08bbd0", "msg_313080d51b89f145ccc7", "msg_aa15a46e27aab43ea870", "msg_7a2eb677c775bd4f3676", "msg_bad17e5dfd059d6cc23c"],
+      "arguments": {"selector": "birthday", "value": "May 5", "kind": "fact", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_e033ac7f39430222e9a6"],
+      "arguments": {"selector": "carter_privacy", "value": "local_and_private", "kind": "rule", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_bc3204deb99f79653bd4", "msg_d9488045282cb9d28f4d"],
+      "arguments": {"selector": "carter_location", "value": "Carter_v3", "kind": "context", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_5a76d8cc59b580f4b31d", "msg_c82dabc8b039a3a504dd"],
+      "arguments": {"selector": "testing_cleanup", "value": true, "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_03315557fd09848d16ca"],
+      "arguments": {"selector": "name", "value": "red", "kind": "fact", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_b74c4d864d9ddb16eeae"],
+      "arguments": {"selector": "name", "value": "Reta", "kind": "fact", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_982f7f951ae7a4fc5184", "msg_f619ef1009e1304e66b1"],
+      "arguments": {"selector": "test_folder", "value": "%USERPROFILE%\\Desktop\\Carter_Test", "kind": "context", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_3d93b750a663115ac1ff", "msg_f2a51a5456e1ea45cf09"],
+      "arguments": {"selector": "project_name", "value": "Carter v3", "kind": "context", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_5b35f2b19c8439807725", "msg_c11ea2cfff04bb993165"],
+      "arguments": {"selector": "avoid_legacy", "value": true, "kind": "rule", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_458ffbea77c8d0761f64", "msg_ec07e3adfec11402ac3e"],
+      "arguments": {"selector": "avoid_hardcodes", "value": true, "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_850213b2d5a018a82e77", "msg_856fc78f70087a498598"],
+      "arguments": {"selector": "language", "value": "es", "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_3157f9c5211f08c02990", "msg_e7204df6f274527dfbd7"],
+      "arguments": {"selector": "avoid_taskkill_force", "value": true, "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_617c4de1c5433f6f0529", "msg_a5daff50d07d7ca9fd2e", "msg_09a11d4eb4763eecb34e"],
+      "arguments": {"selector": "response_style", "value": "short", "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_2ad2661acc7b840c913f", "msg_c4522785266f2b8a9052", "msg_f9dbcadb5e872d5d7b9c"],
+      "arguments": {"selector": "response_style", "value": "direct", "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_124adfb41e8c88ac0614", "msg_28d3c4d65d0deddb4c72", "msg_67c534980edcf1f23fdb"],
+      "arguments": {"selector": "age_category", "value": "minor", "kind": "fact", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_22f81537419c47fd913e", "msg_3b2ec5fd40b8facc5f18"],
+      "arguments": {"selector": "steam_in_minimal_suites", "value": false, "kind": "rule", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_0a2be6557a4637c1c77b", "msg_85859ee8ca08c9398830"],
+      "arguments": {"selector": "exam", "value": "tomorrow", "kind": "context", "retention": "temporary", "expires": "after_relevance_window"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_1b112eec8823d6b030bc", "msg_29a3145f3817179bc7da"],
+      "arguments": {"selector": "employer", "value": "Intelectra", "kind": "fact", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_b8daaa7f59adf680b807", "msg_bccc948333d76cbb44ea"],
+      "arguments": {"selector": "operating_system", "value": "Windows", "kind": "fact", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_30099a4ea5af21afe0cf", "msg_d6c5259944a1815fac1a"],
+      "arguments": {"selector": "run_label", "value": "smoke 12", "kind": "context", "retention": "temporary", "expires": "after_relevance_window"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_54196b947f5b77b1e251"],
+      "arguments": {"selector": "name", "value": "Red", "kind": "fact", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_4b91b6c0340cee3dcb7a", "msg_6d8350ff24d0c26a183f"],
+      "arguments": {"selector": "favorite_color", "value": "blue", "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_e5e907d0aa8d34518921"],
+      "arguments": {"selector": "name", "value": "Alex", "kind": "fact", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.save",
+      "ids": ["msg_6d12eff26f0c24128e65"],
+      "arguments": {"selector": "display_mode", "value": "dark", "kind": "preference", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.recall",
+      "ids": ["msg_583b9cc04d56a7b95615", "msg_d2c07aeefde693a70874", "msg_463665b13c5640c6a63c", "msg_1c64dd6ffc7f9aa27a78", "msg_c265be29e6c86c3777d7", "msg_38623a463c289393f1d3"],
+      "arguments": {"scope": "exact", "selector": "name"}
+    },
+    {
+      "operation": "memory.recall",
+      "ids": ["msg_0141e00d26eaeb21ff4d", "msg_4ad23f075477181e6a59", "msg_87737b5a8c440eefd026", "msg_4c63714b1d80135e933d", "msg_4cf9512dd22f5632c611", "msg_b3a514ed1d4d4d7d4372"],
+      "arguments": {"scope": "all", "selector": null}
+    },
+    {
+      "operation": "memory.recall",
+      "ids": ["msg_8523d99e149d44472278", "msg_a6ef9343a8d0f05cdf03", "msg_a9c2565f2cc621e56851"],
+      "arguments": {"scope": "kind", "selector": "preference"}
+    },
+    {
+      "operation": "memory.recall",
+      "ids": ["msg_dbc7e6844a9a281f136d", "msg_4df104e0dc7b5bd5f289", "msg_ec44602bbb738d79c540"],
+      "arguments": {"scope": "exact", "selector": "favorite_color"}
+    },
+    {
+      "operation": "memory.recall",
+      "ids": ["msg_693d5db133942324eb62"],
+      "arguments": {"scope": "exact", "selector": "favorite_drink"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_117b165804492dd6054c", "msg_8e85dc63397324d57bda"],
+      "arguments": {"scope": "exact", "selector": "operating_system", "confirmation": "required"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_40766c8345dcd2d0e20b", "msg_f134ccd31bff2005a116", "msg_fef46876346ae1ddf7d3"],
+      "arguments": {"scope": "exact", "selector": "favorite_color", "confirmation": "required"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_27c9cdbb7324a576c9ad", "msg_c9e92fb12ce1a7377255", "msg_584474717f59a066f8b1", "msg_d380f45502734dc26fbf", "msg_d813ef10de83ee364b05"],
+      "arguments": {"scope": "all", "selector": null, "confirmation": "required"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_5163d9d9c14b37924a82", "msg_ffaa9d353f16a184c903"],
+      "arguments": {"scope": "exact", "selector": "response_style", "confirmation": "required"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_6c24855a84f7fb731155"],
+      "arguments": {"scope": "exact", "selector": "test_folder", "confirmation": "required"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_a02d10dddef5b1ef0dd3", "msg_ddd7e942ea46ad3c901e"],
+      "arguments": {"scope": "exact", "selector": "response_style", "confirmation": "required"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_d32466f73b05eae9fee2", "msg_ebf66a788cdc12514183"],
+      "arguments": {"scope": "kind", "selector": "style_preferences", "confirmation": "required"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_1b6a3ace43016ca0f24f", "msg_8be0a10a1ac10ae9ba1a"],
+      "arguments": {"scope": "exact", "selector": "language", "confirmation": "required"}
+    },
+    {
+      "operation": "memory.forget",
+      "ids": ["msg_89ead63a11b6cd061fa2", "msg_f912cab240c13faecc97", "msg_d0a98c174ee63402e96f"],
+      "arguments": {"scope": "topic", "selector": "Carter", "confirmation": "required"}
+    },
+    {
+      "operation": "memory.correct",
+      "ids": ["msg_c63e16f388e9c514103b", "msg_d72e015e9e5a6c80347c"],
+      "arguments": {"selector": "carter_version", "old_value": "Carter v2", "value": "Carter v3", "retention": "persistent"}
+    },
+    {
+      "operation": "memory.correct",
+      "ids": ["msg_5aa39b6d909e0b8d4bf3", "msg_804c29f3b35735387760", "msg_f98a7dee0392ad997fd5"],
+      "arguments": {"selector": "response_style", "value": "technical_and_brief", "kind": "preference", "retention": "persistent"}
+    }
+  ],
+  "hard_negative_cases": [
+    {
+      "category": "sensitive_save_requires_confirmation",
+      "ids": ["msg_2ccb599c7fe700c1d85a", "msg_5309236d37a921dd31cd", "msg_06dc31173f813eca2067", "msg_f15a5d00c9a2401647fb", "msg_e1b3c726d96b4badb772"],
+      "expected": {"outcome": "confirm_sensitive_save", "must_not_persist_before_confirmation": true, "mask_public_projection": true}
+    },
+    {
+      "category": "missing_or_ambiguous_save_payload",
+      "ids": ["msg_4594a82b765fa92d6ea8", "msg_57a9b7321627e4be23e4", "msg_a37421555e5dd3b82421", "msg_f556a521f6308b126482"],
+      "expected": {"outcome": "clarify", "must_not_persist": true}
+    },
+    {
+      "category": "ambiguous_forget_selector",
+      "ids": ["msg_ef50d934428963e064cf", "msg_a228e9ac719168a17689", "msg_301a498bbf248f62e97f"],
+      "expected": {"outcome": "clarify", "must_not_delete": true}
+    },
+    {
+      "category": "session_context_forget",
+      "ids": ["msg_5eea09675f3417719b9b", "msg_e8c40ef827ad8cbb2e16"],
+      "expected": {"outcome": "route_specialized", "operation": "memory.forget", "scope": "session", "must_not_delete_persistent": true}
+    },
+    {
+      "category": "mixed_or_composed_request",
+      "ids": ["msg_b71ef917a8549bfc44ff", "msg_5e4586f3dc3275a3e08d", "msg_f35ed30ae6a0865555b7"],
+      "expected": {"outcome": "do_not_claim_standalone_memory_route"}
+    },
+    {
+      "category": "fixture_metric_or_document_noise",
+      "ids": ["msg_91a6508c2667bf4fdaea", "msg_c64d8fe7a33aed3b8c38", "msg_345e256e4dbdb0f60078", "msg_467944b8d5acec6a89bb", "msg_5d223b923fdad6292dda", "msg_59e3103344680e96edf7"],
+      "expected": {"outcome": "no_memory_route"}
+    },
+    {
+      "category": "memory_word_homonym",
+      "ids": ["msg_5c6402de9a1ad5dfdf2b", "msg_b7d59617a32e63aca567", "msg_45deb5e3915a1e08ca10", "msg_3b7a1f7f4903688105f0", "msg_bcfcd3ea373d67dd0afd"],
+      "expected": {"outcome": "no_memory_route"}
+    },
+    {
+      "category": "authorization_is_not_durable_memory",
+      "ids": ["msg_0a08d2b8c978ce816a1e"],
+      "expected": {"outcome": "reject_authorization_persistence", "must_not_change_authority": true}
+    },
+    {
+      "category": "explicit_temporary_no_store",
+      "ids": ["msg_23f41284d743c52f2bce"],
+      "expected": {"outcome": "session_context_only", "must_not_persist": true}
+    },
+    {
+      "category": "correction_not_recall",
+      "ids": ["msg_f98a7dee0392ad997fd5"],
+      "expected": {"outcome": "route_specialized", "operation": "memory.correct"}
+    },
+    {
+      "category": "implicit_fact_or_preference_requires_consent",
+      "ids": ["msg_34a13386c85018291719", "msg_9e9c0758dff233fa0831"],
+      "expected": {"outcome": "ask_to_save", "must_not_persist_before_consent": true}
+    },
+    {
+      "category": "malformed_inspection_requires_clarification",
+      "ids": ["msg_e804361813b290d0e042"],
+      "expected": {"outcome": "clarify", "must_not_invent": true}
+    }
+  ],
+  "behavioral_contracts": {
+    "ttl": [
+      {
+        "name": "session_memory_expires_at_session_end",
+        "ids": ["msg_55e839aadebc8f48ea57", "msg_cb6be18d2b2217606200"],
+        "expected": {"retention": "session", "expires": "session_end"}
+      },
+      {
+        "name": "temporary_context_has_finite_relevance_window",
+        "ids": ["msg_0a2be6557a4637c1c77b", "msg_85859ee8ca08c9398830", "msg_30099a4ea5af21afe0cf", "msg_d6c5259944a1815fac1a"],
+        "expected": {"retention": "temporary", "expires": "after_relevance_window"}
+      },
+      {
+        "name": "session_forget_never_deletes_persistent_memory",
+        "ids": ["msg_5eea09675f3417719b9b", "msg_e8c40ef827ad8cbb2e16"],
+        "expected": {"scope": "session", "preserve_persistent": true}
+      },
+      {
+        "name": "temporary_use_is_not_a_save",
+        "ids": ["msg_23f41284d743c52f2bce"],
+        "expected": {"retention": "session", "persist": false}
+      }
+    ],
+    "consent": [
+      {
+        "name": "sensitive_memory_requires_explicit_confirmation",
+        "ids": ["msg_2ccb599c7fe700c1d85a", "msg_5309236d37a921dd31cd", "msg_06dc31173f813eca2067", "msg_f15a5d00c9a2401647fb", "msg_e1b3c726d96b4badb772"],
+        "expected": {"confirmation": "required", "persist_before_confirmation": false, "public_projection": "masked"}
+      },
+      {
+        "name": "implicit_memory_is_default_off",
+        "ids": ["msg_34a13386c85018291719", "msg_9e9c0758dff233fa0831"],
+        "expected": {"ask_to_save": true, "persist_before_consent": false}
+      },
+      {
+        "name": "blanket_pc_authorization_never_becomes_durable",
+        "ids": ["msg_0a08d2b8c978ce816a1e"],
+        "expected": {"persist": false, "change_authority": false}
+      },
+      {
+        "name": "forget_requires_visible_confirmation",
+        "ids": ["msg_117b165804492dd6054c", "msg_8e85dc63397324d57bda", "msg_40766c8345dcd2d0e20b", "msg_27c9cdbb7324a576c9ad", "msg_c9e92fb12ce1a7377255", "msg_f134ccd31bff2005a116", "msg_fef46876346ae1ddf7d3", "msg_584474717f59a066f8b1", "msg_d380f45502734dc26fbf", "msg_5163d9d9c14b37924a82", "msg_ffaa9d353f16a184c903", "msg_d813ef10de83ee364b05", "msg_6c24855a84f7fb731155", "msg_a02d10dddef5b1ef0dd3", "msg_ddd7e942ea46ad3c901e", "msg_d32466f73b05eae9fee2", "msg_ebf66a788cdc12514183", "msg_1b6a3ace43016ca0f24f", "msg_8be0a10a1ac10ae9ba1a", "msg_89ead63a11b6cd061fa2", "msg_f912cab240c13faecc97", "msg_d0a98c174ee63402e96f"],
+        "expected": {"confirmation": "required", "delete_before_confirmation": false}
+      }
+    ],
+    "inspection": [
+      {
+        "name": "inspect_all",
+        "ids": ["msg_0141e00d26eaeb21ff4d", "msg_4ad23f075477181e6a59", "msg_87737b5a8c440eefd026", "msg_4c63714b1d80135e933d", "msg_4cf9512dd22f5632c611", "msg_b3a514ed1d4d4d7d4372"],
+        "expected": {"scope": "all", "selector": null}
+      },
+      {
+        "name": "inspect_preferences",
+        "ids": ["msg_8523d99e149d44472278", "msg_a6ef9343a8d0f05cdf03", "msg_a9c2565f2cc621e56851"],
+        "expected": {"scope": "kind", "selector": "preference"}
+      },
+      {
+        "name": "inspect_exact",
+        "ids": ["msg_583b9cc04d56a7b95615", "msg_d2c07aeefde693a70874", "msg_463665b13c5640c6a63c", "msg_1c64dd6ffc7f9aa27a78", "msg_c265be29e6c86c3777d7", "msg_38623a463c289393f1d3", "msg_dbc7e6844a9a281f136d", "msg_4df104e0dc7b5bd5f289", "msg_ec44602bbb738d79c540", "msg_693d5db133942324eb62"],
+        "expected": {"scope": "exact"}
+      },
+      {
+        "name": "correct_is_an_auditable_revision",
+        "ids": ["msg_c63e16f388e9c514103b", "msg_d72e015e9e5a6c80347c", "msg_5aa39b6d909e0b8d4bf3", "msg_804c29f3b35735387760", "msg_f98a7dee0392ad997fd5"],
+        "expected": {"operation": "memory.correct", "increment_revision": true, "preserve_audit_metadata": true}
+      },
+      {
+        "name": "export_has_no_frozen_literal_in_this_oracle",
+        "ids": [],
+        "expected": {"status": "product_requirement_only", "format": "inspectable_local_export", "include_secret_values": false}
+      }
+    ]
+  }
+}

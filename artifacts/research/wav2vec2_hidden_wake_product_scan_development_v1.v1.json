@@ -1,0 +1,290 @@
+{
+  "schema": "baxy.wav2vec2-hidden-wake-product-scan-audit.v1",
+  "measured_at_utc": "2026-08-06T01:29:01.663117+00:00",
+  "scope": "development_only_exact_causal_product_views",
+  "sources": {
+    "corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0",
+    "product_report_sha256": "1a90944356541b811353ff0656eb88f519ffcccab91d42b4e1689db61d8db6f5",
+    "development_audit_sha256": "82a572dd01c6ee8c782621b44863941f7b9b92770f61cc4537c3bf684e1d2cc2",
+    "stage1_model_sha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "verifier_manifest_sha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "model_weights_sha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e"
+  },
+  "frozen_embedding": {
+    "layer": 2,
+    "window_duration_seconds": 0.35,
+    "pooling": "max",
+    "normalization": "per_product_view_mean_variance_then_l2_embedding",
+    "query": "20ms_sliding_all_product_verification_views_max_score",
+    "cross_validation": "leave_one_speaker_group_out_nearest_centroid"
+  },
+  "metrics": {
+    "speaker_held_out_auc": 0.5357142857142857,
+    "threshold_zero_positive_accepted": 14,
+    "threshold_zero_positive_total": 14,
+    "threshold_zero_hard_negative_false": 4,
+    "threshold_zero_hard_negative_total": 4,
+    "diagnostic_zero_false_threshold": 0.0408843755722046,
+    "diagnostic_zero_false_positive_accepted": 1,
+    "diagnostic_zero_false_positive_rate": 0.07142857142857142
+  },
+  "records": [
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "activity_view_target_seconds": 0.992,
+      "view_starts_samples": [
+        64000,
+        63360,
+        65920
+      ],
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.023958325386047363,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 2.3925
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "activity_view_target_seconds": 0.992,
+      "view_starts_samples": [
+        64000,
+        68480,
+        71040
+      ],
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.028127968311309814,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 1.3325
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "activity_view_target_seconds": 1.012,
+      "view_starts_samples": [
+        64000,
+        68160,
+        70720
+      ],
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.024254918098449707,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 2.7525
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "activity_view_target_seconds": 1.012,
+      "view_starts_samples": [
+        64000,
+        65600,
+        68160
+      ],
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.02603226900100708,
+      "view_start_sample": 65600,
+      "window_start_seconds_in_view": 2.9525
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "activity_view_target_seconds": 0.432,
+      "view_starts_samples": [
+        64000,
+        59520,
+        62080
+      ],
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.031635284423828125,
+      "view_start_sample": 62080,
+      "window_start_seconds_in_view": 0.1725
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "activity_view_target_seconds": 0.512,
+      "view_starts_samples": [
+        64000,
+        71040,
+        73600
+      ],
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.03901481628417969,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 0.2725
+    },
+    {
+      "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "activity_view_target_seconds": 0.852,
+      "view_starts_samples": [
+        64000,
+        70720,
+        73280
+      ],
+      "speaker_group": "ecogen_narrator",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.033515214920043945,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 1.2125
+    },
+    {
+      "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "activity_view_target_seconds": 1.012,
+      "view_starts_samples": [
+        64000,
+        68160,
+        70720
+      ],
+      "speaker_group": "jesus_marcos",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.02175980806350708,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 0.4525
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "activity_view_target_seconds": 1.012,
+      "view_starts_samples": [
+        64000,
+        34880,
+        37440
+      ],
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.033867835998535156,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 0.8525
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "activity_view_target_seconds": 0.912,
+      "view_starts_samples": [
+        64000,
+        67200,
+        69760
+      ],
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.04289025068283081,
+      "view_start_sample": 67200,
+      "window_start_seconds_in_view": 2.9525
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "activity_view_target_seconds": 0.992,
+      "view_starts_samples": [
+        64000,
+        63360,
+        65920
+      ],
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.03967082500457764,
+      "view_start_sample": 63360,
+      "window_start_seconds_in_view": 0.5925
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "activity_view_target_seconds": 1.012,
+      "view_starts_samples": [
+        64000,
+        68160,
+        70720
+      ],
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.03807055950164795,
+      "view_start_sample": 70720,
+      "window_start_seconds_in_view": 2.9325
+    },
+    {
+      "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "activity_view_target_seconds": 0.992,
+      "view_starts_samples": [
+        64000,
+        68480,
+        71040
+      ],
+      "speaker_group": "alexey_tukay",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.040352463722229004,
+      "view_start_sample": 71040,
+      "window_start_seconds_in_view": 1.6925
+    },
+    {
+      "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "activity_view_target_seconds": 0.952,
+      "view_starts_samples": [
+        64000,
+        66560,
+        69120
+      ],
+      "speaker_group": "baxi_ferrol_welcome_narrator",
+      "label": "positive",
+      "speaker_held_out_product_scan_score": 0.02828681468963623,
+      "view_start_sample": 66560,
+      "window_start_seconds_in_view": 2.9325
+    },
+    {
+      "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "activity_view_target_seconds": 1.6385,
+      "view_starts_samples": [
+        64000,
+        70080,
+        72640
+      ],
+      "speaker_group": "tarang_bakshi",
+      "label": "hard_negative",
+      "speaker_held_out_product_scan_score": 0.03233867883682251,
+      "view_start_sample": 70080,
+      "window_start_seconds_in_view": 0.9725
+    },
+    {
+      "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "activity_view_target_seconds": 0.732,
+      "view_starts_samples": [
+        64000,
+        57280,
+        59840
+      ],
+      "speaker_group": "upendra_bakshi",
+      "label": "hard_negative",
+      "speaker_held_out_product_scan_score": 0.04088437557220459,
+      "view_start_sample": 57280,
+      "window_start_seconds_in_view": 0.2125
+    },
+    {
+      "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "activity_view_target_seconds": 1.7985,
+      "view_starts_samples": [
+        64000,
+        63040,
+        65600
+      ],
+      "speaker_group": "mahesh_faxi",
+      "label": "hard_negative",
+      "speaker_held_out_product_scan_score": 0.01715707778930664,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 2.9525
+    },
+    {
+      "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "activity_view_target_seconds": 0.992,
+      "view_starts_samples": [
+        64000,
+        40320,
+        42880
+      ],
+      "speaker_group": "viplav_vaxi",
+      "label": "hard_negative",
+      "speaker_held_out_product_scan_score": 0.02993607521057129,
+      "view_start_sample": 64000,
+      "window_start_seconds_in_view": 0.9725
+    }
+  ],
+  "runtime_seconds": 4.423777399992105,
+  "candidate_frozen": false,
+  "product_operating_point": true,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

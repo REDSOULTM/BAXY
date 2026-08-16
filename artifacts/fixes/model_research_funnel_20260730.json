@@ -1,0 +1,82 @@
+{
+  "schema": "baxy.model-research-funnel.v1",
+  "measured_at_utc": "2026-07-30",
+  "cutoff_date": "2026-07-30",
+  "scope": "documentary phase-1 funnel; no assets downloaded, no runtime changed, no effects executed",
+  "hardware_context": {
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "gpu_state_at_research": "P3, SM 900 MHz (max 2100), SW Thermal Slowdown active, 57-65 C",
+    "cpu": "AMD Ryzen 7 5800H",
+    "registered_runtime": "llama-server b9980 CUDA 12.4 shared-lib build; gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf (2620370976 bytes)"
+  },
+  "candidates": [
+    {
+      "name": "gemma-4-E2B-it-qat-UD-Q4_K_XL (baseline)",
+      "provenance": "Google QAT checkpoint, Unsloth dynamic Q4_K_XL GGUF; registered manifest hash e5310072...",
+      "status": "retained",
+      "reason": "No newer official E2B checkpoint or QAT revision found through 2026-07-30; remains the certified asset."
+    },
+    {
+      "name": "google/gemma-4-E2B-it-assistant (official MTP drafter, ~78M)",
+      "provenance": "Official Google MTP drafter for gemma-4-E2B-it; custom gemma4_assistant GGUF architecture",
+      "license": "Gemma Terms of Use",
+      "status": "rejected_physically_20260730",
+      "physical_update": "User-authorized isolated experiment executed on b9553 (the last working loader build) with the official assistant converted to Q8_0 GGUF via the b10182 converter. With product-matching server flags (-ctk/-ctv q8_0 --jinja --reasoning off --reasoning-budget 0, --spec-type draft-mtp): draft acceptance 28.3% (1558/5508), free chat p50 regressed 2.546->3.383s (+33%), the real P payload gained nothing (2.468 vs 2.498s), visible chat outputs changed in 3/4 cases, VRAM +108 MiB. Rejected on the exact-output, latency and resource gates simultaneously; see b9553_mtp_assistant_verdict_20260730.json. Prior status kept for history:",
+      "status_before_experiment": "blocked_upstream",
+      "evidence": [
+        "llama.cpp PR #24282 (merged 2026-06-08) adds E2B/E4B assistant conversion/loading on top of Gemma4 MTP PR #23398 (2026-06-07)",
+        "Open regression ggml-org/llama.cpp#24795 (opened 2026-06-19, still open, no fix PR): gemma4-assistant draft load crashes with 'invalid vector subscript' on b9702/b9717+; last known working build is b9553",
+        "BAXY prior probe on b10182 could not create a draft context (llama_b10182_mtp_verdict_20260729.json); registered b9980 is inside the regressed range",
+        "Community reports ~2.5x speedup and ~62% draft acceptance on b9553 with deterministic prompts; CUDA FlashAttention hard-abort also reported for some head configurations"
+      ],
+      "reason": "Highest-upside latency candidate (exact-output speculative decoding of the same certified target), but productive support does not exist for any build >= the canonical b9980. Adopting it today would require downgrading llama-server below the certified revision to b9553, whose compatibility with the current E2B GGUF layout is unverified (b8738 already failed to load it), plus a new attested asset. Re-test when ggml-org/llama.cpp#24795 is fixed in a release >= b9980."
+    },
+    {
+      "name": "Qwen3.5-4B (released 2026-03-02)",
+      "provenance": "Alibaba Qwen; hybrid Gated DeltaNet + Gated Attention, multimodal, 262k context; official GGUFs published (e.g. unsloth/Qwen3.5-4B-MTP-GGUF); Qwen docs: convert-hf-to-gguf supported, 'absolute latest' llama.cpp required for the new operators",
+      "license": "open weights (Qwen license family)",
+      "status": "discarded_phase1_reaudited",
+      "capability_breakdown": {
+        "gguf_conversion": "supported (official docs + published GGUFs)",
+        "load_and_execution": "supported only on llama.cpp builds newer than the certified b9980 vintage; MTP needs custom build (PR #22673)",
+        "grammar_structured_output": "server-side GBNF is architecture-agnostic; unverified physically on hybrid models",
+        "productive_maturity": "not mature for BAXY's workload: hybrid/recurrent models force full prompt re-processing between requests (ggml-org/llama.cpp#21831 open; #22746 same class for Qwen3.6; #25913 slot save/restore loses reuse; #21681 prompt-cache state drift closed)"
+      },
+      "reason": "Corrected after reaudit with official sources: the architecture IS runnable on recent llama.cpp, but the open prompt-reuse defects for hybrid DeltaNet models attack exactly BAXY's hot path (every P/G/L/V call reuses a 554-1214-token cached prefix; measured cache_n in turn_retry_decomposition_full_20260730.json). Full re-prefill of ~1.2k tokens per call on this GPU would add roughly 0.9-1s per inference regardless of decode speed, so the expected value is negative until the upstream cache-reuse issues close AND a supported runtime at or above the certified revision exists. Reversal condition: #21831 fixed in an official release, then run the physical funnel."
+    },
+    {
+      "name": "Ministral-3-3B-Instruct-2512 (released 2025-12-04)",
+      "provenance": "Mistral AI official; dense 3B + vision; official GGUF repository available",
+      "license": "Apache 2.0",
+      "status": "rejected_phase2_20260730",
+      "physical_update": "User-authorized download executed (official mistralai GGUF Q4_K_M, 2147023008 bytes, sha256 9ed150d4367e68df0ac8e1540f6ddc65b42d0ee26378329d1ecbca60f93fc5f8). Phase-2 ABBA on the registered b9980 binary with product-matching flags: decode 34.2 vs Gemma 48.1 tok/s (-29%), real P payload 3.524 vs 2.337s (+51%), chat 3.796 vs 2.501s (+52%), VRAM peak 3451 vs 2483 MiB (+968). JSON validity 6/6 both arms; TTFT proxy marginally better (0.095 vs 0.117s) but immaterial. Rejecting gate: phase-2 latency/decode/VRAM microbenchmark; phases 3-5 not entered. Evidence: ministral_phase2_ab_v2_20260730.json.",
+      "reason_before_experiment": "Compatible and distributable, but ~3B dense active parameters exceed E2B's active compute; physical phases were pending authorization."
+    },
+    {
+      "name": "Phi-4-mini (3.8B) / Phi-5-Mini",
+      "status": "discarded_phase1",
+      "reason": "Phi-4-mini predates the 6-month window and is larger-active than E2B with no evidence of Spanish/latency advantage; Phi-5-Mini (3-4B) is announced as in development, not released, as of 2026-07-30."
+    },
+    {
+      "name": "gemma-4-26B-A4B MoE (2026-04-02)",
+      "status": "discarded_phase1",
+      "reason": "Total weights exceed the 6 GiB laptop GPU budget for the canonical profile even at 4-bit; latency mission targets smaller, not larger, activation."
+    },
+    {
+      "name": "Qwen3.5 small series 0.8B/2B (2026-03)",
+      "status": "discarded_phase1",
+      "reason": "Same unsupported hybrid architecture in official llama.cpp as Qwen3.5-4B."
+    }
+  ],
+  "sources": [
+    "https://github.com/ggml-org/llama.cpp/pull/24282",
+    "https://github.com/ggml-org/llama.cpp/pull/23398",
+    "https://github.com/ggml-org/llama.cpp/issues/24795",
+    "https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf",
+    "https://huggingface.co/mistralai/Ministral-3-3B-Instruct-2512-GGUF",
+    "https://huggingface.co/blog/mlabonne/qwen35",
+    "https://github.com/mlc-ai/web-llm/issues/778",
+    "https://ai.google.dev/gemma/docs/mtp/mtp"
+  ],
+  "verdict": "No candidate passes phase 1 with a credible, certifiable latency or quality win on the canonical hardware without new attested assets. The single high-upside path (official E2B MTP assistant) is blocked by an open llama.cpp loader regression covering every build at or above the certified b9980. Gemma 4 E2B QAT Q4_K_XL remains the correct asset; re-open this funnel when issue #24795 ships a fix in an official release."
+}

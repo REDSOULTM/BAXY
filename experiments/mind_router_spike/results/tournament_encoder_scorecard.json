@@ -1,0 +1,144 @@
+{
+  "protocol": "baxy-mind-encoder-tournament-v1",
+  "results": [
+    {
+      "model": "intfloat/multilingual-e5-small",
+      "status": "measured",
+      "frozen_tau": 0.9,
+      "frozen_margin": 0.005,
+      "coverage_accuracy": 0.9985,
+      "coverage_failures": [
+        {
+          "text": "cuánta memoria me queda libre",
+          "expected": "ABSTAIN_POLICY",
+          "predicted": "system.status:memory"
+        }
+      ],
+      "loo_accuracy": 0.8933,
+      "loo_dangerous": 37,
+      "loo_dangerous_rate": 0.0548,
+      "loo_safe_abstention": 35,
+      "single_query_cpu_ms": 15.8,
+      "process_ram_mib": 880.3,
+      "weights_size_mib": 470.4
+    },
+    {
+      "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "status": "measured",
+      "frozen_tau": 0.8,
+      "frozen_margin": 0.025,
+      "coverage_accuracy": 0.9867,
+      "coverage_failures": [
+        {
+          "text": "Cuanta ram tengo",
+          "expected": "system.status:memory",
+          "predicted": "system.status:gpu_usage"
+        },
+        {
+          "text": "Cuanta ram tengo",
+          "expected": "system.status:memory",
+          "predicted": "system.status:gpu_usage"
+        },
+        {
+          "text": "Cuanta ram tengo",
+          "expected": "system.status:memory",
+          "predicted": "system.status:gpu_usage"
+        },
+        {
+          "text": "silencia el audio",
+          "expected": "audio.mute",
+          "predicted": "ABSTAIN"
+        },
+        {
+          "text": "recuerda que prefiero español",
+          "expected": "memory.save",
+          "predicted": "ABSTAIN"
+        },
+        {
+          "text": "recuerda que prefiero español",
+          "expected": "memory.save",
+          "predicted": "ABSTAIN"
+        },
+        {
+          "text": "olvida que prefiero español",
+          "expected": "memory.forget",
+          "predicted": "ABSTAIN"
+        },
+        {
+          "text": "olvida que prefiero español",
+          "expected": "memory.forget",
+          "predicted": "ABSTAIN"
+        },
+        {
+          "text": "cuánta memoria me queda libre",
+          "expected": "ABSTAIN_POLICY",
+          "predicted": "system.status:memory"
+        }
+      ],
+      "loo_accuracy": 0.8474,
+      "loo_dangerous": 26,
+      "loo_dangerous_rate": 0.0385,
+      "loo_safe_abstention": 77,
+      "single_query_cpu_ms": 13.6,
+      "process_ram_mib": 1221.8,
+      "weights_size_mib": 4406.9
+    },
+    {
+      "model": "Qwen/Qwen3-Embedding-0.6B",
+      "status": "measured",
+      "frozen_tau": 0.8,
+      "frozen_margin": 0.01,
+      "coverage_accuracy": 0.9941,
+      "coverage_failures": [
+        {
+          "text": "Cuanta ram tengo",
+          "expected": "system.status:memory",
+          "predicted": "ABSTAIN"
+        },
+        {
+          "text": "Cuanta ram tengo",
+          "expected": "system.status:memory",
+          "predicted": "ABSTAIN"
+        },
+        {
+          "text": "Cuanta ram tengo",
+          "expected": "system.status:memory",
+          "predicted": "ABSTAIN"
+        },
+        {
+          "text": "cuánta memoria me queda libre",
+          "expected": "ABSTAIN_POLICY",
+          "predicted": "system.status:memory"
+        }
+      ],
+      "loo_accuracy": 0.883,
+      "loo_dangerous": 28,
+      "loo_dangerous_rate": 0.0415,
+      "loo_safe_abstention": 51,
+      "single_query_cpu_ms": 243.4,
+      "process_ram_mib": 1177.8,
+      "weights_size_mib": 1151.6
+    },
+    {
+      "model": "unsloth/embeddinggemma-300m",
+      "status": "measured",
+      "frozen_tau": 0.8,
+      "frozen_margin": 0.0,
+      "coverage_accuracy": 0.9985,
+      "coverage_failures": [
+        {
+          "text": "cuánta memoria me queda libre",
+          "expected": "ABSTAIN_POLICY",
+          "predicted": "system.status:memory"
+        }
+      ],
+      "loo_accuracy": 0.8711,
+      "loo_dangerous": 21,
+      "loo_dangerous_rate": 0.0311,
+      "loo_safe_abstention": 66,
+      "single_query_cpu_ms": 78.0,
+      "process_ram_mib": 1110.1,
+      "weights_size_mib": 1210.8
+    }
+  ]
+}

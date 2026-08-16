@@ -1,0 +1,8104 @@
+{
+  "schema": "baxy.phoneme-teacher-category-oracle-development.v2",
+  "measured_at_utc": "2026-08-04T20:46:13.653183+00:00",
+  "scope": "development_lossless_teacher_head_projection_before_student_training",
+  "sources": {
+    "teacher_directory": "D:/BAXYRuntime/experiments/wakeword/phoneme_audit/facebook-wav2vec2-lv-60-espeak-cv-ft-ae45363b",
+    "teacher_model_sha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "synthetic_directory": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_voxcpm2_mixed_development_v4",
+    "synthetic_negative_report": "D:/BAXY/source/artifacts/research/livekit_wakeword_candidate4_negative_test_ctc_cascade_v3.v1.json",
+    "synthetic_negative_report_sha256": "9eaf01bc38493b4c4293371c2cc40a53b63f3ac2d9527db494fd9715f2d33146",
+    "human_teacher_report": "D:/BAXY/source/artifacts/research/livekit_wakeword_ccby_development_ctc_cascade_v3.v1.json",
+    "human_teacher_report_sha256": "dd47b3ceb03d9ad168edf18838dd5fcbcc5c8a3d45479457f07a9f45ced7e709",
+    "human_corpus_manifest": "D:/BAXYRuntime/experiments/wakeword/ccby_wake_holdout_v1/corpus.manifest.v1.json",
+    "human_corpus_manifest_sha256": "44b76906e97516411a33af732d1574e959b4399ab6a8a06653199138d85cd8e0"
+  },
+  "student_head": {
+    "category_names": [
+      "blank",
+      "B",
+      "BETA",
+      "V",
+      "F",
+      "P",
+      "A",
+      "AE",
+      "AA",
+      "UH",
+      "K",
+      "S",
+      "S_PAL",
+      "SH",
+      "I",
+      "IH",
+      "R_TAP",
+      "other"
+    ],
+    "category_count": 18,
+    "teacher_ids": {
+      "blank": [
+        0
+      ],
+      "B": [
+        26
+      ],
+      "BETA": [
+        45
+      ],
+      "V": [
+        25
+      ],
+      "F": [
+        23
+      ],
+      "P": [
+        18
+      ],
+      "A": [
+        9
+      ],
+      "AE": [
+        36
+      ],
+      "AA": [
+        59
+      ],
+      "UH": [
+        33
+      ],
+      "K": [
+        11
+      ],
+      "S": [
+        5
+      ],
+      "S_PAL": [
+        102
+      ],
+      "SH": [
+        38
+      ],
+      "I": [
+        10
+      ],
+      "IH": [
+        17
+      ],
+      "R_TAP": [
+        15
+      ],
+      "other": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        12,
+        13,
+        14,
+        16,
+        19,
+        20,
+        21,
+        22,
+        24,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        34,
+        35,
+        37,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245,
+        246,
+        247,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        254,
+        255,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280,
+        281,
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        288,
+        289,
+        290,
+        291,
+        292,
+        293,
+        294,
+        295,
+        296,
+        297,
+        298,
+        299,
+        300,
+        301,
+        302,
+        303,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        312,
+        313,
+        314,
+        315,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325,
+        326,
+        327,
+        328,
+        329,
+        330,
+        331,
+        332,
+        333,
+        334,
+        335,
+        336,
+        337,
+        338,
+        339,
+        340,
+        341,
+        342,
+        343,
+        344,
+        345,
+        346,
+        347,
+        348,
+        349,
+        350,
+        351,
+        352,
+        353,
+        354,
+        355,
+        356,
+        357,
+        358,
+        359,
+        360,
+        361,
+        362,
+        363,
+        364,
+        365,
+        366,
+        367,
+        368,
+        369,
+        370,
+        371,
+        372,
+        373,
+        374,
+        375,
+        376,
+        377,
+        378,
+        379,
+        380,
+        381,
+        382,
+        383,
+        384,
+        385,
+        386,
+        387,
+        388,
+        389,
+        390,
+        391
+      ]
+    },
+    "target_category_sequences": [
+      [
+        1,
+        6,
+        10,
+        11,
+        14
+      ],
+      [
+        1,
+        7,
+        10,
+        11,
+        14
+      ],
+      [
+        1,
+        7,
+        10,
+        11,
+        15
+      ],
+      [
+        1,
+        8,
+        10,
+        11,
+        14
+      ],
+      [
+        1,
+        6,
+        10,
+        12,
+        14
+      ],
+      [
+        1,
+        8,
+        10,
+        12,
+        14
+      ],
+      [
+        1,
+        9,
+        10,
+        12,
+        14
+      ],
+      [
+        1,
+        6,
+        16,
+        10,
+        11,
+        14
+      ],
+      [
+        2,
+        6,
+        10,
+        11,
+        14
+      ],
+      [
+        2,
+        6,
+        16,
+        10,
+        11,
+        14
+      ]
+    ],
+    "confusable_category_sequences": [
+      [
+        3,
+        6,
+        10,
+        11,
+        14
+      ],
+      [
+        3,
+        6,
+        10,
+        11,
+        15
+      ],
+      [
+        3,
+        6,
+        10,
+        12,
+        14
+      ],
+      [
+        3,
+        6,
+        10,
+        12,
+        15
+      ],
+      [
+        3,
+        7,
+        10,
+        11,
+        14
+      ],
+      [
+        3,
+        7,
+        10,
+        11,
+        15
+      ],
+      [
+        3,
+        7,
+        10,
+        12,
+        14
+      ],
+      [
+        3,
+        7,
+        10,
+        12,
+        15
+      ],
+      [
+        3,
+        8,
+        10,
+        11,
+        14
+      ],
+      [
+        3,
+        8,
+        10,
+        11,
+        15
+      ],
+      [
+        3,
+        8,
+        10,
+        12,
+        14
+      ],
+      [
+        3,
+        8,
+        10,
+        12,
+        15
+      ],
+      [
+        3,
+        9,
+        10,
+        11,
+        14
+      ],
+      [
+        3,
+        9,
+        10,
+        11,
+        15
+      ],
+      [
+        3,
+        9,
+        10,
+        12,
+        14
+      ],
+      [
+        3,
+        9,
+        10,
+        12,
+        15
+      ],
+      [
+        4,
+        6,
+        10,
+        11,
+        14
+      ],
+      [
+        4,
+        6,
+        10,
+        11,
+        15
+      ],
+      [
+        4,
+        6,
+        10,
+        12,
+        14
+      ],
+      [
+        4,
+        6,
+        10,
+        12,
+        15
+      ],
+      [
+        4,
+        7,
+        10,
+        11,
+        14
+      ],
+      [
+        4,
+        7,
+        10,
+        11,
+        15
+      ],
+      [
+        4,
+        7,
+        10,
+        12,
+        14
+      ],
+      [
+        4,
+        7,
+        10,
+        12,
+        15
+      ],
+      [
+        4,
+        8,
+        10,
+        11,
+        14
+      ],
+      [
+        4,
+        8,
+        10,
+        11,
+        15
+      ],
+      [
+        4,
+        8,
+        10,
+        12,
+        14
+      ],
+      [
+        4,
+        8,
+        10,
+        12,
+        15
+      ],
+      [
+        4,
+        9,
+        10,
+        11,
+        14
+      ],
+      [
+        4,
+        9,
+        10,
+        11,
+        15
+      ],
+      [
+        4,
+        9,
+        10,
+        12,
+        14
+      ],
+      [
+        4,
+        9,
+        10,
+        12,
+        15
+      ],
+      [
+        5,
+        6,
+        10,
+        11,
+        14
+      ],
+      [
+        5,
+        6,
+        10,
+        11,
+        15
+      ],
+      [
+        5,
+        6,
+        10,
+        12,
+        14
+      ],
+      [
+        5,
+        6,
+        10,
+        12,
+        15
+      ],
+      [
+        5,
+        7,
+        10,
+        11,
+        14
+      ],
+      [
+        5,
+        7,
+        10,
+        11,
+        15
+      ],
+      [
+        5,
+        7,
+        10,
+        12,
+        14
+      ],
+      [
+        5,
+        7,
+        10,
+        12,
+        15
+      ],
+      [
+        5,
+        8,
+        10,
+        11,
+        14
+      ],
+      [
+        5,
+        8,
+        10,
+        11,
+        15
+      ],
+      [
+        5,
+        8,
+        10,
+        12,
+        14
+      ],
+      [
+        5,
+        8,
+        10,
+        12,
+        15
+      ],
+      [
+        5,
+        9,
+        10,
+        11,
+        14
+      ],
+      [
+        5,
+        9,
+        10,
+        11,
+        15
+      ],
+      [
+        5,
+        9,
+        10,
+        12,
+        14
+      ],
+      [
+        5,
+        9,
+        10,
+        12,
+        15
+      ],
+      [
+        1,
+        6,
+        10,
+        13,
+        14
+      ],
+      [
+        1,
+        6,
+        10,
+        13,
+        15
+      ],
+      [
+        1,
+        7,
+        10,
+        13,
+        14
+      ],
+      [
+        1,
+        7,
+        10,
+        13,
+        15
+      ],
+      [
+        1,
+        8,
+        10,
+        13,
+        14
+      ],
+      [
+        1,
+        8,
+        10,
+        13,
+        15
+      ],
+      [
+        1,
+        9,
+        10,
+        13,
+        14
+      ],
+      [
+        1,
+        9,
+        10,
+        13,
+        15
+      ],
+      [
+        2,
+        6,
+        10,
+        13,
+        14
+      ],
+      [
+        2,
+        6,
+        10,
+        13,
+        15
+      ],
+      [
+        2,
+        7,
+        10,
+        13,
+        14
+      ],
+      [
+        2,
+        7,
+        10,
+        13,
+        15
+      ],
+      [
+        2,
+        8,
+        10,
+        13,
+        14
+      ],
+      [
+        2,
+        8,
+        10,
+        13,
+        15
+      ],
+      [
+        2,
+        9,
+        10,
+        13,
+        14
+      ],
+      [
+        2,
+        9,
+        10,
+        13,
+        15
+      ]
+    ],
+    "context_frames": 10,
+    "samples_per_frame": 320
+  },
+  "operating_point": {
+    "selection": "nextafter_maximum_scored_stage1_synthetic_negative_margin",
+    "threshold": 2.2374965843581744,
+    "maximum_negative_margin": 2.237496584358174
+  },
+  "metrics": {
+    "synthetic_negative_stage1_proposals": 179,
+    "synthetic_negative_scored_locators": 1,
+    "synthetic_negative_false_accepts": 0,
+    "human_positive_accepted": 10,
+    "human_positive_total": 14,
+    "human_hard_negative_false_accepts": 0,
+    "human_hard_negative_total": 4,
+    "development_gate_passed": false
+  },
+  "records": [
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000001_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000001_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        11,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "S",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000001_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000002_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        17,
+        10,
+        11
+      ],
+      "collapsed_categories": [
+        "B",
+        "other",
+        "K",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000002_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        17,
+        10,
+        11
+      ],
+      "collapsed_categories": [
+        "B",
+        "other",
+        "K",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000002_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        17,
+        10,
+        11
+      ],
+      "collapsed_categories": [
+        "B",
+        "other",
+        "K",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000004_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 38,
+          "locator_end_frame": 55,
+          "start_frame": 28,
+          "end_frame": 65,
+          "target_log_probability": -3.2792949936367077,
+          "confusable_log_probability": -5.516791577994882,
+          "margin": 2.237496584358174,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 38,
+        "locator_end_frame": 55,
+        "start_frame": 28,
+        "end_frame": 65,
+        "target_log_probability": -3.2792949936367077,
+        "confusable_log_probability": -5.516791577994882,
+        "margin": 2.237496584358174,
+        "target_sequence": [
+          1,
+          6,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          6,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000009_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        4,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "F",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000009_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        11,
+        6
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "S",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000014_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        3,
+        17,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "V",
+        "other",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000014_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000014_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000015_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        8,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "AA",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000016_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        11,
+        15,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "S",
+        "IH",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000016_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        1,
+        6,
+        10,
+        11,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "F",
+        "B",
+        "A",
+        "K",
+        "S",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000016_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        5,
+        6,
+        10,
+        11,
+        17,
+        17,
+        17,
+        13
+      ],
+      "collapsed_categories": [
+        "F",
+        "P",
+        "A",
+        "K",
+        "S",
+        "other",
+        "other",
+        "other",
+        "SH"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000020_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "F",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000021_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        6,
+        10,
+        11
+      ],
+      "collapsed_categories": [
+        "F",
+        "A",
+        "K",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000021_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        7,
+        10,
+        11
+      ],
+      "collapsed_categories": [
+        "F",
+        "AE",
+        "K",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000021_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        17,
+        10,
+        11
+      ],
+      "collapsed_categories": [
+        "F",
+        "other",
+        "K",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000022_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        17,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "F",
+        "other",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000022_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000022_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        4,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "F",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000024_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000024_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000025_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        6,
+        10
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "A",
+        "K"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000026_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000026_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        3,
+        6,
+        17,
+        11,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "V",
+        "A",
+        "other",
+        "S",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000034_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        5,
+        17,
+        10,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "P",
+        "other",
+        "K",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000034_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        5,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "P",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000034_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000037_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000040_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        11,
+        17,
+        10,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "S",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000041_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        6,
+        17,
+        6,
+        17,
+        4,
+        17,
+        17,
+        6
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "A",
+        "other",
+        "A",
+        "other",
+        "F",
+        "other",
+        "other",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000041_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        5,
+        17,
+        17,
+        17,
+        17,
+        4,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "P",
+        "other",
+        "other",
+        "other",
+        "other",
+        "F",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000042_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        11,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "S",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000043_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000050_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000055_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        17,
+        4,
+        14
+      ],
+      "collapsed_categories": [
+        "P",
+        "other",
+        "F",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000060_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000075_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        3,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "V",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000076_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        17,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "other",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000084_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000084_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000091_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000092_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6
+      ],
+      "collapsed_categories": [
+        "other",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000100_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        7,
+        10,
+        11,
+        15,
+        11
+      ],
+      "collapsed_categories": [
+        "other",
+        "AE",
+        "K",
+        "S",
+        "IH",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000113_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17
+      ],
+      "collapsed_categories": [
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000114_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        10,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "K",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000114_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "P",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000138_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        6
+      ],
+      "collapsed_categories": [
+        "F",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000145_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        10,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "K",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000145_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        10
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "K"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000148_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        17,
+        4,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "other",
+        "F",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000148_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        10,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000148_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        10,
+        17,
+        17,
+        17,
+        17,
+        14,
+        17,
+        14,
+        17,
+        14,
+        17,
+        17,
+        17,
+        6,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other",
+        "I",
+        "other",
+        "I",
+        "other",
+        "I",
+        "other",
+        "other",
+        "other",
+        "A",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000154_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000155_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000155_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        4,
+        14
+      ],
+      "collapsed_categories": [
+        "A",
+        "F",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000155_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000167_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000169_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        3,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "V",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000170_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        5,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "P",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000173_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000176_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        6,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "A",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000178_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        10,
+        17,
+        6
+      ],
+      "collapsed_categories": [
+        "K",
+        "other",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000189_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000196_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        17,
+        10,
+        6,
+        4,
+        14
+      ],
+      "collapsed_categories": [
+        "A",
+        "other",
+        "K",
+        "A",
+        "F",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000196_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        17,
+        10,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "P",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000200_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17
+      ],
+      "collapsed_categories": [
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000202_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000203_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        10,
+        11,
+        14,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "K",
+        "S",
+        "I",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000203_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        17,
+        17,
+        17,
+        17,
+        6,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "P",
+        "other",
+        "other",
+        "other",
+        "other",
+        "A",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000204_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        17,
+        10,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "other",
+        "K",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000204_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        10,
+        11,
+        17,
+        13
+      ],
+      "collapsed_categories": [
+        "A",
+        "K",
+        "S",
+        "other",
+        "SH"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000204_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        10,
+        11,
+        17,
+        13
+      ],
+      "collapsed_categories": [
+        "A",
+        "K",
+        "S",
+        "other",
+        "SH"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000209_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        17,
+        17,
+        17,
+        5,
+        17,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "P",
+        "other",
+        "other",
+        "other",
+        "P",
+        "other",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000209_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        1,
+        6,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "B",
+        "A",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000216_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000219_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000220_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000220_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000221_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000221_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        17,
+        17,
+        13,
+        6,
+        10,
+        11,
+        15,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "other",
+        "other",
+        "SH",
+        "A",
+        "K",
+        "S",
+        "IH",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000221_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        17,
+        14,
+        17,
+        6,
+        10,
+        11,
+        14,
+        17
+      ],
+      "collapsed_categories": [
+        "A",
+        "other",
+        "I",
+        "other",
+        "A",
+        "K",
+        "S",
+        "I",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000230_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        17,
+        17,
+        14,
+        3,
+        6,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "A",
+        "other",
+        "other",
+        "I",
+        "V",
+        "A",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000230_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        5,
+        6
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "P",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000230_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        6
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000235_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        11,
+        6,
+        17
+      ],
+      "collapsed_categories": [
+        "A",
+        "S",
+        "A",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000236_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000238_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000238_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000239_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        13,
+        14
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "SH",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000239_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000239_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000242_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000244_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        7,
+        10,
+        11,
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "B",
+        "AE",
+        "K",
+        "S",
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000244_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        11,
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "S",
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000248_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000250_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        6,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "A",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000251_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000254_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        17,
+        17,
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "other",
+        "other",
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000264_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        1,
+        14,
+        10,
+        5,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "B",
+        "I",
+        "K",
+        "P",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000264_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        14,
+        5,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "I",
+        "P",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000264_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000268_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        14,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "I",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000268_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000269_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000269_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000271_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        11,
+        14,
+        6,
+        17,
+        14,
+        10
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "S",
+        "I",
+        "A",
+        "other",
+        "I",
+        "K"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000271_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000271_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000272_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        10,
+        11,
+        14,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "K",
+        "S",
+        "I",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000272_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        10,
+        17,
+        14,
+        17,
+        1,
+        6
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "K",
+        "other",
+        "I",
+        "other",
+        "B",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000276_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000276_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        4,
+        6
+      ],
+      "collapsed_categories": [
+        "A",
+        "F",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000277_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        6,
+        10,
+        11,
+        14,
+        6,
+        17
+      ],
+      "collapsed_categories": [
+        "F",
+        "A",
+        "K",
+        "S",
+        "I",
+        "A",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000277_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        10,
+        17,
+        6,
+        10,
+        11,
+        14,
+        17,
+        6
+      ],
+      "collapsed_categories": [
+        "K",
+        "other",
+        "A",
+        "K",
+        "S",
+        "I",
+        "other",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000277_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        6,
+        10,
+        11,
+        14,
+        6,
+        4,
+        6,
+        5
+      ],
+      "collapsed_categories": [
+        "F",
+        "A",
+        "K",
+        "S",
+        "I",
+        "A",
+        "F",
+        "A",
+        "P"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000278_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000288_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        10,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "A",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000291_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000291_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000292_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        3,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "V",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000292_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        3,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "V",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000292_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000295_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000298_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        7,
+        10,
+        11,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "AE",
+        "K",
+        "S",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000298_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        7,
+        10,
+        11,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "AE",
+        "K",
+        "S",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000304_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        6,
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "P",
+        "A",
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000304_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        1,
+        6
+      ],
+      "collapsed_categories": [
+        "other",
+        "B",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000312_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000316_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000316_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000316_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000319_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "P",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000326_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000327_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000331_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        17,
+        7,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "B",
+        "other",
+        "AE",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000335_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        17,
+        6,
+        10,
+        11
+      ],
+      "collapsed_categories": [
+        "A",
+        "other",
+        "A",
+        "K",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000335_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        5,
+        6,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "P",
+        "A",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000344_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        6,
+        10,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "F",
+        "A",
+        "K",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000344_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000344_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000345_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        6,
+        17,
+        1,
+        6,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "A",
+        "other",
+        "B",
+        "A",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000345_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        5,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "P",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000352_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        10,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "K",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000352_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        17,
+        10,
+        4,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "other",
+        "K",
+        "F",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000352_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000353_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000353_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17
+      ],
+      "collapsed_categories": [
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000361_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        8
+      ],
+      "collapsed_categories": [
+        "other",
+        "AA"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000366_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        6,
+        17,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "A",
+        "other",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000366_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        17,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "P",
+        "other",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000370_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        11,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "S",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000370_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        11,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "S",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000378_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000378_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000385_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        17,
+        17,
+        4,
+        17,
+        13
+      ],
+      "collapsed_categories": [
+        "F",
+        "other",
+        "other",
+        "F",
+        "other",
+        "SH"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000385_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000395_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        4,
+        17,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "F",
+        "other",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000403_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        6
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000404_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000408_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        8,
+        17,
+        8,
+        13
+      ],
+      "collapsed_categories": [
+        "other",
+        "AA",
+        "other",
+        "AA",
+        "SH"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000410_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        4,
+        6,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "F",
+        "A",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000410_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17
+      ],
+      "collapsed_categories": [
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000415_r0.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        11,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "S",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000427_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000428_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000428_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        14,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "I",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000441_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000451_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        6
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "A"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000451_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000459_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        13,
+        3,
+        6,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "SH",
+        "V",
+        "A",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000459_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        6,
+        17,
+        5,
+        6,
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "A",
+        "other",
+        "P",
+        "A",
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000460_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        10,
+        11,
+        14
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "K",
+        "S",
+        "I"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000464_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000474_r1.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "synthetic_negative_development",
+      "label": "negative",
+      "relative_path": "negative_test/clip_000474_r2.wav",
+      "source_id": null,
+      "speaker_group": null,
+      "stage1_proposed": true,
+      "collapsed_category_ids": [],
+      "collapsed_categories": [],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/MQXURO-3xrI_060p480.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        9,
+        3,
+        17,
+        4,
+        17,
+        17,
+        17,
+        17,
+        17,
+        15,
+        17,
+        1,
+        7,
+        10,
+        11,
+        14,
+        17,
+        10,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "UH",
+        "V",
+        "other",
+        "F",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "IH",
+        "other",
+        "B",
+        "AE",
+        "K",
+        "S",
+        "I",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 63,
+          "locator_end_frame": 79,
+          "start_frame": 53,
+          "end_frame": 89,
+          "target_log_probability": -29.484283046287835,
+          "confusable_log_probability": -33.624880081858535,
+          "margin": 4.1405970355707,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            7,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 63,
+        "locator_end_frame": 79,
+        "start_frame": 53,
+        "end_frame": 89,
+        "target_log_probability": -29.484283046287835,
+        "confusable_log_probability": -33.624880081858535,
+        "margin": 4.1405970355707,
+        "target_sequence": [
+          1,
+          7,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          7,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/MQXURO-3xrI_070p520.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        7,
+        10,
+        11,
+        17,
+        15,
+        17,
+        17,
+        17,
+        15,
+        17,
+        17,
+        3,
+        17,
+        16,
+        15
+      ],
+      "collapsed_categories": [
+        "other",
+        "AE",
+        "K",
+        "S",
+        "other",
+        "IH",
+        "other",
+        "other",
+        "other",
+        "IH",
+        "other",
+        "other",
+        "V",
+        "other",
+        "R_TAP",
+        "IH"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/MQXURO-3xrI_094p159.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        10,
+        17,
+        17,
+        17,
+        15,
+        17,
+        14,
+        1,
+        17,
+        17,
+        17,
+        17,
+        1,
+        7,
+        10,
+        11,
+        14,
+        17,
+        15,
+        10,
+        17,
+        17,
+        17,
+        17,
+        1,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other",
+        "IH",
+        "other",
+        "I",
+        "B",
+        "other",
+        "other",
+        "other",
+        "other",
+        "B",
+        "AE",
+        "K",
+        "S",
+        "I",
+        "other",
+        "IH",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other",
+        "B",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 61,
+          "locator_end_frame": 77,
+          "start_frame": 51,
+          "end_frame": 87,
+          "target_log_probability": -15.947886961970262,
+          "confusable_log_probability": -20.36965795693045,
+          "margin": 4.4217709949601876,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            7,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 61,
+        "locator_end_frame": 77,
+        "start_frame": 51,
+        "end_frame": 87,
+        "target_log_probability": -15.947886961970262,
+        "confusable_log_probability": -20.36965795693045,
+        "margin": 4.4217709949601876,
+        "target_sequence": [
+          1,
+          7,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          7,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/MQXURO-3xrI_096p680.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        17,
+        1,
+        7,
+        10,
+        11,
+        14,
+        17,
+        10,
+        17,
+        17,
+        17,
+        17,
+        10,
+        17,
+        17,
+        3,
+        17,
+        17,
+        11,
+        17,
+        15
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "other",
+        "B",
+        "AE",
+        "K",
+        "S",
+        "I",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other",
+        "K",
+        "other",
+        "other",
+        "V",
+        "other",
+        "other",
+        "S",
+        "other",
+        "IH"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 67,
+          "locator_end_frame": 83,
+          "start_frame": 57,
+          "end_frame": 93,
+          "target_log_probability": -6.603113957029519,
+          "confusable_log_probability": -8.528726006994075,
+          "margin": 1.9256120499645561,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            15
+          ],
+          "confusable_sequence": [
+            5,
+            7,
+            10,
+            11,
+            15
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 67,
+        "locator_end_frame": 83,
+        "start_frame": 57,
+        "end_frame": 93,
+        "target_log_probability": -6.603113957029519,
+        "confusable_log_probability": -8.528726006994075,
+        "margin": 1.9256120499645561,
+        "target_sequence": [
+          1,
+          7,
+          10,
+          11,
+          15
+        ],
+        "confusable_sequence": [
+          5,
+          7,
+          10,
+          11,
+          15
+        ]
+      },
+      "detected": false
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/MQXURO-3xrI_104p520.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        15,
+        17,
+        17,
+        17,
+        17,
+        17,
+        1,
+        7,
+        10,
+        11,
+        14,
+        17,
+        10,
+        17,
+        17,
+        17,
+        17,
+        11,
+        15,
+        11,
+        17,
+        17,
+        17,
+        17,
+        10
+      ],
+      "collapsed_categories": [
+        "other",
+        "IH",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "B",
+        "AE",
+        "K",
+        "S",
+        "I",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other",
+        "S",
+        "IH",
+        "S",
+        "other",
+        "other",
+        "other",
+        "other",
+        "K"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 62,
+          "locator_end_frame": 78,
+          "start_frame": 52,
+          "end_frame": 88,
+          "target_log_probability": -18.216082326199416,
+          "confusable_log_probability": -23.802209195263636,
+          "margin": 5.58612686906422,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            15
+          ],
+          "confusable_sequence": [
+            3,
+            7,
+            10,
+            11,
+            15
+          ]
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 47,
+          "locator_end_frame": 72,
+          "start_frame": 37,
+          "end_frame": 82,
+          "target_log_probability": -35.28280112953754,
+          "confusable_log_probability": -40.86522109965036,
+          "margin": 5.582419970112824,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            3,
+            7,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 62,
+        "locator_end_frame": 78,
+        "start_frame": 52,
+        "end_frame": 88,
+        "target_log_probability": -18.216082326199416,
+        "confusable_log_probability": -23.802209195263636,
+        "margin": 5.58612686906422,
+        "target_sequence": [
+          1,
+          7,
+          10,
+          11,
+          15
+        ],
+        "confusable_sequence": [
+          3,
+          7,
+          10,
+          11,
+          15
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/MQXURO-3xrI_228p599.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        1,
+        7,
+        10,
+        11,
+        14,
+        17,
+        7,
+        17,
+        17,
+        17,
+        17,
+        17,
+        5,
+        7,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        10,
+        17,
+        17,
+        1,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "B",
+        "AE",
+        "K",
+        "S",
+        "I",
+        "other",
+        "AE",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "P",
+        "AE",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "K",
+        "other",
+        "other",
+        "B",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 64,
+          "locator_end_frame": 82,
+          "start_frame": 54,
+          "end_frame": 92,
+          "target_log_probability": -14.01221650466207,
+          "confusable_log_probability": -17.87270938518618,
+          "margin": 3.8604928805241094,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            7,
+            10,
+            11,
+            14
+          ]
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 47,
+          "locator_end_frame": 77,
+          "start_frame": 37,
+          "end_frame": 87,
+          "target_log_probability": -6.143740019691861,
+          "confusable_log_probability": -10.004232876935667,
+          "margin": 3.8604928572438064,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            7,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 64,
+        "locator_end_frame": 82,
+        "start_frame": 54,
+        "end_frame": 92,
+        "target_log_probability": -14.01221650466207,
+        "confusable_log_probability": -17.87270938518618,
+        "margin": 3.8604928805241094,
+        "target_sequence": [
+          1,
+          7,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          7,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/MQXURO-3xrI_242p159.wav",
+      "source_id": "MQXURO-3xrI",
+      "speaker_group": "ecogen_narrator",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        17,
+        1,
+        7,
+        10,
+        11,
+        14,
+        17,
+        10,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "other",
+        "B",
+        "AE",
+        "K",
+        "S",
+        "I",
+        "other",
+        "K",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 64,
+          "locator_end_frame": 81,
+          "start_frame": 54,
+          "end_frame": 91,
+          "target_log_probability": -20.771479400241248,
+          "confusable_log_probability": -24.177320931047745,
+          "margin": 3.405841530806498,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            7,
+            10,
+            11,
+            14
+          ]
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 51,
+          "locator_end_frame": 72,
+          "start_frame": 41,
+          "end_frame": 82,
+          "target_log_probability": -15.474464594795318,
+          "confusable_log_probability": -18.88030572300155,
+          "margin": 3.40584112820623,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            7,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 64,
+        "locator_end_frame": 81,
+        "start_frame": 54,
+        "end_frame": 91,
+        "target_log_probability": -20.771479400241248,
+        "confusable_log_probability": -24.177320931047745,
+        "margin": 3.405841530806498,
+        "target_sequence": [
+          1,
+          7,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          7,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/LNZyJcCArhc_004p160.wav",
+      "source_id": "LNZyJcCArhc",
+      "speaker_group": "jesus_marcos",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        11,
+        6,
+        17,
+        6,
+        16,
+        2,
+        17,
+        17,
+        6,
+        10,
+        6,
+        17,
+        17,
+        17,
+        17,
+        6,
+        1,
+        6,
+        10,
+        11,
+        14,
+        17,
+        17,
+        10,
+        6,
+        2,
+        14,
+        17,
+        17,
+        16,
+        17,
+        6
+      ],
+      "collapsed_categories": [
+        "other",
+        "S",
+        "A",
+        "other",
+        "A",
+        "R_TAP",
+        "BETA",
+        "other",
+        "other",
+        "A",
+        "K",
+        "A",
+        "other",
+        "other",
+        "other",
+        "other",
+        "A",
+        "B",
+        "A",
+        "K",
+        "S",
+        "I",
+        "other",
+        "other",
+        "K",
+        "A",
+        "BETA",
+        "I",
+        "other",
+        "other",
+        "R_TAP",
+        "other",
+        "A"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 58,
+          "locator_end_frame": 75,
+          "start_frame": 48,
+          "end_frame": 85,
+          "target_log_probability": -12.08053129515896,
+          "confusable_log_probability": -14.060296470681305,
+          "margin": 1.9797651755223455,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            11,
+            14
+          ]
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 56,
+          "locator_end_frame": 72,
+          "start_frame": 46,
+          "end_frame": 82,
+          "target_log_probability": -14.183598633238123,
+          "confusable_log_probability": -16.16334373741338,
+          "margin": 1.979745104175258,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 58,
+        "locator_end_frame": 75,
+        "start_frame": 48,
+        "end_frame": 85,
+        "target_log_probability": -12.08053129515896,
+        "confusable_log_probability": -14.060296470681305,
+        "margin": 1.9797651755223455,
+        "target_sequence": [
+          1,
+          6,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          6,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": false
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/WGa8E_eK9_w_009p200.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        6,
+        17,
+        14,
+        11,
+        17,
+        6,
+        17,
+        14,
+        17,
+        9,
+        12,
+        17,
+        17,
+        14,
+        17,
+        11,
+        9,
+        1,
+        6,
+        10,
+        12,
+        14,
+        6,
+        17,
+        14,
+        10,
+        12,
+        17,
+        17,
+        17,
+        10,
+        6,
+        3,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "A",
+        "other",
+        "I",
+        "S",
+        "other",
+        "A",
+        "other",
+        "I",
+        "other",
+        "UH",
+        "S_PAL",
+        "other",
+        "other",
+        "I",
+        "other",
+        "S",
+        "UH",
+        "B",
+        "A",
+        "K",
+        "S_PAL",
+        "I",
+        "A",
+        "other",
+        "I",
+        "K",
+        "S_PAL",
+        "other",
+        "other",
+        "other",
+        "K",
+        "A",
+        "V",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 53,
+          "locator_end_frame": 67,
+          "start_frame": 43,
+          "end_frame": 77,
+          "target_log_probability": -22.5828381713111,
+          "confusable_log_probability": -25.97683357955334,
+          "margin": 3.3939954082422403,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            12,
+            14
+          ]
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 51,
+          "locator_end_frame": 72,
+          "start_frame": 41,
+          "end_frame": 82,
+          "target_log_probability": -34.331537175961856,
+          "confusable_log_probability": -37.725532010507486,
+          "margin": 3.39399483454563,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            12,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 53,
+        "locator_end_frame": 67,
+        "start_frame": 43,
+        "end_frame": 77,
+        "target_log_probability": -22.5828381713111,
+        "confusable_log_probability": -25.97683357955334,
+        "margin": 3.3939954082422403,
+        "target_sequence": [
+          1,
+          6,
+          10,
+          12,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          6,
+          10,
+          12,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/WGa8E_eK9_w_014p000.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        11,
+        17,
+        9,
+        12,
+        17,
+        17,
+        17,
+        17,
+        17,
+        14,
+        10,
+        9,
+        17,
+        17,
+        8,
+        17,
+        14,
+        1,
+        8,
+        10,
+        12,
+        14,
+        12,
+        17,
+        17,
+        14,
+        15,
+        17,
+        17,
+        17,
+        6,
+        17,
+        17,
+        14
+      ],
+      "collapsed_categories": [
+        "S",
+        "other",
+        "UH",
+        "S_PAL",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "I",
+        "K",
+        "UH",
+        "other",
+        "other",
+        "AA",
+        "other",
+        "I",
+        "B",
+        "AA",
+        "K",
+        "S_PAL",
+        "I",
+        "S_PAL",
+        "other",
+        "other",
+        "I",
+        "IH",
+        "other",
+        "other",
+        "other",
+        "A",
+        "other",
+        "other",
+        "I"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 52,
+          "locator_end_frame": 67,
+          "start_frame": 42,
+          "end_frame": 77,
+          "target_log_probability": -29.762583895109195,
+          "confusable_log_probability": -34.021876713319706,
+          "margin": 4.259292818210511,
+          "target_sequence": [
+            1,
+            8,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            8,
+            10,
+            12,
+            14
+          ]
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 51,
+          "locator_end_frame": 72,
+          "start_frame": 41,
+          "end_frame": 82,
+          "target_log_probability": -45.61436880074422,
+          "confusable_log_probability": -49.873661474671486,
+          "margin": 4.25929267392727,
+          "target_sequence": [
+            1,
+            8,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            8,
+            10,
+            12,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 52,
+        "locator_end_frame": 67,
+        "start_frame": 42,
+        "end_frame": 77,
+        "target_log_probability": -29.762583895109195,
+        "confusable_log_probability": -34.021876713319706,
+        "margin": 4.259292818210511,
+        "target_sequence": [
+          1,
+          8,
+          10,
+          12,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          8,
+          10,
+          12,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/WGa8E_eK9_w_029p040.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        8,
+        17,
+        14,
+        17,
+        9,
+        17,
+        9,
+        3,
+        17,
+        17,
+        14,
+        1,
+        9,
+        10,
+        12,
+        14,
+        11,
+        5,
+        8,
+        17,
+        17,
+        17,
+        9,
+        17,
+        14,
+        1,
+        9,
+        11,
+        8,
+        17,
+        9,
+        17,
+        9,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "AA",
+        "other",
+        "I",
+        "other",
+        "UH",
+        "other",
+        "UH",
+        "V",
+        "other",
+        "other",
+        "I",
+        "B",
+        "UH",
+        "K",
+        "S_PAL",
+        "I",
+        "S",
+        "P",
+        "AA",
+        "other",
+        "other",
+        "other",
+        "UH",
+        "other",
+        "I",
+        "B",
+        "UH",
+        "S",
+        "AA",
+        "other",
+        "UH",
+        "other",
+        "UH",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 53,
+          "locator_end_frame": 65,
+          "start_frame": 43,
+          "end_frame": 75,
+          "target_log_probability": -30.520171608856984,
+          "confusable_log_probability": -33.55730577115839,
+          "margin": 3.037134162301406,
+          "target_sequence": [
+            1,
+            9,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            9,
+            10,
+            12,
+            14
+          ]
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 47,
+          "locator_end_frame": 72,
+          "start_frame": 37,
+          "end_frame": 82,
+          "target_log_probability": -51.9823955836879,
+          "confusable_log_probability": -50.74123042601611,
+          "margin": -1.2411651576717873,
+          "target_sequence": [
+            1,
+            9,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            3,
+            9,
+            10,
+            12,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 53,
+        "locator_end_frame": 65,
+        "start_frame": 43,
+        "end_frame": 75,
+        "target_log_probability": -30.520171608856984,
+        "confusable_log_probability": -33.55730577115839,
+        "margin": 3.037134162301406,
+        "target_sequence": [
+          1,
+          9,
+          10,
+          12,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          9,
+          10,
+          12,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/WGa8E_eK9_w_036p880.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        5,
+        17,
+        17,
+        14,
+        17,
+        6,
+        17,
+        14,
+        17,
+        3,
+        17,
+        17,
+        14,
+        1,
+        6,
+        10,
+        12,
+        14,
+        17,
+        17,
+        17,
+        14,
+        15,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        14,
+        17,
+        6,
+        17,
+        17,
+        17,
+        17,
+        17,
+        14,
+        6,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "P",
+        "other",
+        "other",
+        "I",
+        "other",
+        "A",
+        "other",
+        "I",
+        "other",
+        "V",
+        "other",
+        "other",
+        "I",
+        "B",
+        "A",
+        "K",
+        "S_PAL",
+        "I",
+        "other",
+        "other",
+        "other",
+        "I",
+        "IH",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "I",
+        "other",
+        "A",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "I",
+        "A",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 49,
+          "locator_end_frame": 64,
+          "start_frame": 39,
+          "end_frame": 74,
+          "target_log_probability": -17.08582481038441,
+          "confusable_log_probability": -20.560784200689245,
+          "margin": 3.4749593903048357,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            12,
+            14
+          ]
+        },
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 47,
+          "locator_end_frame": 68,
+          "start_frame": 37,
+          "end_frame": 78,
+          "target_log_probability": -26.819495659967245,
+          "confusable_log_probability": -30.292667919186464,
+          "margin": 3.4731722592192185,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            12,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 49,
+        "locator_end_frame": 64,
+        "start_frame": 39,
+        "end_frame": 74,
+        "target_log_probability": -17.08582481038441,
+        "confusable_log_probability": -20.560784200689245,
+        "margin": 3.4749593903048357,
+        "target_sequence": [
+          1,
+          6,
+          10,
+          12,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          6,
+          10,
+          12,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/WGa8E_eK9_w_053p520.wav",
+      "source_id": "WGa8E_eK9_w",
+      "speaker_group": "alexey_tukay",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        14,
+        8,
+        17,
+        17,
+        17,
+        17,
+        17,
+        3,
+        17,
+        14,
+        17,
+        17,
+        17,
+        14,
+        1,
+        6,
+        17,
+        12,
+        14,
+        17,
+        6,
+        3,
+        8,
+        17,
+        14,
+        17,
+        17,
+        17,
+        6,
+        10,
+        17,
+        17,
+        14,
+        12,
+        14,
+        11,
+        17,
+        11
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "I",
+        "AA",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "V",
+        "other",
+        "I",
+        "other",
+        "other",
+        "other",
+        "I",
+        "B",
+        "A",
+        "other",
+        "S_PAL",
+        "I",
+        "other",
+        "A",
+        "V",
+        "AA",
+        "other",
+        "I",
+        "other",
+        "other",
+        "other",
+        "A",
+        "K",
+        "other",
+        "other",
+        "I",
+        "S_PAL",
+        "I",
+        "S",
+        "other",
+        "S"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 51,
+          "locator_end_frame": 77,
+          "start_frame": 41,
+          "end_frame": 87,
+          "target_log_probability": -19.550156981377334,
+          "confusable_log_probability": -22.06542394476985,
+          "margin": 2.5152669633925164,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            12,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            12,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "parakeet_lexical_proposal",
+        "locator_start_frame": 51,
+        "locator_end_frame": 77,
+        "start_frame": 41,
+        "end_frame": 87,
+        "target_log_probability": -19.550156981377334,
+        "confusable_log_probability": -22.06542394476985,
+        "margin": 2.5152669633925164,
+        "target_sequence": [
+          1,
+          6,
+          10,
+          12,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          6,
+          10,
+          12,
+          14
+        ]
+      },
+      "detected": true
+    },
+    {
+      "partition": "human_development",
+      "label": "positive",
+      "relative_path": "development/positive/BJLgprj4ztE_067p200.wav",
+      "source_id": "BJLgprj4ztE",
+      "speaker_group": "baxi_ferrol_welcome_narrator",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        5,
+        17,
+        16,
+        6,
+        17,
+        11,
+        17,
+        17,
+        17,
+        11,
+        17,
+        6,
+        10,
+        6,
+        11,
+        6,
+        2,
+        6,
+        16,
+        10,
+        11,
+        14,
+        5,
+        17,
+        16,
+        16,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "P",
+        "other",
+        "R_TAP",
+        "A",
+        "other",
+        "S",
+        "other",
+        "other",
+        "other",
+        "S",
+        "other",
+        "A",
+        "K",
+        "A",
+        "S",
+        "A",
+        "BETA",
+        "A",
+        "R_TAP",
+        "K",
+        "S",
+        "I",
+        "P",
+        "other",
+        "R_TAP",
+        "R_TAP",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 61,
+          "locator_end_frame": 74,
+          "start_frame": 51,
+          "end_frame": 84,
+          "target_log_probability": -22.42101784831607,
+          "confusable_log_probability": -24.490431413204995,
+          "margin": 2.069413564888926,
+          "target_sequence": [
+            2,
+            6,
+            16,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            6,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 61,
+        "locator_end_frame": 74,
+        "start_frame": 51,
+        "end_frame": 84,
+        "target_log_probability": -22.42101784831607,
+        "confusable_log_probability": -24.490431413204995,
+        "margin": 2.069413564888926,
+        "target_sequence": [
+          2,
+          6,
+          16,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          6,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": false
+    },
+    {
+      "partition": "human_development",
+      "label": "hard_negative",
+      "relative_path": "development/hard_negative/jYChxFZPNNQ_bakshi.wav",
+      "source_id": "jYChxFZPNNQ",
+      "speaker_group": "tarang_bakshi",
+      "stage1_proposed": false,
+      "collapsed_category_ids": [
+        11,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        15,
+        17,
+        17,
+        17,
+        6,
+        17,
+        9,
+        17,
+        1,
+        6,
+        10,
+        13,
+        14,
+        17
+      ],
+      "collapsed_categories": [
+        "S",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "IH",
+        "other",
+        "other",
+        "other",
+        "A",
+        "other",
+        "UH",
+        "other",
+        "B",
+        "A",
+        "K",
+        "SH",
+        "I",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "human_development",
+      "label": "hard_negative",
+      "relative_path": "development/hard_negative/olFKsOxLG8k_bakshi.wav",
+      "source_id": "olFKsOxLG8k",
+      "speaker_group": "upendra_bakshi",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        5,
+        17,
+        17,
+        17,
+        17,
+        1,
+        7,
+        10,
+        17,
+        14,
+        17,
+        17,
+        17,
+        7,
+        17,
+        17,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "P",
+        "other",
+        "other",
+        "other",
+        "other",
+        "B",
+        "AE",
+        "K",
+        "other",
+        "I",
+        "other",
+        "other",
+        "other",
+        "AE",
+        "other",
+        "other",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [],
+      "best_verifier": null,
+      "detected": false
+    },
+    {
+      "partition": "human_development",
+      "label": "hard_negative",
+      "relative_path": "development/hard_negative/S_7-Gxa6ANU_faxi.wav",
+      "source_id": "S_7-Gxa6ANU",
+      "speaker_group": "mahesh_faxi",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        17,
+        17,
+        15,
+        17,
+        14,
+        10,
+        11,
+        17,
+        17,
+        17,
+        17,
+        1,
+        14,
+        17,
+        17,
+        10,
+        15,
+        17,
+        17,
+        15,
+        17,
+        17,
+        17,
+        17,
+        13,
+        5,
+        7,
+        10,
+        11,
+        14,
+        17,
+        17,
+        17,
+        17,
+        17,
+        9,
+        17,
+        17,
+        17,
+        10,
+        17
+      ],
+      "collapsed_categories": [
+        "other",
+        "other",
+        "IH",
+        "other",
+        "I",
+        "K",
+        "S",
+        "other",
+        "other",
+        "other",
+        "other",
+        "B",
+        "I",
+        "other",
+        "other",
+        "K",
+        "IH",
+        "other",
+        "other",
+        "IH",
+        "other",
+        "other",
+        "other",
+        "other",
+        "SH",
+        "P",
+        "AE",
+        "K",
+        "S",
+        "I",
+        "other",
+        "other",
+        "other",
+        "other",
+        "other",
+        "UH",
+        "other",
+        "other",
+        "other",
+        "K",
+        "other"
+      ],
+      "greedy_target_span_count": 0,
+      "locators": [
+        {
+          "source": "parakeet_lexical_proposal",
+          "locator_start_frame": 87,
+          "locator_end_frame": 104,
+          "start_frame": 77,
+          "end_frame": 114,
+          "target_log_probability": -31.505785209204472,
+          "confusable_log_probability": -30.03924214039893,
+          "margin": -1.4665430688055423,
+          "target_sequence": [
+            1,
+            7,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            5,
+            7,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "parakeet_lexical_proposal",
+        "locator_start_frame": 87,
+        "locator_end_frame": 104,
+        "start_frame": 77,
+        "end_frame": 114,
+        "target_log_probability": -31.505785209204472,
+        "confusable_log_probability": -30.03924214039893,
+        "margin": -1.4665430688055423,
+        "target_sequence": [
+          1,
+          7,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          5,
+          7,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": false
+    },
+    {
+      "partition": "human_development",
+      "label": "hard_negative",
+      "relative_path": "development/hard_negative/PuSaeFStpwc_vaxi.wav",
+      "source_id": "PuSaeFStpwc",
+      "speaker_group": "viplav_vaxi",
+      "stage1_proposed": true,
+      "collapsed_category_ids": [
+        3,
+        3,
+        17,
+        5,
+        17,
+        6,
+        3,
+        1,
+        6,
+        10,
+        11,
+        14,
+        6,
+        17
+      ],
+      "collapsed_categories": [
+        "V",
+        "V",
+        "other",
+        "P",
+        "other",
+        "A",
+        "V",
+        "B",
+        "A",
+        "K",
+        "S",
+        "I",
+        "A",
+        "other"
+      ],
+      "greedy_target_span_count": 1,
+      "locators": [
+        {
+          "source": "category_greedy_exact_target",
+          "locator_start_frame": 51,
+          "locator_end_frame": 74,
+          "start_frame": 41,
+          "end_frame": 84,
+          "target_log_probability": -5.803613616952374,
+          "confusable_log_probability": -5.29618508571562,
+          "margin": -0.5074285312367541,
+          "target_sequence": [
+            1,
+            6,
+            10,
+            11,
+            14
+          ],
+          "confusable_sequence": [
+            3,
+            6,
+            10,
+            11,
+            14
+          ]
+        }
+      ],
+      "best_verifier": {
+        "source": "category_greedy_exact_target",
+        "locator_start_frame": 51,
+        "locator_end_frame": 74,
+        "start_frame": 41,
+        "end_frame": 84,
+        "target_log_probability": -5.803613616952374,
+        "confusable_log_probability": -5.29618508571562,
+        "margin": -0.5074285312367541,
+        "target_sequence": [
+          1,
+          6,
+          10,
+          11,
+          14
+        ],
+        "confusable_sequence": [
+          3,
+          6,
+          10,
+          11,
+          14
+        ]
+      },
+      "detected": false
+    }
+  ],
+  "runtime": {
+    "device": "cuda",
+    "batch_size": 8,
+    "model_load_seconds": 1.9330025000381283,
+    "inference_seconds": 3.4835750000202097,
+    "torch": "2.10.0+cu130",
+    "transformers": "5.14.1",
+    "espeak": {
+      "library": "D:\\BAXYRuntime\\experiments\\wakeword\\.venv-gpu\\Lib\\site-packages\\espeakng_loader\\espeak-ng.dll",
+      "data": "D:\\BAXYRuntime\\experiments\\wakeword\\.venv-gpu\\Lib\\site-packages\\espeakng_loader\\espeak-ng-data",
+      "source": "espeakng_loader"
+    }
+  },
+  "candidate_development_use": true,
+  "candidate_frozen": false,
+  "product_operating_point": false,
+  "blind_human_partition_accessed": false,
+  "effects_executed": 0
+}

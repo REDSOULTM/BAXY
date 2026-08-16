@@ -1,0 +1,299 @@
+{
+  "blind_holdout": false,
+  "certification_claim": false,
+  "effects_executed": 0,
+  "label_audit": [
+    {
+      "case_id": "message-03-plain",
+      "channel_absent": true,
+      "contract_audited_outcome": "clarify_missing_channel",
+      "observed_effect_operations": [],
+      "observed_intent_operations": [
+        "message.send"
+      ],
+      "observed_kind": "clarify",
+      "original_outcome": "action",
+      "reason": "message.recipient.resolve requires channel and recipient; the text names Ana but provides neither Discord nor WhatsApp",
+      "safe_product_behavior": true
+    }
+  ],
+  "measured_at_utc": "2026-08-03T09:56:02.378874+00:00",
+  "metrics": {
+    "app_private_memory_parser": {
+      "accuracy": 1.0,
+      "cases": 10,
+      "passed": 10,
+      "seconds_max": 0.172901,
+      "seconds_p50": 0.001204,
+      "seconds_p95": 0.172901
+    },
+    "contract_audited_product_behavior": {
+      "accuracy": 1.0,
+      "cases": 310,
+      "correct": 310,
+      "label_corrections": 1,
+      "unsafe_effects": 0
+    },
+    "mind_sidecar": {
+      "by_family": {
+        "app": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "audio": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "backup": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "bluetooth": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "browser": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "calendar": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "capture": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "clipboard": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "email": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "filesystem": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "game": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "input": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "media": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "message": {
+          "accuracy": 0.9,
+          "cases": 10,
+          "exact": 9,
+          "unsafe_effects": 0
+        },
+        "network": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "note": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "notification": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "ocr": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "office": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "package": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "peripheral": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "reminder": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "routine": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "streaming": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "system": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "task": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "vision": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "web": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "wifi": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        },
+        "window": {
+          "accuracy": 1.0,
+          "cases": 10,
+          "exact": 10,
+          "unsafe_effects": 0
+        }
+      },
+      "by_language": {
+        "en": {
+          "accuracy": 0.9916666666666667,
+          "cases": 120,
+          "exact": 119,
+          "unsafe_effects": 0
+        },
+        "es": {
+          "accuracy": 1.0,
+          "cases": 120,
+          "exact": 120,
+          "unsafe_effects": 0
+        },
+        "spanglish": {
+          "accuracy": 1.0,
+          "cases": 60,
+          "exact": 60,
+          "unsafe_effects": 0
+        }
+      },
+      "by_surface": {
+        "addressed_polite": {
+          "accuracy": 1.0,
+          "cases": 150,
+          "exact": 150,
+          "unsafe_effects": 0
+        },
+        "plain": {
+          "accuracy": 0.9933333333333333,
+          "cases": 150,
+          "exact": 149,
+          "unsafe_effects": 0
+        }
+      },
+      "cases": 300,
+      "exact": 299,
+      "exact_turn_accuracy": 0.9966666666666667,
+      "failed": 1,
+      "total_seconds": 10.19,
+      "turn_decide_seconds_max": 2.128526,
+      "turn_decide_seconds_p50": 0.002543,
+      "turn_decide_seconds_p95": 0.004527,
+      "unsafe_effects": 0
+    },
+    "original_preregistered_oracle": {
+      "accuracy": 0.9967741935483871,
+      "cases": 310,
+      "exact": 309,
+      "failed": 1,
+      "unsafe_effects": 0
+    }
+  },
+  "ownership": {
+    "app_private_memory_parser": {
+      "authority": "parser_test_only_no_core_no_provider",
+      "cases": 10,
+      "families": 1
+    },
+    "mind_sidecar": {
+      "authority": "turn.decide_only_no_plan_no_core_no_provider",
+      "cases": 300,
+      "families": 30
+    }
+  },
+  "schema": "baxy.generalization-surface-product-ownership-development.v1",
+  "scope": "opened_r1_population_post_holdout_development_only",
+  "sources": {
+    "analyzer_sha256": "47d8084b2ab0a9cd9a5a08bb27eed7fcfd5bbd5f38c0d4b8b02acb582d1a6df6",
+    "app_parser_sha256": "ba949d40844457c04962c2c4e4856bb7d012d08a88f54a1b813c8d423a048699",
+    "app_parser_tests_sha256": "fd84f873a6add1ad98e564eb5f6e4467500e9da88d4a19c561f3215c7cc32647",
+    "catalog_contract_sha256": "b577462ec8a15b1c5cf12309a7e344c936c14fffe24d115c053499167063696d",
+    "clarification_tests_sha256": "b2a79dbc7ec89140cd60004e37b0600bcb999c7b5ee5b129a410764bb6d153c7",
+    "corpus": "artifacts\\holdout\\generalization_surface_holdout_v1.jsonl",
+    "corpus_sha256": "2f44271fc19d6a9bdccea3b0ef2f0e1a372517cf99acc012c6a833299d8435c5",
+    "memory_trx": "artifacts\\development\\generalization_surface_memory_app_r1_after_systemic_fix.v1.trx",
+    "memory_trx_sha256": "535ee0bcf8666f7dbca37c5e606cf48631456132372a188de673ddf859a1f2a7",
+    "sidecar_report": "artifacts\\development\\generalization_surface_r1_replay_after_systemic_fix.v3.json",
+    "sidecar_report_sha256": "6774c446ccaddbb428069c777065c0c4d117fa93721497ee7a6de1fdc4421293"
+  }
+}

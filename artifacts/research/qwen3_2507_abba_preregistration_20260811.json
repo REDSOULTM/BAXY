@@ -1,0 +1,73 @@
+{
+  "schema": "baxy.local-model-abba-preregistration.v1",
+  "created_at_local": "2026-08-11T08:27:00-04:00",
+  "status": "sealed_before_abba",
+  "purpose": "Resolve whether Qwen3-4B-Instruct-2507's single GPU app.open failure is systematic while measuring its latency and memory against active Qwen3-4B under identical physical-host conditions.",
+  "tree": {
+    "commit": "1336e199bfe56928a4a9116a77adebd45c274c0e",
+    "dirty_shared_campaign": true,
+    "wake_program_python_files": 344,
+    "wake_program_sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0",
+    "source_edits_during_abba_allowed": false
+  },
+  "program": {
+    "path": "scripts/measure_mind_budget.py",
+    "bytes": 43574,
+    "sha256": "4fa3e8af0707e5045e8b919714d61dbc6fc699ac45df8f3f934974ada8650b0b",
+    "workload": "baxy-mind-budget-gate-v6; 45 requests per GPU/CPU profile; effects_executed=0"
+  },
+  "runtime": {
+    "python_sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "llama_server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+    "core_sha256": "dda703d45e3172410758c23797bd416d9150ec1663dff8cd0b538ffbebc035f7",
+    "gpu_layers": 99
+  },
+  "variants": {
+    "A": {
+      "name": "active_qwen3_4b_instruct_awq_q4_k_m",
+      "bytes": 2497280256,
+      "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5"
+    },
+    "B": {
+      "name": "qwen3_4b_instruct_2507_q4_k_m",
+      "bytes": 2497281120,
+      "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+    }
+  },
+  "order": [
+    {
+      "position": 1,
+      "variant": "A",
+      "output": "artifacts/product/mind_budget_abba_qwen3_active_a1_20260811.json"
+    },
+    {
+      "position": 2,
+      "variant": "B",
+      "output": "artifacts/product/mind_budget_abba_qwen3_2507_b1_20260811.json"
+    },
+    {
+      "position": 3,
+      "variant": "B",
+      "output": "artifacts/product/mind_budget_abba_qwen3_2507_b2_20260811.json"
+    },
+    {
+      "position": 4,
+      "variant": "A",
+      "output": "artifacts/product/mind_budget_abba_qwen3_active_a2_20260811.json"
+    }
+  ],
+  "preconditions": {
+    "all_four_outputs_absent": true,
+    "no_baxy_core_llama_or_mind_processes": true,
+    "wake_audio_opened": false,
+    "active_manifest_mutation_allowed": false
+  },
+  "development_acceptance": {
+    "candidate_gpu": "B1 and B2 each complete 45/45 with zero errors and <=3072 MiB attributable VRAM",
+    "candidate_cpu": "B1 and B2 each complete 45/45 with zero errors; a timeout may only be classified after matching the already diagnosed harness defect",
+    "comparison": "Use the pairwise profile medians; no latency gain can compensate for a semantic or safety regression",
+    "effects_executed": 0,
+    "promotion_eligible_from_abba_alone": false,
+    "next_if_passed": "After wake v17, repair the CPU gate contract, rerun the candidate through the repaired full gate, then require a distinct preregistered blind current-tree cut before any runtime promotion."
+  }
+}

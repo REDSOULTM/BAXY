@@ -1,0 +1,222 @@
+{
+  "schema": "baxy-night-audit-live-turn-probe-v1",
+  "measured_at": "2026-07-27T06:03:45.105807+00:00",
+  "catalog_count": 168,
+  "mind_hello": {
+    "type": "hello",
+    "protocol": "baxy.mind.v1",
+    "mindVersion": "1.0.0",
+    "models": {
+      "router": "intfloat/multilingual-e5-small",
+      "llm": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "requests": [
+      "catalog.configure",
+      "turn.decide",
+      "plan",
+      "plan.ground",
+      "narrate",
+      "voice.start",
+      "voice.stop",
+      "voice.status",
+      "voice.speak",
+      "voice.cancel",
+      "shutdown"
+    ]
+  },
+  "catalog_ready": {
+    "type": "catalog.ready",
+    "id": "catalog",
+    "count": 168
+  },
+  "history": [
+    {
+      "role": "assistant",
+      "content": "Hola. Estoy lista para ayudarte con este equipo."
+    }
+  ],
+  "cases": [
+    {
+      "text": "Hola",
+      "elapsed_seconds": 3.937,
+      "result": {
+        "type": "turn.result",
+        "id": "case-1",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "El usuario saludó al asistente.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Opera",
+      "elapsed_seconds": 5.191,
+      "result": {
+        "type": "turn.result",
+        "id": "case-2",
+        "kind": "clarify",
+        "operation": null,
+        "question": "¿A qué URL deseas navegar?",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre el Bloc de notas",
+      "elapsed_seconds": 5.293,
+      "result": {
+        "type": "turn.result",
+        "id": "case-3",
+        "kind": "clarify",
+        "operation": null,
+        "question": "Abre una carpeta conocida de Windows y verifica la ventana de Explorer observada?",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "abre notepad",
+      "elapsed_seconds": 13.651,
+      "result": {
+        "type": "turn.result",
+        "id": "case-4",
+        "kind": "action",
+        "operation": "app.open",
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre la calculadora",
+      "elapsed_seconds": 3.943,
+      "result": {
+        "type": "turn.result",
+        "id": "case-5",
+        "kind": "action",
+        "operation": "app.open",
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Chrome",
+      "elapsed_seconds": 7.467,
+      "result": {
+        "type": "turn.result",
+        "id": "case-6",
+        "kind": "plan",
+        "operation": null,
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-6",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "app.open",
+            "purpose": "Abre Chrome",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "appId": "Chrome"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Abre Spotify",
+      "elapsed_seconds": 4.888,
+      "result": {
+        "type": "turn.result",
+        "id": "case-7",
+        "kind": "action",
+        "operation": "app.open",
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Que hora es?",
+      "elapsed_seconds": 4.798,
+      "result": {
+        "type": "turn.result",
+        "id": "case-8",
+        "kind": "conversation",
+        "operation": null,
+        "question": "",
+        "reply": "Como modelo de lenguaje, no tengo acceso a la hora en tiempo real.",
+        "turn_attempts": 1
+      },
+      "plan": null
+    },
+    {
+      "text": "Abre Opera y navega a https://example.com/",
+      "elapsed_seconds": 7.246,
+      "result": {
+        "type": "turn.result",
+        "id": "case-9",
+        "kind": "plan",
+        "operation": null,
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "plan.result",
+        "id": "plan-9",
+        "version": 1,
+        "kind": "plan",
+        "question": "",
+        "steps": [
+          {
+            "id": "step_1",
+            "operation": "browser.navigate.named",
+            "purpose": "Navegar a la URL especificada en Opera",
+            "dependsOn": [],
+            "argumentsMode": "literal",
+            "arguments": {
+              "browser": "opera",
+              "url": "https://example.com/"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "text": "Abre Spotify, reproduce exactamente Beat It y despues pausa",
+      "elapsed_seconds": 8.496,
+      "result": {
+        "type": "turn.result",
+        "id": "case-10",
+        "kind": "plan",
+        "operation": null,
+        "question": "",
+        "reply": "",
+        "turn_attempts": 1
+      },
+      "plan": {
+        "type": "error",
+        "id": "plan-10",
+        "code": "request_failed",
+        "message": "plan_contract_failure"
+      }
+    }
+  ]
+}

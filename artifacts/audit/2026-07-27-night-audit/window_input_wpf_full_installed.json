@@ -1,0 +1,1105 @@
+{
+  "schema": "baxy.audit.window-input-safe-chain.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74283,
+  "elapsed_seconds": 10.119035800000347,
+  "target_pid": 19680,
+  "total": 26,
+  "verified": 22,
+  "cases": [
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "6e7aaece-caf2-4433-8fe9-798d7df7ca8f",
+          "missionId": "bf788d26-7ae2-4987-9e59-faa6af930cbf",
+          "invocationId": "3bf44dea-5032-4354-93aa-6ae49671f3ae",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_a1b8f0774fc26ab70021b8f5cf90c9b8",
+                "processId": 19680,
+                "processName": "powershell",
+                "state": "normal",
+                "foreground": true,
+                "x": 180,
+                "y": 160,
+                "width": 720,
+                "height": 480
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.04004220000024361
+    },
+    {
+      "operation": "window.focus",
+      "arguments": {
+        "windowId": "win_a1b8f0774fc26ab70021b8f5cf90c9b8"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "2078a20a-d0a4-4433-b0c5-d8dfa377577c",
+          "missionId": "76af003e-02b4-46c5-8238-6f830ba034d4",
+          "invocationId": "44648e03-1c85-4df0-9c0d-fbace4288c79",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "window": {
+              "windowId": "win_42a0addae9ed96f8bf5fc03fe25882bf",
+              "processId": 19680,
+              "processName": "powershell",
+              "state": "normal",
+              "foreground": true,
+              "x": 180,
+              "y": 160,
+              "width": 720,
+              "height": 480
+            }
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03168080000068585
+    },
+    {
+      "operation": "window.active",
+      "arguments": {},
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ca5e6378-06b8-4d57-9900-184e15ae2dc2",
+          "missionId": "59c46edd-72a7-41d1-ad72-021cb40d088a",
+          "invocationId": "5ee2b93d-bbc4-47c8-864b-1e442af6a90e",
+          "status": "completed",
+          "message": "La aplicación activa es powershell; su ventana está normal y mide 720 × 480 píxeles.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_f9245360f24d97faafac826a519f1a21",
+                "processId": 19680,
+                "processName": "powershell",
+                "state": "normal",
+                "foreground": true,
+                "x": 180,
+                "y": 160,
+                "width": 720,
+                "height": 480
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03187390000130108
+    },
+    {
+      "operation": "input.keyboard.status",
+      "arguments": {},
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "7f6b40bf-70f6-4020-92ed-913cca904b4f",
+          "missionId": "0a26b504-a695-409c-b6cc-25a0b4801e7e",
+          "invocationId": "39df4190-6e53-47b6-a152-ff4b071090b3",
+          "status": "completed",
+          "message": "El teclado activo está configurado en el idioma indicado por Windows.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": false,
+            "action": "layoutstatus",
+            "key": "",
+            "pointerAction": "",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 0,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "",
+            "layoutLanguageId": "0x080a",
+            "language": "spanish",
+            "openedProcessId": null,
+            "acceptedEvents": 1,
+            "expectedEvents": 1,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "win32_foreground_keyboard_layout_read",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.7686629999989236
+    },
+    {
+      "operation": "input.keyboard.layout",
+      "arguments": {
+        "language": "spanish"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "62acc4b9-4fe3-4227-aa59-6b9d36de5e8e",
+          "missionId": "839b2e91-59d2-4230-8c28-44f748919472",
+          "invocationId": "a30d5ef3-c8b2-4649-a0ec-7aaf0e0e335b",
+          "status": "completed",
+          "message": "Listo, activé y verifiqué el teclado español en la ventana activa.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "layout",
+            "key": "",
+            "pointerAction": "",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 0,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "spanish",
+            "layoutLanguageId": "0x080a",
+            "language": "spanish",
+            "openedProcessId": null,
+            "acceptedEvents": 1,
+            "expectedEvents": 1,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "win32_foreground_keyboard_layout_postread",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.7413669000015943
+    },
+    {
+      "operation": "input.keyboard.open",
+      "arguments": {},
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "de21302a-0fce-43a1-91f6-66d797e9e54a",
+          "missionId": "175135b9-999c-49bd-8db8-b7bd42f3763a",
+          "invocationId": "33b308cf-dda3-430b-b1cb-7554220c1b19",
+          "status": "completed",
+          "message": "Listo, abrí y verifiqué el teclado en pantalla de Windows.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "keyboard",
+            "key": "",
+            "pointerAction": "",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 0,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": 28148,
+            "acceptedEvents": 1,
+            "expectedEvents": 1,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "windows_osk_process_window_visible_postread",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 1.1183872999990854
+    },
+    {
+      "operation": "input.text.type",
+      "arguments": {
+        "text": "BAXY synthetic input audit line 1\r\nBAXY synthetic input audit line 2\r\nBAXY synthetic input audit line 3"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "cb9fc6c4-8836-4316-9222-11bb371cff66",
+          "missionId": "71729c84-86f4-4167-8f75-53b69aa8ec9c",
+          "invocationId": "05191475-98d8-4392-b4dd-5b7d3db229d6",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "BAQSbq2EBfiMKFyNSrLaU5fVRHTnSqESj9t-lWsmNkc",
+            "expiresAtUtc": "2026-07-27T06:46:50.4540910+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "6ea31c89-f5ad-4963-89ba-6fd2c434a746",
+          "missionId": "71729c84-86f4-4167-8f75-53b69aa8ec9c",
+          "invocationId": "05191475-98d8-4392-b4dd-5b7d3db229d6",
+          "status": "completed",
+          "message": "Listo, Windows aceptó todo el texto en el control activo.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "text",
+            "key": "",
+            "pointerAction": "",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 103,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": null,
+            "acceptedEvents": 206,
+            "expectedEvents": 206,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "win32_sendinput_return_count",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.8214706999988266
+    },
+    {
+      "operation": "input.key.press",
+      "arguments": {
+        "key": "backspace"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "bc865ba0-182a-4a90-9dad-1e1f6a27a5cc",
+          "missionId": "488bfde0-544c-49a1-ab13-b731b6e1bf27",
+          "invocationId": "d098520e-3e07-4c4c-ad81-7c10b4c1929d",
+          "status": "completed",
+          "message": "Listo, Windows aceptó la tecla en la ventana activa.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "key",
+            "key": "backspace",
+            "pointerAction": "",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 0,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": null,
+            "acceptedEvents": 2,
+            "expectedEvents": 2,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "win32_sendinput_return_count",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.7185478000010335
+    },
+    {
+      "operation": "input.text.type",
+      "arguments": {
+        "text": "BAXY synthetic input audit"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "458ab69d-e4d0-4059-adab-010ab46a08e3",
+          "missionId": "77412861-4e64-4f4a-aa1a-0e830985654b",
+          "invocationId": "481f2403-bf7d-4ddc-9ebc-13ae77fa9fa0",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "ImycGJeAUi20tlFB-Cb-i2fWQTCeBXL2QJ2SNO6xNq0",
+            "expiresAtUtc": "2026-07-27T06:46:51.9941231+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "4c83b50c-2b30-45e1-9deb-3c13172b64ed",
+          "missionId": "77412861-4e64-4f4a-aa1a-0e830985654b",
+          "invocationId": "481f2403-bf7d-4ddc-9ebc-13ae77fa9fa0",
+          "status": "completed",
+          "message": "Listo, Windows aceptó todo el texto en el control activo.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "text",
+            "key": "",
+            "pointerAction": "",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 26,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": null,
+            "acceptedEvents": 52,
+            "expectedEvents": 52,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "win32_sendinput_return_count",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.7432480999996187
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "be688a85-b6ec-4747-905f-de05eb8e4c98",
+          "missionId": "f82ad171-4624-4020-ae45-8fbd24aa0c8d",
+          "invocationId": "a13dfa67-4b23-41fa-810a-87dbc7332dfc",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_069666d30c4471b357cc65273096dbd7",
+                "processId": 19680,
+                "processName": "powershell",
+                "state": "normal",
+                "foreground": true,
+                "x": 180,
+                "y": 160,
+                "width": 720,
+                "height": 480
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.035743899999943096
+    },
+    {
+      "operation": "window.maximize",
+      "arguments": {
+        "windowId": "win_069666d30c4471b357cc65273096dbd7"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "5d44e49f-51ea-454b-a00d-bfea3be6423a",
+          "missionId": "4608e92f-bc3f-4880-9d53-bbb3cdc9c8ae",
+          "invocationId": "8218ab2d-d4d7-4030-812c-e8a1b3a48fb8",
+          "status": "failed",
+          "message": "No pude completar la operación.",
+          "verified": false,
+          "replayed": false,
+          "result": null,
+          "errorCode": "verification_failed"
+        }
+      ],
+      "elapsed_seconds": 0.033280900001045666
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "ee5fe60a-0053-4547-92b4-3a0f59516b40",
+          "missionId": "3f9d2733-a4fe-4d8e-b08f-83f1cc1abafb",
+          "invocationId": "a1d859ee-5bd9-4c4e-bc2b-3ce9ba9e384b",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_13623211f02fcc57f5a442cb1ce7cf91",
+                "processId": 19680,
+                "processName": "powershell",
+                "state": "maximized",
+                "foreground": true,
+                "x": -7,
+                "y": -7,
+                "width": 1295,
+                "height": 687
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03172449999874516
+    },
+    {
+      "operation": "window.restore",
+      "arguments": {
+        "windowId": "win_13623211f02fcc57f5a442cb1ce7cf91"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "b283125c-935d-451d-bb9e-f5a08600cb3b",
+          "missionId": "13e8e535-8566-4f54-a80c-09bdc7a8fd59",
+          "invocationId": "dad387f7-1ff2-4e1d-8d19-1f2cb336f750",
+          "status": "failed",
+          "message": "No pude completar la operación.",
+          "verified": false,
+          "replayed": false,
+          "result": null,
+          "errorCode": "verification_failed"
+        }
+      ],
+      "elapsed_seconds": 0.029980700001033256
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "1b92c1db-bc40-40c1-beda-8fe3aee602d5",
+          "missionId": "257042a1-6f03-4935-9f6c-6a0c37eed984",
+          "invocationId": "081f8ede-cfc8-40e1-b307-bc8c51120f36",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_81bce0a983b8eed8a57f7d0038c0d52e",
+                "processId": 19680,
+                "processName": "powershell",
+                "state": "normal",
+                "foreground": true,
+                "x": 180,
+                "y": 160,
+                "width": 720,
+                "height": 480
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.04802689999996801
+    },
+    {
+      "operation": "window.move",
+      "arguments": {
+        "windowId": "win_81bce0a983b8eed8a57f7d0038c0d52e",
+        "x": 160,
+        "y": 140
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "08825ede-11d6-4641-ac1d-aa81aef3f3c4",
+          "missionId": "94195ee6-e949-43d5-b162-94ab9f4029ff",
+          "invocationId": "63056b96-839d-45bb-aa8a-d069f1fd6b68",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "window": {
+              "windowId": "win_89075110c46bdfc30529c966efc16861",
+              "processId": 19680,
+              "processName": "powershell",
+              "state": "normal",
+              "foreground": true,
+              "x": 160,
+              "y": 140,
+              "width": 720,
+              "height": 480
+            }
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03222989999994752
+    },
+    {
+      "operation": "window.resize",
+      "arguments": {
+        "windowId": "win_89075110c46bdfc30529c966efc16861",
+        "width": 760,
+        "height": 520
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "debcdc1a-fe7a-4d86-bfa5-ab3fc28c327f",
+          "missionId": "103ba44d-a0ad-4333-9c14-aacc15b9591d",
+          "invocationId": "cad5a454-90d3-400b-b3be-b6952968244c",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "window": {
+              "windowId": "win_20d75d0589cddfbaf8bb0c9190a47887",
+              "processId": 19680,
+              "processName": "powershell",
+              "state": "normal",
+              "foreground": true,
+              "x": 160,
+              "y": 140,
+              "width": 760,
+              "height": 520
+            }
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03646889999981795
+    },
+    {
+      "operation": "window.minimize",
+      "arguments": {
+        "windowId": "win_20d75d0589cddfbaf8bb0c9190a47887"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "9c376bb0-e202-47af-809f-8e425b4efde3",
+          "missionId": "12751082-d962-4210-9375-3c7b97f64d1c",
+          "invocationId": "9fe8732d-8ae3-4ab1-8cc0-b27e4914f287",
+          "status": "failed",
+          "message": "No pude completar la operación.",
+          "verified": false,
+          "replayed": false,
+          "result": null,
+          "errorCode": "verification_failed"
+        }
+      ],
+      "elapsed_seconds": 0.03432350000002771
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "fc5bc28f-920f-425b-ad6d-642397e69a10",
+          "missionId": "04733f3b-bbdb-45c0-8c39-58970f272207",
+          "invocationId": "43286f5d-6c48-4495-9fc6-5a398c79812a",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_5ef6f75a669e4e6f6fef1b1b256d7caa",
+                "processId": 19680,
+                "processName": "powershell",
+                "state": "minimized",
+                "foreground": false,
+                "x": -21333,
+                "y": -21333,
+                "width": 158,
+                "height": 26
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.04831969999941066
+    },
+    {
+      "operation": "window.restore",
+      "arguments": {
+        "windowId": "win_5ef6f75a669e4e6f6fef1b1b256d7caa"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "fab64fa6-a263-4a10-8428-9eabe92042c4",
+          "missionId": "19760ad6-fddf-43d0-a375-46d0fb069b56",
+          "invocationId": "52a2ecd1-6896-4590-adb3-4516725a50ab",
+          "status": "failed",
+          "message": "No pude completar la operación.",
+          "verified": false,
+          "replayed": false,
+          "result": null,
+          "errorCode": "verification_failed"
+        }
+      ],
+      "elapsed_seconds": 0.034982299999683164
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "35fdc721-8603-433e-8a97-f695c77966bf",
+          "missionId": "c09bc922-0e5b-4de4-ac43-34ff0966b204",
+          "invocationId": "420754ab-2dae-4a2b-a98e-50f1afd52d7a",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_8c141fa93a1c41c6cc54d55376cceecb",
+                "processId": 19680,
+                "processName": "powershell",
+                "state": "normal",
+                "foreground": true,
+                "x": 160,
+                "y": 140,
+                "width": 760,
+                "height": 520
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.034691999999267864
+    },
+    {
+      "operation": "window.focus",
+      "arguments": {
+        "windowId": "win_8c141fa93a1c41c6cc54d55376cceecb"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "402e16f2-330a-49e5-a585-8923c242a150",
+          "missionId": "61ab4482-5856-4e2a-81d7-a2e9029664c7",
+          "invocationId": "67a0bd29-b343-4ba6-95fb-cdbdc26231bc",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "window": {
+              "windowId": "win_ce2c504003e2a68aeca5a70c0deae9ce",
+              "processId": 19680,
+              "processName": "powershell",
+              "state": "normal",
+              "foreground": true,
+              "x": 160,
+              "y": 140,
+              "width": 760,
+              "height": 520
+            }
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.02867349999905855
+    },
+    {
+      "operation": "input.pointer.control",
+      "arguments": {
+        "action": "move_center"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "59119476-5ab8-4846-b83d-2be3c2fc859f",
+          "missionId": "ec2c222d-aa5c-4be6-8f7e-e325065480f2",
+          "invocationId": "239f80ed-2a23-4a48-b165-810e726b389b",
+          "status": "completed",
+          "message": "Listo, controlé y verifiqué el puntero.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "pointer",
+            "key": "",
+            "pointerAction": "move_center",
+            "pointerX": 640,
+            "pointerY": 360,
+            "textLength": 0,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": null,
+            "acceptedEvents": 1,
+            "expectedEvents": 1,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "win32_sendinput_return_count",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.7011041999994632
+    },
+    {
+      "operation": "input.pointer.control",
+      "arguments": {
+        "action": "click"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "53036c97-c811-458e-89f8-781e19163b1a",
+          "missionId": "0658efea-2c20-4709-ba0b-5bb896d0e13a",
+          "invocationId": "ed10e41b-8ea7-4f94-922e-5a5c82116b3c",
+          "status": "completed",
+          "message": "Listo, controlé y verifiqué el puntero.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "pointer",
+            "key": "",
+            "pointerAction": "click",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 0,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": null,
+            "acceptedEvents": 2,
+            "expectedEvents": 2,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "win32_sendinput_return_count",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.6782701000011002
+    },
+    {
+      "operation": "input.pointer.control",
+      "arguments": {
+        "action": "scroll_down"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "08efb361-8cee-44d5-8186-1c254cda633c",
+          "missionId": "4fa2d91b-7283-4a32-818d-0e8b8bbd22ce",
+          "invocationId": "4ec22586-a0f5-4dde-91e8-591ebb8bd8ca",
+          "status": "completed",
+          "message": "Listo, controlé y verifiqué el puntero.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "ok": true,
+            "effectObserved": true,
+            "action": "pointer",
+            "key": "",
+            "pointerAction": "scroll_down",
+            "pointerX": null,
+            "pointerY": null,
+            "textLength": 0,
+            "clipboardFormatCount": null,
+            "clipboardSequenceBefore": null,
+            "clipboardSequenceAfter": null,
+            "layout": "",
+            "layoutLanguageId": null,
+            "language": "other",
+            "openedProcessId": null,
+            "acceptedEvents": 1,
+            "expectedEvents": 1,
+            "inputSize": 40,
+            "lastWin32Error": 0,
+            "foregroundProcessIdBefore": 19680,
+            "foregroundProcessIdAfter": 19680,
+            "foregroundTitleBefore": "BAXY audit WPF text target",
+            "authority": "win32_sendinput_return_count",
+            "error": null
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.6697471000006772
+    },
+    {
+      "operation": "window.resolve",
+      "arguments": {
+        "process": "powershell",
+        "limit": 50
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "5f927e05-16c4-4017-8814-a6a9bb5ed5b7",
+          "missionId": "d6932b45-e9fe-4eee-862b-b7f0d5765b5b",
+          "invocationId": "385474a4-c357-4f5a-9692-5cac35bbdda6",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "windows": [
+              {
+                "windowId": "win_f88ad70c17eea781fb9d2a00dbff3576",
+                "processId": 19680,
+                "processName": "powershell",
+                "state": "normal",
+                "foreground": true,
+                "x": 160,
+                "y": 140,
+                "width": 760,
+                "height": 520
+              }
+            ],
+            "count": 1
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.03516669999953592
+    },
+    {
+      "operation": "app.close",
+      "arguments": {
+        "windowId": "win_f88ad70c17eea781fb9d2a00dbff3576"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "f20634f0-ae7a-4940-9bb7-f79ec00848e5",
+          "missionId": "b506f8e0-7600-4acf-bab4-2eab7f5f537a",
+          "invocationId": "506f81b9-c9db-4b60-9546-e016c0a6960b",
+          "status": "pending",
+          "message": "Necesito tu confirmación antes de hacer eso.",
+          "verified": false,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "token": "9DJRRhKgqf4WW8ejQrjB8vAQ6pkk1a-dCaxLlAMPoug",
+            "expiresAtUtc": "2026-07-27T06:46:57.2521807+00:00",
+            "reconciliationRequired": false
+          },
+          "errorCode": "confirmation_required"
+        },
+        {
+          "type": "operation.response",
+          "requestId": "7769d6d9-7df1-42ba-8e47-adcc0474b122",
+          "missionId": "b506f8e0-7600-4acf-bab4-2eab7f5f537a",
+          "invocationId": "506f81b9-c9db-4b60-9546-e016c0a6960b",
+          "status": "completed",
+          "message": "Listo, cerré la ventana.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "processId": 19680,
+            "windowClosed": true
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsed_seconds": 0.13108760000068287
+    }
+  ],
+  "error": null,
+  "select_diagnostic": null,
+  "window_recoveries": [
+    {
+      "operation": "window.maximize",
+      "failure": "window.maximize failed: verification_failed",
+      "observedAfter500ms": {
+        "windowId": "win_13623211f02fcc57f5a442cb1ce7cf91",
+        "processId": 19680,
+        "processName": "powershell",
+        "state": "maximized",
+        "foreground": true,
+        "x": -7,
+        "y": -7,
+        "width": 1295,
+        "height": 687
+      }
+    },
+    {
+      "operation": "window.restore",
+      "failure": "window.restore failed: verification_failed",
+      "observedAfter500ms": {
+        "windowId": "win_81bce0a983b8eed8a57f7d0038c0d52e",
+        "processId": 19680,
+        "processName": "powershell",
+        "state": "normal",
+        "foreground": true,
+        "x": 180,
+        "y": 160,
+        "width": 720,
+        "height": 480
+      }
+    },
+    {
+      "operation": "window.minimize",
+      "failure": "window.minimize failed: verification_failed",
+      "observedAfter500ms": {
+        "windowId": "win_5ef6f75a669e4e6f6fef1b1b256d7caa",
+        "processId": 19680,
+        "processName": "powershell",
+        "state": "minimized",
+        "foreground": false,
+        "x": -21333,
+        "y": -21333,
+        "width": 158,
+        "height": 26
+      }
+    },
+    {
+      "operation": "window.restore",
+      "failure": "window.restore failed: verification_failed",
+      "observedAfter500ms": {
+        "windowId": "win_8c141fa93a1c41c6cc54d55376cceecb",
+        "processId": 19680,
+        "processName": "powershell",
+        "state": "normal",
+        "foreground": true,
+        "x": 160,
+        "y": 140,
+        "width": 760,
+        "height": 520
+      }
+    }
+  ],
+  "cleanup": {
+    "osk_closed_by_system_message": true,
+    "target_exit_code": 0,
+    "remaining_audit_osk": [],
+    "cursor_restored": true
+  },
+  "process_exit_code": 0,
+  "stderr": ""
+}

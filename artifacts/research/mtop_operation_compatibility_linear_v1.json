@@ -1,0 +1,497 @@
+{
+  "best": {
+    "argmax": {
+      "compatible_accuracy": 0.980757667,
+      "incompatible_accuracy": 0.996392063
+    },
+    "c": 10.0,
+    "estimated_model_bytes": 4310477,
+    "fit_seconds": 3.979151,
+    "per_operation": {
+      "calendar.event.list": {
+        "features": 3853,
+        "train_compatible": 237,
+        "train_incompatible": 237,
+        "validation_compatible": 18,
+        "validation_incompatible": 99
+      },
+      "media.control": {
+        "features": 15033,
+        "train_compatible": 96,
+        "train_incompatible": 2434,
+        "validation_compatible": 5,
+        "validation_incompatible": 149
+      },
+      "media.play.query": {
+        "features": 14317,
+        "train_compatible": 1067,
+        "train_incompatible": 1313,
+        "validation_compatible": 188,
+        "validation_incompatible": 85
+      },
+      "media.seek.relative": {
+        "features": 15552,
+        "train_compatible": 27,
+        "train_incompatible": 2572,
+        "validation_compatible": 0,
+        "validation_incompatible": 164
+      },
+      "media.status": {
+        "features": 15114,
+        "train_compatible": 123,
+        "train_incompatible": 2380,
+        "validation_compatible": 10,
+        "validation_incompatible": 159
+      },
+      "message.send": {
+        "features": 14757,
+        "train_compatible": 778,
+        "train_incompatible": 778,
+        "validation_compatible": 111,
+        "validation_incompatible": 77
+      },
+      "notification.cancel.latest": {
+        "features": 16856,
+        "train_compatible": 29,
+        "train_incompatible": 3660,
+        "validation_compatible": 11,
+        "validation_incompatible": 222
+      },
+      "notification.dismiss": {
+        "features": 16709,
+        "train_compatible": 99,
+        "train_incompatible": 3520,
+        "validation_compatible": 11,
+        "validation_incompatible": 217
+      },
+      "notification.schedule": {
+        "features": 16696,
+        "train_compatible": 1731,
+        "train_incompatible": 1859,
+        "validation_compatible": 238,
+        "validation_incompatible": 93
+      },
+      "reminder.create": {
+        "features": 8665,
+        "train_compatible": 373,
+        "train_incompatible": 558,
+        "validation_compatible": 59,
+        "validation_incompatible": 77
+      },
+      "reminder.delete": {
+        "features": 8854,
+        "train_compatible": 149,
+        "train_incompatible": 818,
+        "validation_compatible": 17,
+        "validation_incompatible": 104
+      },
+      "reminder.list": {
+        "features": 9716,
+        "train_compatible": 2,
+        "train_incompatible": 1112,
+        "validation_compatible": 0,
+        "validation_incompatible": 96
+      },
+      "reminder.resolve.exact": {
+        "features": 9545,
+        "train_compatible": 34,
+        "train_incompatible": 1048,
+        "validation_compatible": 4,
+        "validation_incompatible": 110
+      },
+      "web.search": {
+        "features": 40313,
+        "train_compatible": 6816,
+        "train_incompatible": 4745,
+        "validation_compatible": 991,
+        "validation_incompatible": 11
+      }
+    },
+    "score_seconds": 0.260987,
+    "selected": {
+      "compatible_accuracy": 0.987973542,
+      "incompatible_accuracy": 0.991581479,
+      "minimum_accuracy": 0.987973542,
+      "threshold": 0.336130634
+    }
+  },
+  "configuration": {
+    "c_values": [
+      1.0,
+      3.0,
+      10.0
+    ],
+    "char_features": 60000,
+    "negative_strategy": "all_same_family_plus_hash_sampled_cross_family",
+    "seed": 20260801,
+    "word_features": 40000
+  },
+  "data": {
+    "operations": 14,
+    "train_compatible": 11561,
+    "utterance_text_persisted": false,
+    "validation_compatible": 1663,
+    "validation_incompatible": 1663
+  },
+  "measured_at": "2026-08-02T19:51:19.465274+00:00",
+  "measurements": [
+    {
+      "argmax": {
+        "compatible_accuracy": 0.98135899,
+        "incompatible_accuracy": 0.992784125
+      },
+      "c": 1.0,
+      "estimated_model_bytes": 4310477,
+      "fit_seconds": 3.750729,
+      "per_operation": {
+        "calendar.event.list": {
+          "features": 3853,
+          "train_compatible": 237,
+          "train_incompatible": 237,
+          "validation_compatible": 18,
+          "validation_incompatible": 99
+        },
+        "media.control": {
+          "features": 15033,
+          "train_compatible": 96,
+          "train_incompatible": 2434,
+          "validation_compatible": 5,
+          "validation_incompatible": 149
+        },
+        "media.play.query": {
+          "features": 14317,
+          "train_compatible": 1067,
+          "train_incompatible": 1313,
+          "validation_compatible": 188,
+          "validation_incompatible": 85
+        },
+        "media.seek.relative": {
+          "features": 15552,
+          "train_compatible": 27,
+          "train_incompatible": 2572,
+          "validation_compatible": 0,
+          "validation_incompatible": 164
+        },
+        "media.status": {
+          "features": 15114,
+          "train_compatible": 123,
+          "train_incompatible": 2380,
+          "validation_compatible": 10,
+          "validation_incompatible": 159
+        },
+        "message.send": {
+          "features": 14757,
+          "train_compatible": 778,
+          "train_incompatible": 778,
+          "validation_compatible": 111,
+          "validation_incompatible": 77
+        },
+        "notification.cancel.latest": {
+          "features": 16856,
+          "train_compatible": 29,
+          "train_incompatible": 3660,
+          "validation_compatible": 11,
+          "validation_incompatible": 222
+        },
+        "notification.dismiss": {
+          "features": 16709,
+          "train_compatible": 99,
+          "train_incompatible": 3520,
+          "validation_compatible": 11,
+          "validation_incompatible": 217
+        },
+        "notification.schedule": {
+          "features": 16696,
+          "train_compatible": 1731,
+          "train_incompatible": 1859,
+          "validation_compatible": 238,
+          "validation_incompatible": 93
+        },
+        "reminder.create": {
+          "features": 8665,
+          "train_compatible": 373,
+          "train_incompatible": 558,
+          "validation_compatible": 59,
+          "validation_incompatible": 77
+        },
+        "reminder.delete": {
+          "features": 8854,
+          "train_compatible": 149,
+          "train_incompatible": 818,
+          "validation_compatible": 17,
+          "validation_incompatible": 104
+        },
+        "reminder.list": {
+          "features": 9716,
+          "train_compatible": 2,
+          "train_incompatible": 1112,
+          "validation_compatible": 0,
+          "validation_incompatible": 96
+        },
+        "reminder.resolve.exact": {
+          "features": 9545,
+          "train_compatible": 34,
+          "train_incompatible": 1048,
+          "validation_compatible": 4,
+          "validation_incompatible": 110
+        },
+        "web.search": {
+          "features": 40313,
+          "train_compatible": 6816,
+          "train_incompatible": 4745,
+          "validation_compatible": 991,
+          "validation_incompatible": 11
+        }
+      },
+      "score_seconds": 0.243342,
+      "selected": {
+        "compatible_accuracy": 0.987372219,
+        "incompatible_accuracy": 0.986770896,
+        "minimum_accuracy": 0.986770896,
+        "threshold": 0.418441588
+      }
+    },
+    {
+      "argmax": {
+        "compatible_accuracy": 0.982561636,
+        "incompatible_accuracy": 0.996392063
+      },
+      "c": 3.0,
+      "estimated_model_bytes": 4310477,
+      "fit_seconds": 3.764674,
+      "per_operation": {
+        "calendar.event.list": {
+          "features": 3853,
+          "train_compatible": 237,
+          "train_incompatible": 237,
+          "validation_compatible": 18,
+          "validation_incompatible": 99
+        },
+        "media.control": {
+          "features": 15033,
+          "train_compatible": 96,
+          "train_incompatible": 2434,
+          "validation_compatible": 5,
+          "validation_incompatible": 149
+        },
+        "media.play.query": {
+          "features": 14317,
+          "train_compatible": 1067,
+          "train_incompatible": 1313,
+          "validation_compatible": 188,
+          "validation_incompatible": 85
+        },
+        "media.seek.relative": {
+          "features": 15552,
+          "train_compatible": 27,
+          "train_incompatible": 2572,
+          "validation_compatible": 0,
+          "validation_incompatible": 164
+        },
+        "media.status": {
+          "features": 15114,
+          "train_compatible": 123,
+          "train_incompatible": 2380,
+          "validation_compatible": 10,
+          "validation_incompatible": 159
+        },
+        "message.send": {
+          "features": 14757,
+          "train_compatible": 778,
+          "train_incompatible": 778,
+          "validation_compatible": 111,
+          "validation_incompatible": 77
+        },
+        "notification.cancel.latest": {
+          "features": 16856,
+          "train_compatible": 29,
+          "train_incompatible": 3660,
+          "validation_compatible": 11,
+          "validation_incompatible": 222
+        },
+        "notification.dismiss": {
+          "features": 16709,
+          "train_compatible": 99,
+          "train_incompatible": 3520,
+          "validation_compatible": 11,
+          "validation_incompatible": 217
+        },
+        "notification.schedule": {
+          "features": 16696,
+          "train_compatible": 1731,
+          "train_incompatible": 1859,
+          "validation_compatible": 238,
+          "validation_incompatible": 93
+        },
+        "reminder.create": {
+          "features": 8665,
+          "train_compatible": 373,
+          "train_incompatible": 558,
+          "validation_compatible": 59,
+          "validation_incompatible": 77
+        },
+        "reminder.delete": {
+          "features": 8854,
+          "train_compatible": 149,
+          "train_incompatible": 818,
+          "validation_compatible": 17,
+          "validation_incompatible": 104
+        },
+        "reminder.list": {
+          "features": 9716,
+          "train_compatible": 2,
+          "train_incompatible": 1112,
+          "validation_compatible": 0,
+          "validation_incompatible": 96
+        },
+        "reminder.resolve.exact": {
+          "features": 9545,
+          "train_compatible": 34,
+          "train_incompatible": 1048,
+          "validation_compatible": 4,
+          "validation_incompatible": 110
+        },
+        "web.search": {
+          "features": 40313,
+          "train_compatible": 6816,
+          "train_incompatible": 4745,
+          "validation_compatible": 991,
+          "validation_incompatible": 11
+        }
+      },
+      "score_seconds": 0.254179,
+      "selected": {
+        "compatible_accuracy": 0.987372219,
+        "incompatible_accuracy": 0.987973542,
+        "minimum_accuracy": 0.987372219,
+        "threshold": 0.363778729
+      }
+    },
+    {
+      "argmax": {
+        "compatible_accuracy": 0.980757667,
+        "incompatible_accuracy": 0.996392063
+      },
+      "c": 10.0,
+      "estimated_model_bytes": 4310477,
+      "fit_seconds": 3.979151,
+      "per_operation": {
+        "calendar.event.list": {
+          "features": 3853,
+          "train_compatible": 237,
+          "train_incompatible": 237,
+          "validation_compatible": 18,
+          "validation_incompatible": 99
+        },
+        "media.control": {
+          "features": 15033,
+          "train_compatible": 96,
+          "train_incompatible": 2434,
+          "validation_compatible": 5,
+          "validation_incompatible": 149
+        },
+        "media.play.query": {
+          "features": 14317,
+          "train_compatible": 1067,
+          "train_incompatible": 1313,
+          "validation_compatible": 188,
+          "validation_incompatible": 85
+        },
+        "media.seek.relative": {
+          "features": 15552,
+          "train_compatible": 27,
+          "train_incompatible": 2572,
+          "validation_compatible": 0,
+          "validation_incompatible": 164
+        },
+        "media.status": {
+          "features": 15114,
+          "train_compatible": 123,
+          "train_incompatible": 2380,
+          "validation_compatible": 10,
+          "validation_incompatible": 159
+        },
+        "message.send": {
+          "features": 14757,
+          "train_compatible": 778,
+          "train_incompatible": 778,
+          "validation_compatible": 111,
+          "validation_incompatible": 77
+        },
+        "notification.cancel.latest": {
+          "features": 16856,
+          "train_compatible": 29,
+          "train_incompatible": 3660,
+          "validation_compatible": 11,
+          "validation_incompatible": 222
+        },
+        "notification.dismiss": {
+          "features": 16709,
+          "train_compatible": 99,
+          "train_incompatible": 3520,
+          "validation_compatible": 11,
+          "validation_incompatible": 217
+        },
+        "notification.schedule": {
+          "features": 16696,
+          "train_compatible": 1731,
+          "train_incompatible": 1859,
+          "validation_compatible": 238,
+          "validation_incompatible": 93
+        },
+        "reminder.create": {
+          "features": 8665,
+          "train_compatible": 373,
+          "train_incompatible": 558,
+          "validation_compatible": 59,
+          "validation_incompatible": 77
+        },
+        "reminder.delete": {
+          "features": 8854,
+          "train_compatible": 149,
+          "train_incompatible": 818,
+          "validation_compatible": 17,
+          "validation_incompatible": 104
+        },
+        "reminder.list": {
+          "features": 9716,
+          "train_compatible": 2,
+          "train_incompatible": 1112,
+          "validation_compatible": 0,
+          "validation_incompatible": 96
+        },
+        "reminder.resolve.exact": {
+          "features": 9545,
+          "train_compatible": 34,
+          "train_incompatible": 1048,
+          "validation_compatible": 4,
+          "validation_incompatible": 110
+        },
+        "web.search": {
+          "features": 40313,
+          "train_compatible": 6816,
+          "train_incompatible": 4745,
+          "validation_compatible": 991,
+          "validation_incompatible": 11
+        }
+      },
+      "score_seconds": 0.260987,
+      "selected": {
+        "compatible_accuracy": 0.987973542,
+        "incompatible_accuracy": 0.991581479,
+        "minimum_accuracy": 0.987973542,
+        "threshold": 0.336130634
+      }
+    }
+  ],
+  "schema": "baxy.mtop-operation-compatibility-linear-benchmark.v1",
+  "scope": "development_validation_only_mtop_test_remains_sealed",
+  "source": {
+    "mtop_development_sha256": "ed1871262bdb78a53e219ac6ebd7b995879c60eba29ec5d9203217480a142802",
+    "mtop_manifest_sha256": "3accbab239b1f431f7696203b6e7efabf7176615cbbf17cdbc98d249efe9815d",
+    "mtop_map_sha256": "b13baef00c362ae10d130f359f94d28e0105987db17337795c79d2ea8a951c5d",
+    "mtop_test_content_read": false
+  },
+  "status": "rejected_below_0_99",
+  "training_seconds": 13.845786
+}

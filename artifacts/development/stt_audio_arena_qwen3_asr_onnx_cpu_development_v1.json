@@ -1,0 +1,576 @@
+{
+  "schema": "baxy.stt-qwen3-asr-onnx-development.v1",
+  "measuredAtUtc": "2026-08-11T04:29:40.078518+00:00",
+  "source": "audio_arena",
+  "partition": "development",
+  "engine": "qwen3_asr_onnx_cpu",
+  "status": "failed",
+  "contract": {
+    "path": "D:/BAXY/source/artifacts/research/stt_real_audio_development_preopen_contract_v9.json",
+    "sha256": "cbee17ab9f10dc2d1057c21c7ad717133e7622752fa489474659f235e92f786b"
+  },
+  "frozenEvaluator": {
+    "path": "D:/BAXY/source/experiments/stt_quality/evaluate_reserved_stt.py",
+    "sha256": "73793b496b34e4912d99fc92706640417bf564907c6a3ca6cf1859d962555e34"
+  },
+  "model": {
+    "archive": {
+      "path": "D:/BAXYRuntime/experiments/stt_candidates/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2",
+      "bytes": 878702423,
+      "sha256": "393f8a14e2f5fb96746aaab342997a40641001fbd5bf9592a080a8329178ee96",
+      "officialAssetUrl": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2"
+    },
+    "directory": "D:/BAXYRuntime/experiments/stt_candidates/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25",
+    "files": {
+      "conv_frontend.onnx": {
+        "bytes": 44148281,
+        "sha256": "d22dc4423e0940e49884e903d2ea2f7e5567c14fc1aed97e4e26d6b8f208ef9e"
+      },
+      "encoder.int8.onnx": {
+        "bytes": 182491662,
+        "sha256": "60748d3e6744a57c9c91e1b17424a6c2990567e8adceb0783940c03ed98fa9d9"
+      },
+      "decoder.int8.onnx": {
+        "bytes": 755914231,
+        "sha256": "4f6885be5959ae26af3089d38ee7972c5fafbeeb1cf8d5e76eab6d8b61ca5771"
+      },
+      "tokenizer/merges.txt": {
+        "bytes": 1671853,
+        "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5"
+      },
+      "tokenizer/tokenizer_config.json": {
+        "bytes": 12487,
+        "sha256": "4942d005604266809309cabc9f4e9cb89ce855d59b14681fdc0e1cc62ea26c4c"
+      },
+      "tokenizer/vocab.json": {
+        "bytes": 2776833,
+        "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+      }
+    },
+    "treeSha256": "93ae2db8419e5491424752a0acc8ae3a121df21dcf11935f2ffaee1c16cdc168"
+  },
+  "engineRuntime": {
+    "loadSeconds": 5.280952,
+    "warmupSeconds": 0.488452,
+    "peakRssBytesObserved": 1686302720,
+    "status": {
+      "loaded": true,
+      "model": "Qwen3-ASR-0.6B-int8-2026-03-25",
+      "provider": "cpu",
+      "threads": 8,
+      "maxNewTokens": 128,
+      "sherpaOnnxVersion": "1.13.4",
+      "modelTreeSha256": "93ae2db8419e5491424752a0acc8ae3a121df21dcf11935f2ffaee1c16cdc168",
+      "rssBeforeLoadBytes": 46977024,
+      "rssAfterLoadBytes": 1133051904
+    }
+  },
+  "intentOracle": null,
+  "scoringNormalization": "unicode-fold; punctuation-insensitive; HH:MM equivalent to HHMM; English/Spanish ordinal words equivalent to ordinal digits",
+  "elapsedSeconds": 29.156729,
+  "aggregate": {
+    "metrics": {
+      "cases": 12,
+      "usableCases": 12,
+      "usableRatio": 1.0,
+      "nonemptyRate": 1.0,
+      "decodeErrors": 0,
+      "referenceTokens": 160,
+      "wordErrors": 13,
+      "corpusWer": 0.08125,
+      "strictReferenceTokens": 162,
+      "strictWordErrors": 13,
+      "strictCorpusWer": 0.080247,
+      "caseWerP50": 0.0,
+      "caseWerP95": 0.625,
+      "criticalAnchors": 18,
+      "criticalAnchorsPreserved": 16,
+      "criticalAnchorRecall": 0.888889,
+      "intentPreservationProxy": 0.833333,
+      "latencyP50Seconds": 1.735994,
+      "latencyP95Seconds": 5.608085,
+      "finalizationLatencyP50Seconds": 1.735994,
+      "finalizationLatencyP95Seconds": 5.608085,
+      "realTimeFactorP50": 0.411452,
+      "realTimeFactorP95": 0.540874,
+      "byLanguage": {
+        "en": {
+          "cases": 12,
+          "corpusWer": 0.08125,
+          "caseWerP95": 0.625,
+          "nonemptyRate": 1.0,
+          "criticalAnchorRecall": 0.888889,
+          "intentPreservationProxy": 0.833333
+        }
+      },
+      "byIntent": {}
+    },
+    "threshold": {
+      "expectedCases": 12,
+      "minimumUsableRatio": 1.0,
+      "maximumCorpusWer": 0.2,
+      "maximumCaseWerP95": 0.5,
+      "minimumCriticalAnchorRecall": 0.99,
+      "minimumNonemptyRate": 1.0,
+      "maximumLatencyP50Seconds": 1.5,
+      "maximumLatencyP95Seconds": 2.0
+    },
+    "checks": {
+      "expectedCases": true,
+      "usableRatio": true,
+      "nonemptyRate": true,
+      "decodeErrors": true,
+      "corpusWer": true,
+      "caseWerP95": false,
+      "latencyP50": false,
+      "latencyP95": false,
+      "criticalAnchorRecall": false
+    }
+  },
+  "cases": [
+    {
+      "caseId": "audio-arena-person1-000",
+      "speaker": "person1",
+      "turnId": 0,
+      "metadata": {
+        "requiredFunctionCall": null,
+        "categories": "basic_qa, long_range_memory"
+      },
+      "reference": "Hi, this is Dana Fischer — that's F-I-S-C-H-E-R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "referenceTokens": 34,
+      "strictReferenceTokens": 34,
+      "audioSeconds": 13.583687,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "Hi, this is Dana Fisher. That's F I S C H E R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "productTranscript": "Hi, this is Dana Fisher. That's F I S C H E R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "nonempty": true,
+      "wordErrors": 1,
+      "rawWordErrors": 1,
+      "wer": 0.029412,
+      "rawWer": 0.029412,
+      "strictWordErrors": 1,
+      "strictWer": 0.029412,
+      "criticalAnchors": [
+        "F-I-S-C-H-E-R",
+        "Dana",
+        "New",
+        "York",
+        "Alex"
+      ],
+      "criticalAnchorsPreserved": [
+        "F-I-S-C-H-E-R",
+        "Dana",
+        "New",
+        "York",
+        "Alex"
+      ],
+      "intentPreservationProxy": true,
+      "latencySeconds": 5.608085,
+      "finalizationLatencySeconds": 5.608085,
+      "maximumChunkDecodeSeconds": 5.608085,
+      "realTimeFactor": 0.412854,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-001",
+      "speaker": "person1",
+      "turnId": 1,
+      "metadata": {
+        "requiredFunctionCall": "{\"name\": \"check_calendar\", \"args\": {\"date\": \"2025-02-03\"}}",
+        "categories": "tool_use"
+      },
+      "reference": "Flying out of LAX, February third — I'd like a morning flight.",
+      "referenceTokens": 11,
+      "strictReferenceTokens": 11,
+      "audioSeconds": 6.757,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "Flying out of LAX, February third. I'd like a morning flight.",
+      "productTranscript": "Flying out of LAX, February third. I'd like a morning flight.",
+      "nonempty": true,
+      "wordErrors": 0,
+      "rawWordErrors": 0,
+      "wer": 0.0,
+      "rawWer": 0.0,
+      "strictWordErrors": 0,
+      "strictWer": 0.0,
+      "criticalAnchors": [
+        "LAX",
+        "February"
+      ],
+      "criticalAnchorsPreserved": [
+        "LAX",
+        "February"
+      ],
+      "intentPreservationProxy": true,
+      "latencySeconds": 2.157814,
+      "finalizationLatencySeconds": 2.157814,
+      "maximumChunkDecodeSeconds": 2.157814,
+      "realTimeFactor": 0.319345,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-002",
+      "speaker": "person1",
+      "turnId": 2,
+      "metadata": {
+        "requiredFunctionCall": null,
+        "categories": "basic_qa"
+      },
+      "reference": "Oh right, I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "referenceTokens": 14,
+      "strictReferenceTokens": 14,
+      "audioSeconds": 6.966,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "Oh, right. I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "productTranscript": "Oh, right. I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "nonempty": true,
+      "wordErrors": 0,
+      "rawWordErrors": 0,
+      "wer": 0.0,
+      "rawWer": 0.0,
+      "strictWordErrors": 0,
+      "strictWer": 0.0,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "intentPreservationProxy": true,
+      "latencySeconds": 2.455064,
+      "finalizationLatencySeconds": 2.455064,
+      "maximumChunkDecodeSeconds": 2.455064,
+      "realTimeFactor": 0.352435,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-003",
+      "speaker": "person1",
+      "turnId": 3,
+      "metadata": {
+        "requiredFunctionCall": null,
+        "categories": "basic_qa, ambiguous_entity"
+      },
+      "reference": "How much is the afternoon one?",
+      "referenceTokens": 6,
+      "strictReferenceTokens": 6,
+      "audioSeconds": 2.763187,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "How much is the afternoon one?",
+      "productTranscript": "How much is the afternoon one?",
+      "nonempty": true,
+      "wordErrors": 0,
+      "rawWordErrors": 0,
+      "wer": 0.0,
+      "rawWer": 0.0,
+      "strictWordErrors": 0,
+      "strictWer": 0.0,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "intentPreservationProxy": true,
+      "latencySeconds": 1.1005,
+      "finalizationLatencySeconds": 1.1005,
+      "maximumChunkDecodeSeconds": 1.1005,
+      "realTimeFactor": 0.398272,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-004",
+      "speaker": "person1",
+      "turnId": 4,
+      "metadata": {
+        "requiredFunctionCall": "{\"name\": \"book_flight\", \"args\": {\"origin\": \"LAX\", \"destination\": \"JFK\", \"date\": \"2025-02-03\", \"time\": \"14:30\", \"passengers\": 1, \"passenger_name\": \"Dana Fischer\"}}",
+        "categories": "tool_use, long_range_memory"
+      },
+      "reference": "The 2:30 Delta. Book that for just me.",
+      "referenceTokens": 8,
+      "strictReferenceTokens": 9,
+      "audioSeconds": 5.526375,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "The two thirty Delta. Book that one for just me.",
+      "productTranscript": "The two thirty Delta. Book that one for just me.",
+      "nonempty": true,
+      "wordErrors": 3,
+      "rawWordErrors": 3,
+      "wer": 0.375,
+      "rawWer": 0.375,
+      "strictWordErrors": 3,
+      "strictWer": 0.333333,
+      "criticalAnchors": [
+        "2:30",
+        "Delta"
+      ],
+      "criticalAnchorsPreserved": [
+        "Delta"
+      ],
+      "intentPreservationProxy": false,
+      "latencySeconds": 1.735994,
+      "finalizationLatencySeconds": 1.735994,
+      "maximumChunkDecodeSeconds": 1.735994,
+      "realTimeFactor": 0.314129,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person1-005",
+      "speaker": "person1",
+      "turnId": 5,
+      "metadata": {
+        "requiredFunctionCall": null,
+        "categories": "long_range_memory, ambiguous_entity"
+      },
+      "reference": "Great. Now about that email I mentioned.",
+      "referenceTokens": 7,
+      "strictReferenceTokens": 7,
+      "audioSeconds": 3.018562,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "Great. Now, what about that email I mentioned?",
+      "productTranscript": "Great. Now, what about that email I mentioned?",
+      "nonempty": true,
+      "wordErrors": 1,
+      "rawWordErrors": 1,
+      "wer": 0.142857,
+      "rawWer": 0.142857,
+      "strictWordErrors": 1,
+      "strictWer": 0.142857,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "intentPreservationProxy": true,
+      "latencySeconds": 1.458385,
+      "finalizationLatencySeconds": 1.458385,
+      "maximumChunkDecodeSeconds": 1.458385,
+      "realTimeFactor": 0.483139,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-000",
+      "speaker": "person2",
+      "turnId": 0,
+      "metadata": {
+        "requiredFunctionCall": null,
+        "categories": "basic_qa, long_range_memory"
+      },
+      "reference": "Hi, this is Dana Fischer — that's F-I-S-C-H-E-R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "referenceTokens": 34,
+      "strictReferenceTokens": 34,
+      "audioSeconds": 12.328,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "Hi, this is Dana Fisher. That's F I S C H E R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "productTranscript": "Hi, this is Dana Fisher. That's F I S C H E R. I need to book a flight to New York and send an email to my colleague Alex about the meeting agenda.",
+      "nonempty": true,
+      "wordErrors": 1,
+      "rawWordErrors": 1,
+      "wer": 0.029412,
+      "rawWer": 0.029412,
+      "strictWordErrors": 1,
+      "strictWer": 0.029412,
+      "criticalAnchors": [
+        "F-I-S-C-H-E-R",
+        "Dana",
+        "New",
+        "York",
+        "Alex"
+      ],
+      "criticalAnchorsPreserved": [
+        "F-I-S-C-H-E-R",
+        "Dana",
+        "New",
+        "York",
+        "Alex"
+      ],
+      "intentPreservationProxy": true,
+      "latencySeconds": 5.600765,
+      "finalizationLatencySeconds": 5.600765,
+      "maximumChunkDecodeSeconds": 5.600765,
+      "realTimeFactor": 0.454313,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-001",
+      "speaker": "person2",
+      "turnId": 1,
+      "metadata": {
+        "requiredFunctionCall": "{\"name\": \"check_calendar\", \"args\": {\"date\": \"2025-02-03\"}}",
+        "categories": "tool_use"
+      },
+      "reference": "Flying out of LAX, February third — I'd like a morning flight.",
+      "referenceTokens": 11,
+      "strictReferenceTokens": 11,
+      "audioSeconds": 4.900563,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "Flying out of LAX, February third. I'd like a morning flight.",
+      "productTranscript": "Flying out of LAX, February third. I'd like a morning flight.",
+      "nonempty": true,
+      "wordErrors": 0,
+      "rawWordErrors": 0,
+      "wer": 0.0,
+      "rawWer": 0.0,
+      "strictWordErrors": 0,
+      "strictWer": 0.0,
+      "criticalAnchors": [
+        "LAX",
+        "February"
+      ],
+      "criticalAnchorsPreserved": [
+        "LAX",
+        "February"
+      ],
+      "intentPreservationProxy": true,
+      "latencySeconds": 2.130468,
+      "finalizationLatencySeconds": 2.130468,
+      "maximumChunkDecodeSeconds": 2.130468,
+      "realTimeFactor": 0.434739,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-002",
+      "speaker": "person2",
+      "turnId": 2,
+      "metadata": {
+        "requiredFunctionCall": null,
+        "categories": "basic_qa"
+      },
+      "reference": "Oh right, I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "referenceTokens": 14,
+      "strictReferenceTokens": 14,
+      "audioSeconds": 4.909375,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "Alright, I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "productTranscript": "Alright, I totally forgot about those. Yeah, what afternoon flights do you have?",
+      "nonempty": true,
+      "wordErrors": 2,
+      "rawWordErrors": 2,
+      "wer": 0.142857,
+      "rawWer": 0.142857,
+      "strictWordErrors": 2,
+      "strictWer": 0.142857,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "intentPreservationProxy": true,
+      "latencySeconds": 2.01997,
+      "finalizationLatencySeconds": 2.01997,
+      "maximumChunkDecodeSeconds": 2.01997,
+      "realTimeFactor": 0.411452,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-003",
+      "speaker": "person2",
+      "turnId": 3,
+      "metadata": {
+        "requiredFunctionCall": null,
+        "categories": "basic_qa, ambiguous_entity"
+      },
+      "reference": "How much is the afternoon one?",
+      "referenceTokens": 6,
+      "strictReferenceTokens": 6,
+      "audioSeconds": 2.027188,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "How much is the afternoon one?",
+      "productTranscript": "How much is the afternoon one?",
+      "nonempty": true,
+      "wordErrors": 0,
+      "rawWordErrors": 0,
+      "wer": 0.0,
+      "rawWer": 0.0,
+      "strictWordErrors": 0,
+      "strictWer": 0.0,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "intentPreservationProxy": true,
+      "latencySeconds": 1.096453,
+      "finalizationLatencySeconds": 1.096453,
+      "maximumChunkDecodeSeconds": 1.096453,
+      "realTimeFactor": 0.540874,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-004",
+      "speaker": "person2",
+      "turnId": 4,
+      "metadata": {
+        "requiredFunctionCall": "{\"name\": \"book_flight\", \"args\": {\"origin\": \"LAX\", \"destination\": \"JFK\", \"date\": \"2025-02-03\", \"time\": \"14:30\", \"passengers\": 1, \"passenger_name\": \"Dana Fischer\"}}",
+        "categories": "tool_use, long_range_memory"
+      },
+      "reference": "The 2:30 Delta. Book that for just me.",
+      "referenceTokens": 8,
+      "strictReferenceTokens": 9,
+      "audioSeconds": 3.188938,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "It's two thirty. Delta booked out for just me.",
+      "productTranscript": "It's two thirty. Delta booked out for just me.",
+      "nonempty": true,
+      "wordErrors": 5,
+      "rawWordErrors": 5,
+      "wer": 0.625,
+      "rawWer": 0.625,
+      "strictWordErrors": 5,
+      "strictWer": 0.555556,
+      "criticalAnchors": [
+        "2:30",
+        "Delta"
+      ],
+      "criticalAnchorsPreserved": [
+        "Delta"
+      ],
+      "intentPreservationProxy": false,
+      "latencySeconds": 1.570792,
+      "finalizationLatencySeconds": 1.570792,
+      "maximumChunkDecodeSeconds": 1.570792,
+      "realTimeFactor": 0.492575,
+      "error": null
+    },
+    {
+      "caseId": "audio-arena-person2-005",
+      "speaker": "person2",
+      "turnId": 5,
+      "metadata": {
+        "requiredFunctionCall": null,
+        "categories": "long_range_memory, ambiguous_entity"
+      },
+      "reference": "Great. Now about that email I mentioned.",
+      "referenceTokens": 7,
+      "strictReferenceTokens": 7,
+      "audioSeconds": 3.187625,
+      "languageClass": "en",
+      "usableReference": true,
+      "rawTranscript": "Great. Now about that email I mentioned.",
+      "productTranscript": "Great. Now about that email I mentioned.",
+      "nonempty": true,
+      "wordErrors": 0,
+      "rawWordErrors": 0,
+      "wer": 0.0,
+      "rawWer": 0.0,
+      "strictWordErrors": 0,
+      "strictWer": 0.0,
+      "criticalAnchors": [],
+      "criticalAnchorsPreserved": [],
+      "intentPreservationProxy": true,
+      "latencySeconds": 1.297494,
+      "finalizationLatencySeconds": 1.297494,
+      "maximumChunkDecodeSeconds": 1.297494,
+      "realTimeFactor": 0.407041,
+      "error": null
+    }
+  ],
+  "developmentOnly": true,
+  "blindHoldoutOpened": false,
+  "candidatePromoted": false,
+  "effectsExecuted": 0,
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "schema": "baxy.stt-fresh-source-audit.v1",
+  "auditedAtUtc": "2026-08-11T04:08:13Z",
+  "generator": {
+    "path": "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+    "sha256": "c3a7588f0a06946cacee61dd0ee0ff7a961c199f3efbc85560204ce8c7786385"
+  },
+  "role": "preacquisition_audit_for_fresh_independent_bilingual_stt_holdout",
+  "status": "ready_pending_authenticated_common_voice_acquisition",
+  "previousBlindCampaignConsumed": true,
+  "previousBlindResultsMayBeUsedForTuning": false,
+  "modelBinding": {
+    "consumedBlindContract": {
+      "path": "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json",
+      "sha256": "24fb9ff12939968d9d951f8ca93c8d5268f102d6f3619e31016aecfbb18f297e"
+    },
+    "primary": {
+      "model": "nvidia/parakeet-tdt-0.6b-v3",
+      "releasedAtUtc": "2025-08-14T00:00:00Z",
+      "localAssetDirectory": "D:/BAXYRuntime/assets/stt/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
+      "localAssetSha256": "5a70e0862ca0ed713a2bb1bfd50bf4886ae027815c8634a3800da7bdec6ab28f"
+    },
+    "fallback": {
+      "model": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+      "releasedAtUtc": "2026-06-04T00:00:00Z",
+      "conversion": "k2-fsa/sherpa-onnx 560ms int8 release 2026-06-11",
+      "files": {
+        "encoder.int8.onnx": {
+          "bytes": 657601403,
+          "sha256": "012e9321373af99021415e0b0eb3ec827b4be3153be6f30d9b448fe65e896e68"
+        },
+        "decoder.int8.onnx": {
+          "bytes": 14978075,
+          "sha256": "19f9c98fc6d0a2c33a65a43b36fdb2e914c26c0aa9764be3aebc502a1e982fb0"
+        },
+        "joiner.int8.onnx": {
+          "bytes": 9504438,
+          "sha256": "4101c7c679a0bc30483794b27a059e34e79232aa2068d78d51231a22c8b0d7ce"
+        },
+        "tokens.txt": {
+          "bytes": 131440,
+          "sha256": "729cc103155bafa785f9cd45746cd41cabe97eab7182fc04d594129587958f8a"
+        }
+      }
+    }
+  },
+  "sources": {
+    "commonVoiceSpontaneousSpeech4": {
+      "es": {
+        "datasetId": "cmqi28y2v004imf076oh7e5zs",
+        "url": "https://mozilladatacollective.com/datasets/cmqi28y2v004imf076oh7e5zs",
+        "name": "Common Voice Spontaneous Speech 4.0 - Spanish",
+        "citeAs": "common-voice-spontaneous-speech-4-0-span-c5b31fca",
+        "archiveFilename": "common-voice-spontaneous-speech-4-0-span-c5b31fca.tar.gz",
+        "dateCreated": "2026-06-17T12:41:58.663Z",
+        "datePublished": "2026-06-17T12:41:58.662Z",
+        "language": "es",
+        "license": "https://spdx.org/licenses/CC0-1.0.html",
+        "version": "1.0",
+        "contentBytes": 28931716,
+        "snapshot": "sps-corpus-4.0-2026-06-12",
+        "clips": 403,
+        "recordedHours": 1.21,
+        "validatedHours": 0.07,
+        "speakers": 16,
+        "validatedClips": 37,
+        "pendingClips": 123,
+        "untranscribedClips": 243,
+        "trainClips": 0,
+        "devClips": 0,
+        "testClips": 0,
+        "unassignedClips": 403,
+        "realHumanSpeech": true,
+        "speechStyle": "spontaneous_responses_to_questions",
+        "forbiddenUsage": "It is forbidden to attempt to determine the identity of speakers in the Common Voice datasets. It is forbidden to re-host or re-share this dataset.",
+        "pageSamples": {
+          "questionsCount": 5,
+          "questionsNormalizedSha256": [
+            "ea91364219a53d2cc80c20e0bb810973b229089bb6fac3578796aa53d2fea106",
+            "d520518d39ceb51e371cc5620a879c008091750da235fb0ec32b59b15d5f2ae7",
+            "b7a948e4c91b369edbfee07b9863ca18b1c4c2cd80678394fa457185824f4257",
+            "b4304ce0f80e1dcc4ca3311e25540f9ce7767b8989b7dc9ba87d18c02ebe419f",
+            "fdef5a476d6441dd7860ec0794a6e1f215eb30d72b4c41af12c75a453956b8fa"
+          ],
+          "responsesCount": 5,
+          "responsesNormalizedSha256": [
+            "f28c5d59eb1307e88ffc2943867931a33eaa9dbd2e246e40e60c1c12139bd960",
+            "d60e7b3c13045c0b08d7f1c822073ddd5bebdf6f0cf99ff9dea3e03f8206e077",
+            "d40e7392b5128eea61e40c2b99dd8bb6b7cb2e8691c5c4e900bdae334ceb7489",
+            "f23e8e72342201a14d2f2f308c86eecb6082a46e9a2bc3cc5207115be440f276",
+            "910ce6768ba9d0e2f682179ea5d7e48f2d8f1e42dd6a76f6b4f3c587f6d65790"
+          ],
+          "manifestSha256": "c45afd91685e79a087fbfd5e72adde2eb339b90946c95d9216da2a4fbec59526"
+        },
+        "normalizedSourceMetadataSha256": "e44700878f32c2129dec365ae1ecb3691ea21e44720cf5865a1a930b483ee244",
+        "archiveAcquired": false,
+        "modelAudioDecoded": false,
+        "referenceTranscriptOpenedByBaxyCampaign": false,
+        "authenticatedDownloadRequired": true,
+        "pageSampleTextEmittedInAudit": false,
+        "pageSampleHashesMustBeExcludedFromReservation": true
+      },
+      "en": {
+        "datasetId": "cmqialpeo0077nr077xqdqo0j",
+        "url": "https://mozilladatacollective.com/datasets/cmqialpeo0077nr077xqdqo0j",
+        "name": "Common Voice Spontaneous Speech 4.0 - English",
+        "citeAs": "common-voice-spontaneous-speech-4-0-engl-c643378f",
+        "archiveFilename": "common-voice-spontaneous-speech-4-0-engl-c643378f.tar.gz",
+        "dateCreated": "2026-06-17T16:35:50.880Z",
+        "datePublished": "2026-06-17T16:35:50.879Z",
+        "language": "en",
+        "license": "https://spdx.org/licenses/CC0-1.0.html",
+        "version": "1.0",
+        "contentBytes": 522005930,
+        "snapshot": "sps-corpus-4.0-2026-06-12",
+        "clips": 5679,
+        "recordedHours": 17.58,
+        "validatedHours": 7.81,
+        "speakers": 609,
+        "validatedClips": 2305,
+        "pendingClips": 120,
+        "untranscribedClips": 3254,
+        "trainClips": 1519,
+        "devClips": 409,
+        "testClips": 377,
+        "unassignedClips": 3374,
+        "realHumanSpeech": true,
+        "speechStyle": "spontaneous_responses_to_questions",
+        "forbiddenUsage": "It is forbidden to attempt to determine the identity of speakers in the Common Voice datasets. It is forbidden to re-host or re-share this dataset.",
+        "pageSamples": {
+          "questionsCount": 5,
+          "questionsNormalizedSha256": [
+            "61c58d2dc55aa2f0073919ac8529286f302cc2e29a1d9f53eb0793c3a8266cd3",
+            "ebcca73bcbbf297d9a2d8568454c8915874be2cd0945a7b7f29ac50c50079051",
+            "e2945f7924def80ca33213eef2a8c99d3c4f619368c1e28dcc0beffcecb40655",
+            "1e0586d19b6374ab05f1e2a9d0e7fd05d3feaae1c19d57fc11505f77d2190420",
+            "25aa1684b6e627a46d5436fe2cf6e1ede9b45c58cfb7263a6a45771261797e82"
+          ],
+          "responsesCount": 5,
+          "responsesNormalizedSha256": [
+            "e500ceaca986478ab169e3593dab2830e24d579e7bfb41a5a0347d2b6e4e4b96",
+            "4e39a11a14a6481a72072aa703d08bf36eaf47ee6b480acd420711b0f6bb5429",
+            "aceb857e0b90f2b1fd4f1cc3aa165b8948cb9a2788bb1c2a99f6db3c79fd02ed",
+            "77710aedc74ecfa33685e33a6c7df5cc83004da1bdcef7fb280f5c2b2e97e0a5",
+            "9620afb26a76a2bb95c853597f03b839f885a4a2885498b4000abb032e3630a2"
+          ],
+          "manifestSha256": "90a194f1ec64d8c402c6de5ea016c2cebf8b4079378e3b24f42c4de4639909a3"
+        },
+        "normalizedSourceMetadataSha256": "9cbd53390e3f3531a4324362b258c6b0cdc8282c7b4eaf6c5cb97f13acc7bca5",
+        "archiveAcquired": false,
+        "modelAudioDecoded": false,
+        "referenceTranscriptOpenedByBaxyCampaign": false,
+        "authenticatedDownloadRequired": true,
+        "pageSampleTextEmittedInAudit": false,
+        "pageSampleHashesMustBeExcludedFromReservation": true
+      }
+    },
+    "gigaSpeechBench": {
+      "name": "GigaSpeechBench",
+      "repository": "https://huggingface.co/datasets/speechcolab/GigaSpeechBench",
+      "paper": "https://arxiv.org/abs/2606.28884",
+      "commit": "680d3057641b7507a1ef14974407c7b0a7964e64",
+      "lastModifiedAtUtc": "2026-07-09T07:32:20.000Z",
+      "files": 155,
+      "gated": false,
+      "private": false,
+      "paperReportedSource": "recent YouTube videos",
+      "paperReportedSpeechStyle": "spontaneous",
+      "paperReportedManualTranscriptionAccuracyAbove": 0.98,
+      "repositoryLicenseFilePresent": false,
+      "repositoryLicenseTagPresent": false,
+      "eligibleForFinalCertifiedHoldout": false,
+      "rejectionReason": "audio_data_license_absent_and_youtube_provenance",
+      "audioDownloaded": false,
+      "transcriptsOpenedByBaxyCampaign": false
+    }
+  },
+  "decision": {
+    "selectedSource": "Common Voice Spontaneous Speech 4.0",
+    "sourceSnapshotPostdatesBothModelReleases": true,
+    "realHumanSpontaneousEnglish": true,
+    "realHumanSpontaneousSpanish": true,
+    "licenseClearForEvaluation": true,
+    "englishEligibleAfterAcquisition": true,
+    "spanishEligibleAfterAcquisition": true,
+    "spanishValidatedClips": 37,
+    "spanishSufficientAloneForFinalCertification": false,
+    "containsNaturalSpanglish": false,
+    "sufficientAloneForFinalBilingualAndSpanglishCertification": false,
+    "gigaSpeechBenchRejectedRatherThanSilentlyAdopted": true,
+    "nextRequiredSteps": [
+      "authenticate_to_mozilla_data_collective_without_rehosting",
+      "download_and_hash_exact_en_and_es_archives",
+      "reserve_speaker_disjoint_validated_rows_before_any_model_decode",
+      "exclude_every_datasheet_sample_by_normalized_sha256",
+      "freeze_evaluator_and_exact_0.99_semantic_and_anchor_thresholds",
+      "add_a_separate_real_human_spanglish_and_accent_holdout"
+    ]
+  },
+  "auditContract": {
+    "audioArchivesDownloaded": false,
+    "audioDecoded": false,
+    "referenceTranscriptsOpened": false,
+    "caseIdsSelected": false,
+    "thresholdsChanged": false,
+    "candidatePromoted": false,
+    "effectsExecuted": 0
+  },
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0
+}

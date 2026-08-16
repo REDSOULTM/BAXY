@@ -1,0 +1,12 @@
+[
+  {"text":"Hola","expectedKind":"conversation"},
+  {"text":"Gracias","expectedKind":"conversation"},
+  {"text":"No entendí","expectedKind":"conversation"},
+  {"text":"Abre el teclado en pantalla","expectedKind":"action","expectedOperation":"input.keyboard.open"},
+  {"text":"Abre Spotify, reproduce exactamente Beat It y después pausa","expectedKind":"plan","expectedPlanOperations":["media.play.exact","media.control"]},
+  {"text":"Crea una tarea llamada Alfa y un recordatorio llamado Beta para manana a las 9","expectedKind":"plan","expectedPlanOperations":["task.create","reminder.create"]},
+  {"text":"Estan instalados Paint y Visual Studio Code?","expectedKind":"plan","expectedPlanOperations":["app.installed","app.installed"]},
+  {"text":"Are Paint, Visual Studio Code, and Spotify installed?","expectedKind":"plan","expectedPlanOperations":["app.installed","app.installed","app.installed"]},
+  {"text":"Abre Configuración","expectedKind":"action","expectedOperation":"app.open"},
+  {"text":"Abre Asistencia rápida","expectedKind":"action","expectedOperation":"app.open"}
+]

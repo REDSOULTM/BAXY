@@ -1,0 +1,11 @@
+{
+  "correct": 137,
+  "accuracy": 0.8670886075949367,
+  "action_cases": 158,
+  "action_correct": 137,
+  "wrong_action_selection": 18,
+  "no_action_cases": 0,
+  "false_actions": 0,
+  "seconds_p50": 0.6231995,
+  "seconds_p95": 1.370598
+}

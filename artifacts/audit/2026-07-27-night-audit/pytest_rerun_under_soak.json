@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-07-27T10:55:00-04:00",
+  "command": "PYTHONPATH=src experiments/mind_router_spike/.venv/Scripts/python.exe -m pytest -q tests",
+  "context": "core and mind overnight soaks active",
+  "testsPassed": 611,
+  "subtestsPassed": 350,
+  "failed": 0,
+  "elapsedSeconds": 153.23,
+  "exitCode": 0
+}

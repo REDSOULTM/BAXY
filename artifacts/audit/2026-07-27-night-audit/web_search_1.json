@@ -1,0 +1,53 @@
+{
+  "schema": "baxy.audit.single-operation.v1",
+  "core": "C:\\Users\\usuario\\AppData\\Local\\Programs\\BAXY\\versions\\1.0.8\\core\\baxy-core.exe",
+  "core_version": "1.0.8",
+  "catalog_count": 168,
+  "catalog_utf8_bytes": 74282,
+  "operation": "web.search",
+  "arguments": {
+    "limit": 3,
+    "query": "Windows 11 calculator"
+  },
+  "confirmation_followed": false,
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "47947d04-70bf-4edc-a574-386ff48e31be",
+      "missionId": "0385f657-85f4-437b-82a6-da02341b95d4",
+      "invocationId": "98dc351a-84a1-4103-a1c0-da3d9d20750e",
+      "status": "completed",
+      "message": "La operación terminó correctamente.",
+      "verified": true,
+      "replayed": false,
+      "result": {
+        "version": 1,
+        "query": "Windows 11 calculator",
+        "count": 3,
+        "results": [
+          {
+            "title": "Descargar Windows 11 - microsoft.com",
+            "url": "https://www.microsoft.com/es-es/software-download/windows11",
+            "snippet": "Para buscar actualizaciones ahora, selecciona el botón Inicio y después ve a Configuración > Windows Update y selecciona Buscar actualizaciones. También puedes visitar el sitio de soporte técnico del fabricante del dispositivo para descargar los controladores adicionales que puedan ser necesarios."
+          },
+          {
+            "title": "Descargar Windows 10 - microsoft.com",
+            "url": "https://www.microsoft.com/es-es/software-download/windows10",
+            "snippet": "Sigue estos pasos para crear medios de instalación (unidad flash USB o DVD) que puedes usar para instalar una nueva copia de Windows 10, realizar una instalación limpia o volver a instalar Windows 10."
+          },
+          {
+            "title": "Microsoft Windows - Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/Microsoft_Windows",
+            "snippet": "Windows is a proprietary operating system developed by Microsoft. Windows is grouped into families that cater to particular sectors of the computing industry – Windows for personal computers, Windows Server for servers, and Windows IoT for embedded systems."
+          }
+        ],
+        "authority": "bing_rss_https"
+      },
+      "errorCode": null
+    }
+  ],
+  "elapsed_seconds": 0.5699556999998094,
+  "timed_out": false,
+  "process_exit_code": 0,
+  "stderr": ""
+}

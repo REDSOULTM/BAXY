@@ -1,0 +1,1468 @@
+{
+  "authority": "diagnostic_only_no_runtime_gate_or_operation_selection",
+  "conclusion": {
+    "fresh_cut_b_authorized": false,
+    "lexical_gate_authorized": false,
+    "runtime_change_authorized": false,
+    "structural_shape_alone_can_ground_a_free_form_domain": false,
+    "structural_shape_alone_can_select_all_catalog_operations": false,
+    "structural_shape_alone_can_validate_a_known_call": true
+  },
+  "counts": {
+    "exact_operation_upper_bound_from_shape_only": 0.573964,
+    "largest_equivalence_class": 12,
+    "operations": 169,
+    "operations_in_ambiguous_classes": 101,
+    "singleton_operations": 68,
+    "structural_equivalence_classes": 97
+  },
+  "equivalence_classes": [
+    {
+      "operations": [
+        "memory.disable"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "085058ed9d965cd274b32beeccac497ad5fa926f89115ef471da3f7789cbdc12"
+    },
+    {
+      "operations": [
+        "routine.read"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "0d37c99f42cdeeff568c09b75944c0e40bb038fa80f0c726acf5d5afce33e470"
+    },
+    {
+      "operations": [
+        "system.status"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "100677a0cb6bae823bbd667e3a1343b07e2f43cfabb767448bca3ba1179b64ac"
+    },
+    {
+      "operations": [
+        "filesystem.list",
+        "game.catalog.list"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "15f4012ce17b748fd3ce286ababd221cff70d0c83a2149795c70cb682108b2e2"
+    },
+    {
+      "operations": [
+        "note.trash"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "185a4a80a0262ba6f7a12be66719dc67e6ceb6588014f3042ba0bc133cbaa60a"
+    },
+    {
+      "operations": [
+        "audio.volume",
+        "media.seek.relative"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "185d5a2b8d3e00dbda8ffa3f580c6b3cbbd6eb8cbdbceb88bae1637c897ef525"
+    },
+    {
+      "operations": [
+        "game.install.named"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "1cbad330a174dcc0d80a72dfdc0856773fe7c01f71153b2f45fd7c351f81184b"
+    },
+    {
+      "operations": [
+        "filesystem.trash.restore",
+        "game.launch",
+        "window.focus",
+        "window.maximize",
+        "window.minimize",
+        "window.restore"
+      ],
+      "operations_count": 6,
+      "structural_shape_sha256": "1da6aec526a404305b25fc1d0973f30bd0707fead1dae55639ad6f6424e02f90"
+    },
+    {
+      "operations": [
+        "task.update"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "1ef43e9a3ee1adf529004d7c601e75d1b99868c1c376216f90a53904df2b2867"
+    },
+    {
+      "operations": [
+        "calendar.event.create"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "1f77496e8f7f86f5b91a563014156ededba648dab8c710f2af84d0fea3d43234"
+    },
+    {
+      "operations": [
+        "backup.known.verify.latest"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "20e11e41f71bf0537d0a516fadafaa6eb14a94ebd13e95b7376aa46319fc961b"
+    },
+    {
+      "operations": [
+        "task.list"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "278f16a4ee8411b4a903ea595bad757b28e3cc80af2be3a8fc24356a52b7c887"
+    },
+    {
+      "operations": [
+        "memory.forget"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "29c3aa63d36e2928425647dc4b109529caed94526d261d3dd2c5e5eb37af0956"
+    },
+    {
+      "operations": [
+        "task.create"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "2e706f1db3fcd43a74cdb6d442776e473ae71a6801109a900db276ec0f50ffb6"
+    },
+    {
+      "operations": [
+        "routine.set.enabled"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "333a6c0e975e2a3838c1a55ab3605d112d8506ca2f32029ae99743262d1b434a"
+    },
+    {
+      "operations": [
+        "memory.save"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "351704530a7d0518d71526af87ee7728ba931d35bcf96e92199ab3023530979c"
+    },
+    {
+      "operations": [
+        "notification.cancel.at"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "35e48742c4b7de42e2f0a2d4449dee7bf3a20d19fd1a737c687f41280bbdc71a"
+    },
+    {
+      "operations": [
+        "backup.known.create",
+        "backup.known.restore.latest"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "36fd3f9c3c5687a3f541a886bf71974c724564f2c5877be39166bac090088f3f"
+    },
+    {
+      "operations": [
+        "ocr.read"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "3737ce3ceedec721cb130e058e348a6397f154bf94f3ed331090ef89fc6e4b81"
+    },
+    {
+      "operations": [
+        "calendar.event.list"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "37be65b6ee6248fb48af6e908bc536c47144d50670583fef6fdd37b3d6ff3102"
+    },
+    {
+      "operations": [
+        "game.installed.named"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "39c430e62e5bda991a14424373f1ef7b5e843f84ae47ce10e5d48892e45bd7b5"
+    },
+    {
+      "operations": [
+        "memory.sensitive.save"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "3a40a5f20d2796e3b7cca41809ce4ffeedc3add0823882bb0d83f30ebd47c2dd"
+    },
+    {
+      "operations": [
+        "memory.recall"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "3c50773a9cd0d7de37e53bb78180f092d23f73df15764f4f6d8cd63fbea90317"
+    },
+    {
+      "operations": [
+        "filesystem.sandbox.move.named"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "3fb5e43c8a773af4f7c893db001ea9c1dc467dc53a4ad7d1d841dd612b89b0f2"
+    },
+    {
+      "operations": [
+        "game.purchase.commit"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "3fda8395be2c8b5c09a41b2bff0d60415ba87d1287e4eb478aba12a1ac9f659b"
+    },
+    {
+      "operations": [
+        "peripheral.print"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "44d0ec125de6d6af1a0252248a53c63657a8e06c954534c14d54f6a910ff1123"
+    },
+    {
+      "operations": [
+        "filesystem.copy",
+        "filesystem.move"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "44e183491b27f3db86e88b2bd8dc131c1953ec420c0b2042dc1c199cb65d65ef"
+    },
+    {
+      "operations": [
+        "office.document.create"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "486e392e11c760f475e447a8737196b641724c10c433c8b40668af85213514bb"
+    },
+    {
+      "operations": [
+        "package.install.prepare"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "494f850302ecf7daf69ac45cd1d264f565f1250f39f5e01e24a1ad47b1c60a93"
+    },
+    {
+      "operations": [
+        "memory.list"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "4b9aca35d472ed1e3ab2d94213d9f57376061f9e3ba183eef8877f33e08c9a01"
+    },
+    {
+      "operations": [
+        "game.install.cancel.active",
+        "system.recyclebin.empty"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "4c4a42c1ade40f27985627d4e874b92879f438d156b0f5ac4891acbf4a9c6b2c"
+    },
+    {
+      "operations": [
+        "peripheral.list"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "569137324432071caede2bf2e5b22cb28fe9478779848995c769846f7d2ee786"
+    },
+    {
+      "operations": [
+        "memory.export"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "58f49df0af0cad005d2c19b749d5dcff0e1df87093655f6bd64736461667c0a6"
+    },
+    {
+      "operations": [
+        "backup.verify",
+        "filesystem.hash",
+        "filesystem.trash.prepare",
+        "game.install.prepare",
+        "game.install.status",
+        "game.purchase.prepare",
+        "office.document.read"
+      ],
+      "operations_count": 7,
+      "structural_shape_sha256": "59a9a81ad18921711ce6469b3eee2f6da82db1f71f219372ca362c61c408d6be"
+    },
+    {
+      "operations": [
+        "backup.known.list",
+        "backup.list",
+        "network.port.list",
+        "notification.list.due",
+        "reminder.list"
+      ],
+      "operations_count": 5,
+      "structural_shape_sha256": "59b8f8e9d170a494f950aa4c4a82a628b89122469db12b340b65d314d4ce5098"
+    },
+    {
+      "operations": [
+        "backup.create"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "5b4530ceeb25b16a3d33410ca9e14dc1e01d703c30f8d5238eee2ce92384ae8e"
+    },
+    {
+      "operations": [
+        "routine.list"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "5b9f29c9e7a588f7bd5a1238825b2b78b4219d345b8b9bf806ee4306eafaba7e"
+    },
+    {
+      "operations": [
+        "note.read"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "615e82e6334f3f92d4096a0d47816a3fda0868c7a479f7562a9f62c333151b60"
+    },
+    {
+      "operations": [
+        "system.application.crash.diagnose"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "709d2927d101daebc02a8671e926a13ec22192d2d33811807832b147ca4c1089"
+    },
+    {
+      "operations": [
+        "audio.status",
+        "bluetooth.device.list",
+        "input.keyboard.status",
+        "media.status",
+        "network.dns.status",
+        "network.status",
+        "notification.diagnose",
+        "system.identity",
+        "system.time",
+        "wifi.ensure.connected",
+        "wifi.profile.list",
+        "window.active"
+      ],
+      "operations_count": 12,
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "operations": [
+        "note.restore"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "70c106bbc6807c56bd8dd4fed7bd47f93ec3fc0cd6d8524f0e2d1d740af8bc03"
+    },
+    {
+      "operations": [
+        "app.open",
+        "filesystem.create.directory"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "76ae92d435d933249027db04ec7da4472230a0355185b30f984c3261e1e15cd2"
+    },
+    {
+      "operations": [
+        "audio.microphone.mute",
+        "audio.mute",
+        "bluetooth.radio.set"
+      ],
+      "operations_count": 3,
+      "structural_shape_sha256": "7dd9cf3bea99ef848bcacf7aac67b41616d1652db3be1f8990b458bc03490dab"
+    },
+    {
+      "operations": [
+        "filesystem.read.text",
+        "window.resolve"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "7e7b2af1d320e7c7423d13619d852ea0cb06245850f9ad669da340d1e915f5a8"
+    },
+    {
+      "operations": [
+        "task.search"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "7e9a4962aa151d7a9b7de9d62c858e9de249a467dd68fdf2c87cccc3322bbde9"
+    },
+    {
+      "operations": [
+        "memory.correct"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "7efd8bc3fe6e987434db64cff6805b53f8f313cb2394917ec318b07aeab4807c"
+    },
+    {
+      "operations": [
+        "app.installed",
+        "network.ping",
+        "window.application.status"
+      ],
+      "operations_count": 3,
+      "structural_shape_sha256": "7f2077f2d585956d8dec17f991245039eef1d6f103ce0411879616eb4235d996"
+    },
+    {
+      "operations": [
+        "browser.control"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "85894e8aa048b06e7e253d2e044d100507145aba2ce265a8826bce5918631c56"
+    },
+    {
+      "operations": [
+        "browser.navigate",
+        "email.latest.reply",
+        "input.visible.click",
+        "media.play.youtube"
+      ],
+      "operations_count": 4,
+      "structural_shape_sha256": "87d4b0db06ed396c868b808c4bc188d2d14b1f225392d0f2015291bd619985b7"
+    },
+    {
+      "operations": [
+        "notification.schedule"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "8a1c3061a66c3a01a2516d1cbf2abdf02168a6680d7527cd7da4dfa3cab1d6e9"
+    },
+    {
+      "operations": [
+        "system.settings.set"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "8dc86ff63cf47cab74b80bfc806a009a574df7d629762503a7630ee46a7ea352"
+    },
+    {
+      "operations": [
+        "clipboard.write.text"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "8fab22c6bf6dd3f31dc5a96cc6de693c7e175723b366e3c746a944ed1a564396"
+    },
+    {
+      "operations": [
+        "message.recipient.resolve"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "92cfe85e800647f7ce81eae9517540968688b6dc5a6beb54ad6abd5825c6df4b"
+    },
+    {
+      "operations": [
+        "media.control"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "9503cceb49c941e7cea4e7a81f13df9f9e3f603d5344d4b3e630d7ec6c7e4f8c"
+    },
+    {
+      "operations": [
+        "filesystem.path.ensure.absent"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "96182fea653d235829c81383e748bfa464e6f8f0e846ed7d69ba34d78e3815cf"
+    },
+    {
+      "operations": [
+        "input.keyboard.open",
+        "input.select.all"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "97600714ef463f88749bcb571dbe5cdcc1e38bff1edefb42f233677f7af85956"
+    },
+    {
+      "operations": [
+        "note.update"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "998abea0bf4d7297d362d6179c4c2e2110141cdfb3315dd581ce2772be112be6"
+    },
+    {
+      "operations": [
+        "input.keyboard.layout"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "9d5f788ef9a9e61bed85907da05867af997cc18c1db4d8ce82e7c1785c76d317"
+    },
+    {
+      "operations": [
+        "browser.page.read",
+        "browser.tabs.list",
+        "clipboard.read.text"
+      ],
+      "operations_count": 3,
+      "structural_shape_sha256": "9e95e5f64128fc81d5b3f70220ed2c12f03ce5db973563c86622030673ac260f"
+    },
+    {
+      "operations": [
+        "filesystem.search",
+        "web.search"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "a02440b1f0301909792a744de06f217047366ea38191fa4788ca1b54bbb5c281"
+    },
+    {
+      "operations": [
+        "filesystem.trash.commit"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "a066980aec807c1a8f3b87e14ed821bcc7a62f64635c54a95d5a70fae00ada19"
+    },
+    {
+      "operations": [
+        "app.close",
+        "game.install.cancel",
+        "system.process.terminate.named"
+      ],
+      "operations_count": 3,
+      "structural_shape_sha256": "a35171df280493659b3f0841d72f2a7de11ac47921f099ba396ab306a0c8d8cc"
+    },
+    {
+      "operations": [
+        "system.settings.adjust"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "a4789f513fd7b28442b489f7d80bec20be767b6a1f5f18042654008dadfd2283"
+    },
+    {
+      "operations": [
+        "system.settings.status"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "a9bd8fcd557a96766007e40851633ea9cea8904d1cf059e34c21c2c65f2a7876"
+    },
+    {
+      "operations": [
+        "message.send"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "ad24e782fb2fe2394e15d1e07ef1acbe30cb824a0efad5599538b9bac79c11c8"
+    },
+    {
+      "operations": [
+        "memory.session.clear"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "ad2ff180c3495d3e56f575c1c77700cfee7e16c209dc7cc33e1c94d9038159a0"
+    },
+    {
+      "operations": [
+        "reminder.create"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "adc29d70465d0102e9b1c8937a653d3dfc4b90cfb00337ceb0ac4ffb05904738"
+    },
+    {
+      "operations": [
+        "notification.dismiss",
+        "reminder.restore",
+        "routine.restore",
+        "task.complete",
+        "task.reopen",
+        "task.restore"
+      ],
+      "operations_count": 6,
+      "structural_shape_sha256": "b35a40ea4f91f22663b5512e0cf56d3f7451e40c72efc2a9c80937dc76e21443"
+    },
+    {
+      "operations": [
+        "reminder.resolve.exact",
+        "routine.resolve.exact",
+        "task.resolve.exact"
+      ],
+      "operations_count": 3,
+      "structural_shape_sha256": "b69bbf47e7673778d2070e6ec81d6f771cd575debd2ffd33cb8bf64fd6477e20"
+    },
+    {
+      "operations": [
+        "memory.enable"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "b74740c62bcd04f474c0bc2e91ea73871844cf486787a66a6a41c585c341710a"
+    },
+    {
+      "operations": [
+        "bluetooth.device.pair",
+        "input.text.type",
+        "wifi.connect.named"
+      ],
+      "operations_count": 3,
+      "structural_shape_sha256": "bcab14b3e025d3a79e7d84219fe73a00e4ea2f2c2fe989fe1f266d03b3e17f13"
+    },
+    {
+      "operations": [
+        "reminder.delete",
+        "routine.delete",
+        "task.delete"
+      ],
+      "operations_count": 3,
+      "structural_shape_sha256": "bcac1b4da96799532017cc3e00abc01984c71e8603a4c797fcb05bbbba100490"
+    },
+    {
+      "operations": [
+        "filesystem.sandbox.append.named",
+        "note.create"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "be690088eac57291fb4d42a46ac24438bb99091eae19e317e5b86d3c1f4c8c3c"
+    },
+    {
+      "operations": [
+        "memory.status"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "bf3b23d38e892974e0993449678279aab57b0fbe1cd217477b91f33ef0ac9a7f"
+    },
+    {
+      "operations": [
+        "note.list"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "c175ec14932e3667d38119ec4e6d5228addd396f905ba39f964dc39b9d66f905"
+    },
+    {
+      "operations": [
+        "filesystem.known.trash.named"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "c2903ae99f410afd5b2f09d8c4fe8234199976fc4108b5d4589ba6b53eb90b9d"
+    },
+    {
+      "operations": [
+        "filesystem.known.duplicates"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "c46d5b35117172a408d6987d3cbe35195048b85e1f46a51e9d9492eb7dbcc56b"
+    },
+    {
+      "operations": [
+        "filesystem.known.search"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "c4db2b3e3c0aa069feac24f2bfc50e4b5b367e6a1f9bf70f93ab49ed8854fcf5"
+    },
+    {
+      "operations": [
+        "notification.cancel.latest"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "c5823e784be86c91058a30b38e3f806846038ce32312ce19ad54e9cd965678ce"
+    },
+    {
+      "operations": [
+        "system.power"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "c9a5cfeb4859571831dbab691dc39e7cd31dab8c1861feade845690f4b988c50"
+    },
+    {
+      "operations": [
+        "browser.navigate.named",
+        "media.play.exact",
+        "media.play.query",
+        "streaming.play.named"
+      ],
+      "operations_count": 4,
+      "structural_shape_sha256": "cc8935dc7e3133c4eff7ab71cc218047b858fcd0b6c110e0da85cb9cf5ab224c"
+    },
+    {
+      "operations": [
+        "capture.active.window",
+        "capture.screenshot",
+        "clipboard.copy",
+        "clipboard.paste",
+        "email.latest.read",
+        "network.ip.list",
+        "wifi.disconnect",
+        "wifi.status"
+      ],
+      "operations_count": 8,
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "operations": [
+        "note.search"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "ce7d270a1edd26f7039b9521e9f973a776e4d284e7d3af7498c2ea2b71832c4e"
+    },
+    {
+      "operations": [
+        "window.move",
+        "window.resize"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "d5872b13864152f3de6aa418b51cf7fb6f65b4b3e500fac814b13d3e721c3e13"
+    },
+    {
+      "operations": [
+        "peripheral.scan",
+        "wifi.connect"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "d5a72800281145b06b241368c78293997aae9cb7bdb75b6ef144aed01ea26b6d"
+    },
+    {
+      "operations": [
+        "input.key.press"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "ddf5a21799e8655661d18eab6742ac96ba121c15588ea674480b90fa52661f14"
+    },
+    {
+      "operations": [
+        "audio.volume.adjust"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "dfea1e415ca1efca1577c657342862c21b85daea06e2fded50d1c165974b0d59"
+    },
+    {
+      "operations": [
+        "filesystem.sandbox.diff.named"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "eb74e44e09735a94d7009de04dd9573eae8401fd6ccc15e6204c9fb5fbe5e32e"
+    },
+    {
+      "operations": [
+        "system.process.list"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "edf524db6370c9bb4b702857c071a77c2089d4c67d8ef1acdc27718c73ba97c6"
+    },
+    {
+      "operations": [
+        "streaming.navigate"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "eeb3c2873da3b5e171f5865c5a80a5bbbfaef9f3a89f7b25cf831dcabfc7104d"
+    },
+    {
+      "operations": [
+        "backup.restore"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "f050c4e4756e52a887393eb06da5ba2174f5e176fd0d53bb4234d5cbe5fc2f74"
+    },
+    {
+      "operations": [
+        "routine.phrase.create"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "f180bcdc84bda3f1069ef3cb823e96b5b990ce53eadbeaf9de9ce56c48f2d260"
+    },
+    {
+      "operations": [
+        "input.pointer.control"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "fd545b52648a11479778e04dafefd0ebedc06d5cad07bef0db2530e104ce0dbc"
+    },
+    {
+      "operations": [
+        "filesystem.file.open.latest",
+        "filesystem.folder.open"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "fd6821ea4d903cec3044077d92f8c91030bad75d1031bc29cd236bac09666d28"
+    },
+    {
+      "operations": [
+        "game.install.commit",
+        "package.install.commit"
+      ],
+      "operations_count": 2,
+      "structural_shape_sha256": "ff2ebf3f828dd8923cb995ceb6af9b08da8175d512bd3f1aecfa99c2ded3618d"
+    },
+    {
+      "operations": [
+        "vision.describe"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "ffb0f0a6c555a745ec3d86d9bba683fcdc2f6e0c5e268bbd5dd7f030892e761d"
+    },
+    {
+      "operations": [
+        "filesystem.write.text"
+      ],
+      "operations_count": 1,
+      "structural_shape_sha256": "fffb307d24a0d11f347b162f45c8cc4e61d666bcb97d26d499e8c06f6f05b070"
+    }
+  ],
+  "identities": {
+    "catalog_sha256": "2d5a257c9c2986b22a1f3159ffd30b4d658045d3cb7e15982abc42819651e376",
+    "program_sha256": "411f940fc86c324a73a50dd0b05b69b98eda62db51c2c4691f51d9b930259696"
+  },
+  "method": {
+    "input_fields_used": [
+      "argumentsSchema",
+      "risk"
+    ],
+    "lexical_inputs_discarded": [
+      "operation_name",
+      "property_name",
+      "description",
+      "enum_values"
+    ],
+    "selection_or_runtime_invoked": false
+  },
+  "operations": [
+    {
+      "name": "app.close",
+      "structural_shape_sha256": "a35171df280493659b3f0841d72f2a7de11ac47921f099ba396ab306a0c8d8cc"
+    },
+    {
+      "name": "app.installed",
+      "structural_shape_sha256": "7f2077f2d585956d8dec17f991245039eef1d6f103ce0411879616eb4235d996"
+    },
+    {
+      "name": "app.open",
+      "structural_shape_sha256": "76ae92d435d933249027db04ec7da4472230a0355185b30f984c3261e1e15cd2"
+    },
+    {
+      "name": "audio.microphone.mute",
+      "structural_shape_sha256": "7dd9cf3bea99ef848bcacf7aac67b41616d1652db3be1f8990b458bc03490dab"
+    },
+    {
+      "name": "audio.mute",
+      "structural_shape_sha256": "7dd9cf3bea99ef848bcacf7aac67b41616d1652db3be1f8990b458bc03490dab"
+    },
+    {
+      "name": "audio.status",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "audio.volume",
+      "structural_shape_sha256": "185d5a2b8d3e00dbda8ffa3f580c6b3cbbd6eb8cbdbceb88bae1637c897ef525"
+    },
+    {
+      "name": "audio.volume.adjust",
+      "structural_shape_sha256": "dfea1e415ca1efca1577c657342862c21b85daea06e2fded50d1c165974b0d59"
+    },
+    {
+      "name": "backup.create",
+      "structural_shape_sha256": "5b4530ceeb25b16a3d33410ca9e14dc1e01d703c30f8d5238eee2ce92384ae8e"
+    },
+    {
+      "name": "backup.known.create",
+      "structural_shape_sha256": "36fd3f9c3c5687a3f541a886bf71974c724564f2c5877be39166bac090088f3f"
+    },
+    {
+      "name": "backup.known.list",
+      "structural_shape_sha256": "59b8f8e9d170a494f950aa4c4a82a628b89122469db12b340b65d314d4ce5098"
+    },
+    {
+      "name": "backup.known.restore.latest",
+      "structural_shape_sha256": "36fd3f9c3c5687a3f541a886bf71974c724564f2c5877be39166bac090088f3f"
+    },
+    {
+      "name": "backup.known.verify.latest",
+      "structural_shape_sha256": "20e11e41f71bf0537d0a516fadafaa6eb14a94ebd13e95b7376aa46319fc961b"
+    },
+    {
+      "name": "backup.list",
+      "structural_shape_sha256": "59b8f8e9d170a494f950aa4c4a82a628b89122469db12b340b65d314d4ce5098"
+    },
+    {
+      "name": "backup.restore",
+      "structural_shape_sha256": "f050c4e4756e52a887393eb06da5ba2174f5e176fd0d53bb4234d5cbe5fc2f74"
+    },
+    {
+      "name": "backup.verify",
+      "structural_shape_sha256": "59a9a81ad18921711ce6469b3eee2f6da82db1f71f219372ca362c61c408d6be"
+    },
+    {
+      "name": "bluetooth.device.list",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "bluetooth.device.pair",
+      "structural_shape_sha256": "bcab14b3e025d3a79e7d84219fe73a00e4ea2f2c2fe989fe1f266d03b3e17f13"
+    },
+    {
+      "name": "bluetooth.radio.set",
+      "structural_shape_sha256": "7dd9cf3bea99ef848bcacf7aac67b41616d1652db3be1f8990b458bc03490dab"
+    },
+    {
+      "name": "browser.control",
+      "structural_shape_sha256": "85894e8aa048b06e7e253d2e044d100507145aba2ce265a8826bce5918631c56"
+    },
+    {
+      "name": "browser.navigate",
+      "structural_shape_sha256": "87d4b0db06ed396c868b808c4bc188d2d14b1f225392d0f2015291bd619985b7"
+    },
+    {
+      "name": "browser.navigate.named",
+      "structural_shape_sha256": "cc8935dc7e3133c4eff7ab71cc218047b858fcd0b6c110e0da85cb9cf5ab224c"
+    },
+    {
+      "name": "browser.page.read",
+      "structural_shape_sha256": "9e95e5f64128fc81d5b3f70220ed2c12f03ce5db973563c86622030673ac260f"
+    },
+    {
+      "name": "browser.tabs.list",
+      "structural_shape_sha256": "9e95e5f64128fc81d5b3f70220ed2c12f03ce5db973563c86622030673ac260f"
+    },
+    {
+      "name": "calendar.event.create",
+      "structural_shape_sha256": "1f77496e8f7f86f5b91a563014156ededba648dab8c710f2af84d0fea3d43234"
+    },
+    {
+      "name": "calendar.event.list",
+      "structural_shape_sha256": "37be65b6ee6248fb48af6e908bc536c47144d50670583fef6fdd37b3d6ff3102"
+    },
+    {
+      "name": "capture.active.window",
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "name": "capture.screenshot",
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "name": "clipboard.copy",
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "name": "clipboard.paste",
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "name": "clipboard.read.text",
+      "structural_shape_sha256": "9e95e5f64128fc81d5b3f70220ed2c12f03ce5db973563c86622030673ac260f"
+    },
+    {
+      "name": "clipboard.write.text",
+      "structural_shape_sha256": "8fab22c6bf6dd3f31dc5a96cc6de693c7e175723b366e3c746a944ed1a564396"
+    },
+    {
+      "name": "email.latest.read",
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "name": "email.latest.reply",
+      "structural_shape_sha256": "87d4b0db06ed396c868b808c4bc188d2d14b1f225392d0f2015291bd619985b7"
+    },
+    {
+      "name": "filesystem.copy",
+      "structural_shape_sha256": "44e183491b27f3db86e88b2bd8dc131c1953ec420c0b2042dc1c199cb65d65ef"
+    },
+    {
+      "name": "filesystem.create.directory",
+      "structural_shape_sha256": "76ae92d435d933249027db04ec7da4472230a0355185b30f984c3261e1e15cd2"
+    },
+    {
+      "name": "filesystem.file.open.latest",
+      "structural_shape_sha256": "fd6821ea4d903cec3044077d92f8c91030bad75d1031bc29cd236bac09666d28"
+    },
+    {
+      "name": "filesystem.folder.open",
+      "structural_shape_sha256": "fd6821ea4d903cec3044077d92f8c91030bad75d1031bc29cd236bac09666d28"
+    },
+    {
+      "name": "filesystem.hash",
+      "structural_shape_sha256": "59a9a81ad18921711ce6469b3eee2f6da82db1f71f219372ca362c61c408d6be"
+    },
+    {
+      "name": "filesystem.known.duplicates",
+      "structural_shape_sha256": "c46d5b35117172a408d6987d3cbe35195048b85e1f46a51e9d9492eb7dbcc56b"
+    },
+    {
+      "name": "filesystem.known.search",
+      "structural_shape_sha256": "c4db2b3e3c0aa069feac24f2bfc50e4b5b367e6a1f9bf70f93ab49ed8854fcf5"
+    },
+    {
+      "name": "filesystem.known.trash.named",
+      "structural_shape_sha256": "c2903ae99f410afd5b2f09d8c4fe8234199976fc4108b5d4589ba6b53eb90b9d"
+    },
+    {
+      "name": "filesystem.list",
+      "structural_shape_sha256": "15f4012ce17b748fd3ce286ababd221cff70d0c83a2149795c70cb682108b2e2"
+    },
+    {
+      "name": "filesystem.move",
+      "structural_shape_sha256": "44e183491b27f3db86e88b2bd8dc131c1953ec420c0b2042dc1c199cb65d65ef"
+    },
+    {
+      "name": "filesystem.path.ensure.absent",
+      "structural_shape_sha256": "96182fea653d235829c81383e748bfa464e6f8f0e846ed7d69ba34d78e3815cf"
+    },
+    {
+      "name": "filesystem.read.text",
+      "structural_shape_sha256": "7e7b2af1d320e7c7423d13619d852ea0cb06245850f9ad669da340d1e915f5a8"
+    },
+    {
+      "name": "filesystem.sandbox.append.named",
+      "structural_shape_sha256": "be690088eac57291fb4d42a46ac24438bb99091eae19e317e5b86d3c1f4c8c3c"
+    },
+    {
+      "name": "filesystem.sandbox.diff.named",
+      "structural_shape_sha256": "eb74e44e09735a94d7009de04dd9573eae8401fd6ccc15e6204c9fb5fbe5e32e"
+    },
+    {
+      "name": "filesystem.sandbox.move.named",
+      "structural_shape_sha256": "3fb5e43c8a773af4f7c893db001ea9c1dc467dc53a4ad7d1d841dd612b89b0f2"
+    },
+    {
+      "name": "filesystem.search",
+      "structural_shape_sha256": "a02440b1f0301909792a744de06f217047366ea38191fa4788ca1b54bbb5c281"
+    },
+    {
+      "name": "filesystem.trash.commit",
+      "structural_shape_sha256": "a066980aec807c1a8f3b87e14ed821bcc7a62f64635c54a95d5a70fae00ada19"
+    },
+    {
+      "name": "filesystem.trash.prepare",
+      "structural_shape_sha256": "59a9a81ad18921711ce6469b3eee2f6da82db1f71f219372ca362c61c408d6be"
+    },
+    {
+      "name": "filesystem.trash.restore",
+      "structural_shape_sha256": "1da6aec526a404305b25fc1d0973f30bd0707fead1dae55639ad6f6424e02f90"
+    },
+    {
+      "name": "filesystem.write.text",
+      "structural_shape_sha256": "fffb307d24a0d11f347b162f45c8cc4e61d666bcb97d26d499e8c06f6f05b070"
+    },
+    {
+      "name": "game.catalog.list",
+      "structural_shape_sha256": "15f4012ce17b748fd3ce286ababd221cff70d0c83a2149795c70cb682108b2e2"
+    },
+    {
+      "name": "game.install.cancel",
+      "structural_shape_sha256": "a35171df280493659b3f0841d72f2a7de11ac47921f099ba396ab306a0c8d8cc"
+    },
+    {
+      "name": "game.install.cancel.active",
+      "structural_shape_sha256": "4c4a42c1ade40f27985627d4e874b92879f438d156b0f5ac4891acbf4a9c6b2c"
+    },
+    {
+      "name": "game.install.commit",
+      "structural_shape_sha256": "ff2ebf3f828dd8923cb995ceb6af9b08da8175d512bd3f1aecfa99c2ded3618d"
+    },
+    {
+      "name": "game.install.named",
+      "structural_shape_sha256": "1cbad330a174dcc0d80a72dfdc0856773fe7c01f71153b2f45fd7c351f81184b"
+    },
+    {
+      "name": "game.install.prepare",
+      "structural_shape_sha256": "59a9a81ad18921711ce6469b3eee2f6da82db1f71f219372ca362c61c408d6be"
+    },
+    {
+      "name": "game.install.status",
+      "structural_shape_sha256": "59a9a81ad18921711ce6469b3eee2f6da82db1f71f219372ca362c61c408d6be"
+    },
+    {
+      "name": "game.installed.named",
+      "structural_shape_sha256": "39c430e62e5bda991a14424373f1ef7b5e843f84ae47ce10e5d48892e45bd7b5"
+    },
+    {
+      "name": "game.launch",
+      "structural_shape_sha256": "1da6aec526a404305b25fc1d0973f30bd0707fead1dae55639ad6f6424e02f90"
+    },
+    {
+      "name": "game.purchase.commit",
+      "structural_shape_sha256": "3fda8395be2c8b5c09a41b2bff0d60415ba87d1287e4eb478aba12a1ac9f659b"
+    },
+    {
+      "name": "game.purchase.prepare",
+      "structural_shape_sha256": "59a9a81ad18921711ce6469b3eee2f6da82db1f71f219372ca362c61c408d6be"
+    },
+    {
+      "name": "input.key.press",
+      "structural_shape_sha256": "ddf5a21799e8655661d18eab6742ac96ba121c15588ea674480b90fa52661f14"
+    },
+    {
+      "name": "input.keyboard.layout",
+      "structural_shape_sha256": "9d5f788ef9a9e61bed85907da05867af997cc18c1db4d8ce82e7c1785c76d317"
+    },
+    {
+      "name": "input.keyboard.open",
+      "structural_shape_sha256": "97600714ef463f88749bcb571dbe5cdcc1e38bff1edefb42f233677f7af85956"
+    },
+    {
+      "name": "input.keyboard.status",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "input.pointer.control",
+      "structural_shape_sha256": "fd545b52648a11479778e04dafefd0ebedc06d5cad07bef0db2530e104ce0dbc"
+    },
+    {
+      "name": "input.select.all",
+      "structural_shape_sha256": "97600714ef463f88749bcb571dbe5cdcc1e38bff1edefb42f233677f7af85956"
+    },
+    {
+      "name": "input.text.type",
+      "structural_shape_sha256": "bcab14b3e025d3a79e7d84219fe73a00e4ea2f2c2fe989fe1f266d03b3e17f13"
+    },
+    {
+      "name": "input.visible.click",
+      "structural_shape_sha256": "87d4b0db06ed396c868b808c4bc188d2d14b1f225392d0f2015291bd619985b7"
+    },
+    {
+      "name": "media.control",
+      "structural_shape_sha256": "9503cceb49c941e7cea4e7a81f13df9f9e3f603d5344d4b3e630d7ec6c7e4f8c"
+    },
+    {
+      "name": "media.play.exact",
+      "structural_shape_sha256": "cc8935dc7e3133c4eff7ab71cc218047b858fcd0b6c110e0da85cb9cf5ab224c"
+    },
+    {
+      "name": "media.play.query",
+      "structural_shape_sha256": "cc8935dc7e3133c4eff7ab71cc218047b858fcd0b6c110e0da85cb9cf5ab224c"
+    },
+    {
+      "name": "media.play.youtube",
+      "structural_shape_sha256": "87d4b0db06ed396c868b808c4bc188d2d14b1f225392d0f2015291bd619985b7"
+    },
+    {
+      "name": "media.seek.relative",
+      "structural_shape_sha256": "185d5a2b8d3e00dbda8ffa3f580c6b3cbbd6eb8cbdbceb88bae1637c897ef525"
+    },
+    {
+      "name": "media.status",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "memory.correct",
+      "structural_shape_sha256": "7efd8bc3fe6e987434db64cff6805b53f8f313cb2394917ec318b07aeab4807c"
+    },
+    {
+      "name": "memory.disable",
+      "structural_shape_sha256": "085058ed9d965cd274b32beeccac497ad5fa926f89115ef471da3f7789cbdc12"
+    },
+    {
+      "name": "memory.enable",
+      "structural_shape_sha256": "b74740c62bcd04f474c0bc2e91ea73871844cf486787a66a6a41c585c341710a"
+    },
+    {
+      "name": "memory.export",
+      "structural_shape_sha256": "58f49df0af0cad005d2c19b749d5dcff0e1df87093655f6bd64736461667c0a6"
+    },
+    {
+      "name": "memory.forget",
+      "structural_shape_sha256": "29c3aa63d36e2928425647dc4b109529caed94526d261d3dd2c5e5eb37af0956"
+    },
+    {
+      "name": "memory.list",
+      "structural_shape_sha256": "4b9aca35d472ed1e3ab2d94213d9f57376061f9e3ba183eef8877f33e08c9a01"
+    },
+    {
+      "name": "memory.recall",
+      "structural_shape_sha256": "3c50773a9cd0d7de37e53bb78180f092d23f73df15764f4f6d8cd63fbea90317"
+    },
+    {
+      "name": "memory.save",
+      "structural_shape_sha256": "351704530a7d0518d71526af87ee7728ba931d35bcf96e92199ab3023530979c"
+    },
+    {
+      "name": "memory.sensitive.save",
+      "structural_shape_sha256": "3a40a5f20d2796e3b7cca41809ce4ffeedc3add0823882bb0d83f30ebd47c2dd"
+    },
+    {
+      "name": "memory.session.clear",
+      "structural_shape_sha256": "ad2ff180c3495d3e56f575c1c77700cfee7e16c209dc7cc33e1c94d9038159a0"
+    },
+    {
+      "name": "memory.status",
+      "structural_shape_sha256": "bf3b23d38e892974e0993449678279aab57b0fbe1cd217477b91f33ef0ac9a7f"
+    },
+    {
+      "name": "message.recipient.resolve",
+      "structural_shape_sha256": "92cfe85e800647f7ce81eae9517540968688b6dc5a6beb54ad6abd5825c6df4b"
+    },
+    {
+      "name": "message.send",
+      "structural_shape_sha256": "ad24e782fb2fe2394e15d1e07ef1acbe30cb824a0efad5599538b9bac79c11c8"
+    },
+    {
+      "name": "network.dns.status",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "network.ip.list",
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "name": "network.ping",
+      "structural_shape_sha256": "7f2077f2d585956d8dec17f991245039eef1d6f103ce0411879616eb4235d996"
+    },
+    {
+      "name": "network.port.list",
+      "structural_shape_sha256": "59b8f8e9d170a494f950aa4c4a82a628b89122469db12b340b65d314d4ce5098"
+    },
+    {
+      "name": "network.status",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "note.create",
+      "structural_shape_sha256": "be690088eac57291fb4d42a46ac24438bb99091eae19e317e5b86d3c1f4c8c3c"
+    },
+    {
+      "name": "note.list",
+      "structural_shape_sha256": "c175ec14932e3667d38119ec4e6d5228addd396f905ba39f964dc39b9d66f905"
+    },
+    {
+      "name": "note.read",
+      "structural_shape_sha256": "615e82e6334f3f92d4096a0d47816a3fda0868c7a479f7562a9f62c333151b60"
+    },
+    {
+      "name": "note.restore",
+      "structural_shape_sha256": "70c106bbc6807c56bd8dd4fed7bd47f93ec3fc0cd6d8524f0e2d1d740af8bc03"
+    },
+    {
+      "name": "note.search",
+      "structural_shape_sha256": "ce7d270a1edd26f7039b9521e9f973a776e4d284e7d3af7498c2ea2b71832c4e"
+    },
+    {
+      "name": "note.trash",
+      "structural_shape_sha256": "185a4a80a0262ba6f7a12be66719dc67e6ceb6588014f3042ba0bc133cbaa60a"
+    },
+    {
+      "name": "note.update",
+      "structural_shape_sha256": "998abea0bf4d7297d362d6179c4c2e2110141cdfb3315dd581ce2772be112be6"
+    },
+    {
+      "name": "notification.cancel.at",
+      "structural_shape_sha256": "35e48742c4b7de42e2f0a2d4449dee7bf3a20d19fd1a737c687f41280bbdc71a"
+    },
+    {
+      "name": "notification.cancel.latest",
+      "structural_shape_sha256": "c5823e784be86c91058a30b38e3f806846038ce32312ce19ad54e9cd965678ce"
+    },
+    {
+      "name": "notification.diagnose",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "notification.dismiss",
+      "structural_shape_sha256": "b35a40ea4f91f22663b5512e0cf56d3f7451e40c72efc2a9c80937dc76e21443"
+    },
+    {
+      "name": "notification.list.due",
+      "structural_shape_sha256": "59b8f8e9d170a494f950aa4c4a82a628b89122469db12b340b65d314d4ce5098"
+    },
+    {
+      "name": "notification.schedule",
+      "structural_shape_sha256": "8a1c3061a66c3a01a2516d1cbf2abdf02168a6680d7527cd7da4dfa3cab1d6e9"
+    },
+    {
+      "name": "ocr.read",
+      "structural_shape_sha256": "3737ce3ceedec721cb130e058e348a6397f154bf94f3ed331090ef89fc6e4b81"
+    },
+    {
+      "name": "office.document.create",
+      "structural_shape_sha256": "486e392e11c760f475e447a8737196b641724c10c433c8b40668af85213514bb"
+    },
+    {
+      "name": "office.document.read",
+      "structural_shape_sha256": "59a9a81ad18921711ce6469b3eee2f6da82db1f71f219372ca362c61c408d6be"
+    },
+    {
+      "name": "package.install.commit",
+      "structural_shape_sha256": "ff2ebf3f828dd8923cb995ceb6af9b08da8175d512bd3f1aecfa99c2ded3618d"
+    },
+    {
+      "name": "package.install.prepare",
+      "structural_shape_sha256": "494f850302ecf7daf69ac45cd1d264f565f1250f39f5e01e24a1ad47b1c60a93"
+    },
+    {
+      "name": "peripheral.list",
+      "structural_shape_sha256": "569137324432071caede2bf2e5b22cb28fe9478779848995c769846f7d2ee786"
+    },
+    {
+      "name": "peripheral.print",
+      "structural_shape_sha256": "44d0ec125de6d6af1a0252248a53c63657a8e06c954534c14d54f6a910ff1123"
+    },
+    {
+      "name": "peripheral.scan",
+      "structural_shape_sha256": "d5a72800281145b06b241368c78293997aae9cb7bdb75b6ef144aed01ea26b6d"
+    },
+    {
+      "name": "reminder.create",
+      "structural_shape_sha256": "adc29d70465d0102e9b1c8937a653d3dfc4b90cfb00337ceb0ac4ffb05904738"
+    },
+    {
+      "name": "reminder.delete",
+      "structural_shape_sha256": "bcac1b4da96799532017cc3e00abc01984c71e8603a4c797fcb05bbbba100490"
+    },
+    {
+      "name": "reminder.list",
+      "structural_shape_sha256": "59b8f8e9d170a494f950aa4c4a82a628b89122469db12b340b65d314d4ce5098"
+    },
+    {
+      "name": "reminder.resolve.exact",
+      "structural_shape_sha256": "b69bbf47e7673778d2070e6ec81d6f771cd575debd2ffd33cb8bf64fd6477e20"
+    },
+    {
+      "name": "reminder.restore",
+      "structural_shape_sha256": "b35a40ea4f91f22663b5512e0cf56d3f7451e40c72efc2a9c80937dc76e21443"
+    },
+    {
+      "name": "routine.delete",
+      "structural_shape_sha256": "bcac1b4da96799532017cc3e00abc01984c71e8603a4c797fcb05bbbba100490"
+    },
+    {
+      "name": "routine.list",
+      "structural_shape_sha256": "5b9f29c9e7a588f7bd5a1238825b2b78b4219d345b8b9bf806ee4306eafaba7e"
+    },
+    {
+      "name": "routine.phrase.create",
+      "structural_shape_sha256": "f180bcdc84bda3f1069ef3cb823e96b5b990ce53eadbeaf9de9ce56c48f2d260"
+    },
+    {
+      "name": "routine.read",
+      "structural_shape_sha256": "0d37c99f42cdeeff568c09b75944c0e40bb038fa80f0c726acf5d5afce33e470"
+    },
+    {
+      "name": "routine.resolve.exact",
+      "structural_shape_sha256": "b69bbf47e7673778d2070e6ec81d6f771cd575debd2ffd33cb8bf64fd6477e20"
+    },
+    {
+      "name": "routine.restore",
+      "structural_shape_sha256": "b35a40ea4f91f22663b5512e0cf56d3f7451e40c72efc2a9c80937dc76e21443"
+    },
+    {
+      "name": "routine.set.enabled",
+      "structural_shape_sha256": "333a6c0e975e2a3838c1a55ab3605d112d8506ca2f32029ae99743262d1b434a"
+    },
+    {
+      "name": "streaming.navigate",
+      "structural_shape_sha256": "eeb3c2873da3b5e171f5865c5a80a5bbbfaef9f3a89f7b25cf831dcabfc7104d"
+    },
+    {
+      "name": "streaming.play.named",
+      "structural_shape_sha256": "cc8935dc7e3133c4eff7ab71cc218047b858fcd0b6c110e0da85cb9cf5ab224c"
+    },
+    {
+      "name": "system.application.crash.diagnose",
+      "structural_shape_sha256": "709d2927d101daebc02a8671e926a13ec22192d2d33811807832b147ca4c1089"
+    },
+    {
+      "name": "system.identity",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "system.power",
+      "structural_shape_sha256": "c9a5cfeb4859571831dbab691dc39e7cd31dab8c1861feade845690f4b988c50"
+    },
+    {
+      "name": "system.process.list",
+      "structural_shape_sha256": "edf524db6370c9bb4b702857c071a77c2089d4c67d8ef1acdc27718c73ba97c6"
+    },
+    {
+      "name": "system.process.terminate.named",
+      "structural_shape_sha256": "a35171df280493659b3f0841d72f2a7de11ac47921f099ba396ab306a0c8d8cc"
+    },
+    {
+      "name": "system.recyclebin.empty",
+      "structural_shape_sha256": "4c4a42c1ade40f27985627d4e874b92879f438d156b0f5ac4891acbf4a9c6b2c"
+    },
+    {
+      "name": "system.settings.adjust",
+      "structural_shape_sha256": "a4789f513fd7b28442b489f7d80bec20be767b6a1f5f18042654008dadfd2283"
+    },
+    {
+      "name": "system.settings.set",
+      "structural_shape_sha256": "8dc86ff63cf47cab74b80bfc806a009a574df7d629762503a7630ee46a7ea352"
+    },
+    {
+      "name": "system.settings.status",
+      "structural_shape_sha256": "a9bd8fcd557a96766007e40851633ea9cea8904d1cf059e34c21c2c65f2a7876"
+    },
+    {
+      "name": "system.status",
+      "structural_shape_sha256": "100677a0cb6bae823bbd667e3a1343b07e2f43cfabb767448bca3ba1179b64ac"
+    },
+    {
+      "name": "system.time",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "task.complete",
+      "structural_shape_sha256": "b35a40ea4f91f22663b5512e0cf56d3f7451e40c72efc2a9c80937dc76e21443"
+    },
+    {
+      "name": "task.create",
+      "structural_shape_sha256": "2e706f1db3fcd43a74cdb6d442776e473ae71a6801109a900db276ec0f50ffb6"
+    },
+    {
+      "name": "task.delete",
+      "structural_shape_sha256": "bcac1b4da96799532017cc3e00abc01984c71e8603a4c797fcb05bbbba100490"
+    },
+    {
+      "name": "task.list",
+      "structural_shape_sha256": "278f16a4ee8411b4a903ea595bad757b28e3cc80af2be3a8fc24356a52b7c887"
+    },
+    {
+      "name": "task.reopen",
+      "structural_shape_sha256": "b35a40ea4f91f22663b5512e0cf56d3f7451e40c72efc2a9c80937dc76e21443"
+    },
+    {
+      "name": "task.resolve.exact",
+      "structural_shape_sha256": "b69bbf47e7673778d2070e6ec81d6f771cd575debd2ffd33cb8bf64fd6477e20"
+    },
+    {
+      "name": "task.restore",
+      "structural_shape_sha256": "b35a40ea4f91f22663b5512e0cf56d3f7451e40c72efc2a9c80937dc76e21443"
+    },
+    {
+      "name": "task.search",
+      "structural_shape_sha256": "7e9a4962aa151d7a9b7de9d62c858e9de249a467dd68fdf2c87cccc3322bbde9"
+    },
+    {
+      "name": "task.update",
+      "structural_shape_sha256": "1ef43e9a3ee1adf529004d7c601e75d1b99868c1c376216f90a53904df2b2867"
+    },
+    {
+      "name": "vision.describe",
+      "structural_shape_sha256": "ffb0f0a6c555a745ec3d86d9bba683fcdc2f6e0c5e268bbd5dd7f030892e761d"
+    },
+    {
+      "name": "web.search",
+      "structural_shape_sha256": "a02440b1f0301909792a744de06f217047366ea38191fa4788ca1b54bbb5c281"
+    },
+    {
+      "name": "wifi.connect",
+      "structural_shape_sha256": "d5a72800281145b06b241368c78293997aae9cb7bdb75b6ef144aed01ea26b6d"
+    },
+    {
+      "name": "wifi.connect.named",
+      "structural_shape_sha256": "bcab14b3e025d3a79e7d84219fe73a00e4ea2f2c2fe989fe1f266d03b3e17f13"
+    },
+    {
+      "name": "wifi.disconnect",
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "name": "wifi.ensure.connected",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "wifi.profile.list",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "wifi.status",
+      "structural_shape_sha256": "cd68d9f573ed27b2330fca22cb638352c4aad102ce3d1da2e51116c2b4ae1eb4"
+    },
+    {
+      "name": "window.active",
+      "structural_shape_sha256": "70a5f383a0000a678b8b93329ad160e2f811f623a8c28088ee047ec61c59d85b"
+    },
+    {
+      "name": "window.application.status",
+      "structural_shape_sha256": "7f2077f2d585956d8dec17f991245039eef1d6f103ce0411879616eb4235d996"
+    },
+    {
+      "name": "window.focus",
+      "structural_shape_sha256": "1da6aec526a404305b25fc1d0973f30bd0707fead1dae55639ad6f6424e02f90"
+    },
+    {
+      "name": "window.maximize",
+      "structural_shape_sha256": "1da6aec526a404305b25fc1d0973f30bd0707fead1dae55639ad6f6424e02f90"
+    },
+    {
+      "name": "window.minimize",
+      "structural_shape_sha256": "1da6aec526a404305b25fc1d0973f30bd0707fead1dae55639ad6f6424e02f90"
+    },
+    {
+      "name": "window.move",
+      "structural_shape_sha256": "d5872b13864152f3de6aa418b51cf7fb6f65b4b3e500fac814b13d3e721c3e13"
+    },
+    {
+      "name": "window.resize",
+      "structural_shape_sha256": "d5872b13864152f3de6aa418b51cf7fb6f65b4b3e500fac814b13d3e721c3e13"
+    },
+    {
+      "name": "window.resolve",
+      "structural_shape_sha256": "7e7b2af1d320e7c7423d13619d852ea0cb06245850f9ad669da340d1e915f5a8"
+    },
+    {
+      "name": "window.restore",
+      "structural_shape_sha256": "1da6aec526a404305b25fc1d0973f30bd0707fead1dae55639ad6f6424e02f90"
+    }
+  ],
+  "schema": "baxy.catalog-structural-discriminability-r212.v1"
+}

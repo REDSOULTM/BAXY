@@ -1,0 +1,68 @@
+{
+  "schema": "baxy.situated-cut-b.model-path.r224-preregistration.v1",
+  "authority": "sealed_before_local_model_start_or_product_turn",
+  "candidate": {
+    "path": "unmodified_baxy_mind_turn_decide",
+    "retrieval": "current_turn_evidence_and_planner_shortlist",
+    "decision": "registered_local_qwen3_native_or_structured_turn_policy",
+    "catalogue": "current_Core_must_match_R219_174_operation_snapshot",
+    "runtime": "registered_manifest_and_corrected_per_file_STT_verifier",
+    "selection_limit": 28
+  },
+  "population": {
+    "rows": 93,
+    "families": 31,
+    "languages": {
+      "es": 31,
+      "en": 31,
+      "spanglish": 31
+    },
+    "recogniser_reach": 0.010753
+  },
+  "acceptance": {
+    "retrieval_expected_complete_recall": 1.0,
+    "raw_decision_exact_minimum": 0.95,
+    "end_to_end_exact_or_useful_clarification_minimum": 0.95,
+    "gpu_first_signal_p50_seconds_maximum": 1.0,
+    "gpu_first_signal_p95_seconds_maximum": 2.0,
+    "hard_zeros": [
+      "unsolicited_effects",
+      "unverified_successes",
+      "fixed_visible_replies",
+      "external_effects_executed"
+    ],
+    "diagnostic_cause_buckets": [
+      "retrieval",
+      "decision",
+      "veto"
+    ]
+  },
+  "measurement": {
+    "one_shot": true,
+    "retry_allowed": false,
+    "raw_decision_retained_before_veto": true,
+    "turn_audit_retained": true,
+    "visible_reply_audit_retained": true,
+    "dispatch": "not_called"
+  },
+  "constraints": {
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "opened_v9": false,
+    "v9_reserved": true,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "corpus_sha256": "de66e6d2c1c439b6575bf1ea89a60d8f657aad36bed922fbea8918693066afa3",
+    "source_preregistration_sha256": "944a30efee0a225015afc903cb70fb047326aafd5e57bd1e073f4343301f473e",
+    "recogniser_reach_sha256": "e3ce3a246bcfc5f4f624b9bfad4716e6c050ba829d9bc6287d2360463f3acd0b",
+    "current_core_snapshot_sha256": "1732a3d549d12eb6029c900d44e27ec84b85167952f10d9ea016bf6a3362795f",
+    "current_core_capabilities_sha256": "fd859ccc3258731846600be714066bfe99b99e74c6052ea1178176f6cd56de71",
+    "runtime_manifest_sha256": "c5a8b2a219a04eb695114094cba2dd46caf6cc81fd4403d7280558b39b2d9d86",
+    "runtime_resolver_sha256": "f00e0d05d23b88b490add97dd0712a3340ed59d5ca3336356285afedebb5dad5",
+    "runner_sha256": "7a94aedd32b71a42cedd957fb8aacfb8ad7a159debb393974224e144544f1463",
+    "base_runner_sha256": "d8e5bf725ce4b495c1c3127d8c34fad3bfbd6acccab94551ed73ab437b0ec9ae",
+    "scorer_sha256": "276772156dc41ab354cc13694f29b39513b6d5594b450db854b5a773691deedd",
+    "program_sha256": "fcaf3fed236f370be5e934ac4579ec42d22107b20c523e9367a7b49bf9ecd9e6"
+  }
+}

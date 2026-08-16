@@ -1,0 +1,315 @@
+{
+    "schema_version":  2,
+    "protocol_id":  "baxy-technology-tournament-v1",
+    "round":  "b_package_lifecycle",
+    "scope":  "internal offline package mechanism; not a Windows installer certification",
+    "system_id":  "dotnet-wpf",
+    "provenance":  {
+                       "harness":  {
+                                       "path":  "experiments/technology_tournament/round_b/package_lifecycle.ps1",
+                                       "bytes":  34830,
+                                       "sha256":  "0a21005a3d19ad426cb7a43ae567b46a9aeeb83a87b16ae60a1abf446a2ac370"
+                                   },
+                       "cases":  {
+                                     "path":  "experiments/technology_tournament/cases.json",
+                                     "bytes":  4657,
+                                     "sha256":  "62eb63e108256f5b91da4834d13efb8febc5aa137cb369acac966adce0dbf59d"
+                                 },
+                       "protocol":  {
+                                        "path":  "artifacts/technology_tournament/protocol.json",
+                                        "bytes":  10962,
+                                        "sha256":  "383a9e54cfc5a186de61f060aeb2a6cd013bab3ec21bdeb387063d935d99a892"
+                                    },
+                       "build_recipe":  {
+                                            "path":  "experiments/technology_tournament/round_b/build_round_b.ps1",
+                                            "bytes":  16152,
+                                            "sha256":  "c65d0e4d5ce935c6ff32a1a4e25a09a6f8f6184e2cf9b5f1701e2bca2313404f"
+                                        }
+                   },
+    "hashes":  {
+                   "shell_bundle_sha256":  "ca5f43560c56693efd2a2ad338a8069e1bc70be31a9be736e4c14a50fd9168ca",
+                   "shell_entrypoint_sha256":  "2d6fbdd4c5813bd4149b67359bd4da0d0172b27d1c2421c0629dc38b6a4b6b47",
+                   "core_sha256":  "27d566f7cdeb4f8bdd0cd7f1cadf4b89f8244aabc6f6e87b8174ee5e33bd403e"
+               },
+    "signatures":  {
+                       "shell":  "NotSigned",
+                       "core":  "NotSigned"
+                   },
+    "package_bytes":  70890462,
+    "package_integrity":  {
+                              "authenticity":  "not_provided",
+                              "unsigned_payload_consistency":  true,
+                              "threat_model":  "Detects payload changes only while the colocated manifest is trusted and unchanged.",
+                              "tampered_payload_rejected":  true,
+                              "content_tampered_payload_rejected":  true,
+                              "content_tamper_failure":  "Package verification failed before install: size mismatch: version.txt",
+                              "alternate_data_stream_observed":  true,
+                              "alternate_data_stream_payload_rejected":  true,
+                              "alternate_data_stream_name":  "baxy-package-hostile",
+                              "alternate_data_stream_failure":  "Package verification failed before install: alternate data stream forbidden: version.txt [baxy-package-hostile]"
+                          },
+    "reparse_defense":  {
+                            "rejected":  true,
+                            "external_sentinel_preserved":  true
+                        },
+    "runtime_resolution_probe":  {
+                                     "clean_machine_claimed":  false,
+                                     "dotnet_root":  "C:\\baxy-runtime-intentionally-absent",
+                                     "multilevel_lookup":  "0",
+                                     "shared_with_install_launch":  true,
+                                     "first_launch":  {
+                                                          "passed":  true,
+                                                          "version":  "1.0.0",
+                                                          "core_attested":  true,
+                                                          "mission_verified":  true,
+                                                          "effect_verified":  true,
+                                                          "journal_completed_records":  1,
+                                                          "replay_visible":  true,
+                                                          "replay_single_effect":  true,
+                                                          "network_snapshots":  [
+                                                                                    {
+                                                                                        "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                                        "observer_ok":  true,
+                                                                                        "tcp":  [
+
+                                                                                                ],
+                                                                                        "udp":  [
+
+                                                                                                ]
+                                                                                    },
+                                                                                    {
+                                                                                        "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                                        "observer_ok":  true,
+                                                                                        "tcp":  [
+
+                                                                                                ],
+                                                                                        "udp":  [
+
+                                                                                                ]
+                                                                                    }
+                                                                                ],
+                                                          "network_observer_ok":  true,
+                                                          "graceful_shutdown":  true,
+                                                          "orphan_process_ids":  [
+
+                                                                                 ],
+                                                          "bundle_cache_bytes":  0,
+                                                          "errors":  [
+
+                                                                     ]
+                                                      }
+                                 },
+    "install":  {
+                    "version":  "1.0.0",
+                    "release_marker":  "BAXY tournament payload 1.0.0",
+                    "launch":  {
+                                   "passed":  true,
+                                   "version":  "1.0.0",
+                                   "core_attested":  true,
+                                   "mission_verified":  true,
+                                   "effect_verified":  true,
+                                   "journal_completed_records":  1,
+                                   "replay_visible":  true,
+                                   "replay_single_effect":  true,
+                                   "network_snapshots":  [
+                                                             {
+                                                                 "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                 "observer_ok":  true,
+                                                                 "tcp":  [
+
+                                                                         ],
+                                                                 "udp":  [
+
+                                                                         ]
+                                                             },
+                                                             {
+                                                                 "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                 "observer_ok":  true,
+                                                                 "tcp":  [
+
+                                                                         ],
+                                                                 "udp":  [
+
+                                                                         ]
+                                                             }
+                                                         ],
+                                   "network_observer_ok":  true,
+                                   "graceful_shutdown":  true,
+                                   "orphan_process_ids":  [
+
+                                                          ],
+                                   "bundle_cache_bytes":  0,
+                                   "errors":  [
+
+                                              ]
+                               },
+                    "passed":  true
+                },
+    "update":  {
+                   "version":  "1.0.1",
+                   "release_marker":  "BAXY tournament payload 1.0.1",
+                   "payload_changed":  true,
+                   "launch":  {
+                                  "passed":  true,
+                                  "version":  "1.0.1",
+                                  "core_attested":  true,
+                                  "mission_verified":  true,
+                                  "effect_verified":  true,
+                                  "journal_completed_records":  1,
+                                  "replay_visible":  true,
+                                  "replay_single_effect":  true,
+                                  "network_snapshots":  [
+                                                            {
+                                                                "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                "observer_ok":  true,
+                                                                "tcp":  [
+
+                                                                        ],
+                                                                "udp":  [
+
+                                                                        ]
+                                                            },
+                                                            {
+                                                                "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                "observer_ok":  true,
+                                                                "tcp":  [
+
+                                                                        ],
+                                                                "udp":  [
+
+                                                                        ]
+                                                            }
+                                                        ],
+                                  "network_observer_ok":  true,
+                                  "graceful_shutdown":  true,
+                                  "orphan_process_ids":  [
+
+                                                         ],
+                                  "bundle_cache_bytes":  0,
+                                  "errors":  [
+
+                                             ]
+                              },
+                   "passed":  true
+               },
+    "tampered_update":  {
+                            "rejected":  true,
+                            "content_tamper_rejected":  true,
+                            "alternate_data_stream_rejected":  true,
+                            "current_after_content_tamper":  "1.0.1",
+                            "current_after_alternate_data_stream_tamper":  "1.0.1",
+                            "current_unchanged":  true
+                        },
+    "rollback":  {
+                     "source":  "current.previous",
+                     "previous_pointer":  "1.0.0",
+                     "restored_version":  "1.0.0",
+                     "current_version":  "1.0.0",
+                     "launch":  {
+                                    "passed":  true,
+                                    "version":  "1.0.0",
+                                    "core_attested":  true,
+                                    "mission_verified":  true,
+                                    "effect_verified":  true,
+                                    "journal_completed_records":  1,
+                                    "replay_visible":  true,
+                                    "replay_single_effect":  true,
+                                    "network_snapshots":  [
+                                                              {
+                                                                  "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                  "observer_ok":  true,
+                                                                  "tcp":  [
+
+                                                                          ],
+                                                                  "udp":  [
+
+                                                                          ]
+                                                              },
+                                                              {
+                                                                  "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                  "observer_ok":  true,
+                                                                  "tcp":  [
+
+                                                                          ],
+                                                                  "udp":  [
+
+                                                                          ]
+                                                              }
+                                                          ],
+                                    "network_observer_ok":  true,
+                                    "graceful_shutdown":  true,
+                                    "orphan_process_ids":  [
+
+                                                           ],
+                                    "bundle_cache_bytes":  0,
+                                    "errors":  [
+
+                                               ]
+                                },
+                     "passed":  true
+                 },
+    "uninstall_keep_data":  {
+                                "passed":  true
+                            },
+    "reinstall":  {
+                      "launch":  {
+                                     "passed":  true,
+                                     "version":  "1.0.1",
+                                     "core_attested":  true,
+                                     "mission_verified":  true,
+                                     "effect_verified":  true,
+                                     "journal_completed_records":  1,
+                                     "replay_visible":  true,
+                                     "replay_single_effect":  true,
+                                     "network_snapshots":  [
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               },
+                                                               {
+                                                                   "observer":  "Get-NetTCPConnection+Get-NetUDPEndpoint",
+                                                                   "observer_ok":  true,
+                                                                   "tcp":  [
+
+                                                                           ],
+                                                                   "udp":  [
+
+                                                                           ]
+                                                               }
+                                                           ],
+                                     "network_observer_ok":  true,
+                                     "graceful_shutdown":  true,
+                                     "orphan_process_ids":  [
+
+                                                            ],
+                                     "bundle_cache_bytes":  0,
+                                     "errors":  [
+
+                                                ]
+                                 },
+                      "passed":  true
+                  },
+    "uninstall_purge_data":  {
+                                 "passed":  true
+                             },
+    "gates":  {
+                  "reparse_defense":  true,
+                  "install":  true,
+                  "update":  true,
+                  "tampered_payload_rejected":  true,
+                  "rollback":  true,
+                  "uninstall_keep_data":  true,
+                  "reinstall":  true,
+                  "uninstall_purge_data":  true
+              },
+    "failed_gates":  [
+
+                     ],
+    "overall_passed":  true
+}

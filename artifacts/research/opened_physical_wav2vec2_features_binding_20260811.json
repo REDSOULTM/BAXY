@@ -1,0 +1,56 @@
+{
+  "schema": "baxy.opened-physical-wav2vec2-features-binding.v1",
+  "createdAtUtc": "2026-08-11T18:54:08.4948496Z",
+  "role": "opened_development_feature_extraction_only",
+  "programSha256": "d2ba37c09c820dfae1a9febf8ba280af2df724b4de7d6bc2dd2a28c88a36240f",
+  "testSha256": "c7e7f6ab1b1983ba3c499f69406e2da442361f029a245008fe14b529ffc83c4e",
+  "prosodyProgram": "D:/BAXY/source/experiments/wake_validation/evaluate_prosody_spectral_loco_diagnostic_v1.py",
+  "prosodyProgramSha256": "86bd8b972f3d8a26f718b4736a8eaccd70de560578d5e6039a1a8185c03774a8",
+  "plannedOutputRoot": "D:/BAXYRuntime/research/baxy_opened_phonetic_prosody_features_v1",
+  "teacher": {
+    "root": "D:/BAXYRuntime/experiments/wakeword/phoneme_audit/facebook-wav2vec2-lv-60-espeak-cv-ft-ae45363b",
+    "weightsSha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "configSha256": "4609fb49b7e1d28aecb2840da1926c40bd915bc6f1120a940afacf7159bbfb13"
+  },
+  "layer": 2,
+  "batchSize": 16,
+  "contract": {
+    "openedDevelopmentCorporaOnly": true,
+    "physicalV17Read": false,
+    "filenamesRetained": false,
+    "transcriptTextRetained": false,
+    "teacherFrozen": true,
+    "runtimeModificationAllowed": false,
+    "promotionEligible": false,
+    "effectsExecuted": 0
+  },
+  "corpora": [
+    {
+      "name": "endpoint_confusable",
+      "root": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_endpoint_confusable_raw_v1_development",
+      "manifestSha256": "a73eb59ef219b244388c9c30ca2504e72eb25ef8a58c15cc4b8fd0c9e89c60c4",
+      "counts": {
+        "positive": 24,
+        "negative": 96
+      }
+    },
+    {
+      "name": "physical_v20",
+      "root": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_reserved_raw_v20_development",
+      "manifestSha256": "a18e19dcf175994418f3f838c69032f17a1666fb61cfc2076075719ff3fdfbc6",
+      "counts": {
+        "positive": 48,
+        "negative": 96
+      }
+    },
+    {
+      "name": "human_v14",
+      "root": "D:/BAXYRuntime/experiments/wakeword/controlled_physical_room_real_human_augmented_raw_v14_validation",
+      "manifestSha256": "d98078c60c0a13027c5c3c5d3e0bdd53bf787dc0db8245cc5abb53dde2735805",
+      "counts": {
+        "positive": 48,
+        "negative": 96
+      }
+    }
+  ]
+}

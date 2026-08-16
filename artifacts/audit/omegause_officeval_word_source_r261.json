@@ -1,0 +1,70 @@
+{
+  "schema": "baxy.omegause-officeval-word-source.r261.v1",
+  "authority": "external_source_identity_and_semantic_admission_audit_not_model_training",
+  "verdict": "rejected_preexecution_final_artifact_only_lifecycle_mismatch",
+  "source": {
+    "repository": "https://huggingface.co/datasets/baidu-frontier-research/OmegaUse-OfficeVal",
+    "commit": "cd6ba6d8fb83b3fb551e24eebc20e1fb0bd154a5",
+    "license": "Apache-2.0",
+    "source_files_merkle_sha256": "b2a49df18760ae2bf752055bfef14382e8fa9d4a7ff009510cb257be5e5b1541",
+    "merged_english_task_rows": 100,
+    "word_related_instruction_rows": 39,
+    "operation_intents": [
+      "Annotate",
+      "Beautify",
+      "Compute",
+      "Extract",
+      "Other",
+      "Reformat",
+      "Restructure"
+    ],
+    "task_instruction_texts_retained": false,
+    "task_instruction_identifiers_retained": false
+  },
+  "observed_surface": {
+    "source_native_baxy_operation_labels": false,
+    "source_requires_microsoft_word_application": false,
+    "evaluation_target": "final delivered artifact, not execution trajectory",
+    "evaluation_allows_gui_scripts_or_apis": true,
+    "evaluation_observes_active_document_state": false,
+    "evaluation_observes_saved_dirty_state": false,
+    "evaluation_binds_discard_to_confirmation": false
+  },
+  "admission": {
+    "required_baxy_operations": [
+      "office.word.append",
+      "office.word.close",
+      "office.word.discard",
+      "office.word.save",
+      "office.word.start",
+      "office.word.status"
+    ],
+    "required_application_and_verification": "Microsoft Word operations verified through COM, including an active document, Saved/Dirty state and confirmation-bound discard",
+    "instruction_keyword_candidates_not_labels": {
+      "office.word.append": 11,
+      "office.word.close": 0,
+      "office.word.discard": 0,
+      "office.word.save": 0,
+      "office.word.start": 6,
+      "office.word.status": 0
+    },
+    "admitted_baxy_operations": [],
+    "reason": "OmegaUse publishes authentic long-horizon requests and final-artifact rubrics, but deliberately does not constrain or observe the execution trajectory. It has no native BAXY labels and no close, discard, save or active-state requests in its Word-related instructions. Final deliverable quality cannot establish BAXY's active Microsoft Word lifecycle semantics."
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_requirement": "Do not use OmegaUse final-artifact tasks to fill R207. A successor must publish native Microsoft Word COM lifecycle requests and state-sensitive verifiers for all six missing typed operations.",
+  "identities": {
+    "catalog_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "program_sha256": "88c4d2d0973855a158f0aaee1e7b144a05fc4dae6061b99dae8be075e03dcd2f"
+  }
+}

@@ -1,0 +1,465 @@
+{
+  "schema": "baxy.first-turn-prefix-priming-ab.v1",
+  "arm_order": [
+    "baseline",
+    "primed"
+  ],
+  "server": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+  "model": "D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+  "profile": {
+    "parallel": 3,
+    "context_per_slot": 4096,
+    "cache_prompt": "llama.cpp b9980 default true",
+    "fresh_server_per_case_and_arm": true,
+    "one_real_turn_per_server": true,
+    "prime_slots": {
+      "P": 0,
+      "G": 1,
+      "L": 2
+    },
+    "real_requests_use_automatic_slot_selection": true
+  },
+  "safety": {
+    "production_code_changed": false,
+    "core_started": false,
+    "external_effects_executed": false,
+    "real_case_text_in_priming_requests": false
+  },
+  "exact_turn_outputs": true,
+  "actual_request_identity": true,
+  "actual_prompt_token_identity": true,
+  "aggregate_delta_primed_minus_baseline_seconds": {
+    "first_turn_e2e": {
+      "median": -0.4948292000044603,
+      "total": -0.4948292000044603,
+      "wins": 1,
+      "pairs": 1,
+      "minimum": -0.4948292000044603,
+      "maximum": -0.4948292000044603
+    },
+    "ready_to_first_turn_complete_including_priming": {
+      "median": 0.29210419999435544,
+      "total": 0.29210419999435544,
+      "wins": 0,
+      "pairs": 1,
+      "minimum": 0.29210419999435544,
+      "maximum": 0.29210419999435544
+    },
+    "startup_to_first_turn_complete": {
+      "median": -0.13784940000186907,
+      "total": -0.13784940000186907,
+      "wins": 1,
+      "pairs": 1,
+      "minimum": -0.13784940000186907,
+      "maximum": -0.13784940000186907
+    }
+  },
+  "pairs": [
+    {
+      "case": "knowledge_a",
+      "expected_mode": "conversation",
+      "arm_order": [
+        "baseline",
+        "primed"
+      ],
+      "exact_turn_output": true,
+      "actual_request_identity": true,
+      "actual_prompt_token_identity": true,
+      "delta_primed_minus_baseline_seconds": {
+        "first_turn_e2e": -0.4948292000044603,
+        "ready_to_first_turn_complete_including_priming": 0.29210419999435544,
+        "startup_to_first_turn_complete": -0.13784940000186907
+      },
+      "arms": [
+        {
+          "arm": "baseline",
+          "case": "knowledge_a",
+          "startup_to_ready_seconds": 4.561644499997783,
+          "priming": null,
+          "priming_seconds": 0.0,
+          "first_turn_e2e_seconds": 4.7668622999990475,
+          "ready_to_first_turn_complete_seconds": 4.766863700002432,
+          "startup_to_first_turn_complete_seconds": 9.328508200000215,
+          "turn": {
+            "case": "knowledge_a",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 4.766825099999551,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+          },
+          "posts": [
+            {
+              "case": "knowledge_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "elapsed_seconds": 1.2325117000000319,
+              "cache_n": 0,
+              "prompt_n": 228,
+              "prompt_ms": 963.861,
+              "predicted_n": 6,
+              "predicted_ms": 239.008,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "elapsed_seconds": 1.7028018999990309,
+              "cache_n": 0,
+              "prompt_n": 168,
+              "prompt_ms": 562.454,
+              "predicted_n": 20,
+              "predicted_ms": 1133.736,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "elapsed_seconds": 2.89667190000182,
+              "cache_n": 0,
+              "prompt_n": 645,
+              "prompt_ms": 910.011,
+              "predicted_n": 72,
+              "predicted_ms": 1956.795,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "elapsed_seconds": 1.8687814000004437,
+              "cache_n": 0,
+              "prompt_n": 202,
+              "prompt_ms": 145.346,
+              "predicted_n": 118,
+              "predicted_ms": 1700.107,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "prompt_tokens_total": 228,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "prompt_tokens_total": 168,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "prompt_tokens_total": 645,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "prompt_tokens_total": 202,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 645.0,
+              "prompt_ms_median": 910.011,
+              "elapsed_median_seconds": 2.89667190000182
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 168.0,
+              "prompt_ms_median": 562.454,
+              "elapsed_median_seconds": 1.7028018999990309
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 228.0,
+              "prompt_ms_median": 963.861,
+              "elapsed_median_seconds": 1.2325117000000319
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 202.0,
+              "prompt_ms_median": 145.346,
+              "elapsed_median_seconds": 1.8687814000004437
+            }
+          }
+        },
+        {
+          "arm": "primed",
+          "case": "knowledge_a",
+          "startup_to_ready_seconds": 4.1316909000015585,
+          "priming": {
+            "derive_seconds": 0.28407350000634324,
+            "inference_seconds": 0.5027074000026914,
+            "total_seconds": 0.7867809000090347,
+            "prefixes": {
+              "P": {
+                "stage": "P",
+                "lcp_tokens_before_margin": 563,
+                "safe_prefix_tokens": 562,
+                "synthetic_prompt_token_lengths": [
+                  582,
+                  582,
+                  584,
+                  582,
+                  582
+                ],
+                "synthetic_prompt_character_lengths": [
+                  2904,
+                  2903,
+                  2904,
+                  2900,
+                  2902
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "G": {
+                "stage": "G",
+                "lcp_tokens_before_margin": 155,
+                "safe_prefix_tokens": 154,
+                "synthetic_prompt_token_lengths": [
+                  161,
+                  161,
+                  163,
+                  161,
+                  161
+                ],
+                "synthetic_prompt_character_lengths": [
+                  798,
+                  797,
+                  798,
+                  794,
+                  796
+                ],
+                "conservative_margin_tokens": 1
+              },
+              "L": {
+                "stage": "L",
+                "lcp_tokens_before_margin": 215,
+                "safe_prefix_tokens": 214,
+                "synthetic_prompt_token_lengths": [
+                  221,
+                  221,
+                  223,
+                  221,
+                  221
+                ],
+                "synthetic_prompt_character_lengths": [
+                  970,
+                  969,
+                  970,
+                  966,
+                  968
+                ],
+                "conservative_margin_tokens": 1
+              }
+            },
+            "requests": [
+              {
+                "stage": "G",
+                "id_slot": 1,
+                "elapsed_seconds": 0.26647940000111703,
+                "safe_prefix_tokens": 154,
+                "tokens_cached": 154,
+                "tokens_evaluated": 154,
+                "cache_n": 0,
+                "prompt_n": 154,
+                "prompt_ms": 263.762,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "L",
+                "id_slot": 2,
+                "elapsed_seconds": 0.26749500000005355,
+                "safe_prefix_tokens": 214,
+                "tokens_cached": 214,
+                "tokens_evaluated": 214,
+                "cache_n": 0,
+                "prompt_n": 214,
+                "prompt_ms": 265.786,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              },
+              {
+                "stage": "P",
+                "id_slot": 0,
+                "elapsed_seconds": 0.5021263000016916,
+                "safe_prefix_tokens": 562,
+                "tokens_cached": 562,
+                "tokens_evaluated": 562,
+                "cache_n": 0,
+                "prompt_n": 562,
+                "prompt_ms": 350.108,
+                "predicted_n": 1,
+                "predicted_ms": 0.001,
+                "stopped_limit": null
+              }
+            ]
+          },
+          "priming_seconds": 0.7867809000090347,
+          "first_turn_e2e_seconds": 4.272033099994587,
+          "ready_to_first_turn_complete_seconds": 5.058967899996787,
+          "startup_to_first_turn_complete_seconds": 9.190658799998346,
+          "turn": {
+            "case": "knowledge_a",
+            "expected_mode": "conversation",
+            "elapsed_seconds": 4.27200140000059,
+            "decision": {
+              "mode": "conversation",
+              "operation": null,
+              "question": "",
+              "conversation_kind": "knowledge",
+              "effect_count": "zero",
+              "effect_operations": [],
+              "effect_verification": "not_applicable",
+              "response_language": "es"
+            },
+            "extraction": null,
+            "response_language": "es",
+            "reply": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+          },
+          "posts": [
+            {
+              "case": "knowledge_a",
+              "stage": "L",
+              "id_slot": null,
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "elapsed_seconds": 0.679978599997412,
+              "cache_n": 209,
+              "prompt_n": 19,
+              "prompt_ms": 349.422,
+              "predicted_n": 6,
+              "predicted_ms": 207.658,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "G",
+              "id_slot": null,
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "elapsed_seconds": 1.1961123000000953,
+              "cache_n": 149,
+              "prompt_n": 19,
+              "prompt_ms": 327.785,
+              "predicted_n": 20,
+              "predicted_ms": 841.581,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "P",
+              "id_slot": null,
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "elapsed_seconds": 2.3931730999975116,
+              "cache_n": 562,
+              "prompt_n": 83,
+              "prompt_ms": 260.779,
+              "predicted_n": 72,
+              "predicted_ms": 2111.788,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "case": "knowledge_a",
+              "stage": "chat",
+              "id_slot": null,
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "elapsed_seconds": 1.8773301999972318,
+              "cache_n": 0,
+              "prompt_n": 202,
+              "prompt_ms": 145.825,
+              "predicted_n": 118,
+              "predicted_ms": 1704.178,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "actual_request_projection": [
+            {
+              "stage": "L",
+              "payload_sha256": "29c055497dcd735e9391dc6099e467d8ac0ecae023cb4c0ea756485bce978df6",
+              "prompt_tokens_total": 228,
+              "content": "{\"language\":\"es\"}"
+            },
+            {
+              "stage": "G",
+              "payload_sha256": "0b7a0f02688d5f3e42ddd3daa01ca611b4552fcc096d4cdca26e4f1d6042cfac",
+              "prompt_tokens_total": 168,
+              "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"one\"}"
+            },
+            {
+              "stage": "P",
+              "payload_sha256": "80e3907720a8696bb97ac10cf7c81679e01850a1e23ff610608e5812ffb67d05",
+              "prompt_tokens_total": 645,
+              "content": "{\n  \"mode\": \"conversation\",\n  \"operation\": \"\",\n  \"question\": \"No hay\",\n  \"conversation_kind\": \"knowledge\",\n  \"effect_count\": \"zero\",\n  \"effect_operations\": [],\n  \"response_language\": \"es\"\n}"
+            },
+            {
+              "stage": "chat",
+              "payload_sha256": "cc4d614d942169058ca735193d8b5de09339b1c9094fc7da985c9773ee9274c0",
+              "prompt_tokens_total": 202,
+              "content": "La fotosíntesis es el proceso mediante el cual las plantas, algas y algunas bacterias convierten la energía de la luz solar en energía química. Utilizan dióxido de carbono ($\\text{CO}_2$) y agua ($\\text{H}_2\\text{O}$) para producir glucosa (un tipo de azúcar que sirve como alimento) y oxígeno ($\\text{O}_2$) como subproducto.\n\nEn términos sencillos, es cómo las plantas \"comen\" la luz del sol para fabricar su propio alimento y liberan el oxígeno que necesitamos para respirar."
+            }
+          ],
+          "stage_summary": {
+            "P": {
+              "calls": 1,
+              "cache_n_median": 562.0,
+              "prompt_n_median": 83.0,
+              "prompt_ms_median": 260.779,
+              "elapsed_median_seconds": 2.3931730999975116
+            },
+            "G": {
+              "calls": 1,
+              "cache_n_median": 149.0,
+              "prompt_n_median": 19.0,
+              "prompt_ms_median": 327.785,
+              "elapsed_median_seconds": 1.1961123000000953
+            },
+            "L": {
+              "calls": 1,
+              "cache_n_median": 209.0,
+              "prompt_n_median": 19.0,
+              "prompt_ms_median": 349.422,
+              "elapsed_median_seconds": 0.679978599997412
+            },
+            "chat": {
+              "calls": 1,
+              "cache_n_median": 0.0,
+              "prompt_n_median": 202.0,
+              "prompt_ms_median": 145.825,
+              "elapsed_median_seconds": 1.8773301999972318
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "candidate_status": "research_only",
+  "promotion_rule": "Require exact projected outputs, identical real request payloads and prompt-token totals, increased real P/G/L cache_n, and a repeatable opposite-order first-turn gain. Report priming and startup-to-complete separately; do not promote as a cold-start optimization if priming merely moves equal or greater latency ahead of the real turn."
+}

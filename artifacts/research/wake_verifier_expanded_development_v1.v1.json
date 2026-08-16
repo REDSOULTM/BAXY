@@ -1,0 +1,207 @@
+{
+  "schema": "baxy.wake-verifier-expanded-development.v1",
+  "measured_at_utc": "2026-08-06T02:27:45.128864+00:00",
+  "scope": "new_expanded_development_only_frozen_v4_product_cascade",
+  "sources": {
+    "corpus_manifest_sha256": "8c505d4abbf092404f71aa9c313ff2b4054a8c15f68721bbb4ccdae076a9c2b2",
+    "stage1_model_sha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "verifier_manifest_sha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "stt_files_sha256": {
+      "encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+      "decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+      "joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+      "tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+    },
+    "ffmpeg_sha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf"
+  },
+  "contract": {
+    "candidate_was_frozen_before_expanded_corpus_existed": true,
+    "first_causal_broad_hit": true,
+    "stage1_hop_samples": 2560,
+    "audio_frame_samples": 512,
+    "verification_samples": 48000,
+    "maximum_turn_samples": 480000
+  },
+  "metrics": {
+    "positive_accepted": 1,
+    "positive_total": 4,
+    "matched_negative_false_accepts": 0,
+    "matched_negative_total": 8,
+    "development_gate_passed": false
+  },
+  "records": [
+    {
+      "relative_path": "positive/EeLqy-j3Ji8_00_positive.wav",
+      "source_id": "EeLqy-j3Ji8",
+      "speaker_group": "uploader_el_ganxo",
+      "label": "positive",
+      "stage1_hit": null,
+      "transcript": "",
+      "stage1_eligible": false,
+      "method": "no_hit",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "matched_negative/EeLqy-j3Ji8_00_matched_negative.wav",
+      "source_id": "EeLqy-j3Ji8",
+      "speaker_group": "uploader_el_ganxo",
+      "label": "matched_negative",
+      "stage1_hit": {
+        "window_end_seconds": 3.76,
+        "score": 0.02198129892349243
+      },
+      "transcript": "Es una historia aquí porque una...",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "matched_negative/EeLqy-j3Ji8_01_matched_negative.wav",
+      "source_id": "EeLqy-j3Ji8",
+      "speaker_group": "uploader_el_ganxo",
+      "label": "matched_negative",
+      "stage1_hit": {
+        "window_end_seconds": 1.2,
+        "score": 0.021632790565490723
+      },
+      "transcript": "",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "positive/Axgc6aHutvw_00_positive.wav",
+      "source_id": "Axgc6aHutvw",
+      "speaker_group": "uploader_jes_s_marcos",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 0.56,
+        "score": 0.01926368474960327
+      },
+      "transcript": "Bueno, nuestra caldera pasirroca, Victoria.",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "matched_negative/Axgc6aHutvw_00_matched_negative.wav",
+      "source_id": "Axgc6aHutvw",
+      "speaker_group": "uploader_jes_s_marcos",
+      "label": "matched_negative",
+      "stage1_hit": null,
+      "transcript": "",
+      "stage1_eligible": false,
+      "method": "no_hit",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "matched_negative/Axgc6aHutvw_01_matched_negative.wav",
+      "source_id": "Axgc6aHutvw",
+      "speaker_group": "uploader_jes_s_marcos",
+      "label": "matched_negative",
+      "stage1_hit": {
+        "window_end_seconds": 0.88,
+        "score": 0.01868876814842224
+      },
+      "transcript": "y tenemos el mismo problema, ¿vale amigo?",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "positive/Olv3YYWA7g0_00_positive.wav",
+      "source_id": "Olv3YYWA7g0",
+      "speaker_group": "uploader_jes_s_marcos",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 1.68,
+        "score": 0.03947797417640686
+      },
+      "transcript": "Gracias.",
+      "stage1_eligible": true,
+      "method": "rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "matched_negative/Olv3YYWA7g0_00_matched_negative.wav",
+      "source_id": "Olv3YYWA7g0",
+      "speaker_group": "uploader_jes_s_marcos",
+      "label": "matched_negative",
+      "stage1_hit": null,
+      "transcript": "",
+      "stage1_eligible": false,
+      "method": "no_hit",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "matched_negative/Olv3YYWA7g0_01_matched_negative.wav",
+      "source_id": "Olv3YYWA7g0",
+      "speaker_group": "uploader_jes_s_marcos",
+      "label": "matched_negative",
+      "stage1_hit": {
+        "window_end_seconds": 2.8,
+        "score": 0.019308358430862427
+      },
+      "transcript": "la presión correcta vale chao",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "positive/yRzt-fhlZ_0_00_positive.wav",
+      "source_id": "yRzt-fhlZ_0",
+      "speaker_group": "uploader_hot-well_ukraine",
+      "label": "positive",
+      "stage1_hit": {
+        "window_end_seconds": 2.8,
+        "score": 0.024926692247390747
+      },
+      "transcript": "КМП торговой марки Бакси.",
+      "stage1_eligible": true,
+      "method": "ctc_exact",
+      "margin": 5.274874088605898,
+      "detected": true
+    },
+    {
+      "relative_path": "matched_negative/yRzt-fhlZ_0_00_matched_negative.wav",
+      "source_id": "yRzt-fhlZ_0",
+      "speaker_group": "uploader_hot-well_ukraine",
+      "label": "matched_negative",
+      "stage1_hit": {
+        "window_end_seconds": 0.72,
+        "score": 0.01998952031135559
+      },
+      "transcript": "и попытки изменения каких-либо параметров.",
+      "stage1_eligible": false,
+      "method": "stage1_rejected",
+      "margin": null,
+      "detected": false
+    },
+    {
+      "relative_path": "matched_negative/yRzt-fhlZ_0_01_matched_negative.wav",
+      "source_id": "yRzt-fhlZ_0",
+      "speaker_group": "uploader_hot-well_ukraine",
+      "label": "matched_negative",
+      "stage1_hit": null,
+      "transcript": "",
+      "stage1_eligible": false,
+      "method": "no_hit",
+      "margin": null,
+      "detected": false
+    }
+  ],
+  "runtime_seconds": 18.738608100044075,
+  "candidate_frozen": false,
+  "product_operating_point": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}

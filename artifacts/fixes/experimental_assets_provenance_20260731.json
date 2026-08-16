@@ -1,0 +1,26 @@
+{
+ "schema": "baxy.experimental-assets-provenance.v1",
+ "measured_at_utc": "2026-07-31",
+ "folder": "D:\\BAXY\\experimental_assets_20260731",
+ "authorization": "user batch 2026-07-30, extended to 2026-07-31",
+ "outside_git": true,
+ "outside_active_installation": true,
+ "manifest_changed": false,
+ "sources": {
+  "mtp-gemma-4-E2B-it-Q4_0.gguf": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF/resolve/main/MTP/mtp-gemma-4-E2B-it-Q4_0.gguf"
+ },
+ "files": {
+  "mtp-gemma-4-E2B-it-Q4_0.gguf": {
+   "bytes": 59235648,
+   "sha256": "586f2460b909008640981ec34060aa864e03c144fbabfb3173c4335087e4aae0",
+   "license": "apache-2.0",
+   "repository_last_modified_utc": "2026-07-17T12:36:37.000Z",
+   "why_downloaded": "the only candidate that survived the documentary filter: same repository as the certified target, Q4 precision as Google's QAT card requires of an MTP assistant, and the certified b9980 accepts it",
+   "outcome": "rejected physically; see mtp_q4_abba_20260731.json"
+  }
+ },
+ "diagnostics_written_in_folder": [
+  "b9980_mtp_q4_load.out",
+  "b9980_mtp_q4_load.err"
+ ]
+}

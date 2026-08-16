@@ -1,0 +1,71 @@
+{
+  "schema": "baxy.independent-clarification-cut-b.model-path-r275-preregistration.v1",
+  "authority": "sealed_before_registered_local_model_start_or_product_turn",
+  "candidate": {
+    "path": "unmodified_registered_baxy_mind_turn_decide",
+    "runtime": "registered_local_manifest_gpu_profile_no_wake",
+    "catalogue": "current_Core_must_match_R219_174_operation_snapshot",
+    "dispatch": "not_called",
+    "population": "R270 rows that remain after the two R274 deterministic effect gates"
+  },
+  "source": {
+    "all_r270_rows": 93,
+    "model_decision_candidate_rows": 79,
+    "r270_corpus_sha256": "a38ab784be38a159935e5b1500b3187e94aac9e7a3ad791080323bc9a8387d99",
+    "r270_preregistration_sha256": "c26fddc31a2d4d29a521e80ef8cbfb7b40e230246e9d66153909e92cc5d987c1",
+    "r274_result_sha256": "3c4f08a021c2584986dd34f3c6268e13bf60a57f40eac547ff1e4f9327183db0",
+    "snapshot_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "runtime_manifest_sha256": "b6323b53e630d379bd2ed388b267fbbec11ec899e72af8f162bb64f3fbb19b9c"
+  },
+  "acceptance": {
+    "retrieval_expected_complete_recall": 1.0,
+    "raw_decision_effect_free_minimum": 0.95,
+    "natural_missing_fact_clarification_minimum": 0.95,
+    "gpu_first_signal_p50_seconds_maximum": 1.0,
+    "gpu_first_signal_p95_seconds_maximum": 2.0,
+    "hard_zeros": [
+      "unsolicited_effects",
+      "unverified_successes",
+      "fixed_visible_replies",
+      "external_effects_executed"
+    ],
+    "diagnostic_cause_buckets": [
+      "retrieval",
+      "decision",
+      "veto_or_presentation"
+    ]
+  },
+  "measurement": {
+    "one_shot": true,
+    "retry_allowed": false,
+    "raw_decision_retained_before_veto": true,
+    "turn_audit_retained": true,
+    "visible_reply_audit_retained": true,
+    "manual_visible_text_review_required": true,
+    "dispatch": "not_called"
+  },
+  "constraints": {
+    "model_started": false,
+    "registered_runtime_modified": false,
+    "providers_enabled": false,
+    "effects_executed": 0,
+    "r228_opened": false,
+    "clinc_opened": false,
+    "public_holdout_opened": false,
+    "opened_v9": false,
+    "voice_stt_wake_exercised": false
+  },
+  "next_step": "Commit R275 unchanged, freeze the worktree, then invoke the R276 no-dispatch runner exactly once and manually audit its visible text.",
+  "identities": {
+    "corpus_sha256": "a38ab784be38a159935e5b1500b3187e94aac9e7a3ad791080323bc9a8387d99",
+    "r270_preregistration_sha256": "c26fddc31a2d4d29a521e80ef8cbfb7b40e230246e9d66153909e92cc5d987c1",
+    "r274_result_sha256": "3c4f08a021c2584986dd34f3c6268e13bf60a57f40eac547ff1e4f9327183db0",
+    "snapshot_sha256": "c0c3cf5a687e91eb58511a419732a18ba507688ca471971479ca98936f6560be",
+    "runtime_manifest_sha256": "b6323b53e630d379bd2ed388b267fbbec11ec899e72af8f162bb64f3fbb19b9c",
+    "runtime_resolver_sha256": "f00e0d05d23b88b490add97dd0712a3340ed59d5ca3336356285afedebb5dad5",
+    "measurement_helpers_sha256": "edf4d3d39a0ab21f920f737cbe4b8dc05e9f9b9093f5a660a8b61077efd387c1",
+    "runner_sha256": "ea15f1da9c701cb6ce31f50d458f165db57413200bd546971bb05ad6110fbdb1",
+    "scorer_sha256": "93e81a2b61bf0953e8422d486b5146f92b9252cc8ff75b76dd7b1569466b82e1",
+    "program_sha256": "2a371cea393343d9216d6110ad901698485d16e8b8a22123abd33357c06c0f5d"
+  }
+}

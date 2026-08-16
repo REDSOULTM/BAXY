@@ -1,0 +1,41 @@
+# Development candidate 10: candidate 6 plus two disjoint opened human
+# physical-room corpora localized by independent CTC and Parakeet teachers.
+# Only target-containing two-second windows are appended.
+model_name: baxy_voxcpm2_mixed_hardnegative_physicalmultialigned_development_v10
+target_phrases:
+  - "Baxy"
+tts_backend: voxcpm
+
+n_samples: 1800
+n_samples_val: 500
+n_background_samples: 0
+n_background_samples_val: 0
+
+data_dir: D:/BAXYRuntime/experiments/wakeword/livekit_data
+output_dir: D:/BAXYRuntime/experiments/wakeword/livekit_output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 16
+  rounds: 3
+  background_paths:
+    - D:/BAXYRuntime/experiments/wakeword/livekit_data/backgrounds
+  rir_paths:
+    - D:/BAXYRuntime/experiments/wakeword/room_ir
+
+model:
+  model_type: conv_attention
+  model_size: large
+
+steps: 12000
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.03
+max_negative_weight: 1000
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 128
+  adversarial_negative: 96
+  ACAV100M_sample: 384
+  background_noise: 0

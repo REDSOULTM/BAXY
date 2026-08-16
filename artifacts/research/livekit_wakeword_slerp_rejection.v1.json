@@ -1,0 +1,92 @@
+{
+  "schema": "baxy.livekit-wakeword-generation-rejection.v1",
+  "measured_at_utc": "2026-08-04T13:05:21.9062337Z",
+  "upstream": {
+    "repository": "https://github.com/livekit/livekit-wakeword",
+    "version": "0.2.1",
+    "commit": "1ec7f680df30ff4ca0ebae6b5983441e94b10980"
+  },
+  "rejected_configuration_sha256": "1fc260024b7eca547f6a9116f3d3355a9a49b7b90989cbbe46119d46d783b353",
+  "rejected_output_directory": "D:/BAXYRuntime/experiments/wakeword/livekit_output/baxy_piper_scale",
+  "preserved": true,
+  "deleted_files": 0,
+  "counts_at_stop": {
+    "positive_train": 25000,
+    "positive_test": 1368,
+    "negative_train": 6286,
+    "negative_test": 0,
+    "background_train": 0,
+    "background_test": 0
+  },
+  "binary_validation": {
+    "dense_names": true,
+    "all_existing_wavs_decoded": true,
+    "positive_train_sha256": "9189cc831a9f1a942e1a582f5e0ac8d0b3d4fa6152a0a944a11f2c9d235fe220",
+    "positive_train_min_frames": 4880,
+    "positive_train_max_frames": 411920
+  },
+  "semantic_failure": {
+    "known_positive_outlier_count": 20,
+    "duration_over_2_seconds_indices": [
+      3860, 3861, 3862, 3863, 3864, 3865, 3866, 3867, 3868, 3869,
+      3870, 3871, 3872, 3873, 3874, 3875, 15224, 15227, 15231, 15233
+    ],
+    "duration_over_3_seconds_indices": [15224, 15227, 15231, 15233],
+    "parakeet_confirmed_non_target_examples": [
+      {"index": 3860, "transcript": "Taxi."},
+      {"index": 3864, "transcript": "Maxi."},
+      {"index": 3865, "transcript": "The vaccine."},
+      {"index": 3866, "transcript": "Thanks."},
+      {"index": 3870, "transcript": "Back seat."},
+      {"index": 15224, "transcript": "Thank you."},
+      {"index": 15231, "transcript": "Backseat."}
+    ],
+    "root_cause_boundary": "invalid linguistic content appears after correct baxi text normalization and is localized to particular interpolated speaker-embedding neighborhoods",
+    "candidate_model_scores_accessed": false,
+    "blind_human_partition_accessed_by_candidate": false
+  },
+  "research_basis": [
+    {
+      "title": "Interpolating Speaker Identities for Synthetic Voice Generation",
+      "venue": "SSW 2025",
+      "url": "https://www.isca-archive.org/ssw_2025/francis25_ssw.html",
+      "relevance": "reports weaker zero-shot TTS generalization where training data does not approximate points in the speaker-embedding space"
+    },
+    {
+      "title": "livekit-wakeword v0.2.1",
+      "url": "https://github.com/livekit/livekit-wakeword",
+      "relevance": "upstream generation and classifier implementation"
+    }
+  ],
+  "decision_at_measured_at": {
+    "status": "rejected_before_training",
+    "reason": "known false positive labels in the positive class",
+    "replacement_model_name": "baxy_piper_discrete_scale",
+    "replacement_slerp_weights": [1.0],
+    "replacement_mechanism": "use each trained Piper speaker endpoint exactly; retain 904-speaker diversity without unseen interpolated identities"
+  },
+  "subsequent_evidence": {
+    "measured_at_utc": "2026-08-04T13:36:55.612631+00:00",
+    "audit": "artifacts/research/livekit_wakeword_piper_ipa_pilot.v1.json",
+    "audit_sha256": "3c19a380471ece78c7da476ca27bb8acfb1815a67937a2fdef19d5f1402836bf",
+    "phoneme_model": "facebook/wav2vec2-lv-60-espeak-cv-ft",
+    "phoneme_model_revision": "ae45363bf3413b374fecd9dc8bc1df0e24c3b7f4",
+    "common_prefix_clip_count": 1048,
+    "accent_tolerant_exact": {
+      "interpolated_slerp": 114,
+      "discrete_speaker_endpoint": 120
+    },
+    "accent_tolerant_edit_distance_lte_1": {
+      "interpolated_slerp": 462,
+      "discrete_speaker_endpoint": 411
+    },
+    "blind_human_partition_accessed": false
+  },
+  "current_decision": {
+    "status": "both_piper_strategies_rejected_before_training",
+    "reason": "The discrete speaker endpoint removed the duration catastrophes but did not materially repair phoneme-label fidelity; even the accent-tolerant exact rate was only 11.45%.",
+    "replacement_model_name": "baxy_voxcpm2_gguf_ipa_filtered",
+    "replacement_boundary": "VoxCPM2 candidates must pass exact IPA, WebRTC VAD, <=2 second duration, and a post-transform exact IPA re-audit before training."
+  },
+  "effects_executed": 0
+}

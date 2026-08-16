@@ -1,0 +1,117 @@
+{
+  "schema": "baxy.soft-ctc-alignment-full-negative-regression.v5",
+  "measuredAtUtc": "2026-08-07T03:21:17.909024+00:00",
+  "scope": "previously_opened_100h_full_rescan_preregistered_soft_ctc_guard",
+  "sources": {
+    "fusionManifestSha256": "1eed38e6ef06923954d4060f6f647796fe2158237c7e8704d120a28c94feec0c",
+    "ctcVerifierManifestSha256": "e6d22c04f96e332d19c2765f2997b1c3fecb2037a10dc24b9b7f477d2e7ff69c",
+    "cudaParityReportSha256": "ec9664826eb1f8f7291f59e30b47ee33d3042f5ad351c39db9611c4cfe171b3f",
+    "teacherWeightsSha256": "3173bde9e9ce490fa0f989e413c42f25bc1820c020adc1e6b9b87025b3cfcc5e",
+    "priorHoldoutReportSha256": "8c582921eba872a0af001770857d011519cab8ae5efa935da05bce60f4a1b43f",
+    "priorStage1ScanSha256": "8854b5b489d4d2be9c761de9acbfe1535e767204bb27db295ac6deb4395c3b04",
+    "corpusManifestSha256": "8ed9a34e1f6689a3a18c632d7d409e7f81f12987b262df9be26c7e24c5fd7329",
+    "stage1ModelSha256": "14ba8cbfa58d99ee502ad9efd2bee4680f4d5c42e1d4a98bd1ac81989b6b9148",
+    "actualFfmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "sentinelThreshold": "0.01",
+    "fixedViewStarts": "40000,64000",
+    "stage1ExactBoundaryGuard": "0.0001",
+    "stt:encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+    "stt:decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+    "stt:joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+    "stt:tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d",
+    "softCtcDevelopmentReportSha256": "6cdb375ca371a1590d06d66d308e5e4ae1bebf663f98d08842901691803a0b73",
+    "softCtcThreshold": "-0.25",
+    "failedStrengthRegressionSha256": "e767016b307419235891e6423c34ef3767f3a63eba566db419efe3c7eacfa294"
+  },
+  "contract": {
+    "observedMaximumNormalizedScoreDrift": 0.001852023889695456,
+    "cpuRescoringBelt": 0.25,
+    "empiricalSafetyMultiplier": 134.9874596062093,
+    "priorStage1MaximaReusedForSafePrefilterOnly": true,
+    "everySentinelCandidateRescannedAtRuntimeSchedule": true,
+    "firstSentinelCrossingUsedForCapture": true,
+    "stage1OverlapScreenExactBoundaryGuard": 0.0001,
+    "stage1BoundaryViewsRescoredByOriginalCpuPath": true,
+    "fixedFusionViewStarts": [
+      40000,
+      64000
+    ],
+    "everyFusionViewWithinBeltRescoredByExactCpuOnnx": true,
+    "contextualAsrRestrictedToExactAcousticFalseCandidates": true,
+    "secondaryViewGuard": {
+      "name": "soft_local_ctc_target_minus_confusable",
+      "threshold": -0.25,
+      "minimumAlignmentFrames": 8,
+      "maximumAlignmentFrames": 40,
+      "selectedOnOpenedHumanDevelopment": true
+    },
+    "secondaryViewGuardRestrictedToSameExactCpuFusionView": true,
+    "contextualHotwordScore": 4.0,
+    "contextualAsrRestrictedToSecondaryGuardPassingCandidates": true,
+    "priorEstablishedCtcFalseActivations": 0,
+    "freshHoldoutClaimSupported": false,
+    "farCertificationSupported": false,
+    "softCtcThresholdSelectedBeforeThisRegression": true,
+    "softCtcDevelopmentGatePassed": true,
+    "softCtcRequiresSameFusionPassingView": true
+  },
+  "metrics": {
+    "descriptiveExposureHours": 100.59087964444444,
+    "corpusUtterances": 28539,
+    "sentinelCandidates": 28139,
+    "verificationViews": 56278,
+    "cpuRescoredViews": 36,
+    "rawFusionFalseActivations": 34,
+    "secondaryGuardPassingRawFusionFalseActivations": 33,
+    "contextualLexicalEvidenceAmongRawFalse": 1,
+    "contextualLexicalEvidenceAmongSecondaryGuard": 1,
+    "guardedNegativeFalseActivations": 1,
+    "guardedDescriptivePointFalseActivationsPerHour": 0.009941259123438129,
+    "maximumCudaScreenDecisionMargin": 5.774011115282465,
+    "maximumCpuRescoredDecisionMargin": 5.77393999676955,
+    "minimumCpuRescoredDecisionMargin": -0.0766924066450998
+  },
+  "runtime": {
+    "cudaDevice": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "torch": "2.10.0+cu130",
+    "onnxruntime": "1.28.0",
+    "cudaBatchSize": 32,
+    "recordBatchSize": 64,
+    "stage1Workers": 16,
+    "screeningSeconds": 16025.673515399976,
+    "cpuRescoreSeconds": 39.41422869998496,
+    "contextualDecodeSeconds": 99.96668179996777,
+    "decodeMillisecondsPerCandidate": {
+      "p50": 1515.8182000159286,
+      "p95": 3787.098700006027,
+      "maximum": 7704.653699998744,
+      "mean": 1608.414080895029
+    },
+    "hyperMillisecondsPerView": {
+      "p50": 34.88604997983202,
+      "p95": 70.26747000636531,
+      "maximum": 195.8275000215508,
+      "mean": 39.68979383947549
+    },
+    "cudaCtcMillisecondsPerView": {
+      "p50": 21.57589062517218,
+      "p95": 22.32001250013127,
+      "maximum": 48.998612499417504,
+      "mean": 21.67645908703029
+    },
+    "cpuCtcMillisecondsPerRescoredView": {
+      "p50": 1062.8821499994956,
+      "p95": 1272.5392750144238,
+      "maximum": 1607.8539000009187,
+      "mean": 1094.8396861106933
+    }
+  },
+  "regressionPassed": false,
+  "candidateDevelopmentUse": true,
+  "candidateFrozen": false,
+  "productOperatingPoint": false,
+  "negativeCorpusPreviouslyAccessed": true,
+  "blindHumanAudioAccessed": false,
+  "recordsTranscriptsOrFilenamesRetained": false,
+  "effectsExecuted": 0
+}

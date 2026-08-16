@@ -1,0 +1,453 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-08-11T21:11:07.921066+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "Qwen3-4B-Q4_K_M.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424,
+      "registeredCandidateWasFunctional": true
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "bytes": 2497280256
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 169,
+  "total_seconds": 16.035,
+  "cases": [
+    {
+      "case": "deterministic_file_write",
+      "planner_path": "deterministic_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "action",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "filesystem.write.text"
+      ],
+      "effect_operations": [
+        "filesystem.write.text"
+      ],
+      "decision_seconds": 2.176,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "filesystem.write.text"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "filesystem.write.text",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "relativePath",
+            "text"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "resourceId": "fs_5bc69f53b3c043058edc721a4cf22783",
+            "sha256": "8565b6a7b00f0d5303688fb5fd16808150984240a593fae76327ccb2a216e6e7"
+          }
+        }
+      ],
+      "seconds": 2.283,
+      "status": "passed",
+      "dependency_positions": [
+        []
+      ]
+    },
+    {
+      "case": "capture_ocr_grounding",
+      "planner_path": "deterministic_skeleton_real_llm_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "effect_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "decision_seconds": 0.013,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "capture.screenshot",
+          "risk": "privacy_sensitive",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "captureId": "capture_f52c19ef43b244b5a38a46c75b807383",
+            "sha256": "85e13672d3bab253feea97401a23f9c4b4f0dc723f66e0db4df1fdb3fe377951"
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "ocr.read",
+          "risk": "privacy_sensitive",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "captureId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "captureId": "capture_f52c19ef43b244b5a38a46c75b807383"
+          }
+        }
+      ],
+      "seconds": 0.424,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "case": "llm_steam_catalog_status",
+      "planner_path": "real_llm_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "game.catalog.list",
+        "game.install.status"
+      ],
+      "effect_operations": [
+        "game.catalog.list",
+        "game.install.status"
+      ],
+      "decision_seconds": 0.012,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "game.catalog.list",
+        "game.install.status"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "game.catalog.list",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "count": 16,
+            "games": [
+              {
+                "appId": "924970",
+                "name": "Back 4 Blood",
+                "state": "installed"
+              },
+              {
+                "appId": "696370",
+                "name": "BROKE PROTOCOL",
+                "state": "installed"
+              },
+              {
+                "appId": "367670",
+                "name": "Controller Companion",
+                "state": "installed"
+              },
+              {
+                "appId": "730",
+                "name": "Counter-Strike 2",
+                "state": "installed"
+              },
+              {
+                "appId": "268910",
+                "name": "Cuphead",
+                "state": "installed"
+              },
+              {
+                "appId": "227260",
+                "name": "DisplayFusion",
+                "state": "installed"
+              },
+              {
+                "appId": "1812620",
+                "name": "DSX",
+                "state": "installed"
+              },
+              {
+                "appId": "420",
+                "name": "Half-Life 2: Episode Two",
+                "state": "installed"
+              },
+              {
+                "appId": "993090",
+                "name": "Lossless Scaling",
+                "state": "installed"
+              },
+              {
+                "appId": "2767030",
+                "name": "Marvel Rivals",
+                "state": "installed"
+              },
+              {
+                "appId": "572430",
+                "name": "Party Hard 2 ",
+                "state": "installed"
+              },
+              {
+                "appId": "739630",
+                "name": "Phasmophobia",
+                "state": "installed"
+              },
+              {
+                "appId": "6060",
+                "name": "Star Wars: Battlefront 2 (Classic, 2005)",
+                "state": "installed"
+              },
+              {
+                "appId": "228980",
+                "name": "Steamworks Common Redistributables",
+                "state": "installed"
+              },
+              {
+                "appId": "4069520",
+                "name": "Super Battle Golf",
+                "state": "installed"
+              },
+              {
+                "appId": "431960",
+                "name": "Wallpaper Engine",
+                "state": "installed"
+              }
+            ]
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "game.install.status",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "appId"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "jobId": "steam_job_52d19b26fb6f59cf5c387cdc",
+            "appId": "945360",
+            "state": "not_installed"
+          }
+        }
+      ],
+      "seconds": 0.796,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        []
+      ]
+    },
+    {
+      "case": "web_search_and_navigation",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "effect_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "decision_seconds": 0.01,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "web.search",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "query"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "failed",
+          "verified": false,
+          "error": "web_search_results_irrelevant",
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 0.463,
+      "status": "failed",
+      "dependency_positions": [
+        [],
+        []
+      ],
+      "error": "web_search_results_irrelevant"
+    },
+    {
+      "case": "streaming_and_search",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "effect_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "decision_seconds": 0.01,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "streaming.navigate",
+          "risk": "external_communication",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "resourceUri",
+            "service"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "resourceUri": "https://www.youtube.com/results?search_query=BAXY+planner",
+            "targetId": "A42E2027A50E1AF189F8386A1BDC6488"
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "web.search",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "query"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "failed",
+          "verified": false,
+          "error": "web_search_results_irrelevant",
+          "effect_may_have_occurred": false
+        }
+      ],
+      "seconds": 4.266,
+      "status": "failed",
+      "dependency_positions": [
+        [],
+        []
+      ],
+      "error": "web_search_results_irrelevant"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "environment_blocked": 0,
+    "failed": 2,
+    "total": 5,
+    "verified_steps": 6,
+    "real_llm_plan_cases": 1,
+    "real_llm_plan_cases_passed": 1,
+    "model_grounded_steps": 1,
+    "ambiguous_effects": 0,
+    "status": "failed"
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

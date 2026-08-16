@@ -1,0 +1,111 @@
+{
+    "schema":  "baxy-mind-shell-e2e-gate-v1",
+    "status":  "failed",
+    "started_utc":  "2026-07-27T23:03:15.5315216+00:00",
+    "completed_utc":  "2026-07-27T23:05:43.1935899+00:00",
+    "duration_seconds":  147.462,
+    "source":  {
+                   "commit":  "f23b23f064211154e954d82883ba6bee5c2c466c",
+                   "dirty":  true
+               },
+    "runtime":  {
+                    "manifest_sha256":  "d8b3aa5ff903266aa8a786b18bea0c30f7fd4b21cd2791c6e27c6a7f6344614b",
+                    "python_sha256":  "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+                    "gguf_name":  "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+                    "gguf_sha256":  "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889",
+                    "llama_server_sha256":  "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+                    "dotnet_sdk":  "10.0.100",
+                    "gpu_layers":  99,
+                    "corpus_sha256":  "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680"
+                },
+    "boundary":  {
+                     "path":  "MainWindowViewModel -\u003e MindSidecarClient -\u003e baxy_mind turn.decide/plan -\u003e CoreProcessClient -\u003e core",
+                     "observed_operations":  [
+                                                 "memory.status",
+                                                 "system.time",
+                                                 "system.status"
+                                             ],
+                     "operation_counts":  {
+                                              "memory.status":  1,
+                                              "system.time":  1,
+                                              "system.status":  1
+                                          },
+                     "external_effects":  false,
+                     "installed_application_launched":  false
+                 },
+    "evidence":  {
+                     "attestation_schema":  "baxy-mind-shell-core-attestation-v1",
+                     "journal_integrity_validated":  true,
+                     "journal_authentication":  "hmac-sha256",
+                     "journal_sha256":  "46ec2ffa8070ac61cc159b10dd6ea856754f47f03819304e16330a66df191e18",
+                     "anchor_sha256":  "b4f1e8a00eea7d4c952fd01afd2fc0de263b2af82f1f87c1142e5d152e0f82e7",
+                     "attestation_sha256":  "f6fa04c0f395c9cf3b4a4a87c875b7879a96066bf27ea1cf00ee1a6797ec44eb",
+                     "failure":  null
+                 },
+    "test":  {
+                 "selection_filter":  "FullyQualifiedName~Baxy.Integration.Tests.MindShellEndToEndTests",
+                 "exact_execution_filter":  "FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.ClarificationFragmentPreservesAndResumesTheObjective|FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.ContextualConversationAndClarificationCrossTheMindProcessBoundary|FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.GenericPlanWithoutPreservedEffectsStillReachesPlanner|FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations|FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.ReadOnlyCompositePlanTraversesPlannerAndRealCoreWithoutEffects|FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.SafeSingleActionTraversesTurnDecisionArgumentsAndRealCore|FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.SelfContainedOrdersSupersedePendingTurnClarification|FullyQualifiedName=Baxy.Integration.Tests.MindShellEndToEndTests.SimpleMindActionPreservesCoreConfirmationInsteadOfClaimingSuccess",
+                 "selected_tests":  [
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.ClarificationFragmentPreservesAndResumesTheObjective",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.ContextualConversationAndClarificationCrossTheMindProcessBoundary",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.GenericPlanWithoutPreservedEffectsStillReachesPlanner",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.ReadOnlyCompositePlanTraversesPlannerAndRealCoreWithoutEffects",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.SafeSingleActionTraversesTurnDecisionArgumentsAndRealCore",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.SelfContainedOrdersSupersedePendingTurnClarification",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.SimpleMindActionPreservesCoreConfirmationInsteadOfClaimingSuccess"
+                                    ],
+                 "executed_tests":  [
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.ClarificationFragmentPreservesAndResumesTheObjective",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.ContextualConversationAndClarificationCrossTheMindProcessBoundary",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.GenericPlanWithoutPreservedEffectsStillReachesPlanner",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.ReadOnlyCompositePlanTraversesPlannerAndRealCoreWithoutEffects",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.SafeSingleActionTraversesTurnDecisionArgumentsAndRealCore",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.SelfContainedOrdersSupersedePendingTurnClarification",
+                                        "Baxy.Integration.Tests.MindShellEndToEndTests.SimpleMindActionPreservesCoreConfirmationInsteadOfClaimingSuccess"
+                                    ],
+                 "test_assembly":  "baxy.integration.tests.dll",
+                 "test_assembly_sha256":  "8fd274d3595376e2394f2c6ee6b0789dbf06e627bcaede392cbfaa5a7e074a7e",
+                 "selection_exit_code":  0,
+                 "selection_counters":  {
+                                            "total":  8,
+                                            "executed":  7,
+                                            "passed":  7,
+                                            "failed":  0,
+                                            "error":  0,
+                                            "timeout":  0,
+                                            "aborted":  0,
+                                            "inconclusive":  0,
+                                            "not_executed":  0
+                                        },
+                 "exit_code":  1,
+                 "counters":  {
+                                  "total":  8,
+                                  "executed":  8,
+                                  "passed":  7,
+                                  "failed":  1,
+                                  "error":  0,
+                                  "timeout":  0,
+                                  "aborted":  0,
+                                  "inconclusive":  0,
+                                  "not_executed":  0
+                              },
+                 "failure":  null
+             },
+    "checks":  {
+                   "selection_probe_exit_zero":  true,
+                   "selection_probe_complete":  true,
+                   "selected_test_set_matches_execution":  true,
+                   "test_assembly_unchanged":  true,
+                   "dotnet_exit_zero":  false,
+                   "trx_exists":  true,
+                   "all_selected_tests_executed":  true,
+                   "all_selected_tests_passed":  false,
+                   "no_test_failed_or_skipped":  false,
+                   "authenticated_journal_attestation_valid":  false,
+                   "exact_read_only_core_operations":  false,
+                   "all_core_results_completed_and_verified":  true,
+                   "no_core_effect_may_have_occurred":  true
+               }
+}

@@ -1,0 +1,110 @@
+<Window x:Class="Baxy.Tournament.RoundB.Dotnet.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="BAXY — asistente local nativo"
+        Width="1160" Height="680" MinWidth="600" MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ResizeMode="CanResize"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextBrush}"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
+        PreviewKeyDown="OnWindowPreviewKeyDown">
+  <shell:WindowChrome.WindowChrome>
+    <shell:WindowChrome CaptionHeight="68" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" />
+  </shell:WindowChrome.WindowChrome>
+  <Grid x:Name="Root">
+    <Grid.RowDefinitions><RowDefinition Height="68" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="{DynamicResource SurfaceSoftBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1">
+      <Grid Margin="24,0">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <Grid Width="30" Height="30" Margin="0,0,12,0">
+            <Border Width="23" Height="23" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1" CornerRadius="4" RenderTransformOrigin=".5,.5">
+              <Border.RenderTransform><RotateTransform Angle="45" /></Border.RenderTransform>
+            </Border>
+            <Ellipse Width="5" Height="5" Fill="#FFFF6974" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,3,0,0" />
+            <Ellipse Width="5" Height="5" Fill="#FFFF6974" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <Ellipse Width="5" Height="5" Fill="#FFFF6974" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+          </Grid>
+          <TextBlock Text="BAXY" FontWeight="Bold" FontSize="19" VerticalAlignment="Center" />
+          <Border Margin="12,0,0,0" Padding="8,4" BorderBrush="#66EF3340" BorderThickness="1" CornerRadius="5">
+            <TextBlock Text="LOCAL" Foreground="#FFFF7D86" FontSize="10" FontWeight="Bold" />
+          </Border>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+          <Border Padding="12,7" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="16" Margin="0,0,9,0">
+            <StackPanel Orientation="Horizontal"><Ellipse Width="7" Height="7" Fill="{StaticResource OkBrush}" Margin="0,0,7,0" /><TextBlock Text="PRIVADO" Foreground="#AFEED4" FontSize="10" FontWeight="SemiBold" /></StackPanel>
+          </Border>
+          <Border Padding="12,7" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="16" Margin="0,0,9,0">
+            <StackPanel Orientation="Horizontal"><Ellipse x:Name="CoreStatusDot" Width="7" Height="7" Fill="{StaticResource MutedBrush}" Margin="0,0,7,0" /><TextBlock x:Name="CoreStatusText" Text="CORE INICIANDO" Foreground="{StaticResource MutedBrush}" FontSize="10" FontWeight="SemiBold" /></StackPanel>
+          </Border>
+          <Button x:Name="ContrastButton" Width="34" Height="34" Content="◐" FontSize="16" Style="{StaticResource QuietButton}" Padding="0" HorizontalContentAlignment="Center" AutomationProperties.Name="Alternar contraste alto" Click="OnContrastClick" TabIndex="3" shell:WindowChrome.IsHitTestVisibleInChrome="True" />
+          <Button Width="34" Height="34" Margin="7,0,0,0" Content="—" FontSize="15" Style="{StaticResource QuietButton}" Padding="0" HorizontalContentAlignment="Center" AutomationProperties.Name="Minimizar BAXY" Click="OnMinimizeClick" IsTabStop="False" shell:WindowChrome.IsHitTestVisibleInChrome="True" />
+          <Button Width="34" Height="34" Margin="5,0,0,0" Content="×" FontSize="18" Style="{StaticResource QuietButton}" Padding="0" HorizontalContentAlignment="Center" AutomationProperties.Name="Cerrar BAXY" Click="OnCloseClick" IsTabStop="False" shell:WindowChrome.IsHitTestVisibleInChrome="True" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions><ColumnDefinition x:Name="LeftColumn" Width="248" /><ColumnDefinition Width="*" /><ColumnDefinition x:Name="ActivityColumn" Width="292" /></Grid.ColumnDefinitions>
+
+      <Border x:Name="LeftRail" Grid.Column="0" Background="{DynamicResource RailBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,1,0" Padding="22,26">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+            <Grid Width="48" Height="48" Margin="0,0,14,0"><Ellipse Stroke="#88EF3340" /><Ellipse Margin="8" Stroke="#55EF3340" /><Ellipse Width="8" Height="8" Fill="{StaticResource AccentBrush}" /></Grid>
+            <StackPanel VerticalAlignment="Center"><TextBlock Text="ASISTENTE" Style="{StaticResource Eyebrow}" /><TextBlock Text="BAXY" FontSize="23" FontWeight="Bold" Margin="0,3,0,0" /><TextBlock Text="Siempre local. Siempre honesta." FontSize="10" Foreground="{StaticResource MutedBrush}" /></StackPanel>
+          </StackPanel>
+          <Border Height="1" Background="{StaticResource LineBrush}" />
+          <TextBlock Text="Estado" FontSize="13" FontWeight="Bold" Margin="0,24,0,12" />
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,5"><Grid><TextBlock Text="Conversación" Foreground="{DynamicResource MutedBrush}" /><TextBlock Text="lista" HorizontalAlignment="Right" FontWeight="SemiBold" /></Grid></Border>
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,5"><Grid><TextBlock Text="Motor local" Foreground="{DynamicResource MutedBrush}" /><TextBlock x:Name="CoreLabel" Text="iniciando" HorizontalAlignment="Right" FontWeight="SemiBold" /></Grid></Border>
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,5"><Grid><TextBlock Text="Conexiones" Foreground="{DynamicResource MutedBrush}" /><TextBlock Text="ninguna" HorizontalAlignment="Right" FontWeight="SemiBold" /></Grid></Border>
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="10"><Grid><TextBlock Text="Datos" Foreground="{DynamicResource MutedBrush}" /><TextBlock Text="en este equipo" HorizontalAlignment="Right" FontWeight="SemiBold" /></Grid></Border>
+          <TextBlock Text="Prueba una misión" FontSize="13" FontWeight="Bold" Margin="0,28,0,12" />
+          <Button Content="Crear una nota" Style="{StaticResource QuietButton}" Margin="0,0,0,8" Click="OnCreateExample" TabIndex="4" />
+          <Button Content="Leer una nota" Style="{StaticResource QuietButton}" Margin="0,0,0,8" Click="OnReadExample" TabIndex="5" />
+          <Button Content="Mover a papelera" Style="{StaticResource QuietButton}" Click="OnTrashExample" TabIndex="6" />
+          <TextBlock Text="✓  Nada sale de tu equipo." Foreground="{StaticResource MutedBrush}" FontSize="10" Margin="4,28,0,0" />
+        </StackPanel></ScrollViewer>
+      </Border>
+
+      <Grid x:Name="ConversationPanel" Grid.Column="1" Margin="48,32,48,24">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+          <StackPanel><TextBlock Text="CONVERSACIÓN" Style="{StaticResource Eyebrow}" /><TextBlock Text="¿Qué hacemos hoy?" FontSize="35" FontWeight="SemiBold" Margin="0,6,0,0" /></StackPanel>
+          <Border HorizontalAlignment="Right" VerticalAlignment="Top" Background="{DynamicResource SurfaceBrush}" CornerRadius="7" Padding="11,7">
+            <TextBlock x:Name="MissionState" Text="LISTA" Foreground="{StaticResource MutedBrush}" FontSize="10" FontWeight="Bold" AutomationProperties.LiveSetting="Polite" />
+          </Border>
+          <TextBlock x:Name="LiveAnnouncement" Width="1" Height="1" Opacity="0" IsHitTestVisible="False" AutomationProperties.Name="Anuncios de BAXY" AutomationProperties.LiveSetting="Polite" />
+        </Grid>
+        <ScrollViewer x:Name="ConversationScroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,14">
+          <StackPanel x:Name="ConversationStack" AutomationProperties.Name="Conversación con BAXY" AutomationProperties.LiveSetting="Polite" />
+        </ScrollViewer>
+        <Border x:Name="ProgressCard" Grid.Row="2" Visibility="Collapsed" Background="{DynamicResource AccentSoftBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="12" Padding="14,11" Margin="0,0,0,13" AutomationProperties.LiveSetting="Polite">
+          <StackPanel Orientation="Horizontal"><Ellipse Width="24" Height="24" Stroke="{StaticResource AccentBrush}" Margin="0,0,12,0" /><StackPanel><TextBlock x:Name="ProgressTitle" Text="Entendiendo" FontWeight="Bold" FontSize="11" /><TextBlock x:Name="ProgressDetail" Text="Preparando la misión local…" Foreground="{StaticResource MutedBrush}" FontSize="10" Margin="0,3,0,0" /></StackPanel></StackPanel>
+        </Border>
+        <Border Grid.Row="3" Background="{DynamicResource SurfaceSoftBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="15" Padding="10">
+          <Grid>
+            <Grid.RowDefinitions><RowDefinition x:Name="AutomationRow" Height="0" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+            <Border x:Name="AutomationPanel" Grid.Row="0" Visibility="Collapsed" BorderBrush="#88F0B85B" BorderThickness="1" CornerRadius="8" Padding="9,6" Margin="0,0,0,8">
+              <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><TextBlock Text="ID de invocación de prueba" Foreground="#FFF0CF98" FontSize="10" VerticalAlignment="Center" Margin="0,0,9,0" /><TextBox x:Name="InvocationInput" Grid.Column="1" AutomationProperties.Name="ID de invocación de prueba" Background="#FF090A0D" Foreground="White" BorderBrush="{StaticResource LineBrush}" Padding="7,5" TabIndex="0" /></Grid>
+            </Border>
+            <Grid Grid.Row="1"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+              <Grid>
+                <TextBlock x:Name="ComposerPlaceholder" Text="Escribe una misión o pregunta…" Foreground="#FF666C78" Margin="11,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" />
+                <TextBox x:Name="MessageInput" MinHeight="48" MaxHeight="130" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Background="Transparent" Foreground="{DynamicResource TextBrush}" BorderThickness="0" Padding="9" FontSize="14" AutomationProperties.Name="Mensaje para BAXY" AutomationProperties.HelpText="Enter para enviar; Shift más Enter para nueva línea" TabIndex="1" TextChanged="OnMessageTextChanged" />
+              </Grid>
+              <Button x:Name="SendButton" Grid.Column="1" MinWidth="92" MinHeight="44" Margin="10,0,0,0" Content="Enviar  ↗" Background="{StaticResource AccentBrush}" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand" AutomationProperties.Name="Enviar mensaje" TabIndex="2" Click="OnSendClick" />
+            </Grid>
+          </Grid>
+        </Border>
+      </Grid>
+
+      <Border x:Name="ActivityRail" Grid.Column="2" Background="{DynamicResource RailBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1,0,0,0" Padding="22,32">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel><TextBlock Text="ACTIVIDAD" Style="{StaticResource Eyebrow}" /><TextBlock Text="Última misión" FontSize="19" FontWeight="SemiBold" Margin="0,6,0,22" /><StackPanel x:Name="ActivityStack" AutomationProperties.LiveSetting="Polite"><TextBlock Text="1  En espera" FontWeight="SemiBold" /><TextBlock Text="Aquí verás el progreso verificable." Foreground="{DynamicResource MutedBrush}" FontSize="10" Margin="22,5,0,0" /></StackPanel><Border Margin="0,28,0,0" Padding="14" Background="#1255D6A0" BorderBrush="#3355D6A0" BorderThickness="1" CornerRadius="12"><StackPanel><TextBlock Text="✓  Efectos verificados" FontWeight="Bold" FontSize="11" /><TextBlock Text="BAXY no declara éxito por intención." Foreground="{DynamicResource MutedBrush}" FontSize="10" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border></StackPanel></ScrollViewer>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>

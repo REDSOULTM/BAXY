@@ -1,0 +1,173 @@
+{
+  "schema": "baxy.msner-spanish-onnx-phrase-boosting-development.v1",
+  "measuredAtUtc": "2026-08-11T09:10:02.841310+00:00",
+  "partition": "opened_development",
+  "status": "passed_development_oracle",
+  "diagnosticKind": "reference_assisted_target_only_oracle",
+  "candidatePromotable": false,
+  "configuration": {
+    "alphas": [
+      0.0,
+      0.5,
+      1.0,
+      2.0,
+      4.0,
+      10.0
+    ],
+    "selectedAlpha": 2.0,
+    "contextScore": 1.0,
+    "depthScaling": 2.0,
+    "caseAndAccentVariants": true,
+    "silenceSeconds": {
+      "leading": 0.2,
+      "trailing": 0.2
+    }
+  },
+  "matrix": [
+    {
+      "alpha": 0.0,
+      "cases": 15,
+      "targets": 18,
+      "targetsRecovered": 1,
+      "targetRecoveryRate": 0.05555555555555555,
+      "previouslyCorrectEntityDamages": 0,
+      "nonTargetEntityRecoveries": 0,
+      "changedCases": 0,
+      "semanticWordErrors": 123,
+      "semanticReferenceTokens": 698,
+      "semanticWer": 0.17621776504297995,
+      "latencyP50Seconds": 1.3367994999862276,
+      "latencyP95Seconds": 3.3637928999960423
+    },
+    {
+      "alpha": 0.5,
+      "cases": 15,
+      "targets": 18,
+      "targetsRecovered": 1,
+      "targetRecoveryRate": 0.05555555555555555,
+      "previouslyCorrectEntityDamages": 0,
+      "nonTargetEntityRecoveries": 0,
+      "changedCases": 0,
+      "semanticWordErrors": 123,
+      "semanticReferenceTokens": 698,
+      "semanticWer": 0.17621776504297995,
+      "latencyP50Seconds": 1.2964182999858167,
+      "latencyP95Seconds": 3.319547799997963
+    },
+    {
+      "alpha": 1.0,
+      "cases": 15,
+      "targets": 18,
+      "targetsRecovered": 4,
+      "targetRecoveryRate": 0.2222222222222222,
+      "previouslyCorrectEntityDamages": 0,
+      "nonTargetEntityRecoveries": 0,
+      "changedCases": 4,
+      "semanticWordErrors": 120,
+      "semanticReferenceTokens": 698,
+      "semanticWer": 0.17191977077363896,
+      "latencyP50Seconds": 1.2885303999937605,
+      "latencyP95Seconds": 3.3595079999940936
+    },
+    {
+      "alpha": 2.0,
+      "cases": 15,
+      "targets": 18,
+      "targetsRecovered": 10,
+      "targetRecoveryRate": 0.5555555555555556,
+      "previouslyCorrectEntityDamages": 0,
+      "nonTargetEntityRecoveries": 0,
+      "changedCases": 8,
+      "semanticWordErrors": 114,
+      "semanticReferenceTokens": 698,
+      "semanticWer": 0.16332378223495703,
+      "latencyP50Seconds": 1.2959843999997247,
+      "latencyP95Seconds": 3.3276186999864876,
+      "semanticWerDelta": -0.012893982808022925
+    },
+    {
+      "alpha": 4.0,
+      "cases": 15,
+      "targets": 18,
+      "targetsRecovered": 10,
+      "targetRecoveryRate": 0.5555555555555556,
+      "previouslyCorrectEntityDamages": 1,
+      "nonTargetEntityRecoveries": 0,
+      "changedCases": 8,
+      "semanticWordErrors": 122,
+      "semanticReferenceTokens": 698,
+      "semanticWer": 0.17478510028653296,
+      "latencyP50Seconds": 1.2902697999961674,
+      "latencyP95Seconds": 3.336971699987771
+    },
+    {
+      "alpha": 10.0,
+      "cases": 15,
+      "targets": 18,
+      "targetsRecovered": 16,
+      "targetRecoveryRate": 0.8888888888888888,
+      "previouslyCorrectEntityDamages": 4,
+      "nonTargetEntityRecoveries": 0,
+      "changedCases": 13,
+      "semanticWordErrors": 211,
+      "semanticReferenceTokens": 698,
+      "semanticWer": 0.3022922636103152,
+      "latencyP50Seconds": 1.2977973999804817,
+      "latencyP95Seconds": 3.3065310000092722
+    }
+  ],
+  "selected": {
+    "alpha": 2.0,
+    "cases": 15,
+    "targets": 18,
+    "targetsRecovered": 10,
+    "targetRecoveryRate": 0.5555555555555556,
+    "previouslyCorrectEntityDamages": 0,
+    "nonTargetEntityRecoveries": 0,
+    "changedCases": 8,
+    "semanticWordErrors": 114,
+    "semanticReferenceTokens": 698,
+    "semanticWer": 0.16332378223495703,
+    "latencyP50Seconds": 1.2959843999997247,
+    "latencyP95Seconds": 3.3276186999864876,
+    "semanticWerDelta": -0.012893982808022925
+  },
+  "checks": {
+    "targetRecoveryRate": true,
+    "previouslyCorrectEntityDamages": true,
+    "semanticWerDelta": true
+  },
+  "thresholds": {
+    "minimumTargetRecoveryRate": 0.5,
+    "maximumPreviouslyCorrectEntityDamages": 0,
+    "maximumSemanticWerDelta": 0.0
+  },
+  "decision": "retain_for_catalog_derived_fresh_evaluation",
+  "source": {
+    "baselineDetail": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_parakeet_greedy_development_v1.detail.json",
+      "sha256": "1d0b32a62b2ebe25854fe62e5bc9118eeea85b9389cb5ebe52a80ceefab8d9be"
+    },
+    "oracleDetail": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_contextual_hotword_oracle_development_v2.detail.json",
+      "sha256": "2838d74689636ac8cb60938bf56133f97198378f6be897d5e133cc54ab97252d"
+    },
+    "manifest": {
+      "path": "D:/BAXYRuntime/experiments/stt_holdout_sources/msner_304333f/development_extraction_v1/manifest.jsonl",
+      "sha256": "78a299aa0e9603e9b72830ce646805db70e60e99a1a78cb2a86975b451745ad9"
+    },
+    "detail": {
+      "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_onnx_phrase_boosting_development_v1.detail.json",
+      "sha256": "21a7f252aa9ce4162757725e902665b92017c991e9bbf80ac341f53b5bf5cc91"
+    }
+  },
+  "implementation": {
+    "path": "experiments/stt_quality/onnx_tdt_phrase_boosting.py",
+    "sha256": "95a28da21cb6d6e4d5c24d7119df984c67abbd9b8fe9e83af65b07a162c524b6"
+  },
+  "elapsedSeconds": 32.0493729999871,
+  "developmentRowsOpened": true,
+  "validationBlindOpened": false,
+  "finalBlindOpened": false,
+  "effectsExecuted": 0
+}

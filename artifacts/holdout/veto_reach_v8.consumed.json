@@ -1,0 +1,31 @@
+{
+  "effects_executed": 0,
+  "failed_thresholds": [
+    "final_served_accuracy",
+    "legitimate_guard_control_regressions",
+    "outside_zero_candidate_rate",
+    "raw_decision_served_accuracy",
+    "retrieval_served_recall",
+    "visible_fabrications"
+  ],
+  "hashes": {
+    "catalog_sha256": "67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41",
+    "corpus_sha256": "fc146196dca16ffa5ff866b8d2f9b65bebb83ded5aba13cee61cf8bf8eb3f528",
+    "model_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+    "preregistration_sha256": "5054e417738bd5dbe536634abfe859054bf167affd2e52f668e7b6fdba01b381",
+    "program_sha256": "e257ffd8e75815a22b59af409ad4c501b816f4fe1aaf3bb407260d27f8f2794a",
+    "raw_reply_audit_sha256": "310ec506465c236108c506dc0e871873ad6cad0127c96366b8203bed0ef7c93b",
+    "result_sha256": "ea9150f4ae8e5b9b888e3c92956008c3b602d63b00e1e6407c1a1e7cbdf8ea21",
+    "telemetry_sha256": "db9f5a25fbc948ab8beed31c4f12942c62aac92ea9721aa9b05e5d28144f6fa5",
+    "tree_sha256": "d1f4741d5ac1d345b88e26663b30d1b7dbb1bf6b60252becbadf98ccdc95687b",
+    "turn_audit_sha256": "2a0d8559cc210e079507e59cf22cef992d0518e959dd89bace5ad9616592d005"
+  },
+  "measurement_status": "consumed",
+  "opened_exactly_once": true,
+  "providers_enabled": false,
+  "retry_allowed": false,
+  "schema": "baxy.veto-reach-consumption.v8",
+  "status": "failed",
+  "verdict": "fail",
+  "voice_stt_wake_exercised": false
+}

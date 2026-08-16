@@ -1,0 +1,4316 @@
+{
+  "schema": "baxy.msner-spanish-faster-whisper-development-evaluation.v1",
+  "measuredAtUtc": "2026-08-11T08:39:13.976829+00:00",
+  "partition": "development",
+  "engine": "faster_whisper_large_v3_turbo_cuda",
+  "status": "failed",
+  "metrics": {
+    "cases": 504,
+    "entityCases": 341,
+    "entityCasesPerfect": 267,
+    "nonemptyRate": 1.0,
+    "decodeErrors": 0,
+    "referenceTokens": 16322,
+    "wordErrors": 1265,
+    "corpusWer": 0.077503,
+    "entities": 726,
+    "entitiesExactlyPreserved": 630,
+    "entityExactRecall": 0.867769,
+    "entityTokens": 1168,
+    "entityTokensPreserved": 1061,
+    "entityTokenRecall": 0.90839,
+    "latencyP50Seconds": 0.5341938000055961,
+    "latencyP95Seconds": 0.8210494999948423,
+    "realTimeFactorP50": 0.04955916946278041,
+    "realTimeFactorP95": 0.11908449367045341,
+    "peakRssBytesObserved": 1787080704,
+    "elapsedSeconds": 284.50992099998984,
+    "rowsPerSecond": 1.7714672241605873,
+    "perType": {
+      "cardinal_number": {
+        "entities": 54,
+        "entitiesExactlyPreserved": 43,
+        "entityTokens": 70,
+        "entityTokensPreserved": 59
+      },
+      "date": {
+        "entities": 98,
+        "entitiesExactlyPreserved": 86,
+        "entityTokens": 211,
+        "entityTokensPreserved": 199
+      },
+      "event": {
+        "entities": 6,
+        "entitiesExactlyPreserved": 5,
+        "entityTokens": 22,
+        "entityTokensPreserved": 21
+      },
+      "geopolitical_area": {
+        "entities": 91,
+        "entitiesExactlyPreserved": 86,
+        "entityTokens": 113,
+        "entityTokensPreserved": 108
+      },
+      "group": {
+        "entities": 77,
+        "entitiesExactlyPreserved": 76,
+        "entityTokens": 77,
+        "entityTokensPreserved": 76
+      },
+      "language": {
+        "entities": 5,
+        "entitiesExactlyPreserved": 5,
+        "entityTokens": 5,
+        "entityTokensPreserved": 5
+      },
+      "law": {
+        "entities": 30,
+        "entitiesExactlyPreserved": 22,
+        "entityTokens": 72,
+        "entityTokensPreserved": 66
+      },
+      "location": {
+        "entities": 48,
+        "entitiesExactlyPreserved": 42,
+        "entityTokens": 62,
+        "entityTokensPreserved": 55
+      },
+      "money": {
+        "entities": 7,
+        "entitiesExactlyPreserved": 3,
+        "entityTokens": 25,
+        "entityTokensPreserved": 24
+      },
+      "ordinal_number": {
+        "entities": 30,
+        "entitiesExactlyPreserved": 27,
+        "entityTokens": 30,
+        "entityTokensPreserved": 27
+      },
+      "organization": {
+        "entities": 220,
+        "entitiesExactlyPreserved": 199,
+        "entityTokens": 391,
+        "entityTokensPreserved": 361
+      },
+      "percent": {
+        "entities": 10,
+        "entitiesExactlyPreserved": 10,
+        "entityTokens": 13,
+        "entityTokensPreserved": 13
+      },
+      "person": {
+        "entities": 41,
+        "entitiesExactlyPreserved": 19,
+        "entityTokens": 56,
+        "entityTokensPreserved": 31
+      },
+      "product": {
+        "entities": 1,
+        "entitiesExactlyPreserved": 1,
+        "entityTokens": 1,
+        "entityTokensPreserved": 1
+      },
+      "quantity": {
+        "entities": 1,
+        "entitiesExactlyPreserved": 1,
+        "entityTokens": 3,
+        "entityTokensPreserved": 3
+      },
+      "time": {
+        "entities": 6,
+        "entitiesExactlyPreserved": 5,
+        "entityTokens": 15,
+        "entityTokensPreserved": 12
+      },
+      "work_of_art": {
+        "entities": 1,
+        "entitiesExactlyPreserved": 0,
+        "entityTokens": 2,
+        "entityTokensPreserved": 0
+      }
+    }
+  },
+  "checks": {
+    "expectedCases": true,
+    "nonemptyRate": true,
+    "decodeErrors": true,
+    "corpusWer": true,
+    "entityExactRecall": false,
+    "entityTokenRecall": false,
+    "latencyP95": true,
+    "realTimeFactorP95": true,
+    "peakRss": true,
+    "effectsExecuted": true
+  },
+  "thresholds": {
+    "expectedCases": 504,
+    "minimumNonemptyRate": 1.0,
+    "maximumDecodeErrors": 0,
+    "maximumCorpusWer": 0.2,
+    "minimumEntityExactRecall": 0.99,
+    "minimumEntityTokenRecall": 0.99,
+    "maximumLatencyP95Seconds": 2.0,
+    "maximumRealTimeFactorP95": 0.5,
+    "maximumPeakRssBytes": 4294967296
+  },
+  "inference": {
+    "language": "es",
+    "beamSize": 1,
+    "bestOf": 1,
+    "temperature": 0.0,
+    "conditionOnPreviousText": false,
+    "vadFilter": false,
+    "withoutTimestamps": false,
+    "maxNewTokens": 256,
+    "hotwords": null
+  },
+  "modelRuntime": {
+    "path": "D:/BAXYRuntime/assets/huggingface/hub/models--mobiuslabsgmbh--faster-whisper-large-v3-turbo/snapshots/0a363e9161cbc7ed1431c9597a8ceaf0c4f78fcf",
+    "files": {
+      "config.json": {
+        "bytes": 2263,
+        "sha256": "b0253ea6c0d3bea6b1e19e91a02acfd3b53f4467362efcb5a3e6b16c9b3a9b7e"
+      },
+      "model.bin": {
+        "bytes": 1617884929,
+        "sha256": "e76620f83d5f5b69efd3d87e3dc180c1bd21df9fbebacfd4335e5e1efcc018da"
+      },
+      "preprocessor_config.json": {
+        "bytes": 340,
+        "sha256": "7ccc62c6f2765af1f3b46c00c9b5894426835a05021c8b9c01eecb6dfb542711"
+      },
+      "tokenizer.json": {
+        "bytes": 2710337,
+        "sha256": "297b13372ac43916285644fb9687add3cc62ee2a1adb60da3dc25cc94c1871fd"
+      },
+      "vocabulary.json": {
+        "bytes": 1068114,
+        "sha256": "c69260f2ab26d659b7c398f9a2b2b48ed0df16c3b47d7326782fd9cba71690c1"
+      }
+    },
+    "loadSeconds": 3.2900006999843754,
+    "packages": {
+      "faster-whisper": "1.2.1",
+      "ctranslate2": "4.8.1",
+      "av": "18.0.0",
+      "numpy": "2.5.1"
+    },
+    "cudaDeviceCount": 1,
+    "runtimeDlls": {
+      "cublas64_12.dll": {
+        "bytes": 113716224,
+        "sha256": "9513540e4ec4c51ee9e7304138c2cc255c29a8c181f9e80c38efa25738becd99"
+      },
+      "cublasLt64_12.dll": {
+        "bytes": 674667520,
+        "sha256": "b199d1ff892a81b7fd3d57ba1781549609b41500b36008fef326038393ad46c7"
+      },
+      "cudnn64_9.dll": {
+        "bytes": 264304,
+        "sha256": "c6de55089c4759a545ff63459c00a6223dacffa5e797109a6be2be0477fb6c5c"
+      },
+      "cudnn_adv64_9.dll": {
+        "bytes": 269016688,
+        "sha256": "a8aed3390144ea20d96c0d618462a12cbc7897620380e60438489329b9722531"
+      },
+      "cudnn_cnn64_9.dll": {
+        "bytes": 2984560,
+        "sha256": "acac8bf8f924ecd60928877310ba360d2ee5eb1e4ec80ff6475bf9d819d3a5c8"
+      },
+      "cudnn_engines_precompiled64_9.dll": {
+        "bytes": 481015408,
+        "sha256": "3a97df241beb2b75eb5d6152996a9a90d2155c2d4da1aeac5bd66850ed2446c1"
+      },
+      "cudnn_engines_runtime_compiled64_9.dll": {
+        "bytes": 27759216,
+        "sha256": "81c5e5475e386269825ae6da0652f4554fa1c58af6c90908a180314689e12350"
+      },
+      "cudnn_graph64_9.dll": {
+        "bytes": 2493040,
+        "sha256": "f5453cb541402218cb5459e669db1d578656ebef394c755ab5acc2bec1165657"
+      },
+      "cudnn_heuristic64_9.dll": {
+        "bytes": 58874992,
+        "sha256": "3b1cb10835204fb7a45bf03aeb353842185cb2ebb34f59db20d9cb6fe5c1c556"
+      },
+      "cudnn_ops64_9.dll": {
+        "bytes": 105604208,
+        "sha256": "922897bd15a66acecde7c026ecc835b0fc5662c9ae08c120fd89f0f73affa7da"
+      },
+      "cudart64_12.dll": {
+        "bytes": 573952,
+        "sha256": "c2c9a9c22a9bcba90e261825968836787b331038047a26770cffb7a583c28344"
+      }
+    }
+  },
+  "runtime": {
+    "python": "D:/BAXYRuntime/experiments/wakeword/.venv-faster-whisper-audit/Scripts/python.exe",
+    "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+  },
+  "extraction": {
+    "path": "artifacts/development/msner_spanish_entity_development_extraction_v1.json",
+    "sha256": "e85fc53af410a753f23c6f790bc53bb41eac1c1b45902d34e2391e88b3194b54"
+  },
+  "manifest": {
+    "path": "D:/BAXYRuntime/experiments/stt_holdout_sources/msner_304333f/development_extraction_v1/manifest.jsonl",
+    "sha256": "78a299aa0e9603e9b72830ce646805db70e60e99a1a78cb2a86975b451745ad9"
+  },
+  "detail": {
+    "path": "D:/BAXYRuntime/experiments/stt_results/msner_spanish_faster_whisper_large_v3_turbo_cuda_development_v1.detail.json",
+    "sha256": "9388ce72458893ef5107f658a68f7bf7cfd501c3904fe5c1148fb793c745aab7"
+  },
+  "evaluator": {
+    "path": "experiments/stt_quality/evaluate_msner_spanish_faster_whisper_development.py",
+    "sha256": "30705c2cecbb691dc1d042299ce52a689aaed2915410082a461a9516bb515673"
+  },
+  "caseCommitments": [
+    {
+      "caseId": "msner-es-development-0000",
+      "referenceSha256": "e07322c669e57a2720aef3baadca6e27bfc95ed4d6449743a42dfa35d7d93cd9",
+      "transcriptSha256": "eefa3e80b1573a21233b116ddfa087acdf684ce380c6c70da3dbde8176764af9",
+      "wer": 0.195652,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0001",
+      "referenceSha256": "e28825be9ab366190397b979ed58689cd3635b9ee1faf83ad6b79e51efa70a36",
+      "transcriptSha256": "f39db9990bbe9c556e20158c2ca726430551175625e464aee401c66f497fb22f",
+      "wer": 0.0,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0002",
+      "referenceSha256": "c0d9ff2b138dcdf38c14bc831e011b461f2bcaba8f7d3c99a621b7e1b4e861ec",
+      "transcriptSha256": "fa05bc956f58702f2b03806048656e23a71fba92a7d7e6e4fe5ff8f570292ce8",
+      "wer": 0.115385,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0003",
+      "referenceSha256": "244610efd96a72f39c8f5eadd3661bc54e7a69a61e50dc3d639bf7e3ddedfecc",
+      "transcriptSha256": "244610efd96a72f39c8f5eadd3661bc54e7a69a61e50dc3d639bf7e3ddedfecc",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0004",
+      "referenceSha256": "6100b72dc35574a7821099ecc89b38288e42bba4647d8ddf37412999ea717c68",
+      "transcriptSha256": "61880aa37adce263852af6af6bb72873a0c0e6ad94d1708660a94396cb1acf55",
+      "wer": 0.038462,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0005",
+      "referenceSha256": "4efb87cb69b52b6b59d12e00b3e70bb0d9ccef3c67634dff741fe946e4731df1",
+      "transcriptSha256": "a1f9fa693a6f04eb877abff6217d53f727a92f3c6627b6ab210dcfbaad865dc0",
+      "wer": 0.25,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0006",
+      "referenceSha256": "04cde3230a81986877b442598472b2d9bbd94ca9772497fcfc72f4d1bd33dec8",
+      "transcriptSha256": "eac37c360cc14a0ee3cea40ae46f5d5c99bc099a6a991660de48f2d3cb5da694",
+      "wer": 0.133333,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0007",
+      "referenceSha256": "4bcdcc3763311fbb5bd2a7dbfc9919ec1a784b633e99b2ba3f7f0506e34d22e1",
+      "transcriptSha256": "5811ed8e4e8659fbde90955eaf303cd07954a5f2eb945778f21c21d32fca5010",
+      "wer": 0.066667,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0008",
+      "referenceSha256": "6649cfab11459f6756d93b60402f774e31a245cbb28cf476462eddfdb35332d9",
+      "transcriptSha256": "6649cfab11459f6756d93b60402f774e31a245cbb28cf476462eddfdb35332d9",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0009",
+      "referenceSha256": "08295116d558e00ecdfe5fb87afb2416111673d0f0df3a9ed042a869a2f5aed0",
+      "transcriptSha256": "08295116d558e00ecdfe5fb87afb2416111673d0f0df3a9ed042a869a2f5aed0",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0010",
+      "referenceSha256": "501f39985b42f68bdedd2a1c6920f44fd5a4800e9e0138d1401db827ab8e963d",
+      "transcriptSha256": "6c1afc51cc707465d4147c0c6d800934b99a774c38c0bc3d03fd6aa81b65204d",
+      "wer": 0.032258,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0011",
+      "referenceSha256": "864dd5937e1059c3a2e7a8da35513e8d21d56433b7695b1adfc34483d7f9f97b",
+      "transcriptSha256": "fb91d5a553ce0bf2d3f315500c24c32be74e35c7930b3357e44522f71c449ad6",
+      "wer": 0.095238,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0012",
+      "referenceSha256": "830f6623004d8f49fd97a3c8bed8a0c1f5a4cc5a7e038ee250bdf5a194b50a24",
+      "transcriptSha256": "32d6262fe4640611b67cbe397e48ea209eca8e46f65fcefd3ecc158ecc2dd4cd",
+      "wer": 0.15,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0013",
+      "referenceSha256": "2f8d7cc11eaa65870ab44bc1652c48c072d6a0a5e9359250ff9b925fe674d6ea",
+      "transcriptSha256": "33d4dae5a52f3266e40305dd5295599ae84d900f4a1c949b3f85fd62313ab7bc",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0014",
+      "referenceSha256": "2bc1030d7080d083dfacf493c27fbe08758fa979f7122ae279fa4bd66660be4b",
+      "transcriptSha256": "079f59eda3569512b6660aa1e18fe671b4f39cc84a13fb27865a42c412e28c0f",
+      "wer": 0.076923,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0015",
+      "referenceSha256": "445c21be62a744ff509734224a4be3134e4141ee359af341f79a3295c51b5d93",
+      "transcriptSha256": "445c21be62a744ff509734224a4be3134e4141ee359af341f79a3295c51b5d93",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0016",
+      "referenceSha256": "272038b08eeaf8cc53a3920b4a50fe051720cb54c73be86db4b5ee53eb0a73a5",
+      "transcriptSha256": "2b4488ad4f202abe25caf164382133287ce673a736e85c098d945bdd5fdc8f1b",
+      "wer": 0.111111,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0017",
+      "referenceSha256": "8a1062817d05f6d08d41d611a6814ff6e45b01e5fc1f7872b2c8e8a53ec2821c",
+      "transcriptSha256": "67837743dbdc2aa8e8511b480fc7b1374538da306ab638e690464beb285d6982",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0018",
+      "referenceSha256": "4164cbd37fde8ce326145e7e8b78651a16ab4013684086c9843c3de633ef33d2",
+      "transcriptSha256": "eeab71db69c855fa4a919869c3079fb4f9eea3f415d57f7e07c4227c38fe0988",
+      "wer": 0.033333,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0019",
+      "referenceSha256": "a7b8c3f5d04ed3a7de4d6bd9ff44abd4be5e03f51f40adf3f78085963229c15d",
+      "transcriptSha256": "a7b8c3f5d04ed3a7de4d6bd9ff44abd4be5e03f51f40adf3f78085963229c15d",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0020",
+      "referenceSha256": "0e33ab725095133fd6a1af6300e11616944da4b8d0e6faea2eab929a474625b5",
+      "transcriptSha256": "c3be115d1193f0de7e46a3adda15055c2ecad896e1eaad1c07f878928bb95d06",
+      "wer": 0.047619,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0021",
+      "referenceSha256": "db7072df020b5ff40b70d99aadfd127c2adc92117bf7c3b05f1978306e2e3fd3",
+      "transcriptSha256": "db7072df020b5ff40b70d99aadfd127c2adc92117bf7c3b05f1978306e2e3fd3",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0022",
+      "referenceSha256": "3e42bba47b2d2e5489c64d292e4e437544e2c5bb193d767b06013bf17cc4894e",
+      "transcriptSha256": "0e973e18fdf7168f0196211a583634af35b0118597f3edf6154e5b3f55c4f2bb",
+      "wer": 0.041667,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0023",
+      "referenceSha256": "097da09c9a4f6ed5849a33ebdc43eb4c2e03c3a11b642597424237a4695e1c60",
+      "transcriptSha256": "b71d59daf15067d088172c701127165d6b2d85577af1699ce48570114b5a6616",
+      "wer": 0.12069,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0024",
+      "referenceSha256": "0d06a90deb801aa45d8494f9f217d65b66c94a9b24ce36157015bec13552b7cd",
+      "transcriptSha256": "fe1f67da8179c9e6a5bfd8cb881945c7714a0e4f648021dfc51a298ae4d34a80",
+      "wer": 0.064103,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0025",
+      "referenceSha256": "3b8050686ed7483bc2bbbffca0638c06c1e35472736ac8f2a500449f12fde875",
+      "transcriptSha256": "b600eea309d5b32ec2bc19cc5b21af1337da6b46aa9b350118aa667577bd2d43",
+      "wer": 1.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0026",
+      "referenceSha256": "0d199e2b0038ca01faef63d5d25a8feaf526d98e95cf411ba28ff6081b556e9c",
+      "transcriptSha256": "0d199e2b0038ca01faef63d5d25a8feaf526d98e95cf411ba28ff6081b556e9c",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0027",
+      "referenceSha256": "fa65621a2121d127fa67085ebe486d536c5a76761972e17653a4ef571d494a78",
+      "transcriptSha256": "16cc96cb8ed60115ee1dff1bc31aef8b46e1995778b8d62d642c695f37dfa65e",
+      "wer": 0.428571,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0028",
+      "referenceSha256": "5febece64b65e69f3c11e3f5a633081da7e3a6e6af91735e409813a3f1857851",
+      "transcriptSha256": "ce672e2f314038d624a305490756c8650a130cfa0df8907ee4c457d90b865dfb",
+      "wer": 0.045455,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0029",
+      "referenceSha256": "e3aea08ab32df63c6e3672b8fd6c680778ce16ddf58130d8c8068b536198723d",
+      "transcriptSha256": "981df603922e00c76826a4a1eb046d7b386263944ba9bca601275af75a76cbc5",
+      "wer": 0.02,
+      "entities": 6,
+      "entitiesExactlyPreserved": 6
+    },
+    {
+      "caseId": "msner-es-development-0030",
+      "referenceSha256": "93e1647a8dcd05ded54ab9f995a35b19d2e83d4b82c6e2905037c7f3fca0c398",
+      "transcriptSha256": "3d419dde0c4e1d66ecb2840cc25b8c0ef659ecd46d5157aaafc9db38e8bab1d1",
+      "wer": 0.030303,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0031",
+      "referenceSha256": "8716f2f84bf30bfc10d975a3d0ff803695d14b7966a5e93a658f2dd4c4374105",
+      "transcriptSha256": "93dae76427d31a2f936f7a1b3e4208cd9d0ab89d2b89769eeb39720f2c60707a",
+      "wer": 0.072464,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0032",
+      "referenceSha256": "966d47cce1441dbc0939110ac00c3f46ebdfd168c2756d0ef74d442d6d250fcf",
+      "transcriptSha256": "8c71f45b165ee9ef516160d13c9d431c7408890dc8478be84227ea2f914a03f8",
+      "wer": 0.181818,
+      "entities": 5,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0033",
+      "referenceSha256": "69e74b6ef5d63d63bcd1926bf9303e123d1608faed160decc353231d4d6f8459",
+      "transcriptSha256": "c0f5f66cb64e04c5f650da7b21b99f54efd7a139ac2b051f970a727a962ba040",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0034",
+      "referenceSha256": "540cedde8b089829edfbe65d98345b81d686b348f405bd25f783adf8ba90502f",
+      "transcriptSha256": "b16918540ecb480496c88b5b7b038a7efba39ded67a02d40b807a3f97235b61b",
+      "wer": 0.070175,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0035",
+      "referenceSha256": "dc00e8f5daef62d1e6d9ca92557a5a42dece3e7134492893bc8809f39e4a271e",
+      "transcriptSha256": "281f6eb873d052e9f745dcc4887ee60ee005fa1b52aceecf75dee74413f0483d",
+      "wer": 0.034483,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0036",
+      "referenceSha256": "e2e9268d5a448ba318d3de45440e6fd9439bcdb82a088f9eb892e7fa517b960d",
+      "transcriptSha256": "77c468fac6f975940551a1ef19a9ac75c3069773dc69083d9927ea0ec0a5d4e8",
+      "wer": 0.270833,
+      "entities": 3,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0037",
+      "referenceSha256": "80f7a24352bcc1e2e92254ad8206ce44db9002d530d269a11e918c5e6f36fa90",
+      "transcriptSha256": "ce6385a622cd11bf9016e0264ddb118acb5412766ec243fef5aee2653fd9eef3",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0038",
+      "referenceSha256": "04cab73f9b33440c154bf5ff7ba0aa678cce67aab39b98e1cbbce9695dc2bc8d",
+      "transcriptSha256": "a7c9d9bdc669fa8b4b1bae631396343869c321fe6eb6adae0ea85ce9347489ac",
+      "wer": 0.128205,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0039",
+      "referenceSha256": "a4d35d04c265fa610fe8c5869f4adfbe86c7c6bd828afd29fd95a800eb7107d5",
+      "transcriptSha256": "2021559dadb80828b0ae909692a2c0338bad3a5f10ee78605d472b67981b27af",
+      "wer": 0.125,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0040",
+      "referenceSha256": "886d6b17de2ba901208307fde9d8beba41436be3defd1ed62271e9994a2aa800",
+      "transcriptSha256": "d5a34481c71b809b7c3dc348e1cf63a1c1afcee9421090d068b95e5bd69f24e3",
+      "wer": 0.074074,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0041",
+      "referenceSha256": "9b5d5bec699a0b239f4bd4f9da8d7c98e652adb3d9d5b1fa9dac6ddb15812fa1",
+      "transcriptSha256": "037f79bcf9acb7a4f3c474ca06f622c8b1ddb63f44e2ecda809b5846aa30f6fc",
+      "wer": 0.102041,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0042",
+      "referenceSha256": "3da98736892583be23800d10a0b5c147dd25719be553f41bd8004efa5dc95884",
+      "transcriptSha256": "05d612f83fdd5486bb4e50250f3fa0e7726b66e5f7e7c77be2b97fac5186aff5",
+      "wer": 0.05814,
+      "entities": 4,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0043",
+      "referenceSha256": "a2d3f0e3e4d9c71b905b8cc83f94ce354f2f77e1ef1d4881e3286d35d4a54afd",
+      "transcriptSha256": "641f50c1b3f3996053195e77314e238d003770270131faf62043bcee354b1c9a",
+      "wer": 0.030303,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0044",
+      "referenceSha256": "24397abb16f4d5f8ac2d1b5e31728cd9e13b8501465965b5b93c4d25cdbf7a58",
+      "transcriptSha256": "bf8ace5098968fd8464a112e81a0c8d1ff2bab8b621fb98d461e16edfe46029d",
+      "wer": 1.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0045",
+      "referenceSha256": "c27a75a7fcc7fa1ca58f857e4cb51fc6c872b5bf5306b06b1c0b275242d9b556",
+      "transcriptSha256": "a945f47aa0990c7dabf66df423e767a4e71958477323a615cd9dda901b9ed4d9",
+      "wer": 0.088889,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0046",
+      "referenceSha256": "b48fc6f8dd1ffc5cb1c682b255c152c462fa9caa8aa291bf23aa1b1e29de68e7",
+      "transcriptSha256": "a399128dac669e63a093b60ea89e898fcd5232efb0469140d247d0614d794f0b",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0047",
+      "referenceSha256": "5b86f98a51e5e709fdbff5c10ac6ce4bfc9025e756ba6b144fae40347af546e1",
+      "transcriptSha256": "5d196a3af3df8dddd187d37bee983882ebecd70d778ffe0859444faa1af1f6e8",
+      "wer": 0.05,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0048",
+      "referenceSha256": "74ecd3a7d36c678580671db1132681c46e8bd82165c6332633b05571069477bc",
+      "transcriptSha256": "24c41f01b98f70161be864a07cfda35b8092a572a8b3bcb6b05fa80478208d6c",
+      "wer": 0.020408,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0049",
+      "referenceSha256": "caedac39d32c838ecb7b7e888b8add7d2f7ad49357098dbc9dae8df33230868f",
+      "transcriptSha256": "4d0ed158eea39da884cb8f72d380c10481b785c1a585d72072eae41e9351b951",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0050",
+      "referenceSha256": "e8fd18fddc568baf8ac70d7fb1d36ef6df5b57a3363a1aecb6d7abbda08db32a",
+      "transcriptSha256": "0c6e7813363e6f8db3af1c33e348401e089f32c9df94b811970325ba84508d8f",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0051",
+      "referenceSha256": "a5effc0cf25999c6948df7a4556dc76d6b8db609483e800fe24b6ab2906aac13",
+      "transcriptSha256": "b401d5ea06ee03e8093f58f7ab0e1d01ae0496846f144214553c63769c042ce7",
+      "wer": 0.064516,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0052",
+      "referenceSha256": "1d2eb157e2589887712f1a1651cf30794ba1616ad46f4a6950d945457cc03a08",
+      "transcriptSha256": "2d36a9b4622e2d2d11e64f9be7a7acf89aa0be3215f625177fb4752dd3c36f0f",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0053",
+      "referenceSha256": "51b7facf300331f0a18f899adc1a26a65b2c2adcd78b36b483032a624cea2e81",
+      "transcriptSha256": "db96d75814b7d490574c0317d04843cc53e9f54c63a2779d8f3b3e1b795d8eed",
+      "wer": 0.052632,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0054",
+      "referenceSha256": "40b2216ac3d183f97117460deefa365914e5543a23c56a5cab99a5f31a19d9e9",
+      "transcriptSha256": "20a2d1a0cef49f3f2de4464596032eb869784b844e6f8cc60ca4d5fb1c39cbe6",
+      "wer": 0.05,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0055",
+      "referenceSha256": "c384b9a7e7485dec3f5d04bf33b8d4f512d863ce0b0fb684277a4076a9b65548",
+      "transcriptSha256": "c384b9a7e7485dec3f5d04bf33b8d4f512d863ce0b0fb684277a4076a9b65548",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0056",
+      "referenceSha256": "0b21465011e39f8a71e1e6351e4378280a29c343f42aa70f51230142e3ed1b85",
+      "transcriptSha256": "d58992a1e066a4cfe1bb3cf3ab079c30df96b858ee145563f0ec2788a5156554",
+      "wer": 0.035714,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0057",
+      "referenceSha256": "c53379c9b35641818df6bc453348ff12568448898366e50e7e88d8e8c124f622",
+      "transcriptSha256": "9c06d1c81f33be47c5229a4d03939b8790c7d19458083734b679b13b8b6c899c",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0058",
+      "referenceSha256": "6fb7a6afda5d20b2c19890ddbeb37e08b8afeedf456ed386a31a03a1e54ef7a2",
+      "transcriptSha256": "662df8725c2c47b4a435a8797de929832839a38fc8c158b0097d0fb78b9b61f5",
+      "wer": 0.050847,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0059",
+      "referenceSha256": "e53092db18e66d6a408e5ad06bfb07b43a63b722a3781cb75ab0ba82bbc53912",
+      "transcriptSha256": "a1e3cf3f3ba9ca0a45a90fb4fa2a3666421d9982c6e8332ce60928342b1fbf05",
+      "wer": 0.016129,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0060",
+      "referenceSha256": "0e44ddd9dd6c9e5d4ccc1284eb3a0d5f246a91305f25ee87ddf335e58b22fa06",
+      "transcriptSha256": "39667e719ad57a5ebaf04503267d4916d0fd0ba60a425f90222a85cab01547de",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0061",
+      "referenceSha256": "70cc155bf5d9a4f20a260ab5a8632642f280b4a2cbf649e414007ad549f878bd",
+      "transcriptSha256": "b3b43c274348523a1fdc28f17e405078bcf067b3f84988f866516ee0efb7d9a2",
+      "wer": 0.083333,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0062",
+      "referenceSha256": "3505f3fda27e8037314ab7d3a0e0870e144ea0cbb97d7726ac4129a7bcc29d7f",
+      "transcriptSha256": "3505f3fda27e8037314ab7d3a0e0870e144ea0cbb97d7726ac4129a7bcc29d7f",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0063",
+      "referenceSha256": "b27a0051ff33804929284c580d28588647bcb4042d8e9e9af282a43e248b23e2",
+      "transcriptSha256": "2aa6b60b5398fa1b1b305988b8738c7d7b07d63cf2b49758e95c74f6e6ccf77d",
+      "wer": 0.111111,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0064",
+      "referenceSha256": "c7889229700c0fd518fa8a83dd675aa94686b1f36789914d8fe471b8a987dd8f",
+      "transcriptSha256": "e32a1ff00953b632b69702c6ab8b57e18b5c7d41fa46cd70dfa8bece977bceb7",
+      "wer": 0.108696,
+      "entities": 5,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0065",
+      "referenceSha256": "a89306a34e5e5faa27d6974d4c36e371b2b56aa3f31f1def896a79d5816ae993",
+      "transcriptSha256": "abb0ec437204cf82b79d945fd00dd79d275f714c322ced381ab6f4c6225ff684",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0066",
+      "referenceSha256": "bf88c4428f1e5e88aac01ecc6af5c86351cbf2d958ef5436ccddd08444a16e7f",
+      "transcriptSha256": "2ce25ce3575dd2941a5688f63c108db1e9ec2dcb6fb8d14bfde45b1ad9096e54",
+      "wer": 0.016667,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0067",
+      "referenceSha256": "ada85b7cfd9949deba23dfd443237e847996f2bd899eb4e35dc91ad26bfae471",
+      "transcriptSha256": "859b3a60c220e9ea216c67646bf3fe6a2d421c5364247596b5bc8b6d6f4a5639",
+      "wer": 0.09375,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0068",
+      "referenceSha256": "f2fffdc768725c1b900d7b2058aa08b95fdc61a968d6d1844c26e89c8efc0976",
+      "transcriptSha256": "e34c183b4a1a73e821a4ce9e25fe9e25b4c08c42dfb4485346cdf4a559edef1c",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0069",
+      "referenceSha256": "a684d275e0a5405026fb2338604534022b9742875e3ab298d3da9d0e898969f5",
+      "transcriptSha256": "9ce4a00733d895a22a3900c69855a329380975ec4917bdbb2bc5271466719195",
+      "wer": 0.058824,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0070",
+      "referenceSha256": "c5437233b6153e1e895a4eee42d67cdfee535c7ca74607dca11ccac499de4c97",
+      "transcriptSha256": "c5437233b6153e1e895a4eee42d67cdfee535c7ca74607dca11ccac499de4c97",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0071",
+      "referenceSha256": "9db3090dd37f8856a8f2795ff4574b3410dd28f21173fa246a321c3583630f31",
+      "transcriptSha256": "b15d2f9539a42450ecd24d7fbf146cad1f7863b02976e6e1e40fd9cc8fe42a7e",
+      "wer": 0.034483,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0072",
+      "referenceSha256": "8d405208910f69a2e527ea1e75d1ecaf0bc2fd217ccb313bbddc8fac82d642bd",
+      "transcriptSha256": "a8b8065a4267d1a5545e1c960fbabdd07d460feafb760a1c275bbd95399f5410",
+      "wer": 1.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0073",
+      "referenceSha256": "e281741eb46daaa1eb6d1c4459d2b3519c71b0b010a09f7cd48a4a60e0b241f6",
+      "transcriptSha256": "95fa824f4c5961cee7385f83bf7024a41a7f02a3754a4b183ffbfb393acfb884",
+      "wer": 0.055556,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0074",
+      "referenceSha256": "d25d6ca48db2c184bfe4b95b2b56499e361bb12e3e9efd6e15d2769206c745d0",
+      "transcriptSha256": "332865016394992b17a219b973857166b641cdc0e770af997a4074c1fface6da",
+      "wer": 0.025,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0075",
+      "referenceSha256": "a1a158b49b34d1e94dacff483318a70f0cfa0abf7fad53406b8f2e7180461d18",
+      "transcriptSha256": "8591c0cc9c2638e4c4dda8557f2cd3a2608f26021e5d5446a194360ec3ab6507",
+      "wer": 0.030303,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0076",
+      "referenceSha256": "e6cf2493353572546190304e1ec35f95637f51845ea948ebae7877cb3afb0859",
+      "transcriptSha256": "8dd7b27dcd91875d7ff96001041ed4f21a21d10c028977bf1cff4245d1228d11",
+      "wer": 0.088889,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0077",
+      "referenceSha256": "94393f5d05fd870f42992e7def95415b9cf661656ee83d32612b0d69366b1d6b",
+      "transcriptSha256": "342bd17443411ecce62b84aecce4d8fc7b49504f9fd99b1439faab8a9c2c6755",
+      "wer": 0.153846,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0078",
+      "referenceSha256": "c2990e3139b652f2c2c117fac78b455ed7dd508ca950c254ebad8a05e358cde6",
+      "transcriptSha256": "39f5679152dac4d75d38c55eaaf8955963dfe11d76cb3623ab067d5f6cdbdccd",
+      "wer": 0.078947,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0079",
+      "referenceSha256": "17dedc66546dc70f17a545a2f2d7469e20b1b1de9c6f44b2a5cbfe451b73346a",
+      "transcriptSha256": "8d7fe0937171947a0a5dc5324924a7c660485b387ccf4564248d5a70b98ed894",
+      "wer": 0.058824,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0080",
+      "referenceSha256": "1e437b5f64f3e2c80651c900d8adde714fa8b2da890e55058e63d38f093db0f3",
+      "transcriptSha256": "44bd41646e43a077cb61d54b9f5ed8305ccc27922efd64b9c6563a8e5d7d76e5",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0081",
+      "referenceSha256": "132c1dd1fcfdba61140b6387f14a56dd72214325fd2abe2064e5c9f72621bf27",
+      "transcriptSha256": "879bc381e049a854b7753d7addf8962031a13cd72b7d23fd1abf0193b341522d",
+      "wer": 0.125,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0082",
+      "referenceSha256": "7d7beae7e630c46052ad2e64d4c4714c0fd9366060e8a527377421e7221b539f",
+      "transcriptSha256": "7d7beae7e630c46052ad2e64d4c4714c0fd9366060e8a527377421e7221b539f",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0083",
+      "referenceSha256": "35d213e558fcb759ba85cd26ea210653a952574ee241680c2bb091eedbcd8461",
+      "transcriptSha256": "ece700dae7803b163724e408dccf60f5db5f2a94d2e2a621f8005271a8dcfba3",
+      "wer": 0.035714,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0084",
+      "referenceSha256": "e6d8aea008c22952b3dcad345da13aa99ee05a10ad769a05c1f86453f5e88f02",
+      "transcriptSha256": "82c735b2102b9cc817f31d63712367792d7621ece1a6150f668a55206fad488d",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0085",
+      "referenceSha256": "1c25472dcb50079abab1b44c5c876e541746029e465ce921f57caaeaca054fd1",
+      "transcriptSha256": "a6fae1b58131759f1fe25211ab12ed13f3e3ec7d9df177da11aea35265d4b4cd",
+      "wer": 0.130435,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0086",
+      "referenceSha256": "037662c4da84d6331531850a4f1755a4d333c5466da67b47f40425a7f938ae77",
+      "transcriptSha256": "21cf22e29e0f019192cfa0b4a23985599d9ac44d1099bfd7a50a9c4fe2470724",
+      "wer": 0.071429,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0087",
+      "referenceSha256": "6414643dc392b1b69bc9c6bc71b05a0b1e09960ab8218c555050c7fcec7db8bc",
+      "transcriptSha256": "da71f02221ebdb05eba36169b2a467870f35c5830928a57bc41a7fd72b399792",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0088",
+      "referenceSha256": "acb6350d26e6e56fd02a99763bdb2a188e3bd9898a4705bfe52ff0500cf754ff",
+      "transcriptSha256": "04bb33b6a5082bcfa10d1c55097350d669ec0727b397fe812385547fbcb6c0de",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0089",
+      "referenceSha256": "bff472b9c78a214414fd527d904d9340e324bb0c073215054d49ab1484925c30",
+      "transcriptSha256": "d2bc76601438386f69034233890df9e466da221c4c14fc229c56f94f1bf66db4",
+      "wer": 0.113208,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0090",
+      "referenceSha256": "3077bfe7fdfb8d9ea3f800a9d220f91ad733c43fa80ce35e2e7cfc535c2a0c4d",
+      "transcriptSha256": "3077bfe7fdfb8d9ea3f800a9d220f91ad733c43fa80ce35e2e7cfc535c2a0c4d",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0091",
+      "referenceSha256": "4da65bf83ee0839108b3494002ca225f3cd8498aead19e5384a67773b7b02d18",
+      "transcriptSha256": "00c4bea323aaca772a813054ed240b19cb1f76134081b1004bc1745d9d55c91e",
+      "wer": 0.035714,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0092",
+      "referenceSha256": "fd6ece404e05467388d059a8812d03ca9df6fdeb3973253fc449e22b6d010e88",
+      "transcriptSha256": "31a34c1b6083798225c29a356282906ebffbe1ecd8c29163e27e9fcdea16cd5c",
+      "wer": 0.0625,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0093",
+      "referenceSha256": "88370f0f4a5f7b934286b496a8ee3b9c60f437ef15f628b65586695cd60ee21b",
+      "transcriptSha256": "d49bdecee786a9f359f0654926d90a5f28eda10c74debb76cdb7183f87b53621",
+      "wer": 0.081633,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0094",
+      "referenceSha256": "4fec666212d5215eeb00f3b5b4f2b72dd959639b0aea6cdf7592cfcfd4ad01f3",
+      "transcriptSha256": "c861d2a0febe0263a5237a1a67f343586562bb507c68f88cc648d5772559a0c4",
+      "wer": 0.027778,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0095",
+      "referenceSha256": "f8ce1a719bce99394dc80cb0fdf477e1f09eaadb1b118a9e9310f4fe1a3bc4ec",
+      "transcriptSha256": "f8ce1a719bce99394dc80cb0fdf477e1f09eaadb1b118a9e9310f4fe1a3bc4ec",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0096",
+      "referenceSha256": "4c75b2ab5eb0cc3c2511dce117abe056d7d84696e7a0b72f341346cdd12c8bfe",
+      "transcriptSha256": "4c75b2ab5eb0cc3c2511dce117abe056d7d84696e7a0b72f341346cdd12c8bfe",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0097",
+      "referenceSha256": "8755c720eaac2e2ae21d5054e8f80d02e41e3c4c02407dde2fd2a2483bf5d704",
+      "transcriptSha256": "b22bdb18e16d49785918efd7816b8691845ce9f99f28c1f3be64cbd8340a1618",
+      "wer": 0.030303,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0098",
+      "referenceSha256": "3fc668fab9c4957feb492e2467acceef02baaeb1d4fe04bfabd9c00e9217eee2",
+      "transcriptSha256": "3eef2ed634bb92c029a774473a2b0a29a14d5a979487e606ae4a4808f84b0553",
+      "wer": 0.058824,
+      "entities": 4,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0099",
+      "referenceSha256": "c7087f1c6f84eb1ebc5e2625d8963115fcd5587466d04a71e3330f1b791afdc6",
+      "transcriptSha256": "6ffcd340a3989a918dd8e089f5ca70bf8a379654c5f6ee6cc99ed9cb02fb7055",
+      "wer": 0.068182,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0100",
+      "referenceSha256": "7bbdd880a9a1ddb851c6ced3f5a47c1746956aefef3a663c00130853150ebb7b",
+      "transcriptSha256": "463c3329c00477409af4db7774ba52735bb09ea4a97ed376592d707c7c6f4b04",
+      "wer": 0.114286,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0101",
+      "referenceSha256": "a7adfc4afa08d6b38d6e10a346d7be055105513cde4f7c0aaecf8e8237f26bf1",
+      "transcriptSha256": "a389e9e18d0b22f16531b59f1a7176e94ec3d2e51c0a8da2ef59bed5d65d2871",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0102",
+      "referenceSha256": "0f752167ce21b71d183c56721ab24e8f759f42603c2b0f60e4d30fb94752ae25",
+      "transcriptSha256": "e9952fa38691f4786208ac2489e21b7c90885cfb3bfec6854e731eb044faaa3e",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0103",
+      "referenceSha256": "79dd6989764eda1868d7ffb721f449318de07db7a859b9b39f44de0035f82743",
+      "transcriptSha256": "f8b82d5200716fa5556fe54aed01182501e2455f861e8dadbd9387e75385323f",
+      "wer": 0.032258,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0104",
+      "referenceSha256": "f05e6e0dd2d7b7292d702b525e58e7b1418a9b3b7b59a299c28493ce92148fe6",
+      "transcriptSha256": "c854be97f94fe732bbd5d3b29ee510b8b0301b14dc21d5f809ce08a9bfad5c15",
+      "wer": 0.05,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0105",
+      "referenceSha256": "f1b2bd8218628cde5d4b67378bd59227cfcc751ed6dfcd0aeb3e788b02b38399",
+      "transcriptSha256": "ff2c5466de8b2820bfc158248f9eef11e057c5dabed44c613767a4c1e966428b",
+      "wer": 0.036364,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0106",
+      "referenceSha256": "ff8df7852149c3336fb5555bf24eb73b608447b52732ead7e799ff6c3437d01a",
+      "transcriptSha256": "987a8af09d5d6a968bdd0ce956acce17a5d164897f504fddec921d6e87b9300e",
+      "wer": 0.823529,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0107",
+      "referenceSha256": "e1a6dd9906d5e134aa2c1b27e0fdbc28ea9e50803a5c0c8cff580a49bce38077",
+      "transcriptSha256": "e2c0a40c1309d70629ebf8d28468105d299a6d7875e8296e2039410c74a3e26e",
+      "wer": 0.206897,
+      "entities": 3,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0108",
+      "referenceSha256": "be58701d2877c5481b7c595a7614b7e4a2d3fce95d677fa998d108fce0601dc0",
+      "transcriptSha256": "07a4c890e4a26e4abd10acabc050c4c12b31b435481da752a490d9f132b641ec",
+      "wer": 0.056818,
+      "entities": 7,
+      "entitiesExactlyPreserved": 7
+    },
+    {
+      "caseId": "msner-es-development-0109",
+      "referenceSha256": "aed66951ec0080cc31a198c27dfffd0c84724fe227d50429b25c17d9feeb4583",
+      "transcriptSha256": "8fc1dd0fd55af9f65a6b584155f5cd3723d956e7492233e44f6400e9399d3272",
+      "wer": 0.142857,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0110",
+      "referenceSha256": "ea5310d30938194fd97553887c7657c009ed7c738e06280e263b9a082a282d45",
+      "transcriptSha256": "43324d96e5a12ddbbd221b80c2496c094118b013808d02e3923bc163b6b2fc6a",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0111",
+      "referenceSha256": "2c7c557112ee4d30b26d3e3051112823cbaf9e8d0af368a9c45225566bcb646a",
+      "transcriptSha256": "e02e84c196724591ce23d8991f31ffadd03384e61a8f821ab1de19cefbdb2dd1",
+      "wer": 0.225,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0112",
+      "referenceSha256": "a785118f157324263b3c3fb024a56f548d8ac2984e9955e0d7fac63a9643ff2e",
+      "transcriptSha256": "443359aea48c0b26bca9898fb29fff556a06fc0dea78abec7f940c2a7fb9f5c2",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0113",
+      "referenceSha256": "8e821f4d26eb633d897d1c71656fed9880f06687d71496ba7b80e6b43359a0f3",
+      "transcriptSha256": "75e630c9b76a135825fae337067ace8d05c6b93f059647d199dd99ac92edea23",
+      "wer": 0.046512,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0114",
+      "referenceSha256": "d66b2f1fb0b945969c0c42ccdf845e0977468d3687888b8176c84cf02956596f",
+      "transcriptSha256": "eaf9bd0ec5793ce676e0b1ca39b3b46cf08584a05a74afdc3c0a56bc9a4216f5",
+      "wer": 0.021277,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0115",
+      "referenceSha256": "618cb8da81efafc10288c24e102d54377e4bf28951c7d95510ae25d0e63f16fa",
+      "transcriptSha256": "618cb8da81efafc10288c24e102d54377e4bf28951c7d95510ae25d0e63f16fa",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0116",
+      "referenceSha256": "c3df66bef6ee072c2081187a1bbf75d330d334532fb2716a43b4b85e1ea2a868",
+      "transcriptSha256": "c55377d82d5db7689214f22ace0d447048acc72264e63d837114b83338d38be8",
+      "wer": 0.026316,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0117",
+      "referenceSha256": "26aee304e21ecc70ebd3bb3fef8de55c9e021d432e1ea12e96246a236571146a",
+      "transcriptSha256": "b6d20788cdf11ac0f0a8302b5a4671e7743c4685679371943e5d6ac3dca85024",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0118",
+      "referenceSha256": "ccea90c6aeff55ef2c8cec062fdcf2a7087ab0c185d5ab3f9eb2d398b33b3cde",
+      "transcriptSha256": "582217713fe98b5f94e111dbd99241f5ef600c85fd31c9a87c4cc47092264965",
+      "wer": 0.052632,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0119",
+      "referenceSha256": "02ec3a605854b23637e7639508d4a51851521f9c63aec7d384111ffe2eb457a3",
+      "transcriptSha256": "0cfc7c74b1bd069dd944074903fbc22ef13d30cf319708a874d9c5b29a4e07e7",
+      "wer": 0.057692,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0120",
+      "referenceSha256": "40d1f3186f25a6389c205bfb8d1cb4458be529b25f3c5ecb443635b79feb5208",
+      "transcriptSha256": "40d1f3186f25a6389c205bfb8d1cb4458be529b25f3c5ecb443635b79feb5208",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0121",
+      "referenceSha256": "224dd624f8ebba5cfa2219d569094d4321aaa7a42a6f182a6a9d64806a478405",
+      "transcriptSha256": "84c0636d098f52ae53709b2c02583c6d869bddbfb55674ce0bdd06cf0f8f9f17",
+      "wer": 0.020408,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0122",
+      "referenceSha256": "17d4280a44950e385993a0838c8b9d2713d33cfb43f77559852e54e236d2434d",
+      "transcriptSha256": "17d4280a44950e385993a0838c8b9d2713d33cfb43f77559852e54e236d2434d",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0123",
+      "referenceSha256": "c2b7cde831804f489b1f5be86e7586ac11537d5d52e93fecc63dbb95f61768c1",
+      "transcriptSha256": "80f085bcdaeb96948b072ba18da291167970a095645ef6226abd5c5e90297fda",
+      "wer": 0.047619,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0124",
+      "referenceSha256": "bc4b756578eead288e422c2be16df8950075ddf6252cc05c8f1f75f9036bcb7b",
+      "transcriptSha256": "bc4b756578eead288e422c2be16df8950075ddf6252cc05c8f1f75f9036bcb7b",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0125",
+      "referenceSha256": "aa3bbb406901ddd9ee1c4be328b30fc7263cd4d6e8123e0cd95587e9fad0cd65",
+      "transcriptSha256": "9df25f99312a0016400f219690bfec73d1bc2f2633ef718a8d7da7110b791bda",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0126",
+      "referenceSha256": "9d37b3a1663fb9e1fec677e7331f91d6155920e10519b08bb848d060207bcc6c",
+      "transcriptSha256": "d50f3e37a47d95e8e3d634d7e4ab3be99e0fd996e92a0de685aec5e8443d1a73",
+      "wer": 0.057143,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0127",
+      "referenceSha256": "5c85f9319b23e5c0e2360c44b01f4e8b76fdae3bf565fddf77c74ae01d3eca91",
+      "transcriptSha256": "5c85f9319b23e5c0e2360c44b01f4e8b76fdae3bf565fddf77c74ae01d3eca91",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0128",
+      "referenceSha256": "460a15b5ff9b76a7d0e48cbaddb9e9e7c2c5c0f8b73b826ab2ed238c84f430df",
+      "transcriptSha256": "460a15b5ff9b76a7d0e48cbaddb9e9e7c2c5c0f8b73b826ab2ed238c84f430df",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0129",
+      "referenceSha256": "339245a3046024949d70a91fde1cc7ca587d1c75494ea803ac1a3d77b9fa81f4",
+      "transcriptSha256": "bf8ace5098968fd8464a112e81a0c8d1ff2bab8b621fb98d461e16edfe46029d",
+      "wer": 1.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0130",
+      "referenceSha256": "95013b1702f0c97dc89a6adc006c08239a63dcacd4a938683399a31778c38a27",
+      "transcriptSha256": "3b2a14ec4340416b8c3fd8e3cc2fe76ac43255c6b737ed1b10cb6ebc3c8a7e52",
+      "wer": 0.2,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0131",
+      "referenceSha256": "00b1330f7a257852ec8896b0ee11cfe727c9fc5802ec168e31108e05edc0a3c6",
+      "transcriptSha256": "0aff17840ea4844439b12909070ac020390af3680a73a07ff4866a94ae11f7a4",
+      "wer": 0.097561,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0132",
+      "referenceSha256": "0bd0e76d594ca3e8bb810dc290759b3a292e462e6f7e07f5c59d61f22a55de77",
+      "transcriptSha256": "0565bce547e25ccf435426d5af33ec657500f5a236c063f95c443f01e4ea2f23",
+      "wer": 0.075,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0133",
+      "referenceSha256": "f188c9697f1d3c7f8b299efd8530c761823464f8d71cf1b01a5aff3b638c12ee",
+      "transcriptSha256": "f188c9697f1d3c7f8b299efd8530c761823464f8d71cf1b01a5aff3b638c12ee",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0134",
+      "referenceSha256": "9c5f6ab15b897cf6b45c942c2781c4dd257bdeb5b56a67e8ca72ac06e9303204",
+      "transcriptSha256": "aa04224cd60705d881980072d01b12bfa9c14245e7090320eea6dc1f37110465",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0135",
+      "referenceSha256": "51ad447f8d06df56c83119d4a76b23b193a0a31a897491fe4290e5227cc70dff",
+      "transcriptSha256": "754f05ad808130ef42f0cd358fd8265d94882639291ae92bf42b1f798f3bd9c3",
+      "wer": 0.277778,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0136",
+      "referenceSha256": "11c439d587b084a4745af473903326af552e471b91925fd54f291ac4ab170398",
+      "transcriptSha256": "88c70bfbf4de130162903c3d78b9966c35b8bc9d62667ee18e02670f14ea7685",
+      "wer": 0.028571,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0137",
+      "referenceSha256": "39acea9a5ff7baccad4597589419b2b3147f04060829d6216f21a05c01e00d82",
+      "transcriptSha256": "b5e5ce3cca43ad59fa861c3b715b2e4d07257239b4f4034efd8df17b0a05307c",
+      "wer": 0.038462,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0138",
+      "referenceSha256": "fd06ea69f74e9bc24e60543b99bbbbf79ba074c5790184847ff1255806f93da5",
+      "transcriptSha256": "9ce20dc5b6962cfe74372f2b95b984393247f8bb01f158ececdc262a3d298aac",
+      "wer": 0.061224,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0139",
+      "referenceSha256": "e9681ee946e67dbeca30c7c934119466c3a707a73ad11187b6cbabf8d60a28cc",
+      "transcriptSha256": "7570a011e3f5e4bea2ef76e393e3c0ceb0c303b2bd8ab38c0a83ac577bafa52b",
+      "wer": 0.142857,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0140",
+      "referenceSha256": "c6caa47ee0d22e4418299ac786a1f205675f1d0da4eab9e8f106610dd9da3ba2",
+      "transcriptSha256": "51ef0d2ec006b26d7220a026feed63ece2cb9d2324deef5bc221e8296b0ac719",
+      "wer": 0.040816,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0141",
+      "referenceSha256": "596a29373f291743b11a9562366c15bbb16f61549ea625a03f1f6885c415599e",
+      "transcriptSha256": "b20211638839f4300453dfb5878a510bd43ae13a8376d94cdaae1bf194b4f457",
+      "wer": 0.037037,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0142",
+      "referenceSha256": "b4c8392a16f8b387f3aceeb7d7c412b729bfb62b5a8e5fcd96ac26005024b80b",
+      "transcriptSha256": "b4c8392a16f8b387f3aceeb7d7c412b729bfb62b5a8e5fcd96ac26005024b80b",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0143",
+      "referenceSha256": "ae34dbf9b16cdb61e265c548af8a7d4c1ce85a7ad2e2a8a8f1992548a508707d",
+      "transcriptSha256": "f78534958880ee97c4f39e4fbb6efeebb352ad70c212ded389fd266ef1daae0c",
+      "wer": 0.047619,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0144",
+      "referenceSha256": "c0a472331ebc5171d68ba026125820abba776805e259f9ce5b8f78b037f77374",
+      "transcriptSha256": "1a5a6b0979979c604da8793ba56c45031f0452a29fd44d38e7c9eee6a7dfcbaf",
+      "wer": 0.058824,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0145",
+      "referenceSha256": "98c341d4db0c267392d0c0c8076d0b91fc421cb2556b812efae397d28613ae57",
+      "transcriptSha256": "f66ef6d08f44d932427e47dc650118a58cac06f92c86625982fe9ff3e997736b",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0146",
+      "referenceSha256": "2a3d659a999cb3c3534ded52cb1e5fc913c878f6807abe9388893a647593fd9b",
+      "transcriptSha256": "4dbf6327cfe2655e8b7fca0fa7a45c6970368123529a9fede1b4af744841ee91",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0147",
+      "referenceSha256": "05506e4f67359fe6e176cd49ceaa5184be1fe57a0df65955f3d99176f1ef0100",
+      "transcriptSha256": "7dc58025d4ed79c8ddd3089b04529a7904e852a35d7353a559a0bbaba0927e57",
+      "wer": 0.078431,
+      "entities": 6,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0148",
+      "referenceSha256": "d9f7451374a9f5d835859edee7246a170bada224671936c8de9dff87f6a0a647",
+      "transcriptSha256": "6ce9c5a0e6f8f0831514c0a0100369baddd329d990195b2a72057ae0f8257cfc",
+      "wer": 0.181818,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0149",
+      "referenceSha256": "e72d9111e4c3e7a9f2260e051ee62d76957762b8d3b69eb997927b717fb3bb26",
+      "transcriptSha256": "623d190c5613bb5adfc128094cc4329df8365104c822aa8525fe09eb69519787",
+      "wer": 0.032258,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0150",
+      "referenceSha256": "c0bb2537342da13681abd7b3c5d70524c4e35fb364a2c0c47dcc45d627b69db1",
+      "transcriptSha256": "fb75a5f8afbf3ad8e2339946a800dc9433b3468b5096e53b389244a9368093bf",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0151",
+      "referenceSha256": "c408f4ebad06bd142a13f6a4a1beb9a82a76d1b7e2436eab1d29255863813a94",
+      "transcriptSha256": "1f9b798ab6d84f6b53693d6ec76dec797e2872113c432cf44fd21625cd20ed9c",
+      "wer": 0.032258,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0152",
+      "referenceSha256": "dd61abc16f51d896e36b6cfde5ceaad46b243bc47f717ff1b469adad937b164f",
+      "transcriptSha256": "26f627936c99fbb58fc74a25eb7cf01c3535623c541e127cacf6267f57557976",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0153",
+      "referenceSha256": "e062ace60fa9fa4c11041b95fb92e4520b2b1c4843d96e64670b7d731b726046",
+      "transcriptSha256": "e062ace60fa9fa4c11041b95fb92e4520b2b1c4843d96e64670b7d731b726046",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0154",
+      "referenceSha256": "cdc69edd15cfbd327257e46c0d010c6f777241a53c784a4ea9b615ae1518c157",
+      "transcriptSha256": "eb4c1ba6addf6f7b83eb5b86afe5efdbef31f9c3369969f6100644f91a497065",
+      "wer": 0.0,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0155",
+      "referenceSha256": "d6ed104c93f42c61e2966ae2008719c4cb312e1203bf31fce693540b941a760d",
+      "transcriptSha256": "5d886f2392d9ff193f276659e454374919cad9a9ce82ebd3003856d16a2fd05f",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0156",
+      "referenceSha256": "e61d4e20af42cfe623e08890bdf8a0f9ade62cd2455291975cde320d6a25663a",
+      "transcriptSha256": "16cf6ab07b51b39b51aee0783726bce28eff3f62655f566cc799eb905a60994a",
+      "wer": 0.2,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0157",
+      "referenceSha256": "33b5e8cd80389975eaab4a49fc0c68065285f0a7ef991919a8b0dc2f7d9c9a76",
+      "transcriptSha256": "33b5e8cd80389975eaab4a49fc0c68065285f0a7ef991919a8b0dc2f7d9c9a76",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0158",
+      "referenceSha256": "2aa2da8d791d6a1139b8a9301c7b3411eea496ab53a03c7e1ae0226675646c06",
+      "transcriptSha256": "18cf0c238479ccab6de1b58626e23f857b3de4c03f7f37b2d186681c8fe7771d",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0159",
+      "referenceSha256": "96bb11dbaf751a2ae6bf84434154f7f8f4f75921a28b8e0050ab76712e67a74d",
+      "transcriptSha256": "ed63d4ec9f02db942ec1dd7d9260335bd251142b8d6a8653656dce3c10d3940d",
+      "wer": 0.166667,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0160",
+      "referenceSha256": "c4065e53baf5c68ae02f0faf4d55a3c150c26e6563026fefc7151c5f871ff055",
+      "transcriptSha256": "3ab7133d462927d9a9ed6afad9bdbbf2d9dd2858f44a23b662e5181670f636ce",
+      "wer": 0.117647,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0161",
+      "referenceSha256": "c8adb077ed2f5a2e194c254e741e21cbdcd94ec2095f92775e1b1678283e957f",
+      "transcriptSha256": "01613e043b41f8771203978500b3c0a475fa52ce877c67f8d35586df3cf9c741",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0162",
+      "referenceSha256": "bed5779819729cd1f29caaf2a22b201ca92ca0aa6a82e79afffec08ce142b2f4",
+      "transcriptSha256": "55125c93cd250c334571d9fffbc17aca3d86714060096e767b234a2e11dbc5b9",
+      "wer": 0.084746,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0163",
+      "referenceSha256": "b8e1999b56e89ec4296a07d77e2621a16d63bc9d773fa1ba9a9a7d81dac02ee0",
+      "transcriptSha256": "6cfd65c2b9cc6b9b31396fc7ec7f4c63570036a84063d2d3e9e39b377a427f35",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0164",
+      "referenceSha256": "b201041197bdcb57d82d3e6cc2f8decf69187b516773c58ee6a6250b498bff4e",
+      "transcriptSha256": "01a925c530aa50c5e9cfcc1b1fe697439bbd60762ddd2ee4c7301baac191ce29",
+      "wer": 0.105263,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0165",
+      "referenceSha256": "c5d3fdef5ccf2f5b4b8f7823ce39846c1acaf15e7da1576dab91d57cb986ce12",
+      "transcriptSha256": "98dc18ec4926a1201e4c3fc4bc9020612e4c2fd1f23371097df294c7f994fa9b",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0166",
+      "referenceSha256": "701bcbab2bc90f1fbb659822edfd7851139f12b71e0ab8facadd30829e983a86",
+      "transcriptSha256": "2deb125df0d505e7c038845da9ebc2cb84bb70aab67b4e8b7951bb9f0eb88e51",
+      "wer": 0.071429,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0167",
+      "referenceSha256": "4faf29d210c453ccbac74dc9fd166904d300d972393dacaf228c0712353b9d63",
+      "transcriptSha256": "f8445eda2a024fd5c3904ca082f73cc489bf0cf9bfad704e54311d92ea8e1edd",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0168",
+      "referenceSha256": "f7573f52fe82683ce76236642459e3ef760700217d3f664422de02b7373fcd35",
+      "transcriptSha256": "6b817c7068a28aaec153d8412379445d55c2a0e6fc512528587901662654e940",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0169",
+      "referenceSha256": "c6528b2fd1ad921bef6c97b719d15c718296edba9c9c939a4e3dbf843bf3c33b",
+      "transcriptSha256": "b600eea309d5b32ec2bc19cc5b21af1337da6b46aa9b350118aa667577bd2d43",
+      "wer": 1.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0170",
+      "referenceSha256": "4eeb415d18c68f2c79fef4e28e7b7dc48d4b381294a0411e15f3ad79a702f648",
+      "transcriptSha256": "3b15e7a6bac2c43be6e38692e146e74c2a3590c8b4e8a88bc681e8e8c9d722e6",
+      "wer": 0.089552,
+      "entities": 7,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0171",
+      "referenceSha256": "dc3826f1b317c97753c38276b13303c51a862ea23cfe306c62502a0654d4e78a",
+      "transcriptSha256": "a48a8a7b60c59b2cbf8ed576da67e2e0d6bfd84ec6c3746f78f93d2a1ac82a45",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0172",
+      "referenceSha256": "99c690e0227b9df5903336c229f77a96821cda0340dd491333cd74d8b5cfedc7",
+      "transcriptSha256": "8f7420fcd1d3709d8e6b5d3425c6958946efe7c715c67ac5dd3bddc8127be002",
+      "wer": 0.102564,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0173",
+      "referenceSha256": "3a60b344c9d557b5da51e3ae1c1996a386ffc9160f630f1477f0a732d63117ef",
+      "transcriptSha256": "3a60b344c9d557b5da51e3ae1c1996a386ffc9160f630f1477f0a732d63117ef",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0174",
+      "referenceSha256": "bd0b5448914571c54c13a1084c4218785ac2fdeb39ed4a02ca7f2a2509c89f68",
+      "transcriptSha256": "e408254ed5cd718f6e05cf3c49f2e0859dd9d3ad277737b78a01f4046c383969",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0175",
+      "referenceSha256": "cd9af6fac1b9d899f9aedeca2349614ba0ee184cb14c9a6ec87318acbde1c0f0",
+      "transcriptSha256": "a81b6649602ef61a7c131b73be3cc2e6917e753c97798a3b208bea0dd8552727",
+      "wer": 0.019231,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0176",
+      "referenceSha256": "0a49681b823717f6a382790df44a81fba461a99fa9ac08cf10f294504a4b6915",
+      "transcriptSha256": "c1174b53b30a788f6cf1b5f285f21874d9a41b06c9cfe88e8a14aa973c87a427",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0177",
+      "referenceSha256": "aa3d985a41a0a5d77cf2303ca57aa7b7a1ed8790ef416be5706e62649a6a34ac",
+      "transcriptSha256": "7605ddc81badda461a6c503b22fec5b50bf89611b2083d0fede16f7c108e8399",
+      "wer": 0.090909,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0178",
+      "referenceSha256": "08cf9ff6fa337a20f2626a364031f9e4314472c3c8db92257f8097db425ed742",
+      "transcriptSha256": "63fb679dc763d7ecc7d21aedb1073b8fd3d8e3efbf9de4f109a47bff7891b75c",
+      "wer": 0.032787,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0179",
+      "referenceSha256": "d09f4104867b9028afe32f76c3f315bfdcfd5af6ef0470034c81035237437b82",
+      "transcriptSha256": "504b94e0a37ce18cfa2a0885160880001fe8ea04c0b1c9eb8b5c89800d3a49c1",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0180",
+      "referenceSha256": "73b374ee4d0faf6b1ae4ec8bf96faeb6ef2ea19507f940f708845846d44632f2",
+      "transcriptSha256": "73b374ee4d0faf6b1ae4ec8bf96faeb6ef2ea19507f940f708845846d44632f2",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0181",
+      "referenceSha256": "f41706809909bdf7a5daae3b0da44eda93996b2fe3d650a736850e90b6a311cf",
+      "transcriptSha256": "7d81c971c9c0f564f111bdb030defa346f6d13a7de6fc8d0717901b33584ea75",
+      "wer": 0.12,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0182",
+      "referenceSha256": "1271008c4c642c5dba166e983c41bc2b80a3919ff93e0f38483712bcfdc415ab",
+      "transcriptSha256": "19e4b94b47e98fa48206388844421fe169d3ae90bac673880ef3d98cf9e8e3c0",
+      "wer": 0.173913,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0183",
+      "referenceSha256": "73e9edc3b07e442abf0767be4ce6c77dc3398c57909a95c707c464872294d4f8",
+      "transcriptSha256": "2f18d9a7fe12b5994e40b0ad11c017f215df7e9e3dc8a882052b8941f2ee15d4",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0184",
+      "referenceSha256": "38990d0dc4f1cb5eb078c1ecf607408e418132f4b9a1d17394f5b96426969503",
+      "transcriptSha256": "896b2cf3ea5bbacae33d05e5dbd9a4ecf50fc1f3d110d95907d42b8c7f99339f",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0185",
+      "referenceSha256": "324f5dbf0142ff34d915cc2154e1a27ac69ac09c0d1ca5fa6bd71b30d37e8c26",
+      "transcriptSha256": "cc8171dc224d68afe0f81952fc2a304816185f9f19ee49b20c6eb30d5e82719f",
+      "wer": 0.083333,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0186",
+      "referenceSha256": "e7a5bcc7567cbec5a9f1153f14753328a9b586c188459f3505a4f6a23b7691d2",
+      "transcriptSha256": "61e5bd3471f419e6c73f69efbe4931a67c81b7f9feae357ccd81ccf760fe8882",
+      "wer": 0.075,
+      "entities": 2,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0187",
+      "referenceSha256": "65820797cc03d7eca1777a8796f96a9c6add76c399665440f92eaaceccef9545",
+      "transcriptSha256": "24ea039e58e0ab10c018151db8c95419b30aab00de47a3728ae0768babda6d60",
+      "wer": 0.083333,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0188",
+      "referenceSha256": "3630234bb7ca2c989bdd6319065fb995fe266f2db39b0242b00ae31fcd639fa1",
+      "transcriptSha256": "488949fe8ff961c72aeef21f4e454d7fda8225bccaeba9d5574668f3a25168de",
+      "wer": 0.045455,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0189",
+      "referenceSha256": "ae0e888a6c5edd029c6bb05fb8739e1fd065fd2715d4d2a5ba89389a7a6623e5",
+      "transcriptSha256": "bf8ace5098968fd8464a112e81a0c8d1ff2bab8b621fb98d461e16edfe46029d",
+      "wer": 0.944444,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0190",
+      "referenceSha256": "f51f6362f39dba7a7de131a2d7f45f58f518ce17be0227ec2fb6f2f67543ec97",
+      "transcriptSha256": "f51f6362f39dba7a7de131a2d7f45f58f518ce17be0227ec2fb6f2f67543ec97",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0191",
+      "referenceSha256": "4eb9ec37b61a57370885e2cfe7a64df93b12580eeda3400d249f355533e4379d",
+      "transcriptSha256": "f1064381bdda59884731899334e12b7d036bcfd621d440e4cd0f14cb9fd0e57f",
+      "wer": 0.152174,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0192",
+      "referenceSha256": "1dc99ff3ef1ab0e951105b81826b792619580edad32c4bcdcf2982628d99e52d",
+      "transcriptSha256": "95a7aac184101e3d22428be4c2a16fed6eedd459804540074f5e7335816283e7",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0193",
+      "referenceSha256": "aa22769a141c0324d3463d5a31346934dd44c9087e01e86d75adefd5f4b400cf",
+      "transcriptSha256": "e1e1b66b4463dbd9b9cea447924bc778ca88b00c06606ba638d8f8d8a9ba6b99",
+      "wer": 0.061224,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0194",
+      "referenceSha256": "f3c102e207fa3d2575822058129e01d84906448018f43e44b187ba39f4fff3c0",
+      "transcriptSha256": "f3c102e207fa3d2575822058129e01d84906448018f43e44b187ba39f4fff3c0",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0195",
+      "referenceSha256": "200b2eb3daabd029cf07baf2b1273def2ddc1d6cfab094018b87af20afbd6709",
+      "transcriptSha256": "9e131aa3c73376a8de4d17cd9bc6d7edbc88cba52f68b53ee1c77aa5cc1b09d1",
+      "wer": 0.075472,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0196",
+      "referenceSha256": "353e6fecb1dd8d99d3983e93d1c3a1fb1344c8b4782cb0500c474ba4fec85fb6",
+      "transcriptSha256": "353e6fecb1dd8d99d3983e93d1c3a1fb1344c8b4782cb0500c474ba4fec85fb6",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0197",
+      "referenceSha256": "7b8e6e9de738febdc996dcd0b125a9c55edc90fb1f9e360a5c9edb6a2d18a508",
+      "transcriptSha256": "ed60334029fa7d555f1469e5eaa28c8d577dd6e7d4fd7e4a8af0cf551a623180",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0198",
+      "referenceSha256": "ba08e23bfcb0e642399e70600e6bee86e50545cb70a3fd7e8f698f8340caf7df",
+      "transcriptSha256": "e6a9157b442eb0363e8c2f6f0addca240eabc97ab5fd25c8a12226b2bd215bf9",
+      "wer": 0.055556,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0199",
+      "referenceSha256": "aee7722bd2f96242fcbbecfd502255ab4009f1c6acb6122454a1d314eb836f4a",
+      "transcriptSha256": "5eb93651237294f591beeb42437f9dfe789258954e4e0e801941a0443af944c9",
+      "wer": 0.027027,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0200",
+      "referenceSha256": "7478913dea0f2683ca1d458d5ce4ab2116a833c5eb3705e245c7ed68c55e8cff",
+      "transcriptSha256": "7478913dea0f2683ca1d458d5ce4ab2116a833c5eb3705e245c7ed68c55e8cff",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0201",
+      "referenceSha256": "6733e2b8b96ba3081ad8d5e5ac334dfa68ce15c2df70b3088a90f7b8cc980397",
+      "transcriptSha256": "177fae7cc0bd4b15e0bb38ab8a4e6b8ae48b8e983ed539f97b1562164293e33c",
+      "wer": 0.105263,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0202",
+      "referenceSha256": "5118a8c4d8b6dbc9ff6e24dc8a12acff32eafd72a76d022c641e85180d9b5d5e",
+      "transcriptSha256": "2cb837cd8bc580bc3f6f0b2cd4e0480bd1b4f43a9a331cfcd9b39a8797e20ea1",
+      "wer": 0.037037,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0203",
+      "referenceSha256": "82a2ca8689cb352f7a4fc63d11ccf8c3ffbfa3c7135f817ed6aaa3c3fc0cf0cc",
+      "transcriptSha256": "c430082624db490b99b449717c024122de0fcd4431ebaf85922eae1b37763467",
+      "wer": 0.177778,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0204",
+      "referenceSha256": "d1c6b29751fd26e9b1e440409f4c3e64cd86b21f9278eff5564d8d8fdfe20ea1",
+      "transcriptSha256": "d17d83609e21c52f6b07c09a30eed5bdc52d6fdec7362f63409dbd421349414e",
+      "wer": 0.172414,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0205",
+      "referenceSha256": "b64be6ce67438d6637ef8447e5f1c60f3ea3866fcc31d892e2d626e4559f6d90",
+      "transcriptSha256": "9512aece4b678bb60e6724e0dc59ddfb528e2457d575358459f6b903f564a95a",
+      "wer": 0.1,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0206",
+      "referenceSha256": "ebf66b196adbd9ec9808a966211a3d6d0b9748045289933c1f9ebc06d34b68d6",
+      "transcriptSha256": "771c6f4d13392f229c634a81631ea385773e1158183bd0999b5602a27b274c80",
+      "wer": 0.025,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0207",
+      "referenceSha256": "1fa3834f1067e2bb11caf71ff70c5fb47fbdc9ba0ccebfb334e0f5bcf2f15caa",
+      "transcriptSha256": "d921e4799de78f11a1c716d2dd9c8427554cc853ec228766c473b293363099ff",
+      "wer": 0.04,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0208",
+      "referenceSha256": "991e0c4d91420e1df3a56fcccc83bb68779b130c48af0e0231a3d7ce9a6bbb73",
+      "transcriptSha256": "aec3f22f298948499b315d2e5fee593350cd5141220b970c94b526dafec88cff",
+      "wer": 0.230769,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0209",
+      "referenceSha256": "d0bf7a92797da66d20e5ff6b00089aa4fd8a675bec85b50c54ef70f1c88bb5c7",
+      "transcriptSha256": "c8a8175ee04f3ad237e498edb0acf5a514d84d5721c20025180e1492614b6589",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0210",
+      "referenceSha256": "f3a34bdbd53defc4867de2208f729094e8d4594753247375a323d8eb4e7f4efd",
+      "transcriptSha256": "f3a34bdbd53defc4867de2208f729094e8d4594753247375a323d8eb4e7f4efd",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0211",
+      "referenceSha256": "d29892558dc4408494ce0ed756453edb514310cfab69d940d70fb3991a64d212",
+      "transcriptSha256": "d4afe83a856af1c16ccf5a0ea7f63e594228459479278a0cd2502717f8f49b36",
+      "wer": 0.08,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0212",
+      "referenceSha256": "c764635041909cd35fc8d4b7064a2b040c6e59565d03610892af25103e4f259e",
+      "transcriptSha256": "491f2f36482823c22e0a53e848abe9849bedd07c20b233f0b19787ea8ca46655",
+      "wer": 0.042553,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0213",
+      "referenceSha256": "c67f0a6c03846c65beeac8e29a86b92e28f4e112b9d3db75ece18ed1c9e15b32",
+      "transcriptSha256": "22be20a632fcbb1fcf8078494889e61b60be0d268fd79119cf2c3babccf9cc9b",
+      "wer": 0.030303,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0214",
+      "referenceSha256": "7107e3824f434b7af99e1dfe3323eb4b43a11f0786b92422892de13468b9d943",
+      "transcriptSha256": "939a28d3718ede6631a49ece44e431028e17d3ed98728130c9f066a33cee6573",
+      "wer": 0.03125,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0215",
+      "referenceSha256": "122aa533be2ec673c5f1a436f4e84ce7beee89a5c6d1833d39aa369ad3b73e1b",
+      "transcriptSha256": "122aa533be2ec673c5f1a436f4e84ce7beee89a5c6d1833d39aa369ad3b73e1b",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0216",
+      "referenceSha256": "3959d1a45d06c38b169ee4cb62daf68bbb4f31777aee73d2f309bd86b84a0ac2",
+      "transcriptSha256": "51216bdedc67d92238a9d492f2a2e23ed09daff3591af51c6d34f647d25ea0f3",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0217",
+      "referenceSha256": "c234ae082c2c017913adf8f03dacbecc8cc6c9d969255e69d75f6a2c1f70e1ff",
+      "transcriptSha256": "c234ae082c2c017913adf8f03dacbecc8cc6c9d969255e69d75f6a2c1f70e1ff",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0218",
+      "referenceSha256": "df8bff15a4d30a6b16e130969d8eefec19e805f44c054e5c0de02067b441e943",
+      "transcriptSha256": "4ce8e7125f5635c5a1729f179a85bf3e3b85aff296c70da81097601c8140ea42",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0219",
+      "referenceSha256": "9067f0397f74c4bf4c0ab18da469bbe3ae178d6223f20f30dba8e23f636a35a6",
+      "transcriptSha256": "5b2ce0f12f63fdca3767eb0bcb7af0d8b67c332f18e7da230c1b16f6a125eeec",
+      "wer": 0.055556,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0220",
+      "referenceSha256": "b1ba35ea8b39aa688ffbb0278f14f488f1bf49f0d3c74ab53024c6842875fbf1",
+      "transcriptSha256": "27c9905d5b27d6af065eaa9ea38380b8f944b7a3d88e7f079593dc13bf188bd6",
+      "wer": 0.08,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0221",
+      "referenceSha256": "613b91f59082e49425f77ed3ba2b1862dbbd608654cc333cae23154e82356bcb",
+      "transcriptSha256": "42052b844344226c36f868222c85b57da572fab10ab1dac40080646bf744c0da",
+      "wer": 0.5,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0222",
+      "referenceSha256": "dd108af638d91373103ca2e591d3415b24e9c5c389a992fa4b99f7f607570402",
+      "transcriptSha256": "746bb1c3de598c1db60d425cf085408d2ca799bc122b3dd85e848c2726bd4334",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0223",
+      "referenceSha256": "50524c47cda9aac911e347578587a0b86d8311c6b465822fcf77beb3aba2dbd9",
+      "transcriptSha256": "0f1ffb2811e207efbd6ebc8ab117de6e51fb0edc5176921800321d0176ffb5f0",
+      "wer": 0.080645,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0224",
+      "referenceSha256": "779460353afc12693fc14a278c4752f55af04288f45a422b03f61e831df14101",
+      "transcriptSha256": "779460353afc12693fc14a278c4752f55af04288f45a422b03f61e831df14101",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0225",
+      "referenceSha256": "1137ba9262d34556622123dfaaf46101e138ba252f10bd0f118ef00b2ec31197",
+      "transcriptSha256": "7341112f5208c8c84c01be202f6c8e41095aa4f2700bbc11083f08d0c6573bba",
+      "wer": 0.055556,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0226",
+      "referenceSha256": "4818a173b85d936b6872cfee1bc5fd4be5cc04f26e040fb27bba226bb434ce2e",
+      "transcriptSha256": "f17843b1c1507165517f30f932868b2ef7ba079364146df570f0e88754a46559",
+      "wer": 0.213115,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0227",
+      "referenceSha256": "8fe8e68ab769bb633af7fadd05110eff306e240e04bfd5e0e2bd80e49bee608f",
+      "transcriptSha256": "7b227663bf3ce541c2a26bc25ebb63ab2e0fcb4e0b19adaa269a17b0ecc085b6",
+      "wer": 0.125,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0228",
+      "referenceSha256": "751220628bad9d49bc2b1d80f9d77b118e5a1333a3e85b1ee16e6f53e3ae2a92",
+      "transcriptSha256": "062aee92ade64dfd086aeb1bfb656915a098f4d1dae996476747c232098c51c2",
+      "wer": 0.111111,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0229",
+      "referenceSha256": "60d45886a8f9e2f96c24ce80ed751a40750724679a46d50f9cc14b1406c5b7b0",
+      "transcriptSha256": "8d7c84d129a82dc7d92ac72c4c7a470cc1c40005918fe3864d9c0880eded4fc3",
+      "wer": 0.074074,
+      "entities": 5,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0230",
+      "referenceSha256": "912c457f8f9400d4182ad471b57d723b324e3254281285f75a89b321734eaaf2",
+      "transcriptSha256": "4442d7d1ea9ffad711a53cdeff72ff1dadfe0adef307d6b7c435f68158781794",
+      "wer": 0.105263,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0231",
+      "referenceSha256": "a1bc651232c3639e92ef45bb97eda31582a11f0cd9077c4d1bf63efa7c4f72a8",
+      "transcriptSha256": "aae911eeaa839210e467011c8278fc7845b2fc1e053b3b6f1869ffecd3909896",
+      "wer": 0.125,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0232",
+      "referenceSha256": "c10bf128378df672681d3b86e107001078e8664dd26448636fce2ce75a2ef450",
+      "transcriptSha256": "c0d5d98772f2386561f1619fb93b4e68d103e342ab89a3c215d4ec6bb921ea20",
+      "wer": 0.035714,
+      "entities": 4,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0233",
+      "referenceSha256": "71f26609b5f6c48e8c9cb0da97927df4ae9b531da25a75c55349a9d540e9ec8e",
+      "transcriptSha256": "71f26609b5f6c48e8c9cb0da97927df4ae9b531da25a75c55349a9d540e9ec8e",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0234",
+      "referenceSha256": "558de336905088e0069d64c49c693fdc44d7c1784e690787b5811219dd672d49",
+      "transcriptSha256": "4d5bc78633ff1a570d189d3483a4207ec9a92136d2d36c100fbd322bdf9ccaea",
+      "wer": 0.153846,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0235",
+      "referenceSha256": "10be7304c79775e78d6fc145c40c9d0dcf82299d2029ba3563476d7710578b8c",
+      "transcriptSha256": "c2fec29c9eddb9916cbb3813f40919524226f562f5ee23b324093b9c318270af",
+      "wer": 0.069767,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0236",
+      "referenceSha256": "d7472b95ffb860085cce23ed2c2590e75ba5ce0a7a09a23297dc9d99a2a8fd03",
+      "transcriptSha256": "4eb8de3b87424c55b578f1d749696f528297f51eba57eef33a41e2e3aac244db",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0237",
+      "referenceSha256": "c7531717849cf1daed69d461ccb38e1e9f061af9f85fb73f22bd2499faa6b118",
+      "transcriptSha256": "e1e7880ac6c833923a49515e89894db31e39e158521f044b21cbc8c52bf4ad17",
+      "wer": 0.083333,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0238",
+      "referenceSha256": "9d2e638fefece573c967bfc77456692f6f29f2e9fb12250128b7d07d17d6c69d",
+      "transcriptSha256": "4baf72f040bc71a3974dd9eb5306bed9a6df9cf2d57c1c5b27a749b2e48576fc",
+      "wer": 0.105263,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0239",
+      "referenceSha256": "ff6af2deb8368ebb878fdff8422059a0370f970c2cacd7ca30c5d2e822a70ab1",
+      "transcriptSha256": "60e991a2b6fb2129b92228ad64b4adb69f89eaba4ccfbd368eda7730be89992b",
+      "wer": 0.125,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0240",
+      "referenceSha256": "f4dc7c0e7bd0bb8a24c8abb524f557ed7bc712b3481f5e0854f70ae23eba88e8",
+      "transcriptSha256": "14434d128aaff7dfca7936532675648f1b8c5fea6c8b9e1e3eedb9aeee4b981a",
+      "wer": 0.054545,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0241",
+      "referenceSha256": "f36f8530f7e80de5dd6f66d8114c4a873188581c91bd12791e33c1c049e0ad7a",
+      "transcriptSha256": "32f3b5ec672e86ac163c2e99d42bdc3e88e933bab2839c116c3810edbaa66355",
+      "wer": 0.107143,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0242",
+      "referenceSha256": "7783fcbc5bc00f01d431d05ce2f02c4902818c8bf9fb55412d251e7eb30c3455",
+      "transcriptSha256": "9466cacdf7d42f461af422984ad606ba2757d7a83ab37210244ff9b3298fcdaf",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0243",
+      "referenceSha256": "f367351a11a392d9901aac080f56dfc3373d3dd4f71355ca4ae6fd92e6362117",
+      "transcriptSha256": "eda85d1e9ee0e3981d03f5ee309a0b684376d2140dfb2bd53c45b7e47e4e67f5",
+      "wer": 0.214286,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0244",
+      "referenceSha256": "ef87d37dd13865fef8d2c3783806cd56823c690791b8f0601e73a26974c0a470",
+      "transcriptSha256": "54e3980e1c6e98f5e1c2e0870b37350d1839cf07a6d35cd22c22030f615501d7",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0245",
+      "referenceSha256": "6e0f2f0d205a50d473320e62163f81e15ecd5fc8c6a6a43f296b0e7e4fdb0fa6",
+      "transcriptSha256": "6e0f2f0d205a50d473320e62163f81e15ecd5fc8c6a6a43f296b0e7e4fdb0fa6",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0246",
+      "referenceSha256": "8e1106488681ee708324e73e24b997b74d522ef4d398e2656db4506ae41136bb",
+      "transcriptSha256": "39a8c9f9346f0ed1a4071cff360a28e484dac91233291104dcbd0733315ffef2",
+      "wer": 0.208955,
+      "entities": 8,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0247",
+      "referenceSha256": "b698223738e45842a19d692801845a8767dca9d7422f470e049e97c9b62a9ebb",
+      "transcriptSha256": "b698223738e45842a19d692801845a8767dca9d7422f470e049e97c9b62a9ebb",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0248",
+      "referenceSha256": "9580b6075cb0a2c0106bce6b8ea5563fedd6741467418f2389cc978615d5795a",
+      "transcriptSha256": "1e53b47a5bee9501b14ac34043ad6d334181d814bb3704e6491943c5b7bbed6e",
+      "wer": 0.010101,
+      "entities": 5,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0249",
+      "referenceSha256": "58e7abbb0cd1fc6ebd2b5378c44d2aae85df044a6676c4c93a3559cebdb085b9",
+      "transcriptSha256": "de571c9d036d3406f7c89afd881238717d0b129aa6fc07008453753982e36087",
+      "wer": 0.028986,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0250",
+      "referenceSha256": "30345ae2383612b480830eb5c3ac00ad68ae44fefed71f6b4314f6f58d17b5f8",
+      "transcriptSha256": "30345ae2383612b480830eb5c3ac00ad68ae44fefed71f6b4314f6f58d17b5f8",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0251",
+      "referenceSha256": "bbcd1314be56a35639a9b99f5d35452c7b1d431ad5b4c755a4887ca35e125d82",
+      "transcriptSha256": "52e02bbca41fa3e1274bf260120b72ad4961159aeef31afb86dcdcc7fce4f9bb",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0252",
+      "referenceSha256": "351d622075a7d911d30a8aaa971c15a22f888a96e71aebcb6599a8b5f45e5946",
+      "transcriptSha256": "dcee7d56ee9e98783ee0fefe7d868c03e7b3f717afc8123aec065298e5e6034d",
+      "wer": 0.222222,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0253",
+      "referenceSha256": "3cb28779881d7c3fb3c3b3cf74874d4b380c8336bed246b223374fd0bc50e03c",
+      "transcriptSha256": "3cb28779881d7c3fb3c3b3cf74874d4b380c8336bed246b223374fd0bc50e03c",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0254",
+      "referenceSha256": "e323bc0f3b069ccdcb4490b52067df1c3aba108d28cde7b84a3e83dbf794d317",
+      "transcriptSha256": "a89be2bd3efc2adee3a847c5c228b9fc35c1ec041ade12ea736d662a361495cd",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0255",
+      "referenceSha256": "ff8df7852149c3336fb5555bf24eb73b608447b52732ead7e799ff6c3437d01a",
+      "transcriptSha256": "ff8df7852149c3336fb5555bf24eb73b608447b52732ead7e799ff6c3437d01a",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0256",
+      "referenceSha256": "9352629bbab0417745ebd325e77b19c54a8cf60849b1acbd33bf78757d463fbe",
+      "transcriptSha256": "9352629bbab0417745ebd325e77b19c54a8cf60849b1acbd33bf78757d463fbe",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0257",
+      "referenceSha256": "af7627cc6c5eab8a88973d7743672c3fa5c07559a5c96f0c5d4fe58d535ee1dd",
+      "transcriptSha256": "4c3065c378c82fddbc0a750ccec5d417a19d556ac13e6350df46faab092f9350",
+      "wer": 0.08,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0258",
+      "referenceSha256": "19b98bccab2f61a65b3b2002a2b6600847bf2c303cfd554196688e512cf6edfe",
+      "transcriptSha256": "19b98bccab2f61a65b3b2002a2b6600847bf2c303cfd554196688e512cf6edfe",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0259",
+      "referenceSha256": "c6b9175769952136e7c7b106c4f25ccbcb376fc5fc401e10bfa3901a81475a1c",
+      "transcriptSha256": "4e53e67601f98c77da63a61021bc216a68d160da3296f935cb71c34302a64d9f",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0260",
+      "referenceSha256": "fe70ed215b07b94fc3719e6fdf7ae9928f29c716641bd5c7033cf2bed966adce",
+      "transcriptSha256": "fe70ed215b07b94fc3719e6fdf7ae9928f29c716641bd5c7033cf2bed966adce",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0261",
+      "referenceSha256": "f750e897586169df3ee94e2a63349302fa7b66eb5cd6b6e9294d26ae4b8cf8a2",
+      "transcriptSha256": "f47c6ebee050eed217ddba852aff9256a821fd13329cf55d0607cd0a0277ba39",
+      "wer": 0.071429,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0262",
+      "referenceSha256": "3b8e299cf56f83102873a4bae4aa3c5bf9481c2399fac591150cf7fd1dff6e24",
+      "transcriptSha256": "6735e5bdedef813d171315267fbb91887d544e916de6023baa34d9c8aa56c423",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0263",
+      "referenceSha256": "a6bcdac9ac251aa0c4662fd3fe3f03f3753a50ef019c359a556bd9c3b97f173e",
+      "transcriptSha256": "4b0bddc0f09e7f5ed679508c552d9ed052415332844499b4e119f0ec34afd3a5",
+      "wer": 0.052083,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0264",
+      "referenceSha256": "af44b4fce4a69ca9cb8c526e9a3d7c9fab8d148736931a9795502b0fd5780579",
+      "transcriptSha256": "af44b4fce4a69ca9cb8c526e9a3d7c9fab8d148736931a9795502b0fd5780579",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0265",
+      "referenceSha256": "3219fef33ebd3c4220ce6ddc086d4d842ebba0705c3655a6e2b1e315c4a87047",
+      "transcriptSha256": "31d1104570f753f7632107ad68fb29a03c61447423c90139fe175b66321b2968",
+      "wer": 0.032258,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0266",
+      "referenceSha256": "08dfb8553a643d6bab0dc707be08a945d88a92ab55f1e043146a62b210ce5726",
+      "transcriptSha256": "69f5ae353cb13ef3e6cf6471bc16a04407e0fd57e01d081a38a93987724b8605",
+      "wer": 0.105263,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0267",
+      "referenceSha256": "5d4bdb20c1103c74b93d97808c97feafb320972cf917c933b60959c900847d76",
+      "transcriptSha256": "a544da6e75437a3dac1bf3fcd6ddd6618d2c5eaee440ebc8004023be8b3aa790",
+      "wer": 0.086957,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0268",
+      "referenceSha256": "360dacab3ec56a0ed89ebad4bd510352c15d2793280e1bcba9b2b51cdb4bac77",
+      "transcriptSha256": "ac4528c360cf53d9500b6a5f77205f9bdcb575c57cd6db7a325921811bc1026a",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0269",
+      "referenceSha256": "d48b46a47a0f8f88e9040c0aae55034e560fa8bdfb530a6d6b4e98beba4cb650",
+      "transcriptSha256": "0e745622ef60943c286ae2c344beda50e243ca667a8992aab6d11de05815ae7d",
+      "wer": 0.115385,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0270",
+      "referenceSha256": "797777c6ed43c6333d54d44e65c75d8c3df6bf1975f6fb01180ac691c74c310c",
+      "transcriptSha256": "ddad1231c4de61c55756169a4b2d4252f628915cf7aa7ff8af8b6c9a26e45971",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0271",
+      "referenceSha256": "6f52fb3a2625627b2154d8edf686000e0418d05009aa67953783a70effdbad48",
+      "transcriptSha256": "1d17d13281c44738d0224c5dc7486f1f331d20d646d5d7933516a204da35bc8a",
+      "wer": 0.022727,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0272",
+      "referenceSha256": "30b59a057ea35048a2c1ca4d73edeb7e5c6e0379e39288530c17e1b4ae60964f",
+      "transcriptSha256": "f9a73307c16373551038b90c5ae76eb6e35da22d72c5e63ec4c5b2c08985ed69",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0273",
+      "referenceSha256": "d434a40f050d4f99994d735a3431e7ccdd2daaab4a12d8a08aa38322cd7510b3",
+      "transcriptSha256": "615f61176f1eb5ac638728fa73bb2b8c9208aecb85838bf46b4f9381b6c5c9f9",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0274",
+      "referenceSha256": "3719c7a37c09e6d47dd16a6c62c8b5ec673d9d4433828743d2d747e6960e21a1",
+      "transcriptSha256": "3719c7a37c09e6d47dd16a6c62c8b5ec673d9d4433828743d2d747e6960e21a1",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0275",
+      "referenceSha256": "da9da4a0bb8393966d6ca4031e6f49ef246afcd5d2967918994b827577a51070",
+      "transcriptSha256": "da9da4a0bb8393966d6ca4031e6f49ef246afcd5d2967918994b827577a51070",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0276",
+      "referenceSha256": "ba5d7e85373af908b3c63dfe4ca4cb5112914816e88294e057980a364d091f74",
+      "transcriptSha256": "ca106be54a6cde08c93b2c4c49c75734f414244e58857ef3195c8725386a474c",
+      "wer": 0.075,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0277",
+      "referenceSha256": "67a5cd113c858aeb406c78cc20c61a027c812f7cd7ae220e76bac689daf1f67f",
+      "transcriptSha256": "122ee523286075c2fd252452d4704be2c19d041797f6d69227e6d9730648812f",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0278",
+      "referenceSha256": "8068d4fdf40c412f5e3f33f497d079037b5766f35c587c2a57c2ec1b5f97a301",
+      "transcriptSha256": "491985f4bb45bd11273c6b868c22b88ee0aa79022a429b22d75156f38c62ab24",
+      "wer": 0.162162,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0279",
+      "referenceSha256": "57a95ded69d68c0adbcadd35f3f6310e6ab500c028ee9530da960cb6d26626f2",
+      "transcriptSha256": "2d350cfcc6c4d47c48a86894207056aeab28630539ef83eba03863b48e0e6cb3",
+      "wer": 0.037037,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0280",
+      "referenceSha256": "1bfd20af6c9c2a0c84e73fef962581571ab62c8ddab1194a00bc669f7517204a",
+      "transcriptSha256": "bcff4f29a36ac2c1cd7517bf415f2a419bde1c2ea8f9d79bee7e470b36ab81da",
+      "wer": 0.045455,
+      "entities": 8,
+      "entitiesExactlyPreserved": 8
+    },
+    {
+      "caseId": "msner-es-development-0281",
+      "referenceSha256": "1eb030e1cf1142736a2a12c3f578f1e29b0c75b79b81711229c1f9365938bd98",
+      "transcriptSha256": "9109350504212d88dbc7fc012d9743c5ee0774f8b1400d332018ea7cfbc51045",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0282",
+      "referenceSha256": "0f2c245d87d3281f56a6bf2b6c37d16dca6d4e9b0e81f2da2029c33fad88081c",
+      "transcriptSha256": "d403de342c940b0a76109d7cba498b7790777284c54d7861537b25304a55ca44",
+      "wer": 0.121951,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0283",
+      "referenceSha256": "fc846338445183d23987c6c2984375754745f55cb0f1029115ae1ebd4cf356ac",
+      "transcriptSha256": "c04aefec54d92a4e9cf3b217d5de8280087d6f80f3dc3bbdfbae4feb3e599797",
+      "wer": 0.069767,
+      "entities": 5,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0284",
+      "referenceSha256": "ff08dd0cbd8deff2e3bdea0efe31274c7c0f35b6306e81cd828f9c3c06f1a91e",
+      "transcriptSha256": "ff08dd0cbd8deff2e3bdea0efe31274c7c0f35b6306e81cd828f9c3c06f1a91e",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0285",
+      "referenceSha256": "63350df92b586553ee546c5f5cb691aeaa1b801c9bfc51ed0213a2a48f8517de",
+      "transcriptSha256": "571879a95e7ddd74e8b708a0c7b758e4402c65081dc59be970944316fadd5f00",
+      "wer": 0.272727,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0286",
+      "referenceSha256": "8e4b3bf4265b9cbbe593a239ddae92269119b431b8a2e80b396d0e3922300b16",
+      "transcriptSha256": "f1c37395e0a782dfcbc52132b3b8e643ac0a05ce2d159bc55a9765039affc9d3",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0287",
+      "referenceSha256": "a8c07154c8f7da3c9980c9700ee8d107846be1e50fdab8bd93c296c4ec752389",
+      "transcriptSha256": "9b2215a269b44fafbe82bad2c3b7aa4c4622c7075f8799a67483833254e2f2e8",
+      "wer": 0.032258,
+      "entities": 5,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0288",
+      "referenceSha256": "58fdf393091d03fd3e38dff6ed534d71655de5aadf8b2167c4a56f525c538512",
+      "transcriptSha256": "94f6fa8fe82d2ee6ebbe1c6dd7b8bfe521cb588719ee8b4ce72593d179fbb82e",
+      "wer": 0.058824,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0289",
+      "referenceSha256": "2d5fa8c1077df430d86916dfb16a4c598d9ca91125b9e978f442ab284173e615",
+      "transcriptSha256": "aa5994d44d28e73a87f9ced069f0d670c5dca72f46e991caee5ad3d13360c7bc",
+      "wer": 0.052632,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0290",
+      "referenceSha256": "48df755e72a38d69ec2d232d0cfc93010f105a93b4a2d77c42e38dc7cc2dba7a",
+      "transcriptSha256": "8c61cf9bac5b67c7c519d5af2dd158d41d3f23302119390c1f7d15ff5cc4e2da",
+      "wer": 0.035714,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0291",
+      "referenceSha256": "b71a8a7ada4353dbc4c49e342046db0a15c7b9c99a8c693377b01f41e12ed3e6",
+      "transcriptSha256": "9fc23dab2ae3e414582d2d3c865a85c360723b532adfe6e35ccf63bbbe1cfa1b",
+      "wer": 0.052632,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0292",
+      "referenceSha256": "72267561ec32e8755fa5b2d7d6343bc230da5d4fcb2aa403508814d0a02063cd",
+      "transcriptSha256": "99ac674e1f80ff86638d01222547f24f69916db8c9658aad53bd2f01ddc5122b",
+      "wer": 0.030303,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0293",
+      "referenceSha256": "0a45fc9624aa5e4861bca1f21718840bc64a8c97175b55d661644b4c5a0083fc",
+      "transcriptSha256": "e5e6f7f088ea9c8fd141ce8a01fcab237280e80dd532e40711bdb9a942045271",
+      "wer": 0.090909,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0294",
+      "referenceSha256": "908428e7dbda056d489fda6fcf8bdbc9fba9afa3ce5931c902f3cfcabbc6cef1",
+      "transcriptSha256": "fe1674d183725877263542bd87f3c7bbfdd9db6dba23af50a5fca27afbde86c0",
+      "wer": 0.068966,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0295",
+      "referenceSha256": "2f3b63c882642dcc9fdb8370782be5b939a80e287e52aa61a0ae5e1816303109",
+      "transcriptSha256": "ddee6dcfae6f236acf18cdd6d21d6ba78f5607174b57df04d4f07a39327a3315",
+      "wer": 0.06,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0296",
+      "referenceSha256": "63be4638da85cae8c55de41d9dcc119067648d2007003259c2477f77c7a79f0d",
+      "transcriptSha256": "58ab6bae7b0e1336841a4e1be045cfbb220c40b462d862a9c3dccf0f636825de",
+      "wer": 0.081081,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0297",
+      "referenceSha256": "d78d2802a17befc974b6be499bc80673d1aba0076b4f70b227afe327a1b76ebb",
+      "transcriptSha256": "d4a8bd72c7025c7a5bd4ab1004c9496745456992b2517f14948c6936a8517b04",
+      "wer": 0.041667,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0298",
+      "referenceSha256": "c81556cca45de43e054677c9bf008d9d01c36ba9d2585615962d36893adcaec8",
+      "transcriptSha256": "ce244cd5cbdba9eaeaa47bce66044bb1f00c2d4fccf71aa1d336a34850ab28ab",
+      "wer": 0.02381,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0299",
+      "referenceSha256": "a9a91262151bee0429f0e636c330a7604a49acde03f335b6253a0bddf792cb3b",
+      "transcriptSha256": "f8588f1b3b2655096bb6ccd061abdd0a4057b6fbc489ba7812335bf2241c2905",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0300",
+      "referenceSha256": "eb9e9ba989fdc7079d85f66ca14e5f45a424bd855f21015f4291480e8702f5a7",
+      "transcriptSha256": "8d5af9ecbf25486416d9667597a83b02d1242b25d82eec8de2fead34cb995688",
+      "wer": 0.2,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0301",
+      "referenceSha256": "abd146c5011b76e14addc341434c70a9d64fdb7cac95548b2121d687b87e9d0c",
+      "transcriptSha256": "be5e2f91e3906391768c55cdd08bb0611aa9deb2a9d5ebcfe6cdbb3050983990",
+      "wer": 0.059701,
+      "entities": 3,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0302",
+      "referenceSha256": "f725a020417ce11e973e9363ba7c6cc82c6f234137c39282c2073013d476fab4",
+      "transcriptSha256": "1592e45f77faccf94748638495e5b75fb61e888f3c1841cf4e0e6efe5130b640",
+      "wer": 0.155556,
+      "entities": 5,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0303",
+      "referenceSha256": "3ce5e19775cac73a738a6f48c0eb6427167c99c21926e6d714aff5afe2087b8f",
+      "transcriptSha256": "e8eed6dcf6ec873e51aa7474bffaa48901aad461f21f991789f13634303c092b",
+      "wer": 0.111111,
+      "entities": 3,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0304",
+      "referenceSha256": "63cb654d8ac5f2b51a4be78b85e3dac22dbfbb4c34ed6f8b680c6f30384d7888",
+      "transcriptSha256": "8fab8ab83e076401d288ecbbb292bfa72f89e2dad50c3a1a09398fd68a3cdb16",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0305",
+      "referenceSha256": "1b2742dc7a0cdce626cf39f5e80ff8916c4d268bcd377d26d193f1a0ce18ce40",
+      "transcriptSha256": "8263f8dde311b9f097f546e6dbc23ecda09ff1a4f4abfdd6429bfd932f57d436",
+      "wer": 0.015385,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0306",
+      "referenceSha256": "42c11c850721979d8472835aef5d863712e8a26c2eec52a754696bd5727feb95",
+      "transcriptSha256": "88ae1a90dc02edf19450bb777448f5a77cd4348f1c296548b55ccc1d3a87c203",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0307",
+      "referenceSha256": "b0669bc33ad6d4f55640d9554e1f6ae24f218a355c9067290ef5b6d8e2008103",
+      "transcriptSha256": "b0669bc33ad6d4f55640d9554e1f6ae24f218a355c9067290ef5b6d8e2008103",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0308",
+      "referenceSha256": "1515be4d8f553bbd4e626780f54b99af6b013406716d7a955ae345a15c524fcf",
+      "transcriptSha256": "5c1585ad3ab635ceed5cf22fd80abb88fcdb3c5dfd857c379acfc6d8609b5303",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0309",
+      "referenceSha256": "d2122ea411da32098779a50529f63fce14a7b7dcbfe2afbff85959e32347a560",
+      "transcriptSha256": "1b37f0fec9d5cba9cddb5d2a00f4331bf1794202c5ac6f65f9190c7f22d1766e",
+      "wer": 0.027027,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0310",
+      "referenceSha256": "5feb16dae0fe96e170083e054f2a88c411e53b1009fdc59d3357b02ad74b39d9",
+      "transcriptSha256": "5feb16dae0fe96e170083e054f2a88c411e53b1009fdc59d3357b02ad74b39d9",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0311",
+      "referenceSha256": "973ea262e896d787592e9923599685806d554d79c8193a04466d177ae9dc2d50",
+      "transcriptSha256": "2d3ed3db17c5dd00b2caed309ed5e2d5190bb9d18211ac8926b1f2e7675ec00f",
+      "wer": 0.034483,
+      "entities": 6,
+      "entitiesExactlyPreserved": 6
+    },
+    {
+      "caseId": "msner-es-development-0312",
+      "referenceSha256": "590bd57b49031eafbc39a0bd975291355ab911514e2bbfff396c4071a536776f",
+      "transcriptSha256": "0d449a344ff60d471cb4e5f3af88ec538224a2344cb90c8308de17190e6aaf16",
+      "wer": 0.09375,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0313",
+      "referenceSha256": "defaf5b13bff0e724a0afe9848c0397445a83a77cdda0050c50d6c7059946cd1",
+      "transcriptSha256": "28dd1b17d5cd5982427028a46e278fe45794b7b008a9a1426663c1a88d24dcbb",
+      "wer": 0.074074,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0314",
+      "referenceSha256": "71c5244db0ef8df9ef581736aa189ada8b0c3825ec18fb44783e0f9791a9f5b4",
+      "transcriptSha256": "b7afa13b8bee5299567fe3d592beb02a345b62571793805da90e6e1f0d831e3f",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0315",
+      "referenceSha256": "cd1791f14be4cf94638d93216bca20bc62519495610f1042199531ddda1659ae",
+      "transcriptSha256": "38c4a370522c889874b49b45b53376eb696de4b833edf0c36d3d6574fe31bd12",
+      "wer": 0.088235,
+      "entities": 4,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0316",
+      "referenceSha256": "013b0d5eb213e170c2db11fc4612c50f53aa65b35878e22d898da297c831e18f",
+      "transcriptSha256": "013b0d5eb213e170c2db11fc4612c50f53aa65b35878e22d898da297c831e18f",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0317",
+      "referenceSha256": "df41c44fff86852f8d8eeb39299296a5bf8a95bb4a02502ba90fe144a5710a3b",
+      "transcriptSha256": "df41c44fff86852f8d8eeb39299296a5bf8a95bb4a02502ba90fe144a5710a3b",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0318",
+      "referenceSha256": "b0fc63eea7f552f53557354508dc67cfac4a07334ef0bca1cb315178c08cc1cc",
+      "transcriptSha256": "584b4c7c10f5387e2d4ced57d67aed06387ca311ea83c6c7b3f2937a3e00d71c",
+      "wer": 0.055556,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0319",
+      "referenceSha256": "62bbb00f348e9eb5d42139a7280cd8b8627f48d41e616fc2939e71a464760c72",
+      "transcriptSha256": "5b40be361cac4f1d76d8e32680e94632fdc0cce2433eb74d4b2a793f2059293b",
+      "wer": 0.073171,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0320",
+      "referenceSha256": "e4429e10c8fe1e6266ee9025e18f3010ba25333a20001767ea602d48139110ee",
+      "transcriptSha256": "aa86f9bc831758f2f0f6e687d17628aa2edd7ecc40ffd5d1444d7f6db0201a90",
+      "wer": 0.152941,
+      "entities": 4,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0321",
+      "referenceSha256": "f2f711ed6c5b2508c4e4e818a7179bb86f4faf659843b6f09717f59fb360c549",
+      "transcriptSha256": "75b696e09c34f4b43ec8be409815aa02fe9904e8d0a9abd7b44506d78f1247c9",
+      "wer": 0.391304,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0322",
+      "referenceSha256": "3d27d4d8956619c1ed208d3d145944a356373de75e70f709f7e223069486c313",
+      "transcriptSha256": "3d27d4d8956619c1ed208d3d145944a356373de75e70f709f7e223069486c313",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0323",
+      "referenceSha256": "613b91f59082e49425f77ed3ba2b1862dbbd608654cc333cae23154e82356bcb",
+      "transcriptSha256": "42052b844344226c36f868222c85b57da572fab10ab1dac40080646bf744c0da",
+      "wer": 0.5,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0324",
+      "referenceSha256": "aa9ee5406a39d317fd1ff4926039e6e8a02be8f2455865cbdf01668aa9372d4c",
+      "transcriptSha256": "43f6f3bb3b43f77928eebedc58c0e45ce6e4101e693107625845d9f7cda6c66d",
+      "wer": 0.119048,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0325",
+      "referenceSha256": "48ad16a5263e4fb44a925d16958d8eea37abb02ab6c1379b2b3b2f33f83ea97c",
+      "transcriptSha256": "1aa654c910eeb95840b9678f965c530cd7054c064342fd010ab0784c06c40d9f",
+      "wer": 0.058824,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0326",
+      "referenceSha256": "d2b1fb14e17d85a61e757578e84f662610875e891ecca2a9ced1dfc63dc833c0",
+      "transcriptSha256": "6559b500fac1c3a751ed8c2dfeeebfc1906eb118768979955b169079afdf8fb7",
+      "wer": 0.138889,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0327",
+      "referenceSha256": "59bbad198178302b0294ba6a496f7b1e448449dc2772627487bccc386d965b48",
+      "transcriptSha256": "291c220a2e597053950a1561fb88bb6235abcca3054c1c8f2ba9e8ef769f103c",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0328",
+      "referenceSha256": "82cb7465515d112bd06d215c776d85862a36e0ee7687b1a5c461e91aa8e869af",
+      "transcriptSha256": "7b5f695361729adb79393e6c99cb9c2ab5e99bfb50d8297ecaa3a9f8bd118eb8",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0329",
+      "referenceSha256": "43d51c120876ce809097927096571d861514fc10feb79508d5f032d2006fe419",
+      "transcriptSha256": "93ae4023887924bb3a2310b5be4f9ac3f59816e5e0ea8fda9356329dd242aa68",
+      "wer": 0.019608,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0330",
+      "referenceSha256": "37f75cdda48d7c68deb0ed04a2f26fac5813980edb56a605966de5a84bbded71",
+      "transcriptSha256": "2e8126ee17aa3e04c2413b72782ac3eb3fc21ed231cbbf743f30df216275bda1",
+      "wer": 0.041096,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0331",
+      "referenceSha256": "c85e8674588821485282f8f5314dab3e105e3234f0c9fe78d1d742213eae7232",
+      "transcriptSha256": "a9e201ab3651606b273169a79a19ae4d91edfca015f2d7ea1f7462a5b50c7627",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0332",
+      "referenceSha256": "29ee4ab0c0828a6e3385c84e2adf10d78d2d4c7a7d8146d58475e944e0f31df8",
+      "transcriptSha256": "29ee4ab0c0828a6e3385c84e2adf10d78d2d4c7a7d8146d58475e944e0f31df8",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0333",
+      "referenceSha256": "d8fe87ec0bf14f7edebc003186a2b4f40f27101a26b01841b4dc2c5f6bb87a34",
+      "transcriptSha256": "0d1fa0ebd74625fad7c68f8d2d8813fe61140ef0ff8134b15e62f165161b46a9",
+      "wer": 0.166667,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0334",
+      "referenceSha256": "594825ef308c96beb47953044c8a037e28015f55d4ba6fa5462680be392bdecd",
+      "transcriptSha256": "70a3db07d848dd5804352fa05a731224280d9c0aff05abcb497b6c42340e8663",
+      "wer": 0.058824,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0335",
+      "referenceSha256": "57f5720ab4bfddb136d877dc5249d24c0414b76dcfe901ad35e35443f7f8410c",
+      "transcriptSha256": "84f33f1a04defebc8a4b1fd7f852465fa9bc2a377720796e0a236fd0edf6477c",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0336",
+      "referenceSha256": "168a15d38d30938f57ec713be7f8f8bbcb64d6ec741fca64a48bdd44d83f2768",
+      "transcriptSha256": "3cc2b5232f65b9dbd915e8009c452c7dc1953d79516509afc2e0fe8672436baf",
+      "wer": 0.117647,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0337",
+      "referenceSha256": "bef48794115320fd0e8eada393b4c6f739c5e8cbd3ccdcf780f3d4312fdff7fc",
+      "transcriptSha256": "bef48794115320fd0e8eada393b4c6f739c5e8cbd3ccdcf780f3d4312fdff7fc",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0338",
+      "referenceSha256": "a9d2364889bc4fd43fad3b31756058df43fd40ee78ec050319061ae74f045393",
+      "transcriptSha256": "a9d2364889bc4fd43fad3b31756058df43fd40ee78ec050319061ae74f045393",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0339",
+      "referenceSha256": "a6453a00a4a531c07733a0af9fd78eaa52c7dfbd561c69c9af510ea9da6aae1a",
+      "transcriptSha256": "e9c4d8d5f5670bd436811a6e3060a61a7bd2c8d73dae0d43cd4b8d7c2cc1c024",
+      "wer": 1.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0340",
+      "referenceSha256": "ef16e47d12900da15220c3e028142e6ed88dd1d976287c9816904c53c20a5256",
+      "transcriptSha256": "ea6b401fc24bdf7eb3951d9bf5cee27ec1ea93e331774ca5e487ab6739890d45",
+      "wer": 0.08,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0341",
+      "referenceSha256": "172e001e183fb93ede2695e91d74944a78cb10202f5d818b38d780d48fed4da3",
+      "transcriptSha256": "d8a1241d410427ed2661a44350e2ef6ac98496327fe98666b1423402c1a60f82",
+      "wer": 0.0,
+      "entities": 5,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0342",
+      "referenceSha256": "e1c35d6c7f15cd4011e2335682121d59567934642c0dceb026e404a50e0779a8",
+      "transcriptSha256": "bd86e8573eee306666f9972934522d2f43022dd27868409c35876d2d34e4cd6e",
+      "wer": 0.02439,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0343",
+      "referenceSha256": "ad54c5313b7c971c54715b14aa2ffa105bd621947a2d16f5bba946301bd6fc0e",
+      "transcriptSha256": "ce1d9896f96d622e457f9073cdad05d3daa39b81d34f0b0aa5cc11762f4cb553",
+      "wer": 0.017544,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0344",
+      "referenceSha256": "536baa731653e41a8551bc14aef42eab37b4e6e599ae15df1bdc984b90e913c8",
+      "transcriptSha256": "fc789f94c8a06c906a7068b9c6a3439f57e154dc134c5a32ea36e077d56463bd",
+      "wer": 0.907692,
+      "entities": 3,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0345",
+      "referenceSha256": "c086da0eae6ddadcfebdee254a3a2444cdd8a8589b9b44636c60a456624cbcae",
+      "transcriptSha256": "14a229a7ffd5c988a8cacc1195985901f14da7e212b97c2ebc93b44900bf2b89",
+      "wer": 0.384615,
+      "entities": 5,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0346",
+      "referenceSha256": "ff68b333b5c39560a918c01d6563a27122e5a13c2dff605d027472826d705d03",
+      "transcriptSha256": "3c8601dc61cc7cdf93fa7755be0f72c9b523a61b5b02a1434dd4ec90c2a98537",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0347",
+      "referenceSha256": "6aa1b9058613207dc25a71654b1092a6f98270c2fd90e7ca55318e99a20b76ca",
+      "transcriptSha256": "631f048ae7b6c8bd90fd7d4562a7f18669f260deee98f1f09a1d644d6c402f7a",
+      "wer": 0.212121,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0348",
+      "referenceSha256": "b25a36b1ed550a1b4b439c9e1b58d063ad295e04c4b89fe2002af7ffa08f42fd",
+      "transcriptSha256": "52e764ff2d4a8953a4c1ddd898b90054dfbbea6a717132be3b335d80a7047296",
+      "wer": 0.25,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0349",
+      "referenceSha256": "5284bf6018dcbdb90f6523b1ebf0b9411b5b4cff666992df18b1537620ebf2b2",
+      "transcriptSha256": "8e8a818a339010235b876d25ac3ed9eeb639cec78d0f11cec21dfe0b076ff72f",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0350",
+      "referenceSha256": "b37b403413c2d42fbfd61f9641d16deb74c61e9556def6d15812cd6c427b4fcc",
+      "transcriptSha256": "fa521a2b6c705dbc77797d1a340b5dca6e3ccd8015cca9de05f2a730adace153",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0351",
+      "referenceSha256": "576b1fdc7e01283e361c8874b60b90e52465116b71398407fbcccf8b514321eb",
+      "transcriptSha256": "c57f8218632edf4af45c0c385fd6786823da81f3758b3a4b6d76d2c4bdacfe2d",
+      "wer": 0.057692,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0352",
+      "referenceSha256": "39b92eec6a2e3e066fe67a2d82850a751cbe5d78aa66e898b5d24ace065f9b56",
+      "transcriptSha256": "43188b162d5505520d47802cd133760373dac010342d5e8f74117961edaadb2e",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0353",
+      "referenceSha256": "81345b2de5014a177cacd075de0d1d53cda83aac5638ad51aa11e180def79afc",
+      "transcriptSha256": "a26e7b6c15b40ed5e0deec69e267df039a66ff0e8d5a6e846e0e72fe442adc71",
+      "wer": 0.05,
+      "entities": 5,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0354",
+      "referenceSha256": "c83ad7f8bad7da96b44ddc3781a58fbf2acead1a879a457b7c187049fb6e80c0",
+      "transcriptSha256": "889e978dc9d5ad4e810fc27deb7e824eccbb2f217b327d2775b4d1b4dbc26b5d",
+      "wer": 0.066667,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0355",
+      "referenceSha256": "921d1c22eb6532fce15cc56b19d7a43b26ec5553b13bd9fd25d23ce4d242dfd0",
+      "transcriptSha256": "7ce548a9b6f3006cf221240c00e06e9b309ead7aa56edb9fed9400a368984490",
+      "wer": 0.071429,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0356",
+      "referenceSha256": "22a13fdcbb2bc13fcee089bea100be99c48e88f5bfa881946b4ce8826507096b",
+      "transcriptSha256": "22a13fdcbb2bc13fcee089bea100be99c48e88f5bfa881946b4ce8826507096b",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0357",
+      "referenceSha256": "9bd20e3ba5ed14132b87dd6b5f5a55a6d43dde3ffd09507c05ae4da504cbd21e",
+      "transcriptSha256": "e747ba6ef6ca80de68690862584299273f3ec805ab2b26e2167e942641f118e5",
+      "wer": 0.095238,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0358",
+      "referenceSha256": "23796a1eb55686a4a0a9431899034d41b6f7b6f339d13a92eebeb0c55476d825",
+      "transcriptSha256": "c552fe9432a59728aff471a00b98a1c1442fcc7c88b6016998203eba189c79c9",
+      "wer": 0.117647,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0359",
+      "referenceSha256": "b4a25c4fe622a87068b8f34756b624c37fb07cee76ec9d0d2b4d51500c177db7",
+      "transcriptSha256": "1021d20691944cf0b5da4f1187a6eaddfab9f6d3952740ba09b88dd92b383114",
+      "wer": 0.060606,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0360",
+      "referenceSha256": "dddad5d2ec61fd7eaf55d3f3b573738d2e1fedf9a0e9eadaacbbb813486579f8",
+      "transcriptSha256": "dda8a2aec039b2493d685cc17ca2451fd223bba5182b0cf9e80364a523ece669",
+      "wer": 0.08,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0361",
+      "referenceSha256": "22d6c067fb8771d50cb7d313a4c2b5171945d6f9c8529b7190885c754e3c7b3a",
+      "transcriptSha256": "22d6c067fb8771d50cb7d313a4c2b5171945d6f9c8529b7190885c754e3c7b3a",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0362",
+      "referenceSha256": "d347431cd0c3a745b9725c08142255c75d82b9868bd0a6e85888395d02a76564",
+      "transcriptSha256": "73c1316f4d93396e023b14532146c58379a831939813653f1ee3983a8a5e766d",
+      "wer": 0.083333,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0363",
+      "referenceSha256": "87f9ec496dc101fb63e8363e67831399afeac2a5c845e306cedacc17fd882605",
+      "transcriptSha256": "c76d4147febfb70d2bd52462d8a103f229f5860735b991d6a9774843077e394e",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0364",
+      "referenceSha256": "df7a5e296813124d2b5444838edbbeca740e8fa0333c96647b9ff1be00e1b387",
+      "transcriptSha256": "716c72b8cc82d8385e7b791d7ea6f14467eb86d60c19ade2988d6d4814c11692",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0365",
+      "referenceSha256": "60b4efaee94350aa1a210b2f547424771ccdf325f622f6c0f6c106cb04d1ff1e",
+      "transcriptSha256": "3df5a75f18ab9bc73d5a278720165346737e32e9ab720b3fa748f9c3febf54d0",
+      "wer": 0.098039,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0366",
+      "referenceSha256": "fdab44c0da70012dc8c1a1698ea3f5227647c154749a68c3cc85294140e044bd",
+      "transcriptSha256": "169d21ad4b5b83e728cd23b7d71622c76803ae706a9b8c6aeace5e5adcec76de",
+      "wer": 0.032258,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0367",
+      "referenceSha256": "02546b0c06c63c907b2033ec0bb9dfc1242916d6867d8ce9f5e3e70d50820f83",
+      "transcriptSha256": "02546b0c06c63c907b2033ec0bb9dfc1242916d6867d8ce9f5e3e70d50820f83",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0368",
+      "referenceSha256": "d18d5de6ffd69bec0446854f74e35f07f5023a690b500bf98992299250f6538b",
+      "transcriptSha256": "321b7e491741934ad936c976e1cc962ad518de58185b96293394e52a61b5fc5d",
+      "wer": 0.076923,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0369",
+      "referenceSha256": "21cc63c4eef693903822e2b1c7932bc14d399460d223ae266256197fff212073",
+      "transcriptSha256": "f2425aa22d091a79b10a133960673d228495608731c880876c29897cc1915e69",
+      "wer": 0.015152,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0370",
+      "referenceSha256": "b0361f978753a3d37430d83d04eeb8129d27b7d7df2ebce4d1a6e689e50b4d4f",
+      "transcriptSha256": "7b7155898fa74e94aa7e77bd6bea8bba4a316b72e6d4b307b54f9f75a0dff3d3",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0371",
+      "referenceSha256": "e418499408a695833157e6e1fa7023d1015df260d2a2cfcf178f17b8567e27bc",
+      "transcriptSha256": "05e57cbfb634eb51737e3da3e662eab0136ccb561203dd0f86dcd11346a0fae1",
+      "wer": 0.142857,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0372",
+      "referenceSha256": "da8746517daa15e6669932af7287429407cdb2ad1a464b714196715a2d8e9ca3",
+      "transcriptSha256": "311a78f2df5a5c9eb6c7b2916a6890bb7250a43836372631eb94b0106cd84ab6",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0373",
+      "referenceSha256": "647ffae4ac035c10592e2eb05014e1ef9294a6af83b312a41ddc43261da3a303",
+      "transcriptSha256": "647ffae4ac035c10592e2eb05014e1ef9294a6af83b312a41ddc43261da3a303",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0374",
+      "referenceSha256": "9fa69479dbdec8467fea192e7326bf4b6bfeae8066b2aaec73bc7c15bc6d4d21",
+      "transcriptSha256": "fbd54ae1f79e0a06ad6800ea70122e4de973f3ceb3da54c6095cd5cde783c54d",
+      "wer": 0.132075,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0375",
+      "referenceSha256": "dae2cf4bf06d756d2a4ff59a5e2fdcec31136713b3db3ad993161d7e16556e74",
+      "transcriptSha256": "bccfd892b5314dad7b5723f4f5245f9c64cb3f8ae8e19e6b2abae4d925e739f1",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0376",
+      "referenceSha256": "5a59c831d5fb17e489de62a2199325869d693390040734143bcb292d140b4ef8",
+      "transcriptSha256": "5289090dae449f2928e8c11b5e48b0058568573de07c6a1ca913340a684cbc88",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0377",
+      "referenceSha256": "c40603ed56e7154933edf0791898b02052705ed9701852a1a08784945647464a",
+      "transcriptSha256": "6d3fe92f027a8a0d6fbdca8ee3f7dcd4153c7aec469525a86c06c0123f428a07",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0378",
+      "referenceSha256": "f148e2261264bd97a03215d25dd7f4baca0018301c3ac1a10e9d53609953528f",
+      "transcriptSha256": "a4bbaa72079a7d3062db9413d47b74ce09eecdcafc8e126505e609242289bfe9",
+      "wer": 0.078947,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0379",
+      "referenceSha256": "2d6dbd100b3a97af51cecb04d8102980bee568f9da5bee1029b6ebd479209a05",
+      "transcriptSha256": "a88bc5296862dddf31beb39c6b5060c4337b4cb80479fbe02bb9c0c06d4b62f8",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0380",
+      "referenceSha256": "f24106b6a4509f617bc4e6c4995a43ecb5ba73edd02c5005328f960e23b19b19",
+      "transcriptSha256": "e1ee2dc8ef2f698a65d4389deeff9c1e5ab4ea295d8973503b0c0e266dd4841c",
+      "wer": 0.058824,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0381",
+      "referenceSha256": "1dd939600194a8a1462976fd44e5a630a8dac51b1c84257d535716c7f8d58a84",
+      "transcriptSha256": "74e259dd1d8a929a51376e8d12a4f65360fc2088f4934c447839a83644d6d63b",
+      "wer": 0.095238,
+      "entities": 4,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0382",
+      "referenceSha256": "6cb54d5efb5604ab0f14a84499565add4e9bd429fe83a843e640bba77c75cf06",
+      "transcriptSha256": "099839552b2a39eeb8b75b469420a884ca70942377aa9a8d5a8cb0b58a7da37d",
+      "wer": 0.346154,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0383",
+      "referenceSha256": "9273413b26602cd88b1c3c05eeb13e6d8a93a661e616247ce9cf7d350f7b29c5",
+      "transcriptSha256": "9bc3e7ada436ff79d7a338592c8b1f32ec697ea70385b075871698f1a3c05545",
+      "wer": 0.103448,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0384",
+      "referenceSha256": "c66c0b29ee0ff2e245616177f1afe727faad4115d34d2a8bd44e2bed2919b627",
+      "transcriptSha256": "c66c0b29ee0ff2e245616177f1afe727faad4115d34d2a8bd44e2bed2919b627",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0385",
+      "referenceSha256": "f6c5cf4f5bee424fe6f2ac8f6867dafbecfcbb6d335e9fe76169d0482b0244b0",
+      "transcriptSha256": "fb1983f1911dcdb4f73775b28611de82e48ffb3be3d9cbb50a1a13c8c8387ed9",
+      "wer": 0.033333,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0386",
+      "referenceSha256": "3d71d838f915ac70f49e26d2a6ed99e7c2a5bd725784578358e69393ed283186",
+      "transcriptSha256": "990910cdd4e9ee1d120851ec30736ebcd5f3996a5627584a5a2e1cbbecf69c8c",
+      "wer": 0.206897,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0387",
+      "referenceSha256": "3da5fc8a8d8e3504de136b97149ac0baf19f2e182893cc87ce69e0b13af0e270",
+      "transcriptSha256": "319e6f8113b3dfe76d340c0c218e3153b1d48a85e8f072469a17966f551c5ee8",
+      "wer": 0.033333,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0388",
+      "referenceSha256": "cff42cd571a3fb2d518dc7ed84a619167e939a35f855bd3eb214001c12e25817",
+      "transcriptSha256": "9f4353c5da9a7cd60a3c643b04c906e964d4efcaed9872219d7c71c6c358d34b",
+      "wer": 0.030303,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0389",
+      "referenceSha256": "f38d20b8bafb28cddd72f85523b9f1c203496deb2d6030f2fb1b85c006b24be9",
+      "transcriptSha256": "bf8ace5098968fd8464a112e81a0c8d1ff2bab8b621fb98d461e16edfe46029d",
+      "wer": 1.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0390",
+      "referenceSha256": "bc1987d3332195f7e27fc0339aad822a29eb32e19498b63b2def1ae99af95715",
+      "transcriptSha256": "bc1987d3332195f7e27fc0339aad822a29eb32e19498b63b2def1ae99af95715",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0391",
+      "referenceSha256": "12782bb42491567e3bc45ab1bacb2bb105df32b702adde364bdb264a4d5aef6c",
+      "transcriptSha256": "0376e11916a23ae6b1fd2bcbfacfd15d0712c7f4a02432ab2e6a131e641425f7",
+      "wer": 0.135135,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0392",
+      "referenceSha256": "24b8108ea21cff382670e24a9bd8a26d1a291fcc631845750f560a9ee7510f67",
+      "transcriptSha256": "67a93f67a46d20b3c2138b7686f43636dcb1633be3ecee6c27c0ed3fdcd048af",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0393",
+      "referenceSha256": "783a9da269b30f03fc01d6b6cebb503fad145e927714c2b2fba0efa6a41a20d0",
+      "transcriptSha256": "783a9da269b30f03fc01d6b6cebb503fad145e927714c2b2fba0efa6a41a20d0",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0394",
+      "referenceSha256": "4ea161b279e316c2eb4d35d3d5a5d45d933defd371c39ab6fabe1be96c4a9a21",
+      "transcriptSha256": "da4091685397b1025c36495c58508def7502590ef5c8a65b7e3d03d1c1479e81",
+      "wer": 0.038462,
+      "entities": 2,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0395",
+      "referenceSha256": "b979e2616431b3321c8cc59c29af4f879c3f960601b029ab08bb5de993641caf",
+      "transcriptSha256": "41b81edf59c17739ef54ed6ad6c549a199353d9638e187b6b96647a389ebe2fa",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0396",
+      "referenceSha256": "590924506914fe586b76663d9e4ae620eb5441fd1229d1469316842563fee352",
+      "transcriptSha256": "123a9ea2805d6866d1bc2017b929a18761253bca3b33cba77c8f708442049c8e",
+      "wer": 0.208333,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0397",
+      "referenceSha256": "2d5ff70d33d97ca0d2611539e9e8a67a1d470e42ee27de6501f42d99bd861368",
+      "transcriptSha256": "5f7fa90279bb0af26e9b38721f5fa8e5dbca957c152dc6733dc3e72ffe9308d9",
+      "wer": 0.142857,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0398",
+      "referenceSha256": "eefcd59680bbcb32d0e89f05bbc0c5364adbcf3f2293c7f21ca0996b25c193a7",
+      "transcriptSha256": "9941dab52ea6de206dc08f7a34b22f5434f6fcff08db736c5e959ec7e0330e10",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0399",
+      "referenceSha256": "00c17dc9d08f5db77fa433835b0f2d2f06386bfeea77b54ac6ebd67b0ac6d1c9",
+      "transcriptSha256": "f88e30bfe68d9cec6cb1102a13c81ce86d5bb818f56bf810343ed82510e1fd33",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0400",
+      "referenceSha256": "122268a4fc00f2ab144adf9eceb5feb16393185c4911f64774cd10b88952eea8",
+      "transcriptSha256": "8b8993620fbbe4dce325696b89e118805131ef574fed5764ea1d48a2a755b6f5",
+      "wer": 0.046154,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0401",
+      "referenceSha256": "8314b8485578f8bb3cd4646d698d4cbcc9f40e4dfdfd03ebc3045031f46b035e",
+      "transcriptSha256": "7374df23f9fb745d81be8d8acab6878a638182336e6f9e5c27b3e4e124412176",
+      "wer": 0.022222,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0402",
+      "referenceSha256": "78f641ddef624766b1a95c75d0ff546fd34563d98f5feb5bb8f2bda7383d2849",
+      "transcriptSha256": "78f641ddef624766b1a95c75d0ff546fd34563d98f5feb5bb8f2bda7383d2849",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0403",
+      "referenceSha256": "c148a6d7f8521e395503635a1e030c47cd350cdf60a5110035dfb77e387f04f9",
+      "transcriptSha256": "c148a6d7f8521e395503635a1e030c47cd350cdf60a5110035dfb77e387f04f9",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0404",
+      "referenceSha256": "a49470c67be5d19557c48a01e3833626bb59017efe55a659074c1f2d6fb89a00",
+      "transcriptSha256": "7119f72c4e8d00175c1d38655b549d75f4cf24a749d052283eade961750d498f",
+      "wer": 0.055556,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0405",
+      "referenceSha256": "009a20385fb69793df128077f8893408d1ab5fea1a2e04b51bd9350362744f2d",
+      "transcriptSha256": "b1b953c518d85e34d3394a5ed909a437548ec993d17829a8af234554f5770296",
+      "wer": 0.277778,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0406",
+      "referenceSha256": "4e2c155159bc4295cc750198f3996f1a62ab1caf66bf77b0aa688af0b3a1ca6e",
+      "transcriptSha256": "b3d928d7615b83986b85b0a6a09d074752d6382b1543147d1904ef63ffe9dce7",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0407",
+      "referenceSha256": "af18da45155a5b9e193d7f32acdbcf57d01ecad0f2fff2b15b442b410a250289",
+      "transcriptSha256": "7ba56888348fed68eecf62b56792df2d8189e0143d18a70335b5bedf0656c28f",
+      "wer": 0.045455,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0408",
+      "referenceSha256": "594a7ea2ab284d6a33adf945df2aaa85ca6daa9fe2dd1a4b132a6e880adb2230",
+      "transcriptSha256": "594a7ea2ab284d6a33adf945df2aaa85ca6daa9fe2dd1a4b132a6e880adb2230",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0409",
+      "referenceSha256": "aa952d459dd7298268c115a74e784a7cbb0b44e54261cf4fcd26289e624c2b0a",
+      "transcriptSha256": "fa9fee4fb899d3ec9518e4023957f81e6dfa92ef8322ab685224797e98de26a2",
+      "wer": 0.1,
+      "entities": 5,
+      "entitiesExactlyPreserved": 5
+    },
+    {
+      "caseId": "msner-es-development-0410",
+      "referenceSha256": "f1dec08e1583015498ad7e9895a9d03401ee60a459565ee2167f64e728d6970d",
+      "transcriptSha256": "410b249c529eb1ec843d53eedac3c3c4a89883e023040f88b755a052a21f259a",
+      "wer": 0.0,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0411",
+      "referenceSha256": "8fb78d8f7e3f14f18c7c36bd3568c2940f0dee5e40b61a09abe0bc3d80e48333",
+      "transcriptSha256": "f74efb7ebf69ea5e797e08720a1c2dedc284739ab5d1ce6aa1b898c8cd01ec2f",
+      "wer": 0.033333,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0412",
+      "referenceSha256": "08057c7be0e83c8453cce66934d5f2a875671b58306a70de36e14d05546e9505",
+      "transcriptSha256": "f637974e782151a791e5402c78f33bb624bfeac039d68c4ebec1b8bb75dbe0fb",
+      "wer": 0.06,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0413",
+      "referenceSha256": "b494bb43e36177ee9fb33cbbed48dbfa264c21b034ba13c6912a7963bf577502",
+      "transcriptSha256": "6aef26fd058716af4a44be0d73d0dcc5e9f4171f849586431a20aa408da85f08",
+      "wer": 0.027027,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0414",
+      "referenceSha256": "931064329a219e7f2f8b0ad2a6f36357868fc30baebbb09da46dc33ee104cea6",
+      "transcriptSha256": "3b09d5d3f8e226f07777f9e045848b763bc0e630ca08bdb86a0a7b72860b912b",
+      "wer": 0.038462,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0415",
+      "referenceSha256": "4a8f0fae638b14ba11a6f30f98132b4ed1264a19c6cdec0151a635d2c33f213f",
+      "transcriptSha256": "4424c52dd0786de8ff5c0e3bdc768a121dbcaa2b21b57b35f6ea931e1ccf4b4d",
+      "wer": 0.021739,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0416",
+      "referenceSha256": "ce9d440ac28b034c0b435ea89b87ba1b8645895bc172042626b8736f04a0dc79",
+      "transcriptSha256": "7061484fc7a1b17da1aff965a7c8b9dac301de216d0cd29482319861a1bd0d7e",
+      "wer": 0.108108,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0417",
+      "referenceSha256": "c852eda20476cc3a857835b75d9122287b04d6ec501ea0cf177a82ee7bc018cb",
+      "transcriptSha256": "016fc1e444a2044f5db34d61505ea88713037c0dab7a8026f8f0668c3f59d4cd",
+      "wer": 0.073171,
+      "entities": 6,
+      "entitiesExactlyPreserved": 6
+    },
+    {
+      "caseId": "msner-es-development-0418",
+      "referenceSha256": "fb849f1a4ea98b10ff45e2a01358b73efc4566540f70f77943a7b623e5925467",
+      "transcriptSha256": "9c3e7e45946157a3e01d9a49930726544ffeab0cbf99ef3d3e0d45525c0f482f",
+      "wer": 0.033898,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0419",
+      "referenceSha256": "0d74108a3f54ca45f1fbd2207a1b0e11928f0ce88908c18dcab3710fce836bf7",
+      "transcriptSha256": "5d44737419eb5a1b1f6262caf593dd2a36562f6aacf81435e91ea0c4868f800e",
+      "wer": 0.068966,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0420",
+      "referenceSha256": "5890a58664d9fa99d0bbf4e650315b9ec5b12506acdb015450dcfa4c6ad71631",
+      "transcriptSha256": "f62eb0581baf743693dcaba167dd900ad2029b8ffa2fb0f704e0fe4f1f104eb4",
+      "wer": 0.043478,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0421",
+      "referenceSha256": "a533a594e6a4fcf66623a78239974b20bc571717376e32d38ced404b49931b9b",
+      "transcriptSha256": "50aec10a41dd304749d59978a76c64eb160ea806573aeef023d0d995ae3bef36",
+      "wer": 0.040541,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0422",
+      "referenceSha256": "e61b6cdee10560cc5af8ac736fee24346468037a1b2d9c9d1d35995ca05691e9",
+      "transcriptSha256": "52f7d1c561632f7124ea1980022ec3fa338e3dd62ce4667e91947332834d958e",
+      "wer": 0.03125,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0423",
+      "referenceSha256": "82f44db17845977c9f60c6231e5a8e538949247e5eda754ea1704e64ab6c46db",
+      "transcriptSha256": "3772056aaa6c256496905a14c73cf999abf3529e139252b9a7f17db4a56747d7",
+      "wer": 0.72,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0424",
+      "referenceSha256": "edd5e8245119fa3f2f7455b861e9420896b8752e59f110aae4010239289b5e80",
+      "transcriptSha256": "ed5dac41b4cfa5bb12f5d494bdf99eb04dc501821910b9d6d1690c0b227b971e",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0425",
+      "referenceSha256": "d06c4353780ed2c51ff1e0d7bfce8181468d713b039440ea4638cb5429732adb",
+      "transcriptSha256": "d06c4353780ed2c51ff1e0d7bfce8181468d713b039440ea4638cb5429732adb",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0426",
+      "referenceSha256": "e2ae81977bd23fc3e7a294b67e0a333317a2c30816bf0257ea109f699453511a",
+      "transcriptSha256": "7ec2b72c9ce7806f13940238ac5dbdc68276dcdd182695c79c3a4204242ae25d",
+      "wer": 0.102564,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0427",
+      "referenceSha256": "ab108ed9732a4b7918a06d2440e350278435e0847bb710dad7a398328a25ae9d",
+      "transcriptSha256": "567cc810c52faf42c1b60c62429a4f98a6308cce0bd11dbac0e36e01c777583d",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0428",
+      "referenceSha256": "d08e062b056cd92eb077c930504cfe1eadbc1b0b929484a5aa9334647098666a",
+      "transcriptSha256": "c7640d83a5a5d8c5c1161f02ca3a8c98d090ce05e59fca19663e3b77ada62556",
+      "wer": 0.06,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0429",
+      "referenceSha256": "c08b4b516967230ba8d53a0ce03e66ce0a8a3678f90cd05c4c6cf24f85f8c5ba",
+      "transcriptSha256": "8c6bd208b9008e89053af720905904fecccb9b11da9b27cd90f75b8ddad87e5d",
+      "wer": 0.136364,
+      "entities": 2,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0430",
+      "referenceSha256": "ee394e7eeac848fa815bfbd23937aa8c913c5f09a82b62d1e7e073eafb2c2f83",
+      "transcriptSha256": "14038a13d6b2f1cef9d4be4d50c76129cb2f8ab9396d8c8c3c11b3971825af89",
+      "wer": 0.02381,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0431",
+      "referenceSha256": "9085d6d6fbe323ab49b4507352d738658b8ca85883b95cd8c0f9f42dd7d4b09d",
+      "transcriptSha256": "9ce2b9ac377519ed02cb1d85dda52caf4b1bcbd80576a96564eac0971ee4550c",
+      "wer": 0.157895,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0432",
+      "referenceSha256": "3203df85219e2cb9b0a85426dc53891769106353d1ebf510456b82a295b0c678",
+      "transcriptSha256": "7b60f2f4f89c2548a5814751dcc7aa1a692cde7605ab2caadf8e8ec9dc1d131d",
+      "wer": 0.122449,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0433",
+      "referenceSha256": "a1df266a499867f9cea7d53895cd5bec7b6ce54eea3ed9e698d3e3242941e9c8",
+      "transcriptSha256": "8d81acf8276eb22085af8da37b6d054bb5227960be68b3ef0a96030670346bb8",
+      "wer": 0.013514,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0434",
+      "referenceSha256": "d75241f2ba784f6aa71fbd18f17cd1fa6fa8f98d7f32a7a99afc54272a4657e6",
+      "transcriptSha256": "0d49f0b0c40fc8765eac4987a97f09e9ea1abb7c395b2d26e2530cfde3a53e51",
+      "wer": 0.05,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0435",
+      "referenceSha256": "ad3f325bfddf903a00f37719f25fe0d832a4c1013afa5426ea03f7b02205d2e3",
+      "transcriptSha256": "990a55ed8c7206572e3f5336b2007795ab3ff5e9ad682331a3cd2e77ed6f98fe",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0436",
+      "referenceSha256": "6b3698d232267e78fc3da3aa52dd8b1951d975d189cf88453229c47077bbd911",
+      "transcriptSha256": "fc635552f0420656f6e7ff0a253a4ad0472c903a72314301cde945f302286122",
+      "wer": 0.025,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0437",
+      "referenceSha256": "771604d1e6c4b79ba3e1057c8cef294ad52a1f417b6e0a7379030e338565bdd0",
+      "transcriptSha256": "1fae12cb89d4be44c05e12505f9bf2fe9390b24505843bad7bf8c452dd3b70ce",
+      "wer": 0.035088,
+      "entities": 4,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0438",
+      "referenceSha256": "edc2aae83544aa35b0bd7ed628fa294b6b53739d4dc7b5f4b28f05971638e66c",
+      "transcriptSha256": "f6cdb31df8bc16c48961ac58784e6f5975c5b36f4d667539e5680bbf7a9b007b",
+      "wer": 0.107143,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0439",
+      "referenceSha256": "f9fc421093096e48174947262e1c7b946aa80e9ef75374502c9394957ce45900",
+      "transcriptSha256": "d37338fcd0f75aa7455de2cbf2586decb55d1bd30865658658aad1d681dfcdda",
+      "wer": 0.031746,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0440",
+      "referenceSha256": "e94a1e5139fb1cd34f1b87aaed0ff8045d4398e7117e1b22805f4c0c48cdc131",
+      "transcriptSha256": "b5a98e35b42e8bea2178d89ad15797515af1a82709c49e138785106fff55eeb9",
+      "wer": 0.090909,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0441",
+      "referenceSha256": "68e452dd677326c542b2dddcab65355101e417473bd2ad1354e9ed47527f9c8a",
+      "transcriptSha256": "68e452dd677326c542b2dddcab65355101e417473bd2ad1354e9ed47527f9c8a",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0442",
+      "referenceSha256": "70157dfdf340f359465f747e55be2067c7260e5a16afb3ab0e8ee25a72057190",
+      "transcriptSha256": "8629fbf308067f6e270057d342bd0f0e66002eb76e76466194136bfc2d7629b2",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0443",
+      "referenceSha256": "dea33338079f1bb338f8acbe4f73b98a16f2be10483a16bad812a79817243f2f",
+      "transcriptSha256": "3f436c4c83b463d9221dcbb83ee0429d66d14887f84c0781649dd9cfaf4187fc",
+      "wer": 0.214286,
+      "entities": 2,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0444",
+      "referenceSha256": "3f10f3ab3f81e6d3d0b938990877c237d408eede9b27bf28da94a6f8bdb887b9",
+      "transcriptSha256": "4edde7db5d3496125e8c2e76370bd18d22c8cd570b4bf3ab4b5c5bce88ae59cb",
+      "wer": 0.02439,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0445",
+      "referenceSha256": "69ba9c9ff08be0c4268dec42a697d72c48e3ad9e9b256de486f1b93b3c588c2b",
+      "transcriptSha256": "e74e95c4021c23f51ab98ffd024add4dfd97bae529509a4d1e95d9f8c2eefbba",
+      "wer": 0.068966,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0446",
+      "referenceSha256": "5e49f9e60349aa2e1fbb99344f375ba57debc6fe0af96fefa0686b0e264da48a",
+      "transcriptSha256": "5c49d0905975ada2135ff004fcd7c2c16d6b58781025dd283aaeb335b602835a",
+      "wer": 0.027027,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0447",
+      "referenceSha256": "266bbbc65f08cf3064b37312462b4a6fdddf13ce36964b1c170ec5efdf5a9d80",
+      "transcriptSha256": "9aa50c5d04bc571d1bb69546104890fbfd81ca823cca4bbe6070adda01714d43",
+      "wer": 0.0,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0448",
+      "referenceSha256": "532cdc8a701c4d573883d9fe2249a375f0deef2b9dfdf5764ee7771212d8c346",
+      "transcriptSha256": "532cdc8a701c4d573883d9fe2249a375f0deef2b9dfdf5764ee7771212d8c346",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0449",
+      "referenceSha256": "5f1b651378d10c43cda2c114c9deb1baefdf24cf5e2a47d6255e8d0c365f82f5",
+      "transcriptSha256": "521b2134d29383fdff7410d0fd05da12e0964ecc0a044d901a9a140bea168b53",
+      "wer": 0.1875,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0450",
+      "referenceSha256": "96daf57d0cfc9134fa334d4c71ef18c058e60e59ae80bb1b19126cb6c0db8e7d",
+      "transcriptSha256": "30a46afab3c96b9fe094e5b4bd50b0c50582e2768c53999218ab22e4d785b7e8",
+      "wer": 0.066667,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0451",
+      "referenceSha256": "2e11132390b27e1782c39d277769878c592641905bf4f0b6e662858875f8abed",
+      "transcriptSha256": "3fa08a79e373ec60178ec56f2fbacd4d9fd5ab031c45548c90cb3cf6c2b163d2",
+      "wer": 0.0,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0452",
+      "referenceSha256": "69b8289e3bb0bc53e1b13d876c4471947cfb54cffa0c589df95eaea6d952f973",
+      "transcriptSha256": "69b8289e3bb0bc53e1b13d876c4471947cfb54cffa0c589df95eaea6d952f973",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0453",
+      "referenceSha256": "ee348f3455c9fbaea4a686a01cef94c346a4693180b7ad09d700b7505a6fc050",
+      "transcriptSha256": "1641ec301797f9a9949580c61f87d33b6949a0f37f57547d3950c8cc85f7857a",
+      "wer": 0.06383,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0454",
+      "referenceSha256": "6348b57f97ca6a897100c13bcec9163777690ba7b652048bec0a3c6dc7ab79bb",
+      "transcriptSha256": "a75133c2c45b59bacd20af2f8a47e4ef4750f997f12a5683017c71e0979b55f4",
+      "wer": 0.046512,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0455",
+      "referenceSha256": "08ebd47f087c6ee9980eeadea9b9cf27ba9e55a9df4d6d8238daae2f1e8c4033",
+      "transcriptSha256": "5df62da46c4e15119f2da25ee37a38ec260ca2c43dae3362b67d24b749e8557f",
+      "wer": 0.045455,
+      "entities": 4,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0456",
+      "referenceSha256": "56d002426e78ffbe527851bc39782e9dfe4ff0fb55e7ba3e583869c34d3233ce",
+      "transcriptSha256": "745f1e9b1334ecad7892246e391a1cc4329f7ac05fe46c0b5dd14dab0a869744",
+      "wer": 0.045455,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0457",
+      "referenceSha256": "a71bfaece5f55ad6c9e6946387c7a06b5500ed07a5abe38220e76c3eb9e9bdd5",
+      "transcriptSha256": "d27d2edf0e94f12a3563264df305ce72ec65df9baf3b223f3414b42a0449af29",
+      "wer": 0.127273,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0458",
+      "referenceSha256": "c469a29105a1a687dc4799dddf020644fa2ee597a9574eca6d9e1c530ce21e6c",
+      "transcriptSha256": "09a87464c3ac95b0d5efa8f23c5ebe023cc41241b20627518c1ac7f56ed1ea11",
+      "wer": 0.088889,
+      "entities": 7,
+      "entitiesExactlyPreserved": 7
+    },
+    {
+      "caseId": "msner-es-development-0459",
+      "referenceSha256": "df7d7f0d60c31bee5b473921fc7b016bd511d1fe2c8dc0e139744cec2c5968db",
+      "transcriptSha256": "8144b11594e3a213f5061b5f2921444b581c802a2a239065cdc8879b31c3a908",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0460",
+      "referenceSha256": "2cbf2e115008a909b928dc6eae6b1d4bd0594ec7ef9cf9e0026d970105bf0a28",
+      "transcriptSha256": "ffc059a55805aaa5edc4ecee28f2b5e85f3dadc0030003da317c13442e890680",
+      "wer": 0.071429,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0461",
+      "referenceSha256": "9426147d4b0646b8991cbd3847ba52a3fcd4ef357dd491d46037cc0ab04fcf8d",
+      "transcriptSha256": "5756087cb76f7dc321e8b662208574cd28e95ff50a2d184a486537b7bb58ab20",
+      "wer": 0.272727,
+      "entities": 1,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0462",
+      "referenceSha256": "eb004a6206a4cc6f02e830dbcdcb1e92a403e681f5a96850d6a25abef11fd321",
+      "transcriptSha256": "03c556129f35868bcefa1b6a1c52209d9803c65ae2fdab212409e75b1838c812",
+      "wer": 0.083333,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0463",
+      "referenceSha256": "4f576f029b3d40c9d3db1d0be5a6298de3c54b63cd1102776ee784ccb894e868",
+      "transcriptSha256": "73ead306ec104658b7d38da1e4d338b9c446ed98e0a70d4d263786e1902a7083",
+      "wer": 0.058824,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0464",
+      "referenceSha256": "158b2d08bfe01dc86ddaf2bb1f6da590e77f6c9945e6e4c18f2b21733270fcb7",
+      "transcriptSha256": "158b2d08bfe01dc86ddaf2bb1f6da590e77f6c9945e6e4c18f2b21733270fcb7",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0465",
+      "referenceSha256": "6b31dddf52980a54fa63f749d4a18ae6f02107a6e5b344faae80b6d340fabf32",
+      "transcriptSha256": "64d0026bac277a7cac69295e452d6b413f84bb8250f0d9383e062d6ac4b1e9ca",
+      "wer": 0.086957,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0466",
+      "referenceSha256": "40bd885882cd6beeab9fac3a93a661b82f9f5b92a7a37fdc737361b70fa87d26",
+      "transcriptSha256": "273a32c5edb9a2fff8c27d49beb34cd61a56bb1509a811b50e87e693d2d30a69",
+      "wer": 0.241379,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0467",
+      "referenceSha256": "c970ae7112eaeb00131aa8b7665d7a475e2e35fed4924d9c7d17fd34e9042821",
+      "transcriptSha256": "06e99d662a57df8a7559af55d994a28a49dd7dd36fc3bed6dac56f30fc4b1c10",
+      "wer": 0.076923,
+      "entities": 3,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0468",
+      "referenceSha256": "fb8ee76b66f08608a178cabba0d38623e5f34c02a39417abe21ed763539935df",
+      "transcriptSha256": "0f5be727b7ec2e3d9154b743934fb299d7c7b1eb6e1997a2ee08eed9a3dfc189",
+      "wer": 0.047619,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0469",
+      "referenceSha256": "924281eafdfc065947e8664d9d2be7661dbd0e6f218c1e4dbe34bfde2aa09d58",
+      "transcriptSha256": "ebc3c94f2ae47ff5690aa1401f2446f713b40c642d0d99810aaf4ddb95a25d6c",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0470",
+      "referenceSha256": "fb8e8b57353ec75b4913664cc3e0a03342c6dd5971778a9c081269cdf96857f1",
+      "transcriptSha256": "d79f5b1ee15aa9fc12ef6e23e72ab4f820ba53d65681670d9f8d9376301a3bd9",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0471",
+      "referenceSha256": "1808a78f902c7966fce09e67cc9b890339ee9c6751bc6498f5dad96f7bc3ef5e",
+      "transcriptSha256": "b787fef97bf191a043b9860cb03174c159ce49805380f6169abb7aec52d5ac98",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0472",
+      "referenceSha256": "0b0d5bebe2719bfb2f04dc47b7d599a80a33c2325fd69d2cb1d884379422bc74",
+      "transcriptSha256": "11e109c6690b9b74b0bc86b6244221091708e45d718f4e58b788aba9bee22071",
+      "wer": 0.058824,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0473",
+      "referenceSha256": "a6452b817854fc632151b3426f5a95aa4f9432fed29bad23cdd0ca15db59a96b",
+      "transcriptSha256": "49913bc28279bbbe1fd96ae2dafb6eb7aeff1fbd7b89c810400c27f090030fc3",
+      "wer": 0.1,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0474",
+      "referenceSha256": "57aba5b9a2f388103bfef8704c367a94e01313d773c45d6a85cf31099ec23b2d",
+      "transcriptSha256": "28ec382795d03fb7f9301ad28c9ff9468b1cda08d291d1cdbc4c5c61767c3a05",
+      "wer": 0.057143,
+      "entities": 4,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0475",
+      "referenceSha256": "1daad2f10c1e4226ebc3945cae541f17e3aa46104fe34acfefa143b1e6683f7b",
+      "transcriptSha256": "47678e3d2f206ae739111951915a2cba8f703b071a9b21bb0f1593321d2b7d35",
+      "wer": 0.045455,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0476",
+      "referenceSha256": "7a77a717fc426281dd2a2898bf33ef251bfb57f73f4ff1fd630ad7ee83fe651e",
+      "transcriptSha256": "7ae312b1db89f75bf1bdc42d07c20b78ba7594e1e49419c32f5f3f6a92d657b6",
+      "wer": 0.125,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0477",
+      "referenceSha256": "b0bacac8de04939c3b28abb635157c80985c0d71e00111dabe8da166b7c85989",
+      "transcriptSha256": "cb71c971fc0ca052a767da69c098f652c4a8d65705880e8429ce6741f3a77fb3",
+      "wer": 0.139535,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0478",
+      "referenceSha256": "7d018291d3e7a812fd5f3e139cd5ec2a87cdef435955297b6799ecb8fa2d9d00",
+      "transcriptSha256": "60357351b5a526818d46b04d6a3f0067ee1f075c06fbf03752c7aa9685a96ab1",
+      "wer": 0.041667,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0479",
+      "referenceSha256": "16ca0a36ddbb1259173eaf0c06b55f7416c75259c343a29e721ff3bc032ab775",
+      "transcriptSha256": "61472a970cc5fd9555e9b3d4f7e8f77f70183b08ce694754bfa06f846345230b",
+      "wer": 0.1125,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0480",
+      "referenceSha256": "c6ff80c12e128c2e83e9d1b5aeda5c16627b237160db0697d1e271b5cd6855c9",
+      "transcriptSha256": "a23836ce651e0cbd4109f1ab914246f7482feeb825a069d43377b294c4ff7f1d",
+      "wer": 0.214286,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0481",
+      "referenceSha256": "55facc03cc76857d0d457fcb61f05419f7a81b927acd1f5ef73c18a1846a03c3",
+      "transcriptSha256": "93500291af724d9844cb27580acafff985c2b7b6dc2851a3d3903cffefba5ff3",
+      "wer": 0.037037,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0482",
+      "referenceSha256": "cec2f48a9ca642c0a9ed6e82a43ee80ea02d16c83e97f4784b8acf66e121ddd8",
+      "transcriptSha256": "2c4736f29bfee9bb4903608ee7472aea19982955fd92e980fe11ffb8de5d3a00",
+      "wer": 0.093333,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0483",
+      "referenceSha256": "a58293650c7fc054357e3b92a18e33dd1707fb829f21ca182f548e1fe56d1339",
+      "transcriptSha256": "e4ea922a5b01efaa49b9fa55d47a41fdfe8fa0d5c58ca5d1eecc40cbaa691a5d",
+      "wer": 0.066667,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0484",
+      "referenceSha256": "34091a6ce9ded8cdc1fe50f40268e1a0050eed77e96ac70d6e4c5390be85718a",
+      "transcriptSha256": "34091a6ce9ded8cdc1fe50f40268e1a0050eed77e96ac70d6e4c5390be85718a",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0485",
+      "referenceSha256": "969b12024ea69d7f23781b8e7b557675ce6e46b0e173379580ac8d267ce98596",
+      "transcriptSha256": "449d66e69c3eec96a436097fd267e3f0ea0f18ef222411ebf2e38a8705003373",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0486",
+      "referenceSha256": "d7f2ebe98735b1b1602c1c62e11fd04db9b8aa3f8b2e00b1ef95e3409cc6d92d",
+      "transcriptSha256": "bfadc73079da312d287a7080a379752cbea9455c821b2000bc70a9cdd9c8aa88",
+      "wer": 0.086957,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0487",
+      "referenceSha256": "15a82e3406a6fe7a68b0e1a4a374c5a0082ff4bd9c180c939d0aefbfb83ae14e",
+      "transcriptSha256": "58e0cd389c84a4f46eb2e8902f34131035bd8569e25ddbd5210797bdf622253b",
+      "wer": 0.066667,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0488",
+      "referenceSha256": "5ca5f203f27c05a7d369952a08ceb0e889ed5e6862e8bcf202923ccaa7f597dc",
+      "transcriptSha256": "efb78c49cf29869bc4ace289d7fb0c1c3cb66522bc13a5c64aaa9b02ed2bd831",
+      "wer": 0.0,
+      "entities": 4,
+      "entitiesExactlyPreserved": 4
+    },
+    {
+      "caseId": "msner-es-development-0489",
+      "referenceSha256": "1b837d34ffdfacd466b9b09f4973a4aa32af1d31100eefbc215967279d479cf6",
+      "transcriptSha256": "b48fb27d7ef217ab5645d652c57f3282d788d038083bc79b526787e46cb40dae",
+      "wer": 0.027027,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0490",
+      "referenceSha256": "8795a9d97919ac2caadda22138252923a97397a5bb7d150aab49d32ee83155e9",
+      "transcriptSha256": "e78d181e2606067ede3c09204560b97c882317b2a3c4540c62e7130bd46ffa12",
+      "wer": 0.137931,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0491",
+      "referenceSha256": "200f3fe8c74c4a70b7b263e80df126d6ff528b65f1fd7a47c6607abbce3d14f3",
+      "transcriptSha256": "200f3fe8c74c4a70b7b263e80df126d6ff528b65f1fd7a47c6607abbce3d14f3",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0492",
+      "referenceSha256": "f9b564d4e1f8d818f7a02889ab465751ea277a9382a5a6f7f184f7570d46661e",
+      "transcriptSha256": "31a1c27848af0ed9fcefc459a70c8a9ad291578b625856869b853532efe37a84",
+      "wer": 0.035714,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0493",
+      "referenceSha256": "498c7b30621f13ebd389ebb940ad1c9388ce90ae6b278d9f14c3ace9b97b4cd5",
+      "transcriptSha256": "f740ac0df96ccd8ee7946ac24310873d7f09d2b450d9418b3d78d5bcc24b0e7a",
+      "wer": 0.057692,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0494",
+      "referenceSha256": "e04bdac765aa9c1133ba68fa6a9788f9ca11b2b5fc203474b53bcb1e4d18ef16",
+      "transcriptSha256": "e04bdac765aa9c1133ba68fa6a9788f9ca11b2b5fc203474b53bcb1e4d18ef16",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0495",
+      "referenceSha256": "99469f085e054fffe1cae8e13d5bf16547a5f5a9cfcaf13149e494a527a10344",
+      "transcriptSha256": "e7ba211a97fe8c4e9572b3cd067680d8361f5d35950b529ab70648d8d2e017de",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0496",
+      "referenceSha256": "701e80774dfc1bdf7243e0e8a3762bfc568beae31c656867f7e062c3ff0eddf1",
+      "transcriptSha256": "701e80774dfc1bdf7243e0e8a3762bfc568beae31c656867f7e062c3ff0eddf1",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0497",
+      "referenceSha256": "b2444f89f753b1e8a91aa3ffc167089fd4d400a53a2b1365eb06d23db503f3d9",
+      "transcriptSha256": "29038208961aca7a116c359f9bb83be0f388c7d20ab6ce775966a947ec84f587",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0498",
+      "referenceSha256": "15727dd0a0ae0fc4889d9ce33b44f5a0370801d4f78a355eec1ac6e8431eb580",
+      "transcriptSha256": "ef7bf85d493b9140d6cebeec3945d76b56d2ee400fc02dfe103659a29dc9ef00",
+      "wer": 0.0,
+      "entities": 0,
+      "entitiesExactlyPreserved": 0
+    },
+    {
+      "caseId": "msner-es-development-0499",
+      "referenceSha256": "2ee247e819e7713874833260a87c0843cde0e76277e585dd5f970a25862119c3",
+      "transcriptSha256": "2ee247e819e7713874833260a87c0843cde0e76277e585dd5f970a25862119c3",
+      "wer": 0.0,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0500",
+      "referenceSha256": "a5728979506d9715c5096234ef676b3d18dc865a1df9f5d460f69ba1162eca9b",
+      "transcriptSha256": "6f8daf4045c0ded18dc5e97ca83920d273b3500acad881c507307808c0884811",
+      "wer": 0.043478,
+      "entities": 1,
+      "entitiesExactlyPreserved": 1
+    },
+    {
+      "caseId": "msner-es-development-0501",
+      "referenceSha256": "34a5e30cb6483baee2223b4e3ba2ec89d59997ecd138198aa3cfccf566e7f93e",
+      "transcriptSha256": "ab0476d9e0206883fe698d072f7f9d3c13f6e9bed0becf62bd1b9608af5e3fac",
+      "wer": 0.076923,
+      "entities": 3,
+      "entitiesExactlyPreserved": 3
+    },
+    {
+      "caseId": "msner-es-development-0502",
+      "referenceSha256": "788da793dc32c832cdfda1f5da8b2e8cb5583f0e3e395e4c21c3e070a80fe892",
+      "transcriptSha256": "cf231d203d9edf9490f045ffd648172b7d828612f2e1227e53c8a35af2780e4f",
+      "wer": 0.102564,
+      "entities": 2,
+      "entitiesExactlyPreserved": 2
+    },
+    {
+      "caseId": "msner-es-development-0503",
+      "referenceSha256": "e9844e8c29b9691a51805d064f4937e0bcce41173c01c531e381938b5df10049",
+      "transcriptSha256": "5654cf482209a8f9f39efb1e01874c332a3a5a309931bcdd98d38feeb377bcd4",
+      "wer": 0.1,
+      "entities": 2,
+      "entitiesExactlyPreserved": 1
+    }
+  ],
+  "developmentRowsOpened": true,
+  "validationBlindOpened": false,
+  "finalBlindOpened": false,
+  "candidatePromoted": false,
+  "wakeProgramTree": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 344,
+    "sha256": "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
+  },
+  "effectsExecuted": 0
+}

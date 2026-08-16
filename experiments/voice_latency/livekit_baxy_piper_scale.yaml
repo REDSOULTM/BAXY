@@ -1,0 +1,137 @@
+# Production-scale research run for the acoustic wake word "Baxy".
+#
+# This configuration follows the upstream LiveKit production profile while
+# retaining BAXY's stricter promotion boundary.  Its output is research-only
+# until scripts/evaluate_wake_corpus.py passes on an independent physical
+# corpus (FRR <= 5% and the 95% Poisson FAR upper bound <= 0.1/h).
+model_name: baxy_piper_discrete_scale
+target_phrases:
+  # BAXY remains the product/display name.  Piper en-US must receive the
+  # phonetic spelling below: "baxy" is rendered /beIksi/ ("bay-see"), while
+  # "baxi" is rendered /baeksi/ (the intended "back-see").
+  - "baxi"
+
+tts_backend: piper_vits
+n_samples: 25000
+n_samples_val: 5000
+n_background_samples: 2000
+n_background_samples_val: 500
+
+# Upstream recommends 50 on an 8 GiB GPU.  The validation notebook has a
+# 6 GiB RTX 3060.  Batch 16 sustained 5.87 GiB on the scale corpus, so 8 is
+# the largest promotion-safe setting measured with useful display headroom.
+tts_batch_size: 8
+
+# Confusable groups combine the prior manual set with one- and two-phoneme
+# neighbours audited from CMUdict.  They intentionally exclude exact /baksi/
+# homophones: the acoustic keyword, not its spelling, defines a true positive.
+custom_negative_phrases:
+  - "taxi"
+  - "maxi"
+  - "waxy"
+  - "boxy"
+  - "foxy"
+  - "Betsy"
+  - "Baxter"
+  - "Paxi"
+  - "Faxi"
+  - "Vaxi"
+  - "proxy"
+  - "backs"
+  - "backsaw"
+  - "boxed"
+  - "boxer"
+  - "boxes"
+  - "boxing"
+  - "backer"
+  - "back seat"
+  - "backseat"
+  - "backside"
+  - "back soon"
+  - "backs easy"
+  - "Bexley"
+  - "Bixby"
+  - "Bacchi"
+  - "Bakley"
+  - "Bakshi"
+  - "Baxa"
+  - "Bax"
+  - "Baxley"
+  - "Basi"
+  - "Bassi"
+  - "Doxie"
+  - "Doxy"
+  - "Hoxie"
+  - "Lexie"
+  - "Moxie"
+  - "Roxie"
+  - "Roxy"
+  - "Patsy"
+  - "Pixie"
+  - "epoxy"
+  - "facts"
+  - "fax"
+  - "faxed"
+  - "Maxine"
+  - "maxis"
+  - "sexy"
+  - "taxis"
+  - "vaccine"
+  - "vax"
+  - "wacky"
+  - "hey Betsy"
+  - "hey Bixby"
+  - "hey Moxie"
+  - "hey Roxy"
+  - "Mahesh Faxi"
+  - "Viplav Vaxi"
+  - "Tarang Bakshi"
+  - "Upendra Bakshi"
+  - "oye taxi"
+  - "hola Maxi"
+  - "un taxi"
+  - "taxi please"
+  - "call Maxi"
+  - "anti vaccine"
+  - "casi"
+  - "asi"
+
+noise_scales: [0.98]
+noise_scale_ws: [0.98]
+length_scales: [0.75, 1.0, 1.25]
+# The initial scale run used interpolated speaker embeddings and produced
+# linguistically invalid positive clips (for example "thank you", "taxi" and
+# "backseat").  Use the second endpoint exactly: all 904 trained Piper speaker
+# embeddings remain represented, while no unseen point is invented between
+# them.  The rejected run is preserved in the adjacent research artifact.
+slerp_weights: [1.0]
+
+# Models and corpora remain outside Git and outside the installed runtime.
+data_dir: D:/BAXYRuntime/experiments/wakeword/livekit_data
+output_dir: D:/BAXYRuntime/experiments/wakeword/livekit_output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 16
+  rounds: 3
+  background_paths:
+    - D:/BAXYRuntime/experiments/wakeword/livekit_data/backgrounds
+  rir_paths:
+    - D:/BAXYRuntime/experiments/wakeword/livekit_data/rirs
+
+model:
+  model_type: conv_attention
+  model_size: medium
+
+steps: 100000
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.05
+max_negative_weight: 3000
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 50
+  adversarial_negative: 50
+  ACAV100M_sample: 1024
+  background_noise: 50

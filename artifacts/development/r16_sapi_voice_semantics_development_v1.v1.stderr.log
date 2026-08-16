@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_r16_sapi_voice_semantics_development_v1.py", line 478, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_r16_sapi_voice_semantics_development_v1.py", line 468, in main
+    report = evaluate(
+             ^^^^^^^^^
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_r16_sapi_voice_semantics_development_v1.py", line 366, in evaluate
+    write_checkpoint(checkpoint_path, checkpoint)
+  File "D:\BAXY\source\experiments\voice_latency\evaluate_r16_sapi_voice_semantics_development_v1.py", line 235, in write_checkpoint
+    temporary.replace(path)
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\pathlib.py", line 1376, in replace
+    os.replace(self, target)
+PermissionError: [WinError 5] Acceso denegado: 'D:\\BAXY\\source\\artifacts\\development\\r16_sapi_voice_semantics_development_v1.v1.json.partial.json.tmp' -> 'D:\\BAXY\\source\\artifacts\\development\\r16_sapi_voice_semantics_development_v1.v1.json.partial.json'

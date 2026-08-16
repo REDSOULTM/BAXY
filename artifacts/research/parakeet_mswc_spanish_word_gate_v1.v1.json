@@ -1,0 +1,56 @@
+{
+  "schema": "baxy.parakeet-mswc-spanish-word-gate.v1",
+  "measuredAtUtc": "2026-08-07T03:35:30.523224+00:00",
+  "scope": "opened_human_spanish_isolated_word_stt_measurement",
+  "sources": {
+    "corpusManifestSha256": "dce8bcec72ccbf5fe49e046aabba93f02046351bb809cc9e0a1da13ad6ba85a7",
+    "ffmpegSha256": "227af0691433b703ffc5725e47f7d06eefc34b4a72e7870e73d30e2cda483ecf",
+    "stt:encoder.int8.onnx": "acfc2b4456377e15d04f0243af540b7fe7c992f8d898d751cf134c3a55fd2247",
+    "stt:decoder.int8.onnx": "179e50c43d1a9de79c8a24149a2f9bac6eb5981823f2a2ed88d655b24248db4e",
+    "stt:joiner.int8.onnx": "3164c13fc2821009440d20fcb5fdc78bff28b4db2f8d0f0b329101719c0948b3",
+    "stt:tokens.txt": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+  },
+  "contract": {
+    "queryPartitionOnly": true,
+    "queryClipsExpected": 2400,
+    "wordClassesExpected": 200,
+    "distinctSpeakersWithinEachWord": true,
+    "normalization": "unicode_casefold_strip_diacritics_letter_tokens",
+    "targetAccuracy": 0.99,
+    "aggregateCheckpointOnly": true
+  },
+  "metrics": {
+    "queryClips": 2400,
+    "wordClasses": 200,
+    "exactUtteranceAccuracy": 0.2525,
+    "targetTokenRecall": 0.26416666666666666,
+    "macroExactUtteranceAccuracy": 0.25250000000000006,
+    "characterErrorRate": 0.6091930679664229,
+    "emptyTranscripts": 671,
+    "audioSeconds": 2399.9700000000003,
+    "decodeSeconds": 666.4491757000796,
+    "audioRealtimeFactor": 0.2776906276745458
+  },
+  "gate": {
+    "passed": false,
+    "checks": {
+      "minimumExactUtteranceAccuracy": false,
+      "minimumTargetTokenRecall": false,
+      "minimumMacroExactUtteranceAccuracy": false,
+      "zeroEmptyTranscripts": false
+    }
+  },
+  "runtime": {
+    "loadAndWarmupSeconds": 5.007617700030096,
+    "batchSize": 32,
+    "decodeWorkers": 8
+  },
+  "freshHoldoutClaimSupported": false,
+  "commandSentenceClaimSupported": false,
+  "microphoneRoomClaimSupported": false,
+  "officialTestAudioAccessed": false,
+  "blindHumanAudioAccessed": false,
+  "speakerReidentificationAttempted": false,
+  "recordsClassesSpeakersFilenamesOrTranscriptsRetained": false,
+  "effectsExecuted": 0
+}

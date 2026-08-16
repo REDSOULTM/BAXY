@@ -1,0 +1,2878 @@
+{
+  "schema": "baxy-night-audit-catalog-smoke-v1",
+  "measured_at": "2026-08-11T20:12:39.247909+00:00",
+  "core": "D:\\BAXY\\source\\src\\Baxy.Core\\bin\\Release\\net10.0-windows10.0.19041.0\\win-x64\\publish\\baxy-core.exe",
+  "core_version": "1.0.0",
+  "catalog_count": 169,
+  "seconds": 138.35,
+  "summary": {
+    "total_operations": 169,
+    "contract_passed": 158,
+    "read_only_provider_attempted": 59,
+    "read_only_provider_passed": 56,
+    "failed": 11
+  },
+  "cases": [
+    {
+      "index": 1,
+      "operation": "app.close",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 2,
+      "operation": "app.installed",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "name"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 3,
+      "operation": "app.open",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 4,
+      "operation": "audio.microphone.mute",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 5,
+      "operation": "audio.mute",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 6,
+      "operation": "audio.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 7,
+      "operation": "audio.volume",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 8,
+      "operation": "audio.volume.adjust",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 9,
+      "operation": "backup.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 10,
+      "operation": "backup.known.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 11,
+      "operation": "backup.known.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 12,
+      "operation": "backup.known.restore.latest",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 13,
+      "operation": "backup.known.verify.latest",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "folder"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "known_backup_not_found",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 14,
+      "operation": "backup.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 15,
+      "operation": "backup.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 16,
+      "operation": "backup.verify",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "backupId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_backup_id",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 17,
+      "operation": "bluetooth.device.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 18,
+      "operation": "bluetooth.device.pair",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 19,
+      "operation": "bluetooth.radio.set",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 20,
+      "operation": "browser.control",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 21,
+      "operation": "browser.navigate",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 22,
+      "operation": "browser.navigate.named",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 23,
+      "operation": "browser.page.read",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 24,
+      "operation": "browser.tabs.list",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 25,
+      "operation": "calendar.event.create",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 26,
+      "operation": "calendar.event.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "endUtc",
+          "startUtc"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "outlook_profile_not_configured",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 27,
+      "operation": "capture.active.window",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 28,
+      "operation": "capture.screenshot",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 29,
+      "operation": "clipboard.copy",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 30,
+      "operation": "clipboard.paste",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 31,
+      "operation": "clipboard.read.text",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 32,
+      "operation": "clipboard.write.text",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 33,
+      "operation": "email.latest.read",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 34,
+      "operation": "email.latest.reply",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 35,
+      "operation": "filesystem.copy",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 36,
+      "operation": "filesystem.create.directory",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 37,
+      "operation": "filesystem.file.open.latest",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 38,
+      "operation": "filesystem.folder.open",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 39,
+      "operation": "filesystem.hash",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "resourceId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_resource_id",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 40,
+      "operation": "filesystem.known.duplicates",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "folder"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 41,
+      "operation": "filesystem.known.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "folder",
+          "query"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 42,
+      "operation": "filesystem.known.trash.named",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 43,
+      "operation": "filesystem.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 44,
+      "operation": "filesystem.move",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 45,
+      "operation": "filesystem.path.ensure.absent",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 46,
+      "operation": "filesystem.read.text",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "resourceId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_resource_id",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 47,
+      "operation": "filesystem.sandbox.append.named",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 48,
+      "operation": "filesystem.sandbox.diff.named",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "leftQuery",
+          "rightQuery"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "sandbox_named_file_not_found",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 49,
+      "operation": "filesystem.sandbox.move.named",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 50,
+      "operation": "filesystem.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "query"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 51,
+      "operation": "filesystem.trash.commit",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 52,
+      "operation": "filesystem.trash.prepare",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "resourceId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_resource_id",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 53,
+      "operation": "filesystem.trash.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 54,
+      "operation": "filesystem.write.text",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 55,
+      "operation": "game.catalog.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 56,
+      "operation": "game.install.cancel",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 57,
+      "operation": "game.install.cancel.active",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 58,
+      "operation": "game.install.commit",
+      "risk": "installation",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 59,
+      "operation": "game.install.named",
+      "risk": "installation",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 60,
+      "operation": "game.install.prepare",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "appId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "steam_app_id_invalid",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 61,
+      "operation": "game.install.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "appId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "steam_app_id_invalid",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 62,
+      "operation": "game.installed.named",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "provider",
+          "title"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 63,
+      "operation": "game.launch",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 64,
+      "operation": "game.purchase.commit",
+      "risk": "monetary",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 65,
+      "operation": "game.purchase.prepare",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "appId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "steam_price_authority_required",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 66,
+      "operation": "input.key.press",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 67,
+      "operation": "input.keyboard.layout",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 68,
+      "operation": "input.keyboard.open",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 69,
+      "operation": "input.keyboard.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 70,
+      "operation": "input.pointer.control",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 71,
+      "operation": "input.select.all",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 72,
+      "operation": "input.text.type",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 73,
+      "operation": "input.visible.click",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 74,
+      "operation": "media.control",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 75,
+      "operation": "media.play.exact",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 76,
+      "operation": "media.play.query",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 77,
+      "operation": "media.play.youtube",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 78,
+      "operation": "media.seek.relative",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 79,
+      "operation": "media.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "failed",
+        "verified": false,
+        "error": "media_session_not_found",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 80,
+      "operation": "memory.correct",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 81,
+      "operation": "memory.disable",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 82,
+      "operation": "memory.enable",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 83,
+      "operation": "memory.export",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 84,
+      "operation": "memory.forget",
+      "risk": "work_loss",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 85,
+      "operation": "memory.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": false,
+        "argument_keys": [
+          "limit",
+          "offset",
+          "version"
+        ],
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 86,
+      "operation": "memory.recall",
+      "risk": "read_only",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": false,
+        "argument_keys": [
+          "scope",
+          "selector",
+          "version"
+        ],
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 87,
+      "operation": "memory.save",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 88,
+      "operation": "memory.sensitive.save",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 89,
+      "operation": "memory.session.clear",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 90,
+      "operation": "memory.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": false,
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": false,
+        "argument_keys": [
+          "version"
+        ],
+        "status": "rejected",
+        "verified": false,
+        "error": "invalid_private_envelope",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 91,
+      "operation": "message.recipient.resolve",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "channel",
+          "recipient"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "discord_client_not_running",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 92,
+      "operation": "message.send",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 93,
+      "operation": "network.dns.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 94,
+      "operation": "network.ip.list",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 95,
+      "operation": "network.ping",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "host"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 96,
+      "operation": "network.port.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 97,
+      "operation": "network.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 98,
+      "operation": "note.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 99,
+      "operation": "note.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 100,
+      "operation": "note.read",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 101,
+      "operation": "note.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 102,
+      "operation": "note.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "query"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 103,
+      "operation": "note.trash",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 104,
+      "operation": "note.update",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 105,
+      "operation": "notification.cancel.at",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 106,
+      "operation": "notification.cancel.latest",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 107,
+      "operation": "notification.diagnose",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 108,
+      "operation": "notification.dismiss",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 109,
+      "operation": "notification.list.due",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 110,
+      "operation": "notification.schedule",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 111,
+      "operation": "ocr.read",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 112,
+      "operation": "office.document.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 113,
+      "operation": "office.document.read",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "documentId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "office_document_not_resolved",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 114,
+      "operation": "package.install.commit",
+      "risk": "installation",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 115,
+      "operation": "package.install.prepare",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "packageId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "winget_adapter_unavailable",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 116,
+      "operation": "peripheral.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 117,
+      "operation": "peripheral.print",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 118,
+      "operation": "peripheral.scan",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 119,
+      "operation": "reminder.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 120,
+      "operation": "reminder.delete",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 121,
+      "operation": "reminder.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 122,
+      "operation": "reminder.resolve.exact",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "title"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "reminder_not_found",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 123,
+      "operation": "reminder.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 124,
+      "operation": "routine.delete",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 125,
+      "operation": "routine.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 126,
+      "operation": "routine.phrase.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 127,
+      "operation": "routine.read",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "routineId"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 128,
+      "operation": "routine.resolve.exact",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "name"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "routine_not_found",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 129,
+      "operation": "routine.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 130,
+      "operation": "routine.set.enabled",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 131,
+      "operation": "streaming.navigate",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 132,
+      "operation": "streaming.play.named",
+      "risk": "external_communication",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 133,
+      "operation": "system.application.crash.diagnose",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 134,
+      "operation": "system.identity",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 135,
+      "operation": "system.power",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 136,
+      "operation": "system.process.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 137,
+      "operation": "system.process.terminate.named",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 138,
+      "operation": "system.recyclebin.empty",
+      "risk": "work_loss",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 139,
+      "operation": "system.settings.adjust",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 140,
+      "operation": "system.settings.set",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 141,
+      "operation": "system.settings.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "setting"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 142,
+      "operation": "system.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 143,
+      "operation": "system.time",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 144,
+      "operation": "task.complete",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 145,
+      "operation": "task.create",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 146,
+      "operation": "task.delete",
+      "risk": "recoverable_delete",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 147,
+      "operation": "task.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 148,
+      "operation": "task.reopen",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 149,
+      "operation": "task.resolve.exact",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "title"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "task_not_found",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 150,
+      "operation": "task.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 151,
+      "operation": "task.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "query"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 152,
+      "operation": "task.update",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 153,
+      "operation": "vision.describe",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 154,
+      "operation": "web.search",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "query"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "web_search_results_irrelevant",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 155,
+      "operation": "wifi.connect",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 156,
+      "operation": "wifi.connect.named",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 157,
+      "operation": "wifi.disconnect",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 158,
+      "operation": "wifi.ensure.connected",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "failed",
+        "verified": false,
+        "error": "wifi_saved_profile_required",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 159,
+      "operation": "wifi.profile.list",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 160,
+      "operation": "wifi.status",
+      "risk": "privacy_sensitive",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 161,
+      "operation": "window.active",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 162,
+      "operation": "window.application.status",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "name"
+        ],
+        "status": "completed",
+        "verified": true,
+        "error": null,
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 163,
+      "operation": "window.focus",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 164,
+      "operation": "window.maximize",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 165,
+      "operation": "window.minimize",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 166,
+      "operation": "window.move",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 167,
+      "operation": "window.resize",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    },
+    {
+      "index": 168,
+      "operation": "window.resolve",
+      "risk": "read_only",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": {
+        "passed": true,
+        "argument_keys": [
+          "process"
+        ],
+        "status": "failed",
+        "verified": false,
+        "error": "window_not_found",
+        "effect_may_have_occurred": false,
+        "core_exit_code": 0,
+        "core_stderr": "",
+        "timed_out": false
+      }
+    },
+    {
+      "index": 169,
+      "operation": "window.restore",
+      "risk": "low_reversible",
+      "contract": {
+        "passed": true,
+        "status": "failed",
+        "verified": false,
+        "error": "invalid_arguments",
+        "effect_may_have_occurred": false
+      },
+      "provider": null
+    }
+  ],
+  "stderr": ""
+}

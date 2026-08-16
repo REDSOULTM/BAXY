@@ -1,0 +1,83 @@
+{
+  "schema": "baxy.llama-ngram-mod-verdict.v1",
+  "date": "2026-07-29",
+  "baseline": {
+    "spec_type": "none",
+    "cache_type_k": "q8_0",
+    "cache_type_v": "q8_0",
+    "flash_attention": true
+  },
+  "design": {
+    "fresh_servers_per_profile": 4,
+    "orders": [
+      "none-then-ngram",
+      "ngram-then-none"
+    ],
+    "same_payloads": true,
+    "raw_tokens_checked": true,
+    "production_changed": false
+  },
+  "profiles": {
+    "b9980_defaults_24_48_64": {
+      "draft_n_per_candidate_arm": 613,
+      "draft_n_accepted_per_candidate_arm": 123,
+      "acceptance": 0.200652528548124,
+      "drafted_stages": [
+        "P"
+      ],
+      "quality": {
+        "visible_contents_equal": true,
+        "final_decisions_equal": true,
+        "raw_tokens_equal": false,
+        "mismatch": "knowledge_c/G generated 19 tokens with none and 20 with ngram-mod in both orders"
+      },
+      "latency": {
+        "none_then_ngram": {
+          "candidate_minus_baseline_structured_total_seconds": 2.103870299994014,
+          "candidate_minus_baseline_case_p50_seconds": -0.30276779999621795,
+          "candidate_minus_baseline_case_total_seconds": -0.448823699982313
+        },
+        "ngram_then_none": {
+          "candidate_minus_baseline_structured_total_seconds": 1.9707104999833973,
+          "candidate_minus_baseline_case_p50_seconds": -0.4422172499980661,
+          "candidate_minus_baseline_case_total_seconds": -1.0910820000062813
+        }
+      },
+      "promotion_gate_passed": false
+    },
+    "dense_tuned_24_4_16": {
+      "draft_n_per_candidate_arm": 319,
+      "draft_n_accepted_per_candidate_arm": 203,
+      "acceptance": 0.6363636363636364,
+      "quality": {
+        "visible_contents_equal": false,
+        "final_decisions_equal": true,
+        "raw_tokens_equal": false,
+        "mismatch": "knowledge_a/P changed visible content and generated 72 or 78 tokens with none versus 71 with ngram-mod"
+      },
+      "latency": {
+        "none_then_ngram": {
+          "candidate_minus_baseline_structured_total_seconds": 0.3430541000197991,
+          "candidate_minus_baseline_case_p50_seconds": -0.2640326999935496,
+          "candidate_minus_baseline_case_total_seconds": -1.7755306999824825
+        },
+        "ngram_then_none": {
+          "candidate_minus_baseline_structured_total_seconds": 1.0029863999807276,
+          "candidate_minus_baseline_case_p50_seconds": -0.2591432499975781,
+          "candidate_minus_baseline_case_total_seconds": -1.8193112000008114
+        }
+      },
+      "promotion_gate_passed": false
+    }
+  },
+  "verdict": {
+    "decision": "reject",
+    "reason": "Both ngram-mod profiles changed raw generated tokens; the higher-acceptance dense profile also changed visible planner output. Both increased aggregate structured-call latency despite improving the six-case end-to-end median.",
+    "further_parameter_sweep": false,
+    "promotion_gate_passed": false
+  },
+  "source_artifacts": [
+    "artifacts/fixes/llama_ngram_mod_ab_20260729.json",
+    "artifacts/fixes/llama_ngram_mod_tuned_24_4_16_ab_20260729.json"
+  ]
+}

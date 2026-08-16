@@ -1,0 +1,430 @@
+{
+  "authority": "unchanged: the value still crosses normalize_objective_arguments and the Core schema/risk/confirmation gates",
+  "cases": [
+    {
+      "agrees": true,
+      "expected_scope": "battery",
+      "keeps_grounding": false,
+      "label": "positivo es",
+      "supplied_scope": "battery",
+      "text": "cuanta bateria queda"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "battery",
+      "keeps_grounding": false,
+      "label": "positivo es acentos",
+      "supplied_scope": "battery",
+      "text": "¿Cuánta batería le queda al equipo?"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "battery",
+      "keeps_grounding": false,
+      "label": "positivo en",
+      "supplied_scope": "battery",
+      "text": "battery level please"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "battery",
+      "keeps_grounding": false,
+      "label": "positivo es carga",
+      "supplied_scope": "battery",
+      "text": "está cargando la batería"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "battery",
+      "keeps_grounding": false,
+      "label": "positivo en",
+      "supplied_scope": "battery",
+      "text": "how much battery is left"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "battery",
+      "keeps_grounding": false,
+      "label": "positivo es nominal",
+      "supplied_scope": "battery",
+      "text": "nivel de carga de la batería"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "battery",
+      "keeps_grounding": false,
+      "label": "positivo es vocativo",
+      "supplied_scope": "battery",
+      "text": "che baxy fijate cuanta bateria le queda al notebook"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "cpu",
+      "keeps_grounding": false,
+      "label": "positivo es",
+      "supplied_scope": "cpu",
+      "text": "cuanta cpu estoy usando"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "cpu",
+      "keeps_grounding": false,
+      "label": "positivo es nucleos",
+      "supplied_scope": "cpu",
+      "text": "cuantos nucleos tiene el procesador"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "cpu",
+      "keeps_grounding": false,
+      "label": "positivo en nominal",
+      "supplied_scope": "cpu",
+      "text": "current cpu load"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "cpu",
+      "keeps_grounding": false,
+      "label": "positivo en",
+      "supplied_scope": "cpu",
+      "text": "how busy is my processor right now"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "cpu",
+      "keeps_grounding": false,
+      "label": "positivo es",
+      "supplied_scope": "cpu",
+      "text": "qué tan cargado anda el procesador"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "memory",
+      "keeps_grounding": false,
+      "label": "positivo es",
+      "supplied_scope": "memory",
+      "text": "cuanta ram tengo"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "memory",
+      "keeps_grounding": false,
+      "label": "positivo en",
+      "supplied_scope": "memory",
+      "text": "how much ram is in use right now"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "memory",
+      "keeps_grounding": false,
+      "label": "positivo es",
+      "supplied_scope": "memory",
+      "text": "cuánta memoria ram libre queda en el sistema"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "memory",
+      "keeps_grounding": false,
+      "label": "positivo es nominal",
+      "supplied_scope": "memory",
+      "text": "ram disponible ahora mismo"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "disk",
+      "keeps_grounding": false,
+      "label": "positivo es",
+      "supplied_scope": "disk",
+      "text": "cuanto espacio libre queda en el disco"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "disk",
+      "keeps_grounding": false,
+      "label": "positivo en",
+      "supplied_scope": "disk",
+      "text": "free disk space please"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "disk",
+      "keeps_grounding": false,
+      "label": "positivo es",
+      "supplied_scope": "disk",
+      "text": "espacio disponible en la unidad c"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "disk",
+      "keeps_grounding": false,
+      "label": "positivo en",
+      "supplied_scope": "disk",
+      "text": "how much storage space is left on this pc"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "gpu_identity",
+      "keeps_grounding": false,
+      "label": "positivo es identidad",
+      "supplied_scope": "gpu_identity",
+      "text": "que gpu tiene este equipo"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "gpu_identity",
+      "keeps_grounding": false,
+      "label": "positivo es identidad",
+      "supplied_scope": "gpu_identity",
+      "text": "dime cual es mi tarjeta grafica"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "gpu_identity",
+      "keeps_grounding": false,
+      "label": "positivo en identidad",
+      "supplied_scope": "gpu_identity",
+      "text": "what gpu is in this machine"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "gpu_usage",
+      "keeps_grounding": false,
+      "label": "positivo es uso",
+      "supplied_scope": "gpu_usage",
+      "text": "cuanta vram se esta usando"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "gpu_usage",
+      "keeps_grounding": false,
+      "label": "positivo en uso",
+      "supplied_scope": "gpu_usage",
+      "text": "show vram usage"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "gpu_usage",
+      "keeps_grounding": false,
+      "label": "positivo es uso nominal",
+      "supplied_scope": "gpu_usage",
+      "text": "uso de gpu ahora"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "os",
+      "keeps_grounding": false,
+      "label": "positivo es",
+      "supplied_scope": "os",
+      "text": "dime la version de windows que tengo"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "os",
+      "keeps_grounding": false,
+      "label": "positivo en",
+      "supplied_scope": "os",
+      "text": "which windows version am i running"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "os",
+      "keeps_grounding": false,
+      "label": "positivo en",
+      "supplied_scope": "os",
+      "text": "what build of windows is this"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "summary",
+      "keeps_grounding": false,
+      "label": "positivo es resumen",
+      "supplied_scope": "summary",
+      "text": "como anda la pc en general"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "summary",
+      "keeps_grounding": false,
+      "label": "positivo es resumen",
+      "supplied_scope": "summary",
+      "text": "estado del sistema por favor"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "summary",
+      "keeps_grounding": false,
+      "label": "positivo en resumen",
+      "supplied_scope": "summary",
+      "text": "how is my computer doing"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "summary",
+      "keeps_grounding": false,
+      "label": "positivo es resumen",
+      "supplied_scope": "summary",
+      "text": "dame el estado general del equipo"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "cpu_memory",
+      "keeps_grounding": false,
+      "label": "combinada representable",
+      "supplied_scope": "cpu_memory",
+      "text": "revisa cpu y ram"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "cpu_memory",
+      "keeps_grounding": false,
+      "label": "combinada representable",
+      "supplied_scope": "cpu_memory",
+      "text": "revisa cpu y ram juntos"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "os_memory",
+      "keeps_grounding": false,
+      "label": "combinada representable",
+      "supplied_scope": "os_memory",
+      "text": "qué windows tengo y cuánta ram tiene esta máquina"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "combinada no representable",
+      "supplied_scope": null,
+      "text": "cuanta bateria queda y cuanta ram tengo"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "combinada no representable",
+      "supplied_scope": null,
+      "text": "cuanto disco libre hay y cuanta bateria queda"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "temperatura",
+      "supplied_scope": null,
+      "text": "a que temperatura esta la gpu"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "atribucion proceso",
+      "supplied_scope": null,
+      "text": "que esta usando la vram ahora"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "atribucion modelo",
+      "supplied_scope": null,
+      "text": "cuanta ram usa parekeet"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "pasado",
+      "supplied_scope": null,
+      "text": "cuanta bateria tenia ayer"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "hipotetico",
+      "supplied_scope": null,
+      "text": "cuanta ram tendria con 32 gb"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "futuro",
+      "supplied_scope": null,
+      "text": "cuanta vram usara realmente"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "otro dispositivo",
+      "supplied_scope": null,
+      "text": "cuanta bateria tiene mi auto"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "conocimiento",
+      "supplied_scope": null,
+      "text": "how much vram does a 4090 have"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "consejo/compra",
+      "supplied_scope": null,
+      "text": "que gpu me recomiendas comprar"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "diagnostico",
+      "supplied_scope": null,
+      "text": "por que mi gpu no se usa"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "ambito aplicacion",
+      "supplied_scope": null,
+      "text": "cuanta vram usa chrome"
+    },
+    {
+      "agrees": true,
+      "expected_scope": "cpu",
+      "keeps_grounding": false,
+      "label": "spanglish",
+      "supplied_scope": "cpu",
+      "text": "check el cpu usage porfa"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "spanglish gpu ambiguo",
+      "supplied_scope": null,
+      "text": "chequea la vram porfa"
+    },
+    {
+      "agrees": true,
+      "expected_scope": null,
+      "keeps_grounding": true,
+      "label": "gpu sin señal de uso o identidad",
+      "supplied_scope": null,
+      "text": "muestra mi VRAM"
+    }
+  ],
+  "measured_at_utc": "2026-07-31T03:50:30.420602+00:00",
+  "schema": "baxy.deterministic-scope-wired.v1",
+  "surface": "baxy_mind.__main__._explicit_system_status_scope, reached from _explicit_arguments_from_evidence via _ground_explicit_arguments, which is the sanctioned seam that already skips the model for other explicit arguments",
+  "totals": {
+    "cases": 52,
+    "safe_abstentions": 0,
+    "supplies_scope": 37,
+    "wrong_scope_supplied": 0
+  }
+}

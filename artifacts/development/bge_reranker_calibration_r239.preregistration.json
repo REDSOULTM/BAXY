@@ -1,0 +1,34 @@
+{
+  "schema": "baxy.bge-reranker.r239-calibration-preregistration.v1",
+  "authority": "sealed_before_model_import",
+  "candidate": {
+    "model": "BAAI/bge-reranker-v2-m3@953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "score": "sigmoid cross-encoder relevance query-to-typed-family-document",
+    "abstention": "zero candidates below threshold"
+  },
+  "development": {
+    "inside": 256,
+    "outside": 256,
+    "sources": [
+      "PRESTO v1",
+      "MASSIVE v1"
+    ],
+    "threshold": "nextafter below minimum inside score; outside excluded from selection",
+    "r228_used": false,
+    "public_holdout_used": false
+  },
+  "constraints": {
+    "model_started": false,
+    "r228_opened": false,
+    "opened_v9": false,
+    "effects_executed": 0,
+    "providers_enabled": false,
+    "voice_stt_wake_exercised": false
+  },
+  "identities": {
+    "r238_sha256": "9e148c026438c242d8c96dfc8c21af801997f53da6ebad3d74d58121d900c5cb",
+    "r234_sha256": "10ebd512df812aacc1db458ef4c7771076b861af26810a9568e8f9ef4c8f2bab",
+    "r228_sha256": "fe094331bce2045a7f2bc0afa18fdd20636678d66bafd69b569976af811cfc2a",
+    "program_sha256": "52aa97cd9e18da79d59c147f5e7e7c50b436f9bbde5d7e56d902d5b50d95cbd7"
+  }
+}

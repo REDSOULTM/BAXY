@@ -1,0 +1,399 @@
+{
+  "schema": "baxy.servicenow-codeswitch-development-extraction.v1",
+  "createdAtUtc": "2026-08-11T04:54:16.1417963Z",
+  "source": {
+    "path": "D:/BAXYRuntime/experiments/stt_holdout_sources/servicenow_asr_codeswitched_82bf4b4/en_es-test-00000-of-00001.parquet",
+    "bytes": 134596508,
+    "sha256": "808e373099ae16c80f2bf5434fbb70afd06487ffd3a9c2f88495638dc7e035d8"
+  },
+  "preregistration": {
+    "path": "artifacts/research/servicenow_codeswitch_stt_preregistration_v1.json",
+    "sha256": "61e1368fe9d32c28e1de413adbc8378a0cd9c0039e98e37a062e73fbc91532ab"
+  },
+  "extraction": {
+    "readRowGroups": [
+      2
+    ],
+    "blindRowGroupsRead": [],
+    "rows": 59,
+    "firstSourceRowIndex": 200,
+    "lastSourceRowIndexInclusive": 258,
+    "outputRoot": "D:/BAXYRuntime/experiments/stt_holdout_sources/servicenow_asr_codeswitched_82bf4b4/development_rg2_v1",
+    "manifestPath": "D:/BAXYRuntime/experiments/stt_holdout_sources/servicenow_asr_codeswitched_82bf4b4/development_rg2_v1/manifest.jsonl",
+    "manifestSha256": "b13a92992e9c33891d08e6cbb042d9faf7d1c50d1f5ab2b38dfb815db360a74a",
+    "audioFiles": 59,
+    "audioBytes": 41221166,
+    "audioFormats": {
+      "wav": 59
+    },
+    "rowCommitments": [
+      {
+        "caseId": "servicenow-en-es-0200",
+        "sourceRowIndex": 200,
+        "audioSha256": "53d9bfa47fe7508dc32737f803b00ba492989bd0e561cbbdd6951e021e1e76c4",
+        "referenceSha256": "2605469a1a2797a10e4a82ee73c92d3bb430a08fed328733114c4cf8e7511c4a"
+      },
+      {
+        "caseId": "servicenow-en-es-0201",
+        "sourceRowIndex": 201,
+        "audioSha256": "308bc3c5466fcca73873fdde8eda651107b7f710cbaf30704c32c5e9ec95b38b",
+        "referenceSha256": "98bcc9dc01c391e17c60f0c9e11a1e234af76e2169c507870dd2883b88253022"
+      },
+      {
+        "caseId": "servicenow-en-es-0202",
+        "sourceRowIndex": 202,
+        "audioSha256": "d0655d56e7b540b6f4e85d7b22a81fd5d463bf7361a8dd69e58e9576af6097e1",
+        "referenceSha256": "3d04c8794b8b7f79230be924efebdaf1001667e8d2fd94af6582b9f12edcef78"
+      },
+      {
+        "caseId": "servicenow-en-es-0203",
+        "sourceRowIndex": 203,
+        "audioSha256": "d82484f7be9928254d1f237c2e3427df67782e5c77fc24ae4055d6cf8b2e74ac",
+        "referenceSha256": "ff36f61181dde425ca3a6c9091afcfc46612058613224eb31f7525f0dbeef494"
+      },
+      {
+        "caseId": "servicenow-en-es-0204",
+        "sourceRowIndex": 204,
+        "audioSha256": "25b8fd9cc9ac974e101c9af888f39de1e8fb13090577094a88946274031a6e83",
+        "referenceSha256": "c515c071bece7183769203130bf943825c6a5e7613d44d97afeaf009056f86c3"
+      },
+      {
+        "caseId": "servicenow-en-es-0205",
+        "sourceRowIndex": 205,
+        "audioSha256": "c86ac7d44492eabc0a3ebc34271704d0975fa9c5b44c61ea25bd0fbd8170f073",
+        "referenceSha256": "7d801f1b693916c24b50c84a98ac9cad56c3884371c3bc961813672103977dfd"
+      },
+      {
+        "caseId": "servicenow-en-es-0206",
+        "sourceRowIndex": 206,
+        "audioSha256": "86115b930778b8ca04e21f82fd55412e6279faee661c823ab422a3c29dcd0633",
+        "referenceSha256": "2fb41863621e21b06988e8b62790e241759592e17584f31c9c4d4ee4d1f7862c"
+      },
+      {
+        "caseId": "servicenow-en-es-0207",
+        "sourceRowIndex": 207,
+        "audioSha256": "c7934dd6019aaebfe1e4cd3c84b739cca74bde6636c95fafbe11a3ec8c483a91",
+        "referenceSha256": "9a9fc778b9a109fcda115b730ace2853b3397b47db86f513647e6e1acd6e6f82"
+      },
+      {
+        "caseId": "servicenow-en-es-0208",
+        "sourceRowIndex": 208,
+        "audioSha256": "abe64b5766239d8340892673d88986f13615150a5797c96f61351b5d130d4a78",
+        "referenceSha256": "afb317ebac1e05764110ba2e6d979eacaef4118ecdf131dffe8bf33930636511"
+      },
+      {
+        "caseId": "servicenow-en-es-0209",
+        "sourceRowIndex": 209,
+        "audioSha256": "54ef976e7db89e3c03df2af449efa85ed2dc3cc533acfdf5a9a7d92f7a03269d",
+        "referenceSha256": "a87b997d5a3edaaf13358ed2f3f718e3a4317a80a19df2b396ad5445b3d32aa2"
+      },
+      {
+        "caseId": "servicenow-en-es-0210",
+        "sourceRowIndex": 210,
+        "audioSha256": "03e9d7dc9810607c840b209ef46c83a923d949878a6a0d3a3f4d4ba6c4a24a8b",
+        "referenceSha256": "453c260ee4beb460094b3c84f07f850506dd3dab667dc4605ab07eb879891d4f"
+      },
+      {
+        "caseId": "servicenow-en-es-0211",
+        "sourceRowIndex": 211,
+        "audioSha256": "be288c5c64f4e8be7b54fc62dd958398f4085aaf81005334b81a8e97e8bf3401",
+        "referenceSha256": "9ffa144eb1f5dc38c6fbf272d2dc3dcd862b09f644622396ce92e27dbb373735"
+      },
+      {
+        "caseId": "servicenow-en-es-0212",
+        "sourceRowIndex": 212,
+        "audioSha256": "0fb56a78c765544d0c50ca862f01b78713ad29782b1355709fc5aae0cb18095d",
+        "referenceSha256": "253ffadbbafd5586c69b104c19d7dc536ba7fb23fecffeaa9b5d23c90cc001a4"
+      },
+      {
+        "caseId": "servicenow-en-es-0213",
+        "sourceRowIndex": 213,
+        "audioSha256": "2beb33c15cfe384b9271718d3b467734416493a52f96252a65e55d9efb369feb",
+        "referenceSha256": "b197ff84a222bfaa87a4cc65a5503544b6c7167fbcdd98cfcb4023b745de1a0d"
+      },
+      {
+        "caseId": "servicenow-en-es-0214",
+        "sourceRowIndex": 214,
+        "audioSha256": "c022f2a80082a948d9ea90f3b69ca74dc91060d6bee528cf9fb41878b11e5f4a",
+        "referenceSha256": "1d08e96bfa7f6d462ce5760c35c3c0db03005c3b96732ac4d5024a417acacdf0"
+      },
+      {
+        "caseId": "servicenow-en-es-0215",
+        "sourceRowIndex": 215,
+        "audioSha256": "3fda25c3801fceeaf4c5378887bfed55392f9c29110068527e2375bece3dfa4e",
+        "referenceSha256": "c0285ed60eba3ca0b3ec1bae11e5e3e4ad5c8bef8018009dd447d5876a55a8af"
+      },
+      {
+        "caseId": "servicenow-en-es-0216",
+        "sourceRowIndex": 216,
+        "audioSha256": "910504c1c98c2b46431815665b327744e7ce4a0e0755804c9325912b7d30c6b9",
+        "referenceSha256": "10376fe9e6e38c8c5fca8cb3ed3f130781bba053511ef429e92af51115524661"
+      },
+      {
+        "caseId": "servicenow-en-es-0217",
+        "sourceRowIndex": 217,
+        "audioSha256": "4d541d7e475d165fe6cb2787aee02a1b7165c18b7771efeb4c5375291430ce8a",
+        "referenceSha256": "9ca4709d964bd7dbdc7974df1eb7e6cd907f6a8fd83d9261bda3b094fa7af0b2"
+      },
+      {
+        "caseId": "servicenow-en-es-0218",
+        "sourceRowIndex": 218,
+        "audioSha256": "72ebab9d55d6c431b5bef72be005852c10a813008a2d13bb623450ad186d1668",
+        "referenceSha256": "88db76221481585f83f632868ccd31370b9836c9836b7f1665d4c5f36c3d908e"
+      },
+      {
+        "caseId": "servicenow-en-es-0219",
+        "sourceRowIndex": 219,
+        "audioSha256": "c7c67164b348a47078945abe5c9794d84c490ae300867bcf0cba143b778f391c",
+        "referenceSha256": "d871c0658c301a456990c3b6cbb05664987edce4a0fc8ac87b07945f6685d928"
+      },
+      {
+        "caseId": "servicenow-en-es-0220",
+        "sourceRowIndex": 220,
+        "audioSha256": "8b8eb52746b6b45efcfa07a0fb366f314828d89792267f87d61f2f22c04b3a92",
+        "referenceSha256": "a60c727f127fa5d1d82b5b6c03278efdd8cd9181996e4e695bf8076b7524bd60"
+      },
+      {
+        "caseId": "servicenow-en-es-0221",
+        "sourceRowIndex": 221,
+        "audioSha256": "b35cc4805772a6f671a4e14c204ac2276ddda3d2ed94f61208400251d7cbe3f0",
+        "referenceSha256": "7a5c0794a891f952c052795abf4e6d9e8906529bffa1e9893e0659c1b374ba47"
+      },
+      {
+        "caseId": "servicenow-en-es-0222",
+        "sourceRowIndex": 222,
+        "audioSha256": "5843cac4d8ffd6817ebf6b70d505a9c11de76b1cbe1968de3d97ee9ad0ff4bfd",
+        "referenceSha256": "e909510ecfc24e5208f8dedaaca0985396b43c46af5dffd50e7c16ced9416112"
+      },
+      {
+        "caseId": "servicenow-en-es-0223",
+        "sourceRowIndex": 223,
+        "audioSha256": "b1e7411e9dd93f14025e99b6251fb9025da649828bcef4afe43d43c1d2189302",
+        "referenceSha256": "0867ff1c918b745430e1c638af0940b854662da3515470ae3eb88c085f5e8f47"
+      },
+      {
+        "caseId": "servicenow-en-es-0224",
+        "sourceRowIndex": 224,
+        "audioSha256": "e5fb831eed55f7d084f6dceb61fea9c96f268841d98b4b929196e4e063177b4a",
+        "referenceSha256": "5a8f28ddf822e78343851b9985091ca70edcfbd2108c2f3b824023807371ed70"
+      },
+      {
+        "caseId": "servicenow-en-es-0225",
+        "sourceRowIndex": 225,
+        "audioSha256": "f7edfe50133365432c6d44c1fcb56a8ea0cb6c5eb612e838a685f2356855c4c7",
+        "referenceSha256": "8c4e00f889496cfdc772b5cac491c4c31d4e3bea989504685764007cf95870a0"
+      },
+      {
+        "caseId": "servicenow-en-es-0226",
+        "sourceRowIndex": 226,
+        "audioSha256": "48435611384cfeaee37064b50d5f4ec07b3fb4562c8cc229c95f515e79b73845",
+        "referenceSha256": "b044a00ff1757f6409cdaaaa1d647202441ac0227d840de1686a36ed136496f2"
+      },
+      {
+        "caseId": "servicenow-en-es-0227",
+        "sourceRowIndex": 227,
+        "audioSha256": "5d956dff9c2ad536a8a30750ff97648d5a3c580e4b4b2b2f2a262537074f82ae",
+        "referenceSha256": "4aa35c0a195b648f677c289e278f9c6bab6e175c767ef77020f0a2db59f464b3"
+      },
+      {
+        "caseId": "servicenow-en-es-0228",
+        "sourceRowIndex": 228,
+        "audioSha256": "36b8ea1287e1149a2ad2eca848e6dc2b5baf5aef8edd1e40ade475344f34580c",
+        "referenceSha256": "ee6911fec8a6340c1773910455341709daf20bfcc9dbef9d7f08dd467eb7e6ce"
+      },
+      {
+        "caseId": "servicenow-en-es-0229",
+        "sourceRowIndex": 229,
+        "audioSha256": "416739b483b9c3b419763ab07cf7dc79452031a0501ef32c2a7f744213031d5d",
+        "referenceSha256": "e8b0de59b35755855cf410a97f421f9cf7d2abb3a926a5dcfe182f96de15f628"
+      },
+      {
+        "caseId": "servicenow-en-es-0230",
+        "sourceRowIndex": 230,
+        "audioSha256": "a2b0c21d0aa97c4762c62dd0e1025789055e193fa2c94ee8164c74af2f8c15dc",
+        "referenceSha256": "f983c0585b0cb207a82630d7822c6f84fdf20a1a78be74792e4406552c381895"
+      },
+      {
+        "caseId": "servicenow-en-es-0231",
+        "sourceRowIndex": 231,
+        "audioSha256": "472c11623b070d3ace7a6a1673139961ca90f2efe5c3a158ecb936745e78e55a",
+        "referenceSha256": "10d502b06ea9f454a0099a1b2e4af929ac23a5d9279b5c67ea531362ed8948d6"
+      },
+      {
+        "caseId": "servicenow-en-es-0232",
+        "sourceRowIndex": 232,
+        "audioSha256": "a7e51533f00b4e42acde8e2ef44e89d3b42b5ea3ea39c33830c18589b414c62b",
+        "referenceSha256": "36ae21c5c6c989013e7b02bd9e17163f319c1028f8f3571575be5288ba656875"
+      },
+      {
+        "caseId": "servicenow-en-es-0233",
+        "sourceRowIndex": 233,
+        "audioSha256": "0e1f5a45fb26080b1c32d6f830666dd763832cd6fcd0f8544c2f22c1901d6a7c",
+        "referenceSha256": "ba359c613d33c1e072e610d3ec795231d996d3db4a12f50aa81179240306bea3"
+      },
+      {
+        "caseId": "servicenow-en-es-0234",
+        "sourceRowIndex": 234,
+        "audioSha256": "0d1adf029e18413d2e92f9fc987da24ad1e3b41756cefe118ad4cf0f75194c4a",
+        "referenceSha256": "a8716c8b1163945f4fe9b7b89716768edacca75622628f231855d364a487ef2c"
+      },
+      {
+        "caseId": "servicenow-en-es-0235",
+        "sourceRowIndex": 235,
+        "audioSha256": "ca3e7d070855e044b3476cddd22c24f0b5af5ac779b489b0513dc412bac6931d",
+        "referenceSha256": "61240b139551ac794d78370870007f62329a707ffe59d4a5d1a0557b86082d13"
+      },
+      {
+        "caseId": "servicenow-en-es-0236",
+        "sourceRowIndex": 236,
+        "audioSha256": "4ddf87b22646f1e064c040dfb3d6d0d40e6e97e49fb9e2529f9b037fcefd4035",
+        "referenceSha256": "26e6edaf0df3cd0eb5a434dcebc56407faedd3f5ddfbfbec26d97303acf04276"
+      },
+      {
+        "caseId": "servicenow-en-es-0237",
+        "sourceRowIndex": 237,
+        "audioSha256": "ff9deb6f8127be2431d434612f152cb99d470f9f9ad2ce8f696f61fad306a3d7",
+        "referenceSha256": "506ba8fe3fbc74c25278c7bacd60f38d78335dac4fdb3e0e420f9328c1730bb3"
+      },
+      {
+        "caseId": "servicenow-en-es-0238",
+        "sourceRowIndex": 238,
+        "audioSha256": "a8e659a59f6a40225876db68e0e46128b7ccf92ade8a8ff79edfa0e08ef65550",
+        "referenceSha256": "800aeb2da5ed211c6833273dbe9c9a81f5de1073d9001def1f50dcd7de48f2f1"
+      },
+      {
+        "caseId": "servicenow-en-es-0239",
+        "sourceRowIndex": 239,
+        "audioSha256": "381b448dc2f43f291bc4112b43e7584eaaa51b3af509800ebe495604e4ec29e0",
+        "referenceSha256": "e5746b81eafed375787c7376bacbad63f1ac3babb6818a1181a80cf9e9349c59"
+      },
+      {
+        "caseId": "servicenow-en-es-0240",
+        "sourceRowIndex": 240,
+        "audioSha256": "3e754c6dd7b9a0696e9e3f358c3a11a82318b2a0075cda34ce0e6d5edd2e7891",
+        "referenceSha256": "3a4a06803f5424331c123241c76068a77dee03a827d69356fe44ad8b122ca52b"
+      },
+      {
+        "caseId": "servicenow-en-es-0241",
+        "sourceRowIndex": 241,
+        "audioSha256": "2209cdfb9e35bd08fc62672935629756b437c2fe3ea4f1a3b4ae0961bb6bfa69",
+        "referenceSha256": "155dfe0ef6c07d1d9b19ccca4fd5ed1b4639c317cb926e4b58d8a51420fdf5aa"
+      },
+      {
+        "caseId": "servicenow-en-es-0242",
+        "sourceRowIndex": 242,
+        "audioSha256": "fa176cb4368b401cea371d51136a520196db10f3f3fe1d3ded6842e3e9406cf7",
+        "referenceSha256": "b55731de22ddea99a69f39ad3a46b474a2898f4a9eee8fc64c545cd81c858c12"
+      },
+      {
+        "caseId": "servicenow-en-es-0243",
+        "sourceRowIndex": 243,
+        "audioSha256": "4ebdde3220484887d3e2c45bb5482c1b693b89b471334ff74c3ba94d6378c090",
+        "referenceSha256": "8046c82c7e7093efdca063dc235359963b323a6228b504f9f15450faae007ac4"
+      },
+      {
+        "caseId": "servicenow-en-es-0244",
+        "sourceRowIndex": 244,
+        "audioSha256": "3b0197a3fc8ce72fda4ff817fc82c57a66854f40798f5f4630679108b24a643b",
+        "referenceSha256": "eae05de8342ba2117d69bda921a7da9e7addb5c8ac3547d2085dbbb397a4b56a"
+      },
+      {
+        "caseId": "servicenow-en-es-0245",
+        "sourceRowIndex": 245,
+        "audioSha256": "86d66cdb3a529e30e5dd1cadd151e3538373605e92ea123e1dd7094efbfd04d7",
+        "referenceSha256": "279564dc1b05684f3580076035c12a30dee13bf8df1d0cfe70be2fa7bce6cf74"
+      },
+      {
+        "caseId": "servicenow-en-es-0246",
+        "sourceRowIndex": 246,
+        "audioSha256": "8186c67a8d19ebbf0f0f56398f638220a9ff4f81c712030004047d7bdfdf916d",
+        "referenceSha256": "d90c2eccfcf3cc982e0425e953f792794183313871477d913887e079a9d604c6"
+      },
+      {
+        "caseId": "servicenow-en-es-0247",
+        "sourceRowIndex": 247,
+        "audioSha256": "0b2e9075aeca313136ea72e99d1be8b544a71465cd4b496e0763fc0b9a24ace3",
+        "referenceSha256": "11cb9b5302d7188c91a522963f12da54c75904e4d0aaccddceb9785232f4e153"
+      },
+      {
+        "caseId": "servicenow-en-es-0248",
+        "sourceRowIndex": 248,
+        "audioSha256": "38e800e086d128e9a1824950eac6b10da47932d881ded7453178a2f37e4e6b47",
+        "referenceSha256": "b51dfa80192487a1ac2b54e59483e9908553bd5ef3552e2195b13f996f9cee10"
+      },
+      {
+        "caseId": "servicenow-en-es-0249",
+        "sourceRowIndex": 249,
+        "audioSha256": "548eeee84ffba91941e53ebddee28444e3fcd5f664a3d4c4910a3aa0357a0439",
+        "referenceSha256": "2cd258cbbf589a5a55f989f4d17bcaac20f10b0fcfdab964a909f4f7fec2eff1"
+      },
+      {
+        "caseId": "servicenow-en-es-0250",
+        "sourceRowIndex": 250,
+        "audioSha256": "7a5537a921b47c5ce7f483e6e4d55e84cf11858a731f308dcdb50a51d8d97b4f",
+        "referenceSha256": "a3286702fbe3c4cce0894e63a110b1582bbfa0c92c955b98791dba9c85bf87de"
+      },
+      {
+        "caseId": "servicenow-en-es-0251",
+        "sourceRowIndex": 251,
+        "audioSha256": "d306f71fff5e57c922764816f64a5af87a65994a5a2e3494aa0af754963a3ad0",
+        "referenceSha256": "13fc137558537be33b916771e681a5e89a8501880b1670120683abe95b8f5ed5"
+      },
+      {
+        "caseId": "servicenow-en-es-0252",
+        "sourceRowIndex": 252,
+        "audioSha256": "c0ae5d18a9d8202a57ad4e66a107ed9ffb57e6de32a230b595ff3fc78ff5808d",
+        "referenceSha256": "63e337e23dde87074f42d9a25da8217e8fd206fabb807e955c7ccb52a43639fc"
+      },
+      {
+        "caseId": "servicenow-en-es-0253",
+        "sourceRowIndex": 253,
+        "audioSha256": "915ef1e97e8f6bb1dd73a72b6d52624f87a44f191987ac316e29ef5465cc3f8e",
+        "referenceSha256": "59d98717fe907976c8ddd91473a16609f07898c52bdd0dfaf8b99655fdbc9cd3"
+      },
+      {
+        "caseId": "servicenow-en-es-0254",
+        "sourceRowIndex": 254,
+        "audioSha256": "6be9d2430eaae248efa08c01570dfdc7026a39ca2a927412c4d2be395d15a939",
+        "referenceSha256": "b42b46c85323a59bd1de55ab74bf06eec88ba9be9ac184c8f852562f9f616ceb"
+      },
+      {
+        "caseId": "servicenow-en-es-0255",
+        "sourceRowIndex": 255,
+        "audioSha256": "4b73f356409d3bd6c285fb7aa7cc342567e858f479eace843b107b3139b35c54",
+        "referenceSha256": "99e60d7f479191996824ae21d73e165966f13088f6ea344c6e3b42371106de94"
+      },
+      {
+        "caseId": "servicenow-en-es-0256",
+        "sourceRowIndex": 256,
+        "audioSha256": "a1342d5b2434cab5c578b2c4a2d82806f5cb10078562b72affb8b24b43e868ad",
+        "referenceSha256": "b3d191330351c5135b09f0fbeccb1b8894125bc045538fcf5e765da98859fe90"
+      },
+      {
+        "caseId": "servicenow-en-es-0257",
+        "sourceRowIndex": 257,
+        "audioSha256": "35dd24f0ef684d48b8582bb1954b56c28b9d27b96c9d25425e780a47bf770e70",
+        "referenceSha256": "43f9c1b1fe002734d23612b138a72f1335cc7dcaddfde816dd16a36f1a452636"
+      },
+      {
+        "caseId": "servicenow-en-es-0258",
+        "sourceRowIndex": 258,
+        "audioSha256": "241d90fa21dc405cee6f5f8ffd959c5afcc6d25641086ad07dd73da169a45ce6",
+        "referenceSha256": "4af7f35de52a7d2782a4f269ea7aa0e86575bb3e75a197df9de9975b619cb393"
+      }
+    ]
+  },
+  "contract": {
+    "developmentOnly": true,
+    "syntheticAudio": true,
+    "finalPhysicalCertificationEligible": false,
+    "blindRowsOpened": false,
+    "candidatePromoted": false,
+    "effectsExecuted": 0
+  },
+  "generator": {
+    "path": "experiments/stt_quality/extract_servicenow_codeswitch_development.py",
+    "sha256": "b01e85d3d213d66856fc76150cf7cdae09219efbd2132d84684add9aa4de1a8b"
+  },
+  "effectsExecuted": 0
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "baxy.audit.notification-chain.v1",
+  "coreVersion": "1.0.8",
+  "catalogCount": 168,
+  "elapsedSeconds": 9.951368199999706,
+  "cases": [
+    {
+      "operation": "notification.schedule",
+      "arguments": {
+        "kind": "reminder",
+        "title": "BAXY synthetic overnight audit",
+        "dueUtc": "2026-07-27T08:55:41.823825+00:00"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "cdbd7404-b1ba-4a3c-80cb-6622b2c883d1",
+          "missionId": "5f9cd37d-b891-48a6-bd53-afc38542540b",
+          "invocationId": "c1e7f545-b8f3-4fa1-a3bc-1913943c2219",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "reminder",
+            "title": "BAXY synthetic overnight audit",
+            "dueUtc": "2026-07-27T08:55:41.823825+00:00",
+            "taskName": "BAXY-Reminder-80c9c49b613947e383a0688b59bcc396",
+            "state": "Ready",
+            "nextRunUtc": "2026-07-27T08:55:41.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsedSeconds": 2.2672055999992153
+    },
+    {
+      "operation": "notification.cancel.latest",
+      "arguments": {
+        "kind": "reminder"
+      },
+      "responses": [
+        {
+          "type": "operation.response",
+          "requestId": "2dd36b79-2094-4290-ab07-d73d34312a73",
+          "missionId": "17ce1b52-dbdf-42cc-88d4-11dce9326ea4",
+          "invocationId": "cbc53c90-305d-429a-b595-f3a8b73d6deb",
+          "status": "completed",
+          "message": "La operación terminó correctamente.",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "reminder",
+            "taskName": "BAXY-Reminder-80c9c49b613947e383a0688b59bcc396",
+            "authority": "windows_task_scheduler_absence_postread",
+            "canceled": true
+          },
+          "errorCode": null
+        }
+      ],
+      "elapsedSeconds": 2.8882613999994646
+    }
+  ],
+  "error": null,
+  "cleanup": {
+    "exactTaskRemoved": false,
+    "exactTaskRemaining": false
+  },
+  "coreExitCode": 0,
+  "stderr": ""
+}

@@ -1,0 +1,144 @@
+{
+  "schema": "baxy-mind-voice-gate-v1",
+  "measured_at": "2026-08-11T01:09:45.510722+00:00",
+  "adr": "ADR-0005",
+  "stt": "parakeet-tdt-0.6b-v3 int8 (sherpa-onnx, CPU)",
+  "decision_boundary": "baxy_mind.effect_intent.resolve_explicit_effects; frozen embedding router is diagnostic only",
+  "streaming_preview": {
+    "available": false,
+    "model": null,
+    "error": "streaming_stt_disabled",
+    "final_verifier": "parakeet-tdt-0.6b-v3-int8 + AEC",
+    "promotion": "ASR partial only; requires a held-out microphone corpus",
+    "cases": []
+  },
+  "wake": {
+    "backend": "unavailable",
+    "model": null,
+    "error": "wake_verifier_manifest_missing",
+    "note": "KWS is measured separately with evaluate_wake_corpus.py"
+  },
+  "vad": "silero-vad (CPU)",
+  "tts_probe": "Windows SAPI Sabina (es-MX) / Zira (en-US), PCM16 local",
+  "engine_load_seconds": 45.5,
+  "cases": [
+    {
+      "language": "es",
+      "reference": "Baxy, pon el volumen al cincuenta por ciento",
+      "transcript": "Baxi, pon el volumen al 50%.",
+      "routed_text": "pon el volumen al 50%.",
+      "kws_authorized": true,
+      "wake_prefix_cleaned": true,
+      "vad_segmented": true,
+      "text_match_normalized": true,
+      "routed_kind": "operation",
+      "routed_operation": "audio.volume",
+      "routed_arguments": null,
+      "offline_route_ok": true,
+      "product_operations": [
+        "audio.volume"
+      ],
+      "route_ok": true,
+      "stt_seconds": 0.851
+    },
+    {
+      "language": "es",
+      "reference": "pon el volumen al cincuenta por ciento",
+      "transcript": "Pon el volumen al 50%.",
+      "routed_text": "Pon el volumen al 50%.",
+      "kws_authorized": false,
+      "wake_prefix_cleaned": false,
+      "vad_segmented": true,
+      "text_match_normalized": true,
+      "routed_kind": "operation",
+      "routed_operation": "audio.volume",
+      "routed_arguments": null,
+      "offline_route_ok": true,
+      "product_operations": [
+        "audio.volume"
+      ],
+      "route_ok": true,
+      "stt_seconds": 0.573
+    },
+    {
+      "language": "es",
+      "reference": "crea una nota que diga comprar café",
+      "transcript": "Crea una nota que diga comprar café.",
+      "routed_text": "Crea una nota que diga comprar café.",
+      "kws_authorized": false,
+      "wake_prefix_cleaned": false,
+      "vad_segmented": true,
+      "text_match_normalized": true,
+      "routed_kind": "operation",
+      "routed_operation": "note.create",
+      "routed_arguments": null,
+      "offline_route_ok": true,
+      "product_operations": [
+        "note.create"
+      ],
+      "route_ok": true,
+      "stt_seconds": 0.499
+    },
+    {
+      "language": "en",
+      "reference": "Baxy, how much disk space do I have left",
+      "transcript": "Baxi. How much disk space do I have left?",
+      "routed_text": "How much disk space do I have left?",
+      "kws_authorized": true,
+      "wake_prefix_cleaned": true,
+      "vad_segmented": true,
+      "text_match_normalized": true,
+      "routed_kind": "operation",
+      "routed_operation": "system.status",
+      "routed_arguments": {
+        "scope": "disk"
+      },
+      "offline_route_ok": true,
+      "product_operations": [
+        "system.status"
+      ],
+      "route_ok": true,
+      "stt_seconds": 0.669
+    },
+    {
+      "language": "en",
+      "reference": "mute the sound please",
+      "transcript": "Mute the sound please.",
+      "routed_text": "Mute the sound please.",
+      "kws_authorized": false,
+      "wake_prefix_cleaned": false,
+      "vad_segmented": true,
+      "text_match_normalized": true,
+      "routed_kind": "operation",
+      "routed_operation": "audio.mute",
+      "routed_arguments": null,
+      "offline_route_ok": true,
+      "product_operations": [
+        "audio.mute"
+      ],
+      "route_ok": true,
+      "stt_seconds": 0.469
+    },
+    {
+      "language": "spanglish",
+      "reference": "oye Baxy check el volumen de la compu",
+      "transcript": "Oye Baxi check el volumen de la compu.",
+      "routed_text": "check el volumen de la compu.",
+      "kws_authorized": true,
+      "wake_prefix_cleaned": true,
+      "vad_segmented": true,
+      "text_match_normalized": true,
+      "routed_kind": "conversation",
+      "routed_operation": null,
+      "routed_arguments": null,
+      "offline_route_ok": false,
+      "product_operations": [
+        "audio.status"
+      ],
+      "route_ok": true,
+      "stt_seconds": 0.566
+    }
+  ],
+  "status": "passed",
+  "not_covered": "la identidad acústica del usuario requiere una sesión hablada por el usuario; mic, SAPI y loopback se cubren en voice_system_gate"
+}

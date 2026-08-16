@@ -1,0 +1,17 @@
+{
+  "schema": "baxy.independent-clarification-cut-b.model-path-r276-consumption.v1",
+  "measurement_status": "consumed",
+  "opened_exactly_once": true,
+  "retry_allowed": false,
+  "status": "failed",
+  "effects_executed": 0,
+  "providers_enabled": false,
+  "hashes": {
+    "corpus_sha256": "a38ab784be38a159935e5b1500b3187e94aac9e7a3ad791080323bc9a8387d99",
+    "preregistration_sha256": "5e819988a23ff12357581e557f2329932a1e2c3f87a00b7be8f394b583a8544c",
+    "result_sha256": "ed365ad0725d9541553fdd7275da6f033b96908b8e387dad82874b3d38881726",
+    "telemetry_sha256": "848a2f8f36a84e58c1b7450517dd5daf513c139ea97f0bd6f75d995902df26fa",
+    "turn_audit_sha256": "ca100245ed4452efe7fbb717c4a5f1a6e3a58732391a65dac0bc7bd2c953336d",
+    "runner_sha256": "ea15f1da9c701cb6ce31f50d458f165db57413200bd546971bb05ad6110fbdb1"
+  }
+}

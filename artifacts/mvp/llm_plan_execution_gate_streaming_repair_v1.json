@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-08-11T21:13:54.071448+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "Qwen3-4B-Q4_K_M.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424,
+      "registeredCandidateWasFunctional": true
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "bytes": 2497280256
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 169,
+  "total_seconds": 10.947,
+  "cases": [
+    {
+      "case": "streaming_and_search",
+      "planner_path": "deterministic_bounded_skeleton",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "effect_operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "decision_seconds": 0.173,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "streaming.navigate",
+        "web.search"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "streaming.navigate",
+          "risk": "external_communication",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "resourceUri",
+            "service"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": true,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "resourceUri": "https://www.youtube.com/results?search_query=BAXY+planner",
+            "targetId": "639F6BAA58C0C592BA0559EA8413806B"
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "web.search",
+          "risk": "read_only",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "query"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "count": 5,
+            "results": [
+              {
+                "url": "https://openai.com/codex/"
+              },
+              {
+                "url": "https://openai.com/es-ES/codex/"
+              },
+              {
+                "url": "https://developers.openai.com/learn/codex"
+              },
+              {
+                "url": "https://github.com/openai/codex"
+              },
+              {
+                "url": "https://learn.chatgpt.com/docs/codex/cli"
+              }
+            ]
+          }
+        }
+      ],
+      "seconds": 3.231,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        []
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "environment_blocked": 0,
+    "failed": 0,
+    "total": 1,
+    "verified_steps": 2,
+    "real_llm_plan_cases": 0,
+    "real_llm_plan_cases_passed": 0,
+    "model_grounded_steps": 0,
+    "ambiguous_effects": 0,
+    "status": "passed"
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

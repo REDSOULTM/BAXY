@@ -1,0 +1,330 @@
+{
+  "schema": "baxy.audit.abrupt-restart-recovery-stress.v1",
+  "core": "D:\\BAXY\\source\\artifacts\\product\\build\\audit-remediation-20260727-v109-dev\\app\\core\\baxy-core.exe",
+  "cycles": 20,
+  "queuedRequestsBeforeKill": 100,
+  "successfulCycles": 20,
+  "errors": [],
+  "results": [
+    {
+      "cycle": 1,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.126877599999716
+    },
+    {
+      "cycle": 2,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.2927923999959603
+    },
+    {
+      "cycle": 3,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.287230300004012
+    },
+    {
+      "cycle": 4,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.4043641000025673
+    },
+    {
+      "cycle": 5,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.1569799999997485
+    },
+    {
+      "cycle": 6,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.0642429999934393
+    },
+    {
+      "cycle": 7,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.4016241999997874
+    },
+    {
+      "cycle": 8,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.282055700001365
+    },
+    {
+      "cycle": 9,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.397105600000941
+    },
+    {
+      "cycle": 10,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.346427099997527
+    },
+    {
+      "cycle": 11,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.6438596000007237
+    },
+    {
+      "cycle": 12,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.3316764999981388
+    },
+    {
+      "cycle": 13,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.2697870999982115
+    },
+    {
+      "cycle": 14,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.1870102000029874
+    },
+    {
+      "cycle": 15,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.231078000004345
+    },
+    {
+      "cycle": 16,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.2187895999959437
+    },
+    {
+      "cycle": 17,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.3793429999932414
+    },
+    {
+      "cycle": 18,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.4499423000015668
+    },
+    {
+      "cycle": 19,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.7700871000051848
+    },
+    {
+      "cycle": 20,
+      "errors": [],
+      "writes_before_kill": 19,
+      "responses_before_kill": 0,
+      "killed_exit_code": 1,
+      "first_stderr": "",
+      "second_exit_code": 0,
+      "second_stderr": "",
+      "catalog_counts": [
+        168,
+        168
+      ],
+      "data_root_removed": true,
+      "elapsed_seconds": 3.55751560000499
+    }
+  ]
+}

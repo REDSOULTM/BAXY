@@ -1,0 +1,161 @@
+{
+  "schema": "baxy.audit-remediation.browser-media-voice.v1",
+  "measuredAtUtc": "2026-07-27T18:53:45.7175639Z",
+  "repository": "D:/BAXY/source",
+  "branch": "codex/baxy-rebuild-v3",
+  "core": {
+    "path": "src/Baxy.Core/bin/Debug/net10.0-windows10.0.19041.0/baxy-core.exe",
+    "sha256": "9a3867f1ebfd3d835c20c6b357c97241fcd74a95f10aed9959d1e93a7ade8d78"
+  },
+  "aud008Aud027SpotifyExact": {
+    "query": "Beat It",
+    "provider": "spotify",
+    "preexistingLauncher": {
+      "processName": "SpotifyLauncher",
+      "processId": 24092,
+      "preserved": true
+    },
+    "initialAudio": {
+      "volume": "3%",
+      "muted": false
+    },
+    "cycles": [
+      {
+        "cycle": 1,
+        "rawReportSha256": "d23e25b072d2f6705f7b036f99df587df1c785dc5e78cb31512e90b4f38ff9e9",
+        "exactStatus": "completed",
+        "exactVerified": true,
+        "exactElapsedSeconds": 23.9219,
+        "exactAuthority": "spotify_windows_uia_postread",
+        "terminalCases": 6,
+        "verifiedCases": 5,
+        "pausedAtReportEnd": true,
+        "errors": [
+          "media.control: smtc_postcondition_not_verified"
+        ],
+        "observation": "The first pause invocation reported an ambiguous postcondition, the immediately following media.status read verified paused, and the idempotent cleanup pause completed and verified."
+      },
+      {
+        "cycle": 2,
+        "rawReportSha256": "3abbdf5e21484a6206858ae60fabd5015646c826badf6e3dda1a375819ec48a3",
+        "exactStatus": "completed",
+        "exactVerified": true,
+        "exactElapsedSeconds": 40.813976,
+        "exactAuthority": "spotify_windows_uia_postread",
+        "terminalCases": 5,
+        "verifiedCases": 5,
+        "pausedAtReportEnd": true,
+        "errors": []
+      },
+      {
+        "cycle": 3,
+        "rawReportSha256": "ce43dead11640606e960eb490ae95709c4eec93acd7cadfc07a627bd4ae22a9a",
+        "exactStatus": "completed",
+        "exactVerified": true,
+        "exactElapsedSeconds": 32.420939,
+        "exactAuthority": "spotify_windows_uia_postread",
+        "terminalCases": 5,
+        "verifiedCases": 5,
+        "pausedAtReportEnd": true,
+        "errors": []
+      },
+      {
+        "cycle": 4,
+        "rawReportSha256": "02a38a869d4ea2a1ffbcddf8b04122e45a0eec24b98bda436c8587c976be244f",
+        "exactStatus": "completed",
+        "exactVerified": true,
+        "exactElapsedSeconds": 42.387194,
+        "exactAuthority": "spotify_windows_uia_postread",
+        "terminalCases": 5,
+        "verifiedCases": 5,
+        "pausedAtReportEnd": true,
+        "errors": []
+      },
+      {
+        "cycle": 5,
+        "rawReportSha256": "2258e98a90873db4ed46029ab692bdda35a3ebd447d81e72d27e0443486edf2b",
+        "exactStatus": "completed",
+        "exactVerified": true,
+        "exactElapsedSeconds": 19.379808,
+        "exactAuthority": "spotify_windows_uia_postread",
+        "terminalCases": 5,
+        "verifiedCases": 5,
+        "pausedAtReportEnd": true,
+        "errors": []
+      }
+    ],
+    "summary": {
+      "exactSelectionsVerified": 5,
+      "exactSelectionsAttempted": 5,
+      "fullyVerifiedChains": 4,
+      "chainsAttempted": 5,
+      "minimumExactElapsedSeconds": 19.379808,
+      "maximumExactElapsedSeconds": 42.387194
+    },
+    "finalState": {
+      "spotifyProcessesCreatedByProbeRemaining": 0,
+      "preexistingLauncherPreserved": true,
+      "volume": "3%",
+      "muted": false
+    }
+  },
+  "aud013Aud014Aud026Browser": {
+    "genericBrowserChain": {
+      "verified": 8,
+      "total": 8,
+      "lastTabCloseAuthority": "target_absent"
+    },
+    "namedOperaChain": {
+      "verified": 8,
+      "total": 8,
+      "namedNavigationAndImmediateReadUsedSameTarget": true,
+      "observedTitle": "Example Domain"
+    },
+    "streamingImmediateReadChain": {
+      "verified": 4,
+      "total": 4,
+      "arbitraryDelayInserted": false,
+      "navigationAndReadUsedSameTarget": true,
+      "navigationElapsedSeconds": 3.355,
+      "readElapsedSeconds": 2.449
+    },
+    "cleanup": {
+      "probeBrowserProcessesRemaining": 0,
+      "probeBrowserDataRootsRemaining": 0
+    }
+  },
+  "aud018HistoricalVoiceSample": {
+    "audioSha256": "032214cfb8c8c49e7a988186e8f7e2e19d0dba9dc79d02903d56928932f48b3c",
+    "transcriptSha256": "efdf73d90cdf56b742a3d04cdfb8cb29d60208f92ef51c57cc88c0c9fa570f35",
+    "microphoneOpened": false,
+    "nonemptyTranscript": true,
+    "transcriptCharacterCount": 12,
+    "transcriptTokenCount": 2,
+    "containsSpotify": true,
+    "transcriptPersisted": false
+  },
+  "aud017WakeWord": {
+    "status": "blocked_external_asset",
+    "reason": "No redistributable BAXY wake-word ONNX model and no hash-bound acoustic FAR/FRR calibration report exist in the repository, D:/BAXYRuntime, or the packaged runtime.",
+    "failClosedBehaviorPreserved": true,
+    "directMicrophoneModeOperational": true,
+    "requiredResolution": "Supply an approved wake-word ONNX model and its acoustic calibration report, then install with scripts/install_baxy_wake_model.ps1 and rerun the voice system gate."
+  },
+  "automatedValidation": {
+    "providersWindowsTests": {
+      "passed": 392,
+      "failed": 0,
+      "skipped": 4
+    },
+    "coreProcessClientTimeoutTests": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "voiceFocusedPytest": {
+      "passed": 38,
+      "failed": 0
+    },
+    "pythonCompile": "passed"
+  }
+}

@@ -1,0 +1,1431 @@
+{
+  "answered_by_a_constant": {
+    "baseline": 20,
+    "model_answers": 0
+  },
+  "by_family_p50_s": {
+    "farewell": {
+      "baseline": 0.0871,
+      "model_answers": 0.0894
+    },
+    "gratitude": {
+      "baseline": 0.2018,
+      "model_answers": 0.2094
+    },
+    "greeting": {
+      "baseline": 0.1678,
+      "model_answers": 0.173
+    },
+    "knowledge": {
+      "baseline": 1.9314,
+      "model_answers": 1.9803
+    }
+  },
+  "effects_executed": 0,
+  "gate": "no visible reply may be produced by a constant, and the greeting, gratitude and knowledge controls must keep answering exactly as they did. Latency is reported but is not the gate.",
+  "measured_at_utc": "2026-07-31T19:55:47.562069+00:00",
+  "mechanism": "chat() replaced any reply whose normalised text equalled the person's own with a fixed string. That guard exists to catch a model parroting the question, but for a farewell the mirror IS the answer, so it discarded `¡Nos vemos!`, `¡Chau!`, `Bye!` and `Good night!`. `¡Adiós!` survived only by the accident of its accent. The candidate lets a turn classified as a social act mirror; every other conversation kind keeps the guard unchanged.",
+  "method": "the real sidecar per variant, whole sessions alternated in ABBA order, the same corpus twice per session. The baseline arm restores the unconditional guard inside the same product code.",
+  "passed": true,
+  "per_case": {
+    "bye-en-01": {
+      "baseline": {
+        "answered_by_a_constant": 4,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1033,
+        "replies": [
+          "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?"
+        ],
+        "turns": 4
+      },
+      "family": "farewell",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1041,
+        "replies": [
+          "Bye!"
+        ],
+        "turns": 4
+      },
+      "text": "bye"
+    },
+    "bye-en-02": {
+      "baseline": {
+        "answered_by_a_constant": 4,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.0809,
+        "replies": [
+          "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?"
+        ],
+        "turns": 4
+      },
+      "family": "farewell",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.0812,
+        "replies": [
+          "Good night!"
+        ],
+        "turns": 4
+      },
+      "text": "good night"
+    },
+    "bye-en-03": {
+      "baseline": {
+        "answered_by_a_constant": 4,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.0903,
+        "replies": [
+          "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?"
+        ],
+        "turns": 4
+      },
+      "family": "farewell",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.09,
+        "replies": [
+          "See you later!"
+        ],
+        "turns": 4
+      },
+      "text": "see you later"
+    },
+    "bye-es-01": {
+      "baseline": {
+        "answered_by_a_constant": 4,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1091,
+        "replies": [
+          "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?"
+        ],
+        "turns": 4
+      },
+      "family": "farewell",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1181,
+        "replies": [
+          "Nos vemos.",
+          "¡Nos vemos!"
+        ],
+        "turns": 4
+      },
+      "text": "nos vemos"
+    },
+    "bye-es-02": {
+      "baseline": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1453,
+        "replies": [
+          "¡Chau! ¡Que tengas un buen día!"
+        ],
+        "turns": 4
+      },
+      "family": "farewell",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1506,
+        "replies": [
+          "¡Chau! ¡Que tengas un buen día!"
+        ],
+        "turns": 4
+      },
+      "text": "chau"
+    },
+    "bye-es-03": {
+      "baseline": {
+        "answered_by_a_constant": 4,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.0809,
+        "replies": [
+          "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?"
+        ],
+        "turns": 4
+      },
+      "family": "farewell",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.0839,
+        "replies": [
+          "Hasta luego."
+        ],
+        "turns": 4
+      },
+      "text": "hasta luego"
+    },
+    "bye-es-04": {
+      "baseline": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.0798,
+        "replies": [
+          "Adiós."
+        ],
+        "turns": 4
+      },
+      "family": "farewell",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.0818,
+        "replies": [
+          "Adiós."
+        ],
+        "turns": 4
+      },
+      "text": "adios"
+    },
+    "hi-01": {
+      "baseline": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.175,
+        "replies": [
+          "¡Hola! ¿En qué puedo ayudarte hoy?"
+        ],
+        "turns": 4
+      },
+      "family": "greeting",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1767,
+        "replies": [
+          "¡Hola! ¿En qué puedo ayudarte hoy?"
+        ],
+        "turns": 4
+      },
+      "text": "hola"
+    },
+    "hi-02": {
+      "baseline": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1631,
+        "replies": [
+          "Hi! How can I help you today?"
+        ],
+        "turns": 4
+      },
+      "family": "greeting",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1626,
+        "replies": [
+          "Hi! How can I help you today?"
+        ],
+        "turns": 4
+      },
+      "text": "hi"
+    },
+    "know-01": {
+      "baseline": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 1.9314,
+        "replies": [
+          "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh.\n\nCuando la luz del sol llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan la luz en diferentes longitudes de onda. La luz azul y violeta, que tienen longitudes de onda más cortas, son dispersadas mucho más eficazmente por las moléculas de la atmósfera que las longitudes de onda más largas (como el rojo o el naranja).\n\nComo resultado, la luz azul se dispersa por todo el cielo, haciendo que veamos el cielo de ese color.",
+          "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible al azul que al violeta, percibimos el cielo como azul."
+        ],
+        "turns": 4
+      },
+      "family": "knowledge",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 1.9803,
+        "replies": [
+          "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh.\n\nCuando la luz del sol llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan la luz en diferentes longitudes de onda. La luz azul y violeta, que tienen longitudes de onda más cortas, son dispersadas mucho más eficazmente por las moléculas de la atmósfera que las longitudes de onda más largas (como el rojo o el naranja).\n\nComo resultado, la luz azul se dispersa por todo el cielo, haciendo que veamos el cielo de ese color.",
+          "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible al azul que al violeta, percibimos el cielo como azul."
+        ],
+        "turns": 4
+      },
+      "text": "por que el cielo es azul"
+    },
+    "ty-01": {
+      "baseline": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.1827,
+        "replies": [
+          "De nada. ¿En qué más te puedo ayudar?"
+        ],
+        "turns": 4
+      },
+      "family": "gratitude",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.181,
+        "replies": [
+          "De nada. ¿En qué más te puedo ayudar?"
+        ],
+        "turns": 4
+      },
+      "text": "gracias"
+    },
+    "ty-02": {
+      "baseline": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.2214,
+        "replies": [
+          "You're welcome! Is there anything else I can help you with today?"
+        ],
+        "turns": 4
+      },
+      "family": "gratitude",
+      "model_answers": {
+        "answered_by_a_constant": 0,
+        "kinds": [
+          "conversation"
+        ],
+        "p50_s": 0.2272,
+        "replies": [
+          "You're welcome! Is there anything else I can help you with today?"
+        ],
+        "turns": 4
+      },
+      "text": "thank you"
+    }
+  },
+  "question": "does the model get to answer a farewell, or does a constant answer for it?",
+  "runtime": {
+    "gguf": {
+      "bytes": 2620370976,
+      "name": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "35e3a73d2f6ef88dad7bd3b17d29d3113f132deb1f70c2cdc0b6065dc0a126d6",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "samples": [
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-es-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.079941,
+      "text": "nos vemos",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "¡Chau! ¡Que tengas un buen día!",
+      "seconds": 0.145655,
+      "text": "chau",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-es-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.082474,
+      "text": "hasta luego",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-04",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Adiós.",
+      "seconds": 0.081163,
+      "text": "adios",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.102907,
+      "text": "bye",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.081522,
+      "text": "good night",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.092464,
+      "text": "see you later",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-01",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.176571,
+      "text": "hola",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-02",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Hi! How can I help you today?",
+      "seconds": 0.163546,
+      "text": "hi",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-01",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.182353,
+      "text": "gracias",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-02",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "You're welcome! Is there anything else I can help you with today?",
+      "seconds": 0.221979,
+      "text": "thank you",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "know-01",
+      "family": "knowledge",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh.\n\nCuando la luz del sol llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan la luz en diferentes longitudes de onda. La luz azul y violeta, que tienen longitudes de onda más cortas, son dispersadas mucho más eficazmente por las moléculas de la atmósfera que las longitudes de onda más largas (como el rojo o el naranja).\n\nComo resultado, la luz azul se dispersa por todo el cielo, haciendo que veamos el cielo de ese color.",
+      "seconds": 2.395242,
+      "text": "por que el cielo es azul",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-es-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.146534,
+      "text": "nos vemos",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Chau! ¡Que tengas un buen día!",
+      "seconds": 0.147216,
+      "text": "chau",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-es-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.079358,
+      "text": "hasta luego",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-04",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Adiós.",
+      "seconds": 0.078938,
+      "text": "adios",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.105001,
+      "text": "bye",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.081073,
+      "text": "good night",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.091953,
+      "text": "see you later",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-01",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.175441,
+      "text": "hola",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-02",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Hi! How can I help you today?",
+      "seconds": 0.166037,
+      "text": "hi",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-01",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.183982,
+      "text": "gracias",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-02",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "You're welcome! Is there anything else I can help you with today?",
+      "seconds": 0.219682,
+      "text": "thank you",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "know-01",
+      "family": "knowledge",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible al azul que al violeta, percibimos el cielo como azul.",
+      "seconds": 1.536974,
+      "text": "por que el cielo es azul",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Nos vemos.",
+      "seconds": 0.078022,
+      "text": "nos vemos",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "¡Chau! ¡Que tengas un buen día!",
+      "seconds": 0.15232,
+      "text": "chau",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Hasta luego.",
+      "seconds": 0.082837,
+      "text": "hasta luego",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-04",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Adiós.",
+      "seconds": 0.078271,
+      "text": "adios",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Bye!",
+      "seconds": 0.101122,
+      "text": "bye",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Good night!",
+      "seconds": 0.078624,
+      "text": "good night",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "See you later!",
+      "seconds": 0.089672,
+      "text": "see you later",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-01",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.171004,
+      "text": "hola",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-02",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Hi! How can I help you today?",
+      "seconds": 0.163454,
+      "text": "hi",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-01",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.180119,
+      "text": "gracias",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-02",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "You're welcome! Is there anything else I can help you with today?",
+      "seconds": 0.218993,
+      "text": "thank you",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "know-01",
+      "family": "knowledge",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh.\n\nCuando la luz del sol llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan la luz en diferentes longitudes de onda. La luz azul y violeta, que tienen longitudes de onda más cortas, son dispersadas mucho más eficazmente por las moléculas de la atmósfera que las longitudes de onda más largas (como el rojo o el naranja).\n\nComo resultado, la luz azul se dispersa por todo el cielo, haciendo que veamos el cielo de ese color.",
+      "seconds": 2.345647,
+      "text": "por que el cielo es azul",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Nos vemos!",
+      "seconds": 0.157224,
+      "text": "nos vemos",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Chau! ¡Que tengas un buen día!",
+      "seconds": 0.160582,
+      "text": "chau",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Hasta luego.",
+      "seconds": 0.088146,
+      "text": "hasta luego",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-04",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Adiós.",
+      "seconds": 0.089078,
+      "text": "adios",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Bye!",
+      "seconds": 0.114859,
+      "text": "bye",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Good night!",
+      "seconds": 0.087317,
+      "text": "good night",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "See you later!",
+      "seconds": 0.097767,
+      "text": "see you later",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-01",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.192044,
+      "text": "hola",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-02",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Hi! How can I help you today?",
+      "seconds": 0.177404,
+      "text": "hi",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-01",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.199765,
+      "text": "gracias",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-02",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "You're welcome! Is there anything else I can help you with today?",
+      "seconds": 0.248688,
+      "text": "thank you",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "know-01",
+      "family": "knowledge",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible al azul que al violeta, percibimos el cielo como azul.",
+      "seconds": 1.614904,
+      "text": "por que el cielo es azul",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Nos vemos.",
+      "seconds": 0.088749,
+      "text": "nos vemos",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "¡Chau! ¡Que tengas un buen día!",
+      "seconds": 0.148817,
+      "text": "chau",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Hasta luego.",
+      "seconds": 0.084935,
+      "text": "hasta luego",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-04",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Adiós.",
+      "seconds": 0.082229,
+      "text": "adios",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Bye!",
+      "seconds": 0.105079,
+      "text": "bye",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Good night!",
+      "seconds": 0.080386,
+      "text": "good night",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "See you later!",
+      "seconds": 0.090215,
+      "text": "see you later",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-01",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.178327,
+      "text": "hola",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-02",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Hi! How can I help you today?",
+      "seconds": 0.161647,
+      "text": "hi",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-01",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.181453,
+      "text": "gracias",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-02",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "You're welcome! Is there anything else I can help you with today?",
+      "seconds": 0.230436,
+      "text": "thank you",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "know-01",
+      "family": "knowledge",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh.\n\nCuando la luz del sol llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan la luz en diferentes longitudes de onda. La luz azul y violeta, que tienen longitudes de onda más cortas, son dispersadas mucho más eficazmente por las moléculas de la atmósfera que las longitudes de onda más largas (como el rojo o el naranja).\n\nComo resultado, la luz azul se dispersa por todo el cielo, haciendo que veamos el cielo de ese color.",
+      "seconds": 2.407578,
+      "text": "por que el cielo es azul",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Nos vemos!",
+      "seconds": 0.147439,
+      "text": "nos vemos",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Chau! ¡Que tengas un buen día!",
+      "seconds": 0.1485,
+      "text": "chau",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Hasta luego.",
+      "seconds": 0.079354,
+      "text": "hasta luego",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-04",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Adiós.",
+      "seconds": 0.081372,
+      "text": "adios",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Bye!",
+      "seconds": 0.103071,
+      "text": "bye",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Good night!",
+      "seconds": 0.081926,
+      "text": "good night",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-en-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "See you later!",
+      "seconds": 0.089831,
+      "text": "see you later",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-01",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.175081,
+      "text": "hola",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-02",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Hi! How can I help you today?",
+      "seconds": 0.158772,
+      "text": "hi",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-01",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.180533,
+      "text": "gracias",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-02",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "You're welcome! Is there anything else I can help you with today?",
+      "seconds": 0.224055,
+      "text": "thank you",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "know-01",
+      "family": "knowledge",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible al azul que al violeta, percibimos el cielo como azul.",
+      "seconds": 1.584925,
+      "text": "por que el cielo es azul",
+      "variant": "model_answers"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-es-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.080873,
+      "text": "nos vemos",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "¡Chau! ¡Que tengas un buen día!",
+      "seconds": 0.144921,
+      "text": "chau",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-es-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.086271,
+      "text": "hasta luego",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-04",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Adiós.",
+      "seconds": 0.079812,
+      "text": "adios",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.103504,
+      "text": "bye",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.08064,
+      "text": "good night",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.088689,
+      "text": "see you later",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-01",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.174638,
+      "text": "hola",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-02",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "Hi! How can I help you today?",
+      "seconds": 0.162717,
+      "text": "hi",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-01",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.183132,
+      "text": "gracias",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-02",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "You're welcome! Is there anything else I can help you with today?",
+      "seconds": 0.223398,
+      "text": "thank you",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "know-01",
+      "family": "knowledge",
+      "kind": "conversation",
+      "repeat": 0,
+      "reply_text": "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh.\n\nCuando la luz del sol llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan la luz en diferentes longitudes de onda. La luz azul y violeta, que tienen longitudes de onda más cortas, son dispersadas mucho más eficazmente por las moléculas de la atmósfera que las longitudes de onda más largas (como el rojo o el naranja).\n\nComo resultado, la luz azul se dispersa por todo el cielo, haciendo que veamos el cielo de ese color.",
+      "seconds": 2.325838,
+      "text": "por que el cielo es azul",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-es-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.137414,
+      "text": "nos vemos",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Chau! ¡Que tengas un buen día!",
+      "seconds": 0.144519,
+      "text": "chau",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-es-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.079044,
+      "text": "hasta luego",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "bye-es-04",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Adiós.",
+      "seconds": 0.079805,
+      "text": "adios",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-01",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.103048,
+      "text": "bye",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-02",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.078333,
+      "text": "good night",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": true,
+      "case_id": "bye-en-03",
+      "family": "farewell",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 0.087898,
+      "text": "see you later",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-01",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.169476,
+      "text": "hola",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "hi-02",
+      "family": "greeting",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "Hi! How can I help you today?",
+      "seconds": 0.158381,
+      "text": "hi",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-01",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.179637,
+      "text": "gracias",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "ty-02",
+      "family": "gratitude",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "You're welcome! Is there anything else I can help you with today?",
+      "seconds": 0.220839,
+      "text": "thank you",
+      "variant": "baseline"
+    },
+    {
+      "answered_by_a_constant": false,
+      "case_id": "know-01",
+      "family": "knowledge",
+      "kind": "conversation",
+      "repeat": 1,
+      "reply_text": "El cielo es azul debido a un fenómeno llamado dispersión de Rayleigh. La luz del sol, que parece blanca, está compuesta por diferentes longitudes de onda de colores. Cuando esta luz llega a la atmósfera terrestre, choca con las moléculas de gas (principalmente nitrógeno y oxígeno). Estas moléculas dispersan las longitudes de onda más cortas de la luz (como el azul y el violeta) mucho más que las longitudes de onda más largas (como el rojo y el naranja). Como el ojo humano es más sensible al azul que al violeta, percibimos el cielo como azul.",
+      "seconds": 1.509388,
+      "text": "por que el cielo es azul",
+      "variant": "baseline"
+    }
+  ],
+  "schema": "baxy.farewell-reply.v1",
+  "turns_per_arm": 48
+}

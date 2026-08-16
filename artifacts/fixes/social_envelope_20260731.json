@@ -1,0 +1,4468 @@
+{
+  "baseline": {
+    "max_s": 9.6071,
+    "mean_s": 2.4711,
+    "min_s": 0.9972,
+    "n": 80,
+    "p50_s": 1.6898,
+    "stdev_s": 2.024
+  },
+  "by_family": {
+    "adversarial": {
+      "cases": [
+        "adv-01",
+        "adv-02",
+        "adv-03",
+        "adv-04"
+      ],
+      "p50_s": {
+        "baseline": 1.5743,
+        "social_envelope": 1.6822
+      },
+      "policy_calls": {
+        "baseline": 16,
+        "social_envelope": 16
+      }
+    },
+    "frozen": {
+      "cases": [
+        "conv-01",
+        "guard-01",
+        "guard-04",
+        "plan-01",
+        "tail-01"
+      ],
+      "p50_s": {
+        "baseline": 1.7771,
+        "social_envelope": 1.8835
+      },
+      "policy_calls": {
+        "baseline": 20,
+        "social_envelope": 20
+      }
+    },
+    "social-prefix": {
+      "cases": [
+        "prefix-01",
+        "prefix-02",
+        "prefix-03",
+        "prefix-04"
+      ],
+      "p50_s": {
+        "baseline": 2.7044,
+        "social_envelope": 0.0009
+      },
+      "policy_calls": {
+        "baseline": 32,
+        "social_envelope": 0
+      }
+    },
+    "whole-social": {
+      "cases": [
+        "social-01",
+        "social-02",
+        "social-03",
+        "social-04",
+        "social-05",
+        "social-06",
+        "social-07"
+      ],
+      "p50_s": {
+        "baseline": 1.6582,
+        "social_envelope": 0.1735
+      },
+      "policy_calls": {
+        "baseline": 28,
+        "social_envelope": 0
+      }
+    }
+  },
+  "delta_p50_s": -1.0007,
+  "effects_executed": 0,
+  "gate": "the candidate may not introduce a decision the baseline never produced, on any case of the frozen corpus. A variant that invents one decision is rejected however much it saves. Cases that are nondeterministic inside a single arm are reported rather than hidden, because a set comparison alone would overstate the gate.",
+  "measured_at_utc": "2026-07-31T17:28:02.602653+00:00",
+  "method": "the real sidecar per variant, whole sessions alternated in ABBA order, the same corpus twice per session. The baseline arm restores the gratitude-only social pattern, the narrower request prefix and the narrower social-clause gate inside the same product code, so the two arms differ only in that one behaviour. P calls are attributed to a case by request identity, never by proximity.",
+  "no_new_decisions": false,
+  "nondeterministic_cases": [
+    "prefix-01",
+    "prefix-02",
+    "guard-01"
+  ],
+  "per_case": {
+    "adv-01": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "adversarial",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "escribe hola"
+    },
+    "adv-02": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "adversarial",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "hola, quien sos?"
+    },
+    "adv-03": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "adversarial",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "gracias capo"
+    },
+    "adv-04": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "adversarial",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "mandale hola a lucas por whatsapp"
+    },
+    "conv-01": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "frozen",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "contame un chiste corto"
+    },
+    "guard-01": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": false,
+      "family": "frozen",
+      "introduced_by_candidate": [
+        {
+          "effectOperations": [
+            "audio.mute"
+          ],
+          "kind": "action",
+          "operation": "audio.mute",
+          "question": ""
+        },
+        {
+          "effectOperations": [],
+          "kind": "clarify",
+          "operation": null,
+          "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+        }
+      ],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": false,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [
+            "audio.mute"
+          ],
+          "kind": "action",
+          "operation": "audio.mute",
+          "question": ""
+        },
+        {
+          "effectOperations": [],
+          "kind": "clarify",
+          "operation": null,
+          "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+        },
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "necesito dejar el equipo en silencio ya mismo"
+    },
+    "guard-04": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "frozen",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "podrias dejarme la pantalla lista para trabajar"
+    },
+    "plan-01": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [
+            "audio.volume.adjust"
+          ],
+          "kind": "plan",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "frozen",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [
+            "audio.volume.adjust"
+          ],
+          "kind": "plan",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "sube el volumen"
+    },
+    "prefix-01": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [
+            "system.time"
+          ],
+          "kind": "action",
+          "operation": "system.time",
+          "question": ""
+        },
+        {
+          "effectOperations": [],
+          "kind": "clarify",
+          "operation": null,
+          "question": "¿Puedes explicar con un poco más de detalle qué quieres?"
+        }
+      ],
+      "deterministic_in_both": false,
+      "family": "social-prefix",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 8,
+        "social_envelope": 0
+      },
+      "same_outcome_set": false,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [
+            "system.time"
+          ],
+          "kind": "action",
+          "operation": "system.time",
+          "question": ""
+        }
+      ],
+      "text": "hola, dime que hora es"
+    },
+    "prefix-02": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [
+            "system.time"
+          ],
+          "kind": "action",
+          "operation": "system.time",
+          "question": ""
+        },
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": false,
+      "family": "social-prefix",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": false,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [
+            "system.time"
+          ],
+          "kind": "action",
+          "operation": "system.time",
+          "question": ""
+        }
+      ],
+      "text": "hello, what time is it?"
+    },
+    "prefix-03": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "clarify",
+          "operation": null,
+          "question": "¿Puedes explicar con un poco más de detalle qué quieres?"
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "social-prefix",
+      "introduced_by_candidate": [
+        {
+          "effectOperations": [
+            "system.status"
+          ],
+          "kind": "action",
+          "operation": "system.status",
+          "question": ""
+        }
+      ],
+      "policy_calls": {
+        "baseline": 16,
+        "social_envelope": 0
+      },
+      "same_outcome_set": false,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [
+            "system.status"
+          ],
+          "kind": "action",
+          "operation": "system.status",
+          "question": ""
+        }
+      ],
+      "text": "buenos dias, cuanta bateria queda"
+    },
+    "prefix-04": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [
+            "audio.volume.adjust"
+          ],
+          "kind": "plan",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "social-prefix",
+      "introduced_by_candidate": [
+        {
+          "effectOperations": [
+            "audio.volume"
+          ],
+          "kind": "action",
+          "operation": "audio.volume",
+          "question": ""
+        }
+      ],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": false,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [
+            "audio.volume"
+          ],
+          "kind": "action",
+          "operation": "audio.volume",
+          "question": ""
+        }
+      ],
+      "text": "hola, pon el volumen al 30 por ciento"
+    },
+    "social-01": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "whole-social",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "hola"
+    },
+    "social-02": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "whole-social",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "buenas tardes"
+    },
+    "social-03": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "whole-social",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "hola, todo bien?"
+    },
+    "social-04": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "whole-social",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "hi, how are you?"
+    },
+    "social-05": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "whole-social",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "perfecto gracias"
+    },
+    "social-06": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "whole-social",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "nos vemos"
+    },
+    "social-07": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "whole-social",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 0
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "hello there"
+    },
+    "tail-01": {
+      "baseline_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "deterministic_in_both": true,
+      "family": "frozen",
+      "introduced_by_candidate": [],
+      "policy_calls": {
+        "baseline": 4,
+        "social_envelope": 4
+      },
+      "same_outcome_set": true,
+      "social_envelope_outcomes": [
+        {
+          "effectOperations": [],
+          "kind": "conversation",
+          "operation": null,
+          "question": ""
+        }
+      ],
+      "text": "por que mi gpu no se usa"
+    }
+  },
+  "policy_baseline": {
+    "ms_per_token_p50": 16.55,
+    "p_calls": 98,
+    "predicted_ms_mean": 1269.1,
+    "predicted_ms_p50": 1224.6,
+    "predicted_ms_total": 124369.2,
+    "predicted_n_mean": 81.27,
+    "predicted_n_p50": 61.0,
+    "prompt_ms_p50": 288.8,
+    "prompt_ms_total": 24263.9
+  },
+  "policy_calls": [
+    {
+      "cache_n": 0,
+      "predicted_ms": 1301.626,
+      "predicted_n": 60,
+      "prompt_ms": 561.479,
+      "prompt_n": 1215,
+      "turn_id": "warm",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1194.462,
+      "predicted_n": 59,
+      "prompt_ms": 374.912,
+      "prompt_n": 659,
+      "turn_id": "baseline-0-social-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1261.182,
+      "predicted_n": 61,
+      "prompt_ms": 352.138,
+      "prompt_n": 660,
+      "turn_id": "baseline-0-social-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1284.167,
+      "predicted_n": 57,
+      "prompt_ms": 359.796,
+      "prompt_n": 731,
+      "turn_id": "baseline-0-social-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1276.911,
+      "predicted_n": 57,
+      "prompt_ms": 363.126,
+      "prompt_n": 664,
+      "turn_id": "baseline-0-social-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1172.654,
+      "predicted_n": 52,
+      "prompt_ms": 362.21,
+      "prompt_n": 661,
+      "turn_id": "baseline-0-social-05",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 2360.746,
+      "predicted_n": 54,
+      "prompt_ms": 365.864,
+      "prompt_n": 660,
+      "turn_id": "baseline-0-social-06",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1770.263,
+      "predicted_n": 62,
+      "prompt_ms": 462.824,
+      "prompt_n": 660,
+      "turn_id": "baseline-0-social-07",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1278.67,
+      "predicted_n": 65,
+      "prompt_ms": 372.762,
+      "prompt_n": 783,
+      "turn_id": "baseline-0-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1334.635,
+      "predicted_n": 64,
+      "prompt_ms": 241.23,
+      "prompt_n": 505,
+      "turn_id": "baseline-0-prefix-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 2406.654,
+      "predicted_n": 160,
+      "prompt_ms": 346.613,
+      "prompt_n": 592,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1573.826,
+      "predicted_n": 160,
+      "prompt_ms": 60.676,
+      "prompt_n": 1,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1602.088,
+      "predicted_n": 160,
+      "prompt_ms": 61.034,
+      "prompt_n": 1,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1610.608,
+      "predicted_n": 160,
+      "prompt_ms": 60.156,
+      "prompt_n": 1,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 2122.897,
+      "predicted_n": 61,
+      "prompt_ms": 282.989,
+      "prompt_n": 640,
+      "turn_id": "baseline-0-prefix-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 978.954,
+      "predicted_n": 51,
+      "prompt_ms": 358.64,
+      "prompt_n": 590,
+      "turn_id": "baseline-0-adv-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1412.973,
+      "predicted_n": 66,
+      "prompt_ms": 355.462,
+      "prompt_n": 653,
+      "turn_id": "baseline-0-adv-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1105.686,
+      "predicted_n": 51,
+      "prompt_ms": 355.295,
+      "prompt_n": 719,
+      "turn_id": "baseline-0-adv-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1949.253,
+      "predicted_n": 72,
+      "prompt_ms": 375.127,
+      "prompt_n": 730,
+      "turn_id": "baseline-0-adv-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1432.123,
+      "predicted_n": 72,
+      "prompt_ms": 392.067,
+      "prompt_n": 638,
+      "turn_id": "baseline-0-conv-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1971.147,
+      "predicted_n": 59,
+      "prompt_ms": 315.248,
+      "prompt_n": 606,
+      "turn_id": "baseline-0-guard-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1856.246,
+      "predicted_n": 59,
+      "prompt_ms": 347.063,
+      "prompt_n": 585,
+      "turn_id": "baseline-0-guard-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1898.025,
+      "predicted_n": 61,
+      "prompt_ms": 338.402,
+      "prompt_n": 527,
+      "turn_id": "baseline-0-plan-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1354.661,
+      "predicted_n": 70,
+      "prompt_ms": 352.863,
+      "prompt_n": 625,
+      "turn_id": "baseline-0-tail-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 736.651,
+      "predicted_n": 59,
+      "prompt_ms": 261.452,
+      "prompt_n": 614,
+      "turn_id": "baseline-1-social-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 857.723,
+      "predicted_n": 62,
+      "prompt_ms": 302.565,
+      "prompt_n": 632,
+      "turn_id": "baseline-1-social-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 665.255,
+      "predicted_n": 54,
+      "prompt_ms": 286.488,
+      "prompt_n": 683,
+      "turn_id": "baseline-1-social-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 680.295,
+      "predicted_n": 55,
+      "prompt_ms": 284.062,
+      "prompt_n": 694,
+      "turn_id": "baseline-1-social-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 713.379,
+      "predicted_n": 53,
+      "prompt_ms": 303.081,
+      "prompt_n": 666,
+      "turn_id": "baseline-1-social-05",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1207.557,
+      "predicted_n": 51,
+      "prompt_ms": 268.675,
+      "prompt_n": 648,
+      "turn_id": "baseline-1-social-06",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 746.059,
+      "predicted_n": 58,
+      "prompt_ms": 300.382,
+      "prompt_n": 592,
+      "turn_id": "baseline-1-social-07",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1643.448,
+      "predicted_n": 160,
+      "prompt_ms": 314.499,
+      "prompt_n": 628,
+      "turn_id": "baseline-1-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1181,
+      "predicted_ms": 1672.697,
+      "predicted_n": 160,
+      "prompt_ms": 59.151,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1181,
+      "predicted_ms": 1662.88,
+      "predicted_n": 160,
+      "prompt_ms": 68.951,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1181,
+      "predicted_ms": 1622.115,
+      "predicted_n": 160,
+      "prompt_ms": 64.444,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 897.377,
+      "predicted_n": 64,
+      "prompt_ms": 245.273,
+      "prompt_n": 505,
+      "turn_id": "baseline-1-prefix-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1592.864,
+      "predicted_n": 160,
+      "prompt_ms": 216.774,
+      "prompt_n": 592,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1588.687,
+      "predicted_n": 160,
+      "prompt_ms": 59.44,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1839.238,
+      "predicted_n": 160,
+      "prompt_ms": 87.33,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1653.975,
+      "predicted_n": 160,
+      "prompt_ms": 71.481,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1189,
+      "predicted_ms": 1063.51,
+      "predicted_n": 61,
+      "prompt_ms": 81.082,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-prefix-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1139,
+      "predicted_ms": 674.253,
+      "predicted_n": 51,
+      "prompt_ms": 134.493,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-adv-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1202,
+      "predicted_ms": 764.784,
+      "predicted_n": 53,
+      "prompt_ms": 100.474,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-adv-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1268,
+      "predicted_ms": 620.233,
+      "predicted_n": 51,
+      "prompt_ms": 96.482,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-adv-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1279,
+      "predicted_ms": 869.254,
+      "predicted_n": 72,
+      "prompt_ms": 92.972,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-adv-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1187,
+      "predicted_ms": 885.911,
+      "predicted_n": 66,
+      "prompt_ms": 119.122,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-conv-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1155,
+      "predicted_ms": 984.725,
+      "predicted_n": 59,
+      "prompt_ms": 74.518,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-guard-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1134,
+      "predicted_ms": 1054.94,
+      "predicted_n": 59,
+      "prompt_ms": 76.666,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-guard-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1076,
+      "predicted_ms": 1004.851,
+      "predicted_n": 61,
+      "prompt_ms": 82.633,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-plan-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1174,
+      "predicted_ms": 935.275,
+      "predicted_n": 73,
+      "prompt_ms": 135.87,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-tail-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 0,
+      "predicted_ms": 1196.17,
+      "predicted_n": 61,
+      "prompt_ms": 577.744,
+      "prompt_n": 1215,
+      "turn_id": "warm",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 972.804,
+      "predicted_n": 51,
+      "prompt_ms": 375.805,
+      "prompt_n": 769,
+      "turn_id": "social_envelope-0-adv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1168.883,
+      "predicted_n": 59,
+      "prompt_ms": 381.044,
+      "prompt_n": 663,
+      "turn_id": "social_envelope-0-adv-02",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1215.689,
+      "predicted_n": 62,
+      "prompt_ms": 376.269,
+      "prompt_n": 661,
+      "turn_id": "social_envelope-0-adv-03",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1861.387,
+      "predicted_n": 71,
+      "prompt_ms": 371.835,
+      "prompt_n": 623,
+      "turn_id": "social_envelope-0-adv-04",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1732.437,
+      "predicted_n": 59,
+      "prompt_ms": 437.648,
+      "prompt_n": 681,
+      "turn_id": "social_envelope-0-conv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 2528.412,
+      "predicted_n": 59,
+      "prompt_ms": 415.823,
+      "prompt_n": 821,
+      "turn_id": "social_envelope-0-guard-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1936.758,
+      "predicted_n": 59,
+      "prompt_ms": 347.584,
+      "prompt_n": 585,
+      "turn_id": "social_envelope-0-guard-04",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1765.536,
+      "predicted_n": 61,
+      "prompt_ms": 365.53,
+      "prompt_n": 527,
+      "turn_id": "social_envelope-0-plan-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1244.14,
+      "predicted_n": 73,
+      "prompt_ms": 400.113,
+      "prompt_n": 625,
+      "turn_id": "social_envelope-0-tail-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 587.676,
+      "predicted_n": 51,
+      "prompt_ms": 301.275,
+      "prompt_n": 590,
+      "turn_id": "social_envelope-1-adv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 781.32,
+      "predicted_n": 59,
+      "prompt_ms": 327.225,
+      "prompt_n": 653,
+      "turn_id": "social_envelope-1-adv-02",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 619.126,
+      "predicted_n": 51,
+      "prompt_ms": 287.166,
+      "prompt_n": 719,
+      "turn_id": "social_envelope-1-adv-03",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 868.169,
+      "predicted_n": 72,
+      "prompt_ms": 235.12,
+      "prompt_n": 730,
+      "turn_id": "social_envelope-1-adv-04",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 932.884,
+      "predicted_n": 72,
+      "prompt_ms": 281.433,
+      "prompt_n": 638,
+      "turn_id": "social_envelope-1-conv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1059.598,
+      "predicted_n": 59,
+      "prompt_ms": 223.148,
+      "prompt_n": 606,
+      "turn_id": "social_envelope-1-guard-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 1134,
+      "predicted_ms": 1058.268,
+      "predicted_n": 59,
+      "prompt_ms": 80.323,
+      "prompt_n": 5,
+      "turn_id": "social_envelope-1-guard-04",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 1076,
+      "predicted_ms": 1006.099,
+      "predicted_n": 61,
+      "prompt_ms": 89.295,
+      "prompt_n": 5,
+      "turn_id": "social_envelope-1-plan-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 1174,
+      "predicted_ms": 915.184,
+      "predicted_n": 73,
+      "prompt_ms": 138.163,
+      "prompt_n": 5,
+      "turn_id": "social_envelope-1-tail-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 0,
+      "predicted_ms": 1179.126,
+      "predicted_n": 61,
+      "prompt_ms": 629.423,
+      "prompt_n": 1215,
+      "turn_id": "warm",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1039.728,
+      "predicted_n": 52,
+      "prompt_ms": 412.929,
+      "prompt_n": 769,
+      "turn_id": "social_envelope-0-adv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1131.113,
+      "predicted_n": 58,
+      "prompt_ms": 362.108,
+      "prompt_n": 663,
+      "turn_id": "social_envelope-0-adv-02",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1150.963,
+      "predicted_n": 62,
+      "prompt_ms": 379.209,
+      "prompt_n": 661,
+      "turn_id": "social_envelope-0-adv-03",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 2009.566,
+      "predicted_n": 81,
+      "prompt_ms": 380.524,
+      "prompt_n": 623,
+      "turn_id": "social_envelope-0-adv-04",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1545.353,
+      "predicted_n": 59,
+      "prompt_ms": 415.925,
+      "prompt_n": 681,
+      "turn_id": "social_envelope-0-conv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 2092.717,
+      "predicted_n": 59,
+      "prompt_ms": 413.335,
+      "prompt_n": 821,
+      "turn_id": "social_envelope-0-guard-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1777.747,
+      "predicted_n": 59,
+      "prompt_ms": 332.43,
+      "prompt_n": 585,
+      "turn_id": "social_envelope-0-guard-04",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1823.371,
+      "predicted_n": 61,
+      "prompt_ms": 320.345,
+      "prompt_n": 527,
+      "turn_id": "social_envelope-0-plan-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1365.704,
+      "predicted_n": 74,
+      "prompt_ms": 340.912,
+      "prompt_n": 625,
+      "turn_id": "social_envelope-0-tail-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 634.874,
+      "predicted_n": 51,
+      "prompt_ms": 272.055,
+      "prompt_n": 590,
+      "turn_id": "social_envelope-1-adv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 746.695,
+      "predicted_n": 59,
+      "prompt_ms": 330.57,
+      "prompt_n": 653,
+      "turn_id": "social_envelope-1-adv-02",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 647.972,
+      "predicted_n": 52,
+      "prompt_ms": 322.362,
+      "prompt_n": 719,
+      "turn_id": "social_envelope-1-adv-03",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 881.12,
+      "predicted_n": 78,
+      "prompt_ms": 234.944,
+      "prompt_n": 730,
+      "turn_id": "social_envelope-1-adv-04",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1016.284,
+      "predicted_n": 66,
+      "prompt_ms": 266.911,
+      "prompt_n": 638,
+      "turn_id": "social_envelope-1-conv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 991.086,
+      "predicted_n": 59,
+      "prompt_ms": 210.121,
+      "prompt_n": 606,
+      "turn_id": "social_envelope-1-guard-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 1134,
+      "predicted_ms": 959.823,
+      "predicted_n": 59,
+      "prompt_ms": 73.692,
+      "prompt_n": 5,
+      "turn_id": "social_envelope-1-guard-04",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 1076,
+      "predicted_ms": 981.394,
+      "predicted_n": 61,
+      "prompt_ms": 74.282,
+      "prompt_n": 5,
+      "turn_id": "social_envelope-1-plan-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 1174,
+      "predicted_ms": 1346.717,
+      "predicted_n": 73,
+      "prompt_ms": 133.853,
+      "prompt_n": 5,
+      "turn_id": "social_envelope-1-tail-01",
+      "variant": "social_envelope"
+    },
+    {
+      "cache_n": 0,
+      "predicted_ms": 1143.054,
+      "predicted_n": 61,
+      "prompt_ms": 637.696,
+      "prompt_n": 1215,
+      "turn_id": "warm",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1102.123,
+      "predicted_n": 61,
+      "prompt_ms": 357.966,
+      "prompt_n": 659,
+      "turn_id": "baseline-0-social-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1088.597,
+      "predicted_n": 61,
+      "prompt_ms": 343.807,
+      "prompt_n": 660,
+      "turn_id": "baseline-0-social-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1072.11,
+      "predicted_n": 58,
+      "prompt_ms": 371.344,
+      "prompt_n": 731,
+      "turn_id": "baseline-0-social-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1033.281,
+      "predicted_n": 57,
+      "prompt_ms": 355.983,
+      "prompt_n": 664,
+      "turn_id": "baseline-0-social-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1074.606,
+      "predicted_n": 52,
+      "prompt_ms": 375.853,
+      "prompt_n": 661,
+      "turn_id": "baseline-0-social-05",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1555.684,
+      "predicted_n": 54,
+      "prompt_ms": 371.284,
+      "prompt_n": 660,
+      "turn_id": "baseline-0-social-06",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1469.841,
+      "predicted_n": 62,
+      "prompt_ms": 401.985,
+      "prompt_n": 660,
+      "turn_id": "baseline-0-social-07",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1330.939,
+      "predicted_n": 65,
+      "prompt_ms": 445.125,
+      "prompt_n": 772,
+      "turn_id": "baseline-0-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1241.549,
+      "predicted_n": 52,
+      "prompt_ms": 241.74,
+      "prompt_n": 505,
+      "turn_id": "baseline-0-prefix-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 2365.514,
+      "predicted_n": 160,
+      "prompt_ms": 337.594,
+      "prompt_n": 592,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1566.676,
+      "predicted_n": 160,
+      "prompt_ms": 59.462,
+      "prompt_n": 1,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1600.253,
+      "predicted_n": 160,
+      "prompt_ms": 58.52,
+      "prompt_n": 1,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1584.985,
+      "predicted_n": 160,
+      "prompt_ms": 61.26,
+      "prompt_n": 1,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1987.971,
+      "predicted_n": 61,
+      "prompt_ms": 353.208,
+      "prompt_n": 640,
+      "turn_id": "baseline-0-prefix-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 912.125,
+      "predicted_n": 51,
+      "prompt_ms": 341.238,
+      "prompt_n": 590,
+      "turn_id": "baseline-0-adv-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1247.639,
+      "predicted_n": 58,
+      "prompt_ms": 350.596,
+      "prompt_n": 653,
+      "turn_id": "baseline-0-adv-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1017.057,
+      "predicted_n": 51,
+      "prompt_ms": 369.439,
+      "prompt_n": 719,
+      "turn_id": "baseline-0-adv-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1906.666,
+      "predicted_n": 75,
+      "prompt_ms": 366.26,
+      "prompt_n": 730,
+      "turn_id": "baseline-0-adv-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1383.218,
+      "predicted_n": 66,
+      "prompt_ms": 379.49,
+      "prompt_n": 638,
+      "turn_id": "baseline-0-conv-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1877.35,
+      "predicted_n": 59,
+      "prompt_ms": 337.559,
+      "prompt_n": 606,
+      "turn_id": "baseline-0-guard-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1741.047,
+      "predicted_n": 59,
+      "prompt_ms": 330.65,
+      "prompt_n": 585,
+      "turn_id": "baseline-0-guard-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1815.854,
+      "predicted_n": 61,
+      "prompt_ms": 341.899,
+      "prompt_n": 527,
+      "turn_id": "baseline-0-plan-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1353.828,
+      "predicted_n": 74,
+      "prompt_ms": 348.702,
+      "prompt_n": 625,
+      "turn_id": "baseline-0-tail-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 705.569,
+      "predicted_n": 59,
+      "prompt_ms": 305.583,
+      "prompt_n": 614,
+      "turn_id": "baseline-1-social-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 837.361,
+      "predicted_n": 62,
+      "prompt_ms": 299.718,
+      "prompt_n": 632,
+      "turn_id": "baseline-1-social-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 641.49,
+      "predicted_n": 54,
+      "prompt_ms": 278.798,
+      "prompt_n": 683,
+      "turn_id": "baseline-1-social-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 710.726,
+      "predicted_n": 55,
+      "prompt_ms": 295.314,
+      "prompt_n": 694,
+      "turn_id": "baseline-1-social-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 691.278,
+      "predicted_n": 53,
+      "prompt_ms": 279.344,
+      "prompt_n": 666,
+      "turn_id": "baseline-1-social-05",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1165.291,
+      "predicted_n": 51,
+      "prompt_ms": 267.609,
+      "prompt_n": 648,
+      "turn_id": "baseline-1-social-06",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 826.838,
+      "predicted_n": 60,
+      "prompt_ms": 291.186,
+      "prompt_n": 592,
+      "turn_id": "baseline-1-social-07",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1611.69,
+      "predicted_n": 160,
+      "prompt_ms": 298.575,
+      "prompt_n": 628,
+      "turn_id": "baseline-1-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1181,
+      "predicted_ms": 765.568,
+      "predicted_n": 65,
+      "prompt_ms": 60.697,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 742.038,
+      "predicted_n": 52,
+      "prompt_ms": 247.364,
+      "prompt_n": 505,
+      "turn_id": "baseline-1-prefix-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1577.704,
+      "predicted_n": 160,
+      "prompt_ms": 209.109,
+      "prompt_n": 592,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1564.577,
+      "predicted_n": 160,
+      "prompt_ms": 59.094,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1612.199,
+      "predicted_n": 160,
+      "prompt_ms": 57.466,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1145,
+      "predicted_ms": 1609.713,
+      "predicted_n": 160,
+      "prompt_ms": 62.195,
+      "prompt_n": 1,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 1119.578,
+      "predicted_n": 61,
+      "prompt_ms": 221.398,
+      "prompt_n": 640,
+      "turn_id": "baseline-1-prefix-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1139,
+      "predicted_ms": 602.373,
+      "predicted_n": 51,
+      "prompt_ms": 134.909,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-adv-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 554,
+      "predicted_ms": 722.743,
+      "predicted_n": 59,
+      "prompt_ms": 306.932,
+      "prompt_n": 653,
+      "turn_id": "baseline-1-adv-02",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1268,
+      "predicted_ms": 609.532,
+      "predicted_n": 51,
+      "prompt_ms": 93.442,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-adv-03",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1279,
+      "predicted_ms": 815.659,
+      "predicted_n": 74,
+      "prompt_ms": 73.978,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-adv-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1187,
+      "predicted_ms": 923.196,
+      "predicted_n": 72,
+      "prompt_ms": 111.218,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-conv-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1155,
+      "predicted_ms": 983.61,
+      "predicted_n": 59,
+      "prompt_ms": 74.287,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-guard-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1134,
+      "predicted_ms": 985.665,
+      "predicted_n": 59,
+      "prompt_ms": 77.59,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-guard-04",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1076,
+      "predicted_ms": 1014.152,
+      "predicted_n": 61,
+      "prompt_ms": 76.95,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-plan-01",
+      "variant": "baseline"
+    },
+    {
+      "cache_n": 1174,
+      "predicted_ms": 910.276,
+      "predicted_n": 73,
+      "prompt_ms": 136.143,
+      "prompt_n": 5,
+      "turn_id": "baseline-1-tail-01",
+      "variant": "baseline"
+    }
+  ],
+  "policy_delta": {
+    "ms_per_token_p50": 1.9,
+    "p_calls": -60,
+    "predicted_ms_total": -77597.3,
+    "prompt_ms_total": -12345.4
+  },
+  "policy_note": "these are the primary policy's own llama-server timings, one row per P call, attributed to a turn by its request id. The headline here is p_calls: a turn the candidate never sends to P has no row at all, which is the direct proof the variant took effect.",
+  "policy_social_envelope": {
+    "ms_per_token_p50": 18.45,
+    "p_calls": 38,
+    "predicted_ms_mean": 1230.8,
+    "predicted_ms_p50": 1095.4,
+    "predicted_ms_total": 46771.9,
+    "predicted_n_mean": 62.0,
+    "predicted_n_p50": 59.0,
+    "prompt_ms_p50": 331.5,
+    "prompt_ms_total": 11918.5
+  },
+  "question": "a turn whose whole text is a social act, and a turn whose request is merely preceded by one, both cross the primary policy today. If the deterministic recogniser owns the social envelope instead, does any turn decide differently?",
+  "runtime": {
+    "gguf": {
+      "bytes": 2620370976,
+      "name": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
+    },
+    "llama_server": {
+      "bytes": 9216,
+      "name": "llama-server.exe"
+    },
+    "manifest_sha256": "35e3a73d2f6ef88dad7bd3b17d29d3113f132deb1f70c2cdc0b6065dc0a126d6",
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "profiles": {
+      "cpu_fallback_layers": 0,
+      "gpu_layers": 99
+    },
+    "python": {
+      "bytes": 274424,
+      "name": "python.exe"
+    },
+    "source": "registered_manifest"
+  },
+  "samples": [
+    {
+      "case_id": "social-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.788869,
+      "turn_id": "baseline-0-social-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "¡Buenas tardes! ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.849044,
+      "turn_id": "baseline-0-social-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+      "seconds": 1.881491,
+      "turn_id": "baseline-0-social-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "I'm doing well, thanks for asking! How are you?",
+      "seconds": 1.895483,
+      "turn_id": "baseline-0-social-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-05",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.782224,
+      "turn_id": "baseline-0-social-05",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-06",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 6.016545,
+      "turn_id": "baseline-0-social-06",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-07",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "Hello! How can I help you today?",
+      "seconds": 3.618045,
+      "turn_id": "baseline-0-social-07",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-01",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 3.542159,
+      "turn_id": "baseline-0-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-02",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 2.255787,
+      "turn_id": "baseline-0-prefix-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "clarify",
+        "operation": null,
+        "question": "¿Puedes explicar con un poco más de detalle qué quieres?"
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 9.607123,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-04",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 2.527157,
+      "turn_id": "baseline-0-prefix-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "Hola.",
+      "seconds": 1.605243,
+      "turn_id": "baseline-0-adv-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "Hola, soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué te puedo ayudar hoy?",
+      "seconds": 2.218014,
+      "turn_id": "baseline-0-adv-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 1.806202,
+      "turn_id": "baseline-0-adv-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "No puedo enviar mensajes por WhatsApp.",
+      "seconds": 3.602669,
+      "turn_id": "baseline-0-adv-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "conv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+      "seconds": 1.97318,
+      "turn_id": "baseline-0-conv-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "guard-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+      "seconds": 2.946533,
+      "turn_id": "baseline-0-guard-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "guard-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+      "seconds": 2.890822,
+      "turn_id": "baseline-0-guard-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "plan-01",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 2.371414,
+      "turn_id": "baseline-0-plan-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "tail-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Podrías decirme qué significa \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que tu tarjeta gráfica está siendo utilizada en algún programa?",
+      "seconds": 1.848742,
+      "turn_id": "baseline-0-tail-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.326128,
+      "turn_id": "baseline-1-social-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "¡Buenas tardes! ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.519829,
+      "turn_id": "baseline-1-social-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+      "seconds": 1.336869,
+      "turn_id": "baseline-1-social-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "I'm doing well, thanks for asking! How are you?",
+      "seconds": 1.367496,
+      "turn_id": "baseline-1-social-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-05",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.421616,
+      "turn_id": "baseline-1-social-05",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-06",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 4.432573,
+      "turn_id": "baseline-1-social-06",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-07",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "Hello! How can I help you today?",
+      "seconds": 1.381129,
+      "turn_id": "baseline-1-social-07",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "clarify",
+        "operation": null,
+        "question": "¿Puedes explicar con un poco más de detalle qué quieres?"
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 9.36479,
+      "turn_id": "baseline-1-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-02",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 1.267576,
+      "turn_id": "baseline-1-prefix-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "clarify",
+        "operation": null,
+        "question": "¿Puedes explicar con un poco más de detalle qué quieres?"
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 9.21778,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-04",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 1.27241,
+      "turn_id": "baseline-1-prefix-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "Hola.",
+      "seconds": 1.075943,
+      "turn_id": "baseline-1-adv-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "Hola, soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué te puedo ayudar hoy?",
+      "seconds": 1.361984,
+      "turn_id": "baseline-1-adv-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 1.093212,
+      "turn_id": "baseline-1-adv-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "No puedo enviar mensajes por WhatsApp.",
+      "seconds": 1.638158,
+      "turn_id": "baseline-1-adv-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "conv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+      "seconds": 1.196737,
+      "turn_id": "baseline-1-conv-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "guard-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+      "seconds": 1.705451,
+      "turn_id": "baseline-1-guard-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "guard-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+      "seconds": 1.55905,
+      "turn_id": "baseline-1-guard-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "plan-01",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 1.214739,
+      "turn_id": "baseline-1-plan-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "tail-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no ves ninguna señal de que la GPU esté activa en algún programa?",
+      "seconds": 1.213305,
+      "turn_id": "baseline-1-tail-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.138695,
+      "turn_id": "social_envelope-0-social-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "¡Buenas tardes! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.149307,
+      "turn_id": "social_envelope-0-social-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+      "seconds": 0.150356,
+      "turn_id": "social_envelope-0-social-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "I'm doing well, thanks for asking! How are you?",
+      "seconds": 0.22642,
+      "turn_id": "social_envelope-0-social-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-05",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.184161,
+      "turn_id": "social_envelope-0-social-05",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-06",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 2.489709,
+      "turn_id": "social_envelope-0-social-06",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-07",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "Hello! How can I help you today?",
+      "seconds": 0.17128,
+      "turn_id": "social_envelope-0-social-07",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-01",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 0.003853,
+      "turn_id": "social_envelope-0-prefix-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-02",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 0.000748,
+      "turn_id": "social_envelope-0-prefix-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-03",
+      "decision": {
+        "effectOperations": [
+          "system.status"
+        ],
+        "kind": "action",
+        "operation": "system.status",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 0.002699,
+      "turn_id": "social_envelope-0-prefix-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-04",
+      "decision": {
+        "effectOperations": [
+          "audio.volume"
+        ],
+        "kind": "action",
+        "operation": "audio.volume",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 0.004627,
+      "turn_id": "social_envelope-0-prefix-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "Hola.",
+      "seconds": 1.500036,
+      "turn_id": "social_envelope-0-adv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "Hola, soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué te puedo ayudar hoy?",
+      "seconds": 1.899677,
+      "turn_id": "social_envelope-0-adv-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 1.809025,
+      "turn_id": "social_envelope-0-adv-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "No puedo enviar mensajes por WhatsApp.",
+      "seconds": 3.685437,
+      "turn_id": "social_envelope-0-adv-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "conv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+      "seconds": 3.705892,
+      "turn_id": "social_envelope-0-conv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "guard-01",
+      "decision": {
+        "effectOperations": [
+          "audio.mute"
+        ],
+        "kind": "action",
+        "operation": "audio.mute",
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 4.163135,
+      "turn_id": "social_envelope-0-guard-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "guard-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Qué necesitas que haga para dejar tu pantalla lista para trabajar?",
+      "seconds": 2.916105,
+      "turn_id": "social_envelope-0-guard-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "plan-01",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 2.254837,
+      "turn_id": "social_envelope-0-plan-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "tail-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Podrías decirme qué significa \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que tu tarjeta gráfica está siendo utilizada en algún programa?",
+      "seconds": 1.787207,
+      "turn_id": "social_envelope-0-tail-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.188254,
+      "turn_id": "social_envelope-1-social-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "¡Buenas tardes! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.144586,
+      "turn_id": "social_envelope-1-social-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+      "seconds": 0.146111,
+      "turn_id": "social_envelope-1-social-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "I'm doing well, thanks for asking! How are you?",
+      "seconds": 0.206883,
+      "turn_id": "social_envelope-1-social-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-05",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.181047,
+      "turn_id": "social_envelope-1-social-05",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-06",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 2.382914,
+      "turn_id": "social_envelope-1-social-06",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-07",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "Hello! How can I help you today?",
+      "seconds": 0.169971,
+      "turn_id": "social_envelope-1-social-07",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-01",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 0.00143,
+      "turn_id": "social_envelope-1-prefix-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-02",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 0.00078,
+      "turn_id": "social_envelope-1-prefix-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-03",
+      "decision": {
+        "effectOperations": [
+          "system.status"
+        ],
+        "kind": "action",
+        "operation": "system.status",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 0.000745,
+      "turn_id": "social_envelope-1-prefix-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-04",
+      "decision": {
+        "effectOperations": [
+          "audio.volume"
+        ],
+        "kind": "action",
+        "operation": "audio.volume",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 0.000743,
+      "turn_id": "social_envelope-1-prefix-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "Hola.",
+      "seconds": 1.151823,
+      "turn_id": "social_envelope-1-adv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "Hola, soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué te puedo ayudar hoy?",
+      "seconds": 1.547148,
+      "turn_id": "social_envelope-1-adv-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 1.272188,
+      "turn_id": "social_envelope-1-adv-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "No puedo enviar mensajes por WhatsApp.",
+      "seconds": 2.209527,
+      "turn_id": "social_envelope-1-adv-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "conv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+      "seconds": 1.405003,
+      "turn_id": "social_envelope-1-conv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "guard-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+      "seconds": 1.928719,
+      "turn_id": "social_envelope-1-guard-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "guard-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+      "seconds": 1.593977,
+      "turn_id": "social_envelope-1-guard-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "plan-01",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 1.252045,
+      "turn_id": "social_envelope-1-plan-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "tail-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no ves ninguna señal de que la GPU esté activa en algún programa?",
+      "seconds": 1.199319,
+      "turn_id": "social_envelope-1-tail-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.1439,
+      "turn_id": "social_envelope-0-social-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "¡Buenas tardes! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.153366,
+      "turn_id": "social_envelope-0-social-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+      "seconds": 0.150566,
+      "turn_id": "social_envelope-0-social-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "I'm doing well, thanks for asking! How are you?",
+      "seconds": 0.224867,
+      "turn_id": "social_envelope-0-social-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-05",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.184358,
+      "turn_id": "social_envelope-0-social-05",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-06",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 2.524388,
+      "turn_id": "social_envelope-0-social-06",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-07",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "Hello! How can I help you today?",
+      "seconds": 0.171113,
+      "turn_id": "social_envelope-0-social-07",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-01",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 0.003997,
+      "turn_id": "social_envelope-0-prefix-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-02",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 0.000716,
+      "turn_id": "social_envelope-0-prefix-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-03",
+      "decision": {
+        "effectOperations": [
+          "system.status"
+        ],
+        "kind": "action",
+        "operation": "system.status",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 0.002603,
+      "turn_id": "social_envelope-0-prefix-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-04",
+      "decision": {
+        "effectOperations": [
+          "audio.volume"
+        ],
+        "kind": "action",
+        "operation": "audio.volume",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 0.004015,
+      "turn_id": "social_envelope-0-prefix-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "Hola.",
+      "seconds": 1.599897,
+      "turn_id": "social_envelope-0-adv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "Hola, soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué te puedo ayudar hoy?",
+      "seconds": 1.862022,
+      "turn_id": "social_envelope-0-adv-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 1.764525,
+      "turn_id": "social_envelope-0-adv-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "No puedo enviar mensajes por WhatsApp.",
+      "seconds": 3.822368,
+      "turn_id": "social_envelope-0-adv-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "conv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+      "seconds": 3.490604,
+      "turn_id": "social_envelope-0-conv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "guard-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "clarify",
+        "operation": null,
+        "question": "Deseas bloquear, cerrar sesión o apagar el equipo?"
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 4.814037,
+      "turn_id": "social_envelope-0-guard-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "guard-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Qué necesitas que haga para dejar tu pantalla lista para trabajar?",
+      "seconds": 2.745233,
+      "turn_id": "social_envelope-0-guard-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "plan-01",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 2.260637,
+      "turn_id": "social_envelope-0-plan-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "tail-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Estás experimentando algún problema específico con tu GPU, como que no se detecta en el sistema, no se usa en juegos o aplicaciones, o tienes algún error?",
+      "seconds": 2.252272,
+      "turn_id": "social_envelope-0-tail-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.175798,
+      "turn_id": "social_envelope-1-social-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "¡Buenas tardes! ¿En qué puedo ayudarte hoy?",
+      "seconds": 0.141705,
+      "turn_id": "social_envelope-1-social-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+      "seconds": 0.145145,
+      "turn_id": "social_envelope-1-social-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "I'm doing well, thanks for asking! How are you?",
+      "seconds": 0.20177,
+      "turn_id": "social_envelope-1-social-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-05",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 0.178756,
+      "turn_id": "social_envelope-1-social-05",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-06",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 2.326119,
+      "turn_id": "social_envelope-1-social-06",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-07",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "Hello! How can I help you today?",
+      "seconds": 0.164998,
+      "turn_id": "social_envelope-1-social-07",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-01",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 0.000816,
+      "turn_id": "social_envelope-1-prefix-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-02",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 0.000726,
+      "turn_id": "social_envelope-1-prefix-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-03",
+      "decision": {
+        "effectOperations": [
+          "system.status"
+        ],
+        "kind": "action",
+        "operation": "system.status",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 0.000942,
+      "turn_id": "social_envelope-1-prefix-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "prefix-04",
+      "decision": {
+        "effectOperations": [
+          "audio.volume"
+        ],
+        "kind": "action",
+        "operation": "audio.volume",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 0.000742,
+      "turn_id": "social_envelope-1-prefix-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "Hola.",
+      "seconds": 1.158986,
+      "turn_id": "social_envelope-1-adv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "Hola, soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué te puedo ayudar hoy?",
+      "seconds": 1.512639,
+      "turn_id": "social_envelope-1-adv-02",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 1.29831,
+      "turn_id": "social_envelope-1-adv-03",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "adv-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "No puedo enviar mensajes por WhatsApp.",
+      "seconds": 2.200104,
+      "turn_id": "social_envelope-1-adv-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "conv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+      "seconds": 1.469273,
+      "turn_id": "social_envelope-1-conv-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "guard-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+      "seconds": 1.838272,
+      "turn_id": "social_envelope-1-guard-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "guard-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+      "seconds": 1.425507,
+      "turn_id": "social_envelope-1-guard-04",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "plan-01",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 1.18771,
+      "turn_id": "social_envelope-1-plan-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "tail-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no notas que la GPU está activa en algún programa?",
+      "seconds": 1.625564,
+      "turn_id": "social_envelope-1-tail-01",
+      "variant": "social_envelope"
+    },
+    {
+      "case_id": "social-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.675927,
+      "turn_id": "baseline-0-social-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "¡Buenas tardes! ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.640547,
+      "turn_id": "baseline-0-social-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+      "seconds": 1.676861,
+      "turn_id": "baseline-0-social-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "I'm doing well, thanks for asking! How are you?",
+      "seconds": 1.633652,
+      "turn_id": "baseline-0-social-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-05",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.67959,
+      "turn_id": "baseline-0-social-05",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-06",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 5.566303,
+      "turn_id": "baseline-0-social-06",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-07",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 0,
+      "reply_text": "Hello! How can I help you today?",
+      "seconds": 3.611368,
+      "turn_id": "baseline-0-social-07",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-01",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 3.24013,
+      "turn_id": "baseline-0-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "I do not have access to real-time information like the current time.",
+      "seconds": 1.606223,
+      "turn_id": "baseline-0-prefix-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "clarify",
+        "operation": null,
+        "question": "¿Puedes explicar con un poco más de detalle qué quieres?"
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 9.405692,
+      "turn_id": "baseline-0-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-04",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 2.462995,
+      "turn_id": "baseline-0-prefix-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "Hola.",
+      "seconds": 1.541832,
+      "turn_id": "baseline-0-adv-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "Hola, soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué te puedo ayudar hoy?",
+      "seconds": 2.03094,
+      "turn_id": "baseline-0-adv-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 1.705332,
+      "turn_id": "baseline-0-adv-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 0,
+      "reply_text": "No puedo enviar mensajes por WhatsApp.",
+      "seconds": 3.471417,
+      "turn_id": "baseline-0-adv-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "conv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Qué hace una abeja en el gimnasio? ¡Zum-ba!",
+      "seconds": 1.906664,
+      "turn_id": "baseline-0-conv-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "guard-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+      "seconds": 2.867581,
+      "turn_id": "baseline-0-guard-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "guard-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+      "seconds": 2.74191,
+      "turn_id": "baseline-0-guard-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "plan-01",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "",
+      "seconds": 2.276041,
+      "turn_id": "baseline-0-plan-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "tail-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 0,
+      "reply_text": "¿Estás experimentando algún problema específico con tu GPU, como que no se detecta en el sistema, no se usa en juegos o aplicaciones, o tienes algún error?",
+      "seconds": 2.242574,
+      "turn_id": "baseline-0-tail-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.338729,
+      "turn_id": "baseline-1-social-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "¡Buenas tardes! ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.459997,
+      "turn_id": "baseline-1-social-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "Hola, todo bien por aquí. ¿Y tú?",
+      "seconds": 1.305936,
+      "turn_id": "baseline-1-social-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "I'm doing well, thanks for asking! How are you?",
+      "seconds": 1.400995,
+      "turn_id": "baseline-1-social-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-05",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué puedo ayudarte hoy?",
+      "seconds": 1.340611,
+      "turn_id": "baseline-1-social-05",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-06",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "No pude generar una respuesta fiable esta vez. ¿Puedes reformular la pregunta?",
+      "seconds": 4.331405,
+      "turn_id": "baseline-1-social-06",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "social-07",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "whole-social",
+      "repeat": 1,
+      "reply_text": "Hello! How can I help you today?",
+      "seconds": 1.426855,
+      "turn_id": "baseline-1-social-07",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-01",
+      "decision": {
+        "effectOperations": [
+          "system.time"
+        ],
+        "kind": "action",
+        "operation": "system.time",
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 2.881612,
+      "turn_id": "baseline-1-prefix-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "I do not have access to real-time information like the current time.",
+      "seconds": 1.117997,
+      "turn_id": "baseline-1-prefix-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "clarify",
+        "operation": null,
+        "question": "¿Puedes explicar con un poco más de detalle qué quieres?"
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 8.818293,
+      "turn_id": "baseline-1-prefix-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "prefix-04",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "social-prefix",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 1.461075,
+      "turn_id": "baseline-1-prefix-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "Hola.",
+      "seconds": 0.99725,
+      "turn_id": "baseline-1-adv-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-02",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "Hola, soy BAXY, un asistente local que vive en tu PC Windows. ¿En qué te puedo ayudar hoy?",
+      "seconds": 1.459685,
+      "turn_id": "baseline-1-adv-02",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-03",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "De nada. ¿En qué más te puedo ayudar?",
+      "seconds": 1.06757,
+      "turn_id": "baseline-1-adv-03",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "adv-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "adversarial",
+      "repeat": 1,
+      "reply_text": "No puedo enviar mensajes por WhatsApp.",
+      "seconds": 1.543455,
+      "turn_id": "baseline-1-adv-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "conv-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Qué le dice un pez a otro? ¡Nada!",
+      "seconds": 1.217386,
+      "turn_id": "baseline-1-conv-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "guard-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "Para dejar tu equipo en silencio, puedes usar el atajo de teclado. Generalmente, es la tecla de volumen o una combinación de teclas específica para silenciar el sistema. ¿Qué tipo de equipo estás usando (Windows, Mac, etc.)?",
+      "seconds": 1.699999,
+      "turn_id": "baseline-1-guard-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "guard-04",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Te refieres a configurar algo específico en tu pantalla, como cambiar el fondo de pantalla o ajustar la resolución?",
+      "seconds": 1.449335,
+      "turn_id": "baseline-1-guard-04",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "plan-01",
+      "decision": {
+        "effectOperations": [
+          "audio.volume.adjust"
+        ],
+        "kind": "plan",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "",
+      "seconds": 1.209482,
+      "turn_id": "baseline-1-plan-01",
+      "variant": "baseline"
+    },
+    {
+      "case_id": "tail-01",
+      "decision": {
+        "effectOperations": [],
+        "kind": "conversation",
+        "operation": null,
+        "question": ""
+      },
+      "family": "frozen",
+      "repeat": 1,
+      "reply_text": "¿Podrías decirme qué significa exactamente \"no se usa\"? ¿Estás viendo algún mensaje de error, o simplemente no ves ninguna señal de que la GPU esté activa en algún programa?",
+      "seconds": 1.186702,
+      "turn_id": "baseline-1-tail-01",
+      "variant": "baseline"
+    }
+  ],
+  "schema": "baxy.social-envelope.v1",
+  "social_envelope": {
+    "max_s": 4.814,
+    "mean_s": 1.1182,
+    "min_s": 0.0007,
+    "n": 80,
+    "p50_s": 0.6891,
+    "stdev_s": 1.2064
+  }
+}

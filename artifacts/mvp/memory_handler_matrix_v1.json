@@ -1,0 +1,121 @@
+{
+  "schema": "baxy.mvp-memory-handler-matrix.v1",
+  "measuredAtUtc": "2026-08-11T20:46:12.7241707\u002B00:00",
+  "scope": "all_memory_handlers_bound_to_real_isolated_encrypted_store",
+  "protectionMode": "windows-dpapi-current-user",
+  "actualUserEffectsExecuted": 0,
+  "isolatedStoreOperations": 11,
+  "secretCanaryFoundAtRest": false,
+  "metrics": {
+    "operations": 11,
+    "verified": 11,
+    "privateResultsOpened": 11,
+    "publicSecretLeaks": 0,
+    "failed": 0
+  },
+  "coreAssemblySha256": "a6ffe8bbc5293bf8f480d029a7c3b91c7feb630ffbdda7d6e01dd91085c352f2",
+  "providerAssemblySha256": "f63742db7d7ba954851c6c6ac939e1e974c26737c41389a3784a350c16433dc0",
+  "securityAssemblySha256": "d6a5c89cf39d5e145616d3b1f616e683ec186c7721ff5c5eabafe91a9941681d",
+  "rows": [
+    {
+      "Operation": "memory.enable",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.save",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.sensitive.save",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.status",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.recall",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.list",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.correct",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.export",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.forget",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.session.clear",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    },
+    {
+      "Operation": "memory.disable",
+      "EvidenceKind": "real_isolated_encrypted_store",
+      "Verifier": "bound_dpapi_envelope_plus_store_postread",
+      "Verified": true,
+      "PrivateResultOpened": true,
+      "SecretInPublicOutcome": false,
+      "ActualUserEffectsExecuted": 0
+    }
+  ],
+  "gatePassed": true
+}

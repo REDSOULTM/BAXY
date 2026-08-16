@@ -1,0 +1,43 @@
+{
+  "schema": "baxy-night-audit-social-greeting-repro-v1",
+  "measured_at": "2026-07-27T05:31:09.084313+00:00",
+  "route": {
+    "conversation_kind": "social",
+    "response_language": "es",
+    "temperature": 0.0
+  },
+  "direct_social_runs": [
+    {
+      "attempt": 1,
+      "reply": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "elapsed_seconds": 0.231
+    },
+    {
+      "attempt": 2,
+      "reply": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "elapsed_seconds": 0.175
+    },
+    {
+      "attempt": 3,
+      "reply": "¡Hola! ¿En qué puedo ayudarte hoy?",
+      "elapsed_seconds": 0.153
+    }
+  ],
+  "contextual_welcome_runs": [
+    {
+      "attempt": 1,
+      "reply": "El usuario saludó al asistente.",
+      "elapsed_seconds": 0.707
+    },
+    {
+      "attempt": 2,
+      "reply": "El usuario saludó al asistente.",
+      "elapsed_seconds": 0.642
+    },
+    {
+      "attempt": 3,
+      "reply": "El usuario saludó al asistente.",
+      "elapsed_seconds": 0.642
+    }
+  ]
+}

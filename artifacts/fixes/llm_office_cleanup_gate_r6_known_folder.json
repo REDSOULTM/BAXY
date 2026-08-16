@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-08-03T01:38:38.431723+00:00",
+  "complete": true,
+  "scope": "real_llm_plan_ground_core_execute_verified_postread",
+  "model": "Qwen3-4B-Q4_K_M.gguf",
+  "runtime": {
+    "source": "registered_manifest",
+    "manifest_sha256": "cf1fc6c24c01842f296022c20a8f38a3c0513056473e171ac44b32481fb5ecd4",
+    "python": {
+      "name": "python.exe",
+      "bytes": 274424
+    },
+    "mind": {
+      "module": "baxy_mind"
+    },
+    "gguf": {
+      "name": "Qwen3-4B-Q4_K_M.gguf",
+      "bytes": 2497280256
+    },
+    "llama_server": {
+      "name": "llama-server.exe",
+      "bytes": 9216
+    },
+    "profiles": {
+      "gpu_layers": 99,
+      "cpu_fallback_layers": 0
+    }
+  },
+  "core_catalog_count": 169,
+  "total_seconds": 9.345,
+  "cases": [
+    {
+      "case": "office_roundtrip",
+      "planner_path": "deterministic_skeleton_real_llm_grounding",
+      "turn_response_type": "turn.result",
+      "turn_kind": "plan",
+      "turn_question": "",
+      "turn_reply": "",
+      "intent_operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "effect_operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "decision_seconds": 0.05,
+      "response_type": "plan.result",
+      "kind": "plan",
+      "operations": [
+        "office.document.create",
+        "office.document.read"
+      ],
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "office.document.create",
+          "risk": "low_reversible",
+          "arguments_mode": "literal",
+          "argument_keys": [
+            "format",
+            "title"
+          ],
+          "grounded": false,
+          "dependency_step_ids": [],
+          "dependency_authority_match": null,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "documentId": "document_987a5be7a5a955e79ac793cd"
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "office.document.read",
+          "risk": "read_only",
+          "arguments_mode": "after_dependencies",
+          "argument_keys": [
+            "documentId"
+          ],
+          "grounded": true,
+          "dependency_step_ids": [
+            "step_1"
+          ],
+          "dependency_authority_match": true,
+          "confirmed": false,
+          "status": "completed",
+          "verified": true,
+          "error": null,
+          "effect_may_have_occurred": false,
+          "evidence": {
+            "version": 1,
+            "documentId": "document_987a5be7a5a955e79ac793cd"
+          }
+        }
+      ],
+      "seconds": 1.909,
+      "status": "passed",
+      "dependency_positions": [
+        [],
+        [
+          0
+        ]
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "environment_blocked": 0,
+    "failed": 0,
+    "total": 1,
+    "verified_steps": 2,
+    "real_llm_plan_cases": 0,
+    "real_llm_plan_cases_passed": 0,
+    "model_grounded_steps": 1,
+    "ambiguous_effects": 0,
+    "status": "passed"
+  },
+  "stderr": {
+    "core": "",
+    "mind": ""
+  }
+}

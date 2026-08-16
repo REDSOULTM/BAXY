@@ -1,0 +1,104 @@
+{
+  "schema": "baxy.mswc-spanish-calibrated-selector-tuning.v10",
+  "measured_at_utc": "2026-08-06T08:40:35.984778+00:00",
+  "scope": "five_fold_word_disjoint_oof_calibrated_candidate_selector",
+  "sources": {
+    "hyper_ctc_cache_sha256": "20faabf607e4ec94acf104a61892bd2c0acb06bdc14067d83a49954febd621f7",
+    "whisper_cache_sha256": "533357a6ab548b2d782c7615788fd02bab8ca8d5d0e60b8f649c94a9dfd2426e",
+    "forced_alignment_cache_sha256": "7faf35f71becd51ce035ecec4a248fb0e7b4cd2a2bccdfca0e1baf6dc7c16d86",
+    "shortlist_cache_sha256": "0d7ed9faf8e921e9d5634e94df4f9b429673e04faeef4f7289858fc7991e685d",
+    "silence_prior_cache_sha256": "1ad2b8acf4d85cb856a86606c6e5c3edba6fd78a2311ebe1d01bd6c3386e2020"
+  },
+  "contract": {
+    "fold_seed": 12301,
+    "fold_count": 5,
+    "fold_group": "query_word_class",
+    "silence_prior_weight": 0.63,
+    "calibrated_fusion_weight": 0.6,
+    "selector": "HistGradientBoostingClassifier",
+    "selector_parameters": {
+      "learning_rate": 0.08,
+      "max_iter": 220,
+      "max_leaf_nodes": 7,
+      "min_samples_leaf": 5,
+      "l2_regularization": 2.0,
+      "class_weight": "balanced"
+    },
+    "candidate_alternatives": "union_of_eight_signal_top1_predictions",
+    "quality_floor": {
+      "hard_candidate_top1_accuracy_minimum": 0.94,
+      "pair_auc_minimum": 0.99,
+      "equal_error_rate_maximum": 0.05,
+      "zero_false_true_pair_recall_minimum": 0.2
+    }
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "word_classes": 74,
+      "queries": 444,
+      "top1_accuracy": 0.9436936936936937
+    },
+    {
+      "fold": 1,
+      "word_classes": 76,
+      "queries": 456,
+      "top1_accuracy": 0.9473684210526315
+    },
+    {
+      "fold": 2,
+      "word_classes": 90,
+      "queries": 540,
+      "top1_accuracy": 0.9444444444444444
+    },
+    {
+      "fold": 3,
+      "word_classes": 76,
+      "queries": 456,
+      "top1_accuracy": 0.9473684210526315
+    },
+    {
+      "fold": 4,
+      "word_classes": 84,
+      "queries": 504,
+      "top1_accuracy": 0.9325396825396826
+    }
+  ],
+  "aggregates": {
+    "queries": 2400,
+    "word_classes": 400,
+    "selector_training_rows": 4256,
+    "mean_alternatives_per_query": 1.7733333333333334,
+    "proposal_oracle_top1_accuracy": 0.9679166666666666,
+    "calibrated_fusion_top1_accuracy": 0.9333333333333333
+  },
+  "metrics": {
+    "query_audio": 2400,
+    "hard_negative_pairs": 96000,
+    "hard_candidate_top1_accuracy": 0.9429166666666666,
+    "macro_word_hard_candidate_top1_accuracy": 0.9429166666666667,
+    "pair_auc": 0.9938728081597222,
+    "equal_error_rate": 0.028750000000000026,
+    "equal_error_threshold": 0.581324821325292,
+    "accuracy_at_zero_logit": 0.9169613821138212,
+    "positive_recall_at_zero_logit": 0.9766666666666667,
+    "hard_negative_rejection_at_zero_logit": 0.91546875,
+    "mean_true_minus_maximum_hard_negative_margin": 1.429031038496939,
+    "median_true_minus_maximum_hard_negative_margin": 1.6301835798860345,
+    "positive_margin_queries": 2263,
+    "zero_false_pair_threshold": 2.4462434979091374,
+    "true_pairs_accepted_at_zero_false_pairs": 1042,
+    "true_pairs": 2400
+  },
+  "zero_false_true_pair_recall": 0.43416666666666665,
+  "accepted": true,
+  "runtime": {
+    "scikit_learn": "1.9.0"
+  },
+  "individual_examples_exported": false,
+  "research_tuning_examples_scored": true,
+  "research_reserved_examples_scored": false,
+  "official_test_audio_accessed": false,
+  "blind_human_audio_accessed": false,
+  "effects_executed": 0
+}
