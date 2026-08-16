@@ -12,6 +12,22 @@ ficheros que el repositorio anterior sí versionaba**, y en esa poda cayeron
 artefactos publicados que las pruebas leen. El resto son sellos consumidos, dos
 defectos reales de portabilidad y cuatro dependencias de entorno.
 
+## Las tres corridas que lo cierran
+
+| Corrida | Salida | .NET | Python | `git status` |
+|---|---|---|---|---|
+| Árbol congelado, 1.ª | `source_quality_gate_passed`, exit 0 | 3.864 pasan, **0 fallan**, 1 omitida | 8.511 pasan, 3 omitidas | limpio antes y después |
+| Árbol congelado, 2.ª | `source_quality_gate_passed`, exit 0 | idéntico | 8.511 pasan, 3 omitidas | limpio |
+| **Clon limpio** | `source_quality_gate_passed`, exit 0 | idéntico | 8.503 pasan, 11 omitidas | limpio |
+
+El árbol quedó byte a byte igual antes de la primera, entre las dos y después de
+la segunda: **la compuerta ya no escribe en el árbol que mide** (§9).
+
+Las 8 omitidas de más en el clon son las del §12, todas con «environment» en su
+mensaje. Ningún rojo se cerró con `xfail`, con un umbral relajado ni con un
+fallback; los sellos consumidos se auditan por su hash publicado, que es lo que
+manda el §7 de la meta, y verifican más de lo que verificaban antes.
+
 ---
 
 ## 1. El sello de `Baxy.FieldUi` — faltaban ficheros, no sobraba sello
