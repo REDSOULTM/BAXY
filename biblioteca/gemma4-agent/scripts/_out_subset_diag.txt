@@ -1,0 +1,44 @@
+
+### app
+  abrí la calculadora                subset=['app', 'window', 'verify', 'session']
+                                     sem: app:0.52, uia:0.43, vision:0.42
+  abrí el bloc de notas              subset=['app', 'window', 'verify', 'notes_tasks', 'state', 'session']
+                                     sem: app:0.66, notes_tasks:0.55, browser:0.49
+  abrí el explorador de archivos     subset=['computer_use', 'app', 'window', 'verify', 'session']
+                                     sem: app:0.66, browser:0.61, filesystem:0.56
+
+### browser
+  abrí github                        subset=['computer_use', 'session']
+                                     sem: browser:0.62, app:0.57, developer:0.52
+  navegá a gmail                     subset=['app', 'window', 'browser_real', 'browser', 'uia', 'session']
+                                     sem: app:0.44, browser_real:0.37, computer_use:0.37
+
+### media
+  siguiente tema                     subset=['media', 'browser', 'audio', 'session']
+                                     sem: media:0.54, study:0.48, web:0.45
+
+### gui
+  escribí hola mundo                 subset=['session']
+                                     sem: whatsapp:0.49, reminder:0.41, input:0.40
+  apretá enter                       subset=['input', 'session']
+                                     sem: input:0.64, uia:0.55, window:0.48
+  clickeá aceptar                    subset=['browser', 'verify', 'browser_real', 'state', 'computer_use', 'session']
+                                     sem: uia:0.67, gui:0.59, browser_real:0.59
+
+### filesystem
+  buscá el archivo presupuesto       subset=['browser', 'browser_real', 'web', 'filesystem', 'knowledge', 'session']
+                                     sem: local_search:0.69, knowledge:0.60, filesystem:0.58
+  mostrame el escritorio             subset=['desktop_layout', 'window', 'office', 'verify', 'state', 'session']
+                                     sem: office:0.59, document:0.51, desktop_layout:0.51
+
+### reminder
+  recordame comprar pan a las 5      subset=['browser', 'verify', 'browser_real', 'state', 'reminder', 'session']
+                                     sem: reminder:0.56, notification:0.55, memory:0.43
+
+### SMALLTALK
+  hola                               subset=['session']
+                                     sem: whatsapp:0.54, memory:0.46, reminder:0.45
+  gracias                            subset=['session']
+                                     sem: reminder:0.47, whatsapp:0.43, memory:0.42
+  qué es pytest                      subset=['session']
+                                     sem: web:0.42, dependency:0.41, vision:0.37

@@ -1,0 +1,1 @@
+Fact-check rule: when the user asks to verify a claim against sources, use fact_check(action="check", claim=..., sources=[...]) or just claim=... if the content has already been ingested into knowledge. fact_check is lexical only (TF-IDF + cosine + negation heuristic); write the final verdict yourself from the ranked matches, do not parrot the heuristic verdict.

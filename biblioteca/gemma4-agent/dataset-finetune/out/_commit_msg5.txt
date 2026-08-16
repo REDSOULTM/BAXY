@@ -1,0 +1,29 @@
+fix(router): auto-referencia en el fallback frio de wants_knowledge + eval noES reforzado + higiene de scripts
+
+1) El fallback LEXICO de wants_knowledge (cuando los centroides de intent
+   no cargaron aun — ventana de warm-up) trataba "chi sei?"/"quien eres"
+   como pregunta-info y el planner apilaba web/knowledge: el modelo
+   "buscaba quien sos" en las noticias. El camino caliente ya era
+   correcto (selfref 0.866 >> info 0.556). El fallback ahora reconoce
+   auto-referencia reusando los mismos _SELF_ANCHORS del centroide
+   (match exacto, prefijo solo para anchors multi-palabra). De paso se
+   corrige el typo historico del anchor portugues ("quem es voce" ->
+   "quem e voce") y se agrega "cosa puoi fare". Medido en frio: las 6
+   formas de identidad -> False; "quien es batman"/"que es una GPU" ->
+   True. Caliente intacto; canarios 63/63 y eval congelado identicos.
+
+2) Eval congelado del router reforzado con 41 filas noES curadas a mano
+   (en/pt/fr/de/it; accion/estado-local/conocimiento/no-tool),
+   deduplicadas contra todo el corpus de entrenamiento (9 descartadas
+   por contaminacion). NUEVO baseline: dev 0.9828/keep 0.9975, holdout
+   0.9790/keep 1.0000. El benchmark destapo un gap real documentado y
+   dejado como tripwire: el gate how-to/info sobre-matchea preguntas de
+   informacion ACTUAL en ingles ("what's the weather like in London" ->
+   subset vacio) — distinguir parametrico de actual queda como proximo
+   frente.
+
+3) Higiene de scripts: 4 _diag_*.py top-level a scripts/_diag/, entradas
+   de INDEX.md para los _validate_* y la receta noES.
+   test_scripts_inventory verde.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

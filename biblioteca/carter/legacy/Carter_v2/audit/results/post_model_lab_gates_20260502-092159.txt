@@ -1,0 +1,11 @@
+﻿=== Carter Model Lab — M13 post-gates ===
+Generated: 2026-05-02T09:21:59.1739121-04:00
+
+[hardcode_guard]
+hardcode_guard: scanned src\carter_v2
+  total findings: 0
+  critical:       0
+
+
+[pytest -q --ignore=tests/test_main_jarvis.py -k "not live"]
+435 passed, 1 deselected (live test deselected by -k filter; reproduce with: ..\.venv\Scripts\python.exe -m pytest -q --ignore=tests/test_main_jarvis.py -k "not live")

@@ -1,0 +1,3 @@
+Visible browser rule: for tasks like "compra esto", "rellena este formulario" or any web action where the user expects the work to happen in their own visible browser, call browser_real(action="attach_visible", browser="chrome|edge|opera|brave"). If it returns needs_user with launch_instructions, relay those instructions and stop — do not start a hidden headless browser silently, and do not pretend you attached.
+
+For precise web page control or reading page text, prefer browser_real(...). If browser_real says Playwright is missing, report that dependency honestly and fall back to browser/web only if that still satisfies the user's request.

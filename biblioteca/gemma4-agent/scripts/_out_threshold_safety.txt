@@ -1,0 +1,17 @@
+=== SMALLTALK (no deben ESCAPAR, o si escapan a web es OK) ===
+cómo estás                   t1=0.42 t2=0.38 gap=+0.04 memory   esc@0.50=no
+qué tal                      t1=0.52 t2=0.46 gap=+0.07 web      esc@0.50=no
+jaja sí                      t1=0.36 t2=0.28 gap=+0.07 web      esc@0.50=no
+qué es pytest                t1=0.42 t2=0.41 gap=+0.02 web      esc@0.50=no
+explicame la fotosíntesis    t1=0.37 t2=0.28 gap=+0.09 photo_library esc@0.50=no
+cuéntame un chiste           t1=0.34 t2=0.33 gap=+0.01 reminder esc@0.50=no
+no entiendo nada             t1=0.29 t2=0.29 gap=+0.00 audio    esc@0.50=no
+
+=== COMMANDS (deben ESCAPAR a la tool correcta) ===
+cuál es mi ip                t1=0.55 t2=0.36 gap=+0.19 network  esc@0.50=ESCAPA
+abrí github                  t1=0.62 t2=0.57 gap=+0.06 browser  esc@0.50=no
+escribí hola mundo           t1=0.49 t2=0.41 gap=+0.08 whatsapp esc@0.50=no
+subí el brillo               t1=0.60 t2=0.41 gap=+0.20 smart_home esc@0.50=ESCAPA
+qué redes wifi hay           t1=0.68 t2=0.59 gap=+0.09 device_settings esc@0.50=no
+abrí la calculadora          t1=0.52 t2=0.43 gap=+0.09 app      esc@0.50=no
+poné rock en spotify         t1=0.51 t2=0.43 gap=+0.08 media    esc@0.50=no

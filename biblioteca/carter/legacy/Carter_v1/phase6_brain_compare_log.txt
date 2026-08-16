@@ -1,0 +1,858 @@
+===== qwen3-common fast6 =====
+==============================================================================
+CARTER OS - UNIVERSAL BENCHMARK (6 cases declarados)
+Run iniciado: 2026-04-10 10:39:44
+Guided=SI  Manual=NO  Repeticiones=1
+==============================================================================
+
+==============================================================================
+[CASE 01] Hola
+==============================================================================
+[RESULTADO] PASS (4.8s) route=chat_mode
+  world : chat stayed non-executive
+  report: chat report matches
+  times : first_action=Nones total=4.718s
+  text  : ¡Hola! ¿Cómo estás? 😊
+
+==============================================================================
+[CASE 04] Abre Steam
+==============================================================================
+
+[CARTER] Open Steam
+
+[CARTER] Verify if Steam is running
+
+[CARTER] Complete the task of opening Steam
+
+[CARTER] Start Steam if it is not running
+
+[CARTER] Verify if Steam is running
+[RESULTADO] FAIL HONESTO (34.7s) route=failure
+  world : running={'steam.exe': True}
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=7.187999999998283s total=34.656s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 21] Dime qué dispositivo de audio está activo
+==============================================================================
+
+[CARTER] Obtener el dispositivo de audio activo
+
+[CARTER] Verificar si la clase Win32_SoundDevice existe en el namespace root\\WMI
+
+[CARTER] Obtener el dispositivo de audio activo usando una alternativa
+
+[CARTER] Verificar si la clase Win32_SoundDevice existe en el namespace root\\WMI usando PowerShell
+
+[CARTER] Obtener el dispositivo de audio activo usando una alternativa
+[RESULTADO] FAIL HONESTO (29.5s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=3.875s total=29.469s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 24] Crea un archivo de texto en el escritorio llamado hola.txt que diga hola mundo
+==============================================================================
+
+[CARTER] Crear un archivo de texto en el escritorio llamado hola.txt que diga 'hola mundo'
+  !! Traceback (most recent call last):
+  File "C:\Users\usuario\AppData\Local\Temp\carter_sandbox_3aea9gnt\task.py", line 8, in <module>
+    with open(file_path, "w") as file:
+FileNotFoundError: [Errno 2
+
+[CARTER] Crear un archivo de texto en el escritorio llamado hola.txt que diga 'hola mundo'
+
+[CARTER] Verificar si el archivo 'hola.txt' fue creado correctamente en el escritorio
+
+[CARTER] Completar la tarea de creación del archivo 'hola.txt' en el escritorio
+[RESULTADO] PASS (34.3s) route=factual_contract
+  world : path state ok: C:\Users\usuario\Desktop\hola.txt
+  report: report route matches
+  times : first_action=12.453000000001339s total=34.297s
+  text  : Completion verified by structured evidence.
+
+==============================================================================
+[CASE 36] Abre la página oficial de OpenAI
+==============================================================================
+
+[CARTER] Open the official OpenAI website
+
+[CARTER] Verify if the official OpenAI website is opened
+
+[CARTER] Complete the task of opening the official OpenAI website
+
+[CARTER] Open the official OpenAI website in Chrome
+  !! Traceback (most recent call last):
+  File "C:\Users\usuario\AppData\Local\Temp\carter_sandbox_w3cxnntu\task.py", line 2, in <module>
+    subprocess.Popen([r'"C:\Program Files\Google\Chrome\Application
+
+[CARTER] Open the official OpenAI website in Chrome
+[RESULTADO] FAIL HONESTO (31.7s) route=failure
+  world : window titles ['Inversiones - Resumen IA proyecto bÃ¡sico - Opera', 'N/D', 'OleMainThreadWndName'] do not contain ['openai']
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=5.984000000000378s total=31.703s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 39] Dime qué GPU tengo
+==============================================================================
+
+[CARTER] Obtener informaci\u00f3n sobre la GPU del sistema
+
+[CARTER] Obtener informaci\u00f3n sobre la GPU del sistema
+
+[CARTER] Obtener informaci\u00f3n sobre la GPU del sistema
+[TIMEOUT 90s total]
+
+[CARTER] Obtener informaci\u00f3n sobre la GPU del sistema
+
+[CARTER] Obtener informaci\u00f3n sobre la GPU del sistema
+[RESULTADO] FAIL HONESTO (294.8s) route=failure
+  world : response does not mention a detected GPU
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=287.6399999999994s total=294.797s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+RESUMEN UNIVERSAL
+==============================================================================
+Auto-validados: 6
+PASS: 2  FAIL HONESTO: 4  FAIL FALSO: 0
+Ruta factual real: 17%
+Tasa de exito real: 33%
+Cierres legacy restantes: 0%
+Facts legacy por stdout: 0%
+Falsos positivos semanticos: 0%
+Tareas GUI ejecutadas: 1  PASS GUI: 0
+Tiempo medio a primera accion: 63.43
+Tiempo medio a cierre real: 71.62
+Casos flakey: 0 -> []
+Pendientes guided: 0  Pendientes manual: 0
+
+POR CATEGORIA
+  app_lifecycle    cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=5.0 first_llm=7.19s first_action=7.19s total=34.67s vision=0% routes=f:0 l:0 legacy:0
+  audio            cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=5.0 first_llm=3.88s first_action=3.88s total=29.47s vision=0% routes=f:0 l:0 legacy:0
+  casual_chat      cases= 1 pass= 1 fast/full=1/0 cycles=0.0 llm=1.0 first_llm=4.72s first_action=Nones total=4.75s vision=0% routes=f:0 l:1 legacy:0
+  files            cases= 1 pass= 1 fast/full=1/0 cycles=4.0 llm=4.0 first_llm=12.45s first_action=12.45s total=34.31s vision=0% routes=f:1 l:0 legacy:0
+  system           cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=4.0 first_llm=85.09s first_action=287.64s total=294.81s vision=0% routes=f:0 l:0 legacy:0
+  web              cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=5.0 first_llm=5.98s first_action=5.98s total=31.72s vision=0% routes=f:0 l:0 legacy:0
+
+[PASS]   01    4.8s  route=chat_mode           Hola
+[FAIL HONESTO]   04   34.7s  route=failure             Abre Steam
+[FAIL HONESTO]   21   29.5s  route=failure             Dispositivo de audio activo
+[PASS]   24   34.3s  route=factual_contract    Crea hola.txt
+[FAIL HONESTO]   36   31.7s  route=failure             OpenAI oficial
+[FAIL HONESTO]   39  294.8s  route=failure             Qué GPU tengo
+===== qwen3-common full4 =====
+==============================================================================
+CARTER OS - UNIVERSAL BENCHMARK (4 cases declarados)
+Run iniciado: 2026-04-10 10:47:03
+Guided=SI  Manual=NO  Repeticiones=1
+==============================================================================
+
+==============================================================================
+[CASE 46] Abre Steam y dime si Fall Guys ya está instalado
+==============================================================================
+
+[CARTER] Open Steam and check if Fall Guys is installed
+
+[CARTER] Check if Fall Guys is installed in Steam
+
+[CARTER] Verify if Fall Guys is installed
+  >> Fall Guys is not installed
+
+[CARTER] Verify if Fall Guys is installed
+  >> Fall Guys is not installed
+
+[CARTER] Verify if Fall Guys is installed
+
+[CARTER] Open Steam
+
+[CARTER] Verify if Fall Guys is installed
+  >> Fall Guys is not installed
+
+[CARTER] Verify if Fall Guys is installed
+  >> Fall Guys is not installed
+
+[CARTER] Verify if Fall Guys is installed
+
+[CARTER] Investigate if Fall Guys is installed
+  >> Fall Guys is not installed
+[RESULTADO] FAIL HONESTO (63.7s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: task not completed after 10 cycles
+  times : first_action=3.485000000000582s total=63.657s
+  text  : [CARTER] No logre completar la tarea tras 10 intentos.
+
+==============================================================================
+[CASE 54] Abre Epic Games y navega hasta la biblioteca
+==============================================================================
+
+[CARTER] Open Epic Games and navigate to the library
+
+[CARTER] Verify if Epic Games is open and navigated to the library
+  >> 21540
+
+[CARTER] Verify if Epic Games is open and navigated to the library
+  >> 21540
+
+[CARTER] Verify if Epic Games is open and navigated to the library
+
+[CARTER] Open Epic Games Launcher
+
+[CARTER] Verify if Epic Games is open and navigated to the library
+  >> 21540
+
+[CARTER] Verify if Epic Games is open and navigated to the library
+  >> 21540
+
+[CARTER] Verify if Epic Games is open and navigated to the library
+
+[CARTER] Investigate if Epic Games is already open and navigated to the library
+  >> "EpicGamesLauncher.exe","21540","Console","1","130,608 KB"
+
+[CARTER] Verify if Epic Games is open and navigated to the library
+[RESULTADO] FAIL HONESTO (93.6s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: task not completed after 10 cycles
+  times : first_action=4.890999999999622s total=93.578s
+  text  : [CARTER] No logre completar la tarea tras 10 intentos.
+
+==============================================================================
+[CASE 65] Crea una carpeta en el escritorio, mete un txt dentro, comprímela y luego abre el zip
+==============================================================================
+
+[CARTER] Crear una carpeta en el escritorio, agregar un archivo de texto, comprimirlo y abrir el archivo zip
+
+[CARTER] Verificar que la carpeta, el archivo de texto y el archivo zip se hayan creado correctamente y que el zip se haya abierto
+
+[CARTER] Complete the task of creating a folder on the desktop, adding a text file inside, compressing it, and opening the zip file.
+
+[CARTER] Complete the task of creating a folder on the desktop, adding a text file inside, compressing it, and opening the zip file.
+
+[CARTER] Complete the task of creating a folder on the desktop, adding a text file inside, compressing it, and opening the zip file.
+
+[CARTER] Create a folder on the desktop, add a text file inside, compress it, and open the zip file.
+
+[CARTER] Verify that the folder, text file, zip file, and opened zip file exist.
+  !! Traceback (most recent call last):
+  File "C:\Users\usuario\AppData\Local\Temp\carter_sandbox_6571dt9h\task.py", line 15, in <module>
+    process_output = subprocess.check_output(['tasklist', '/FI', '
+
+[CARTER] Crear una carpeta en el escritorio, crear un archivo txt dentro, comprimir la carpeta y abrir el zip
+
+[CARTER] Verificar que la carpeta, el archivo txt y el zip han sido creados y que el zip ha sido abierto
+  >> La carpeta C:\Users\usuario\Desktop\NuevaCarpeta existe.
+El archivo C:\Users\usuario\Desktop\NuevaCarpeta\archivo.txt existe.
+El zip C:\Users\usuario\Desktop\carpeta_comprimida.zip existe.
+El zip C:\Users\usuario\Desktop\carpeta_comprimida.zip ha sido abierto.
+
+[CARTER] Completar la tarea de crear una carpeta, agregar un archivo txt, comprimir y abrir el zip
+[RESULTADO] FAIL HONESTO (221.7s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: task not completed after 10 cycles
+  times : first_action=12.343999999997322s total=221.688s
+  text  : [CARTER] No logre completar la tarea tras 10 intentos.
+
+==============================================================================
+[CASE 69] Abre un navegador que tengas instalado y busca "Windows 11 settings"
+==============================================================================
+
+[CARTER] Open a browser and search for 'Windows 11 settings'
+
+[CARTER] Verify if the browser was opened and the search was performed
+
+[CARTER] Check if Chrome is running
+
+[CARTER] Verify if Chrome is running
+
+[CARTER] Launch Chrome and search for 'Windows 11 settings'
+
+[CARTER] Verify if Chrome is running and the search is initiated
+
+[CARTER] Ensure Chrome is launched and the search is initiated
+
+[CARTER] Verify if Chrome is running and the search is initiated
+
+[CARTER] Ensure Chrome is launched and the search is initiated
+
+[CARTER] Verify if Chrome is running and the search is initiated
+[RESULTADO] FAIL HONESTO (65.2s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: task not completed after 10 cycles
+  times : first_action=4.235000000000582s total=65.141s
+  text  : [CARTER] No logre completar la tarea tras 10 intentos.
+
+==============================================================================
+RESUMEN UNIVERSAL
+==============================================================================
+Auto-validados: 4
+PASS: 0  FAIL HONESTO: 4  FAIL FALSO: 0
+Ruta factual real: 0%
+Tasa de exito real: 0%
+Cierres legacy restantes: 0%
+Facts legacy por stdout: 0%
+Falsos positivos semanticos: 0%
+Tareas GUI ejecutadas: 4  PASS GUI: 0
+Tiempo medio a primera accion: 6.24
+Tiempo medio a cierre real: 111.03
+Casos flakey: 0 -> []
+Pendientes guided: 0  Pendientes manual: 0
+
+POR CATEGORIA
+  compound         cases= 1 pass= 0 fast/full=0/1 cycles=10.0 llm=10.0 first_llm=12.34s first_action=12.34s total=221.7s vision=100% routes=f:0 l:0 legacy:0
+  gui_visual       cases= 1 pass= 0 fast/full=0/1 cycles=10.0 llm=10.0 first_llm=4.89s first_action=4.89s total=93.59s vision=100% routes=f:0 l:0 legacy:0
+  launcher_game    cases= 1 pass= 0 fast/full=0/1 cycles=10.0 llm=10.0 first_llm=3.48s first_action=3.49s total=63.67s vision=0% routes=f:0 l:0 legacy:0
+  universality     cases= 1 pass= 0 fast/full=0/1 cycles=10.0 llm=10.0 first_llm=4.24s first_action=4.24s total=65.16s vision=0% routes=f:0 l:0 legacy:0
+
+[FAIL HONESTO]   46   63.7s  route=failure             Steam dice si Fall Guys está instalado
+[FAIL HONESTO]   54   93.6s  route=failure             Epic navega a biblioteca
+[FAIL HONESTO]   65  221.7s  route=failure             Crea carpeta+txt+zip+abre zip
+[FAIL HONESTO]   69   65.2s  route=failure             Navegador cualquiera
+===== qwen25-coder-common fast6 =====
+==============================================================================
+CARTER OS - UNIVERSAL BENCHMARK (6 cases declarados)
+Run iniciado: 2026-04-10 10:54:31
+Guided=SI  Manual=NO  Repeticiones=1
+==============================================================================
+
+==============================================================================
+[CASE 01] Hola
+==============================================================================
+[RESULTADO] PASS (7.7s) route=chat_mode
+  world : chat stayed non-executive
+  report: chat report matches
+  times : first_action=Nones total=7.64s
+  text  : ¡Hola! ¿En qué puedo ayudarte hoy?
+
+==============================================================================
+[CASE 04] Abre Steam
+==============================================================================
+
+[CARTER] Open Steam application
+[RESULTADO] PASS (13.8s) route=factual_contract
+  world : running={'steam.exe': True}
+  report: report route matches
+  times : first_action=12.625s total=13.765s
+  text  : Completion verified by facts: Steam exists=true via process
+
+==============================================================================
+[CASE 21] Dime qué dispositivo de audio está activo
+==============================================================================
+
+[CARTER] Identify the active audio device on the system.
+  >> AUX (Realtek(R) Audio)
+Altavoces (Focusrite USB Audio)
+Micr¢fono (3- USB PnP Audio Device)
+Desktop (VB-Audio Voicemeeter VAIO)
+Analogue 1 + 2 (Focusrite USB Audio)
+Altavoces (Steam Streaming Speakers)
+HyperX (HyperX Virtual Surround Sound)
+
+[CARTER] Identify the active audio device on the system.
+
+[CARTER] Identify the active audio device on the system.
+[RESULTADO] PASS (71.2s) route=factual_contract
+  world : no world-state validator configured
+  report: report route matches
+  times : first_action=16.687000000001717s total=71.203s
+  text  : Completion verified by facts: audio_device value="Altavoces (Focusrite USB Audio)" via system; audio_session value="Altavoces (Focusrite USB Audio)" via system
+
+==============================================================================
+[CASE 24] Crea un archivo de texto en el escritorio llamado hola.txt que diga hola mundo
+==============================================================================
+
+[CARTER] Create a text file named 'hola.txt' on the desktop with content 'hola mundo'
+
+[CARTER] Create a text file named 'hola.txt' on the desktop with content 'hola mundo'
+
+[CARTER] Verify the creation of 'hola.txt' on the desktop with content 'hola mundo'
+
+[CARTER] Complete the task of creating 'hola.txt' on the desktop with content 'hola mundo'
+
+[CARTER] Create 'hola.txt' on the desktop with content 'hola mundo'
+[RESULTADO] FAIL HONESTO (91.4s) route=failure
+  world : path state ok: C:\Users\usuario\Desktop\hola.txt
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=37.48500000000058s total=91.407s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 36] Abre la página oficial de OpenAI
+==============================================================================
+
+[CARTER] Open the official OpenAI website in a web browser.
+
+[CARTER] Verify that the official OpenAI website is open in a web browser.
+
+[CARTER] Verify that the official OpenAI website is open in a web browser.
+
+[CARTER] Verify that the official OpenAI website is open in a web browser.
+
+[CARTER] Open the official OpenAI website in a web browser.
+[RESULTADO] FAIL HONESTO (44.3s) route=failure
+  world : window titles ['Cargandoâ€¦ - Opera', 'N/D', 'OleMainThreadWndName'] do not contain ['openai']
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=3.8909999999996217s total=44.266s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 39] Dime qué GPU tengo
+==============================================================================
+
+[CARTER] Retrieve and display the GPU information.
+  >> Name                             
+----                             
+SudoMaker Virtual Display Adapter
+NVIDIA GeForce RTX 4060 Ti       
+Intel(R) UHD Graphics
+
+[CARTER] Verify the GPU information.
+  >> Name                             
+----                             
+SudoMaker Virtual Display Adapter
+NVIDIA GeForce RTX 4060 Ti       
+Intel(R) UHD Graphics
+
+[CARTER] Verify the GPU information.
+
+[CARTER] Verify the GPU information.
+
+[CARTER] Retrieve the GPU information using PowerShell.
+  >> __CARTER_EVENT__
++
+{
+    "source":  "system",
+    "value":  "SudoMaker Virtual Display Adapter",
+    "attribute":  "value",
+    "entity":  {
+                   "label":  "GPU",
+                   "selectors":  {
+
+                                 },
+                   "kind":  "system"
+  
+[RESULTADO] FAIL HONESTO (50.7s) route=failure
+  world : response does not mention a detected GPU
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=4.547000000002299s total=50.688s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+RESUMEN UNIVERSAL
+==============================================================================
+Auto-validados: 6
+PASS: 3  FAIL HONESTO: 3  FAIL FALSO: 0
+Ruta factual real: 33%
+Tasa de exito real: 50%
+Cierres legacy restantes: 0%
+Facts legacy por stdout: 0%
+Falsos positivos semanticos: 0%
+Tareas GUI ejecutadas: 1  PASS GUI: 0
+Tiempo medio a primera accion: 15.05
+Tiempo medio a cierre real: 46.51
+Casos flakey: 0 -> []
+Pendientes guided: 0  Pendientes manual: 0
+
+POR CATEGORIA
+  app_lifecycle    cases= 1 pass= 1 fast/full=1/0 cycles=1.0 llm=1.0 first_llm=12.62s first_action=12.62s total=13.8s vision=0% routes=f:1 l:0 legacy:0
+  audio            cases= 1 pass= 1 fast/full=1/0 cycles=3.0 llm=3.0 first_llm=16.69s first_action=16.69s total=71.2s vision=0% routes=f:1 l:0 legacy:0
+  casual_chat      cases= 1 pass= 1 fast/full=1/0 cycles=0.0 llm=1.0 first_llm=7.64s first_action=Nones total=7.66s vision=0% routes=f:0 l:1 legacy:0
+  files            cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=5.0 first_llm=17.75s first_action=37.49s total=91.42s vision=0% routes=f:0 l:0 legacy:0
+  system           cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=5.0 first_llm=4.55s first_action=4.55s total=50.7s vision=0% routes=f:0 l:0 legacy:0
+  web              cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=5.0 first_llm=3.89s first_action=3.89s total=44.28s vision=0% routes=f:0 l:0 legacy:0
+
+[PASS]   01    7.7s  route=chat_mode           Hola
+[PASS]   04   13.8s  route=factual_contract    Abre Steam
+[PASS]   21   71.2s  route=factual_contract    Dispositivo de audio activo
+[FAIL HONESTO]   24   91.4s  route=failure             Crea hola.txt
+[FAIL HONESTO]   36   44.3s  route=failure             OpenAI oficial
+[FAIL HONESTO]   39   50.7s  route=failure             Qué GPU tengo
+===== qwen25-coder-common full4 =====
+==============================================================================
+CARTER OS - UNIVERSAL BENCHMARK (4 cases declarados)
+Run iniciado: 2026-04-10 10:59:18
+Guided=SI  Manual=NO  Repeticiones=1
+==============================================================================
+
+==============================================================================
+[CASE 46] Abre Steam y dime si Fall Guys ya está instalado
+==============================================================================
+
+[CARTER] Determine if Fall Guys is installed in Steam.
+
+[CARTER] Verify if Steam is running and if Fall Guys is installed.
+
+[CARTER] Check if Fall Guys is installed in Steam.
+  >> False
+
+[CARTER] Verify if Steam is running and if Fall Guys is installed.
+
+[CARTER] 
+[TIMEOUT 60s sin tokens]
+
+[CARTER] Check if Fall Guys is installed in Steam.
+  >> False
+
+[CARTER] Verify if Steam is running and if Fall Guys is installed.
+
+[CARTER] Start Steam and check if Fall Guys is installed.
+
+[CARTER] Verify if Steam is running and if Fall Guys is installed.
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (455.0s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: task not completed after 10 cycles
+  times : first_action=23.81199999999808s total=455.0s
+  text  : [CARTER] No logre completar la tarea tras 10 intentos.
+
+==============================================================================
+[CASE 54] Abre Epic Games y navega hasta la biblioteca
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (17.1s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: llm unavailable after 6 attempts: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+  times : first_action=Nones total=17.063s
+  text  : [CARTER ERROR] LLM no responde tras 6 intentos: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+
+==============================================================================
+[CASE 65] Crea una carpeta en el escritorio, mete un txt dentro, comprímela y luego abre el zip
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (17.1s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: llm unavailable after 6 attempts: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+  times : first_action=Nones total=17.047s
+  text  : [CARTER ERROR] LLM no responde tras 6 intentos: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+
+==============================================================================
+[CASE 69] Abre un navegador que tengas instalado y busca "Windows 11 settings"
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (17.1s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: llm unavailable after 6 attempts: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+  times : first_action=Nones total=17.047s
+  text  : [CARTER ERROR] LLM no responde tras 6 intentos: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+
+==============================================================================
+RESUMEN UNIVERSAL
+==============================================================================
+Auto-validados: 4
+PASS: 0  FAIL HONESTO: 4  FAIL FALSO: 0
+Ruta factual real: 0%
+Tasa de exito real: 0%
+Cierres legacy restantes: 0%
+Facts legacy por stdout: 0%
+Falsos positivos semanticos: 0%
+Tareas GUI ejecutadas: 4  PASS GUI: 0
+Tiempo medio a primera accion: 23.81
+Tiempo medio a cierre real: 126.55
+Casos flakey: 0 -> []
+Pendientes guided: 0  Pendientes manual: 0
+
+POR CATEGORIA
+  compound         cases= 1 pass= 0 fast/full=0/1 cycles=6.0 llm=0.0 first_llm=Nones first_action=Nones total=17.06s vision=0% routes=f:0 l:0 legacy:0
+  gui_visual       cases= 1 pass= 0 fast/full=0/1 cycles=6.0 llm=0.0 first_llm=Nones first_action=Nones total=17.08s vision=0% routes=f:0 l:0 legacy:0
+  launcher_game    cases= 1 pass= 0 fast/full=0/1 cycles=10.0 llm=8.0 first_llm=23.81s first_action=23.81s total=455.02s vision=100% routes=f:0 l:0 legacy:0
+  universality     cases= 1 pass= 0 fast/full=0/1 cycles=6.0 llm=0.0 first_llm=Nones first_action=Nones total=17.06s vision=0% routes=f:0 l:0 legacy:0
+
+[FAIL HONESTO]   46  455.0s  route=failure             Steam dice si Fall Guys está instalado
+[FAIL HONESTO]   54   17.1s  route=failure             Epic navega a biblioteca
+[FAIL HONESTO]   65   17.1s  route=failure             Crea carpeta+txt+zip+abre zip
+[FAIL HONESTO]   69   17.1s  route=failure             Navegador cualquiera
+===== devstral24b-common fast6 =====
+==============================================================================
+CARTER OS - UNIVERSAL BENCHMARK (6 cases declarados)
+Run iniciado: 2026-04-10 11:07:48
+Guided=SI  Manual=NO  Repeticiones=1
+==============================================================================
+
+==============================================================================
+[CASE 01] Hola
+==============================================================================
+[RESULTADO] PASS (2.0s) route=chat_mode
+  world : chat stayed non-executive
+  report: chat report matches
+  times : first_action=Nones total=2.016s
+  text  : ¿En que puedo ayudarte?
+
+==============================================================================
+[CASE 04] Abre Steam
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (15.1s) route=failure
+  world : running={'steam.exe': True}
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=Nones total=15.031s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 21] Dime qué dispositivo de audio está activo
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (15.0s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=Nones total=15.032s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 24] Crea un archivo de texto en el escritorio llamado hola.txt que diga hola mundo
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (15.1s) route=failure
+  world : path missing: C:\Users\usuario\Desktop\hola.txt
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=Nones total=15.047s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 36] Abre la página oficial de OpenAI
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (15.0s) route=failure
+  world : window titles ['202610.8016 | PORTAFOLIO DE PROYECTOS - Opera', 'N/D', 'OleMainThreadWndName'] do not contain ['openai']
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=Nones total=15.016s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+[CASE 39] Dime qué GPU tengo
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (15.1s) route=failure
+  world : response does not mention a detected GPU
+  report: task report marked failure: task not completed after 5 cycles
+  times : first_action=Nones total=15.063s
+  text  : [CARTER] No logre completar la tarea tras 5 intentos.
+
+==============================================================================
+RESUMEN UNIVERSAL
+==============================================================================
+Auto-validados: 6
+PASS: 1  FAIL HONESTO: 5  FAIL FALSO: 0
+Ruta factual real: 0%
+Tasa de exito real: 17%
+Cierres legacy restantes: 0%
+Facts legacy por stdout: 0%
+Falsos positivos semanticos: 0%
+Tareas GUI ejecutadas: 1  PASS GUI: 0
+Tiempo medio a primera accion: None
+Tiempo medio a cierre real: 12.89
+Casos flakey: 0 -> []
+Pendientes guided: 0  Pendientes manual: 0
+
+POR CATEGORIA
+  app_lifecycle    cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=0.0 first_llm=Nones first_action=Nones total=15.06s vision=0% routes=f:0 l:0 legacy:0
+  audio            cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=0.0 first_llm=Nones first_action=Nones total=15.05s vision=0% routes=f:0 l:0 legacy:0
+  casual_chat      cases= 1 pass= 1 fast/full=1/0 cycles=0.0 llm=1.0 first_llm=2.02s first_action=Nones total=2.03s vision=0% routes=f:0 l:1 legacy:0
+  files            cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=0.0 first_llm=Nones first_action=Nones total=15.06s vision=0% routes=f:0 l:0 legacy:0
+  system           cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=0.0 first_llm=Nones first_action=Nones total=15.08s vision=0% routes=f:0 l:0 legacy:0
+  web              cases= 1 pass= 0 fast/full=1/0 cycles=5.0 llm=0.0 first_llm=Nones first_action=Nones total=15.05s vision=0% routes=f:0 l:0 legacy:0
+
+[PASS]   01    2.0s  route=chat_mode           Hola
+[FAIL HONESTO]   04   15.1s  route=failure             Abre Steam
+[FAIL HONESTO]   21   15.0s  route=failure             Dispositivo de audio activo
+[FAIL HONESTO]   24   15.1s  route=failure             Crea hola.txt
+[FAIL HONESTO]   36   15.0s  route=failure             OpenAI oficial
+[FAIL HONESTO]   39   15.1s  route=failure             Qué GPU tengo
+===== devstral24b-common full4 =====
+==============================================================================
+CARTER OS - UNIVERSAL BENCHMARK (4 cases declarados)
+Run iniciado: 2026-04-10 11:09:14
+Guided=SI  Manual=NO  Repeticiones=1
+==============================================================================
+
+==============================================================================
+[CASE 46] Abre Steam y dime si Fall Guys ya está instalado
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (17.1s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: llm unavailable after 6 attempts: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+  times : first_action=Nones total=17.032s
+  text  : [CARTER ERROR] LLM no responde tras 6 intentos: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+
+==============================================================================
+[CASE 54] Abre Epic Games y navega hasta la biblioteca
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (17.1s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: llm unavailable after 6 attempts: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+  times : first_action=Nones total=17.063s
+  text  : [CARTER ERROR] LLM no responde tras 6 intentos: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+
+==============================================================================
+[CASE 65] Crea una carpeta en el escritorio, mete un txt dentro, comprímela y luego abre el zip
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (17.1s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: llm unavailable after 6 attempts: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+  times : first_action=Nones total=17.047s
+  text  : [CARTER ERROR] LLM no responde tras 6 intentos: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+
+==============================================================================
+[CASE 69] Abre un navegador que tengas instalado y busca "Windows 11 settings"
+==============================================================================
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+
+[CARTER] 
+[RESULTADO] FAIL HONESTO (17.1s) route=failure
+  world : no world-state validator configured
+  report: task report marked failure: llm unavailable after 6 attempts: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+  times : first_action=Nones total=17.046s
+  text  : [CARTER ERROR] LLM no responde tras 6 intentos: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+
+==============================================================================
+RESUMEN UNIVERSAL
+==============================================================================
+Auto-validados: 4
+PASS: 0  FAIL HONESTO: 4  FAIL FALSO: 0
+Ruta factual real: 0%
+Tasa de exito real: 0%
+Cierres legacy restantes: 0%
+Facts legacy por stdout: 0%
+Falsos positivos semanticos: 0%
+Tareas GUI ejecutadas: 4  PASS GUI: 0
+Tiempo medio a primera accion: None
+Tiempo medio a cierre real: 17.07
+Casos flakey: 0 -> []
+Pendientes guided: 0  Pendientes manual: 0
+
+POR CATEGORIA
+  compound         cases= 1 pass= 0 fast/full=0/1 cycles=6.0 llm=0.0 first_llm=Nones first_action=Nones total=17.06s vision=0% routes=f:0 l:0 legacy:0
+  gui_visual       cases= 1 pass= 0 fast/full=0/1 cycles=6.0 llm=0.0 first_llm=Nones first_action=Nones total=17.08s vision=0% routes=f:0 l:0 legacy:0
+  launcher_game    cases= 1 pass= 0 fast/full=0/1 cycles=6.0 llm=0.0 first_llm=Nones first_action=Nones total=17.06s vision=0% routes=f:0 l:0 legacy:0
+  universality     cases= 1 pass= 0 fast/full=0/1 cycles=6.0 llm=0.0 first_llm=Nones first_action=Nones total=17.08s vision=0% routes=f:0 l:0 legacy:0
+
+[FAIL HONESTO]   46   17.1s  route=failure             Steam dice si Fall Guys está instalado
+[FAIL HONESTO]   54   17.1s  route=failure             Epic navega a biblioteca
+[FAIL HONESTO]   65   17.1s  route=failure             Crea carpeta+txt+zip+abre zip
+[FAIL HONESTO]   69   17.1s  route=failure             Navegador cualquiera

@@ -64,7 +64,9 @@ como los cuatro anteriores.
 
 **1. Hereda primero, estado del arte después, construye al final.** En ese orden:
 ¿lo resolvió ya un BAXY anterior? — entonces trae esa solución, o la **mejor
-combinación** de las que hay. ¿Está resuelto ahí fuera? — entonces impleméntalo en
+combinación** de las que hay, buscándola en
+[`biblioteca/`](../../biblioteca/00_INDICE.md), donde están los 1.350 documentos de
+las cuatro escrituras anteriores. ¿Está resuelto ahí fuera? — entonces impleméntalo en
 vez de inventarlo. Construir es el último recurso, y hay que decir por qué. Y al
 revés: **que BAXY ya lo haga de una manera no es razón para conservarla**; heredar
 es traer lo que funciona, no conservar lo que estaba. Es una pasada, no una

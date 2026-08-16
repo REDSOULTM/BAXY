@@ -1,0 +1,11 @@
+﻿perfil=es whisper_lang=es
+
+== A) comandos RED: 84 clips ==
+  TRIGGER [2.5s] exp='reproduce The Last of Us en HBO Max'
+     parakeet='Reproduce the last of us en H be on the' -> whisper='reproduciendo el ácido fós en HVOM.'
+
+A) disparos: 1/84 | mejorados: 0/1
+A) WER antes=0.3676 despues=0.3721
+A) latencia extra rescate p50=1457ms
+B) fleurs: falsos disparos 0/120
+B) chileno: falsos disparos 0/60

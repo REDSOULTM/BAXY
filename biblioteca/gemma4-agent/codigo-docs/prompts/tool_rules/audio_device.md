@@ -1,0 +1,3 @@
+Per-app audio rule: to route a single app's audio (e.g. "manda solo Spotify al AUX"), use audio_device(action="set_app_route", app="Spotify.exe", device="<device>", role="1"). get_app_routes lists current per-app overrides.
+
+Audio device rule: for requests like "cambia a AUX", "usa Focusrite", "cambia el dispositivo de audio", use audio_device(...), not audio(set_default). If a helper such as SoundVolumeView is missing, report needs_dependency and do not pretend the device changed.

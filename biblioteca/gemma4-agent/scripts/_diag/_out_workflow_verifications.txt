@@ -1,0 +1,538 @@
+===========================================================================
+### busca_teclados  --  'busca teclados'
+--- VERIFICACION/RECOMENDACION FINAL ---
+Confirmed the order: `guard_unverified_final` runs first (line 4034, appends note), then `guard_promise_without_action` (4037) and `guard_grounded_action_claim` (4045) both receive `events` (the crashed web event) → both self-exempt → the "Listo, abrí el primero" survives with only the appended note. The diagnosis is fully confirmed end-to-end.
+
+I have completed my adversarial verification. Here is my final assessment.
+
+---
+
+# VEREDICTO DEL VERIFICADOR ADVERSARIAL — `#busca_teclados`
+
+## (1) ¿El diagnóstico es CORRECTO? → **CONFIRMADO** (con una atribución de línea imprecisa, no material)
+
+Reproduje los TRES bugs al 100% contra el código real (runtime py3.10), no solo de lectura:
+
+- **FALLO(1) crash:** `reg.execute("web", {action:search,query:teclados})` con `web_search` devolviendo lista lanza exactamente `AttributeError: 'list' object has no attribute 'setdefault'` en `tools.py:1678 → tools.py:225`. La línea 1678 está **fuera** del `try/except` (el except cierra en 1677), confirmado. El `_run_with_timeout` lo captura con `str(exc)` (sin prefijo de tipo) → `agent_dispatch.py:108-112` arma `{ok:False,status:failed,error:"'list'...",tool:"web"}` **sin clave `action`**. El error-string del trace matchea byte a byte.
+- **FALLO(2a) nudge falso:** `_only_web_search` (agent.py:3966) exige `"search" in result["action"]`; el result crashado no tiene `action` → `_only_web_search=False` → no se suprime → el nudge dispara (gateado por modo accesibilidad, que es el del trace).
+- **FALLO(2b) "Listo" sobrevive:** corrí el turno COMPLETO en movilidad y el reply final fue, literal:
+  `'Listo, abrí el primero.\n\nNota: la ultima tool no dejo evidencia suficiente... (status=failed, verified=False, evidence=failed).\n\n[1 no confirmada(s)]'` — auto-contradictorio, tal cual predijo.
+
+**Origen de la lista (Hipótesis A del diagnóstico) → CONFIRMADO, no solo "probable".** El test `test_a11y_continue_meta_guard.py:71-72` stubea `web_search` a lista, `t_web` (tools.py:2733) la devuelve cruda, y eso ES la forma que crashea. El trace salió de ese harness (o equivalente). El `web_search` de prod devuelve `_ok(...)` (dict) — verificado.
+
+**Imprecisión menor (no cambia la conclusión):** el diagnóstico dice que `guard_grounded_action_claim` tiene la misma exención "comentado en líneas 410-411". Falso textualmente: 410-411 es solo un comentario en `guard_promise_without_action`. La exención real de `guard_grounded_action_claim` vive en `grounding_gate.py:206` (`if tool_events: return should_replace=False`). El EFECTO que describe el diagnóstico es correcto (ambos guards se eximen con el evento crashado), solo erró el puntero.
+
+## (2) ¿El fix es seguro y completo? → **PARCIAL. Tiene 2 huecos reales.**
+
+**Hueco A — regresión NO detectada (el más grave).** El diagnóstico solo advirtió sobre el test a11y, pero su **fix (2b) ROMPE dos tests directos** en `test_promise_guard.py`:
+- `test_does_nothing_when_tool_ran` (línea 76) y `test_false_confirmation_not_triggered_when_tool_ran` (línea 171) pasan `events=[MagicMock()]`. El fix (2b) hace `isinstance(e.result, dict)` → **False para MagicMock** → `_effective=[]` → el guard FIRES → ambos tests fallan. Lo verifiqué: `MagicMock().result` no es dict y `.get("ok") is True` es False. El diagnóstico no lo vio.
+
+**Hueco B — fix (1) incompleto en una mitad.** Mover la línea 1678 dentro del try solo arregla `execute()`. Pero `execute_routine_step()` (tools.py:1704) tiene el **MISMO bug** (`_normalize_tool_result` fuera del try). La mitad "blindar `_normalize_tool_result` con `isinstance`" SÍ cubre ambos; la mitad "mover dentro del try" no. → Quedarse solo con el guard en `_normalize_tool_result` es más completo que el movimiento de línea.
+
+**Lo que el fix hace BIEN:** `_err(msg, status=..., raw_result_type=...)` es una firma válida (verificado). El guard `isinstance(result,dict)` no recursa peligrosamente. El enfoque es estructural (mide forma, no contenido), multi-idioma, alineado a CLAUDE.md.
+
+**Contexto que FORTALECE el fix (1):** ya existe `test_tool_dispatch_contract.py` cuyo docstring promete "execute() ALWAYS returns a dict, **never raises**, no matter how badly a handler misbehaves" — pero solo testea handlers que *lanzan*, no los que *devuelven no-dict*. El fix cierra una invariante que el repo YA declara suya.
+
+## (3) Recomendación FINAL consolidada (lo que YO aplicaría)
+
+**FIX 1 — blindar el contrato handler→dict (cubre execute + execute_routine_step de una):**
+`tools.py:224-225`
+```python
+def _normalize_tool_result(name: str, args: dict[str, Any], result: Any) -> dict[str, Any]:
+    if not isinstance(result, dict):
+        result = _err(
+            f"tool {name} returned non-dict result ({type(result).__name__})",
+            status="failed", raw_result_type=type(result).__name__,
+        )
+    result.setdefault("tool", name)
+    ...
+```
+(Esto solo, sin mover la línea 1678, ya cierra crash en `execute` Y `execute_routine_step`. Mover 1678 dentro del try es opcional/cosmético; si se hace, perfecto, pero no es lo que carga el peso.)
+
+**FIX 2a — un tool-event FALLIDO no es "acción corrida"** (agent.py:3957): excluir `ok=False`/timeout/failed del set `_dom_events`. Igual que propone el diagnóstico, correcto.
+
+**FIX 2b — corregido para NO romper los tests de MagicMock.** En vez del `_effective` del diagnóstico (que descarta MagicMock por no-dict), eximir solo cuando el evento es no-dict-mock O tiene efecto medido. La forma robusta: tratar el caso "result no es dict" (MagicMock de los tests viejos) como "evento legítimo" y solo des-eximir cuando el result ES dict y reporta fallo:
+`agent_guards.py:399`
+```python
+def _event_is_real_action(e):
+    r = getattr(e, "result", None)
+    if not isinstance(r, dict):
+        return True  # MagicMock / opaco -> back-compat: cuenta como acción
+    return r.get("ok") is not False and str(r.get("status")) != "failed"
+if any(_event_is_real_action(e) for e in events):
+    return content, fallback_streak, last_fallback_user_text
+```
+Aplicar el mismo predicado en `grounding_gate.py:206`. Así `MagicMock` sigue eximiendo (tests verdes) pero el web crashado (`ok=False,status=failed`, dict real) NO exime → "Listo, abrí el primero" cae al fallback honesto.
+
+**FIX 3 (anti-regresión + cierre de origen) — arreglar el stub mentiroso del test.** `test_a11y_continue_meta_guard.py:71-72`: el stub `web_search → list` modela un handler ROTO, no el contrato. Cambiarlo a devolver un dict `_ok(...)` con `ok=True` (o `{"ok":True,"action":"search","results":[...]}`). Con ese stub corregido, el test `test_action_turn_that_delegates_STILL_nudges` sigue válido (web corre OK → delega → nudge dispara), y deja de depender del bug.
+
+**Test nuevo (la canary que faltaba):** en `test_tool_dispatch_contract.py`, agregar `web_search` stubbeado a list/None/str → `execute("web",...)` debe devolver `{ok:False,status:failed,tool:"web"}` sin lanzar. Cubre el hueco que el docstring ya promete.
+
+**Validación EN VIVO (CLAUDE.md §3.5, no requiere gui físico):** arrancar server, modo movilidad, correr "busca teclados" / "buscá teclados" / "search for keyboards" con el provider web caído, y confirmar que el reply NO dice "Listo, abrí…" sino una respuesta honesta de fallo.
+
+## (4) Prioridad y esfuerzo
+
+| Fix | Prioridad | Esfuerzo | Por qué |
+|---|---|---|---|
+| FIX 1 (guard non-dict en `_normalize_tool_result`) | **CRÍTICO** | ~10 min | Cualquier handler que devuelva no-dict tumba el turno entero; viola una invariante ya declarada. Cubre execute + routine_step. |
+| FIX 2b (no eximir guards con tool fallido) | **ALTO** | ~30 min (incluye no romper 2 tests) | Es el bug de HONESTIDAD: el sistema afirma éxito tras un fallo. Núcleo de CLAUDE.md. Ojo con MagicMock. |
+| FIX 2a (failed != acción para el nudge) | **MEDIO** | ~15 min | Solo aplica en modo accesibilidad; sin él, 2b igual frena la mentira (cae a fallback), pero 2a evita que el nudge fabrique el segundo claim. |
+| FIX 3 + canary test | **MEDIO** | ~15 min | Cierra el origen real (stub mentiroso) y previene regresión futura. |
+
+**Causa raíz: 100% CÓDIGO, ningún bug es del LLM.** El 4B ruteó bien `web.search`. Tres bugs determinísticos encadenados: un dispatcher que no defiende el contrato handler→dict, un detector de "solo-búsqueda" que asume el happy-path, y dos guards de honestidad que se desactivan justo cuando una tool falló.
+
+**Caveat de honestidad:** confirmé el crash al 100% (repro directo) y que prod `web_search` HOY devuelve dict; el origen de la lista es el harness de test (confirmado por código), no descarté que algún provider/commit viejo también la haya producido — pero da igual: la vulnerabilidad estructural es real y el FIX 1 la cierra sea cual sea el origen.
+
+Archivos verificados: `gemma4_agent\tools_pkg\tools.py` (224-261, 1670-1704, 2727-2750, 5129-5145), `gemma4_agent\agent_core\agent.py` (3895-4047, 6290-6319), `gemma4_agent\agent_core\agent_dispatch.py` (80-114), `gemma4_agent\agent_core\agent_guards.py` (38-42, 151-303, 383-520), `gemma4_agent\safety_pkg\grounding_gate.py` (195-218), `gemma4_agent\tests\test_a11y_continue_meta_guard.py`, `gemma4_agent\tests\test_promise_guard.py` (76, 171), `gemma4_agent\tests\test_tool_dispatch_contract.py`.
+
+===========================================================================
+### abri_el_mejor  --  'abri el mejor'
+--- VERIFICACION/RECOMENDACION FINAL ---
+I now have everything verified. Let me compile the final adversarial verdict.
+
+---
+
+# VERIFICACIÓN ADVERSARIAL — comando #abri_el_mejor
+
+## (1) ¿El diagnóstico es CORRECTO? → **PARCIAL** (sólido en lo estructural, REFUTADO en la atribución del crash de `web`)
+
+**CONFIRMADO leyendo el código (lo bueno del diagnóstico):**
+- **Dispatcher wrapping** (`tools.py:1670-1678`): el `except Exception` envuelve en `_err(f"{type(exc).__name__}: {exc}")` y luego `_normalize_tool_result`. Correcto.
+- **`pending_intent` solo ante `needs_user`** (`agent.py:3514-3526` + `state.py:324-360`): confirmado. NO existe ningún slot de "resultados de búsqueda guardados para selección cross-turn". `_recent_search_results()` NO existe. Esta es la observación central del diagnóstico y es **correcta**.
+- **`extract_app_open("abri el mejor")` devuelve `"mejor"`** (`command_splitter.py:335-352`): verificado paso a paso — `_APP_OPEN_VERB` matchea "abri ", rest="el mejor" (2≤4 palabras), sin `_NON_APP_MARK`, strip de "el" → `"mejor"`. Dispara `app.open(name="mejor")`, no resuelve, cae al flujo normal. FIX 3 tiene premisa correcta.
+- **Guard de honestidad** (`agent_guards.py:497-538` + `grounding_gate.py:123,130`): el subset `[app, browser, game_launcher, window, session]` NO es subset de `_META_ONLY={"session"}` → la exención NO aplica → `reason="generic"` → `_HONEST_FALLBACK = "No alcancé a completar la acción. ¿La repetimos?"`. Exactamente el reply reportado. **La cadena de honestidad funcionó correctamente.** Confirmado.
+- **Auto-repair search→open es filesystem-only + intra-turno** (`agent.py:5467-5500`, línea 5484 filtra `name != "filesystem"`, itera sobre `events` del turno actual). Confirmado: no cubre `web` ni cross-turn.
+
+**REFUTADO / sobre-afirmado (lo que el verificador debe corregir):**
+- El diagnóstico afirma como "hipótesis fuerte" que el `.setdefault` sobre `list` ocurre **dentro de `t_web`/`web_search`**. Leí el código: **eso es improbable, casi imposible por esa ruta.** `web_search` (`tools.py:5129`) llama `_web_search_provider`, que envuelve **TANTO** `_duckduckgo_search` **COMO** `_bing_search` en `try/except Exception` (`tools.py:1324-1335`). Ningún provider llama `.setdefault`. Y `_ok`/`_err` (`tool_result.py:45-48`) **siempre devuelven dict**. Por lo tanto un `AttributeError` interno al provider sería **tragado** (results=[]) y `web_search` devolvería un dict válido con `count:0` — NO un crash con `status:failed`.
+- El `.setdefault` sobre objeto-no-dict más plausible está **fuera de `web_search`**:
+  - `support/reasoning.py:402` `parsed.setdefault("action", action)` en el **rescue de dotted-call** — crashea si `_parse_kwargs` devuelve una `list` (el 4B emitió args como array). Esto es del PARSEO del tool-call, no del handler `web`.
+  - `tools.py:225` `result.setdefault("tool", name)` en `_normalize_tool_result` — crashea si un handler devuelve `list`. Pero esto corre en `tools.py:1678`, **FUERA** del try/except (1670-1677), así que NO se envolvería como `_err`; propagaría hacia arriba. No cuadra con `status:failed` en el resultado.
+- **Conclusión sobre el crash:** el diagnóstico tiene razón en que *hubo* un crash upstream con ese mensaje, pero su localización ("dentro del search del web") **no la pudo confirmar y el código la contradice**. El crash más probablemente vino del **path de parseo/rescue del tool-call** (reasoning.py:402) o de un handler distinto que devolvió list — no de la red/scraping de DDG/Bing. El diagnóstico es honesto en admitir que no lo reprodujo, pero presenta una localización que el código vuelve poco creíble.
+
+## (2) ¿El fix es seguro y completo? ¿Qué falta / qué rompería?
+
+- **FIX 1 ("arreglar el crash del web search"):** apunta al lugar equivocado. Sin reproducir, perseguir un `.setdefault` en el scraping de DDG/Bing es perseguir un fantasma — esos providers ya están blindados con try/except. **Antes de tocar nada hay que reproducir y capturar el traceback REAL** (el `_log.exception` de `tools.py:1676` YA lo loggea — hay que leer ESE stack, no adivinar). Riesgo de "arreglar" código sano.
+- **FIX 2 ("follow-up abrir N-ésimo resultado sin resultados → fallback honesto"):** dirección correcta y alineada a CLAUDE.md (forma por embeddings, no listas). PERO:
+  - `refers_to_search_result` y `_recent_search_results()` **no existen** — son trabajo nuevo no trivial (el segundo requiere escanear `self.history`/traces por un `web/browser.search` con `ok=True ∧ count>0`, no hay slot persistido).
+  - **Hueco lógico:** en este caso real el search del turno A **falló** (count:0). Entonces `_recent_search_results()` devolvería falso igual, y el reply pediría "¿qué querés que busque?" — razonable, pero NO distingue "nunca buscaste" de "busqué y falló/vino vacío". El reply honesto para el 2º caso es distinto ("busqué teclados pero no obtuve resultados"). FIX 2 no cubre ese matiz.
+  - Riesgo de regresión real sobre "abrí el primer archivo" (filesystem) / "abrí el navegador". Mitigado por exigir search reciente, pero `refers_to_search_result` por embeddings necesita su propio gate medido (CLAUDE.md §3.5: variantes en vivo).
+- **FIX 3 (endurecer `extract_app_open` para ordinales/superlativos):** seguro y barato. Recomiendo **subirlo de "bonus" a parte del fix principal** — es la única pieza con riesgo bajo, test trivial, y previene una mentira futura ("Listo, abrí <app>") si un AppResolver fuzzy false-matchea "mejor"/"primero".
+
+## (3) Recomendación FINAL consolidada (lo que yo aplicaría)
+
+**Paso 0 — REPRODUCIR antes de arreglar (CLAUDE.md §4, causa raíz).** Correr en vivo `web.search("teclados")` con `scripts/_boot_server_for_eval.py` y **leer el traceback que `tools.py:1676 _log.exception` ya escribe**. NO asumir que está en DDG/Bing. Hipótesis priorizada por código: el crash está en `support/reasoning.py:402` (`parsed.setdefault` sobre una list que devolvió `_parse_kwargs`) o en un handler que devolvió list, NO en `web_search`. Sin ese stack, cualquier "FIX 1" es a ciegas.
+
+**Fix defensivo barato e inmediato (independiente de la repro)** — blindar `_parse_kwargs`-consumers para que un list nunca crashee el rescue:
+
+`support/reasoning.py:399-402`
+```python
+    parsed = _parse_kwargs(body)
+    if not isinstance(parsed, dict):   # _parse_kwargs puede devolver list/None si el 4B emitió args como array
+        parsed = {}
+    parsed.setdefault("action", action)
+```
+
+Y guarda simétrica en el normalizador (cinturón + tirantes):
+
+`tools.py:224-225`
+```python
+def _normalize_tool_result(name: str, args: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(result, dict):   # un handler devolvió list/str -> no crashear el dispatcher
+        result = _err(f"tool {name} returned non-dict result: {type(result).__name__}")
+    result.setdefault("tool", name)
+```
+
+**FIX 3 (aplicar ya, riesgo bajo)** — excluir deícticos/ordinales/superlativos en `command_splitter.py`, tras la línea 351:
+```python
+    rest = _OPEN_LEAD_ART.sub("", rest).strip()
+    # ordinal/superlativo deíctico ("el mejor", "el primero", "the best one") NO es nombre de app
+    if _DEICTIC_ORDINAL_RE.fullmatch(rest):   # estructural, multi-idioma (mejor|primer\w*|segund\w*|últim\w*|best|first|second|last|…)
+        return None
+    return rest or None
+```
+Más test `extract_app_open("abri el mejor") is None` (y que NO regrese "abrí discord"/"abrí spotify").
+
+**FIX 2 (la UX real, pero gateado y medido en vivo)** — implementar `refers_to_search_result` (embeddings, como `context_router`) + `_recent_search_results()` (escanear historial por search `ok=True ∧ count>0`), y en `_finalize_turn` antes de elegir el fallback genérico, emitir `reason="partial", missing="una búsqueda previa con resultados"` SI refiere a abrir-resultado y NO hay search exitoso reciente. **Distinguir además el caso "busqué pero falló"** (mencionar el fallo) del "nunca buscaste". NO re-ejecutar la búsqueda automáticamente. Validar en vivo la secuencia real "busca teclados"→"abri el mejor" + 3-4 variantes (CLAUDE.md §3.5).
+
+## (4) Prioridad y esfuerzo
+
+| Pieza | Prioridad | Esfuerzo | Nota |
+|---|---|---|---|
+| Paso 0: reproducir + leer traceback real | **CRÍTICO** | 15-30 min | Bloquea cualquier "FIX 1" honesto. El stack YA se loggea. |
+| Guardas defensivas `isinstance(parsed/result, dict)` | **ALTO** | 10 min | Elimina la clase de crash sin importar el origen exacto. Riesgo casi nulo. |
+| FIX 3 (ordinales en `extract_app_open`) | **MEDIO** | 20 min + test | Previene mentira futura. Bajo riesgo. |
+| FIX 2 (follow-up "abrir N-ésimo" honesto) | **MEDIO** | 0.5-1 día + gate en vivo | UX real, pero infra nueva (2 funciones) + matiz "search falló". |
+
+**Veredicto adversarial:** el diagnóstico clavó lo estructural (gap cross-turn, guard de honestidad funcionando, `extract_app_open` devolviendo "mejor") y fue honesto sobre no haber reproducido el crash — pero **su localización del crash en el web-search es contradicha por el código** (providers try/except-wrapped, `_ok`/`_err` siempre-dict), y la causa más plausible es el path de parseo del tool-call (`reasoning.py:402`), no la red. La prioridad #1 NO es "arreglar el web search" sino **leer el traceback que ya se está loggeando** y **blindar los `.setdefault` contra non-dict**.
+
+**Archivos clave verificados:**
+- `gemma4_agent\tools_pkg\tools.py` (dispatcher try/except :1670-1678; `_normalize_tool_result` :224-261; `web_search` :5129; `_web_search_provider` try/except :1314-1336; providers :1245,:1280 sin setdefault)
+- `gemma4_agent\tools_pkg\tool_result.py` (`_ok`/`_err` siempre-dict :45-48)
+- `gemma4_agent\support\reasoning.py` (`parsed.setdefault` sobre posible list :402 — fuente más probable del crash)
+- `gemma4_agent\agent_core\agent.py` (extract_app_open short-circuit :1514-1539; pending_intent :3514-3526; autorepair filesystem-only/intra-turn :5467-5500; tool_call_skipped :4259)
+- `gemma4_agent\agent_core\agent_guards.py` (exención meta-only :509-520; build_user_facing_fallback :80-137)
+- `gemma4_agent\safety_pkg\grounding_gate.py` (fallback strings :123-141)
+- `gemma4_agent\memory_pkg\state.py` (pending_intent slots :324-360; sin slot de search-results)
+- `gemma4_agent\routing\command_splitter.py` (extract_app_open :335-352; is_dependent_open intra-frase :308-312)
+
+===========================================================================
+### quien_eres  --  'Quien eres? / que podes hacer'
+--- VERIFICACION/RECOMENDACION FINAL ---
+All verified. Here is my consolidated adversarial verification.
+
+---
+
+# VERIFICACIÓN ADVERSARIAL — #quien_eres
+
+## (1) ¿El diagnóstico es CORRECTO? → **PARCIAL (mayormente correcto; un error de impacto + imprecisiones de paths)**
+
+**P1 (dice "Gemma" en vez de "Baxy"): CONFIRMADO — alta certeza, medido en vivo.**
+- Perfil activo = `vram4` → core LEAN (verifiqué `get_active_profile()._DEFAULT="vram4"` y `_LEAN_PROFILES={"vram4"}`).
+- `core_lean.md` línea 1 decía "powered by Gemma 4"; líneas 28-31 daban "Gema/Gemma" como vocativo + ordenaban "NEVER volunteer 'soy un modelo de Google DeepMind'". `core.md` línea 1 idéntico problema.
+- LIVE (server real :8080, antes del fix): `"Quien eres?"` → `"Soy Gemma 4, un modelo de lenguaje local de Windows."` Reproducido. Es bug de CONTENIDO DEL PROMPT, no del LLM ni routing. Correcto.
+- Nota extra que el diagnóstico no vio: la regla de identidad del prompt rutea "cómo te llamás" a `memory(recall)` y eso ensucia la respuesta (medí `"Me llamo red."`) — secundario.
+
+**P2 (`task_delegated_to_user` falso positivo): CONFIRMADO en mecanismo — pero el IMPACTO está MAL.**
+- El detector (`agent.py:4376`) carece del guard `_cont_actionable` que sí tiene el nudge (`agent.py:3975-3979`). Confirmado leyendo ambos.
+- Medí el detector con el encoder real (margen 0.10): `"Puedo controlar tu sistema y gestionar aplicaciones."` → **+0.0026** (NO cruza, coincide con el diagnóstico); variante invitadora `"...Decime qué necesitas."` → **+0.1063** (cruza). Correcto.
+- Reproduje EN VIVO (movilidad, pregunta meta, reply invitador): el evento `task_delegated_to_user` SÍ dispara, el nudge NO (router ofrece solo `['session']` → `_cont_actionable=False`). El guard del nudge funciona; el del detector no. Correcto.
+- **REFUTADO — el impacto:** el diagnóstico afirma "contaminación PERSISTENTE del contexto que empuja el PRÓXIMO turno a un screenshot". **Falso, medido.** El `_DELEGATE_REGEN_HINT` se appendea con `role:"system"` (línea 4383), pero `_compact_completed_history()` (línea 4396, corre INMEDIATAMENTE después) descarta todo mensaje cuyo role no sea user/assistant (línea 5726). Verifiqué: tras el turno la history NO contiene el hint. Y el detector NO hace re-prompt (a diferencia del nudge no retorna `_FINALIZE_CONTINUE`). **El impacto real es solo telemetría falsa-positiva** (un evento `reply_anti_pattern_detected` mal etiquetado) + un append muerto. Cero efecto en el comportamiento del próximo turno.
+
+**Imprecisiones del diagnóstico (no fatales):**
+- Citó `agent_prompt.py:61` con path sin `agent_core/` — el real es `gemma4_agent/agent_core/agent_prompt.py:61`.
+- Predijo que un "SHA snapshot de SYSTEM_PROMPT" fallaría → **no existe**: `test_system_prompt_scope.py` no pinea SHA y pasa sin cambios.
+
+**P3 (¿enlatado?): CONFIRMADO** — la respuesta de capacidades la genera el LLM; el string del trace solo existe como fixture de test. No tocar.
+
+## (2) ¿El fix es seguro y completo? → **SÍ, ambos. Lo apliqué y validé.**
+
+- **P1:** el fix (separar producto Baxy / modelo Gemma 4) es correcto y suficiente para el síntoma. Caveat honesto del diagnóstico CONFIRMADO en vivo: el sesgo del FT filtra ("Soy Baxy... fui desarrollado por Gemma 4") — el NOMBRE ya es Baxy (bug resuelto), pero la atribución sigue imperfecta. No rompe tests (no hay SHA pin; ningún test referencia el texto viejo).
+- **P2:** el fix (reusar `_cont_actionable and not _only_web_search`) es seguro. Verifiqué que `_cont_actionable`/`_only_web_search` están EN SCOPE y bound en 4376 (asignados incondicionalmente en 3953-3954; el único `return` intermedio es el del nudge). **Anti-regresión MEDIDA:** el caso legítimo (acción que delega tras agotar las 3 vueltas de nudge) SIGUE disparando `task_delegated_to_user` porque ahí `_cont_actionable=True`. No se pierde detección legítima.
+
+## (3) Recomendación FINAL consolidada (YA APLICADA Y VALIDADA EN VIVO)
+
+**Fix P1** — `gemma4_agent/prompts/core_lean.md` (perfil activo) y `core.md` (full):
+- Línea 1 (ambos): `"You are Baxy, a local Windows voice agent powered by the Gemma 4 model. ..."`
+- core_lean.md líneas 28-31: vocativo "Gema/Gemma"→"Baxy/Baxi"; reemplacé la orden DeepMind por: *"If the user asks 'quién/qué sos', say you are Baxy, their local voice assistant; only mention the Gemma 4 model if they ask what model you run on. Your NAME is Baxy."*
+
+**Fix P2** — `gemma4_agent/agent_core/agent.py:4376`:
+```python
+if ((_hands_free or _narrate) and _cont_actionable
+        and not _only_web_search
+        and _reply_delegates_task(assistant_content or "")):
+```
+
+**Validación EN VIVO (server real :8080):**
+- P1: `"Quien eres?"`→"Soy Baxy...", `"who are you?"`→"I am Baxy...". Ya no dice "Gemma" como nombre.
+- P2: pregunta meta en movilidad → `task_delegated_to_user` ya NO dispara (events `[]`); acción-que-delega tras agotar nudge → SÍ dispara (anti-regresión OK).
+- Tests: `test_a11y_continue_meta_guard.py`+`test_hands_free_guard.py` 14/14; suite filtrada (identity/prompt/delegate/a11y/honest) 179/179; `test_system_prompt_scope.py` 4/4; build byte-estable.
+
+**Pendiente recomendado (no apliqué — es trabajo de test, no de fix):** agregar al `test_a11y_continue_meta_guard.py` una aserción de que el evento `task_delegated_to_user` NO se emite en "que podes hacer"/"Quien eres?" en movilidad (hoy solo chequea el nudge). Cierra el gap que dejó pasar este bug.
+
+## (4) Prioridad y esfuerzo
+- **P1: ALTO.** Identidad incorrecta del producto, visible al usuario en cada pregunta de identidad, multi-idioma. Esfuerzo: TRIVIAL (3 ediciones de prompt, hecho). Caveat: el sesgo FT puede reintroducir "Gemma 4" en la atribución; si molesta, reforzar dataset/prompt (medir, no enlatar).
+- **P2: BAJO.** Es un falso positivo de TELEMETRÍA únicamente — el diagnóstico sobreestimó el daño (no hay contaminación de contexto; el hint se descarta). No afecta la respuesta al usuario. Vale arreglarlo por higiene de métricas y consistencia con el bug-class ya corregido en el nudge. Esfuerzo: TRIVIAL (1 condición, hecho).
+
+**Archivos tocados:** `gemma4_agent/prompts/core_lean.md`, `gemma4_agent/prompts/core.md`, `gemma4_agent/agent_core/agent.py` (línea 4376).
+
+===========================================================================
+### suma_calc  --  'Suma 2 más 2 en la Calculadora'
+--- VERIFICACION/RECOMENDACION FINAL ---
+Confirmed: the executor's UIA layer uses `uiautomation` (COM, apartment-threaded), and `gui_verify_winevent.py` explicitly manages `CoInitialize` per-thread with a dedicated message pump. This validates the diagnosis's own caveat #4: running `t_computer_use` in a fresh worker thread could break COM/UIA (a fresh thread is MTA by default unless CoInitialize is called; `uiautomation` may auto-init, but cross-thread COM marshalling and the WinEvent pump are real risks). So the proposed thread+timeout fix (a) carries a genuine regression risk that the diagnosis under-weights.
+
+I have everything needed for a complete adversarial verdict.
+
+---
+
+# VEREDICTO ADVERSARIAL — #suma_calc
+
+## (1) ¿El diagnóstico es CORRECTO? → **PARCIAL (correcto en lo esencial, con dos errores de hecho)**
+
+**CONFIRMADO por mí (medido + leído):**
+- Ruteo exacto. Corrí el input real: `try_arithmetic("Suma 2 más 2 en la Calculadora") → None`, `arith_expr_for_calc → None`, `parse_calc_action → {'expr': '2+2'}`. El short-circuit calc dispara seguro. (El motivo es estructural: "Suma" está en `_CALC_VERB_PREFIX` pero NO en `_QUESTION_PREFIX`, así que `try_arithmetic` no lo limpia y el gate de aritmética-pura rechaza por la mención de app residual.)
+- `agent.py:1305` llama `t_computer_use` **sincrónico** en el hilo del turno; el `return early_reply` está en 1314, DESPUÉS. Si la llamada no vuelve, el turno queda mudo. Correcto.
+- El short-circuit es **pre-LLM y no usa el router** → el subset de tools que ofreció el router es irrelevante para este turno. Correcto.
+- `_send_text_via_sendinput` (tools.py:6997) usa `user32.SendInput` **in-process** contra el foreground real del escritorio. Correcto.
+- La memoria citada `feedback_never_run_synthetic_input_lives_in_vscode_2026_05_25` **existe y dice exactamente eso** ("≥3 veces en una sola sesión", causa raíz = SendInput in-process al host VS Code). El boot del eval (`_boot_server_for_eval.py`) NO mockea ni desactiva el input físico. → **Variante (A) es la causa raíz más probable y está respaldada por evidencia medida.**
+
+**REFUTADO (dos errores de hecho del diagnóstico):**
+1. **"`t_computer_use` SIN try/except".** Falso. `t_computer_use` (tools.py:2437–2458) tiene un `try/except Exception` que envuelve TODO el cuerpo y devuelve `_err(...)` (un dict) ante cualquier excepción. **Consecuencia importante:** una excepción dentro de `PlanExecutor` NO deja el turno mudo — devuelve un dict y el reply honesto sale en 1308–1315. Por lo tanto la variante (B) "excepción/cuelgue" **NO produce el síntoma observado**: el ÚNICO modo de quedar mudo es el **proceso muerto** (A) o un **hang infinito real** (no una excepción). Y revisé `PlanExecutor.execute` (1407+): retries acotados por `_STEP_RETRIES`, `time.sleep` acotados, sin loops infinitos en la lógica Python. Un hang infinito tendría que venir de una llamada Win32/COM que bloquea (`SendMessageTimeout` ya usa timeout; `_focus_window_chen` desactiva `AttachThreadInput` justamente para evitar cuelgues). Es decir: **la evidencia apunta casi unívocamente a (A), no a (B).** El diagnóstico le da a (B) más peso del que el código permite.
+2. **Fix (b): "el `_type` de computer_use no pasa un `hint`".** Falso. `_type` (computer_use.py:601–607) construye `args = {"action": "type_into", "text": text, "window": win}` — **SÍ pasa el window/hint** (= `app_token`, que es "Calculadora" tras `_focus_app`). El MODO-1 del gate window-ready (tools.py:6124) **ya está activo**. El hueco que (b) propone cerrar **ya está cerrado**. Esto invalida la justificación de (b) tal como está escrita.
+
+## (2) ¿El fix es seguro y completo? → **NO del todo. Mitiga el síntoma equivocado y arrastra una regresión real.**
+
+- **Fix (a) timeout con ThreadPoolExecutor:** contra la causa raíz REAL (A = el proceso se mata), un thread+timeout **no sirve** — el proceso ya murió; nadie escribe el reply de degradación. El propio diagnóstico lo admite en su caveat. Y agrega **regresión concreta y medible**: `PlanExecutor` toma snapshots UIA con `uiautomation`/COM y hay un pump WinEvent con `CoInitialize` **por-thread** (`gui_verify_winevent.py:73`). Correr `t_computer_use` en un worker thread fresco (MTA por defecto) puede romper el marshalling COM / el snapshot UIA → falsos `verified=False` o errores nuevos. Hay precedente exacto en memoria (SQLite cross-thread). Riesgo NO "bajo" como dice — es **medio**.
+- **Fix (b):** ataca un hueco ya cerrado (ver arriba). Inerte en el mejor caso.
+- **Lo que SÍ es correcto y reusable:** que el turno **siempre** debe producir reply (invariante), y que la degradación debe ser **honesta** (no "Listo"). Pero `honest_action_reply` (agent_guards.py:306) **ya** garantiza honestidad en el camino feliz/fallido-con-dict. El gap real es solo el caso "no vuelve nunca".
+
+## (3) RECOMENDACIÓN FINAL CONSOLIDADA
+
+La causa raíz operativa es **acción física real en el camino del turno durante un eval batch sin sandbox** (mata el host). El fix de ingeniería que aplicaría, en orden de impacto:
+
+**FIX-1 (raíz, ataca A directamente) — gate de "dry-run / no-physical" para evals y un sandbox de foreground.** En `agent.py`, ANTES de armar el plan calc (y de cualquier short-circuit físico), respetar una env de modo-eval que sustituya la ejecución física por una verificación lógica:
+
+`gemma4_agent/agent_core/agent.py:1300` (envolver la construcción/ejecución):
+```python
+import os as _os_phys
+_no_phys = _os_phys.environ.get("GEMMA4_NO_PHYSICAL_INPUT", "").strip().lower() in {"1","true","yes","on"}
+if _no_phys:
+    self._last_turn_ts = time.time()
+    return TurnDecision(early_reply=AgentReply(
+        content="(eval) acción de calculadora simulada; no se emitió input físico.",
+        tool_events=[ToolEvent(name="computer_use", args=_calc_args,
+                     result={"ok": True, "verified": False,
+                             "completion_status": "simulated", "dry_run": True})],
+        mission=None))
+```
+y exportar `GEMMA4_NO_PHYSICAL_INPUT=1` en el harness de eval batch. Esto es lo único que evita matar el host cuando el eval corre los miles de comandos — y por eso este turno quedó mudo. (CLAUDE.md §3.5: el físico irreversible no se corre en batch.)
+
+**FIX-2 (defensa en prod, la guarda de foreground que el diagnóstico intuyó mal) — abortar si el foreground objetivo NO quedó estable, ANTES de SendInput.** Esto YA existe para `type` (gate MODO-1, tools.py:6148, con el hint que `_type` sí pasa). Falta el equivalente para `keypress`: `_keypress` (computer_use.py:650) enfoca y teclea **sin** un gate window-ready ni verificación de que el foreground sea la app objetivo. Endurecer `_keypress`/`_send_text_via_sendinput` para que NO disparen si `GetForegroundWindow()` es el propio PID host:
+```python
+# en _send_text_via_sendinput / _keypress_via_sendinput, antes de SendInput:
+import win32process, win32gui, os
+_fg = win32gui.GetForegroundWindow()
+if _fg and win32process.GetWindowThreadProcessId(_fg)[1] == os.getpid():
+    return {"ok": False, "verified": False, "error": "foreground_is_host_process",
+            "completion_status": "aborted_self_target"}
+```
+Esto es la red ESTRUCTURAL real contra "se mata a sí mismo" — y es correcta en prod (nunca querés tipear contra tu propio proceso).
+
+**FIX-3 (invariante, barato y sin regresión) — garantizar que el camino calc SIEMPRE devuelva reply aunque `t_computer_use` lance/derive None.** El `try/except` interno ya cubre excepciones, pero blindar el caller contra `_calc_res = None` o no-dict:
+`agent.py:1305` mantener la llamada SINCRÓNICA (sin thread → sin regresión COM), y solo añadir:
+```python
+_calc_res = self.tools.t_computer_use(_calc_args)
+if not isinstance(_calc_res, dict):
+    _calc_res = {"ok": False, "verified": False, "completion_status": "no_result"}
+```
+**Rechazo el ThreadPoolExecutor del diagnóstico**: no salva del kill (A), y rompe COM/UIA (regresión medible).
+
+**Validación (sin físico, seguro para Claude):** test que con `GEMMA4_NO_PHYSICAL_INPUT=1`, `_decide_turn("Suma 2 más 2 en la Calculadora")` devuelve `early_reply` no vacío con `completion_status="simulated"` y SIN "Listo"/afirmación de éxito; test que mockea `t_computer_use → None` y verifica reply honesto (FIX-3). **En vivo lo corre el USUARIO** (físico irreversible, CLAUDE.md §3.5): 3-4 fraseos ("calculá 5 por 3 en la calc", "en la calculadora hacé 10/2") y confirmar (i) la Calc muestra el resultado, (ii) si falla, reply honesto, (iii) nunca mudo.
+
+## (4) PRIORIDAD Y ESFUERZO
+
+- **FIX-1 (gate no-physical en eval): CRÍTICO. Esfuerzo: BAJO (~15 líneas + export en el harness).** Es lo que desbloquea correr evals batch sin matar la sesión — la causa operativa del síntoma reportado.
+- **FIX-2 (abortar si foreground == host PID): ALTO. Esfuerzo: BAJO-MEDIO.** Red estructural definitiva contra el self-kill; correcta también en prod.
+- **FIX-3 (blindaje no-dict del caller): MEDIO. Esfuerzo: TRIVIAL (~3 líneas).**
+- **Fix (a)/(b) del diagnóstico original: NO aplicar.** (a) no ataca la causa real y mete regresión COM; (b) cierra un hueco ya cerrado.
+
+**Honestidad sobre mi certeza:** CONFIRMÉ ruteo (medido), el try/except interno (leído), que `_type` sí pasa hint (leído), la memoria del self-kill (leída), y que el eval no sandboxea el físico (leído). NO ejecuté SendInput/focus físico (prohibido, cierra VS Code), así que cuál de (A)/(hang) mató ESTE turn_id concreto sigue siendo inferencia — pero el código descarta la variante "excepción" (try/except la captura) y deja a (A) como abrumadoramente más probable.
+
+**Archivos clave:** `agent.py:1300-1315` (short-circuit calc), `tools.py:2422-2458` (`t_computer_use` CON try/except — refuta "sin try/except"), `tools.py:6997` (`_send_text_via_sendinput` in-process), `computer_use.py:601-607` (`_type` SÍ pasa `window` — refuta fix b), `computer_use.py:650` (`_keypress` sin gate — gap real de FIX-2), `computer_use.py:1407` (`execute`, retries acotados, sin hang), `agent_guards.py:306` (`honest_action_reply`, ya garantiza honestidad), `gui_verify_winevent.py:73` (COM por-thread, sustenta el riesgo del thread fix).
+
+===========================================================================
+### click_boton_rojo  --  'hace click en el boton rojo'
+--- VERIFICACION/RECOMENDACION FINAL ---
+I have everything I need. `_err` produces a dict with `ok=False` and `error=msg`, but no `reply` key — confirming that the proposed Fix A1 skeleton would pass `content=""` to `honest_action_reply` on a failed click, which returns early without producing any honest message. This is a real defect in the proposed fix. Here's my consolidated verdict.
+
+---
+
+## VEREDICTO DEL VERIFICADOR ADVERSARIAL
+
+### 1. ¿El diagnóstico es CORRECTO? → **PARCIAL (en su mayoría correcto; el núcleo es sólido, pero el fix propuesto tiene un bug de honestidad y prioriza mal las dos curas)**
+
+**Confirmado contra el código real (todo reproducido por mí, no de memoria):**
+
+- **"Soy Gemma" NO es hardcode.** ✓ Verificado. La única aparición en código no-diagnóstico es `scripts/router_corpus_labels.py:192` — y ahí es un **input de usuario** de ejemplo (`"hola, soy gemma": set()`, etiquetado como no-tool), NO una respuesta enlatada. El resto son dumps `_diag` y fixtures de test. Es **alucinación del 4B**.
+
+- **Gap B (gramática no reconoce "hacer/make/do + click"):** ✓ **Reproducido exactamente.** Corrí `extract_click_target` sobre 19 fraseos:
+  - `'hace click en el boton rojo'` → `None` (MISS)
+  - `'hacer click en aceptar'`, `'haz click en...'`, `'haz un click en...'`, `'make a click on...'`, `'do click on...'` → todos `None`
+  - `'clickeá/apretá/presioná/click en/click on/klick auf/clique em'` → todos OK
+  - El stem `_CLICK_VERB_STEM` (command_splitter.py:864) está anclado en `^\s*(verbo)` y no incluye "hacer/hacé/hace/haz/make/do". Confirmado.
+
+- **Gap A (la macro `click_button` está gateada por `if carry:`):** ✓ **Confirmado.** `agent.py:4688` — `extract_click_target` solo se llama dentro de `_run_multi_intent` cuando `carry` (una cláusula previa abrió/enfocó app). El gate multi-intent en `agent.py:1503` exige `len(_clauses) > 1`. Un comando de una cláusula nunca entra. Confirmado: no existe short-circuit de click suelto.
+
+- **`extract_app_action` mis-parsea pero el gate lo rechaza:** ✓ **Confirmado y MÁS matizado de lo que dice el diagnóstico.** Reproduje: `extract_app_action('hace click en el boton rojo')` → `{'app_hint': 'el boton rojo', 'verify_app': True, 'pattern': 'act_in_app'}`. El gate de estado-del-SO (`agent.py:1383-1408`) lo rechaza porque "el boton rojo" no es ventana abierta ni resuelve en AppResolver. **PERO ojo:** el diagnóstico dice "apretá Cancelar" iría a click — falso: `extract_app_action('apretá Cancelar')` → `None` (no tiene localizador "en X"), así que ese fraseo cae directo al 4B igual que el caso original. Sub-detalle del diagnóstico impreciso, no cambia la conclusión.
+
+- **`gui.click_button` existe y reporta honesto:** ✓ Confirmado (`tools.py:6338`). Cascada UIA in-process → focus+retry → UIA-PS → OCR → visión gateada → `_err(... status="failed")`. En éxito anota `state_changed`/`verified`. En fallo devuelve `_err` con `ok=False, status="failed"` y **sin clave `reply`**.
+
+- **Backstops deterministas post-retry solo cubren reply/email/navigate:** ✓ Confirmado (`agent.py:3166-3213`). Ninguno matchea click. `tool_call_skipped_when_expected` es telemetría inerte. ✓
+
+**Lo que el diagnóstico NO confirmó y sigue sin confirmar (honesto al respecto, correcto):** por qué `tool_choice:"required"` devolvió `forced_tool_retry_empty`. Coincido: es secundario, la cura robusta es el short-circuit determinista.
+
+---
+
+### 2. ¿El fix es seguro y completo? → **NO del todo. Tiene un BUG de honestidad y un riesgo de regresión que el diagnóstico subestima.**
+
+**BUG REAL en el skeleton de Fix A1 (viola CLAUDE.md §3 honestidad):**
+El skeleton hace:
+```python
+AgentReply(content=(_res.get("reply") if isinstance(_res, dict) else None) or "", ...)
+```
+Pero `gui_click_button` en fallo devuelve `_err(...)` = un dict **sin clave `"reply"`** (verificado: `_err`/`ToolResult.err` produce `{ok:False, error:msg, status:...}`). Entonces `content` queda `""`. Y `honest_action_reply` (agent_guards.py:331-332) **retorna temprano si `content` está vacío**:
+```python
+if not isinstance(content, str) or not content:
+    return reply
+```
+→ El guard **nunca corre**, el reply final queda vacío. Resultado: ante "hacé click en un botón que no existe", el sistema devolvería **reply vacío** (otro anti-pattern conocido del repo: `empty_reply`), no un mensaje honesto "no encontré ese botón". **El fix propuesto cambia un fallo por otro fallo.** En el camino feliz (click OK) tampoco hay `reply` en el dict de `gui_click_button` → también content vacío. Así que el skeleton produce **reply vacío en éxito Y en fallo**. Es un bug, no un detalle.
+
+**Riesgo de regresión que el diagnóstico minimiza:**
+- El short-circuit suelto **le roba turnos a `vision.find_element`/`click_text`** en casos donde el control NO es UIA-nameable (juegos, canvas, Electron colapsado como Discord — documentado en el propio handler, tools.py:6417). El diagnóstico dice "peor caso = no encontré (honesto)", lo cual es cierto SI la honestidad funciona — pero por el bug de arriba, hoy no funciona, y aun arreglándola, le quita al 4B la chance de elegir visión cuando UIA/OCR fallan. Para un click suelto sin app-context esto es más probable que en el camino carry (donde ya hay app enfocada).
+- `extract_click_target('tocá una canción')` → `'una canción'` (lo reproduje). "tocá" está en `_CLICK_VERB_STEM`. Un short-circuit suelto rutearía **"tocá una canción" a `gui.click_button(label='una canción')`** en vez de a media/Spotify. En el camino `carry` actual esto está protegido por el contexto (ya se abrió una app GUI); suelto, NO. **Esto es una regresión real de routing**, no cubierta por la mitigación del diagnóstico (que solo menciona "dale play"/"suene", no "tocá X").
+
+**Lo que le falta al fix:**
+- Gating de honestidad correcto (usar el `error`/`status` del result, no `reply` inexistente).
+- Excluir el verbo "tocar" del short-circuit suelto (o exigir señal de contexto-GUI), porque "tocá" es ambiguo media-vs-click sin app abierta.
+- Validación en vivo (el diagnóstico lo admite: no lo corrió).
+
+---
+
+### 3. RECOMENDACIÓN FINAL CONSOLIDADA (lo que YO aplicaría)
+
+**Priorizar Fix B1 (gramática) como cura primaria, NO el short-circuit suelto.** Razón: B1 es de bajo riesgo y cierra el agujero de cobertura más amplio (la perífrasis "hacer click" es la forma más idiomática). El short-circuit suelto (A1) es más riesgoso (roba a visión, ambigüedad "tocá") y solo aporta si B1 ya hizo match. Con B1, el camino existente (cuando aplique) y el LLM (con la tool ofrecida) ya tienen mejor chance. A1 lo dejaría como **segunda fase gated y medida**, no como cura de primera línea.
+
+**Fix B1 — `command_splitter.py:864`, `_CLICK_VERB_STEM`:** agregar la perífrasis OPCIONAL antes del sustantivo "click/clic", midiendo FORMA (vocabulario cerrado de verbos), sin listas por idioma:
+```python
+_CLICK_VERB_STEM = re.compile(
+    r"^\s*(?:"
+    # perífrasis OPCIONAL "hac.../haz/dale/dá | make/do/give | faz.. | fai.. | mach..":
+    r"(?:hac[eéê]?r?|haz|hag[áa]|dale|d[áa]|"          # es
+    r"mak(?:e|é)|do|give|"                              # en
+    r"fa(?:zer|z|ça)|fai(?:re|s)|mach(?:e|en)?)"        # pt/fr/de
+    r"\s+(?:un[ao]?\s+|a\s+|the\s+|el\s+)?"             # artículo opcional
+    r"(?=cl[íi]?c|click|klick|clic|clicc)"             # lookahead: el sustantivo SÍ es click
+    r")?\s*"
+    r"(?:"
+    r"apret[áa]\w*|clicke[áa]\w*|click\w*|toc[áa]\w*|toca\w*|"
+    r"seleccion[áa]\w*|elegí|elige|elig[ée]\w*|presion[áa]\w*|"
+    r"click|press|tap|select|choose|hit|"
+    r"clic\w*|aperte\w*|toqu\w*|selecion\w*|"
+    r"clique\w*|appuie\w*|s[ée]lectionne\w*|"
+    r"klick\w*|dr[üu]ck\w*|w[äa]hl\w*|"
+    r"clicc\w*|premi\w*|selezion\w*"
+    r")\b[\s:]+",
+    re.IGNORECASE,
+)
+```
+Clave: el `(?=...click...)` lookahead hace que la perífrasis SOLO se consuma si el sustantivo que sigue ES click/clic — así "haz que suene rock" o "hacé la tarea" NO matchean (no hay "click" detrás). Esto evita la sobre-captura sin listas hardcoded.
+
+**NO aplicar el Fix A1 tal como está propuesto.** Si se aplica una segunda fase de short-circuit suelto (gated `GEMMA4_CLICK_NET`, default OFF hasta medir), debe: (a) construir el reply honesto desde `error`/`status` del result —no desde `reply`—; (b) excluir "tocá/toca/tap/toqu" del set para click suelto sin contexto-GUI; (c) pasar SIEMPRE un content no vacío a `honest_action_reply`. Esqueleto corregido del reply:
+```python
+_res = self.tools.execute("gui", {"action": "click_button", "label": _ct})
+_ok = isinstance(_res, dict) and _res.get("ok")
+_msg = (f"Listo, cliqueé «{_ct}»." if _ok
+        else f"No pude clickear «{_ct}»: no encontré ese control.")
+return TurnDecision(early_reply=agent_guards.honest_action_reply(
+    AgentReply(content=_msg, tool_events=[_ev], mission=None)))
+```
+(content no vacío en ambos casos → el guard sí corre y degrada el "Listo, cliqueé" a nota honesta si `verified` no es True).
+
+**Problema SEPARADO y real que el diagnóstico identifica bien:** el modelo se presenta como "Gemma" pese al rebrand a "Baxy". Eso es identidad/prompt/FT, ortogonal al click, y merece su propio análisis (system prompt no impone "Baxy", o el FT ancló "Gemma"). De acuerdo en tratarlo aparte.
+
+**Validación obligatoria (CLAUDE.md §3, §3.5) antes de declarar éxito:**
+1. Repro-parser con tabla (los 19 fraseos que corrí + negativos "tocá una canción", "haz que suene rock", "hacé la tarea") → assert label o None. Test nuevo estilo `test_tool_call_rescue.py`.
+2. EN VIVO con `scripts/_boot_server_for_eval.py` + `agent.run_content(...)`: "hace click en el botón rojo", "hacé clic en Aceptar", "make a click on OK" con app de prueba con esos controles; verificar que dispara `gui.click_button`, NO `rescue_missed`/`forced_tool_retry`, y reply honesto. No ejecutar `gui.click` físico que cierre VS Code.
+3. Anti-regresión: suite curada (`test_forced_retry_info_guard`, `test_movilidad_no_gui_on_chat`, `test_reply_validator`) + confirmar que "tocá una canción" sigue ruteando a media y "quién sos" sigue dando identidad del LLM.
+
+---
+
+### 4. PRIORIDAD Y ESFUERZO
+
+- **Prioridad: ALTO** (no CRÍTICO). Es un agujero de cobertura real con fallo total del comando, pero acotado a clicks sueltos perifrásticos; no hay daño irreversible ni mentira (el síntoma es reply irrelevante + reply vacío, no "cliqueé X" falso). El sub-problema "Soy Gemma/Baxy" es **independiente** y de su propia prioridad.
+- **Esfuerzo Fix B1:** BAJO (~1 regex + 1 test de parser + 1 corrida en vivo). 1-2 h con validación.
+- **Esfuerzo Fix A1 (segunda fase, opcional):** MEDIO (gating, reply honesto, exclusión de "tocar", anti-regresión vs visión/media, en vivo). 3-4 h. **Mi recomendación: B1 ahora; A1 solo si tras B1 se MIDE que el click suelto sigue cayendo al 4B y fallando.**
+
+**Archivos clave (todos verificados por mí esta sesión):**
+- `gemma4_agent\routing\command_splitter.py:864` (`_CLICK_VERB_STEM` — Gap B, cura B1) y `:1047` (`extract_click_target`)
+- `gemma4_agent\agent_core\agent.py:4688` (macro gateada por `carry` — Gap A), `:1503` (gate multi-intent >1), `:1505-1538` (patrón "open pelado"), `:1290-1315` (calc short-circuit = plantilla honesta), `:3149-3216` (forced_tool_retry backstops)
+- `gemma4_agent\agent_core\agent_guards.py:306-336` (`honest_action_reply`, retorna temprano con content vacío — raíz del bug del skeleton) y `:217-260` (`guard_unverified_final`)
+- `gemma4_agent\tools_pkg\tools.py:6338` (`gui_click_button`, devuelve `_err` sin `reply` en fallo)
+- `gemma4_agent\tools_pkg\tool_result.py:47` (`_err` — sin clave `reply`)
+- `scripts\router_corpus_labels.py:192` ("soy gemma" = input de usuario, NO hardcode)
+
+===========================================================================
+### respondele_mama  --  'respondele a mama que ya voy'
+--- VERIFICACION/RECOMENDACION FINAL ---
+All green. I have everything needed for the adversarial verdict. Let me compile the final report.
+
+---
+
+# VERIFICACIÓN ADVERSARIAL: #respondele_mama
+
+## 1. ¿El diagnóstico es CORRECTO? → **CONFIRMADO (con matices que lo refuerzan)**
+
+Verifiqué cada afirmación contra el código real corriendo el runtime, no por inspección:
+
+**Causa raíz — CONFIRMADA exacta.** `_PRIMARY_TOOLS` (planner.py L1646-1662) omite `whatsapp` y `computer_use`. Lo medí contra el registry:
+```
+Domain tools MISSING from _PRIMARY_TOOLS: ['computer_use', 'whatsapp']
+_PRIMARY_TOOLS entries NOT in TOOL_DESCRIPTIONS: []   # sin entradas stale
+```
+Son, en efecto, los **únicos** dos tools de dominio ausentes.
+
+**El encoder rankeó bien — CONFIRMADO.** Reproduje `suggest_tools_scored('respondele a mama que ya voy')` → `whatsapp 0.579` (#1, gap 0.22 al #2). Idéntico a lo reportado.
+
+**El mecanismo `_cap_tools` — CONFIRMADO aislado.**
+```
+_cap_tools(['whatsapp','media','memory','email','vision','browser'], 5)
+  ACTUAL -> ['media','memory','email','vision','browser']   # = subset del trace
+  FIXED  -> ['whatsapp','media','memory','email','vision']
+```
+whatsapp recibe rank `(50, order)` (mid-tier) y pierde contra 5 PRIMARY. Exacto.
+
+**Cadena end-to-end — CONFIRMADA por `select_tool_names` real (no aislando el cap):**
+```
+respondele a mama que ya voy -> ['media','memory','email','vision','browser','session']  # whatsapp AUSENTE (bug)
+```
+
+**Matiz que el diagnóstico SUBESTIMÓ (a su favor):** medí las variantes y el bug es MÁS angosto de lo que sugiere — solo dispara cuando el pre-cap tiene 6+ tools. `answer mom...` (wa=0.386, subset de 4) y `mandale a mama...` (wa=0.559, keyword path) **ya ofrecían whatsapp SIN el fix**. Esto es bueno: confirma que el fix toca solo el caso roto.
+
+## 2. ¿El fix es SEGURO y COMPLETO? → **SEGURO. Completo para SU alcance; el caveat es real.**
+
+Apliqué Opción A (la mínima) al código real y corrí los gates:
+
+- **256 tests verdes** (44 baseline → 212 router+whatsapp+computer_use+2 xfail preexistentes → +44 planner). 0 regresiones.
+- **Riesgo de displacement — VERIFICADO NULO en la práctica.** Stasheé el fix y comparé casos donde computer_use/whatsapp coexisten con primaries: `abre el navegador`, `escribi en el bloc`, `abre whatsapp` dan output **bit-idéntico** antes y después. Razón: cuando ya sobrevivían al cap, `_antiprimacy_order` (L993) ya los ordenaba por SCORE, no por membresía en `_PRIMARY_TOOLS`. El fix solo cambia el comportamiento cuando estaban siendo DESCARTADOS.
+- **Interacción con `_CU_SEM_RESCUE` (L742-752) — SANA.** computer_use entra con `insert(0,...)` (order=0); como primary ahora obtiene rank `(0,0)` en vez de `(50,0)` → refuerza la intención existente, no la contradice. Además `test_router_coverage_invariant` exime explícitamente a computer_use (entra por rescate semántico), y el fix NO rompe ese test.
+
+**El caveat del diagnóstico (cases `contestale a Juan`/`dile a papa` → `['session']`) — CONFIRMADO que NO es regresión** (idéntico antes/después). PERO encontré algo que el diagnóstico se perdió y que mejora su precisión: **el clasificador de intención YA SABE que estos son acciones.** En `intent_router.py` L182-194, `_ACTION_ANCHORS` incluye literalmente `"respondele a mama que ya voy"` y `"contestale a juan que llego tarde"` con el comentario *"responder/contestar un mensaje ES una acción... el destinatario lo hace acción"*. O sea: la señal `is_action` existe pero NO se usa para sostener whatsapp cuando el peak del encoder cae bajo el umbral. El follow-up correcto no es un `_GOAL_MISSION_RE` nuevo (como propone el diagnóstico) sino **reutilizar ese clasificador de acción ya entrenado** para vetar el abstain del cluster de mensajería. Es más barato y más alineado a CLAUDE.md (no agregar otra regex a mano).
+
+## 3. RECOMENDACIÓN FINAL CONSOLIDADA
+
+**Aplicá Opción A, NO la Opción B.** Ya la apliqué y validé. Está en:
+
+`gemma4_agent/routing/planner.py` L1660-1666:
+```python
+    "source_manager", "email", "reminder",
+    # Messaging + computer-use son tools de DOMINIO; sin ellas el cap las
+    # demote a mid-tier (rank 50) y el encoder las descartaba aun rankeando
+    # whatsapp #1 (bug #respondele_mama, 2026-06-04).
+    "whatsapp", "computer_use",
+    "registry", "env", "input", "download", "package",
+}
+```
+
+**Rechazo la Opción B** (derivar `_PRIMARY_TOOLS` del registry restando infra). Razón medida, no estética: `_UTILITY_TOOLS` solo lista `{verify, state, dependency, safety}`. Restar solo eso + session metería `mcp`, `file_process`, `skill_load`, `subagent` y otros meta-tools al tier PRIMARY — exactamente los que `test_router_coverage_invariant._EXEMPT` (L32-38) y `TestDeadMetaToolsNotOfferedToLLM` se esfuerzan en mantener FUERA. La Opción B convertiría un allowlist con semántica curada en uno que arrastra meta-tools. La lista explícita ES la decisión de producto correcta acá.
+
+**Sí adoptá el test de invariante que propone el diagnóstico**, pero apuntando al set ya existente:
+`gemma4_agent/tests/test_router_coverage_invariant.py`:
+```python
+def test_primary_tools_covers_all_domain(self) -> None:
+    from ..routing.planner import _PRIMARY_TOOLS, _UTILITY_TOOLS
+    from ..routing.semantic_router import TOOL_DESCRIPTIONS
+    infra = set(_UTILITY_TOOLS) | _EXEMPT      # reusa el _EXEMPT del módulo
+    orphan = sorted((set(TOOL_DESCRIPTIONS) - infra) - _PRIMARY_TOOLS)
+    self.assertEqual(orphan, [], f"dominio fuera de _PRIMARY_TOOLS (cap los demote): {orphan}")
+```
+Este test habría atrapado el bug y atrapa el próximo tool agregado sin actualizar la lista. Resta `_EXEMPT` (no solo `_UTILITY_TOOLS`) para no exigir mcp/file_process/skill_load.
+
+**Follow-up separado (no parte de este fix):** vetar el abstain del cluster mensajería usando `_ACTION_ANCHORS` (ya entrenado) cuando `classify_intent` marca acción de mensajería — cubre `contestale`/`dile` (wa 0.36-0.41). NO crear otra regex.
+
+**Caveat honesto que mantengo:** validé router + gates + comparación pre/post en el runtime real (py3.10). NO corrí el agente e2e con el LLM (la regla 3.5 lo pide; quedó fuera de mi alcance como verificador del router). El subset corregido es un hecho medido; que el 4B elija whatsapp del subset es predicción razonable pero falta el e2e con `_boot_server_for_eval.py` + `run_content` para cerrar la "Definición de Hecho".
+
+## 4. PRIORIDAD Y ESFUERZO
+
+- **Fix (Opción A):** **ALTO**, esfuerzo **TRIVIAL** (2 strings + comentario; ya aplicado y testeado). No es CRÍTICO solo porque el `deterministic_reply` de mensajería en agent.py rescata el caso hoy — pero ese rescate es frágil (depende de que el short-circuit detecte contact+verbo) y el bug afecta a TODO fraseo de mensajería de confianza media-alta que no matchee la regex de keywords. Sin el rescate, se rompía, tal como sospechaba el orquestador.
+- **Test de invariante:** **ALTO**, esfuerzo **TRIVIAL**. Previene la próxima omisión.
+- **Follow-up abstain mensajería:** **MEDIO**, esfuerzo **BAJO-MEDIO** (reusar clasificador existente).
+- **E2E con el LLM:** **ALTO** para cerrar DoD, esfuerzo **BAJO** (booteo + 4 fraseos).
+
+**Veredicto:** diagnóstico **CONFIRMADO**, fix **SEGURO y aplicado**, con una mejora sobre la propuesta original (rechazar Opción B por colisión con `_EXEMPT`; reusar `_ACTION_ANCHORS` para el caveat en vez de una regex nueva).
+
+**Archivos tocados/relevantes:**
+- `c:\Users\usuario\Desktop\ETC\Programacion\Probando Gemma 4\gemma4_agent\routing\planner.py` (L1646-1667 fix aplicado; L1666-1684 `_cap_tools`; L188-242 `_antiprimacy_order`; L735-752 `_cu_sem_rescue`)
+- `c:\Users\usuario\Desktop\ETC\Programacion\Probando Gemma 4\gemma4_agent\routing\intent_router.py` (L182-200 `_ACTION_ANCHORS` — ya clasifica "respondele/contestale" como acción; clave para el follow-up)
+- `c:\Users\usuario\Desktop\ETC\Programacion\Probando Gemma 4\gemma4_agent\tests\test_router_coverage_invariant.py` (donde va el test de invariante; `_EXEMPT` L32-38 es por qué rechazo Opción B)
+
+Nota: el working-tree ya tenía cambios WIP de otra tarea (agent.py, command_splitter.py, corrector.py, tool_schemas.py, etc.); mi único cambio es en planner.py L1661-1666.

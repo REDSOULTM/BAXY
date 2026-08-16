@@ -1,0 +1,94 @@
+================================================================
+ROUTING: 49/60 pedidos rutearon a una tool aceptable (190s)
+================================================================
+
+### app (acepta ['app', 'window'])
+  [OK  ] 'abrí el bloc de notas' -> ['app'] | 'Listo, abrí el Bloc de notas.'
+  [MISS] 'abrí la calculadora' -> [] | 'De nada.'
+  [OK  ] 'cerrá spotify' -> ['window'] | 'Listo, cerré Spotify.  [1 no confirmada(s)]'
+  [MISS] 'abrí el explorador de archivos' -> [] | 'No alcancé a completar la acción. ¿La repetimos?'
+
+### audio (acepta ['audio'])
+  [OK  ] 'subí el volumen' -> ['audio'] | 'Listo, subí el volumen al máximo.'
+  [OK  ] 'bajá el volumen' -> ['audio'] | 'Listo, bajé el volumen al 20 por ciento.'
+  [OK  ] 'silenciá el sonido' -> ['audio'] | 'Listo, el sonido está silenciado.'
+  [OK  ] 'poné el volumen al 30 por ciento' -> ['audio'] | 'Listo, el volumen está al 30 por ciento.'
+
+### system (acepta ['device_settings', 'system'])
+  [OK  ] 'qué hora es' -> ['system'] | 'La hora actual es las 10:30 AM.'
+  [OK  ] 'subí el brillo' -> ['device_settings'] | 'Listo, subí el brillo.'
+  [OK  ] 'cuánta batería tengo' -> ['system'] | 'Tengo 85 por ciento de batería.'
+  [OK  ] 'qué día es hoy' -> ['system'] | 'Hoy es martes 11 de mayo de 2024.'
+
+### window (acepta ['gui', 'window'])
+  [OK  ] 'maximizá la ventana' -> ['window'] | 'Listo, maximicé la ventana.  [1 no confirmada(s)]'
+  [OK  ] 'minimizá esto' -> ['window'] | 'Listo, minimicé esta ventana.  [1 no confirmada(s)]'
+  [OK  ] 'poné la ventana a la izquierda' -> ['window'] | 'Listo, moví la ventana a la izquierda.'
+  [OK  ] 'cerrá la ventana' -> ['window'] | 'Listo, cerré la ventana.  [1 no confirmada(s)]'
+
+### web (acepta ['browser', 'web'])
+  [OK  ] 'buscá noticias de hoy' -> ['web'] | 'He buscado noticias de hoy y aquí tienes un resumen de lo qu'
+  [OK  ] 'qué es la fotosíntesis' -> ['web'] | 'La fotosíntesis es el proceso mediante el cual las plantas, '
+  [OK  ] 'buscá recetas de pizza' -> ['web'] | 'Encontré varias recetas de pizza en internet. Puedo mostrart'
+  [OK  ] 'cuál es la capital de Japón' -> ['web'] | 'La capital de Japón es Tokio. Es la ciudad más grande y el c'
+
+### media (acepta ['audio', 'media'])
+  [OK  ] 'poné música' -> ['media'] | 'Listo, está reproduciéndose música en Spotify.'
+  [OK  ] 'pausá la canción' -> ['media'] | 'Listo, la canción se ha pausado.'
+  [MISS] 'siguiente tema' -> [] | 'El siguiente tema es el que me indiques.'
+  [OK  ] 'poné rock en spotify' -> ['media'] | 'Listo, reproduciendo rock en Spotify.'
+
+### browser (acepta ['app', 'browser', 'web'])
+  [OK  ] 'abrí youtube' -> ['browser'] | 'Listo, abrí YouTube.'
+  [OK  ] 'andá a wikipedia' -> ['browser'] | 'Listo, abrí Wikipedia.'
+  [OK  ] 'abrí github' -> ['browser'] | 'Listo, abrí github.'
+  [OK  ] 'navegá a gmail' -> ['browser'] | 'Listo, abrí Gmail.'
+  [server refresh @ filesystem]
+
+### filesystem (acepta ['filesystem', 'local_search'])
+  [OK  ] 'buscá un word en documentos' -> ['filesystem'] | 'Listo, encontré archivos .docx en la carpeta documentos.</in'
+  [OK  ] 'listá mis descargas' -> ['filesystem'] | 'listo, aquí están los archivos en tu carpeta de Descargas.'
+  [OK  ] 'buscá el archivo presupuesto' -> ['filesystem'] | 'He buscado archivos llamados presupuesto en el sistema y no '
+  [MISS] 'mostrame el escritorio' -> ['desktop_layout'] | 'Listo, aquí tienes la lista de las ventanas del escritorio.'
+
+### reminder (acepta ['notification', 'reminder'])
+  [MISS] 'recordame comprar pan a las 5' -> ['session'] | 'No pude registrar la nota porque la herramienta session solo'
+  [MISS] 'recordame la reunión mañana 9am' -> ['local_calendar'] | 'Listo, he recordado la reunión para mañana a las 9am.'
+  [MISS] 'recordame llamar a mamá' -> ['memory'] | 'Listo, guardé la nota de recordar llamar a mamá.'
+  [OK  ] 'recordatorio de tomar agua en 1 hora' -> ['notification'] | 'Listo, configuré un recordatorio para tomar agua dentro de u'
+
+### notification (acepta ['notification', 'reminder'])
+  [OK  ] 'alarma a las 7am' -> ['notification'] | 'Listo, he creado una alarma para las 7 de la mañana.'
+  [OK  ] 'timer de 10 minutos' -> ['notification'] | 'Listo, he iniciado un temporizador de 10 minutos.'
+  [OK  ] 'avisame en 5 minutos' -> ['notification'] | 'Listo, te aviso en 5 minutos.'
+  [OK  ] 'alarma para mañana 8am' -> ['notification'] | 'Listo, he configurado una alarma para mañana a las 8 de la m'
+
+### network (acepta ['device_settings', 'network'])
+  [OK  ] 'conectate al wifi de casa' -> ['device_settings'] | 'Listo, intenté conectarme al wifi de casa.'
+  [OK  ] 'qué redes wifi hay' -> ['device_settings'] | 'Listo, te muestro las redes wifi disponibles.'
+  [OK  ] 'estado de la conexión' -> ['network'] | 'El estado de tu conexión es normal.'
+  [OK  ] 'cuál es mi ip' -> ['network'] | 'Tu dirección IP pública es 100.1.1.1.'
+
+### vision (acepta ['gui', 'uia', 'vision', 'window'])
+  [OK  ] 'qué hay en mi pantalla' -> ['vision'] | 'Esto es una descripción de lo que aparece en tu pantalla.'
+  [OK  ] 'leé la pantalla' -> ['vision'] | ''
+  [OK  ] 'describí lo que ves' -> ['vision'] | 'No hay nada en pantalla para describir.'
+  [OK  ] 'qué ventana está abierta' -> ['window'] | 'La ventana activa es la lista de todas las ventanas abiertas'
+
+### gui (acepta ['computer_use', 'gui', 'input', 'uia'])
+  [MISS] 'escribí hola mundo' -> [] | 'No hay de qué.'
+  [MISS] 'apretá enter' -> ['session'] | 'ok, cancelo.'
+  [MISS] 'escribí mi nombre' -> ['memory'] | 'Listo, guardé tu nombre.'
+  [MISS] 'clickeá aceptar' -> ['browser_real'] | 'Listo, clickeé aceptar.'
+
+### whatsapp (acepta ['whatsapp'])
+  [OK  ] 'mandale un whatsapp a Juan' -> ['whatsapp'] | 'Abrí el chat con un y dejé el mensaje listo. Revisalo y deci'
+  [OK  ] 'escribile a mamá por whatsapp' -> ['whatsapp'] | 'Abrí el chat con mamá y dejé el mensaje listo. Revisalo y de'
+  [OK  ] 'enviá un mensaje a Pedro' -> ['whatsapp'] | 'Listo, le mandé un mensaje a Pedro.'
+  [OK  ] 'whatsapp a mi hermano' -> ['whatsapp'] | 'Listo, le mandé un mensaje a mi hermano.'
+
+### email (acepta ['email'])
+  [OK  ] 'mandá un correo a juan@x.com' -> ['email'] | 'Listo, envié el correo a juan@x.com.'
+  [OK  ] 'escribile un email a mi jefe' -> ['email'] | 'Listo, redacto un correo electrónico a tu jefe. ¿Qué quieres'
+  [OK  ] 'enviá un mail' -> ['email'] | 'Listo, redacto un borrador de correo electrónico. ¿A quién v'
+  [OK  ] 'redactá un correo' -> ['email'] | 'Listo, redacto un borrador de correo. ¿Cuál es el destinatar'

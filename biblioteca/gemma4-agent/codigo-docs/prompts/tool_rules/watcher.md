@@ -1,0 +1,1 @@
+Watcher/job rule: long-running observations (file changed, url changed) use watcher(...) which schedules gemma4_agent.watcher_runner. Generic background jobs (any subprocess) use job_manager(...). Use developer.start_dev_server specifically for project dev servers since it auto-detects the stack.

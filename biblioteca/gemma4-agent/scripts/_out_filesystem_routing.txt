@@ -1,0 +1,9 @@
+============================================================
+FILESYSTEM ROUTING (flag ON): 6/6 OK (33s)
+============================================================
+  [OK  ] 'buscá un word en mis documentos' -> ['filesystem'] | 'Encontré archivos .docx en tus documentos. ¿Quiere'
+  [OK  ] 'listá los archivos de descargas' -> ['filesystem'] | 'Listo, te muestro la lista de archivos en tu carpe'
+  [OK  ] 'buscá un pdf en el escritorio' -> ['filesystem'] | 'Encontré archivos PDF en tu escritorio. ¿Qué PDF q'
+  [OK  ] 'mostrame las fotos de mi carpeta' -> ['filesystem'] | 'Listo, listado el contenido de tu carpeta de Fotos'
+  [OK  ] 'buscá noticias de hoy' -> ['web'] | 'Intent:{"intent_type":"search","target":"noticias '
+  [OK  ] 'qué es la fotosíntesis' -> ['web'] | 'La fotosíntesis es el proceso mediante el cual las'

@@ -1,0 +1,1 @@
+Maintenance rule: windows_update_status, defender_status, firewall_status, event_logs_query, services_*, restore_point_create use maintenance(...). defender_quick_scan blocks up to 15 minutes; disk_cleanup_describe returns the cleanmgr command without running it.

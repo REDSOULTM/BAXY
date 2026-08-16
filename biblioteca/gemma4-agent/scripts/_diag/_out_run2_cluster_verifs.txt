@@ -1,0 +1,218 @@
+======================================================================
+### CLUSTER terminal_as_app
+--- VERIFICACION (veredicto final) ---
+# VERIFICACIÓN ADVERSARIAL — cluster "terminal_as_app"
+
+Verifiqué contra el código (regex, handlers, guards de honestidad) y MEDÍ empíricamente sobre los 5551 registros del dataset real y el comportamiento de `extract_app_open` / `t_app` / `_site_resolution_relevant`. Veredicto: **el diagnóstico es CORRECTO en el bug y el fix, pero subdimensiona el alcance y se equivoca en el MECANISMO de la mentira.**
+
+## (1) BUGS REALES CONFIRMADOS
+
+**El bug existe y el fix propuesto es el correcto y seguro.** Causa raíz verificada: `command_splitter.py:321-325`, `_APP_OPEN_VERB` incluye `ejecut[áa]\w*` (línea 322) y `run`/`start` (línea 323) como si fueran verbos de abrir-app. Disparado por el short-circuit en `agent.py:1513-1538` (gate `GEMMA4_APP_OPEN_NET`, default ON), pre-LLM.
+
+Medí `extract_app_open` sobre los 75 imperativos run-command del dataset: **42 son hijackeados** (devuelven un "nombre de app" que es en realidad un comando shell), no 2. Casos: `ejecuta pytest`→"pytest", `ejecuta pip --version`, `ejecuta pytest -q`, `ejecuta npm install`, `ejecuta git status en Carter_v3`, `ejecuta dir`, `ejecuta ls`, `ejecuta exploit`, `run that`, etc. El problema es ~20× más amplio que los 2 casos citados.
+
+**CORRECCIÓN IMPORTANTE al mecanismo de la mentira (el otro ingeniero se equivocó acá):** afirmó "Listo, abrí pytest" como mentira plana producida directamente. FALSO. El short-circuit solo dispara si `t_app` devuelve `ok:True` (agent.py:1524). `app.open("pytest")` NO encuentra app instalada → `ok:False, error="app not found"`. Lo que decide si hay mentira es el **fallback a web** de `t_app` (tools.py:1820-1837): si el nombre resuelve a un sitio estructuralmente relacionado, abre la WEB. Medí `_site_resolution_relevant`:
+- `pytest`→pytest.org = **True**, `python --version`→python.org = **True**, `pip --version`→pip docs = **True**, `npm install`→npmjs.com = **True**, `git status...`→git-scm.com = **True** → **abre el sitio web** y responde "Listo, abrí pytest." **MENTIRA REAL** (el usuario pidió EJECUTAR pytest; Baxy abrió la documentación en el browser y dice que "abrió pytest").
+- `dir`, `ls`, `whoami`, `echo hola`, `run that` = **False** → web fallback NO dispara → `ok:False` → el short-circuit NO dispara → cae al LLM. **Estos se autocorrigen; NO hay mentira.**
+
+Es decir: la mentira es real pero SOLO para comandos cuyo nombre coincide con un sitio (pytest/python/pip/npm/git), no para comandos shell genéricos. La honestidad tri-estado (`honest_action_reply`, agent_guards.py:306) NO atrapa esto porque `open_url_requested` es un éxito legítimo del fallback web — el sistema cree honestamente que abrió un sitio; la falla es de ROUTING, que arrastra una mentira semántica.
+
+| Caso | exec real | Veredicto |
+|---|---|---|
+| "ejecuta pytest" | abre pytest.org en browser | **(A) BUG REAL + MENTIRA** (vía web fallback, no app) |
+| "ejecuta python --version" | abre python.org en browser | **(A) BUG REAL + MENTIRA** |
+
+## (2) REFUTACIONES
+
+- **Los 2 casos `developer` (corre tests / revisa git): el ingeniero los clasificó (B) — CONFIRMO (B), no bug.** Verifiqué: `corre`/`revisa` NO matchean `_APP_OPEN_VERB` (medido: `extract_app_open("corre los tests...")`→None) → llegan al LLM. El schema `developer` (tool_schemas.py:52) expone `run_tests` (=pytest) y `git_status`; es semántica correcta y honesta. Dataset estricto. No tocar código.
+- **"ejecuta dir/ls/whoami/echo/run that": NO son bugs vivos.** Aunque `extract_app_open` los hijackea, el web fallback los rechaza → `ok:False` → cae al LLM. El ingeniero implicó que todos mienten; medí que estos no llegan a la mentira.
+- **Falsa preocupación de regresión: refutada y a favor del fix.** Verifiqué que de los 500 casos open-app del dataset, **solo 1** usa verbo `ejecut/run/start` con `correct_tools==["app"]`: `"ejecuta taskkill /F a Steam"`, y `extract_app_open` ya devuelve None (excluido por `/` en `_NON_APP_MARK`). Quitar `ejecut/run/start` **no pierde ningún app-open legítimo**. El test `test_extracts_app_name` (test_command_splitter.py:420) usa solo `abrí/open/lanzá` → sigue verde. Corrí la suite del splitter: **73 passed**.
+
+## (3) FIX, PRIORIDAD Y ESFUERZO
+
+**Fix CONFIRMADO** (el del ingeniero, correcto): en `command_splitter.py:322-324`, quitar `ejecut[áa]\w*` (es) y `run`/`start` (en) de `_APP_OPEN_VERB`. Estructural (mide la FORMA verbo-abrir vs verbo-ejecutar, no listas de apps), multi-idioma, sin hardcodes, alineado a CLAUDE.md. Deja la desambiguación de "ejecuta X" al router+LLM (que ya ofrecen terminal/developer) y al fallback intrínseco de `app.open`.
+
+- **Prioridad: ALTA** (no CRÍTICO). Justificación honesta del downgrade vs un CRÍTICO: la mentira es real pero acotada a nombres-de-herramienta que coinciden con sitios (pytest/python/pip/npm/git); el resto de comandos ya se autocorrige por el web-fallback gate. No hay daño irreversible. Pero es alto: confunde EJECUTAR con NAVEGAR y miente sobre lo hecho, en un asistente de accesibilidad.
+- **Esfuerzo: TRIVIAL** (~3 tokens borrados en un regex). Sin migración. Suite del splitter ya verde; agregar 1 assert (`extract_app_open("ejecuta pytest") is None`) blinda la regresión.
+- **Caveat honesto sobre `run`/`start` en inglés:** son genuinamente ambiguos ("start Spotify" = abrir vs "run pytest" = comando). El dataset (50 terminal : 0 app entre los run-command) favorece tratarlos como comando, y el LLM con router desambigua mejor que el regex ciego. Coincido con quitarlos: la guarda de precisión correcta es la propia `app.open` (que ya cae al flujo normal si no resuelve), no el short-circuit pre-LLM.
+
+**Pendiente NO cubierto por el ingeniero (recomiendo registrarlo, no bloquea el fix):** aun con el regex arreglado, si el LLM rutea "abrí pytest" (verbo abrir genuino) a `app.open`, el web-fallback de `t_app:1820` seguiría abriendo pytest.org y diciendo "abrí pytest". El fix del regex elimina el camino determinista pre-LLM (la causa de los 42 casos), pero el fallback app→web con nombres-de-herramienta es una segunda cabeza latente del mismo patrón. Fuera del alcance de este cluster.
+
+Archivos: causa raíz `gemma4_agent/routing/command_splitter.py:321-325`; disparador `gemma4_agent/agent_core/agent.py:1513-1538`; mecanismo real de la mentira `gemma4_agent/tools_pkg/tools.py:1820-1837` (web fallback) + `_site_resolution_relevant`.
+
+======================================================================
+### CLUSTER web_as_app
+--- VERIFICACION (veredicto final) ---
+All claims confirmed:
+- `127.0.0.1:3000` is `site_shaped=True` AND `is_domain=True` → enters the fallback → `_resolve_site_by_search` runs, but `_site_resolution_relevant` returns False (tokens "127"/"3000" don't match a real host) → **nothing opens** (the local dev server is unreachable). Bug confirmed.
+- `localhost:8080` vs `localhost.run/` → `_site_resolution_relevant=True` → could open the **wrong** (tunneling-service) site = honesty risk. Confirmed.
+
+I have everything. Final verdict.
+
+---
+
+# VERIFICACIÓN ADVERSARIAL — cluster `web_as_app`
+
+Reproduje todo contra el código real (no contra el reporte). El diagnóstico es **mayormente correcto y bien medido**, con **una imprecisión técnica importante** en el fix propuesto del caso 2 y un par de detalles menores. Detalle:
+
+## (1) BUGS REALES CONFIRMADOS
+
+### Caso 3 — "abre esta búsqueda en Google: …" → computer_use — **CONFIRMADO. CRÍTICO.**
+Verificado empíricamente, no de memoria:
+- `extract_app_action("abre esta busqueda en Google: diodo zener…")` → matchea `_AA_NAV_IN_APP`, `app_hint="Google: diodo zener para que sirve"`, `verify_app=True`, `pattern="nav_in_app"`. (command_splitter.py:679-685). El `_BROWSER_APP_RE` (línea 631) NO excluye buscadores → confirmado.
+- El gate en **agent.py:1404** usa `bool(AppResolver().find(_hint2))`. Medí `find("Google: diodo zener para que sirve")` → **8 resultados, top = "Registro de telemetría para Office"** (basura fuzzy, exactamente como dice el reporte). `_score` real de ese match = **45**.
+- El fix propuesto (umbral `_score >= ~85`) está bien calibrado: medí apps legítimas → `github=100`, `GitHub Desktop=90`, `Brave Browser=90`; query-garbage = 45-55. Separa limpio.
+- **Fix final:** agent.py:1399-1404 — reemplazar `bool(AppResolver().find(_hint2))` por: tomar el mejor candidato y exigir `_score(_hint2, cand.name) >= 85` (reusar `_score` de tools.py, ya importable y verificado). Estructural, sin listas, multi-idioma. **No tocar `_BROWSER_APP_RE`** (coincido con el reporte: agregar buscadores a una lista hardcodeada viola CLAUDE.md).
+- **Flujo correcto:** el gate primero prueba `_window_title_in_text(_hint)` (línea 1392) y SOLO cae a `find()` si la "app" no es una ventana abierta — que nunca lo será para "Google: …". El reporte identificó la línea correcta.
+
+### Caso 2 — "abre 127.0.0.1:3000" → app — **CONFIRMADO (A) + C. ALTO.**
+- `127.0.0.1:3000`: `site_shaped=True`, `is_domain=True` → entra al fallback; `_resolve_site_by_search` corre pero `_site_resolution_relevant('127.0.0.1:3000', …)=False` (tokens "127"/"3000" no matchean host) → **no abre NADA**. El servidor de desarrollo local queda sin abrir. Confirmado.
+- Honesty-risk confirmado: `_site_resolution_relevant('localhost:8080','https://localhost.run/')=True` → abriría un sitio AJENO. Confirmado.
+- **REFUTO el fix tal como está redactado en un punto clave:** el reporte dice "reusar el `looks_url` que ya vive en window.open (tools.py:2260)". **Eso NO arregla el caso.** Medí el regex actual de window.open contra `127.0.0.1:3000` y `localhost:8080` → **ambos dan False** (el regex existente exige `.[a-z]{2,}`, no cubre IP:puerto ni `localhost:puerto`). El reporte se contradice: en el cuerpo propone un regex **nuevo extendido** (con `localhost|\d{1,3}(\.\d{1,3}){3}`), no un reuse. **El fix correcto es el regex extendido, NO reusar el de window.open.** Verifiqué que el extendido sí matchea `127.0.0.1:3000`/`localhost:8080`/`localhost` y rechaza `GitHub`/`Brave`/`GitHub Desktop`.
+- **Wart adicional no señalado:** `web_open_url` (tools.py:5111) antepone `https://` incondicional. Un dev-server local casi siempre es `http://` → `https://127.0.0.1:3000` fallaría por TLS. Si se aplica el fix, conviene que para host `localhost`/IP-privada se prepende `http://`, no `https://`. Es un detalle pero hace la diferencia entre "abre y funciona" vs "abre y da error de certificado".
+- **Fix final:** tools.py:~1808 (antes del bloque de resolución-por-búsqueda en `t_app`/action open) — detectar URL/host:puerto literal con el regex extendido y delegar a `self.web_open_url`. Más: ajustar `web_open_url` para esquema `http://` en localhost/IP privada.
+
+## (2) REFUTADOS (no son bugs)
+
+### Caso 1 — "abre GitHub" → app — **B confirmado (ground-truth dudoso).**
+`find("GitHub")` → top="github", `_score=100`. Es un match de app legítimo; "GitHub" es genuinamente ambiguo (sitio vs GitHub Desktop). No hay mentira. **Corrección menor al reporte:** afirma que resuelve a "GitHub Desktop"; en esta PC el top real es "github" (GitHub Desktop aparece pero no de top). No cambia el veredicto B. Inaccionable sin hardcodear "GitHub=sitio" (prohibido).
+
+### Caso 4 — "abre Brave si es mi navegador por defecto" → app — **B confirmado.**
+`find("Brave")=[]` confirmado → "app not found" → fallback resuelve brave.com honestamente. En PC con Brave instalado, `app.open` es correcto. Sin mentira. El condicional "si es mi navegador por defecto" se ignora (sub-tarea fuera de scope, coincido).
+
+### Replies "Listo, abrí X" sobre app.open mockeado — **C (artefacto del mock) confirmado.** No son mentiras del tipo grave (mover-ventana→renombrar). El único riesgo de honestidad real es el de localhost:8080 (caso 2), que el fix 2 cierra.
+
+## (3) PRIORIDAD Y ESFUERZO
+
+| Fix | Caso | Severidad | Esfuerzo | Nota de verificación |
+|---|---|---|---|---|
+| **agent.py:1404** umbral `_score>=85` en gate `verify_app` | 3 | **CRÍTICO** | Bajo (~3 líneas, `_score` ya importable) | Calibración medida (45 vs 90-100). Previene falsos computer_use en cualquier "verbo + en \<texto largo\>", no solo "Google" |
+| **tools.py:~1808** URL-literal → `web_open_url` verbatim (regex **extendido**, NO el de window.open) + **http:// para localhost/IP en web_open_url** | 2 | **ALTO** | Bajo-Medio (regex + ajuste esquema) | Regex de window.open NO sirve; usar el extendido. Cierra además el honesty-risk de localhost |
+
+**Veredicto global:** el diagnóstico clasificó A/B/C **correctamente en los 4 casos**. La causa raíz y la línea exacta de cada bug están bien. **El único error de sustancia** es la afirmación de "reusar `looks_url` de window.open" para el caso 2 — verifiqué que ese regex no cubre IP:puerto ni localhost:puerto; el fix válido es el regex extendido que el propio reporte detalla más abajo (contradicción interna). Agregar el ajuste de esquema `http://` para localhost/IP. Las dos refutaciones (casos 1 y 4 como ground-truth dudoso) son **correctas y verificadas**.
+
+Archivos: `gemma4_agent/agent_core/agent.py:1383-1408`, `gemma4_agent/tools_pkg/tools.py` (t_app 1782-1842, window.open looks_url 2260-2262, web_open_url 5107-5123), `gemma4_agent/tools_pkg/app_resolver.py:665-702`, `gemma4_agent/routing/command_splitter.py:631-694`.
+
+======================================================================
+### CLUSTER window_vs_filesystem
+--- VERIFICACION (veredicto final) ---
+Confirmed the secondary capability bug: `window_move_resize` takes raw `x/y/width/height` with fixed defaults (0/0/1000/700) and has NO concept of "izquierda"/"left" as a directional preset. Even if routed correctly to `window`, "a la izquierda" would not produce a left-half layout — the LLM would have to compute coords. The previous engineer correctly labeled this secondary/menor.
+
+I have fully verified everything. Here is my adversarial verdict.
+
+---
+
+# VERIFICACIÓN ADVERSARIAL — cluster `window_vs_filesystem`
+
+Reproduje el routing real (py3.10 runtime) y leí el código citado. Corrijo una cosa de forma: las rutas/líneas del diagnóstico previo estaban mal (`planner.py` → el real es `gemma4_agent/routing/planner.py`; números de línea distintos). Pero **el contenido técnico es correcto y lo confirmé empíricamente**, no de memoria.
+
+## Lo que verifiqué corriendo el código (no de memoria)
+
+Subsets reales medidos (idénticos a los que reclamó el diagnóstico previo):
+| Frase | subset real | window ofrecido? |
+|---|---|---|
+| "mueve Notepad a la izquierda" | `['gui','window','uia','filesystem','session']` | sí, pero 2º |
+| "pon foco en Bloc de notas" | `['notes_tasks','window','state','session']` | sí, pero 2º (notes_tasks 1º) |
+| "restaura la última ventana minimizada" | `['window','state','session']` | sí, 1º (correcto) |
+
+Keyword-buckets medidos: "mueve Notepad" → filesystem-kw=True, window-kw=False. "Bloc de notas" → notes_tasks-kw=True, window-kw=False. Todo confirmado.
+
+## 1) BUGS REALES CONFIRMADOS
+
+**Caso 1 — "mueve Notepad a la izquierda" → filesystem + MENTIRA. CONFIRMO BUG REAL (grave).**
+- Causa de routing: `filesystem`-kw dispara por `mueve` (`routing/planner.py:1099`); `window`-kw NO dispara porque exige la frase literal `mueve la ventana` (`routing/planner.py:1239-1244`). filesystem queda keyword-fired (señal fuerte), window solo por encoder/exemplar. El 2B elige filesystem ante "mueve X".
+- Causa de honestidad: **CONFIRMADA y es el hallazgo más importante.** `is_unverified_claim` (`safety_pkg/reply_validator.py:197-200`) hace `if successful: return False`. Con el mock `ok:True`, `filesystem.rename` "tuvo éxito" → no flaggea la mentira. Verifiqué que NO existe ningún verificador cruzado intención↔dominio: los `verify_*` (`safety_pkg/verifiers.py`) son todos per-tool (`verify_filesystem` solo chequea que el rename ocurrió, ciego a que el usuario pidió una ventana). Wiring confirmado en `agent_core/agent.py:4321-4323`: ese es el único guard de honestidad en el path y se bypassa con cualquier tool exitosa. **La mentira pasa incluso en producción real, no solo por el mock.**
+- Fix-line: ampliar bucket window en `routing/planner.py:1239` (verbo-ventana + direccional/estado-SO, estructural, sin lista de apps) + ejemplos `move_resize` en el schema `window` (`tools_pkg/tool_schemas.py:18` — confirmé que el schema lista `move_resize` en actions pero tiene ejemplos SOLO de `active`/`close`, asimetría que invisibiliza la acción al 2B) + guard cruzado nuevo en `reply_validator`/`verifiers`.
+- Bug secundario (menor, capacidad): `window_move_resize` (`tools_pkg/tools.py:4293-4302`) toma `x/y/width/height` crudos con defaults 0/0/1000/700 y no entiende "izquierda" como preset. Aun ruteado bien, "a la izquierda" no produce media-pantalla-izquierda. Correctamente etiquetado como menor.
+
+**Caso 2 — "pon foco en Bloc de notas" → notes_tasks. CONFIRMO BUG REAL.**
+- `notes_tasks`-kw dispara por `notas` (`routing/planner.py:1209`) — colisión léxica: "Bloc de notas" = Notepad en español pero contiene "notas". `window`-kw tiene `foco a`/`enfoca` pero NO `foco en` (`routing/planner.py:1241`) — confirmé window-kw=False. notes_tasks queda 1º (keyword-fired). El 2B crea/abre una nota → no enfoca la app.
+- Fix: agregar `foco en`/`focus on` al bucket window, y mejor el discriminador estructural por estado-SO ("¿hay ventana 'Bloc de notas' abierta?" → window/app, no notes_tasks).
+
+## 2) LO QUE REFUTO / CONFIRMO COMO NO-BUG
+
+**Caso 3 — "restaura la última ventana minimizada" → window+state+state. CONFIRMO: (C) ARTEFACTO del mock.** Routing correcto (`window` 1º). El `+state` viene de la regex `restaura` en `routing/planner.py:938` (cleanup_expected), legítimo; el `state` repetido es loop por `execute→ok:True`. No es bug. (Nota fina: `window` aquí NO entró por keyword — la regex `restaura(r)? la ventana` no matchea "restaura la última ventana" por la palabra "última" en medio; entró por el encoder. Eso refuerza el caso 1: el bucket window es frágil. Pero como window ganó igual, no es bug en este caso.)
+
+**No hay ningún (B) ground-truth dudoso.** En los tres, `window` es la tool correcta; el dataset acierta. Coincido con el diagnóstico previo en esto.
+
+## 3) PRIORIDAD Y ESFUERZO de los fixes reales
+
+| Fix | Prioridad | Esfuerzo | Nota |
+|---|---|---|---|
+| **Guard cruzado intención↔dominio en reply_validator** (cierra la MENTIRA aunque el routing falle) | **CRÍTICO** | MEDIO | Es el único que ataca la mentira de raíz. Por embeddings, fallback seguro sin encoder. Riesgo: falsos-positivos → gatear y medir. |
+| Bucket `window` estructural: verbo-ventana + direccional/`foco en`/estado-SO (`planner.py:1239`) | ALTO | MEDIO | Cubre casos 1 y 2 a la vez. Validar que no rompa filesystem real ("renombrá notas.txt" sigue file-op por extensión). |
+| Ejemplos `move_resize`/`focus` en schema `window` (`tool_schemas.py:18`) | ALTO | BAJO | El 2B se guía por ejemplos; barato y de bajo riesgo. Hay test de contrato `TestSchemasAPI` que se actualiza. |
+| `window_move_resize` mapeo direccional "izquierda/derecha/mitad" → rect (`tools.py:4293`) | MEDIO | MEDIO | Capacidad, no routing/honestidad. Sin esto, "a la izquierda" queda a medias aun ruteado bien. |
+
+**Caveat de método (CLAUDE.md 3.5):** verifiqué routing + keywords + el path del guard de honestidad corriendo código real. NO corrí la cadena completa contra el LLM 2B vivo (el 2B es no-determinista; el subset ofrecido es condición necesaria pero no prueba de que SIEMPRE elija filesystem). Antes de declarar cualquier fix "hecho", hay que correr 3-4 fraseos en vivo con el agente real, como exige la regla 3.5.
+
+**Veredicto sobre el diagnóstico previo: SÓLIDO.** Clasificación A/A/C correcta. Solo corregí rutas/líneas (cosmético) y confirmé empíricamente lo que el otro ingeniero solo afirmó haber reproducido. El hallazgo del hueco de honestidad (mentira no-detectada porque la tool equivocada "tuvo éxito") es real y es el más valioso del cluster.
+
+======================================================================
+### CLUSTER status_checks
+--- VERIFICACION (veredicto final) ---
+Confirmed — this is exactly the precedent the engineer cited (the WhatsApp `_current_user_text` honesty guard). The mechanism for a steam/browser state-question guard is genuinely available and matches an existing structural pattern in the codebase.
+
+I have everything needed. My verification is complete.
+
+---
+
+# Verificación adversarial — cluster `status_checks`
+
+## Veredicto: el diagnóstico del ingeniero es CORRECTO. Confirmo los 3 como BUG REAL + MENTIRA.
+
+Verifiqué cada claim contra el código real (no de memoria). Todo lo que afirmó se sostiene, y reproduje el ruteo en vivo. **No refuto ningún caso** — esto es genuino, no ground-truth dudoso ni artefacto del mock.
+
+### Por qué NO es (B) ground-truth dudoso
+El GT `system` y el `also_valid:["window"]` son ambos read-only y responden la pregunta correctamente (`system(processes)`=`list_processes` vía psutil, `tools.py:3564`; `window(list/active)`). La tool ejecutada (`steam`/`browser`) **no tiene acción de estado** y su default es `open` (`t_steam` `:1845/1848` → `os.startfile("steam://open/main")`; `t_browser` `:2552` default open). Ejecuta la acción **inversa** a una consulta de solo-lectura. La tool ejecutada NO es válida → no es B.
+
+### Por qué NO es (C) artefacto del mock
+El mock devuelve `ok:True` pero **no fabrica la elección de tool ni el reply**. La cadena `steam(open)` + "Listo, abrí Steam" es lo que el 2B realmente eligió y dijo. No hay loop (1 pass cada uno). No es C.
+
+### Las mentiras (confirmadas en el eval, líneas de archivo 104/105/141)
+- i=103 "revisa si Steam está abierto" → exec `steam`, reply **"Listo, abrí Steam."**
+- i=104 "Steam está cerrado?" → exec `steam`, reply **"Listo, abrí Steam."**
+- i=140 "revisa si Chrome está abierto" → exec `browser`, reply **"Listo, abrí Chrome y es la ventana activa."** (además inventa "es la ventana activa" sin verificar)
+
+Las tres son mentiras graves: pregunta read-only → acción opuesta (abre lo preguntado) + afirma haberlo hecho como si respondiera.
+
+## Corrección importante al diagnóstico del ingeniero (su fix #2 está parcialmente refutado)
+
+El ingeniero propuso "inyectar `system`/`window` al frente del subset y despriorizar `steam`/`browser`". **Reproduje `select_tool_names` y esto NO arreglaría el caso más grave (i=140):**
+
+```
+'revisa si Steam esta abierto'  -> ['steam','app','system','verify','safety','session']
+'Steam esta cerrado?'           -> ['app','system','window','steam','verify','session']
+'revisa si Chrome esta abierto'  -> ['window','system','browser','verify','safety','session']  # window YA es #1
+```
+
+En i=140 `window` ya está **primero** y `system` segundo, y el 2B **igual** eligió `browser` (tercero). En i=104 `system`+`window` están delante de `steam` y aun así eligió `steam`. Conclusión medida: **reordenar el subset no alcanza** — el 2B débil tiene sesgo a la tool homónima de la app sin importar el orden. El research del ingeniero subestima esto. (Confirma su propio caveat de que hay que probar en vivo, pero el dato de ruteo ya muestra que el reorder solo no resuelve i=140.)
+
+## Causa raíz (confirmada, ordenada por lo que MÁS importa)
+
+1. **`_suggest_tools` (`planner.py:1048` steam, `:1073` browser/chrome)** antepone la tool del nombre de la app. CONFIRMADO: devuelve solo `['steam']`/`['browser']`.
+2. **El detector estructural protector NO cubre estos casos.** `_LOCAL_STATE_Q_RE` (`planner.py:367-373`) exige marca-de-pregunta (`[¿?]|qué|cuál|what|which`, línea 370) + entidad GENÉRICA (`juego/app/ventana/...`, `:358-361`). "revisa si Steam está abierto" es imperativo y "Steam" es nombre propio → `_is_local_state_question` devuelve **False** (lo reproduje: False/False/False). Además solo corre en `if not names:` (`:846`/`:853`), inalcanzable con `names` ya lleno.
+3. **El verdadero cuello (lo que el ingeniero no enfatizó):** aunque la tool correcta esté en el subset, el 2B la ignora. Por eso el fix **estructural pre-LLM** (forzar la intención de estado a `system`/`window` Y RETIRAR `steam`/`browser`/`app` del subset, no solo despriorizar) es necesario, no opcional.
+4. **Schemas mudos** (`tool_schemas.py`): `system` (`:14`) no menciona que `processes` responde "¿está corriendo X?"; `window.active` (`:18`) enseña "qué uso AHORA" pero no "¿existe la ventana NOMBRADA X?". Confirmado.
+
+## (1) BUGS REALES CONFIRMADOS + fix final
+
+Un solo patrón, un fix compuesto. Patrón: *pregunta de existencia/estado de app NOMBRADA* (`¿está abierto/cerrado/corriendo <App>?`, `revisá/fijate si <App> está abierta`, `is <App> running?`).
+
+- **Fix A (estructural, el principal) — `planner.py`, junto a `_LOCAL_STATE_Q_RE` :367 y aplicado ANTES del return de keyword (alrededor de `_suggest_tools` :1048/1073 o en `select_tool_names` tras armar `names`):** agregar un detector de "predicado-de-estado (`abierto/cerrado/open/closed/running/corriendo/...`, ya existe `_LOCAL_STATE_PREDICATE` :362) + verbo-de-chequeo (`revisar/fijarse/comprobar/check`) aplicado a un sujeto NOMBRADO", SIN exigir marca-de-pregunta ni sustantivo genérico. Cuando dispara: **remover `steam`/`browser`/`app` del subset e inyectar `system`+`window` al frente.** Mide la FORMA, multi-idioma, sin listas de apps (CLAUDE.md OK). RETIRAR las tools de acción es lo que ataca el sesgo del 2B medido arriba.
+- **Fix B (honestidad, red de seguridad) — `t_steam` `tools.py:1845` y `t_browser` :2552:** si `_current_user_text` (ya plumbed, precedente confirmado en `tools.py:3279`, guard WhatsApp) tiene forma de pregunta-de-estado, NO ejecutar `open` por defecto → devolver `needs_user`/abstención en vez de abrir. Determinista, mide forma, coherente con "no mientas / no ejecutes lo no pedido".
+- **Fix C (schema, ayuda al LLM aun si ambas tools quedan) — `tool_schemas.py:14` `system`:** mencionar que `processes` responde "¿está corriendo/abierto X?"; opcionalmente `window` `:18` para chequear ventana nombrada vía `list`.
+
+**OBLIGATORIO antes de declarar arreglado (CLAUDE.md §3.5):** probar en vivo i=103/104/140 + 3-4 fraseos (`is Steam open?`, `fijate si discord está corriendo`, etc.), porque el 2B puede elegir entre `system` y `window` (ambos correctos) y porque, como medí, el reorder solo no basta — hay que confirmar que Fix A retirando las tools de acción realmente fuerza la elección correcta.
+
+## (2) Refutaciones
+Ninguna. Los 3 son bug real. (Verifiqué que i=645 "si Chrome esta abierto cierralo" → `window`, correcto: ahí SÍ hay verbo de acción "cierralo", así que el Fix A debe NO disparar ahí — el detector debe exigir ausencia de verbo-de-acción imperativo, igual que `_LOCAL_STATE_Q_RE` ya evita matchear acciones por exigir forma-pregunta.)
+
+## (3) Prioridad y esfuerzo
+- **Fix A — CRÍTICO. Esfuerzo MEDIO** (regex estructural + lógica de subset; testear que no rompa i=645 ni "abrí Steam" `:1048`, ambos verificados sin predicado-de-estado standalone). Es el que arregla el routing.
+- **Fix B — ALTO. Esfuerzo BAJO** (red de honestidad por si A falla en algún fraseo no anticipado; ataca directamente la MENTIRA/acción irreversible; patrón ya existe en `:3279`).
+- **Fix C — MEDIO. Esfuerzo BAJO** (texto de schema; ayuda marginal dado que el 2B ya ignoraba `window` cuando estaba #1, por eso no es CRÍTICO solo).
+
+Archivos: `gemma4_agent\routing\planner.py` (`_suggest_tools` :1035/1048/1073; `_LOCAL_STATE_*` :358-381; fallback :846-858); `gemma4_agent\tools_pkg\tools.py` (`t_steam` :1844-1850, `t_browser` :2552, `list_processes` :3564, precedente guard :3279); `gemma4_agent\tools_pkg\tool_schemas.py` (`system` :14, `steam` :17, `app` :16, `window` :18, `browser` :22). Evidencia: `_finetune_eval_results_run2_fresh.jsonl` líneas de archivo 104/105/141 (i=103/104/140), contraste 646 (i=645).
+
+Honestidad: leí el código y reproduje el ruteo (`_suggest_tools`, `select_tool_names` con `plan_mission`, `_is_local_state_question`) en esta sesión. NO re-corrí el LLM en vivo con el fix aplicado — ese es el paso pendiente obligatorio por §3.5.

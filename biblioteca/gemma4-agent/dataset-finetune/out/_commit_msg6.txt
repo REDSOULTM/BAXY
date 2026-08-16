@@ -1,0 +1,24 @@
+fix(router): excepcion info-ACTUAL en el gate how-to/info (clima/precios/noticias conservan web)
+
+El gate A6 (pregunta conceptual -> el LLM responde sin tools, politica
+2026-06-04) sobre-matcheaba por su forma lexica ("what's X") las
+preguntas de informacion ACTUAL del mundo: "what's the weather like in
+London" se quedaba con subset vacio y el modelo no puede responder el
+clima de su conocimiento. Tripwire detectado por la fila noES agregada
+al eval congelado.
+
+Fix por embeddings multilingues (patron _SHOP, sin listas de keywords
+por idioma): centroides actual-vs-atemporal (clima/precios/noticias/
+resultados vs definiciones/how-to/hechos atemporales) y el gate conserva
+SOLO web/knowledge cuando is_current_world_info dispara — percepcion y
+destructivas siguen suprimidas, y sin encoder degrada al comportamiento
+previo. Calibracion medida: 17/18 casos con separacion limpia (actuales
++0.10..+0.31 vs conceptuales -0.05..-0.41); el unico FP ("cuanto es 25
+por 4", +0.11) es inalcanzable porque no matchea el regex del gate y la
+aritmetica va por el parser pre-LLM.
+
+Gates: canarios 63/63; eval congelado dev 1259/1280=0.9836 (la fila
+weather pasa; antes 1258), holdout 0.9790, no-tool keep 0.9975/1.0000
+identicos; 234 tests de routing/intent verdes.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

@@ -1,0 +1,36 @@
+fix(router): canarios 47/63 -> 63/63 — cuatro causas raiz medidas, cero regresion
+
+Sesion de causa raiz sobre los 16 canarios rotos, con descomposicion por
+etapa y sys.settrace sobre select_tool_names para aislar la linea exacta
+de cada mutacion:
+
+1) El harness de canarios corria el planner FRIO (sin warmup el planner
+   ve model_loaded=False y apaga la etapa semantica con scored=[]):
+   media un router degradado que en produccion no existe, porque el
+   agente calienta el encoder al boot. 11 de los 16 fallos eran artefacto
+   del harness (47/63 frio vs 58/63 caliente). Se agrega el mismo warmup
+   que router_eval, con tool_head importado de tools_pkg (el import desde
+   safety_pkg de router_eval falla silencioso dentro de su try/except).
+
+2) Tres labels anteriores a la politica how-to/info de 2026-06-04
+   (bdcceda): una pregunta conceptual no debe disparar tools — el
+   precedente real fue "como elimino una carpeta" BORRANDO la carpeta.
+   'que es una GPU/API/CPU' pasan a expect_empty con nota.
+
+3) Guarda local-fact incompleta en el union del tool_head: _suggest_tools
+   ya evitaba apilar web/knowledge cuando una tool local matcheo por
+   keyword, pero el head solo tenia la variante fecha/hora — 'cuanta RAM
+   tengo' arrastraba web debil (trace: names ['system']->['system','web']).
+   La guarda del head ahora usa el set compartido _LOCAL_FACT_TOOLS.
+
+4) contacts no estaba en el set local-fact: 'tengo el numero de Juan' es
+   la agenda LOCAL, no una pregunta de mundo, pero wants_knowledge
+   (falso-positivo borderline en texto folded, con flip frio/caliente de
+   sus centroides lazy) apilaba web/knowledge sobre contacts.
+
+Anti-regresion medida: eval congelado identico (dev recall 0.9832 /
+no-tool keep 0.9974; holdout 0.9788 / 1.0000), ruido dev 1.35->1.34
+extra/turno, suite de routing 196 passed. Detalle en
+_ROUTER_RETRAIN_V3CORPUS_2026-06-11.md.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

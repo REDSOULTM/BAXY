@@ -1,0 +1,6 @@
+[pass]  25/540 C01.25   cat1     5581ms status=trivial     tools=0
+[fail]  31/540 C02.01   cat2    21235ms status=trivial     tools=0
+[fail]  40/540 C02.10   cat2    21422ms status=trivial     tools=0
+[fail]  41/540 C02.11   cat2    21868ms status=trivial     tools=0
+[fail]  45/540 C02.15   cat2    24832ms status=needs_user  tools=0
+[pass]  50/540 C02.20   cat2     8740ms status=trivial     tools=0

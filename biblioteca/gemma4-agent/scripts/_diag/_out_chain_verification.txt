@@ -1,0 +1,55 @@
+Confirmed: `parse_calc_action` routes the calc cases to a deterministic plan → `t_computer_use` (line 1305), so they reach computer_use correctly; the failure (if any) is in the verifier, not routing. Note `'abre la calculadora y suma 25 mas 75'` → calc=None AND nav_action=None (because `suma` is not a calc-trigger when preceded by "abre...y", and not in `_AA_ACT_NAV`), so that one falls through — consistent with the diagnosis's `exec=["app"]` observation for that phrasing.
+
+I have everything needed for an adversarial verdict. Let me clean up (I patched nothing on disk — all patches were in-memory in `python -c`).
+
+---
+
+# VEREDICTO ADVERSARIAL
+
+Verifiqué el diagnóstico **ejecutando el código real** (no leyéndolo): corrí los parsers sobre los casos en disputa, simulé el fix de riesgo-medio para medir su blast-radius, y confirmé la mecánica del harness. Resumen honesto: **el diagnóstico acierta en la causa raíz y en el veredicto conservador, pero tiene imprecisiones de ubicación y un punto ciego en el blast-radius.**
+
+## 1. ¿La causa raíz es correcta? SÍ, las tres, confirmadas empíricamente
+
+- **Artefacto del harness (label-noise):** CONFIRMADO en código. El eval mockea `ToolRegistry.execute` (`_diag_finetune_dataset_eval.py:132-136`), pero (a) `_window_title_in_text` llama `self.tools.list_windows(...)` DIRECTO → consulta el SO real (`agent_core/agent.py:560`); (b) cuando `t_computer_use` corre con `steps`, PlanExecutor despacha vía `self.tools.execute("app"/"gui"/"uia",...)` (`computer_use_pkg/computer_use.py:451,612,...`) → el eval graba `["app","gui"]`, NO `["computer_use"]`. **Conclusión del diagnóstico válida: ~la mitad de los `exec=["gui"]`/`["app","gui"]` NO se pueden clasificar como bug-de-routing sin re-instrumentar el harness.** Este es el hallazgo de mayor valor y es correcto.
+
+- **El bug `app:"tepad"`:** CONFIRMADO ejecutando. `parse_type_action('open Notepad and type my todo list')` → `{'app': 'tepad', ...}`. La causa exacta: `_AA_NAV_RE` matchea `'open No'` porque `_AA_PREP` (`command_splitter.py:613`) incluye `n[oa]` SIN word-boundary, y se come el "No" de "Notepad". Verificado al nivel del span.
+
+- **`nav_action` solo dispara con conjunción `y/and`, no con comas:** CONFIRMADO. `'abre notepad, escribe hola, cierralo'` → `extract_app_action=None`, se parte mal en el splitter.
+
+**Imprecisiones del diagnóstico (no fatales pero relevantes):** citó rutas equivocadas — dijo `command_splitter.py:614` y un `agent.py` en la raíz del repo; los reales son `gemma4_agent/routing/command_splitter.py:613` y `gemma4_agent/agent_core/agent.py`. Quien aplique el fix a ciegas con esas líneas erraría el archivo.
+
+## 2. ¿El fix rompe "abre spotify y pon rock" o "andá a X y luego a Y"? NO el fix seguro; SÍ parcialmente el fix medio
+
+Medido con el encoder REAL cargado (no con capa-2 OFF como hizo el diagnóstico):
+
+- `abre spotify y pon rock` → `nav_action=None` (porque `poné` está EXCLUIDO a propósito de `_AA_ACT_NAV`, `command_splitter.py:622-626`) → va al splitter → `['abre spotify','pon rock']` = app.open + media. **Cadena legítima INTACTA.**
+- `andá a github y luego a youtube` / `ve a youtube y luego a netflix` → `nav_action=None` PERO `_is_bare_nav_to_app=True` → `split_command` los devuelve ENTEROS (no parte). **Misión-goal INTACTA** (la guarda `_is_bare_nav_to_app`, `command_splitter.py:219`, es exactamente la red del revert `f868f00`).
+
+**El fix SEGURO (word-boundary en `_AA_PREP`) es ortogonal al discriminador:** solo afecta extracción de string dentro de `parse_type_action`, que únicamente corre DESPUÉS de que `_aa_route` ya decidió rutear a cu. No toca qué va entero vs qué se parte. Lo verifiqué: con el fix, las 6 cadenas legítimas/goal-mission dan idéntico resultado.
+
+**Pero el fix de riesgo-MEDIO (asíndeton en `nav_action`) tiene un blast-radius que el diagnóstico NO detectó:** lo simulé y SÍ captura el caso target, y NO toca cadenas ni goal-missions — pero **newly captura `'abre la carpeta documentos, borra el archivo viejo'`** (operación de FILESYSTEM, no in-app) → la mandaría a `cu(goal)` incorrectamente. El diagnóstico advirtió "riesgo" pero por la razón equivocada (creyó que rozaba el revert goal-vs-chain; el riesgo real es leakage de otros dominios). Esto REFUERZA diferir ese fix.
+
+## 3. ¿Cuántos de los 92 son bug real vs ground-truth dudoso?
+
+**No puedo dar un número exacto de los 92 sin re-correr el eval re-instrumentado** — y esa es justamente la conclusión correcta. Lo que SÍ confirmé estructuralmente:
+- La familia **calc (~14)** rutea BIEN a `t_computer_use` (`parse_calc_action`→plan→línea 1305); su falla es el **verifier de keypress**, NO routing. Bug real pero de PlanExecutor, no del splitter.
+- Los `exec=["app","gui"]` con reply correcto ("Escribí «gracias» en Discord") **funcionan** = ground-truth dudoso (app+gui logra lo mismo que cu).
+- El bug `"tepad"` afecta solo el patrón `open <app-empezada-con-No/Na>` en inglés/pt + `nav_type` — un subconjunto chico.
+
+El diagnóstico es honesto al marcar que ~la mitad es label-noise. **Es correcto: estarías persiguiendo fantasmas sin re-instrumentar.**
+
+## VEREDICTO FINAL: APLICAR un fix acotado + arreglar el harness; DIFERIR lo arquitectural
+
+**APLICAR (riesgo ~nulo):**
+
+1. **Word-boundary en `_AA_PREP`**, `gemma4_agent/routing/command_splitter.py:613` (NO la raíz del repo como dijo el diagnóstico). El fix mínimo correcto NO es borrar `n[oa]` (perdés "abrí no Spotify" pt/it legítimo) sino anclar la preposición a palabra completa donde se consume, en `_AA_NAV_RE` (`:805`):
+   `_AA_NAV_RE = re.compile(r"\b(?:" + _AA_NAV + r")\b\s+(?:(?:" + _AA_PREP + r")\b\s+)?", re.IGNORECASE)`
+   Verificado: `'open No'`→`'open '`, y preserva `'anda a '`, `'abri no '`. Suite actual 80/80 verde como baseline; este fix necesita su test (`parse_type_action(...)["app"]=="Notepad"`) + 3 fraseos en vivo (CLAUDE.md 3.5).
+
+2. **Re-instrumentar el harness** para grabar también las llamadas directas a `t_computer_use`/`t_*` y a `list_windows`, y RE-CORRER. Sin esto el "92" es mitad ruido. **Mayor ROI, riesgo nulo** (es solo el harness de eval, no toca runtime).
+
+**DIFERIR (riesgo medio-alto, requiere sesión de medición en vivo):**
+- El fix asíndeton de `nav_action`: medí que filtra operaciones de filesystem a cu. Toca precedencia splitter-vs-cu = eje del revert documentado (`project_goal_mission_vs_chain`). NO improvisar.
+- El verifier de keypress en calc (bug dominante real, ~14 casos): es fix de PlanExecutor con precedente en memoria (`project_calc_whatsapp_verifier_storm`), no de routing.
+
+No edité nada en disco; todos los patches fueron en memoria (`python -c`) para medir.

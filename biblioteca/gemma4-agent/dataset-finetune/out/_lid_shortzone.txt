@@ -1,0 +1,4 @@
+﻿clips truncados a 1.2s: 60
+
+outputs con pinta EN (bug LID): 0/60
+disparos heurística: 0 | rescatados a ES: 0/1

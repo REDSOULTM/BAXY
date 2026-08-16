@@ -1,0 +1,22 @@
+retrain(router): encoder re-entrenado sobre el corpus v3 corregido + artefactos re-derivados
+
+El corpus de entrenamiento del encoder pasa a derivarse del dataset v3
+(6.503 filas unicas, 4.432 con tool, 1.526 labels corregidas, contexto
+prev derivado del history multi-turno). Encoder seed 42, 3 epochs,
+14.544 pares con holdout excluido por hash; centroids tool2vec,
+exemplars y abstain head re-derivados con la geometria nueva (mezclar
+espacios de embeddings corrompe el margen de abstencion).
+
+Equivalencia conductual MEDIDA contra baseline congelado: eval curado
+dev 0.9832/holdout 0.9788 con misses byte-identicas, canarios 47/63 en
+ambos stacks (los 16 fallos son preexistentes, atribuidos con rollback
+temporal), suite de routing verde, 10/10 fraseos de valor, identidad en
+vivo 5/6 igual y "chi sei?" 6/6 (antes 5/6). Se mantiene el stack nuevo
+por linaje (distribucion corregida alineada con el modelo) sin regresion
+en ninguna medicion. El techo medible actual lo marcan los 16 canarios
+preexistentes (gaps del planner/abstain, no del encoder) — documentados
+como siguiente frente en _ROUTER_RETRAIN_V3CORPUS_2026-06-11.md.
+
+Rollback: gemma4_agent/data/*.bak_pre_v3corpus_2026-06-11.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

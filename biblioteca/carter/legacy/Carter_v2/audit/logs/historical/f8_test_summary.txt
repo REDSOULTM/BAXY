@@ -1,0 +1,13 @@
+﻿
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1454 passed, 3 warnings in 114.81s (0:01:54)
+python : sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ 
+attribute
+En línea: 1 Carácter: 136
++ ... oding utf8; python -m pytest -q --ignore=tests/test_main_jarvis.py 2> ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (sys:1: Deprecat...ule__ attribute 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

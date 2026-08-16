@@ -71,6 +71,18 @@ No se re-derivan, nunca:
 Verde antes y después de cada tanda. Un rojo bloquea la entrega, sin excepción y
 sin nota al pie. Y no se cierra con `skip`, `xfail`, umbral relajado ni fallback.
 
+## La biblioteca — búscala antes de investigar
+
+[`biblioteca/00_INDICE.md`](biblioteca/00_INDICE.md) reúne **1.350 documentos** de
+las cuatro escrituras anteriores de este proyecto: estudios, auditorías,
+investigaciones encargadas, benchmarks y rechazos con el mecanismo entendido. Está
+indexada por qué pregunta responde cada área, y
+[`biblioteca/01_INVENTARIO.md`](biblioteca/01_INVENTARIO.md) lista todos con título
+y fecha para buscar por palabra.
+
+Abrir una línea de investigación sin haber mirado ahí primero es la forma más cara
+de perder un día. Es la ley 1.
+
 ## Documentación heredada
 
 `documentacion/` trae cientos de páginas de los intentos anteriores: decisiones de

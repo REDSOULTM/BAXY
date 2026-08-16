@@ -1,0 +1,143 @@
+All flagged lines confirmed exactly as described. I have measured every load-bearing claim. Now I'll write the master plan, honestly flagging where my measurements *refine* the input analysis (the honestidad mislabel scope is much smaller than claimed; the language failmode is purely representational; the rebrand spans 63 lines across 5 languages, not 50).
+
+---
+
+# PLAN MAESTRO — Re-Fine-Tuning del dataset de Baxy
+
+Todo lo de abajo está **medido sobre el curated real** (`dataset_finetune/curated/curated.jsonl`, 6661 líneas) y los failmodes (`scripts/_diag/_ftfail/`). Donde mi medición corrige el análisis de entrada, lo marco como **[CORRECCIÓN MEDIDA]**. No entrenamos acá: esto es el plan + los ejemplos para que apruebes.
+
+## 0) Hechos verificados (base del plan)
+
+| Métrica | Valor medido | Fuente |
+|---|---|---|
+| Total ejemplos | 6661 | `wc -l` |
+| Distribución idioma | es 3982 (59.8%), en 883, pt 452, it 434, fr 422, de 419, otro 69 | conteo |
+| Ejemplos con ≥1 tool | 4226; non-ES con tool: 1407 | conteo |
+| "Baxy" en el dataset | **0** (en cualquier campo) | grep |
+| Asistente se auto-nombra "Gemma 4" | **63 líneas** (es 44, en 11, de 4, fr 3, it 1) | regex sujeto |
+| "Gemma 4" como MODELO (legítimo) | 31 líneas en reply | regex |
+| Self-naming "Carter" en reply | 0 (Carter aparece como user_text o se niega) | regex |
+| Reply non-ES con tool que arranca "Listo," (bug de idioma en la etiqueta) | **1** (línea 1823 "scroll down") | regex |
+| Reply auto-afirma verificación en delete/send | **2** (líneas 2643, 3818) | regex |
+| Mensajeria que afirma "entrega verificada" | **0** | regex |
+| Categoría `honestidad_bajo_presion` | 5 ejemplos | conteo |
+| `personalidad_negativo` | 9; `personalidad` 24 | conteo |
+| Judge bugs totales | 992 — routing 477, honestidad 192, idioma 156, completitud 71, loop 71, latencia 25 | `_judge_bugs.json` |
+| Severidad | alta 331, media 576, baja 85 | `_judge_bugs.json` |
+| `tool_args` shape | `{"action": "...", ...kwargs}` (346 filas lo usan) | inspección |
+
+**Tres [CORRECCIONES MEDIDAS] que cambian la estrategia respecto del análisis de entrada:**
+
+1. **Idioma NO es un problema de etiquetas.** El análisis lo dijo y lo confirmo al extremo: de 1407 replies non-ES con tool, **solo 1** (línea 1823) arranca con "Listo,". Las etiquetas non-ES están bien en su idioma. El bug es 100% **representacional** (el modelo memoriza "post-tool → 'Listo, <pretérito-es>'" como atractor por desbalance de superficie). → Fix = **agregar masa balanceada**, casi nada de relabel.
+
+2. **Honestidad: el dataset NO está "lleno" de la plantilla-mentira.** El análisis de entrada afirmó "cientos de filas" con "le mandé X y la entrega fue verificada". Lo medí: **solo 2 líneas** auto-afirman verificación (2643, 3818) y **0 mensajeria** lo hacen. El honestidad falla por **subcobertura** (5 ejemplos en `honestidad_bajo_presion`, prior fuerte de "narrá éxito"), no por estar mal-etiquetado en masa. → Fix = **2 ediciones puntuales + bloque de cobertura contrastiva**, no una purga masiva. Esto baja el riesgo del sprint.
+
+3. **El rebrand es más grande que "50 líneas": son 63, y ya tocan 5 idiomas.** Bien — significa que el patrón canónico "Soy Baxy ... modelo Gemma 4" hay que enseñarlo multilingüe desde el inicio, no solo es/en.
+
+---
+
+## 1) RESUMEN — modos de falla priorizados (por impacto)
+
+Prioridad = (volumen × severidad-alta) × (cuánto lo arregla un re-FT). Loop/latencia quedan fuera del re-FT (son código: dedup batch ya commiteado, web-loop capado).
+
+**P0 — Identidad (rebrand Baxy).** Bug categórico y barato: 63 líneas enseñan el nombre equivocado y hay **0** ejemplos del correcto. El modelo no tiene de dónde aprender "Baxy". Impacto de marca máximo, riesgo mínimo (es find-and-fix dirigido + anclas nuevas). Incluye el sub-bug grave "cómo me llamo" (user) → conflado con el nombre del asistente.
+
+**P1 — Honestidad (H1 afirma-no-hecho + H3/H4 auto-confirma irreversible).** 192 bugs, 331 de severidad alta concentrados acá y en routing. H1 (afirmar "moví/borré/envié" cuando el tool solo listó/planificó) es el modo #1 en alta. Daño = mentira estructural + acciones irreversibles. **Subcobertura medida** (5 ejemplos) → alto retorno por ejemplo agregado.
+
+**P2 — Routing estado-vs-acción / how-to / conocimiento.** 477 bugs (el eje más voluminoso), con R6 (acción opuesta) casi todo alta. El dataset YA tiene los ejemplos correctos pero **mal balanceados por idioma** y sin pares mínimos contrastivos adyacentes con el mismo recurso.
+
+**P3 — Idioma (espejo post-tool).** 156 bugs, todos media/baja. Puro balance representacional. Importante para universalidad, pero severidad baja → se ataca con masa balanceada acotada.
+
+**Fuera de alcance del re-FT:** loop (71) y latencia (25) son código/prompt. Único aporte del dataset: 2-3 ejemplos "una sola búsqueda basta" para conocimiento estable.
+
+---
+
+## 2) ESTRATEGIA del dataset
+
+### Principio rector (medido, no aspiracional)
+El FT actual logra **0% tools inventadas**. Eso se sostiene porque ES es mayoría holgada y los `correct_tools` están bien. **No tocamos `correct_tools` de los caminos que funcionan; el 90% del trabajo es `correct_reply_style` + agregar ejemplos.** Regla aprendida (memoria FT E2B v2): **auditar el 100% del dataset ANTES de entrenar** — ya empecé (sección 0); el sprint debe cerrar con un script de auditoría versionado que valide el dataset corregido entero.
+
+### Ediciones in-place (correcciones al original) — ~75 líneas
+
+| Foco | Qué se edita | Cuántas | Qué cambia |
+|---|---|---|---|
+| Identidad | 63 self-naming "Gemma 4"→"Baxy" | 63 | SOLO el nombre propio; se conserva "modelo Gemma 4". Patrón canónico: *"Soy Baxy, tu asistente de voz local en Windows, impulsado por el modelo Gemma 4."* (espejar idioma) |
+| Identidad | Líneas 2, 59, 1641 (niegan Carter pero se auto-nombran Gemma 4) | 3 | Negar Carter → afirmar **Baxy** |
+| Identidad | Líneas 882, 2725 (hardcodean "Red" en user-recall) | 2 | → template `[nombre guardado]` + fallback honesto, `correct_tools=['memory']`. **Nunca** dejar un nombre concreto de usuario en el GT |
+| Honestidad | Líneas 2643, 3818 (auto-afirman "verifiqué que ya no existe") | 2 | Quitar la cláusula de verificación auto-atribuida; reply queda en intención |
+| Honestidad | Línea 316 (`original_was_correct:false`, pre-afirma "quedó eliminada") | 1 | Intención sin pasado-completado; marcar `owc:true` tras el fix |
+| Routing | Líneas 135, 136 (state-check con `reply_is_template` + barra "/") | 2 → 4 | Partir en ejemplos concretos sin barra, acentuados, `['system']`, `also_valid=['window']` |
+| Idioma | Línea 1823 ("scroll down" → "Listo, hice scroll") | 1 | → *"Done, scrolled down."* `['gui']` |
+
+**Total ediciones: ~74 líneas.** Cantidades chicas y verificables una por una (riesgo bajo).
+
+### Ejemplos NUEVOS por foco — objetivo total ~210 (rango 180–250)
+
+Tope duro: ningún modo nuevo > ~1.5% del dataset (~100 líneas). El bloque nuevo total = **~3.1% sobre 6661**, dejando ES como mayoría holgada (no baja de ~57%).
+
+| Foco | Nuevos | Reparto por idioma | Notas |
+|---|---|---|---|
+| **P0 Identidad** | ~20 | es 6, en 4, de/it/pt/fr 2-3 c/u | Pares contrastivos "cómo te llamas"(asistente=Baxy) vs "cómo me llamo"(user=memory.recall). Incluir ancla anti-regresión "¿qué modelo usás?" → "modelo Gemma 4 ... el asistente se llama Baxy" |
+| **P1 Honestidad** | ~45 | es 15, en 9, de/it/pt/fr ~5 c/u | 3 sub-bloques: (a) H1 listó/planificó → no afirma multi-paso (~18); (b) H3/H4 freno-safety irreversible multi-idioma (~15); (c) **positivos** de la misma acción legítima de bajo riesgo (~12) para enseñar la FRONTERA, no el miedo |
+| **P2 Routing** | ~75 | es 25, en 15, de/it/pt/fr ~9 c/u | ~40% estado-query, ~30% how-to, ~30% conocimiento. **Cada uno con su gemelo de ACCIÓN del mismo recurso** ("está Spotify abierto?"→system **junto a** "abrí Spotify"→app). Incluir R5 media-control (pause/stop/fullscreen) y R7 frase-literal-como-nombre |
+| **P3 Idioma** | ~70 | en/pt/fr/de/it ~14 c/u; es ~0 | Comandos cortos post-tool (open/close/set_volume/mute/screenshot/play) con reply en el idioma del user. **Variar openers DENTRO de cada idioma** (no convertir "Done,/Pronto,/Voilà," en nuevas plantillas rígidas) |
+
+Los ~42 ejemplos del análisis de entrada (idioma 12, identidad 10, routing 11, honestidad 8 + transversal 10) son la **semilla**; completar hasta ~210 siguiendo el reparto.
+
+### Balance global resultante (proyectado)
+- ES: 3982 → ~4030 (**60.5% → ~58%**, sigue siendo mayoría holgada → **no degrada el español**).
+- non-ES con tool: 1407 → ~1560 (sube el contraste corto, que es donde falla).
+- `honestidad_bajo_presion`: 5 → ~35 (sale del ahogo estadístico).
+- Identidad: cluster denso pero acotado a ~1-1.5% (no inundar — riesgo de disparar identidad ante saludos).
+
+### Regla de PARIDAD (la salvaguarda anti-pasividad)
+Por cada ejemplo nuevo de **consulta/how-to/freno**, conservar o agregar su **gemelo de ACCIÓN legítima** con el mismo recurso. El dataset ya tiene los imperativos de acción (173/235/2064/3935/3985…), así que basta con **no agregar más consultas que acciones**. Esto evita que el modelo se vuelva pasivo o medroso (degradaría latencia tier-Alexa).
+
+---
+
+## 3) ORDEN de ejecución y GATES por foco
+
+Orden = riesgo creciente. Cada foco se valida **en vivo con el LLM real** (regla 3.5: `scripts/_boot_server_for_eval.py` + `agent.run_content(...)`, nunca delegado), con variantes de fraseo y caminos de tool alternativos.
+
+**Paso 0 — Auditoría 100% + congelar baseline.**
+Script versionado que valida el dataset entero (JSON válido, `correct_tools` ∈ registry, no nombres de usuario hardcodeados, no self-naming "Gemma 4"/"Carter"). Correr el failmode set actual (idioma 1201 + los 992 judge bugs re-medidos en vivo) para tener el **número de partida por modo**. Sin baseline no hay gate.
+
+**Paso 1 — P0 Identidad** (ediciones + ~20 nuevos).
+- **Gate:** sobre held-out de identidad multilingüe (≥10 por idioma): "se nombra Baxy" ≥ 0.95; "cómo me llamo"(user) resuelve por `memory` sin auto-nombrarse, en **todos** los idiomas; **anti-regresión:** "¿qué modelo usás?" sigue diciendo "Gemma 4" (modelo) ≥ 0.95. Grep post-dataset: `Baxy > 0`, self-naming "Gemma 4" `= 0`.
+
+**Paso 2 — P1 Honestidad** (2 ediciones + ~45 nuevos).
+- **Gate:** 0 replies que afirmen "verifiqué/quedó eliminado/entrega verificada" salidos del modelo sobre delete/send; ops irreversibles de sistema (system32/registry/C:/) → freno o pide confirmación, **nunca** `safety.confirm`+`filesystem.delete` juntos; **anti-regresión:** acciones legítimas de bajo riesgo (abrir app, bajar volumen, wsp bien especificado) NO empiezan a pedir confirmación (medir un set de ~15 benignos antes/después).
+
+**Paso 3 — P2 Routing** (2 ediciones + ~75 nuevos).
+- **Gate por idioma** (es/en/it/fr/de/pt): state-check → reporta estado (no abre/cierra); how-to → explica (`[]`); conocimiento → responde seco (`[]`); **anti-regresión de paridad:** acciones imperativas reales ("abrí Steam", "cerrá Spotify", "borrá X") siguen ejecutando — ningún subgrupo de idioma baja en acciones correctas mientras sube en consultas.
+
+**Paso 4 — P3 Idioma** (1 edición + ~70 nuevos).
+- **Gate:** re-correr failmode_idioma (1201) + held-out balanceado; criterio **reply-language-match ≥ 0.95 por idioma** (no solo promedio global) SIN que ES baje de su baseline. Anti-regresión por idioma, igual que el gate del wake-word.
+
+**Paso 5 — Entrenar + gate global.**
+Recién con los 4 gates por modo en verde se entrena. Gate global post-FT: **0% tools inventadas se mantiene** (el invariante del FT actual) + ningún subgrupo de idioma/dominio fuerte degrada. Smoke test con datos chicos antes de la corrida completa (regla "experimento mínimo").
+
+---
+
+## 4) RIESGOS y mitigaciones
+
+| # | Riesgo | Mitigación medida |
+|---|---|---|
+| R1 | **Romper el español que funciona** al agregar non-ES | ES queda en ~58% (mayoría holgada). Bloque nuevo total ~3.1%. Medir ES antes/después en cada gate; ES no puede bajar de baseline |
+| R2 | **Find-replace ciego Gemma→Baxy** borra las 31 menciones legítimas del MODELO → el modelo deja de saber su backend | Editar SOLO las 63 líneas donde Gemma 4 es **sujeto/nombre del asistente** (regex de sujeto ya escrito). Ancla explícita "¿qué modelo usás?" preserva "Gemma 4 = modelo" |
+| R3 | **Cambiar un loro por otro**: "Done,/Pronto,/Voilà,/Erledigt,/Fatto," como nuevas plantillas rígidas | Variar openers DENTRO de cada idioma (alternar "Opening X.", "X is open.", "Done, opened X."), replicando la dispersión que ya tienen los GT non-ES correctos. No homogeneizar |
+| R4 | **Sobre-corregir hacia el rechazo** → asistente tímido, latencia tier-Alexa rota | Regla de PARIDAD (cada freno con su gemelo de acción legítima). Bloque honesto acotado a ~3-5%. Set de ~15 benignos medido antes/después |
+| R5 | **Sobre-representar identidad** → dispara identidad ante saludos | Identidad acotada a ~1-1.5%. No inundar con "quién eres" |
+| R6 | **Hardcodear nombres de usuario** ("Red"/"Albeda") → el modelo inventa un nombre fijo | user-recall SIEMPRE como template `[nombre guardado]` + fallback honesto, `['memory']`. Auditoría Paso 0 falla si hay nombre concreto en GT de user-recall |
+| R7 | **Inflar EN** (ya es el non-ES con más masa, 883) | Reparto del bloque nuevo prioriza pt/de/fr/it (más flacos). EN no domina el bloque nuevo |
+| R8 | **Pares mínimos solo en un polo** → sesgo en vez de frontera | Cada consulta/how-to/freno entra con su gemelo de acción del mismo recurso, adyacentes para que el batch contenga ambos polos |
+| R9 | **El prompt no vence estos modos** (medido en vivo) → falsa sensación de arreglado por test mockeado | Validación EN VIVO obligatoria por foco con `run_content`, variando fraseos y caminos de tool alternativos (regla 3.5). El mock `execute→ok:True` inventa cifras → no medir honestidad/routing solo con mock |
+
+### Honestidad sobre lo que NO sé todavía
+- **No medí en vivo** que estos fixes de dataset efectivamente venzan el modo de falla post-entrenamiento — eso es el Paso 5. El plan asume la hipótesis (respaldada por la cacería) de que son dataset-level; si tras re-FT un modo persiste, puede ser código/prompt y hay que re-diagnosticar.
+- Los failmode files (`_failmode_*.json`) son **muestras** (200/73/62/105), no las poblaciones completas; los totales (1201 idioma, 992 bugs) salen de `_judge_bugs.json`. Los gates deben correr sobre la población, no la muestra.
+- El reparto exacto de los ~210 nuevos es una **propuesta**; ajustalo si querés priorizar más fuerte H1/R6/idioma (los de mayor severidad-alta y volumen).
+
+**Definición de Hecho del sprint:** dataset auditado al 100% (script versionado verde) + 4 gates por modo en verde en vivo + 0% tools inventadas preservado + ES no degradado + memoria actualizada con el gotcha. Recién ahí se commitea el dataset y se entrena.
+
+Archivos clave: dataset `c:/Users/usuario/Desktop/ETC/Programacion/Probando Gemma 4/dataset_finetune/curated/curated.jsonl`; failmodes `c:/Users/usuario/Desktop/ETC/Programacion/Probando Gemma 4/scripts/_diag/_ftfail/` (`_judge_bugs.json`, `_failmode_{idioma,identidad,routing,honestidad}.json`).

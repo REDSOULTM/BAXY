@@ -1,0 +1,15 @@
+9 skills cargadas: ['purchase-guard', 'backup-then-clean', 'safe-file-cleanup', 'debug-app-crash', 'research-and-summarize', 'schedule-recurring-task', 'screenshot-and-analyze', 'voice-record-transcribe', 'new-development-project']
+
+FALSOS POSITIVOS (deben ser none):
+  'hola'                             -> (none)
+  'gracias'                          -> (none)
+  'qué hora es'                      -> (none)
+  'subí el volumen'                  -> (none)
+  'abrí spotify'                     -> (none)
+  'cuál es mi ip'                    -> (none)
+  'poné música'                      -> (none)
+  'mandale un whatsapp a Juan'       -> (none)
+  'qué es la fotosíntesis'           -> (none)
+  'buscá noticias de hoy'            -> (none)
+
+falsos positivos: 0/10

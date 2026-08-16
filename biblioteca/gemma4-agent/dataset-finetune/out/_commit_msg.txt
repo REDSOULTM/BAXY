@@ -1,0 +1,26 @@
+feat(guards+ft): guard de claims de valor sin evidencia + modelo E2B FT v3 grounded en prod
+
+Capa de honestidad para MEDIDAS (porcentajes/GB/nucleos/GHz) — el mismo
+bug-class que la hora fabricada pero con valores: 'Battery level is 78%'
+con has_battery:false en el tool result, o specs de hardware inventadas
+sin tool. Detector system_value_claim_unfounded por token numerico EXACTO
+(+-0.5 para redondeo de psutil): el match por substring era inutil porque
+los results reales son ricos en digitos y '15' siempre aparece dentro de
+un FreePhysicalMemory. Repair inline con regeneracion clean-context y
+strip de ultimo recurso; rechazo del candidato fabricado en el regen
+post-tool de idioma (re-introducia valores ya reparados); choke-point
+unico al final de _finalize_turn porque el reply final puede salir de
+varios caminos y parchear cada uno por separado demostro ser insuficiente
+(medido 7->6->3->0 fabricaciones en 4 corridas del harness). Fallback
+honesto cuando no corrio ninguna tool. 16 tests calcados de fallas
+medidas en vivo.
+
+El modelo de produccion pasa al FT v3 (dataset grounded con turno de
+tool-result y mascara de loss sobre los spans tool_response; arguments
+como dict para que el render de entrenamiento sea bit-identico al re-feed
+nativo del server). Gates de aceptacion: 0/198 tools inventadas, 0/53
+fabricaciones de valor en 3 corridas, identidad 6/6, 14/14 casos en vivo,
+sin regresion por idioma vs el modelo anterior (es +0.02, it +0.05).
+Backup del modelo anterior en models/E2B/*.BAK_pre_v3.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

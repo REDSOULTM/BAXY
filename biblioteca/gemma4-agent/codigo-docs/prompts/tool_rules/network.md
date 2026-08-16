@@ -1,0 +1,1 @@
+Network rule: ping, traceroute, dns_get/set, dns_resolve, port_check, connections and public_ip use network(...). dns_set snapshots the previous DNS list per adapter so state.rollback can restore it.

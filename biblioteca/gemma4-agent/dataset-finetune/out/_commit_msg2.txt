@@ -1,0 +1,21 @@
+fix(lang): señales fuertes it/pt/de para frases cortas en la detección de idioma
+
+py3langid es poco fiable bajo ~3 palabras: 'chi sei?' clasificaba como
+aleman y la identidad italiana salia respondida en aleman ('Wer bist
+du?'); 'quem e voce?' clasificaba como frances y el gate de identidad
+portugues respondia 'Je suis Baxy'. Se agregan señales estructurales
+exclusivas del idioma (ortografia y palabras funcionales cerradas, no
+keywords de contenido) a detect_lang_strong_signal: para italiano la 'e'
+con acento grave como palabra suelta, las elisiones cos'/dov'/c'e, el
+interrogativo 'chi' solo en posicion inicial (el ingles 'tai chi' queda
+fuera) y perche/poiche; para portugues quem/voce/voces (acentuado — el
+italiano 'voce' sin acento es otra palabra); para aleman la ß.
+
+Medido en vivo con el agente y el modelo reales: identidad 'chi sei?'
+pasa de 2/6 corridas correctas (respuestas en aleman o eco traducido) a
+5/6 con todas las respuestas en italiano; identidad en 6 idiomas con
+validacion de idioma del reply 5/6 (el residual es un desvio del keyword
+de quien-es a knowledge, no de idioma). 9 tests nuevos de regresion;
+14/15 casos offline antes del ajuste pt, 15/15 despues.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

@@ -1,0 +1,37 @@
+﻿======================================================================
+Router eval — router_eval_corpus.curated.jsonl  (2061 rows; dev=1640 holdout=421)
+======================================================================
+  (warmup: semantic router hot in 8.34s)
+  [dev]  TOOL RECALL 1227/1248=0.9832   NO-TOOL keep 391/392=0.9974   (recall misses 21, over-offers 1)
+  [dev]  PRECISIÓN: subset-dominio medio 2.60 tools/turno  RUIDO medio 1.38 extra/turno  (turnos muy ruidosos ≥3: 206)
+  [holdout]  TOOL RECALL 323/330=0.9788   NO-TOOL keep 91/91=1.0000   (recall misses 7, over-offers 0)
+  [holdout]  PRECISIÓN: subset-dominio medio 2.62 tools/turno  RUIDO medio 1.41 extra/turno  (turnos muy ruidosos ≥3: 57)
+
+  per-slice on [holdout]  (recall | no-tool keep):
+    tool           recall 323/330=0.979      no-tool     n/a    
+    no_tool        recall     n/a            no-tool 91/91=1.000
+    short          recall 139/141=0.986      no-tool 49/49=1.000
+    continuation   recall 41/42=0.976        no-tool 19/19=1.000
+    multilingual   recall 7/8=0.875          no-tool     n/a    
+    lang:es        recall 316/322=0.981      no-tool 91/91=1.000
+    lang:en        recall 3/3=1.000          no-tool     n/a    
+    lang:fr        recall 1/1=1.000          no-tool     n/a    
+    lang:de        recall 1/1=1.000          no-tool     n/a    
+    lang:it        recall 0/1=0.000          no-tool     n/a    
+    lang:pt        recall 2/2=1.000          no-tool     n/a    
+
+--- RECALL misses on [holdout] ---
+  'Cuanto te dija tiempo quiero que aprietes la tecla de parar '
+     expected=['input']  subset=['routine', 'safety', 'session']
+  'Cuando dija pantallazo quiero que saques una captura de pant'
+     expected=['gui', 'vision']  subset=['routine', 'safety', 'session']
+  'Cuando dija audifonos quiero que cambies el audio a "Hyperx"'
+     expected=['audio_device']  subset=['routine', 'safety', 'session']
+  'Me abres un link para verla?'
+     expected=['browser']  subset=['app', 'safety', 'session', 'verify', 'web']
+  'Compra esto'
+     expected=['browser']  subset=['knowledge', 'safety', 'session', 'verify', 'web']
+  'Sube esta captura a internet'
+     expected=['web']  subset=['browser', 'browser_real', 'safety', 'session', 'verify']
+  'Cierra Epic Games Launcher'
+     expected=['steam']  subset=['app', 'game_launcher', 'safety', 'session']

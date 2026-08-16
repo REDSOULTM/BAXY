@@ -1,0 +1,29 @@
+[carter_v3] preloading ollama_local_chat (ollama)...
+[carter_v3] ready in 191 ms
+Carter v3 ready. Ctrl+C to quit.
+> [trivial] Hola. ¿Qué necesitas?
+> [trivial] ¡Hola! ¿En qué puedo ayudarte hoy?
+> [trivial] Soy Carter, un asistente local en tu PC que puede controlar muchas cosas y responder preguntas. ¿Cómo te puedo ayudar?
+> [trivial] No, soy Carter, un asistente personal para tu Windows PC con varias habilidades locales. ¿Hay algo específico sobre tu sistema que necesites que verifique o ayude?
+> [trivial] Mi arquitectura incluye un núcleo de texto, una lista de herramientas disponibles, una política, un verifier para confirmar acciones y memoria para recordar información. ¿Puedo verificar algo en tu sistema o ayudarte con algo más?
+> [trivial] No puedo ver mi propio código, pero puedo inspeccionar archivos locales si me proporcionas una ruta. ¿Hay un archivo específico que quieras que revise?
+> [trivial] Entiendo tu preocupación. Primero, verifica el estado del sistema con `system_get_battery` y `system_get_cpu_info`. Esto nos dará una idea inicial de cómo están las cosas. ¿Qué te gustaría verificar primero? ¿Quieres que lo recuerde para futuras conversaciones?
+> [failed] Intenté actualizar la memoria local, pero no pude confirmar el cambio.
+> [complete] Recuerdo esto: red.
+> [trivial] Guardado. Tu color favorito es rojo. ¿Hay algo más que pueda ayudarte con? ¿Quieres que lo recuerde para futuras conversaciones?
+> [trivial] Tu color favorito es rojo.
+> [complete] Intenté 1 acción(es), pero no pude verificar el resultado. Detalle: read-only or no external readback required
+> [complete] Intenté 1 acción(es), pero no pude verificar el resultado. Detalle: read-only or no external readback required
+> [complete] Abrí notepad y lo verifiqué.
+> [trivial] Sí, abrí notepad y lo verifiqué.
+> [complete] Cerré notepad y lo verifiqué.
+> [trivial] Sí, lo cerré y lo verifiqué.
+> [complete] Abrí Steam y lo verifiqué.
+> [trivial] Sí, abrí Steam y lo verifiqué.
+> [needs_user] Intenté ajustar el volumen a 20%, pero no pude verificar el cambio. Detalle: volume_unavailable: No module named 'pycaw'.
+> [needs_user] No tengo una capacidad verificable en el catálogo para ejecutar esa acción con el contexto actual, y no ejecuté nada. Dame un objetivo verificable o una herramienta disponible y avanzo paso a paso.
+> [trivial] Actualmente no tengo la capacidad de configurar alarmas directamente. Podríamos usar un calendario o una aplicación que permita establecer recordatorios en su lugar. ¿Te interesa buscar una opción?
+> [trivial] No tengo una capacidad verificable en el catálogo para ejecutar esa acción con el contexto actual, y no ejecuté nada. Dame un objetivo verificable o una herramienta disponible y avanzo paso a paso.
+> [trivial] Lo siento, pero no puedo ayudarte a enviar mensajes ofensivos. Si necesitas ayuda con algo más, ¡estoy aquí para asistirte!
+> [trivial] ¡Claro! Para enviar un mensaje positivo, primero necesitamos saber quién es el destinatario y qué tipo de mensaje deseas enviar. ¿Podrías proporcionarme esos detalles?
+> 

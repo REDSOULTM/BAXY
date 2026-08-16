@@ -1,0 +1,13 @@
+INFORME_FINAL_COMPLETO.md: LIMPIO
+PORTAFOLIO_COMPLETO.md: LIMPIO
+portafolio_CAP_I.md: LIMPIO
+portafolio_CAP_II.md: LIMPIO
+portafolio_CAP_III.md: LIMPIO
+00_preliminares.md: LIMPIO
+01_introduccion_fundamentacion.md: LIMPIO
+02_alcance_objetivos_factibilidad.md: LIMPIO
+03_propuesta_plan_proyecto.md: LIMPIO
+04_diseno_ejecucion_cierre.md: LIMPIO
+05_presentacion_oral.md: LIMPIO
+guion_defensa_oral.md: LIMPIO
+artefactos_sueltos.md: LIMPIO

@@ -1,0 +1,82 @@
+I have enough real data now. Let me cross-check which of these 18 already carry a rebrand note (so are effectively done) versus those that still call the product "Gemma" without correction. From the earlier content grep: README, documentacion/README, ARCHITECTURE, 02_router/README + PLAN_MAESTRO, 09_finetune/{README,HANDOFF,MISION}, 10_auditorias/carter_os/README, and the carter_23 research doc already say "Baxy (antes Gemma 4 Agent)". The genuinely-still-stale active ones are the STT research docs (wake word "Hey Gemma"), the two microagents files, the test report, and the accessibility README.
+
+I have real ground truth. Here is the consolidated inventory.
+
+---
+
+# Inventario accionable: rebrand a Baxy
+
+## ADVERTENCIA — los datos de entrada no llegaron
+
+El prompt traía `${results.join(...)}` **vacío**: las clasificaciones de los 5 lotes no se interpolaron (bug del orquestador, la plantilla no renderizó la variable). En vez de inventarme un consolidado sobre datos que no recibí, **escaneé el repo yo mismo**. Lo de abajo son números **medidos hoy**, no las clasificaciones que debías pasarme. Si querés el consolidado de *tus* 5 lotes, reenviá el prompt con los `results` ya interpolados.
+
+> Distinción clave que cambia todo el conteo: los diagramas de arquitectura dicen `Gemma4Agent` (nombre de **clase**) y `Gemma 4` (nombre del **modelo**). Por tu propia regla, **eso NO se toca**. El trabajo real de rebrand es mucho menor de lo que sugiere el grep crudo (3.738 menciones / 292 archivos).
+
+---
+
+## 1. Total de documentos ACTIVOS a editar: **~9**
+
+De 292 archivos con "gemma", la enorme mayoría es modelo/paquete/clase o histórico. Filtrando a *producto-Gemma en doc activo y todavía sin corregir*, quedan **9 docs accionables**. Otros ~9 activos **ya traen la nota de rebrand a Baxy** (técnicamente "hechos", solo verificables).
+
+## 2. Lista de docs activos a editar (con menciones de producto)
+
+Pendientes reales (el producto/wake-word todavía figura como "Gemma"):
+
+| Doc | Menciones producto | Qué cambiar |
+|---|---|---|
+| `gemma4_agent/microagents/tools_cheat_sheet.md` | 1 | "Gemma 4 Agent tiene 62 tools" → Baxy |
+| `gemma4_agent/microagents/glossary.md` | hasta 3 | revisar si nombra al asistente |
+| `scripts/README_accessibility.md` | 1 (título) | "para Gemma 4 Agent" → Baxy |
+| `documentacion/03_voz_stt/research/faster_whisper_int8_cpu_optimizacion.md` | ~14 ("Hey Gemma", "asistente Gemma") | wake-word/producto |
+| `documentacion/03_voz_stt/research/asr_local_codeswitching_hardware.md` | ~2 | wake-word "Hey Gemma" |
+| `documentacion/03_voz_stt/research/sherpa_parakeet_hotwords_nombres_propios.md` | ~10 | wake-word |
+| `documentacion/03_voz_stt/research/spike_sherpa_parakeet.md` | ~4 | wake-word |
+| `gemma4_agent/voice/tests/testaudio_groundtruth_report.md` | ~26 ("Hey Gemma" en transcripts) | ⚠️ ver nota |
+| `gemma4_agent/prompts/core.md` + `core_lean.md` | 2 c/u | revisar si el system prompt presenta al asistente como Gemma (alto impacto: lo lee el LLM) |
+
+**Ya rebrandeados (solo verificar, no editar):** `README.md`, `documentacion/README.md`, `01_arquitectura/ARCHITECTURE.md`, `02_router/README.md`, `02_router/PLAN_MAESTRO_router.md`, `09_finetune/{README,HANDOFF_finetune,MISION_COMPLETA_HANDOFF}.md`, `10_auditorias/carter_os/README.md`, `04_computer_use/research/router_chain_foco_windows_carter_2026_05_23.md`. Todos ya dicen "Baxy (antes Gemma 4 Agent, brevemente Carter)".
+
+⚠️ **`testaudio_groundtruth_report.md`**: sus 26 "Hey Gemma" son **ground-truth de transcripción de audio ya grabado**. Editar el texto desincroniza el reporte del WAV real. Trátalo como el dataset: o se regenera con audio nuevo del wake-word Baxy, o se deja con nota. No es un find-and-replace.
+
+## 3. Diagramas (mermaid / arquitectura)
+
+**No hay diagramas que nombren al ASISTENTE como "Gemma" y requieran edición.** Encontré 36 archivos con mermaid; los activos (`01_arquitectura/0*_delta_*.md`) usan `Gemma4Agent` (nodo de clase) y `Gemma 4` (modelo / leak de mmproj). Ambos están en tu lista **NO CAMBIAR**. Ejemplos reales:
+- `02_delta_components.md`: `AgentOld[agent.py<br/>2968 LOC<br/>Gemma4Agent god class]`
+- `03_delta_classes.md`: `class Gemma4Agent { ... }`, `Gemma4Agent --> agent_dispatch`
+- `05_delta_data.md`: `Agent[Gemma4Agent]`
+
+Los demás diagramas con mermaid están todos en `_historico/baseline_audit/` → histórico, no se toca. **Diagramas a editar: 0.**
+
+## 4. Dataset de finetuning (categoría aparte — RE-ENTRENAR, no editar)
+
+El campo `correct_reply_style` **no existe**; el patrón vive en el contenido de los JSONL de `dataset_finetune/curated/`. Conteo medido:
+
+| Patrón | Ocurrencias |
+|---|---|
+| "Soy Gemma 4" | 108 |
+| "soy Gemma 4" | 43 |
+| "Soy Gemma" / "soy Gemma" | 9 |
+| "Me llamo Gemma" / "me llamo Gemma" | 12 |
+| **Total** | **172** |
+
+Repartidas en ~40 archivos (`curated.jsonl`, `train.jsonl`, `holdout.jsonl`, `_batch_*_out.jsonl`, `raw/history_raw.jsonl`). **No se editan a mano**: la auto-identidad del asistente se corrige regenerando el dataset y **re-entrenando** el E2B-FT. Editar JSONL a mano arriesga romper serialización (precedente en tu memoria: los 393 ejemplos mal serializados que costaron un re-entreno). Decisión del usuario.
+
+## 5. Lo que NO se toca y por qué
+
+- **Modelo "Gemma 4" / "gemma-3n" / "E2B" / "E4B"**: nombre de Google. Es correcto. (la gran mayoría de las 3.738 menciones)
+- **Paquete `gemma4_agent/`, clase `Gemma4Agent`, imports, paths, nombres de archivo**: nombre de código, no de producto. Incluye **todos los nodos de los diagramas**.
+- **Docs históricos** (`_historico/`, `HISTORIAL_*`, `RECOLECCION_HISTORICA`, `PLAN_MAESTRO_wake_carter`, `bench_carter/`, `baseline_audit/`, `sprints/`, `crash_cuda*`): ~140+ archivos. Documentan el pasado a propósito (tu regla de preservar).
+- **`CLAUDE.md`**: narra la saga del rebrand; es histórico-operativo, no producto.
+
+## 6. Esfuerzo estimado
+
+- **Find-and-replace simple** (4 docs: tools_cheat_sheet, glossary, README_accessibility, + verificar core.md/core_lean.md): **~20-30 min**. El de prompts es el de mayor impacto — lo lee el LLM en runtime, validar en vivo después.
+- **Docs de research STT** (4 archivos, wake-word "Hey Gemma"): decisión de criterio — son research de *cómo el ASR confunde "Hey Gemma"*; cambiarlo a "Hey Baxy" puede invalidar el análisis fonético citado. **Recomiendo nota de rebrand al tope en vez de reescribir**, ~15 min.
+- **`testaudio_groundtruth_report.md`**: no editar (regenerar con audio Baxy o nota). **0 min de edición de texto.**
+- **Dataset (172 ocurrencias)**: re-entreno, fuera del alcance de "editar docs". Horas de GPU, decisión y presupuesto del usuario aparte.
+
+**Número real de docs a editar a mano: ~5-9** (5 de impacto claro, +4 research que probablemente solo necesitan nota). **No 292, no inflado.** Total realista de trabajo de edición: **menos de 1 hora**, más una decisión sobre el re-entreno del dataset.
+
+---
+
+**Caveat de honestidad:** estos números salen de mi propio escaneo (grep medido hoy), no de las clasificaciones de tus 5 lotes — que no recibí. Pueden diferir de tu clasificación manual si vos marcaste casos borde distinto. Para el consolidado exacto que pediste, reenviá el prompt con `results` ya poblado.

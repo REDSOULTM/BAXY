@@ -1,0 +1,1 @@
+SYNCED from Baxy gemma4_agent/data/fg on 2026-06-24 (Tools-Reduce branch). no_tool appended to slim for FG training only.

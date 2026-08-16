@@ -1,0 +1,1 @@
+Hola, ¿cómo estás? Este archivo tiene caracteres españoles: café, naïve, y árbol.

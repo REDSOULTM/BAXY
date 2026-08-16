@@ -1,0 +1,97 @@
+﻿abstain head enabled: True
+
+--- 'que dia es hoy'
+  kw=['system'] | exemplar=None
+  sem_top3=[('local_calendar', 0.444), ('system', 0.418), ('web', 0.322)]
+  wants_knowledge=True conv=False info=0.33 chit=0.20 | abstain=False p=0.274 | local_state=False
+  FINAL=['system', 'safety', 'session']
+
+--- 'cuanta RAM tengo'
+  kw=['system'] | exemplar=None
+  sem_top3=[('system', 0.318)]
+  wants_knowledge=False conv=True info=0.08 chit=0.34 | abstain=False p=0.586 | local_state=False
+  FINAL=['system', 'safety', 'session']
+
+--- 'que es una GPU'
+  kw=['web', 'knowledge'] | exemplar=None
+  sem_top3=[('knowledge', 0.412), ('web', 0.403), ('system', 0.271)]
+  wants_knowledge=True conv=False info=0.49 chit=0.23 | abstain=True p=0.727 | local_state=False
+  FINAL=['safety', 'session']
+
+--- 'que es una API'
+  kw=['web', 'knowledge'] | exemplar=None
+  sem_top3=[('web', 0.325), ('knowledge', 0.319), ('state', 0.306)]
+  wants_knowledge=True conv=False info=0.45 chit=0.28 | abstain=False p=0.673 | local_state=False
+  FINAL=['safety', 'session']
+
+--- 'what is a CPU'
+  kw=['web', 'knowledge'] | exemplar=None
+  sem_top3=[('web', 0.4), ('knowledge', 0.326), ('system', 0.313)]
+  wants_knowledge=True conv=False info=0.46 chit=0.15 | abstain=True p=0.689 | local_state=False
+  FINAL=['safety', 'session']
+
+--- 'cuanto es 25 por 4'
+  kw=[] | exemplar=None
+  sem_top3=[('audio', 0.371), ('computer_use', 0.323), ('media_edit', 0.28)]
+  wants_knowledge=False conv=True info=0.08 chit=0.22 | abstain=True p=0.834 | local_state=False
+  FINAL=['session', 'safety']
+
+--- 'cuantas pestanas tengo abiertas'
+  kw=['window'] | exemplar=None
+  sem_top3=[('input', 0.396), ('accessibility', 0.367), ('window', 0.365)]
+  wants_knowledge=False conv=True info=0.05 chit=0.26 | abstain=False p=0.491 | local_state=False
+  FINAL=['window', 'safety', 'session']
+
+--- 'que tengo agendado para hoy'
+  kw=['local_calendar'] | exemplar=None
+  sem_top3=[('local_calendar', 0.66), ('notes_tasks', 0.528), ('reminder', 0.454)]
+  wants_knowledge=False conv=True info=0.17 chit=0.23 | abstain=False p=0.118 | local_state=False
+  FINAL=['local_calendar', 'state', 'safety', 'session']
+
+--- 'dile a amor en wsp que la amo'
+  kw=['whatsapp', 'contacts'] | exemplar=tools=['whatsapp'] abstain=False
+  sem_top3=[('whatsapp', 0.792), ('contacts', 0.284)]
+  wants_knowledge=False conv=False info=0.28 chit=0.15 | abstain=False p=0.07 | local_state=False
+  FINAL=['whatsapp', 'contacts', 'state', 'safety', 'session']
+
+--- 'que notas tengo'
+  kw=['notes_tasks'] | exemplar=None
+  sem_top3=[('notes_tasks', 0.62), ('study', 0.552), ('habit_tracker', 0.474)]
+  wants_knowledge=False conv=True info=0.11 chit=0.28 | abstain=False p=0.196 | local_state=False
+  FINAL=['notes_tasks', 'study', 'state', 'safety', 'session']
+
+--- 'anota que tengo que comprar pan'
+  kw=['notes_tasks'] | exemplar=None
+  sem_top3=[('notes_tasks', 0.68), ('reminder', 0.533), ('clipboard', 0.355)]
+  wants_knowledge=False conv=True info=0.14 chit=0.22 | abstain=False p=0.087 | local_state=False
+  FINAL=['notes_tasks', 'browser', 'browser_real', 'verify', 'safety', 'session']
+
+--- 'que version de chrome tengo instalada'
+  kw=['browser', 'package'] | exemplar=None
+  sem_top3=[('package', 0.521), ('terminal', 0.383), ('download', 0.37)]
+  wants_knowledge=False conv=True info=0.11 chit=0.19 | abstain=False p=0.175 | local_state=False
+  FINAL=['package', 'browser', 'verify', 'safety', 'session']
+
+--- 'que recuerdas de mi'
+  kw=['memory'] | exemplar=tools=['memory'] abstain=False
+  sem_top3=[('memory', 0.749), ('reminder', 0.629), ('habit_tracker', 0.454)]
+  wants_knowledge=False conv=True info=0.33 chit=0.36 | abstain=False p=0.164 | local_state=False
+  FINAL=['memory', 'safety', 'session']
+
+--- 'que hay en mi pantalla ahora'
+  kw=['uia', 'gui'] | exemplar=None
+  sem_top3=[('vision', 0.721), ('peripheral', 0.526), ('desktop_layout', 0.524)]
+  wants_knowledge=False conv=False info=0.25 chit=0.30 | abstain=False p=0.189 | local_state=False
+  FINAL=['vision', 'gui', 'uia', 'safety', 'session']
+
+--- 'cual es mi ip publica'
+  kw=['network'] | exemplar=None
+  sem_top3=[('network', 0.66), ('database', 0.358), ('knowledge', 0.332)]
+  wants_knowledge=True conv=False info=0.33 chit=0.18 | abstain=False p=0.221 | local_state=False
+  FINAL=['network', 'state', 'safety', 'session']
+
+--- 'registra que hoy hice ejercicio'
+  kw=['habit_tracker'] | exemplar=None
+  sem_top3=[('habit_tracker', 0.633), ('notes_tasks', 0.469), ('job_manager', 0.445)]
+  wants_knowledge=False conv=True info=0.14 chit=0.22 | abstain=False p=0.128 | local_state=False
+  FINAL=['habit_tracker', 'state', 'safety', 'session']

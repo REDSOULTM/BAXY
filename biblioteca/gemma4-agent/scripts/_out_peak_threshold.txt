@@ -1,0 +1,10 @@
+============================================================
+PEAK-KEEP 0.50 LIVE: 5/7 OK (27s)
+============================================================
+  [OK  ] (net) 'cuál es mi ip' -> ['network'] | 'Mi ip es 192.168.1.1.'
+  [OK  ] (net) 'qué ip tengo' -> ['network'] | 'Mi dirección IP pública es 192.168.1.1.'
+  [MISS] (net) 'mostrame mi dirección ip pública' -> ['system', 'web'] | 'No puedo mostrarte tu dirección IP pública ya '
+  [MISS] (net) 'cuál es mi ip en esta red' -> ['web'] | 'La dirección IP de tu red local no es algo que'
+  [OK  ] (small) 'hola, buenas' -> [] | 'Hola, buenas. ¿En qué puedo ayudarte hoy?'
+  [OK  ] (small) 'gracias por todo' -> [] | 'No alcancé a completar la acción. ¿La repetimo'
+  [OK  ] (small) 'qué tal todo' -> [] | 'No alcancé a completar la acción. ¿La repetimo'

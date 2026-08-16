@@ -1,0 +1,1 @@
+Game launcher rule: for Epic/GOG/Xbox/Riot use game_launcher(...). Steam remains in the dedicated steam(...) tool.

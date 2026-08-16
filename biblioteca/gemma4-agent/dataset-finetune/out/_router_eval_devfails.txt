@@ -1,0 +1,52 @@
+﻿======================================================================
+Router eval — router_eval_corpus.curated.jsonl  (2102 rows; dev=1676 holdout=426)
+======================================================================
+  (warmup: semantic router hot in 7.90s)
+  [dev]  TOOL RECALL 1258/1280=0.9828   NO-TOOL keep 395/396=0.9975   (recall misses 22, over-offers 1)
+  [dev]  PRECISIÓN: subset-dominio medio 2.56 tools/turno  RUIDO medio 1.33 extra/turno  (turnos muy ruidosos ≥3: 200)
+
+--- RECALL misses on [dev] ---
+  'cierra steam'
+     expected=['steam']  subset=['app', 'safety', 'session', 'window']
+  'Cierra steam'
+     expected=['steam']  subset=['app', 'safety', 'session', 'window']
+  'Cuando dija spotify dj quiero que abras spotify con una canc'
+     expected=['media']  subset=['routine', 'safety', 'session']
+  'Quiero jugar los juegos de batman arkham pero no se cual jug'
+     expected=['web']  subset=['browser', 'browser_real', 'safety', 'session', 'verify']
+  'Quien es el mejor?'
+     expected=['web']  subset=['browser', 'browser_real', 'safety', 'session', 'verify']
+  'abre una URL con espacios mal pegados: python.org docs'
+     expected=['web']  subset=['app', 'browser', 'safety', 'session', 'verify']
+  'abre Steam Store de Batman en navegador, no app'
+     expected=['browser', 'web']  subset=['app', 'safety', 'session', 'steam']
+  'explica estrategia GUI usada: UIA, visión o fallback'
+     expected=['gui', 'vision']  subset=['safety', 'session', 'uia']
+  'limita reintentos web si página no carga'
+     expected=['web']  subset=['browser', 'browser_real', 'safety', 'session', 'verify']
+  'ahora en navegador'
+     expected=['web']  subset=['browser', 'safety', 'session', 'verify']
+  'abre Steam store en navegador'
+     expected=['browser', 'web']  subset=['app', 'safety', 'session', 'steam']
+  'busca esto pero no abras resultados'
+     expected=['web']  subset=['browser', 'browser_real', 'computer_use', 'safety', 'session', 'verify']
+  'si falla abrir web no digas listo'
+     expected=['web']  subset=['app', 'browser', 'computer_use', 'safety', 'session', 'verify']
+  'Busca en MercadoLibre audífonos bluetooth'
+     expected=['browser']  subset=['device_settings', 'safety', 'session', 'verify']
+  'La ventana activa es Steam; busca Batman en Google'
+     expected=['browser']  subset=['knowledge', 'safety', 'session', 'steam', 'verify', 'web']
+  'Cierra la Calculadora minimizada'
+     expected=['app']  subset=['safety', 'session', 'system', 'window']
+  'Explícame en 8 líneas por qué un LLM local puede usar GPU'
+     expected=['system']  subset=['safety', 'session']
+  'what is the CPU usage'
+     expected=['system']  subset=['safety', 'session']
+  'search Amazon for bluetooth headphones'
+     expected=['browser']  subset=['device_settings', 'safety', 'session', 'verify']
+  'cerca su Amazon delle cuffie bluetooth'
+     expected=['browser']  subset=['device_settings', 'safety', 'session', 'verify']
+  'suche auf Amazon nach bluetooth kopfhörern'
+     expected=['browser']  subset=['device_settings', 'safety', 'session', 'verify']
+  "what's the weather like in London"
+     expected=['web', 'knowledge']  subset=['safety', 'session', 'verify']

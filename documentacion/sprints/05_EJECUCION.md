@@ -45,8 +45,17 @@ y sin saltarte pasos:
 
 1. **¿Ya está resuelto en un BAXY anterior?** Este proyecto se ha escrito cuatro
    veces y muchos problemas ya cayeron. Trae esa solución — o la **mejor
-   combinación** de las que hay, que muchas veces es lo que gana. El goal 01 dejó
-   el mapa de qué existe y dónde.
+   combinación** de las que hay, que muchas veces es lo que gana.
+
+   **Empieza en [`biblioteca/00_INDICE.md`](../../biblioteca/00_INDICE.md).** Son
+   1.350 documentos de las cuatro escrituras anteriores —estudios, auditorías,
+   investigaciones encargadas, benchmarks y rechazos con el mecanismo entendido—
+   indexados por qué pregunta responde cada área. Si buscas algo concreto,
+   [`biblioteca/01_INVENTARIO.md`](../../biblioteca/01_INVENTARIO.md) los lista
+   todos con su título y su fecha.
+
+   Abrir una línea de investigación sin haber buscado ahí primero es la forma más
+   cara de perder un día.
 2. **¿Está resuelto ahí fuera?** Papers, documentación, repositorios, la respuesta
    de alguien que se topó con lo mismo. Si hay una solución conocida y buena,
    **impleméntala** en vez de inventar la tuya.

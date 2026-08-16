@@ -1,0 +1,191 @@
+Importante: la tanda 2/3 ya añadió muchos hard-negatives a `none`, pero los casos de la tanda actual (i=9 "¿me escuchas?", i=23 "se me bugueó", i=25 "¿qué puedo pedirte?", i=33/42 borrado) muestran que **el short-circuit Jarvis sigue sobre-disparando** — o estos casos son anteriores al fix de t2/t3. Esto es clave para mi análisis.
+
+Tengo todo el contexto necesario. Produzco el análisis agrupado.
+
+---
+
+# Análisis de 470 casos BUG/DUDOSO — agrupados por causa raíz
+
+Convención: **[YA-FIX-T1]** = patrón con mitigación commiteada en tanda 1 (estos casos son del dataset capturado ANTES del fix o regresiones a re-medir en vivo). **[ARTEFACTO]** = no es bug de prod, es el mock. **[BUG-REAL]** = arreglar.
+
+---
+
+## A. HONESTIDAD (mentiras reales — máxima prioridad)
+
+### A1. Media-fabricado: "Stranger Things en Netflix" sobre ruido/pedido genérico — **[YA-FIX-T1 — REGRESIÓN / GUARD NO COBERTURA TOTAL]**
+- **#casos:** ~30 (i=40, 451, 476, 530, 531, 550, 560, 567, 568, 569, 570, 580, 618, 625, 657, 658, 662, 665, 677, 695, 825, 864, 903, 904, 905, 912, 945, 963)
+- **Eje:** honestidad · **Severidad:** ALTA
+- **Causa raíz técnica:** el 4B, ante `media.play` (tecla de medios, que NO navega a un título) o ante ruido/charla, rellena título+plataforma del *corpus de entrenamiento STT* ("Stranger Things en Netflix", "Bohemian Rhapsody de Michael Jackson"). Confirmé que esos strings son literalmente ejemplos en `scripts/stt_eval_commands.py` / `probar_parakeet_mic.py`.
+- **Estado del fix:** existe `media_fabricated_claim()` en `reply_validator.py:273` (detecta plataforma no pedida ni en tool-result). **Pero sigue habiendo 30 casos** → o el guard no estaba activo cuando se midió, o hay dos huecos: (a) título sin plataforma ("Bohemian Rhapsody de MJ", i=580/625/662 — atribución falsa de artista, no de plataforma → el guard solo mira plataformas); (b) `media.play` con título inventado sin plataforma streaming.
+- **BUG-REAL.** **Arreglar PRIMERO.** Extender el guard a títulos+artista fabricados (no solo plataforma) y verificar en vivo que esté default-ON. Es el cluster más grande de honestidad y de severidad alta.
+
+### A2. Over-claim de navegación: `media.play`/`app.open`/`computer_use(null)` afirma haber abierto/navegado a un destino concreto — **[BUG-REAL]**
+- **#casos:** ~14 (i=36, 333, 663, 864, 865, 899, 903, 905, 910, 942, 951, 933, 802, 766)
+- **Eje:** honestidad · **Severidad:** media-alta
+- **Causa raíz:** una tecla de medios o `app.open` no abre Disney+/YouTube ni navega a un título; `computer_use` con `action:null`/`passes:0` no hace trabajo real, pero el reply afirma "abrí Disney+ y reproduzco X" / "te llevé a la página". Caso límite del A1 pero sin plataforma del corpus.
+- **BUG-REAL.** Mismo guard que A1 extendido + detectar `computer_use(action=null, passes=0)` → no permitir claim de éxito (debería decir "no pude" o pedir aclaración).
+
+### A3. Falso "le mandé" (WhatsApp sin draft/confirmación) — **[ARTEFACTO parcial + BUG-REAL en gate]**
+- **#casos:** ~10 (i=633, 634, 652, 872, 891, 930, 931, 950, 970, + 970 recipiente equivocado)
+- **Eje:** honestidad · **Severidad:** media (alta en 970)
+- **Causa raíz:** el reply afirma "le mandé" sin paso de confirmación, mientras otros casos (883/884/885/909) sí draftean. El claim de envío bajo mock es **[ARTEFACTO]** (el send mockeado devuelve ok:True). **PERO** i=970 resuelve el destinatario a "Digema" (la wake-word) y i=631 a "un" (artículo) → **BUG-REAL** clase C1 ya conocida (extracción de destinatario). Verificar EN VIVO el gate auto-send (draft-first). El recipiente roto NO es del mock.
+
+### A4. Tests-passed sin evidencia — **[YA-FIX-T1]**
+- **#casos:** ~8 (i=128, 159, 289, 304, 339, 377, 404, 482, 503)
+- **Eje:** honestidad · **Severidad:** alta
+- **Causa raíz:** afirma "los tests pasaron" sin conteo/exit-code real. Guard `tests_passed_without_evidence` ya existe (reply_validator). Los que persisten son del dataset pre-fix o el `run_tests` mock no trae conteo. **Verificar guard activo en vivo;** el OK del mock es [ARTEFACTO] pero el guard debe disparar igual.
+
+### A5. Claim de verificación/acción inventada que la tool no respalda — **[BUG-REAL]**
+- **#casos:** ~12 (i=47, 255, 264, 269, 299, 370, 397, 507, 799, 802, 847, 113)
+- **Eje:** honestidad · **Severidad:** media-alta
+- **Causa raíz:** afirma efectos que la tool ejecutada no produce: `filesystem.list` → "1.2 MB" (lista no da tamaño, i=264); `filesystem.rename` → "convertí a mayúsculas" (i=269); `registry.query` → "modifiqué el registro" (i=299); `verify.file_exists` → "creé la carpeta" sin mkdir (i=255); inventa "la estrategia fue UIA+vision" cuando corrió screenshot/cancel (i=370); "confirmo que Carter está listo al 100%" sobre un describe_screen (i=507); "copié al portapapeles" sin tool de clipboard (i=113, 397). **BUG-REAL.** Es honestidad estructural: el verbo del claim no matchea la familia de la tool corrida. `is_unverified_claim` cubre parte; ampliar a mismatch verbo↔tool-family.
+
+### A6. Errores factuales del modelo débil (alucinación de conocimiento) — **[BUG-REAL pero baja prioridad / inherente al 4B]**
+- **#casos:** ~8 (i=59 Gotham Academy, i=65 p.u.=per-unit, i=436 "Batman creado por Bruce Wayne", i=674 fecha muerte MJ 2010≠2009, i=692 Superman, i=703 Dune garbled, i=580/625/662 artista)
+- **Eje:** honestidad/calidad · **Severidad:** baja-media
+- **Causa raíz:** límite del Gemma-4B. No parcheable con guards (sería hardcode prohibido). **Descartar como fix de routing**; mitigación honesta = el LLM responde con su saber, slips menores son inherentes. NO inventar tablas de respuestas.
+
+---
+
+## B. CALIDAD-ROUTING (sobre-actuar / tool equivocada — alto volumen)
+
+### B1. Ruido suelto (número/medición/token) ejecutado como comando — **[YA-FIX-T1 — REGRESIÓN, gate no cubre todo]**
+- **#casos:** ~20 (i=508, 509, 513, 514, 515, 516, 517, 530, 531, 535, 536, 537, 538, 540, 541, 542, 609, 621, 626, 886, 917)
+- **Eje:** calidad (+honestidad cuando inventa) · **Severidad:** media (alta en 530/531/535/540/541)
+- **Causa raíz:** strings como "2.14s", "qwen3:4b", "Endpoint", "OpenAI-compat", "/api/chat", "subprocess", "abre este", "Modelo" se ejecutan como `window.active`/`app.open`/`media.play`/`computer_use`. Existe `_is_low_signal_noise` (commit a65dd4e, tanda 1) que abstiene. **Sigue habiendo ~20 casos** → el gate cubre números puros pero NO tokens técnicos ("qwen3:4b", "Endpoint", "OpenAI-compat") ni ruido textual ("abre este", "ventana"). **BUG-REAL:** ampliar `_is_low_signal_noise` a fragmentos técnicos/sin verbo-de-acción claro. Alto impacto (volumen×severidad). Los títulos fabricados encima del ruido (530/531/540) los cubre A1.
+
+### B2. Trigger/rutina ejecutado AHORA en vez de crear la rutina — **[YA-FIX-T1 — REGRESIÓN]**
+- **#casos:** ~10 (i=589, 590, 591, 592, 681, 736, 966, 967, + 311 inverso, 886)
+- **Eje:** responde/calidad · **Severidad:** media
+- **Causa raíz:** "cuando diga X hacé Y" dispara Y inmediatamente (`app.open`, `screenshot`, `audio.next`, `media.previous`). `_is_trigger_declaration` existe (commit 51345ea, tanda 1). Persisten ~10 → fraseos no capturados ("cuando diga siguiente/anterior/audífonos/spotify dj"). **BUG-REAL:** ampliar cobertura del detector de declaración-de-disparador. i=311 es el inverso (pidió plan de comandos, creó rutina espuria).
+
+### B3. Pregunta de conocimiento ruteada a web/acción en vez de responder — **[BUG-REAL]**
+- **#casos:** ~18 (i=67, 69, 74, 78, 125, 129, 240, 650, 727, 892, 958, 808, 893, 47, 56, 58, 455, 962)
+- **Eje:** responde/calidad · **Severidad:** media
+- **Causa raíz:** "qué es markdown/pytest/YouTube/Python", "de qué trata Dune", "3 datos de Marte" → `browser.open`/`web.search`/`computer_use` (a veces loopea, ver C1) o reply genérico de fallo ("No alcancé a completar la acción"). Debería responder de su saber. El router sobre-ofrece web para definiciones. **BUG-REAL:** el gate de conocimiento (responder-de-saber para preguntas definicionales) no está disparando. Solapamiento fuerte con C1 (loop) cuando va a web.
+
+### B4. Consulta de ESTADO ejecutada como ACCIÓN — **[BUG-REAL]**
+- **#casos:** ~10 (i=134, 135, 155, 199, 240, 501, 808, 820, 13, 465)
+- **Eje:** responde/calidad · **Severidad:** media
+- **Causa raíz:** "¿Steam está abierto?"/"revisá si está abierto"/"consultá la app"/"está instalado Discord" → `steam.open`/`app.open`/`package.search` (abre o busca en tienda en vez de consultar estado del SO). i=155 "lista procesos de Steam" → `steam.list_games`. **BUG-REAL:** detector estado-vs-acción (consulta read-only del SO, no lanzar).
+
+### B5. Spotify/Steam: búsqueda al canal equivocado (web en vez de app; app en vez de web) — **[BUG-REAL]**
+- **#casos:** ~14 (i=204, 215, 216, 232, 431, 447, 448, 462, 496, 502, 725, 906, 907, 908, 983/995 abajo)
+- **Eje:** calidad · **Severidad:** media-baja
+- **Causa raíz:** "buscá bad bunny EN Spotify" → `web.search` (Google); URLs locales (localhost:8000, 127.0.0.1) → `app.open` en vez de browser; "abre GitHub/YouTube" → `app.open` de app inexistente; coloquialismos ("coso de notas", "yutu") → app literal. **BUG-REAL:** el router no respeta el canal explícito (EN Spotify/EN la web) ni resuelve URL/coloquialismo→browser.
+
+### B6. `computer_use(action=null)` / volumen ruteado mal → reply "Listo" pelado — **[BUG-REAL — no-determinismo router]**
+- **#casos:** ~6 (i=867, 878, 983, 995, 561, 562)
+- **Eje:** calidad/responde · **Severidad:** media
+- **Causa raíz:** "poné el volumen en 25/10" → `computer_use(null)` en vez de `audio.set_volume`; mismo fraseo que casos que SÍ van a audio → no-determinismo del router. **BUG-REAL:** robustecer el routing de volumen/control directo (no debería caer a computer_use vacío).
+
+### B7. Sobre-acción: ejecuta tool espuria/extra para algo textual o read-only — **[BUG-REAL baja]**
+- **#casos:** ~16 (i=34, 53, 83, 89, 107, 112, 137, 212, 276, 306, 363, 369, 419, 463, 496, 900, 917)
+- **Eje:** calidad · **Severidad:** baja
+- **Causa raíz:** screenshot/computer_use/steam.search/cpu_ram_gpu disparados sin necesidad antes/junto a la acción correcta o una respuesta textual. Ruido de routing, resultado a veces correcto. **BUG-REAL baja prioridad.**
+
+### B8. Acción destructiva/irreversible sin gate de confirmación — **[BUG-REAL — alta donde aplica]**
+- **#casos:** ~8 (i=141, 294, 295, 314, 805, 823, 97/320 secretos, 242)
+- **Eje:** honestidad/calidad · **Severidad:** ALTA
+- **Causa raíz:** how-to "cómo elimino" → `filesystem.delete` real (i=141, solapamiento con B9); rm -rf sin confirm (i=294); shutdown /s inmediato (i=295); borra Documentos (i=314); borra "la primera" ambigua (i=805); guarda API key sin advertir (i=97, contradice i=111 que sabe que no debe); clickea Instalar pese a prohibición (i=242). **BUG-REAL.** El gate de confirmación para irreversibles no cubre todos los caminos. Atacar junto a B9.
+
+### B9. How-to/condicional/regla tratado como comando ejecutable — **[YA-FIX-T1 — REGRESIÓN parcial]**
+- **#casos:** ~22 (i=123, 141, 245, 249, 278, 359, 368, 371, 372, 402, 407, 409, 412, 415, 416, 419, 500, 503, 504, 681, 245, 13)
+- **Eje:** responde/calidad · **Severidad:** media (alta en 141 destructivo)
+- **Causa raíz:** "¿cómo cierro Spotify?" → cierra Spotify (i=123); "si una prueba falla, marca X" (regla condicional) → ejecuta/afirma verificación (i=503); declaraciones de regla/spec ("no uses coordenadas", "modo corto", "marca UNVERIFIED") → ejecuta acción o `cancel_turn`. Existe `_is_howto` (tanda 1). Persisten muchos → no cubre reglas condicionales/declarativas (distinto de how-to puro). **BUG-REAL:** ampliar a "regla/spec/condicional declarado" → acusar recibo, no ejecutar.
+
+### B10. Tarea multi-paso completada a medias / no atiende lo pedido — **[BUG-REAL]**
+- **#casos:** ~20 (i=166, 190, 196, 270, 290, 317, 360, 365, 369, 376, 386, 411, 427, 506, 571, 575, 668, 678, 777, 786, 792, 794, 871, 962, 360)
+- **Eje:** responde · **Severidad:** media
+- **Causa raíz:** abre Calc pero no calcula (166); abre 2 apps pero reply roto (190); "captura Y decime qué ves" → solo captura, falta vision (i=571, 668, 678, 777, 871, 962); triage/reporte pedido → lista escritorio (i=376, 386, 427, 506); organizar archivos → solo lista (i=270, 575). **BUG-REAL:** el agente abandona el 2º paso, en especial screenshot+describe (falta encadenar vision). Sub-cluster "captura+describe" (6 casos) es fix concreto: tras screenshot por pedido de descripción, encadenar vision.describe.
+
+### B11. `resume` (resumir texto) malinterpretado como reanudar media — **[BUG-REAL]**
+- **#casos:** 4 (i=313, 411, 476, 568)
+- **Eje:** responde/calidad · **Severidad:** media
+- **Causa raíz:** "resume la salida/el log/lo que hiciste" → `media.resume`/`media.play` ("reanudé Netflix/Spotify"). Colisión léxica resume(EN/resumir)↔resume(reanudar). **BUG-REAL:** desambiguar por contexto (objeto = texto/log → resumir).
+
+### B12. "para" (detener) / "apaga eso" malinterpretado — **[BUG-REAL]**
+- **#casos:** ~6 (i=475 "para"→"para qué", i=581/567/581 pidió parar→reply "está reproduciéndose", i=852 unmute→mute, i=479 "sigue desde paso 3"→cancel)
+- **Eje:** responde · **Severidad:** media
+- **Causa raíz:** comandos de parada/negación ruteados a su opuesto (play en vez de pause; mute en vez de unmute) y reply contradice la acción. **BUG-REAL.**
+
+### B13. Mismatch de idioma: user en EN/PT/DE/IT, reply en español — **[BUG-REAL baja, producto multilingüe]**
+- **#casos:** ~11 (i=985, 986, 987, 988, 989, 990, 991, 992, 997, 998, 721)
+- **Eje:** calidad · **Severidad:** baja
+- **Causa raíz:** acción correcta (set_volume) pero el reply siempre sale en español. Viola universalidad (CLAUDE.md). **BUG-REAL:** el reply debe matchear el idioma del user. Volumen alto de casos, severidad baja, pero es un principio de producto.
+
+---
+
+## C. LOOP + LATENCIA
+
+### C1. Web-loop degenerado (batch de tool_calls duplicados, ~31-35s) — **[YA-FIX-T1 — REGRESIÓN/cobertura]**
+- **#casos:** ~28 (i=74, 158, 171, 187, 210, 214, 218, 275, 288, 301, 335, 381, 387, 535, 596, 602, 646, 679, 727, 735, 771, 796, 798, 837, 862, 892, 896, 925)
+- **Eje:** loop/latencia · **Severidad:** ALTA
+- **Causa raíz:** bug Gemma4 #1756 (batch degenerado, 56-142 tool_calls, `source_manager`/`browser_real`/`cancel_turn` en bucle). Fix `dedup_degenerate_batch` + cap research 2048→768 (commit c84551e, tanda 1). **Persisten ~28** → el anti-loop CORTA (cancel_turn final) pero la tarea nunca se completa y la latencia ya se gastó (30s+). **BUG-REAL prioritario:** (a) bajar el umbral de detección para cortar ANTES (no a las 100+ llamadas); (b) muchos loops nacen de B3 (conocimiento→web): atacar B3 elimina la causa. Segundo cluster de mayor impacto tras A1.
+
+### C2. cancel_turn como falso-positivo (saludo/pregunta/charla) — **[BUG-REAL]**
+- **#casos:** ~14 (i=1, 14, 113, 252, 327, 371, 372, 381, 394, 407, 415, 470, 479, 628, 675, 698, 956)
+- **Eje:** calidad/latencia/honestidad · **Severidad:** media
+- **Causa raíz:** "hola" (i=1, 3 pasadas/4.3s), pregunta de seguimiento (i=675), reglas (i=371/372), garble (i=698) disparan `session.cancel_turn`; a veces afirma "cancelé la acción pendiente" sin acción real (i=14, 252, 470) o doble cancel (i=394, 479). El abstain_head/cancel over-fire (FP conocido, ver memoria). **BUG-REAL:** subir umbral de cancel_turn; no afirmar cancelación de algo inexistente.
+
+### C3. Latencia alta en respuesta sin tools (ack/clarificación/conocimiento) — **[BUG-REAL latencia]**
+- **#casos:** ~16 (i=32, 38, 323, 424, 425, 453, 467, 500, 543, 543, 647, 746, 764, 861, 865, 933, 555)
+- **Eje:** latencia · **Severidad:** baja-media
+- **Causa raíz:** 5-17s para un ack/clarificación/no-op (i=323 10.3s, i=865 17.4s, i=933 16.7s). Cola de latencia (forced-retry rambling ya capado en sesión previa, pero estos casos lo exceden). **BUG-REAL:** revisar por qué texto-puro tarda >5s; posible 3 pasadas innecesarias. Solapa con C2 (cancel añade pasadas).
+
+---
+
+## D. ARTEFACTOS DEL MOCK — **DESCARTAR (no son bugs de prod)**
+
+### D1. Cifras/datos concretos del tool mockeado (`ok:True` vacío) — **[ARTEFACTO]**
+- **#casos:** ~70 (i=48, 93, 101, 112, 114, 128, 131, 138, 140, 144, 145, 154, 156, 157, 159, 179, 195, 199, 217, 220, 229, 231, 236, 243, 248, 263, 282, 286, 291, 292, 303, 312, 318, 319, 332, 344, 345, 348, 349, 350, 355, 358, 361, 378, 380, 384, 388, 389, 390, 392, 404, 408, 413, 421, 422, 426, 472, 482, 493, 499, 550, 557, 561, 562, 594, 599, 671, 682, 706, 707, 712, 713, 718, 720, 724, 726, 743, 747, 756, 763, 769, 770, 782, 783, 789, 801, 806, 809, 823, 839, 855, 860, 874, 887, 900, 930, 931, 941, 949, 960, 990)
+- **Eje:** honestidad (aparente) · **Severidad:** baja
+- **Causa raíz:** hora "15:12", "155 GB libres", "GPU 85%", path "C:\Users\red\...", recall "color azul", "Python 3.12.4" — el mock devuelve `ok:True` sin payload y el LLM rellena o el dato es del mock. **DESCARTAR.** En prod el tool real trae el dato. Verificar EN VIVO solo los de severidad media donde el claim cambia la acción (envío whatsapp A3, borrado de archivo inexistente i=823).
+- **GOTCHA conocido (memoria):** el mock `execute→ok:True` inventa cifras que el tool REAL devuelve bien. NUNCA contar como bug de prod.
+
+### D2. Leak del payload del mock `{"_eval_mock":true}` al reply — **[ARTEFACTO del harness]**
+- **#casos:** 5 (i=257, 292, 573, 821, 773)
+- **Eje:** vacío/calidad · **Severidad:** media (en el eval)
+- **Causa raíz:** leer una carpeta como archivo o `terminal.run` vuelca el JSON del mock literal. **ARTEFACTO** del harness (en prod sería contenido real). PERO i=573/821 también revelan un sub-bug real: tratar **directorio como archivo** (read de carpeta) — eso SÍ es BUG-REAL menor (validar que el path es archivo antes de read).
+
+### D3. Footer "[1 no confirmada(s)]" / leak de `intent:{...}` / placeholders `${job_id}`,`<name>`,`X` al reply — **[YA-FIX-T1 (footer-prosa, leak) — REGRESIÓN]**
+- **#casos:** ~12 (i=393 intent-leak, i=540 ${job_id}, i=552 "X", i=319 <name>, i=594, 599, 661, 762, 661, 154, 304, 875)
+- **Eje:** vacío/honestidad/leak · **Severidad:** media
+- **Causa raíz:** marcador interno "[no confirmada]" o `intent:{}` o placeholder sin sustituir filtra al reply. Guards `_INTENT_LEAK_RE` (sesión previa) + footer-prosa (tanda 1) existen. Persisten → cobertura incompleta. **BUG-REAL:** ampliar sanitize a placeholders `${...}`/`<...>`/`X` literal y al footer en estos caminos.
+
+---
+
+## Ranking por IMPACTO (cantidad × severidad) — qué arreglar primero
+
+| # | Patrón | Casos | Sev | Tipo | Acción |
+|---|--------|-------|-----|------|--------|
+| 1 | **A1 media-fabricado** (título/artista) | ~30 | ALTA | YA-FIX, hueco | Extender guard a título+artista (no solo plataforma); verificar default-ON en vivo |
+| 2 | **C1 web-loop degenerado** | ~28 | ALTA | YA-FIX, cobertura | Bajar umbral de corte; atacar causa (B3) |
+| 3 | **B9 how-to/regla/condicional** | ~22 | media-ALTA | YA-FIX, hueco | Ampliar a reglas/condicionales declarativas |
+| 4 | **B1 ruido suelto** | ~20 | media-ALTA | YA-FIX, hueco | Ampliar `_is_low_signal_noise` a tokens técnicos |
+| 5 | **B10 multi-paso a medias** | ~20 | media | BUG-REAL | Encadenar screenshot+describe; completar 2º paso |
+| 6 | **B3 conocimiento→web/fallo** | ~18 | media | BUG-REAL | Gate responder-de-saber (mata loops C1) |
+| 7 | **B8+destructivo sin gate** | ~8 | ALTA | BUG-REAL | Gate confirmación irreversibles (con B9) |
+| 8 | **C2 cancel_turn FP** | ~14 | media | BUG-REAL | Subir umbral cancel; no afirmar cancelación falsa |
+| 9 | **A2/A5 over-claim acción/verificación** | ~26 | media-ALTA | BUG-REAL | Guard mismatch verbo↔tool-family; computer_use(null) no claim |
+| 10 | **B13 idioma del reply** | ~11 | baja | BUG-REAL | Reply en idioma del user |
+
+---
+
+## Resumen accionable
+
+**Arreglar PRIMERO (alta sev × volumen):**
+1. **A1** — extender `media_fabricated_claim` a títulos+artista fabricados (no solo plataforma) y confirmar que el guard está default-ON en vivo. 30 casos, sev alta, el más grande.
+2. **C1** — bajar el umbral de `dedup_degenerate_batch`/loop_detection para cortar antes de las 30 llamadas (no a las 100+), y atacar **B3** (conocimiento→responder de saber) que es la fuente de la mitad de los loops.
+3. **B9+B8** — ampliar `_is_howto` a reglas/condicionales/specs declarativas y reforzar el gate de confirmación para destructivos (i=141/294/295/314 son alta sev).
+4. **B1** — ampliar `_is_low_signal_noise` a tokens técnicos ("qwen3:4b", "Endpoint", "/api/chat") y ruido sin verbo.
+
+**Patrones YA-FIX-T1 que REGRESARON o tienen hueco (re-medir en vivo, NO asumir cerrados):** A1 (media-fabricado), A4 (tests-passed), B1 (ruido), B2 (trigger-routine), B9 (how-to), C1 (loop), D3 (footer/leak/placeholder). Probable: el dataset se capturó ANTES de los fixes de t1 → **re-correr estos en vivo con los guards activos antes de tocar código.**
+
+**DESCARTAR por ARTEFACTO del mock (~75 casos, no prod):** D1 (cifras/paths/horas concretas del `ok:True` vacío), D2 (leak `_eval_mock` salvo el sub-bug read-de-directorio), y los "verificar en vivo" de A3 (claim de envío bajo mock). Excepción a verificar en vivo: recipiente roto (i=970 "Digema", i=631 "un") es BUG-REAL clase C1.
+
+**DESCARTAR por límite del 4B (no parchear, sería hardcode prohibido):** A6 (errores factuales de conocimiento — Gotham Academy, p.u., fecha MJ, Superman).
+
+**Archivos clave:** `gemma4_agent/safety_pkg/reply_validator.py` (guards A1/A2/A4/A5/D3), `gemma4_agent/routing/planner.py` (B1/B2/B9 detectores), `gemma4_agent/safety_pkg/loop_detection.py` (C1), `gemma4_agent/memory_pkg/profile_intent.py` (cluster Jarvis, ver nota abajo), `gemma4_agent/agent_core/agent.py:5399` (`_handle_profile_intent`).
+
+**NOTA sobre cluster Jarvis (i=9, 23, 25, 33, 35, 42, 43, 49, 90, 804, 881, 882):** ~12 casos donde "¿me escuchas?"/"se me bugueó"/"¿qué puedo pedirte?"/"¿cómo me llamo?" disparan el short-circuit de perfil (volcado de apps/borrado) en vez de responder. El fix de tanda 2/3 YA agregó esos exactos hard-negatives a `_ANCHORS["none"]` en `profile_intent.py` (líneas 66-113). **Estos casos son PRE-fix-t2/t3** → re-medir en vivo; si reaparecen, subir `_FLOOR`/`_MARGIN` o reforzar negatives. Lo cuento como **YA-FIX-T2/T3 — verificar**, no como bug nuevo.

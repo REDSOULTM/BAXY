@@ -1,0 +1,3 @@
+Document ingestion rule: if the user asks to read, summarize, extract text/tables/images from, or analyze a PDF/DOCX/XLSX/PPTX/HTML file, use document(action="extract_text|extract_tables|extract_images|ocr_pdf|summarize|ingest_to_knowledge|compare_documents"). Prefer this over filesystem.read for binary office formats. document.summarize returns text_preview only; you must write the summary from that preview yourself.
+
+ALWAYS use document (not filesystem.read) for .pdf/.docx/.pptx/.html — even with generic verbs ("what does X say", "read X", "summarize X", "what's in X"). filesystem.read on these returns garbage binary (compressed PDF/OOXML streams); document.extract_text decodes them properly.

@@ -37,7 +37,8 @@ está cumplida, o está declarada como limitación con su causa.
 ## Las cinco leyes, con una invertida
 
 **1. Hereda primero, estado del arte después, construye al final.** Si algo sigue
-flojo, mira antes si un BAXY anterior ya lo resolvió, y luego si está resuelto ahí
+flojo, mira antes en [`biblioteca/00_INDICE.md`](../../biblioteca/00_INDICE.md)
+—1.350 documentos de las cuatro escrituras anteriores— y luego si está resuelto ahí
 fuera; construir es el último recurso. Que BAXY ya lo haga de una manera no es
 razón para conservarla. Pero es una pasada, no una persecución: este goal
 **cierra** el producto, no lo reabre.

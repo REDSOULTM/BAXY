@@ -110,6 +110,9 @@ asistente.
 
 - [`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md) — qué es BAXY.
   Decisiones tomadas, no preferencias. Léelo primero.
+- [`biblioteca/`](biblioteca/00_INDICE.md) — **1.350 documentos** de las cuatro
+  escrituras anteriores: estudios, auditorías, investigaciones y rechazos medidos.
+  Se busca aquí **antes** de abrir cualquier línea de investigación.
 - [`documentacion/sprints/`](documentacion/sprints/) — los once prompts.
 - [`documentacion/APLAZADOS.md`](documentacion/APLAZADOS.md) — lo que los goals
   01–10 ven y no persiguen; el 11 lo vacía.

@@ -1,0 +1,35 @@
+feat(stt): rescate LID frase-corta para Parakeet v3 — re-transcripcion selectiva con Whisper de idioma fijo
+
+Parakeet-TDT-0.6b-v3 hace language-ID interno que NO se puede forzar
+(model card oficial) y en frases cortas sin contexto cae a ingles
+("Tiempo" -> "Really isn't worth it" en logs reales) — limitacion
+documentada del modelo, no de nuestra config (verificada correcta contra
+las fuentes oficiales; sherpa-onnx 1.13.2 y v3 son las ultimas versiones
+publicadas).
+
+Mitigacion implementada (research del 2026-06-10, opcion de mejor ROI):
+pipeline._lid_rescue re-transcribe SOLO ese buffer con Whisper
+(language=perfil, que SI fija idioma) cuando el motor es Parakeet, el
+perfil es no-EN, el audio dura <=3s y la salida parece ingles puro (>=2
+funcionales EN y CERO marcadores del idioma del perfil). Whisper carga
+lazy al primer rescate y queda residente; gates GEMMA4_STT_LID_RESCUE y
+GEMMA4_STT_LID_RESCUE_MAX_S; log instrumentado para acumular evidencia
+viva.
+
+Medido sobre voz REAL (scripts stt_lid_rescue_eval / stt_lid_shortzone_eval):
+- validacion textual de los flips EN reales de logs: 8/8
+- falsos positivos: 0 en 408 casos de audio (84 comandos + 84 truncados
+  0.7s + 60 FLEURS truncados 1.2s + 180 terceros)
+- WER del corpus de comandos IDENTICO con el rescate activo (0.3676):
+  el camino normal de Parakeet (p50 ~74ms) no se toca
+- latencia extra solo en el caso malo: p50 ~1.46s
+- GOTCHA medido que moldeo la heuristica: el code-switching legitimo
+  ("reproduce The Last of Us en HBO Max") NO debe rescatarse — forzar
+  es destruye el titulo; los conectores es (" en ", " si ") bloquean.
+
+Etapa 3 (fp32) documentada como no-factible: v3 solo se publica en int8
+(el fp16 disponible es v2 English-only) y el export NeMo propio no
+justifica ROI contra fusiones diagnosticadas como estructurales.
+Tests de voz 287 passed.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

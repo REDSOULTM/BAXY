@@ -1,0 +1,16 @@
+﻿python : W0611 13:03:10.997000 11372 site-packages\torch\distributed\elastic\multiprocessing\redirects.py:29] NOTE: 
+Redirects are currently not supported in Windows or MacOs.
+En línea: 1 Carácter: 74
++ ... o Gemma 4"; python -X utf8 scripts\router_eval.py --split both 2>&1 | ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (W0611 13:03:10....ndows or MacOs.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+======================================================================
+Router eval — router_eval_corpus.curated.jsonl  (2061 rows; dev=1640 holdout=421)
+======================================================================
+  (warmup: semantic router hot in 25.50s)
+  [dev]  TOOL RECALL 1227/1248=0.9832   NO-TOOL keep 391/392=0.9974   (recall misses 21, over-offers 1)
+  [dev]  PRECISIÓN: subset-dominio medio 2.58 tools/turno  RUIDO medio 1.35 extra/turno  (turnos muy ruidosos ≥3: 200)
+  [holdout]  TOOL RECALL 323/330=0.9788   NO-TOOL keep 91/91=1.0000   (recall misses 7, over-offers 0)
+  [holdout]  PRECISIÓN: subset-dominio medio 2.61 tools/turno  RUIDO medio 1.39 extra/turno  (turnos muy ruidosos ≥3: 58)

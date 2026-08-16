@@ -1,0 +1,28 @@
+================================================================
+SKILLS QUALITY LIVE (41s) — 9 skills
+================================================================
+
+Q: 'se me cerró el juego de repente, ayudame a ver por qué se ca'
+   skill inyectada (determinista): (NINGUNA)
+   live tools: ['app']
+   live reply: 'Listo, busco si tienes algún juego instalado para ayudarte a revisar por qué se cerró.'
+
+Q: 'investigá sobre la fotosíntesis y resumime con las fuentes'
+   skill inyectada (determinista): research-and-summarize
+   live tools: ['web']
+   live reply: 'La fotosíntesis es el proceso mediante el cual las plantas y otras organizaciones conviert'
+
+Q: 'sacá una captura de pantalla y analizá qué hay en ella'
+   skill inyectada (determinista): screenshot-and-analyze
+   live tools: ['gui', 'vision']
+   live reply: 'La captura de pantalla ha sido tomada y el análisis de lo que aparece en ella es ahora.'
+
+Q: 'hacé un respaldo y después limpiá los archivos temporales'
+   skill inyectada (determinista): backup-then-clean
+   live tools: ['backup_sync', 'filesystem', 'filesystem']
+   live reply: 'Listo, se ha iniciado la creación de un respaldo local. He realizado el respaldo y limpiad'
+
+Q: 'programá una tarea que se repita todos los días a las 9'
+   skill inyectada (determinista): schedule-recurring-task
+   live tools: []
+   live reply: 'programaré una tarea recurrente para que se repita todos los días a las 9. Usaré la herram'

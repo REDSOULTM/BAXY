@@ -1,0 +1,21 @@
+﻿======================================================================
+Router eval — router_eval_corpus.curated.jsonl  (2061 rows; dev=1640 holdout=421)
+======================================================================
+  (warmup: semantic router hot in 8.88s)
+  [dev]  TOOL RECALL 1227/1248=0.9832   NO-TOOL keep 391/392=0.9974   (recall misses 21, over-offers 1)
+  [dev]  PRECISIÓN: subset-dominio medio 2.57 tools/turno  RUIDO medio 1.34 extra/turno  (turnos muy ruidosos ≥3: 200)
+  [holdout]  TOOL RECALL 323/330=0.9788   NO-TOOL keep 91/91=1.0000   (recall misses 7, over-offers 0)
+  [holdout]  PRECISIÓN: subset-dominio medio 2.60 tools/turno  RUIDO medio 1.39 extra/turno  (turnos muy ruidosos ≥3: 56)
+
+  per-slice on [holdout]  (recall | no-tool keep):
+    tool           recall 323/330=0.979      no-tool     n/a    
+    no_tool        recall     n/a            no-tool 91/91=1.000
+    short          recall 139/141=0.986      no-tool 49/49=1.000
+    continuation   recall 41/42=0.976        no-tool 19/19=1.000
+    multilingual   recall 7/8=0.875          no-tool     n/a    
+    lang:es        recall 316/322=0.981      no-tool 91/91=1.000
+    lang:en        recall 3/3=1.000          no-tool     n/a    
+    lang:fr        recall 1/1=1.000          no-tool     n/a    
+    lang:de        recall 1/1=1.000          no-tool     n/a    
+    lang:it        recall 0/1=0.000          no-tool     n/a    
+    lang:pt        recall 2/2=1.000          no-tool     n/a    

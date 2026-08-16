@@ -1,0 +1,1 @@
+Graph-backed reminders require an existing Microsoft Graph token in GEMMA4_GRAPH_TOKEN or MS_GRAPH_TOKEN. If auth is missing, reminder must return NEEDS_USER; never pretend a reminder was scheduled.

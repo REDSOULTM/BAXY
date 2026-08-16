@@ -1,0 +1,11 @@
+==============================================================
+FLIPS-BY-DEFAULT LIVE: 7/7 OK (49s)
+==============================================================
+gates (sin env vars): file_routing=True skills_autoinject=True error_recovery=True
+  [OK  ] (file-routing) 'buscá un word en mis documentos' -> ['filesystem'] | 'Listo, busqué documentos con la extensión .doc'
+  [OK  ] (file-routing) 'listá los archivos de descargas' -> ['filesystem'] | 'Listo, listé los archivos en tu carpeta de des'
+  [OK  ] (file-routing) 'buscá un pdf en el escritorio' -> ['filesystem'] | 'Intent:{"intent_type":"search","target":"pdf e'
+  [OK  ] (skills) 'sacá una captura de pantalla y analizá' -> ['gui', 'vision'] | 'Lo siento, no puedo analizar la captura de pan'
+  [OK  ] (control) 'qué hora es' -> ['system'] | 'La hora actual es 11:15 a.m.'
+  [OK  ] (control-web) 'buscá noticias de hoy' -> ['web'] | 'He buscado noticias de hoy y aquí están los re'
+  [OK  ] (control-smalltalk) 'hola, buenas' -> [] | 'Hola, buenas. ¿En qué puedo ayudarte hoy?'

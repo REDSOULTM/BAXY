@@ -1,0 +1,51 @@
+CARTER MODEL LAB — POST WAVE 2/3 GATES
+Captured: 2026-05-02 (Opus 4.7 mission close)
+Working dir: Carter_v2
+Python:      ..\.venv\Scripts\python.exe
+
+==================================================================
+GATE 1 — audit/hardcode_guard.py
+==================================================================
+Command:
+  & "..\.venv\Scripts\python.exe" audit\hardcode_guard.py
+Result (last lines):
+  hardcode_guard: scanned src\carter_v2
+    total findings: 0
+    critical:       0
+Verdict: PASS
+
+==================================================================
+GATE 2 — pytest non-live suite
+==================================================================
+Command:
+  & "..\.venv\Scripts\python.exe" -m pytest -q --ignore=tests/test_main_jarvis.py -k "not live"
+Result (last lines):
+  ........................................................................ [ 16%]
+  ........................................................................ [ 33%]
+  ........................................................................ [ 49%]
+  ........................................................................ [ 66%]
+  ........................................................................ [ 82%]
+  ........................................................................ [ 99%]
+  ...                                                                      [100%]
+  435 passed, 1 deselected in 47.61s
+Verdict: PASS
+
+==================================================================
+SCOPE NOTES
+==================================================================
+- Live LLM suite (`-k live`) and `test_main_jarvis.py` intentionally
+  deselected during model-lab gates (would double-load the GPU during
+  Wave 2/3 work). Live coverage exists separately in
+  audit/results/live_llm_validation/ and in the Wave-1+2 tournament
+  per-model JSONs under audit/results/model_benchmarks/.
+- Selector validated end-to-end via:
+    & "..\.venv\Scripts\python.exe" scripts/maintenance/recommend_carter_models.py
+  Output (16 GB profile): text=qwen3:8b (rollback) with fallback
+  chain qwen3:8b -> mistral-small:24b -> gpt-oss:20b -> hermes3:8b;
+  vision=qwen2.5vl:7b; stt=faster-whisper:large-v3; tts=piper:default.
+
+==================================================================
+SUMMARY
+==================================================================
+M13 (post-mission gates) status: GREEN after Wave-2 registry/selector
+edits and Wave-3 vision tournament. No regressions.

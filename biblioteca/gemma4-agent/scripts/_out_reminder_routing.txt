@@ -1,0 +1,9 @@
+============================================================
+REMINDER ROUTING: 3/6 OK (47s)
+============================================================
+  [MISS] 'recordame comprar pan a las 5' -> ['session'] | 'No pude registrar esa nota porque la herramienta s'
+  [OK  ] 'recordame llamar a mamá en una hora' -> ['reminder'] | 'Listo, recordé llamar a mamá en una hora.'
+  [OK  ] 'recordame sacar la basura mañana' -> ['reminder'] | 'Listo, te he recordado sacar la basura mañana.'
+  [OK  ] 'recordame la reunión a las 9am' -> ['local_calendar'] | 'Listo, he recordado la reunión a las 9am en tu cal'
+  [MISS] 'recordame que prefiero el café sin azúca' -> [] | 'Recuerdo que prefieres el café sin azúcar.'
+  [MISS] 'recordame que soy alérgico al maní' -> [] | 'recordaré que eres alérgico al maní).'
