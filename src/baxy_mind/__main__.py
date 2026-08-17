@@ -1513,7 +1513,20 @@ def apply_operation_domain_grounding_veto(
     compound_contract: CompoundEffectContract | None = None,
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
 ) -> dict[str, object]:
-    """Remove authority when an ambiguous operation lacks its real domain."""
+    """Remove authority when an ambiguous operation lacks its real domain.
+
+    Exempting the ``read_only`` operations from this gate was measured and
+    rejected. It looked free -- the gate exists to stop an unsolicited effect and
+    an observation has none, so on the fresh paraphrase corpus of goal 03 it
+    recovered eight rows of 124 without adding a single effect. It is refuted by
+    a case a previous campaign already paid for and that lives in
+    ``tests/test_turn_policy.py``: "¿Cómo está la red neuronal?" proposes
+    ``network.status``, which is read-only, and answering it would report the
+    machine's connectivity to a question about neural networks. The gate does not
+    only protect against effects; it protects against answering the wrong domain,
+    and ``red``, ``tiempo``, ``memoria`` and ``pagina`` are polysemous in exactly
+    that way. Risk class cannot stand in for domain.
+    """
 
     if decision.get("mode") not in {"action", "plan"}:
         return decision

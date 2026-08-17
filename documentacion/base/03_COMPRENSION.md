@@ -111,6 +111,13 @@ y las que sí lo son —la recuperación de 49/83 a 79/86, el decisor de 63 a 82
 decisiones crudas, la puerta de dominio de 46 % a 66,9 %— están muy por encima de
 ese ruido.
 
+**Hay seis corridas más**, que no van en esta tabla porque miden configuraciones
+que no se embarcan y se discuten donde toca: `clean_before`, `clean_before_v2`,
+`honest` y `honest_v2` son el antes y después del guarda de honestidad (§9), y
+`observing` y `observing_v2` son la exención por clase de riesgo que se midió y se
+revirtió (§6). Sus artefactos están publicados igual, con el mismo nombre en
+`artifacts/development/`.
+
 Por idioma, en la corrida 7: **es 30/73 (41,1 %)**, **en 15/35 (42,9 %)**,
 **spanglish 12/16 (75,0 %)**. El spanglish va mejor porque sus filas caen más a
 menudo dentro de la gramática del reconocedor.
@@ -177,7 +184,7 @@ movió**, que es para lo que están los sellos:
 
 | Sello | Qué pasó | Cómo se cerró |
 |---|---|---|
-| `wake-validation-program-tree` (5 programas de `experiments/stt_quality`) | congela `experiments/voice_latency`, `scripts` y **todo `src/baxy_mind`** antes de abrir un holdout ciego de STT | Repinado de `22f3bd4e…` a `b9896507…`, siguiendo el precedente de R277: *un commit que cambia el árbol congelado sin repinar lo deja roto*. Anotado en `APLAZADOS.md`, porque el evaluador de STT no ejecuta nada de lo que se cambió |
+| `wake-validation-program-tree` (5 programas de `experiments/stt_quality`) | congela `experiments/voice_latency`, `scripts` y **todo `src/baxy_mind`** antes de abrir un holdout ciego de STT | Repinado de `22f3bd4e…` a `2124b0a3…`, siguiendo el precedente de R277: *un commit que cambia el árbol congelado sin repinar lo deja roto*. Anotado en `APLAZADOS.md`, porque el evaluador de STT no ejecuta nada de lo que se cambió |
 | `test_price_v8_veto_damage_by_cause` | exigía que **todo programa que V8 ejecutó** siguiera byte a byte | Se separó el libro en dos: `V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN` y `V8_PROGRAMS_REPLACED_BY_GOAL_03`, con las dos hojas nombradas y su consecuencia dicha — **las cifras de V8 describen un camino de decisión que este árbol ya no tiene**. Cualquier deriva no listada sigue poniéndolo rojo |
 | R277, R280 | auditorías consumidas cuyo sujeto —el literal `qwen3` en `llm.py`— ya no existe | Selladas por el hash de su artefacto (§7 de `00_COMPUERTA.md`), conservando todo lo que concluyeron. R280 gana además una prueba nueva: que **ningún nombre de fichero decide ya el contrato de decisión** |
 | R231, R232, R233 | R231 ata `registered_runtime_manifest_sha256`, un fichero fuera del repositorio que este goal cambió al promover el decisor | Selladas. Es el caso de R225 que el goal 02 ya documentó: esa prueba no podía pasar en ningún clon |
@@ -315,13 +322,14 @@ agenda».
 |---|---:|---:|
 | ninguna | 82/82 | 24/24 |
 | **puerta léxica (hoy)** | **54/82** | **6/24** |
+| puerta léxica exenta de read-only | 62/82 | 9/24, **ninguno un efecto** |
 | verificador del modelo | 48/82 | 4/24 |
 | las dos (Y) | 31/82 | 2/24 |
 | cualquiera (O) | 71/82 | 8/24 |
 
 Ninguna combinación compra las 26 sin pagar el invariante.
 
-**Con esto van cuatro campañas independientes diciendo lo mismo** —R236 con BGE-M3
+**Con los cuatro primeros van cuatro campañas independientes diciendo lo mismo** —R236 con BGE-M3
 por familia, R250 con un clasificador directo de 32 vías, y las dos de aquí—: en
 este catálogo, **el score semántico no separa dentro de fuera**. Ya no es una
 hipótesis abierta.
@@ -359,6 +367,34 @@ fraseología de MTOP, no la frontera de BAXY. En el punto de operación cambiar�
 39 peticiones legítimas por 14 rechazos correctos: peor que no tener nada. **No
 se embarcan pesos**; el programa queda como la medición.
 
+### El sexto: exentar de la puerta lo que no puede tener efecto
+
+Éste no era una abstención, era una **narrowing** de la puerta, y es el que más
+prometía. La puerta existe para impedir un efecto no pedido; una operación
+`read_only` no tiene efecto que impedir —observa y no cambia nada— así que para
+ésas la puerta no compra nada contra el invariante para el que se escribió. Y sí
+cuesta: medido, **ocho filas de 124**, entre ellas «que tengo en primer plano
+ahora», «como anda la maquina en general» y «que cancion es esta».
+
+Se implementó y se midió dos veces: **61 de 124 = 49,2 %** contra 55–58, la puerta
+bajando de 29 a 25 filas perdidas, y —lo importante— **las decisiones con efecto no
+pedido se quedaron en 4, exactamente donde estaban**. Sólo añadía tres lecturas
+irrelevantes. Parecía gratis: +3,2 puntos sin tocar el invariante y sin un solo
+umbral que ajustar.
+
+**Y está refutado por un caso que una campaña anterior ya pagó**, que vive en
+`tests/test_turn_policy.py`: **«¿Cómo está la red neuronal?»** propone
+`network.status`, que es read-only. Con la exención BAXY contestaría con la
+conectividad del equipo a una pregunta sobre redes neuronales. La puerta no
+protege sólo contra efectos: protege contra **contestar del dominio equivocado**, y
+`red`, `tiempo`, `memoria` y `página` son polisémicas exactamente así. **La clase
+de riesgo no puede sustituir al dominio.**
+
+No es un caso raro: la superficie es todas las lecturas de `system.time`,
+`system.status`, `network.status`, `media.status`, `note.list`, `task.list`. Se
+revirtió. Queda medido lo que costaría y lo que compraría, para que nadie lo
+vuelva a intentar sin ver el contraejemplo primero.
+
 ### Y entonces, por qué no hay abstención posible hoy
 
 Mirando **qué** propone el modelo en las 20 peticiones fuera de catálogo que
@@ -381,9 +417,9 @@ y vetaba lo que no las nombrara, y sobre las paráfrasis no vistas del corte B
 llevó el sobreveto de 224/560 a **385/560**. Está escrito en el propio
 `operation_domain_is_grounded`.
 
-**Veredicto del criterio de cero candidatos:** con los cinco mecanismos
-disponibles —cuatro de semejanza y uno supervisado sobre datos etiquetados— **no
-es alcanzable hoy**, y la causa está localizada: las operaciones de argumento
+**Veredicto del criterio de cero candidatos:** con los seis mecanismos
+medidos —cuatro de semejanza, uno supervisado sobre datos etiquetados y uno por
+clase de riesgo— **no es alcanzable hoy**, y la causa está localizada: las operaciones de argumento
 libre son sumideros que absorben cualquier petición. Cerrarlo es trabajo de forma
 del catálogo, no de recuperación ni de decisión.
 
@@ -532,9 +568,15 @@ dominio». Arreglarlo pide un estado de conversación nuevo en el contrato del
 prompt, y ése es el material del goal 04. Queda medido: **17 filas, y el
 mecanismo.**
 
-**Los otros dos ceros, y ahora sí comprobados en el texto:** 0 efectos no pedidos
-—ningún provider habilitado, `effects_executed: 0`, ninguna corrida despachó nada—
-y 0 respuestas visibles fijas: todas las de §8 y de aquí las formuló el modelo.
+**Los otros dos ceros, y con la precisión que les faltaba.** «0 efectos no
+pedidos» es literal en estas corridas: ningún provider habilitado,
+`effects_executed: 0`, nada despachado. Pero lo que este goal puede medir de
+verdad es lo de al lado, y conviene no confundirlos: **cuántas decisiones habrían
+ejecutado un efecto que nadie pidió.** Son **3 a 5 de 36** con la puerta puesta,
+estable en las siete corridas, y **20 de 36** sin ella. Ése es el número que el
+goal 05 tiene que llevar a cero de verdad, con los providers encendidos.
+
+Y 0 respuestas visibles fijas: todas las de §8 y de aquí las formuló el modelo.
 
 **V9 sigue sin abrir.** Ninguna corrida de este goal lo tocó, y con 46,0 % no hay
 candidato que acreditar.
