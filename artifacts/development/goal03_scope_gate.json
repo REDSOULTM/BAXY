@@ -1,0 +1,107 @@
+{
+  "constraints": {
+    "effects_executed": 0,
+    "model_started": false,
+    "mtop_test_opened": false,
+    "opened_v9": false,
+    "providers_enabled": false,
+    "weights_shipped": false
+  },
+  "encoder": {
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  },
+  "schema": "baxy.goal03-scope-gate.v1",
+  "training": {
+    "balance": {
+      "train_in_catalogue": 11566,
+      "train_out_of_catalogue": 9106
+    },
+    "dropped_class": "contract_structure_mismatch",
+    "rows": {
+      "train": 20672,
+      "validation": 2989
+    },
+    "source": "MTOP official release, development members only",
+    "test_opened": false
+  },
+  "variants": {
+    "char_word_tfidf": {
+      "at_that_threshold_on_the_fresh_corpus": {
+        "in_catalogue_kept": 100,
+        "in_catalogue_rows": 124,
+        "out_of_catalogue_refused": 12,
+        "out_of_catalogue_rows": 36
+      },
+      "auc": {
+        "fresh_corpus": 0.5551,
+        "mtop_validation": 0.993
+      },
+      "diagnostic_curve_on_the_fresh_corpus": {
+        "keep_0.90": {
+          "in_catalogue_kept": 111,
+          "out_of_catalogue_refused": 11
+        },
+        "keep_0.95": {
+          "in_catalogue_kept": 117,
+          "out_of_catalogue_refused": 6
+        },
+        "keep_0.99": {
+          "in_catalogue_kept": 122,
+          "out_of_catalogue_refused": 3
+        },
+        "keep_1.00": {
+          "in_catalogue_kept": 124,
+          "out_of_catalogue_refused": 3
+        }
+      },
+      "operating_point": {
+        "chosen_on": "mtop_validation",
+        "mtop_validation": {
+          "in_catalogue_kept": 0.9897775105231509,
+          "out_of_catalogue_refused": 0.9155354449472096
+        },
+        "threshold": -0.6247116949745745
+      }
+    },
+    "e5_embedding": {
+      "at_that_threshold_on_the_fresh_corpus": {
+        "in_catalogue_kept": 85,
+        "in_catalogue_rows": 124,
+        "out_of_catalogue_refused": 14,
+        "out_of_catalogue_rows": 36
+      },
+      "auc": {
+        "fresh_corpus": 0.5766,
+        "mtop_validation": 0.9788
+      },
+      "diagnostic_curve_on_the_fresh_corpus": {
+        "keep_0.90": {
+          "in_catalogue_kept": 111,
+          "out_of_catalogue_refused": 8
+        },
+        "keep_0.95": {
+          "in_catalogue_kept": 117,
+          "out_of_catalogue_refused": 3
+        },
+        "keep_0.99": {
+          "in_catalogue_kept": 122,
+          "out_of_catalogue_refused": 3
+        },
+        "keep_1.00": {
+          "in_catalogue_kept": 124,
+          "out_of_catalogue_refused": 0
+        }
+      },
+      "operating_point": {
+        "chosen_on": "mtop_validation",
+        "mtop_validation": {
+          "in_catalogue_kept": 0.9897775105231509,
+          "out_of_catalogue_refused": 0.7639517345399698
+        },
+        "threshold": -1.3422910928726193
+      }
+    }
+  },
+  "verdict": "supervised_scope_detection_does_not_transfer_to_free_paraphrase"
+}

@@ -10,6 +10,13 @@ veto lo tocara.
 > de dominio léxica entiende 66,9 %, pero ejecuta 20 efectos no pedidos en 36
 > peticiones fuera de catálogo.** BAXY no tiene un mecanismo de abstención;
 > tiene una lista de vocabulario haciendo de abstención, y esa lista es el techo.
+>
+> **Y el segundo criterio abierto —cero candidatos fuera de catálogo— se midió
+> inalcanzable con cinco mecanismos**, incluido el supervisado sobre 23.661 filas
+> etiquetadas contra el propio catálogo de BAXY: 0,98 de AUC en su distribución y
+> **0,58 en paráfrasis libre**. La causa está localizada y no es un modelo: once
+> de cada veinte peticiones fuera de catálogo aterrizan en operaciones cuyo
+> dominio de argumentos es todo el idioma.
 
 ---
 
@@ -292,6 +299,62 @@ plausiblemente con cualquier petición que suene a ordenador. «Prende las luces
 living» recupera `window.active`; «formatea el pendrive» recupera
 `filesystem.write.text`. No es un fallo del encoder: es la forma del catálogo.
 
+### El quinto: aprenderlo de etiquetas, que es lo que hace el estado del arte
+
+Los cuatro de arriba leen una **semejanza**. La pregunta «¿está esto en el
+catálogo?» no es de semejanza, es de **alcance**, y el alcance se aprende de
+etiquetas. Este repositorio ya tenía las etiquetas: `mtop_turn_evidence_map.v1.json`
+declara **80 intents de MTOP como fuera del catálogo de BAXY**, revisados contra
+los contratos reales, y `scripts/build_mtop_turn_evidence.py` proyecta cada fila.
+
+Se descargó MTOP —SHA-256 idéntico al declarado en el árbol— y se construyó el
+desarrollo: **13.229 filas dentro de catálogo contra 10.432 fuera**, en inglés y
+español. El test oficial **no se abrió**. Se descartaron las 6.307 filas de
+`contract_structure_mismatch`, que el adaptador mete en el mismo cubo y no son
+fuera de dominio: «play the next track» cae ahí y BAXY tiene `media.control`.
+
+Clasificador binario, dos familias de rasgos, umbral elegido en la validación de
+MTOP con la restricción de **conservar ≥ 99 % de lo que sí está en catálogo**
+([`train_goal03_scope_gate.py`](../../experiments/mind_router_spike/train_goal03_scope_gate.py)):
+
+| Rasgos | AUC en validación MTOP | AUC en paráfrasis fresca | En el punto elegido |
+|---|---:|---:|---|
+| e5 (el que ya está residente) | **0,9788** | **0,5766** | 85/124 conservadas, 14/36 rechazadas |
+| char+word TF-IDF | **0,9930** | **0,5551** | 100/124 conservadas, 12/36 rechazadas |
+
+**Casi perfecto en su distribución y casi azar fuera de ella.** Aprende la
+fraseología de MTOP, no la frontera de BAXY. En el punto de operación cambiaría
+39 peticiones legítimas por 14 rechazos correctos: peor que no tener nada. **No
+se embarcan pesos**; el programa queda como la medición.
+
+### Y entonces, por qué no hay abstención posible hoy
+
+Mirando **qué** propone el modelo en las 20 peticiones fuera de catálogo que
+ejecutarían sin la puerta, la respuesta deja de ser estadística:
+
+| Lo que propuso | Cuántas | ¿Puede el contrato rechazarlo? |
+|---|---:|---|
+| Operación con dominio de argumentos **cerrado** (enum o sin argumentos) | 9 | Sí en principio: «programa el aire acondicionado» propone `system.settings.set`, cuyo `setting` sólo admite brillo, no-molestar y luz nocturna |
+| Operación de **argumento libre** | 11 | **No.** `task.create("pedir un taxi")` es válido contra su schema; `message.send`, `note.create` y `web.search` aceptan cualquier texto |
+
+Ahí está la razón de fondo, y no es del encoder ni del decisor: **el alcance no
+es una propiedad de la forma del texto, es una propiedad del dominio de
+argumentos del catálogo**, y once de veinte peticiones fuera de catálogo aterrizan
+en operaciones cuyo dominio de argumentos es todo el idioma. Ningún contrato puede
+negar lo que su schema admite.
+
+La mitad que sí sería decidible —el gate derivado del catálogo— **ya se midió y se
+rechazó** antes de este goal: daba a cada operación las palabras distintivas suyas
+y vetaba lo que no las nombrara, y sobre las paráfrasis no vistas del corte B
+llevó el sobreveto de 224/560 a **385/560**. Está escrito en el propio
+`operation_domain_is_grounded`.
+
+**Veredicto del criterio de cero candidatos:** con los cinco mecanismos
+disponibles —cuatro de semejanza y uno supervisado sobre datos etiquetados— **no
+es alcanzable hoy**, y la causa está localizada: las operaciones de argumento
+libre son sumideros que absorben cualquier petición. Cerrarlo es trabajo de forma
+del catálogo, no de recuperación ni de decisión.
+
 ---
 
 ## 7. El catálogo: cobertura y cuenta, y por qué no se consolidó
@@ -408,7 +471,8 @@ candidato que acreditar.
 | **La disciplina del §7 para sellos consumidos** | `documentacion/base/00_COMPUERTA.md` del goal 02 | Aplicada a R231–R233, R277 y R280 |
 | **El arnés de la campaña V8** | `run_veto_reach_v8.py` | El runner de este goal es su misma forma: sidecar, catálogo autenticado, audit del crudo |
 | **Los cinco gates léxicos rechazados** | R116, R117, R124 ×2, R126 | Se respetó: no se escribió un sexto |
-| **Las dos abstenciones semánticas rechazadas** | R236 (BGE-M3 por familia), R250 (clasificador de 32 vías) | Se volvió a medir con otro método y sale lo mismo; ahora son cuatro |
+| **Las dos abstenciones semánticas rechazadas** | R236 (BGE-M3 por familia), R250 (clasificador de 32 vías) | Se volvió a medir con otros métodos y sale lo mismo; ahora son cinco |
+| **Las 80 etiquetas de fuera de catálogo de MTOP** | `src/baxy_mind/data/mtop_turn_evidence_map.v1.json`, y su adaptador en `scripts/` | Se usaron enteras: es la única fuente del árbol que etiqueta alcance contra el catálogo real. El resultado fue un rechazo medido |
 
 **Lo que no se heredó y por qué:** el router Tool2Vec de `FunctionGemma` mide
 recall 0,9521 pero a granularidad de **31 herramientas**, que es la misma que la
@@ -419,13 +483,60 @@ familia. Su `abstain_head.json` sí es la pista viva y está anotada en §11.
 
 ## 11. Lo que este goal deja abierto, con su nombre
 
-**El siguiente paso está identificado y tiene los datos ya mapeados en el árbol.**
-Lo que falta es un detector de fuera de dominio que no sea vocabulario ni score:
-un clasificador binario dentro/fuera entrenado sobre datos etiquetados. Y este
-repositorio ya mapea MTOP, MASSIVE y PRESTO a familias y modos en
-`src/baxy_mind/data/*_turn_evidence_map.v1.json` — **`mtop_turn_evidence_map.v1.json`
-declara además `ood_intents`**, que es exactamente la etiqueta que hace falta. No
-se persiguió aquí porque exige descargar y entrenar, y este goal ya tenía la
-frontera medida.
+El clasificador supervisado que parecía el siguiente paso **se persiguió y se
+midió** (§6): no transfiere. Lo que queda abierto es lo que esa medición dejó
+localizado, y no es un modelo:
+
+1. **Las operaciones de argumento libre son sumideros.** `task.create`,
+   `note.create`, `message.send` y `web.search` aceptan cualquier texto, así que
+   absorben once de cada veinte peticiones fuera de catálogo. Mientras existan
+   así, ninguna abstención basada en contratos puede ser completa. Es una
+   decisión de forma del catálogo, y toca al goal que lo rediseñe.
+2. **El relleno de argumentos, en 30,8 % y preguntando lo que ya está dicho**
+   (§8). Es la pieza que tendría que decidir el alcance de la mitad decidible, y
+   hoy no puede.
+3. **La puerta de dominio curada**, que cuesta 27 respuestas correctas y no tiene
+   sustituto medido. Se queda porque sostiene los cero efectos no pedidos.
 
 Lo demás está en [`APLAZADOS.md`](../APLAZADOS.md).
+
+---
+
+## 12. El estado de los criterios de cierre, uno por uno
+
+Nueve cumplidos, dos medidos y publicados como inalcanzables hoy. Ninguno queda
+sin respuesta.
+
+| Criterio | Estado |
+|---|---|
+| ≥ 90 % sobre paráfrasis frescas, partido por causa | **No cumplido: 46,0 %.** El reparto está en §2 y el techo, abajo |
+| Latencia hasta la primera señal, junto al acierto | Cumplido — §2, p50 2,08 s y p90 3,15 s en el camino por modelo |
+| Pass-rate end-to-end antes y después de tocar el catálogo | Cumplido — 46,0 % → 46,0 %, y §7 dice por qué no se tocó |
+| Peticiones fuera de catálogo con cero candidatos | **No cumplido, y medido inalcanzable** con cinco mecanismos — §6 |
+| Cobertura y cuenta publicadas juntas, antes y después | Cumplido — 169/158/31, sello `dc0a7893…` idéntico |
+| Número y forma del catálogo justificados midiendo | Cumplido — §7 |
+| Acierto de argumentos medido aparte | Cumplido — §8, 30,8 % y por qué no se mudó de sitio |
+| Los tres ceros intactos | Cumplido — §9 |
+| Publicado qué se heredó y de dónde | Cumplido — §10 |
+| El decisor detrás de la frontera de proceso y declarado con su hash | Cumplido — se cambió de modelo seis veces en este goal sin recompilar nada |
+| Filas de `03_COSTURAS.md` rellenas | Cumplido — cinco rellenas y una añadida |
+
+### El techo del 90 %, medido
+
+No hace falta especular sobre por qué falta: **la recuperación pone la operación
+esperada delante del decisor en 103 de 124 turnos**. Con una decisión perfecta y
+sin un solo veto, la arquitectura de hoy da **83,1 %**. El 90 % no está detrás del
+decisor ni de la puerta: hay que pasarlo por la recuperación primero.
+
+Y ahí sí hay margen conocido: el mejor recuperador medido offline —documentos del
+lado `passage:`, ranking por operación— alcanza **113 de 124 (91,1 %)** con los
+mismos 28 candidatos. La diferencia entre 103 y 113 es lo que se pierde entre el
+banco y el producto, y es el primer sitio donde mirar.
+
+**Los tres tramos, con lo que cuesta cada uno hoy:**
+
+| Tramo | Cuántas de 124 pierde | Cómo se arregla |
+|---|---:|---|
+| Recuperación | 19 | Cerrar la distancia entre 103 vivo y 113 offline |
+| Decisión | 17 | Otro decisor, o el mismo con menos hermanas que distinguir |
+| Vetos | 31 | Sustituir la puerta de dominio — y eso pide forma de catálogo, §6 |
