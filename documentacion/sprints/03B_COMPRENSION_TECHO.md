@@ -141,6 +141,44 @@ está rechazada. El libro de cobertura y su sello están en
 operaciones, 158 alcanzables, 31 familias, sello `dc0a7893…`. **Publícalo antes y
 después.**
 
+## Las acciones encadenadas: no las construyes, pero no puedes romperlas
+
+**El corpus del goal 03 no tiene una sola acción compuesta.** Sus 160 filas son
+intentos sueltos, y las 23 que listan varias operaciones las listan como
+**alternativas aceptables** —el puntuador acierta si coincide cualquiera—, no como
+una secuencia a ejecutar. «Conéctate al wifi de casa» vale con
+`wifi.connect.named` o con `wifi.connect`; ninguna fila dice «abre Steam y ve a la
+biblioteca».
+
+Eso lo deja ciego justo donde más duele. Cuando el goal 01 midió el coste de
+consolidar —75,93 % → 62,96 %— nombró dónde se concentraba el daño: **follow-ups,
+multilingüe y encadenado**. Vas a reformar los dominios de argumento del catálogo,
+que es exactamente esa clase de cambio, con un instrumento que no puede verlo.
+
+Y hay una razón de identidad, no sólo de medición: **encadenar es lo que permite
+bajar el catálogo sin bajar cobertura.** Lo que deje de caber en `task.create`
+cuando acotes su dominio tiene que absorberlo una cadena. Si nadie lo comprueba,
+«la cobertura no baja» se vuelve una afirmación sobre el papel.
+
+**Construir las misiones compuestas sigue siendo del goal 07. Tú no lo haces.** Lo
+que sí haces es no dejárselo roto:
+
+- **Un banco pequeño de misiones compuestas** —del orden de quince, en los tres
+  idiomas, con las dependencias implícitas que la gente usa al hablar: «abre Steam
+  y ve a la biblioteca», «busca X y guárdalo en una nota», «mira si tengo Z y si no,
+  créalo»—. Si el goal 07 o los repositorios anteriores ya tienen uno, **heredalo en
+  vez de escribirlo**: el goal 07 cerró una vez con 6/6 misiones y 25/25 pasos
+  verificados, y ese material existe.
+- **Se mide antes y después de tocar el catálogo**, y se publica igual que el
+  corpus principal. No es un objetivo del goal: es una **guarda de regresión**.
+- **Si baja, el cambio de catálogo se revierte o se acota** hasta que deje de
+  bajar. Un catálogo que sube el acierto en intentos sueltos y rompe el encadenado
+  no ha mejorado el producto — ha movido la pérdida a donde este goal no mira.
+
+Aquí, a diferencia del resto del goal, **no persigas una cifra**: persigue que no
+baje. Y si sube porque acotar los argumentos hizo más fácil encadenar, dilo — sería
+la confirmación de que la palanca era la correcta.
+
 ## Lo que ya se midió y se rechazó — no escribas el sexto
 
 Cada línea costó una corrida. Repetirlas es la forma más cara de perder el goal.
@@ -222,7 +260,11 @@ rechazo, no una mejora — el goal 03 midió que hoy son 3 a 5 de 36 las decisio
 que *habrían* ejecutado un efecto que nadie pidió, con la puerta puesta. Ese
 número no puede subir.
 
-**La cobertura no baja.** Publica el libro y su sello antes y después.
+**La cobertura no baja.** Publica el libro y su sello antes y después. Y recuerda
+que el libro cuenta **alcanzabilidad**, no comportamiento: una operación puede
+seguir alcanzable «como paso de una cadena» sobre el papel y encadenarse peor en
+la práctica. Por eso el banco de misiones compuestas es parte de esta regla, no un
+extra.
 
 **El listón del silencio.** 3 segundos. Hoy el p50 es 2,08 s con el equipo
 tranquilo y **3,7–4,0 s mientras la persona usa el PC**, que es cuando lo va a
@@ -236,6 +278,9 @@ usar. Si tu cambio sube el acierto y empeora eso, no ha mejorado el producto.
 - [ ] Las **17 filas del contrato** resueltas: BAXY deja de decir «no puedo» sobre
       lo que sabe hacer, con el estado de conversación nuevo y su prueba.
 - [ ] **Cobertura y cuenta antes y después**, con el sello del libro: no bajó.
+- [ ] **El banco de misiones compuestas medido antes y después: no bajó.** Si bajó,
+      el cambio de catálogo se acotó hasta que dejó de bajar, y está dicho cuánto
+      se cedió.
 - [ ] La **puerta curada más pequeña que antes**, o retirada, con el sobreveto
       medido en los dos casos.
 - [ ] **Latencia junto al acierto**, p50 y p90, con el equipo cargado y tranquilo.
