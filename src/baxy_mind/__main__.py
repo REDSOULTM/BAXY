@@ -1295,6 +1295,8 @@ def apply_conversation_effect_presentation(
 def apply_non_effect_conversation_classification(
     decision: dict[str, object],
     objective: str,
+    *,
+    retired_catalog_effect: bool = False,
 ) -> dict[str, object]:
     """Do not present a non-request observation as a missing capability."""
 
@@ -1350,6 +1352,19 @@ def apply_non_effect_conversation_classification(
         # The local model cannot verify a time-sensitive office holder. Keep
         # the explicit unsupported contract so presentation cannot hallucinate
         # a current fact merely because the clause is grammatical knowledge.
+        return decision
+    if retired_catalog_effect:
+        # A veto retired an authenticated catalogue operation for this request,
+        # which means the decider had said the answer needs an observation of
+        # *this* machine. Relabelling it as knowledge invites the model to
+        # answer from memory, and it does: measured on the fresh paraphrase
+        # corpus of goal 03, "cual es mi direccion ip" replied "Tu dirección IP
+        # es 192.168.1.100" and "que fecha y hora tenemos" replied with a date
+        # in 2023. Both are invented machine state presented as observed, which
+        # is the one thing BAXY may never do. The local model knows nothing
+        # about this machine; it can only observe it. Keeping the unsupported
+        # contract is the same reasoning as the guard above, and at least it
+        # asserts nothing nobody measured.
         return decision
     observation = (
         re.search(
@@ -5784,6 +5799,10 @@ def _prepare_turn_result(
     decision = apply_non_effect_conversation_classification(
         decision,
         objective,
+        retired_catalog_effect=bool(
+            (effects_before_information_veto or effects_before_domain_grounding)
+            and not decision["effect_operations"]
+        ),
     )
     decision = validate_turn_decision(
         decision,

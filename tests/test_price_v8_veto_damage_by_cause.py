@@ -60,7 +60,7 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # here still turns this red.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "3953f9c5fe149c684a550a6d0af5563d4bcbb15871d2ab262f585fccceed17c3"
+        "ea03d2836e095b30db7cc82a0c32864b50474cb0825a7cce2fd46f49ef8c5a8a"
     ),
     "src/baxy_mind/llm.py": (
         "ac73372b1211a8fb0e98e18415be4607cb5aea4d08feb40f76cc9650b4ca959d"

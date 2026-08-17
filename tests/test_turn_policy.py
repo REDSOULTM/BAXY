@@ -7589,6 +7589,53 @@ def test_unpunctuated_interrogatives_are_presented_as_knowledge(
     assert result["conversation_kind"] == "knowledge"
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "cual es mi direccion ip",
+        "que fecha y hora tenemos",
+        "como anda la maquina en general",
+        "how bright is my screen right now",
+    ],
+)
+def test_a_retired_catalog_effect_can_never_be_presented_as_knowledge(
+    text: str,
+) -> None:
+    """BAXY must not answer a question about this machine from memory.
+
+    Measured on the fresh paraphrase corpus of goal 03: when a veto retired the
+    catalogue operation that would have observed the machine, presentation
+    relabelled the turn as knowledge and the model invented the answer -- "Tu
+    dirección IP es 192.168.1.100", a date in 2023, "la maquina está
+    funcionando correctamente". Three fabricated machine states presented as
+    observed, which is the one thing BAXY may never do. The decider had already
+    said the answer needs an observation; presentation may not overrule that.
+    """
+
+    decision = {
+        "mode": "conversation",
+        "operation": None,
+        "question": "",
+        "conversation_kind": "unsupported",
+        "effect_count": "zero",
+        "effect_operations": [],
+        "effect_verification": "not_applicable",
+        "response_language": "es",
+    }
+
+    presented = apply_non_effect_conversation_classification(decision, text)
+    guarded = apply_non_effect_conversation_classification(
+        decision,
+        text,
+        retired_catalog_effect=True,
+    )
+
+    # Without the marker these read as ordinary questions, which is exactly how
+    # the fabrication got in.
+    assert presented["conversation_kind"] == "knowledge"
+    assert guarded["conversation_kind"] == "unsupported"
+
+
 def test_current_office_holder_question_stays_honestly_unsupported() -> None:
     decision = {
         "mode": "conversation",

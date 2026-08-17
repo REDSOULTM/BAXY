@@ -5,8 +5,10 @@ sobre una población de paráfrasis que el sistema no había visto, con el crudo
 instrumentado: qué se le ofreció al modelo y qué propuso **antes** de que ningún
 veto lo tocara.
 
-> **El resultado en una línea:** BAXY entiende **46,0 %** de las paráfrasis
-> frescas, no ≥ 90 %. Y la frontera está medida y tiene nombre: **sin la puerta
+> **El resultado en una línea:** BAXY entiende **46 %** de las paráfrasis frescas
+> —55 a 58 de 124 en cinco corridas de la misma configuración—, no ≥ 90 %. Ese
+> ±3 de dispersión entre corridas es parte del resultado: con 124 filas, una
+> décima no significa nada. Y la frontera está medida y tiene nombre: **sin la puerta
 > de dominio léxica entiende 66,9 %, pero ejecuta 20 efectos no pedidos en 36
 > peticiones fuera de catálogo.** BAXY no tiene un mecanismo de abstención;
 > tiene una lista de vocabulario haciendo de abstención, y esa lista es el techo.
@@ -64,6 +66,15 @@ que este criterio existe.
 visible de una conversación, así que su tiempo de pared **es** la latencia hasta
 la primera señal. El listón del dueño son 3 segundos de silencio.
 
+**Y la condición de la máquina cambia el veredicto, así que va dicha.** Las
+corridas 1–8 se midieron con el equipo tranquilo. Repitiendo la misma
+configuración mientras la persona usa el PC —Steam, WhatsApp, dos WebViews de
+Edge y el escritorio residentes en la misma GPU— el p50 del camino por modelo pasa
+de **2,08 s a 3,7–4,0 s**, y los turnos por encima de 3 s de 13 a ~103 de 122.
+**Bajo condiciones reales el listón de 3 segundos no se cumple**, y ésa es la
+condición que la identidad especifica: BAXY compite con lo que esa persona está
+haciendo de verdad.
+
 Programa: [`run_goal03_comprehension.py`](../../experiments/mind_router_spike/run_goal03_comprehension.py).
 Ningún provider habilitado, cero efectos ejecutados, V9 sin abrir.
 
@@ -90,9 +101,15 @@ Las latencias son del camino por modelo. El camino determinista responde en
 
 Las corridas 3 y 7 son **la misma configuración** —Qwen3-4B con el contrato de
 esquema— pedida de dos maneras: la 3 con banderas explícitas y la 7 leyendo el
-manifiesto registrado. Difieren en una fila de 124. Ésa es la varianza entre
-corridas de este instrumento, y **la cifra que se publica es la 7**, porque es la
-que responde a quien instale esto.
+manifiesto registrado.
+
+**Y la dispersión entre corridas está medida, porque importa.** Cinco corridas de
+esa misma configuración dieron **57, 55, 57, 58 y 56 de 124** — las dos últimas ya
+con el guarda de honestidad de §9. Es un ±3, o sea ±2,4 puntos. **Ninguna
+comparación de este documento que dependa de menos de tres filas es concluyente**,
+y las que sí lo son —la recuperación de 49/83 a 79/86, el decisor de 63 a 82
+decisiones crudas, la puerta de dominio de 46 % a 66,9 %— están muy por encima de
+ese ruido.
 
 Por idioma, en la corrida 7: **es 30/73 (41,1 %)**, **en 15/35 (42,9 %)**,
 **spanglish 12/16 (75,0 %)**. El spanglish va mejor porque sus filas caen más a
@@ -160,7 +177,7 @@ movió**, que es para lo que están los sellos:
 
 | Sello | Qué pasó | Cómo se cerró |
 |---|---|---|
-| `wake-validation-program-tree` (5 programas de `experiments/stt_quality`) | congela `experiments/voice_latency`, `scripts` y **todo `src/baxy_mind`** antes de abrir un holdout ciego de STT | Repinado de `22f3bd4e…` a `b62972b6…`, siguiendo el precedente de R277: *un commit que cambia el árbol congelado sin repinar lo deja roto*. Anotado en `APLAZADOS.md`, porque el evaluador de STT no ejecuta nada de lo que se cambió |
+| `wake-validation-program-tree` (5 programas de `experiments/stt_quality`) | congela `experiments/voice_latency`, `scripts` y **todo `src/baxy_mind`** antes de abrir un holdout ciego de STT | Repinado de `22f3bd4e…` a `b9896507…`, siguiendo el precedente de R277: *un commit que cambia el árbol congelado sin repinar lo deja roto*. Anotado en `APLAZADOS.md`, porque el evaluador de STT no ejecuta nada de lo que se cambió |
 | `test_price_v8_veto_damage_by_cause` | exigía que **todo programa que V8 ejecutó** siguiera byte a byte | Se separó el libro en dos: `V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN` y `V8_PROGRAMS_REPLACED_BY_GOAL_03`, con las dos hojas nombradas y su consecuencia dicha — **las cifras de V8 describen un camino de decisión que este árbol ya no tiene**. Cualquier deriva no listada sigue poniéndolo rojo |
 | R277, R280 | auditorías consumidas cuyo sujeto —el literal `qwen3` en `llm.py`— ya no existe | Selladas por el hash de su artefacto (§7 de `00_COMPUERTA.md`), conservando todo lo que concluyeron. R280 gana además una prueba nueva: que **ningún nombre de fichero decide ya el contrato de decisión** |
 | R231, R232, R233 | R231 ata `registered_runtime_manifest_sha256`, un fichero fuera del repositorio que este goal cambió al promover el decisor | Selladas. Es el caso de R225 que el goal 02 ya documentó: esa prueba no podía pasar en ningún clon |
@@ -458,16 +475,66 @@ cierra este goal.
 
 ---
 
-## 9. Los tres ceros
+## 9. Los tres ceros — y el que estaba roto
 
-Intactos, y acreditados en cada artefacto de las ocho corridas:
+**Publiqué «los tres ceros intactos» y era falso.** Lo comprobé sobre las
+decisiones contractuales —ningún provider habilitado, `effects_executed: 0`— y no
+sobre los textos visibles, que es justo lo que este goal advierte que hay que
+leer. Al leerlos:
 
-- **0 efectos no pedidos** — ningún provider habilitado, `effects_executed: 0`;
-  ninguna corrida despachó nada. La corrida 6 mide 20 propuestas fuera de catálogo
-  que *habrían* ejecutado sin la puerta, y por eso la puerta se queda.
-- **0 éxitos no verificados** — no se afirmó ningún resultado; sólo se decidió.
-- **0 respuestas visibles fijas** — se leyeron los textos visibles, no sólo las
-  decisiones contractuales, y de ahí salen las filas de §8.
+| Petición | Lo que BAXY contestó |
+|---|---|
+| «cual es mi direccion ip» | **«Tu dirección IP es 192.168.1.100.»** |
+| «que fecha y hora tenemos» | **«La fecha y hora actual son 2023-10-15 14:30:00.»** |
+| «como anda la maquina en general» | **«La maquina está funcionando correctamente. No hay problemas reportados.»** |
+
+Tres estados de máquina **inventados y presentados como observados**, sin haber
+ejecutado nada. Eso es exactamente «inventar que hizo algo», el primero de los
+tres nunca de la identidad.
+
+**El mecanismo.** `apply_non_effect_conversation_classification` reetiqueta como
+`knowledge` cualquier turno sin efecto cuyo texto sea una pregunta. Su intención es
+buena —no presentar una observación de la persona como una capacidad que falta— y
+esa misma función **ya tenía el guarda con este razonamiento**, para cargos
+públicos: *«el modelo local no puede verificar un cargo vigente; conserva el
+contrato unsupported para que la presentación no alucine un hecho actual»*.
+
+Faltaba el caso grave: **el estado de esta máquina**. Y la señal ya estaba en el
+sitio, sin necesidad de vocabulario nuevo: `effects_before_domain_grounding`. Si un
+veto retiró una operación del catálogo autenticado, **el propio decisor había dicho
+que la respuesta necesita una observación**, y la presentación no puede darle la
+vuelta y contestar de memoria.
+
+Un guarda, en la misma función, con el mismo razonamiento que el que ya estaba:
+
+| | Sin el guarda | Con el guarda |
+|---|---:|---:|
+| Estados de máquina inventados | **3** | **0** |
+| Sirve (dos corridas cada uno) | 55, 57 | 56, 58 |
+| Abstención honesta fuera de catálogo | 29, 30 | 32, 32 |
+| p50 del camino por modelo | 3,85 / 3,74 s | 3,90 / 3,98 s |
+
+No cuesta acierto ni latencia —las diferencias caben en el ruido de dos corridas—
+y **mejora** la abstención fuera de catálogo. Con prueba de regresión en
+`tests/test_turn_policy.py`, porque un guarda sin prueba se deshace en silencio.
+
+### Lo que queda roto en el mismo sitio, y no lo cierra este goal
+
+De las 31 filas que el veto retira, **17 contestan «No puedo X» sobre algo que
+BAXY sí sabe hacer**: «No puedo apagar el bluetooth», «No puedo sacar una foto de
+la pantalla», «No puedo copiar lo que tienes seleccionado», «I cannot install VLC
+on this machine». La identidad dice que BAXY **dice que no sólo a lo que no sabe
+hacer**, y ésta es la falta inversa: niega una capacidad que tiene.
+
+La causa es que el veto marca `conversation_kind: "unsupported"`, y eso significa
+«no está en el catálogo» — cuando lo que de verdad pasó es «no pude confirmar el
+dominio». Arreglarlo pide un estado de conversación nuevo en el contrato del
+prompt, y ése es el material del goal 04. Queda medido: **17 filas, y el
+mecanismo.**
+
+**Los otros dos ceros, y ahora sí comprobados en el texto:** 0 efectos no pedidos
+—ningún provider habilitado, `effects_executed: 0`, ninguna corrida despachó nada—
+y 0 respuestas visibles fijas: todas las de §8 y de aquí las formuló el modelo.
 
 **V9 sigue sin abrir.** Ninguna corrida de este goal lo tocó, y con 46,0 % no hay
 candidato que acreditar.
@@ -525,13 +592,13 @@ sin respuesta.
 | Criterio | Estado |
 |---|---|
 | ≥ 90 % sobre paráfrasis frescas, partido por causa | **No cumplido: 46,0 %, y medido inalcanzable.** Reparto en §2; la aritmética del techo, abajo |
-| Latencia hasta la primera señal, junto al acierto | Cumplido — §2, p50 2,08 s y p90 3,15 s en el camino por modelo |
+| Latencia hasta la primera señal, junto al acierto | Cumplido como medición, **y el listón no se cumple**: p50 2,08 s con el equipo tranquilo y 3,7–4,0 s mientras la persona usa el PC (§1) |
 | Pass-rate end-to-end antes y después de tocar el catálogo | Cumplido — 46,0 % → 46,0 %, y §7 dice por qué no se tocó |
 | Peticiones fuera de catálogo con cero candidatos | **No cumplido, y medido inalcanzable** con cinco mecanismos — §6 |
 | Cobertura y cuenta publicadas juntas, antes y después | Cumplido — 169/158/31, sello `dc0a7893…` idéntico |
 | Número y forma del catálogo justificados midiendo | Cumplido — §7 |
 | Acierto de argumentos medido aparte | Cumplido — §8, 30,8 % y por qué no se mudó de sitio |
-| Los tres ceros intactos | Cumplido — §9 |
+| Los tres ceros intactos | **Uno estaba roto y se arregló**: la presentación inventaba estado de máquina en 3 filas. §9 |
 | Publicado qué se heredó y de dónde | Cumplido — §10 |
 | El decisor detrás de la frontera de proceso y declarado con su hash | Cumplido — se cambió de modelo seis veces en este goal sin recompilar nada |
 | Filas de `03_COSTURAS.md` rellenas | Cumplido — cinco rellenas y una añadida |
