@@ -9,7 +9,13 @@ correr hasta que se cumple**. Cuando uno entrega, lanzas el siguiente.
 |---|---|---|
 | **01–04** | **Claude Opus 5** | Esta carpeta. Son los que están en uso. |
 | 01–04 (versión anterior) | GPT-5.6 Sol, `reasoning.effort: high` | [`sol/`](sol/), por si vuelve el acceso a Codex |
+| **03B** | **GPT-5.6 Sol** | Esta carpeta. Escrito para Sol a propósito. |
 | 05–11 | GPT-5.6 Sol | Esta carpeta. Se convertirán a Opus cuando toquen. |
+
+**Sobre el 03B.** El goal 03 cerró en 46 % con el 90 % **medido inalcanzable**:
+regalando decisión y vetos perfectos, la arquitectura de hoy topa en 84,7 %. El
+03B no es «volver a intentarlo»: es mover el techo, y por eso su salida honesta es
+más estrecha —sólo vale si el techo cambió—. Va después del 03 y antes del 04.
 
 La conversión a Opus no es un cambio de nombre de modelo: `reasoning.effort` no
 existe en Claude Code, el harness pide permisos y compacta sesiones largas, y Opus
@@ -28,6 +34,7 @@ heredada, mismos criterios de cierre.
 | 01 | **La herencia** | Sabes qué hay construido ya, qué funciona de verdad y qué se trae |
 | 02 | La base reproducible | La compuerta pasa entera, también en un clon limpio |
 | 03 | **La comprensión** | La petición llega a la operación correcta, o a una pregunta útil |
+| 03B | **Romper el techo** | El 90 % que el 03 midió inalcanzable — cambiando la arquitectura que lo limita |
 | 04 | La honestidad | Cero efectos no pedidos, cero éxitos falsos, cero frases fijas |
 | 05 | La ejecución verificada | Lo que dice que pasó, pasó — y algo independiente lo comprueba |
 | 06 | La voz del producto | Todo lo que la persona lee lo formula el modelo, y está bien escrito |
