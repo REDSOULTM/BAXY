@@ -473,7 +473,7 @@ class RequestBudgetEncoderTests(unittest.TestCase):
             def __init__(self):
                 self.calls = []
 
-            def encode(self, texts, *, timeout):
+            def encode(self, texts, *, timeout, prefix="query"):
                 self.calls.append((tuple(texts), timeout))
                 return np.asarray(
                     [
@@ -533,7 +533,7 @@ class RequestBudgetEncoderTests(unittest.TestCase):
             def __init__(self):
                 self.timeouts = []
 
-            def encode(self, texts, *, timeout):
+            def encode(self, texts, *, timeout, prefix="query"):
                 self.timeouts.append(timeout)
                 if timeout < DEFAULT_ENCODER_REQUEST_TIMEOUT_SECONDS:
                     time.sleep(timeout)
@@ -588,11 +588,13 @@ class RequestBudgetEncoderTests(unittest.TestCase):
             min(DEFAULT_INTERACTIVE_ENCODER_TIMEOUT_SECONDS, 0.04),
         )
         self.assertLess(elapsed, 0.25)
-        self.assertTrue(
-            all(
-                timeout == DEFAULT_ENCODER_REQUEST_TIMEOUT_SECONDS
-                for timeout in transport.timeouts[:2]
-            )
+        # La construcción del catálogo codifica sus documentos una sola vez y
+        # fuera de cualquier presupuesto interactivo. Antes eran dos llamadas
+        # porque también se embebía un documento por familia; el ranking ya no
+        # usa familias.
+        self.assertEqual(
+            transport.timeouts[0],
+            DEFAULT_ENCODER_REQUEST_TIMEOUT_SECONDS,
         )
 
 

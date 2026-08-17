@@ -1,0 +1,46 @@
+{
+  "coverage_operations": 158,
+  "encoder": {
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  },
+  "parametric": {
+    "entries": 30,
+    "mean_rank": 2.95,
+    "median_rank": 1.0,
+    "recall_at": {
+      "1": 0.6048,
+      "28": 0.9919,
+      "3": 0.8226,
+      "5": 0.871,
+      "8": 0.8952
+    },
+    "rows": 124,
+    "top_score": {
+      "in_catalog_median": 0.8308,
+      "out_of_catalog_median": 0.8187,
+      "separation": 0.0121
+    },
+    "unreachable_rows": []
+  },
+  "schema": "baxy.goal03-catalog-form.v1",
+  "specific": {
+    "entries": 158,
+    "mean_rank": 10.07,
+    "median_rank": 2.0,
+    "recall_at": {
+      "1": 0.3871,
+      "28": 0.9113,
+      "3": 0.6371,
+      "5": 0.7097,
+      "8": 0.7419
+    },
+    "rows": 124,
+    "top_score": {
+      "in_catalog_median": 0.8493,
+      "out_of_catalog_median": 0.8232,
+      "separation": 0.0261
+    },
+    "unreachable_rows": []
+  }
+}

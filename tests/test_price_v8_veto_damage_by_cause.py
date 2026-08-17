@@ -39,14 +39,31 @@ V8_EVIDENCE_SHA256 = {
     ),
 }
 
-# Runtime files bound by the V8 preregistration that are no longer what it
-# froze. Only data is in here: any program drifting would fail the comparison
-# below. Test files are excluded for the same reason the published audit calls
-# the runtime identical while recording tests/test_veto_reach_v8.py as changed —
+# Runtime data bound by the V8 preregistration that is no longer what it froze.
+# Test files are excluded for the same reason the published audit calls the
+# runtime identical while recording tests/test_veto_reach_v8.py as changed —
 # a test is not what the campaign executed.
-V8_DRIFTED_SINCE_THE_CAMPAIGN = {
+V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
     "src/baxy_mind/data/catalog_operation_aliases.v1.json": (
         "e8fc3ca7bb94224b24f653eb267d4426165554e78947e261fddbaf046b17a5a4"
+    ),
+}
+
+# Programs V8 executed that goal 03 replaced, kept apart from the data drift so
+# the two never blur into one another. The consequence has to be said plainly:
+# **V8's numbers describe a decision path this tree no longer has.** Retrieval
+# ranked families and handed out a window inside the winner; it now ranks the
+# authenticated operations directly. The forced tool-choice contract was on for
+# a model whose filename contained "qwen3"; it is off. Both changes were priced
+# on a fresh paraphrase population (artifacts/development/goal03_*.json) and
+# both move these files by construction. Anything drifting that is not listed
+# here still turns this red.
+V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
+    "src/baxy_mind/__main__.py": (
+        "3953f9c5fe149c684a550a6d0af5563d4bcbb15871d2ab262f585fccceed17c3"
+    ),
+    "src/baxy_mind/llm.py": (
+        "ac73372b1211a8fb0e98e18415be4607cb5aea4d08feb40f76cc9650b4ca959d"
     ),
 }
 
@@ -108,15 +125,18 @@ def test_published_split_and_ceiling_are_the_numbers_r144_reported() -> None:
 
     integrity = report["integrity"]
     assert integrity["v8_artifacts"]["observed"] == V8_EVIDENCE_SHA256
-    # Every program V8 executed is still byte-identical. The only runtime file
-    # that moved is data: the catalogue aliases moved with the catalogue
-    # (157 -> 158 operations).
+    # What moved since the campaign, named file by file and split by kind: the
+    # catalogue aliases moved with the catalogue (157 -> 158 operations), and
+    # goal 03 replaced the two decision-path programs.
     identity = integrity["program_identity"]
     assert {
         row["file"]: row["observed_sha256"]
         for row in identity["files"]
         if not row["identical"] and not row["file"].startswith("tests/")
-    } == V8_DRIFTED_SINCE_THE_CAMPAIGN
+    } == {
+        **V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN,
+        **V8_PROGRAMS_REPLACED_BY_GOAL_03,
+    }
 
     split = report["question_1_vetos_by_what_they_retired"]
     assert split["veto_count"] == 31

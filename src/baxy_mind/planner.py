@@ -24,25 +24,12 @@ from typing import Any, Callable, Iterable, Sequence
 from .effect_intent import enumerated_note_dependency_order
 
 MAX_PLAN_STEPS = 16
-MAX_SHORTLIST_FAMILIES = 10
-# Plazas de familia que conserva siempre el ranking propio del catálogo. La
-# expansión de evidencia es consultiva por contrato, pero ordenaba por encima de
-# ese ranking y podía ocupar las diez plazas por sí sola: medido sobre el corpus
-# congelado, hacía caer el recall de la operación esperada de 50/57 a 34/57 sin
-# rescatar ni un caso. Reservar un piso conserva su aporte sin dejar que anule
-# al catálogo autenticado.
-MAX_CATALOG_GUARANTEED_FAMILIES = 8
-# Ventana de operaciones por familia y banda de relevancia dentro de ella. Son
-# el segundo corte que decide qué puede nombrar el modelo: seis de los siete
-# casos que el catálogo no recuperaba tenían su familia ya en el shortlist y
-# perdían la operación exacta aquí -- `window.active`, `media.control`,
-# `wifi.status` y `note.read` entre ellos.
-MAX_FAMILY_OPERATIONS = 3
-FAMILY_RELEVANCE_BAND = 0.035
-# Las familias que encabezan el ranking reciben una banda más ancha: ahí es
-# donde suele estar la operación correcta y donde el corte la perdía.
-LEADING_FAMILIES = 1
-FAMILY_RELEVANCE_BAND_LEADING = 0.15
+# Cuántas operaciones ve el decisor. El ranking es por operación: no hay ventana
+# por familia, porque rankear familias y luego repartir plazas dentro de ellas
+# perdía la hoja correcta a manos de sus hermanas -- 73/124 contra 102/124 sobre
+# el corpus de paráfrasis frescas del goal 03.
+# El tope se midió: bajarlo a 8 sólo sube el acierto condicionado del decisor de
+# 79,6 % a 82,4 % y cuesta doce filas de recuperación.
 MAX_SHORTLIST_OPERATIONS = 28
 MAX_PURPOSE_CHARS = 512
 MAX_QUESTION_CHARS = 512
@@ -285,7 +272,7 @@ class PlanProposal:
         }
 
 
-Encoder = Callable[[Sequence[str]], Any]
+Encoder = Callable[..., Any]
 
 
 class PlannerCatalog:
@@ -329,25 +316,28 @@ class PlannerCatalog:
             families.setdefault(tool.family, []).append(tool)
         self._families = {key: tuple(value) for key, value in families.items()}
         self._encoder = encoder
-        self._family_names = tuple(sorted(self._families))
-        self._family_documents = tuple(
-            self._family_document(name) for name in self._family_names
-        )
-        self._family_vectors = (
-            encoder(self._family_documents) if encoder is not None else None
-        )
         self._tool_names = tuple(tool.name for tool in self._tools)
         self._tool_documents = tuple(
             f"{tool.name}. {tool.description}. {_compact_schema_hint(tool.schema)}"
             for tool in self._tools
         )
+        # The catalogue entries are what a request is matched *against*, so
+        # they are encoded on E5's passage side.
         self._tool_vectors = (
-            encoder(self._tool_documents) if encoder is not None else None
+            encoder(self._tool_documents, prefix="passage")
+            if encoder is not None
+            else None
         )
 
     @property
     def tools(self) -> tuple[PlannerTool, ...]:
         return self._tools
+
+    @property
+    def ranks_semantically(self) -> bool:
+        """Whether this snapshot ranks with E5 or only with token overlap."""
+
+        return self._tool_vectors is not None
 
     def get(self, name: str) -> PlannerTool | None:
         return self._by_name.get(name)
@@ -357,7 +347,11 @@ class PlannerCatalog:
         objective: str,
         operation: str,
         *,
-        margin: float = 0.03,
+        # Los scores semánticos ya vienen reescalados a 0-1 por consulta. El
+        # margen histórico de 0,03 se medía sobre la banda cruda de e5 (~0,05),
+        # o sea algo más de la mitad de ella; 0,6 es esa misma tolerancia en la
+        # escala nueva.
+        margin: float = 0.6,
     ) -> bool:
         if operation not in self._by_name:
             return False
@@ -372,159 +366,48 @@ class PlannerCatalog:
         score = scores.get(operation)
         return score is not None and score >= best - margin
 
-    def shortlist(
-        self,
-        objective: str,
-        *,
-        preferred_families: Sequence[str] = (),
-        restrict_to_preferred: bool = False,
-    ) -> tuple[PlannerTool, ...]:
+    def shortlist(self, objective: str) -> tuple[PlannerTool, ...]:
+        """Rank the authenticated operations for one request, best first.
+
+        Operations are ranked directly. The previous design ranked families and
+        then handed out a window inside each one, which is a coarser question
+        than the one being asked: the leaf the user meant lost its place to
+        siblings of a family that merely scored well. Measured end to end on the
+        fresh paraphrase corpus of goal 03 with the same decider, the expected
+        operation reached the decider in 73 turns of 124 that way and in 102
+        this way.
+        """
+
         objective = _safe_text(objective, "objective", MAX_OBJECTIVE_CHARS)
-        family_scores = self._semantic_family_scores(objective)
         tool_scores = self._semantic_tool_scores(objective)
         lexical = _tokens(objective)
-        direct_preferred = {
-            family for family in preferred_families if family in self._families
-        }
-        expanded_preferred = set(direct_preferred)
-        if not restrict_to_preferred:
-            expanded_preferred.update(
-                self._catalog_related_families(preferred_families)
-            )
-        candidate_families = self._family_names
-        if restrict_to_preferred and expanded_preferred:
-            candidate_families = tuple(
-                family
-                for family in self._family_names
-                if family in expanded_preferred
-            )
-            if not candidate_families:
-                raise PlannerContractError(
-                    "la familia sugerida no existe en el catálogo activo"
-                )
-        def catalog_rank(family: str) -> tuple[float, str]:
-            return (
-                family_scores.get(family, 0.0)
-                + min(
-                    _family_lexical_score(lexical, self._families[family]),
-                    1.0,
-                )
-                * 0.15,
-                family,
-            )
-
-        ranked_families = sorted(
-            candidate_families,
-            key=lambda family: (
-                2
-                if family in direct_preferred
-                else 1
-                if family in expanded_preferred
-                else 0,
-                *catalog_rank(family),
+        ranked = sorted(
+            self._tools,
+            key=lambda tool: (
+                tool_scores.get(tool.name, 0.0)
+                + min(_tool_lexical_score(lexical, tool), 1.0) * 0.12
+                + (0.06 if lexical & _tokens(tool.name.rsplit(".", 1)[-1]) else 0.0),
+                -len(tool.required),
+                tool.name,
             ),
             reverse=True,
         )
-        # La expansión de evidencia es consultiva: puede sugerir familias, no
-        # sustituir al catálogo autenticado. Sin este piso, sus dos niveles de
-        # preferencia ocupaban las diez plazas y el mejor candidato semántico
-        # del propio catálogo no llegaba nunca al modelo, que sólo puede nombrar
-        # lo que el shortlist le ofrece.
-        guaranteed = sorted(
-            candidate_families, key=catalog_rank, reverse=True,
-        )[:MAX_CATALOG_GUARANTEED_FAMILIES]
-        ordered = list(dict.fromkeys([*guaranteed, *ranked_families]))
-        ranked_families = ordered[:MAX_SHORTLIST_FAMILIES]
-
-        selected: list[PlannerTool] = []
-        for family_index, family in enumerate(ranked_families):
-            members = list(self._families[family])
-            ranking_scores = {
-                tool.name: tool_scores.get(tool.name, 0.0)
-                + min(
-                    _family_specific_lexical_score(lexical, tool, members),
-                    1.0,
-                )
-                * 0.12
-                for tool in members
-            }
-            best_semantic = max(
-                (ranking_scores[tool.name] for tool in members),
-                default=0.0,
-            )
-            # La banda ancha se paga sólo donde suele estar la respuesta. Medido
-            # sobre el oráculo congelado, ensancharla en todas las familias
-            # añadía unas siete operaciones por prompt contra un tope de 28, y
-            # esas extra son hermanas casi sinónimas: justo la población que
-            # hace elegir mal al modelo. Restringirla a las primeras familias
-            # recupera los casos perdidos sin pagar ese coste en las últimas.
-            band = (
-                FAMILY_RELEVANCE_BAND_LEADING
-                if family_index < LEADING_FAMILIES
-                else FAMILY_RELEVANCE_BAND
-            )
-            relevant = [
-                tool
-                for tool in members
-                if ranking_scores[tool.name] >= best_semantic - band
-            ]
-            if self._encoder is not None and relevant:
-                members = relevant
-            members.sort(
-                key=lambda tool: (
-                    ranking_scores[tool.name]
-                    + min(_tool_lexical_score(lexical, tool), 1.0) * 0.03,
-                    -len(tool.required),
-                    tool.name,
-                ),
-                reverse=True,
-            )
-            # Las familias pequeñas se entregan completas. En las grandes basta
-            # una ventana por consulta; los nombres y schemas hermanos compiten.
-            take = (
-                len(members)
-                if self._encoder is None
-                or len(members) <= MAX_FAMILY_OPERATIONS
-                else MAX_FAMILY_OPERATIONS
-            )
-            selected.extend(members[:take])
-            if len(selected) >= MAX_SHORTLIST_OPERATIONS:
-                break
-
-        # A literal operation leaf ("hash", "ocr", "volume") is stronger
-        # evidence than a close embedding inside a large family.  Preserve it
-        # even when the per-family top-k would otherwise crowd it out.
-        selected_names = {tool.name for tool in selected}
-        for tool in self._tools:
-            if restrict_to_preferred and tool.family not in expanded_preferred:
-                continue
-            leaf_tokens = _tokens(tool.name.rsplit(".", 1)[-1])
-            if lexical & leaf_tokens and tool.name not in selected_names:
-                selected.append(tool)
-                selected_names.add(tool.name)
+        selected = list(ranked[:MAX_SHORTLIST_OPERATIONS])
 
         # Las dependencias de identidad son conocimiento del contrato, no una
         # inferencia del modelo. Se incluyen si su consumidor quedó visible.
         names = {tool.name for tool in selected}
         for required in _dependency_operations(names):
             tool = self._by_name.get(required)
-            if (
-                tool is not None
-                and tool.name not in names
-                and (
-                    not restrict_to_preferred
-                    or tool.family in direct_preferred
-                )
-            ):
+            if tool is not None and tool.name not in names:
                 selected.append(tool)
                 names.add(tool.name)
-        selected = selected[:MAX_SHORTLIST_OPERATIONS]
         # Preserve retrieval rank for the constrained LLM. Alphabetizing here
         # discarded the semantic ordering computed above and routinely buried
         # the best operation behind unrelated candidates. Every upstream sort
         # already has a canonical name tie-breaker, so this remains fully
         # deterministic without leaking corpus labels or scores into prompts.
-        return tuple(selected)
+        return tuple(selected[:MAX_SHORTLIST_OPERATIONS])
 
     def compact_prompt(self, tools: Sequence[PlannerTool]) -> str:
         lines: list[str] = []
@@ -537,88 +420,12 @@ class PlannerCatalog:
             )
         return "\n".join(lines)
 
-    def _family_document(self, family: str) -> str:
-        members = self._families[family]
-        descriptions = " ".join(tool.description for tool in members)
-        names = " ".join(tool.name for tool in members)
-        return f"{family}: {names}. {descriptions}"
-
-    def _semantic_family_scores(self, objective: str) -> dict[str, float]:
-        return self._semantic_scores(
-            objective,
-            self._family_names,
-            self._family_vectors,
-        )
-
     def _semantic_tool_scores(self, objective: str) -> dict[str, float]:
         return self._semantic_scores(
             objective,
             self._tool_names,
             self._tool_vectors,
         )
-
-    def _catalog_related_families(
-        self,
-        preferred_families: Sequence[str],
-    ) -> tuple[str, ...]:
-        """Resolve advisory labels from the live catalog, never a phrase map."""
-
-        labels = tuple(
-            dict.fromkeys(
-                label.strip()
-                for label in preferred_families
-                if isinstance(label, str) and label.strip()
-            )
-        )
-        if not labels:
-            return ()
-        documents = dict(
-            zip(self._family_names, self._family_documents, strict=True)
-        )
-        selected: set[str] = set()
-        for label in labels:
-            label_tokens = _tokens(label.replace("_", " "))
-            lexical = sorted(
-                (
-                    (
-                        len(
-                            label_tokens
-                            & _tokens(f"{family} {documents[family]}")
-                        ),
-                        family,
-                    )
-                    for family in self._family_names
-                ),
-                reverse=True,
-            )
-            selected.update(
-                family for score, family in lexical[:3] if score > 0
-            )
-        if self._encoder is None or self._family_vectors is None:
-            return tuple(sorted(selected))
-        try:
-            queries = self._encoder(labels)
-            similarities = queries @ self._family_vectors.T
-            for row in similarities:
-                finite = sorted(
-                    (
-                        (float(score), self._family_names[index])
-                        for index, score in enumerate(row)
-                        if math.isfinite(float(score))
-                    ),
-                    reverse=True,
-                )
-                if not finite:
-                    continue
-                best = finite[0][0]
-                selected.update(
-                    family
-                    for score, family in finite[:3]
-                    if score >= best - 0.035
-                )
-        except Exception:
-            pass
-        return tuple(sorted(selected))
 
     def _semantic_scores(
         self,
@@ -636,13 +443,26 @@ class PlannerCatalog:
             # the constrained LLM owns decomposition into individual steps.
             query = self._encoder([objective])
             scores = query @ vectors.T
-            return {
+            raw = {
                 name: max(float(row[index]) for row in scores)
                 for index, name in enumerate(names)
                 if all(math.isfinite(float(row[index])) for row in scores)
             }
         except Exception:
             return {}
+        # E5 cosines over short catalogue entries live inside a band of about
+        # 0.05, so mixing them with a lexical bonus on a 0-1 scale let a single
+        # shared token outrank the meaning of the request. Rescaling this
+        # query's scores onto 0-1 makes the mix comparable; measured on the
+        # fresh paraphrase corpus it moved the expected operation into the
+        # shortlist in 8 more turns out of 124.
+        if not raw:
+            return {}
+        lowest = min(raw.values())
+        span = max(raw.values()) - lowest
+        if span <= 0.0:
+            return {name: 0.0 for name in raw}
+        return {name: (value - lowest) / span for name, value in raw.items()}
 
 
 def skeleton_schema(operation_names: Sequence[str]) -> dict[str, Any]:
@@ -1088,31 +908,6 @@ def _grounding_tokens(value: str) -> frozenset[str]:
 
 def _tool_lexical_score(query: frozenset[str], tool: PlannerTool) -> float:
     candidate = _tokens(f"{tool.name} {tool.description}")
-    if not candidate:
-        return 0.0
-    return len(query & candidate) / math.sqrt(len(candidate))
-
-
-def _family_lexical_score(
-    query: frozenset[str], tools: Sequence[PlannerTool]
-) -> float:
-    return max((_tool_lexical_score(query, tool) for tool in tools), default=0.0)
-
-
-def _family_specific_lexical_score(
-    query: frozenset[str],
-    tool: PlannerTool,
-    family: Sequence[PlannerTool],
-) -> float:
-    frequencies: dict[str, int] = {}
-    for member in family:
-        for token in _tokens(f"{member.name} {member.description}"):
-            frequencies[token] = frequencies.get(token, 0) + 1
-    candidate = {
-        token
-        for token in _tokens(f"{tool.name} {tool.description}")
-        if frequencies.get(token, 0) <= 2
-    }
     if not candidate:
         return 0.0
     return len(query & candidate) / math.sqrt(len(candidate))

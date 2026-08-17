@@ -69,7 +69,11 @@ class SkillRegistry:
         self._skills = parsed
         self._encoder = encoder
         self._documents = tuple(item.retrieval_document for item in parsed)
-        self._vectors = encoder(self._documents) if encoder is not None and parsed else None
+        self._vectors = (
+            encoder(self._documents, prefix="passage")
+            if encoder is not None and parsed
+            else None
+        )
         lexical_documents = self._documents
         self._lexical_term_counts = tuple(
             Counter(_token_sequence(document))

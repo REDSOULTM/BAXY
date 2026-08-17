@@ -2854,11 +2854,17 @@ class LlmRuntime:
         self._gguf = gguf
         self._server = server
         self._endpoint = endpoint
+        # El contrato de tool-call forzado (``tool_choice: "required"``) se
+        # midió sobre la población fresca del goal 03 con Qwen3-4B: gana 3
+        # decisiones crudas (85 contra 82 de 124) y pierde 8 abstenciones
+        # honestas fuera de catálogo (25/36 contra 33/36). Obligar a elegir una
+        # herramienta cuando ninguna sirve es exactamente el efecto no pedido
+        # que BAXY no admite, así que está apagado. Antes lo encendía el
+        # *nombre del fichero* del modelo, que además ataba el contrato de
+        # decisión a una cadena en una ruta.
         native_policy_override = os.environ.get("BAXY_MIND_NATIVE_TOOL_POLICY")
         if native_policy_override is None:
-            self._native_tool_policy_enabled = bool(
-                gguf and "qwen3" in Path(gguf).name.casefold()
-            )
+            self._native_tool_policy_enabled = False
         elif native_policy_override.strip() in {"1", "true", "yes"}:
             self._native_tool_policy_enabled = True
         elif native_policy_override.strip() in {"0", "false", "no"}:

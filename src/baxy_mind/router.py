@@ -51,6 +51,14 @@ MODEL_SNAPSHOT_MANIFEST_ALGORITHM = (
     "by relative POSIX path UTF-8 bytes as path<TAB>size<TAB>sha256)"
 )
 QUERY_PREFIX = "query: "
+# E5 is trained asymmetrically: a request carries ``query:`` and the text it
+# is matched against carries ``passage:``. Encoding both sides as queries
+# collapses the cosine range -- measured offline over the fresh paraphrase
+# corpus of goal 03 against the whole authenticated catalogue, the expected
+# operation entered the top 28 in 106 of 124 rows that way and in 113 with the
+# pair the model expects.
+PASSAGE_PREFIX = "passage: "
+ENCODER_PREFIXES = {"query": QUERY_PREFIX, "passage": PASSAGE_PREFIX}
 FROZEN_TAU = 0.90
 FROZEN_MARGIN = 0.005
 BANK_PATH = Path(__file__).resolve().parent / "data" / "intent_bank.jsonl"
@@ -259,9 +267,15 @@ class SemanticEncoder:
             local_files_only=True,
         )
 
-    def encode(self, texts: list[str] | tuple[str, ...]):
+    def encode(
+        self,
+        texts: list[str] | tuple[str, ...],
+        *,
+        prefix: str = "query",
+    ):
+        marker = ENCODER_PREFIXES[prefix]
         return self._model.encode(
-            [QUERY_PREFIX + text for text in texts],
+            [marker + text for text in texts],
             normalize_embeddings=True,
             show_progress_bar=False,
         )
@@ -647,9 +661,13 @@ class ProcessIntentRouter:
         self,
         texts: list[str] | tuple[str, ...],
         timeout: float = DEFAULT_ENCODER_REQUEST_TIMEOUT_SECONDS,
+        *,
+        prefix: str = "query",
     ):
         import numpy as np
 
+        if prefix not in ENCODER_PREFIXES:
+            raise ValueError("encoder prefix is invalid")
         batch = self._validated_texts(texts)
         timeout = self._validated_timeout(timeout)
         deadline = time.monotonic() + timeout
@@ -657,14 +675,29 @@ class ProcessIntentRouter:
             raise TimeoutError("router worker is busy")
         try:
             self._ensure_usable_locked()
+            # Esperar a que el worker termine de cargar no es un desajuste de
+            # protocolo: no se ha enviado nada, así que el canal sigue
+            # sincronizado. Tratarlo como tal retiraba el router para siempre
+            # cuando el primer turno llegaba dentro de los ~14 s que tarda E5
+            # en cargar, y el catálogo se quedaba en su ranking léxico durante
+            # toda la vida del proceso. Ése era el fallo que dejaba la
+            # recuperación en 73/124 sobre el corpus de paráfrasis del goal 03,
+            # contra 102/124 una vez que el intercambio ocurre de verdad.
             try:
                 self._wait_ready(self._remaining(deadline, timeout))
+            except TimeoutError:
+                raise
+            except Exception as error:  # noqa: BLE001 - terminal launch fault
+                self._fail_closed_locked(type(error).__name__)
+                raise
+            try:
                 request_id = self._allocate_request_id_locked()
                 self._send(
                     {
                         "type": "encode",
                         "id": request_id,
                         "texts": list(batch),
+                        "prefix": prefix,
                     }
                 )
                 response = self._receive(self._remaining(deadline, timeout))
@@ -896,12 +929,18 @@ class RequestBudgetEncoder:
         if hasattr(self._request_state, "row_cache"):
             del self._request_state.row_cache
 
-    def __call__(self, texts: list[str] | tuple[str, ...]):
+    def __call__(
+        self,
+        texts: list[str] | tuple[str, ...],
+        *,
+        prefix: str = "query",
+    ):
         deadline = getattr(self._request_state, "deadline", None)
         if deadline is None:
             return self._router.encode(
                 texts,
                 timeout=self._offline_timeout,
+                prefix=prefix,
             )
         maximum_timeout = float(self._request_state.maximum_timeout)
         remaining = remaining_seconds(
@@ -914,27 +953,30 @@ class RequestBudgetEncoder:
         batch = ProcessIntentRouter._validated_texts(texts)
         row_cache = self._request_state.row_cache
         if len(batch) == 1:
-            cached_row = row_cache.get(batch[0])
+            cached_row = row_cache.get((prefix, batch[0]))
             if cached_row is not None:
                 return cached_row.reshape(1, -1)
             missing = batch
         else:
             missing = tuple(
-                dict.fromkeys(text for text in batch if text not in row_cache)
+                dict.fromkeys(
+                    text for text in batch if (prefix, text) not in row_cache
+                )
             )
         if missing:
             encoded = self._router.encode(
                 missing,
                 timeout=min(self._interactive_timeout, remaining),
+                prefix=prefix,
             )
             for text, row in zip(missing, encoded, strict=True):
                 cached_row = row.copy()
                 cached_row.setflags(write=False)
-                row_cache[text] = cached_row
+                row_cache[(prefix, text)] = cached_row
             if len(missing) == len(batch):
                 return encoded
 
-        rows = [row_cache[text] for text in batch]
+        rows = [row_cache[(prefix, text)] for text in batch]
         import numpy as np
 
         return np.stack(rows, axis=0)

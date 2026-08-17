@@ -42,7 +42,6 @@ from baxy_mind.__main__ import (
     _normalize_grounded_operation_arguments,
     _prepare_plan_prompt_resources,
     _prepare_turn_result,
-    _prioritized_family_tools,
     _recover_failed_turn,
     _require_catalog_llm_ready,
     _retry_side_effect_free_turn,
@@ -90,7 +89,7 @@ from baxy_mind.llm import (
     visible_reply_restates_the_request,
     visible_text_leaks_internal_vocabulary,
 )
-from baxy_mind.planner import PlannerCatalog, PlannerContractError, PlannerTool
+from baxy_mind.planner import PlannerCatalog, PlannerContractError
 
 
 @pytest.mark.parametrize(
@@ -525,33 +524,6 @@ def test_sentar_and_sentir_both_survive_the_generator() -> None:
     """
     for real in ("sentar", "sentir", "tener", "venir", "poder", "querer"):
         assert real not in _INVENTED_INFINITIVES
-
-def test_primary_family_occupies_shortlist_before_advisory_families() -> None:
-    tools = tuple(
-        PlannerTool(
-            name=f"{family}.operation_{index}",
-            description="fixture",
-            risk="read_only",
-            schema={
-                "type": "object",
-                "properties": {},
-                "required": [],
-                "additionalProperties": False,
-            },
-        )
-        for family in ("audio", "media")
-        for index in range(6)
-    )
-
-    ordered = _prioritized_family_tools(
-        tools,
-        ("media",),
-        ("audio",),
-    )
-
-    assert [tool.family for tool in ordered[:6]] == ["media"] * 6
-    assert [tool.family for tool in ordered[6:]] == ["audio"] * 6
-
 
 def test_opt_in_turn_audit_records_raw_candidates_and_policy_stages(
     monkeypatch: pytest.MonkeyPatch,
@@ -3309,6 +3281,10 @@ def test_turn_resolves_explicit_effects_only_once(
             raise AssertionError("explicit effects do not retrieve evidence")
 
     class ExplicitCatalog:
+        # El audit del turno registra si el catálogo vivo rankea con E5 o
+        # sólo con solapamiento de tokens. Un doble también lo declara.
+        ranks_semantically = False
+
         tools = catalog.tools
 
         @staticmethod
@@ -3557,6 +3533,10 @@ def test_explicit_social_turn_does_not_compute_unused_semantic_candidates() -> N
     )
 
     class NoSemanticWork:
+        # El audit del turno registra si el catálogo vivo rankea con E5 o
+        # sólo con solapamiento de tokens. Un doble también lo declara.
+        ranks_semantically = False
+
         tools = catalog.tools
 
         @staticmethod
@@ -3721,15 +3701,14 @@ def test_outer_final_action_cancels_deferred_language_only_after_all_vetoes() ->
     catalog = PlannerCatalog([tool])
 
     class RelevantCatalog:
+        # El audit del turno registra si el catálogo vivo rankea con E5 o
+        # sólo con solapamiento de tokens. Un doble también lo declara.
+        ranks_semantically = False
+
         tools = catalog.tools
 
         @staticmethod
-        def shortlist(
-            _objective: str,
-            *,
-            preferred_families: tuple[str, ...],
-        ) -> tuple[object, ...]:
-            del preferred_families
+        def shortlist(_objective: str) -> tuple[object, ...]:
             return catalog.tools
 
         @staticmethod
@@ -3895,8 +3874,6 @@ def test_expected_plan_skips_unused_e5_and_skill_retrieval() -> None:
         "cierra la ventana activa",
         (first.name, second.name),
         ClosedCatalog(),  # type: ignore[arg-type]
-        NoEvidence(),  # type: ignore[arg-type]
-        encoder_must_not_run,
         NoSkills(),  # type: ignore[arg-type]
     )
 
@@ -3910,19 +3887,9 @@ def test_inferred_plan_preserves_e5_and_skill_retrieval() -> None:
 
     class OpenCatalog:
         @staticmethod
-        def shortlist(
-            objective: str,
-            *,
-            preferred_families: tuple[str, ...],
-        ):
-            calls.append(("shortlist", objective, preferred_families))
+        def shortlist(objective: str):
+            calls.append(("shortlist", objective))
             return (selected,)
-
-    class Evidence:
-        @staticmethod
-        def candidate_families(objective: str, encoder: object):
-            calls.append(("families", objective, encoder))
-            return ("window",)
 
     class Skills:
         @staticmethod
@@ -3930,21 +3897,19 @@ def test_inferred_plan_preserves_e5_and_skill_retrieval() -> None:
             calls.append(("skills", objective, operations))
             return ()
 
-    encoder = object()
     shortlist, guidance = _prepare_plan_prompt_resources(
         "cierra la ventana activa",
         (),
         OpenCatalog(),  # type: ignore[arg-type]
-        Evidence(),  # type: ignore[arg-type]
-        encoder,  # type: ignore[arg-type]
         Skills(),  # type: ignore[arg-type]
     )
 
     assert shortlist == (selected,)
     assert guidance == ""
+    # La expansión de familias por evidencia ya no existe: el shortlist rankea
+    # operaciones directamente y las habilidades se eligen sobre ese resultado.
     assert calls == [
-        ("families", "cierra la ventana activa", encoder),
-        ("shortlist", "cierra la ventana activa", ("window",)),
+        ("shortlist", "cierra la ventana activa"),
         ("skills", "cierra la ventana activa", ["window.close"]),
     ]
 

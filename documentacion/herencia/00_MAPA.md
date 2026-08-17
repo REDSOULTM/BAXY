@@ -159,7 +159,7 @@ Un rechazo con el mecanismo entendido vale tanto como una herencia.
 
 | Qué | Por qué no |
 |---|---|
-| **Gemma-4-E2B como decisor tal cual** | Gasta 200–400 tokens de *thinking* en inglés **antes de cada respuesta**, incluso para «Abre Spotify» (341 tokens, 7,7 s). El listón del dueño es **3 segundos sin señal**. Ninguna de las 6 pruebas bajó de 4,2 s. Y `--reasoning-budget 0` **lo empeora**: el llama-server b9980 deja de separar el razonamiento y el borrador en inglés **pasa a ser la respuesta visible**. Se hereda el modelo como candidato, no como decisión |
+| **Gemma-4-E2B como decisor tal cual** | Gasta 200–400 tokens de *thinking* en inglés **antes de cada respuesta**, incluso para «Abre Spotify» (341 tokens, 7,7 s). El listón del dueño es **3 segundos sin señal**. Ninguna de las 6 pruebas bajó de 4,2 s. Y `--reasoning-budget 0` **lo empeora**: el llama-server b9980 deja de separar el razonamiento y el borrador en inglés **pasa a ser la respuesta visible**. Se hereda el modelo como candidato, no como decisión. **El goal 03 lo cerró midiendo**: contra Qwen3-4B sobre la misma población pierde 63 decisiones crudas a 82 y p90 3,59 s a 3,02 s, y sale |
 | **FunctionGemma 270M como caller** | Es 30–50× más rápido (0,15 s), pero **emitió nombres que no estaban en el catálogo declarado** (`set_volume` por `audio_volume`, `no_query_query` inexistente) en 4 de 8 casos, y llamó a una herramienta ante una pregunta de conocimiento. El catálogo quedó **cocido en los pesos**, lo que choca de frente con «el catálogo es datos, no código». Cambiar una operación exigiría reentrenar |
 | **Q2_K_XL** | No es más rápido y sí degenera. Ahorra 0,43 GB por una pérdida de calidad sin contrapartida |
 | **`agent.py` y el bucle de Carter** | 1.397 líneas contra su propio objetivo de 400. Es el patrón que el proyecto viene a no repetir |
@@ -176,6 +176,14 @@ Un rechazo con el mecanismo entendido vale tanto como una herencia.
 
 Aquí arranca el goal 03. Hay **cuatro soluciones construidas** al mismo problema
 —de un texto libre a la operación correcta— y son comparables.
+
+> **Cerrado el 2026-08-17, y lo que midió está en
+> [`../base/03_COMPRENSION.md`](../base/03_COMPRENSION.md).** En corto: la
+> comprensión sobre paráfrasis frescas es **46,0 %**, no ≥ 90 %; el decisor pasó
+> a **Qwen3-4B** por medición; y la frontera tiene nombre — sin la puerta de
+> dominio léxica la comprensión sube a 66,9 % pero 20 de 36 peticiones fuera de
+> catálogo ejecutan un efecto no pedido. Lo que sigue abajo es el contexto con el
+> que arrancó, no la conclusión.
 
 | # | Solución | Dónde | Lo que midió | Estado |
 |---|---|---|---|---|

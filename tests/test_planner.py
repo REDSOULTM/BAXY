@@ -16,6 +16,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from baxy_mind.planner import (
+    MAX_SHORTLIST_OPERATIONS,
     MAX_PLAN_STEPS,
     PlanProposal,
     ProposedStep,
@@ -753,9 +754,9 @@ class PlannerCatalogTests(unittest.TestCase):
     def test_semantic_retrieval_encodes_only_the_complete_unseen_objective(self):
         calls: list[tuple[str, ...]] = []
 
-        def encoder(texts):
+        def encoder(texts, *, prefix="query"):
             values = tuple(texts)
-            calls.append(values)
+            calls.append((prefix, values))
             return np.ones((len(values), 4), dtype=np.float32)
 
         catalog = PlannerCatalog(
@@ -770,7 +771,9 @@ class PlannerCatalogTests(unittest.TestCase):
 
         catalog.shortlist(objective)
 
-        self.assertEqual(calls, [(objective,), (objective,)])
+        # El catálogo se codifica del lado ``passage`` y la petición del lado
+        # ``query``: es la asimetría para la que se entrenó e5.
+        self.assertEqual(calls, [("query", (objective,))])
 
     def test_literal_operation_leaf_cannot_be_crowded_out_of_large_family(self):
         family = [
@@ -937,35 +940,26 @@ class PlannerCatalogTests(unittest.TestCase):
         self.assertIn("window.focus", names)
         self.assertIn("window.resolve", names)
 
-    def test_historical_family_hint_prioritizes_but_never_hides_other_families(self):
+    def test_shortlist_ranks_operations_and_never_closes_a_family(self):
+        """Ninguna familia cierra el shortlist.
+
+        El diseño anterior elegía una familia y repartía plazas dentro de ella,
+        y la hoja correcta se perdía a manos de sus hermanas. El goal 03 lo midió
+        sobre paráfrasis frescas -- 73/124 contra 106/124 -- y el ranking pasó a
+        ser por operación. Que ninguna familia pueda cerrar la lista es la parte
+        de esa decisión que una prueba puede fijar sin encoder.
+        """
+
         catalog = PlannerCatalog(TOOLS)
-        names = {
-            item.name
-            for item in catalog.shortlist(
-                "abre el coso",
-                preferred_families=("app",),
-            )
-        }
+        shortlist = catalog.shortlist("abre el bloc de notas")
+        names = [item.name for item in shortlist]
 
         self.assertIn("app.open", names)
         self.assertIn("audio.volume", names)
+        self.assertLessEqual(len(names), MAX_SHORTLIST_OPERATIONS)
+        self.assertEqual(len(names), len(set(names)))
 
-    def test_exact_advisory_family_closes_without_manual_family_expansion(self):
-        catalog = PlannerCatalog(TOOLS)
-        names = {
-            item.name
-            for item in catalog.shortlist(
-                "abre el administrador de tareas",
-                preferred_families=("app",),
-                restrict_to_preferred=True,
-            )
-        }
-
-        self.assertIn("app.open", names)
-        self.assertNotIn("window.resolve", names)
-        self.assertNotIn("audio.volume", names)
-
-    def test_exact_family_does_not_expose_cross_family_plan_predecessors(self):
+    def test_shortlist_keeps_identity_dependencies_of_what_it_offers(self):
         catalog = PlannerCatalog(
             [
                 tool("capture.screenshot", "Capture the current screen."),
@@ -979,14 +973,10 @@ class PlannerCatalogTests(unittest.TestCase):
 
         names = {
             item.name
-            for item in catalog.shortlist(
-                "describe los objetos de mi pantalla",
-                preferred_families=("vision",),
-                restrict_to_preferred=True,
-            )
+            for item in catalog.shortlist("describe los objetos de mi pantalla")
         }
 
-        self.assertEqual(names, {"vision.describe"})
+        self.assertEqual(names, {"vision.describe", "capture.screenshot"})
 
 
 class PlannerContractTests(unittest.TestCase):

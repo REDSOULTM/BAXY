@@ -1,0 +1,536 @@
+{
+  "asked_instead_of_filling": 14,
+  "decider": "registered",
+  "exact_argument_sets": 8,
+  "fields": {
+    "rate": 0.3,
+    "scored": 30,
+    "wrong": 21
+  },
+  "latency_seconds": {
+    "max": 0.891,
+    "p50": 0.564
+  },
+  "rate": 0.3077,
+  "records": [
+    {
+      "case_id": "aud-02",
+      "exact": false,
+      "expected_arguments": {
+        "level": 50
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "audio.volume",
+      "question": "¿qué nivel de volumen quieres para la salida predeterminada?",
+      "seconds": 0.548,
+      "text": "dejame el sonido a la mitad",
+      "wrong_fields": {
+        "level": {
+          "expected": 50,
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "aud-03",
+      "exact": false,
+      "expected_arguments": {
+        "state": true
+      },
+      "language": "en",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "audio.mute",
+      "question": "Should the sound be completely silenced?",
+      "seconds": 0.505,
+      "text": "kill the sound completely, I need silence",
+      "wrong_fields": {
+        "state": {
+          "expected": true,
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "aud-04",
+      "exact": true,
+      "expected_arguments": {
+        "state": true
+      },
+      "language": "es_en",
+      "observed_arguments": {
+        "state": true
+      },
+      "ok": true,
+      "operation": "audio.microphone.mute",
+      "question": "",
+      "seconds": 0.001,
+      "text": "mutea el mic que ya vuelvo",
+      "wrong_fields": {}
+    },
+    {
+      "case_id": "aud-07",
+      "exact": false,
+      "expected_arguments": {
+        "state": false
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": null,
+      "operation": "audio.mute",
+      "question": "",
+      "seconds": 0.613,
+      "text": "quitale el silencio a los parlantes",
+      "wrong_fields": {
+        "state": {
+          "expected": false,
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "aud-08",
+      "exact": false,
+      "expected_arguments": {
+        "amount": 3,
+        "direction": "down"
+      },
+      "language": "es_en",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "audio.volume.adjust",
+      "question": "Baja el volumen tres puntos nomas?",
+      "seconds": 0.659,
+      "text": "baja el volume tres puntos nomas",
+      "wrong_fields": {
+        "amount": {
+          "expected": 3,
+          "observed": null
+        },
+        "direction": {
+          "expected": "down",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "win-05",
+      "exact": false,
+      "expected_arguments": {
+        "height": 600,
+        "width": 800
+      },
+      "language": "en",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "window.resize",
+      "question": "Resize this window to 800 by 600?",
+      "seconds": 0.867,
+      "text": "make this window eight hundred by six hundred",
+      "wrong_fields": {
+        "height": {
+          "expected": 600,
+          "observed": null
+        },
+        "width": {
+          "expected": 800,
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "sys-04",
+      "exact": false,
+      "expected_arguments": {
+        "action": "lock"
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "system.power",
+      "question": "¿qué acción quieres realizar con el equipo?",
+      "seconds": 0.582,
+      "text": "trancame el equipo que me voy",
+      "wrong_fields": {
+        "action": {
+          "expected": "lock",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "sys-08",
+      "exact": false,
+      "expected_arguments": {
+        "direction": "up",
+        "setting": "brightness"
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "system.settings.adjust",
+      "question": "¿cuánto y en qué dirección quieres ajustar la luminosidad de la pantalla?",
+      "seconds": 0.891,
+      "text": "subile un poco a la luz de la pantalla",
+      "wrong_fields": {
+        "direction": {
+          "expected": "up",
+          "observed": null
+        },
+        "setting": {
+          "expected": "brightness",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "sys-12",
+      "exact": false,
+      "expected_arguments": {
+        "action": "shutdown"
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "system.power",
+      "question": "¿qué acción deseas realizar?",
+      "seconds": 0.334,
+      "text": "apaga la compu",
+      "wrong_fields": {
+        "action": {
+          "expected": "shutdown",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "net-02",
+      "exact": true,
+      "expected_arguments": {
+        "host": "8.8.8.8"
+      },
+      "language": "en",
+      "observed_arguments": {
+        "host": "8.8.8.8"
+      },
+      "ok": true,
+      "operation": "network.ping",
+      "question": "",
+      "seconds": 0.611,
+      "text": "see if 8.8.8.8 answers",
+      "wrong_fields": {}
+    },
+    {
+      "case_id": "med-01",
+      "exact": false,
+      "expected_arguments": {
+        "action": "pause"
+      },
+      "language": "es",
+      "observed_arguments": {
+        "action": "stop"
+      },
+      "ok": true,
+      "operation": "media.control",
+      "question": "",
+      "seconds": 0.494,
+      "text": "para lo que esta sonando",
+      "wrong_fields": {
+        "action": {
+          "expected": "pause",
+          "observed": "stop"
+        }
+      }
+    },
+    {
+      "case_id": "med-03",
+      "exact": true,
+      "expected_arguments": {
+        "seconds": 30
+      },
+      "language": "en",
+      "observed_arguments": {
+        "seconds": 30
+      },
+      "ok": true,
+      "operation": "media.seek.relative",
+      "question": "",
+      "seconds": 0.53,
+      "text": "jump ahead thirty seconds",
+      "wrong_fields": {}
+    },
+    {
+      "case_id": "med-06",
+      "exact": true,
+      "expected_arguments": {
+        "action": "next"
+      },
+      "language": "es",
+      "observed_arguments": {
+        "action": "next"
+      },
+      "ok": true,
+      "operation": "media.control",
+      "question": "",
+      "seconds": 0.0,
+      "text": "pasa a la siguiente cancion",
+      "wrong_fields": {}
+    },
+    {
+      "case_id": "fs-01",
+      "exact": false,
+      "expected_arguments": {
+        "folder": "downloads"
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "filesystem.folder.open",
+      "question": "Abrame la carpeta de descargas?",
+      "seconds": 0.569,
+      "text": "abrime la carpeta de descargas",
+      "wrong_fields": {
+        "folder": {
+          "expected": "downloads",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "fs-02",
+      "exact": true,
+      "expected_arguments": {
+        "folder": "documents",
+        "query": "factura"
+      },
+      "language": "en",
+      "observed_arguments": {
+        "folder": "documents",
+        "query": "factura"
+      },
+      "ok": true,
+      "operation": "filesystem.known.search",
+      "question": "",
+      "seconds": 0.692,
+      "text": "look for a pdf with factura in the name in my documents",
+      "wrong_fields": {}
+    },
+    {
+      "case_id": "fs-06",
+      "exact": true,
+      "expected_arguments": {
+        "relativePath": "proyectos"
+      },
+      "language": "es",
+      "observed_arguments": {
+        "relativePath": "proyectos"
+      },
+      "ok": true,
+      "operation": "filesystem.create.directory",
+      "question": "",
+      "seconds": 0.543,
+      "text": "creame una carpeta que se llame proyectos",
+      "wrong_fields": {}
+    },
+    {
+      "case_id": "inp-01",
+      "exact": false,
+      "expected_arguments": {
+        "key": "enter"
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": null,
+      "operation": "input.key.press",
+      "question": "",
+      "seconds": 0.788,
+      "text": "dale enter",
+      "wrong_fields": {
+        "key": {
+          "expected": "enter",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "inp-03",
+      "exact": false,
+      "expected_arguments": {
+        "text": "hello world"
+      },
+      "language": "en",
+      "observed_arguments": {
+        "text": "hello world for me"
+      },
+      "ok": true,
+      "operation": "input.text.type",
+      "question": "",
+      "seconds": 0.001,
+      "text": "type hello world for me",
+      "wrong_fields": {
+        "text": {
+          "expected": "hello world",
+          "observed": "hello world for me"
+        }
+      }
+    },
+    {
+      "case_id": "inp-05",
+      "exact": false,
+      "expected_arguments": {
+        "language": "spanish"
+      },
+      "language": "es_en",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "input.keyboard.layout",
+      "question": "¿cuál es el idioma del teclado?",
+      "seconds": 0.559,
+      "text": "cambia el keyboard a espanol",
+      "wrong_fields": {
+        "language": {
+          "expected": "spanish",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "brw-02",
+      "exact": true,
+      "expected_arguments": {
+        "action": "back"
+      },
+      "language": "en",
+      "observed_arguments": {
+        "action": "back"
+      },
+      "ok": true,
+      "operation": "browser.control",
+      "question": "",
+      "seconds": 0.484,
+      "text": "go back one page",
+      "wrong_fields": {}
+    },
+    {
+      "case_id": "blu-01",
+      "exact": false,
+      "expected_arguments": {
+        "state": false
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "bluetooth.radio.set",
+      "question": "¿cuál es el estado actual del bluetooth?",
+      "seconds": 0.473,
+      "text": "apagame el bluetooth",
+      "wrong_fields": {
+        "state": {
+          "expected": false,
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "bak-01",
+      "exact": true,
+      "expected_arguments": {
+        "folder": "documents"
+      },
+      "language": "es",
+      "observed_arguments": {
+        "folder": "documents"
+      },
+      "ok": true,
+      "operation": "backup.known.create",
+      "question": "",
+      "seconds": 0.64,
+      "text": "hazme una copia de seguridad de documentos",
+      "wrong_fields": {}
+    },
+    {
+      "case_id": "off-01",
+      "exact": false,
+      "expected_arguments": {
+        "format": "docx"
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "office.document.create",
+      "question": "¿Qué formato y título debe tener el documento en blanco?",
+      "seconds": 0.695,
+      "text": "creame un documento de word en blanco",
+      "wrong_fields": {
+        "format": {
+          "expected": "docx",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "med-07",
+      "exact": false,
+      "expected_arguments": {
+        "seconds": -10
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "media.seek.relative",
+      "question": "¿cuántos segundos quieres retroceder la canción?",
+      "seconds": 0.543,
+      "text": "retrocede diez segundos la cancion",
+      "wrong_fields": {
+        "seconds": {
+          "expected": -10,
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "fs-10",
+      "exact": false,
+      "expected_arguments": {
+        "folder": "pictures"
+      },
+      "language": "es",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "filesystem.folder.open",
+      "question": "Abrame la carpeta de imagenes?",
+      "seconds": 0.589,
+      "text": "abrime la carpeta de imagenes",
+      "wrong_fields": {
+        "folder": {
+          "expected": "pictures",
+          "observed": null
+        }
+      }
+    },
+    {
+      "case_id": "sys-14",
+      "exact": false,
+      "expected_arguments": {
+        "action": "signout"
+      },
+      "language": "en",
+      "observed_arguments": {},
+      "ok": false,
+      "operation": "system.power",
+      "question": "What is the official action to log out of Windows?",
+      "seconds": 0.609,
+      "text": "log me out of windows",
+      "wrong_fields": {
+        "action": {
+          "expected": "signout",
+          "observed": null
+        }
+      }
+    }
+  ],
+  "rows": 26,
+  "schema": "baxy.goal03-arguments.v1"
+}

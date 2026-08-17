@@ -1,0 +1,26 @@
+{"case_id":"aud-02","operation":"audio.volume","expected_arguments":{"level":50}}
+{"case_id":"aud-03","operation":"audio.mute","expected_arguments":{"state":true}}
+{"case_id":"aud-04","operation":"audio.microphone.mute","expected_arguments":{"state":true}}
+{"case_id":"aud-07","operation":"audio.mute","expected_arguments":{"state":false}}
+{"case_id":"aud-08","operation":"audio.volume.adjust","expected_arguments":{"amount":3,"direction":"down"}}
+{"case_id":"win-05","operation":"window.resize","expected_arguments":{"height":600,"width":800}}
+{"case_id":"sys-04","operation":"system.power","expected_arguments":{"action":"lock"}}
+{"case_id":"sys-08","operation":"system.settings.adjust","expected_arguments":{"direction":"up","setting":"brightness"}}
+{"case_id":"sys-12","operation":"system.power","expected_arguments":{"action":"shutdown"}}
+{"case_id":"net-02","operation":"network.ping","expected_arguments":{"host":"8.8.8.8"}}
+{"case_id":"med-01","operation":"media.control","expected_arguments":{"action":"pause"}}
+{"case_id":"med-03","operation":"media.seek.relative","expected_arguments":{"seconds":30}}
+{"case_id":"med-06","operation":"media.control","expected_arguments":{"action":"next"}}
+{"case_id":"fs-01","operation":"filesystem.folder.open","expected_arguments":{"folder":"downloads"}}
+{"case_id":"fs-02","operation":"filesystem.known.search","expected_arguments":{"folder":"documents","query":"factura"}}
+{"case_id":"fs-06","operation":"filesystem.create.directory","expected_arguments":{"relativePath":"proyectos"}}
+{"case_id":"inp-01","operation":"input.key.press","expected_arguments":{"key":"enter"}}
+{"case_id":"inp-03","operation":"input.text.type","expected_arguments":{"text":"hello world"}}
+{"case_id":"inp-05","operation":"input.keyboard.layout","expected_arguments":{"language":"spanish"}}
+{"case_id":"brw-02","operation":"browser.control","expected_arguments":{"action":"back"}}
+{"case_id":"blu-01","operation":"bluetooth.radio.set","expected_arguments":{"state":false}}
+{"case_id":"bak-01","operation":"backup.known.create","expected_arguments":{"folder":"documents"}}
+{"case_id":"off-01","operation":"office.document.create","expected_arguments":{"format":"docx"}}
+{"case_id":"med-07","operation":"media.seek.relative","expected_arguments":{"seconds":-10}}
+{"case_id":"fs-10","operation":"filesystem.folder.open","expected_arguments":{"folder":"pictures"}}
+{"case_id":"sys-14","operation":"system.power","expected_arguments":{"action":"signout"}}

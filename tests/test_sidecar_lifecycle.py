@@ -542,7 +542,13 @@ def test_catalog_background_workers_stop_before_router_on_exit(
                 calls_after_close.append("try_ready")
             return not self.closed
 
-        def encode(self, _texts: object, *, timeout: float):
+        def encode(
+            self,
+            _texts: object,
+            *,
+            timeout: float,
+            prefix: str = "query",
+        ):
             if self.closed:
                 calls_after_close.append("encode.start")
             encoder_timeouts.append(timeout)

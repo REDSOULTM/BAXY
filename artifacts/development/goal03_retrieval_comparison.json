@@ -1,0 +1,1284 @@
+{
+  "catalog_operations": 158,
+  "corpus_rows": 160,
+  "encoder": {
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  },
+  "schema": "baxy.goal03-retrieval-comparison.v1",
+  "variants": {
+    "A_current": {
+      "in_catalog": {
+        "mean_shortlist": 28,
+        "median_rank": 2.0,
+        "offered_expected": 106,
+        "rate": 0.8548,
+        "recall_at": {
+          "1": 0.3629,
+          "28": 0.8548,
+          "3": 0.5645,
+          "5": 0.6694,
+          "8": 0.7097
+        },
+        "rows": 124
+      },
+      "misses": [
+        {
+          "case_id": "app-01",
+          "expected": [
+            "app.open"
+          ],
+          "offered": [
+            "note.list",
+            "note.search",
+            "note.read",
+            "note.create",
+            "office.document.read",
+            "clipboard.write.text"
+          ],
+          "rank": 38
+        },
+        {
+          "case_id": "app-02",
+          "expected": [
+            "app.installed"
+          ],
+          "offered": [
+            "system.status",
+            "network.status",
+            "bluetooth.device.pair",
+            "media.play.exact",
+            "wifi.ensure.connected",
+            "wifi.status"
+          ],
+          "rank": 45
+        },
+        {
+          "case_id": "sys-04",
+          "expected": [
+            "system.power"
+          ],
+          "offered": [
+            "filesystem.trash.commit",
+            "wifi.ensure.connected",
+            "game.install.cancel.active",
+            "game.install.commit",
+            "peripheral.print",
+            "app.installed"
+          ],
+          "rank": 30
+        },
+        {
+          "case_id": "sys-11",
+          "expected": [
+            "system.status"
+          ],
+          "offered": [
+            "backup.list",
+            "game.install.cancel.active",
+            "browser.page.read",
+            "notification.list.due",
+            "reminder.list",
+            "game.catalog.list"
+          ],
+          "rank": 43
+        },
+        {
+          "case_id": "net-02",
+          "expected": [
+            "network.ping"
+          ],
+          "offered": [
+            "browser.navigate",
+            "wifi.ensure.connected",
+            "filesystem.search",
+            "filesystem.sandbox.diff.named",
+            "email.latest.read",
+            "web.search"
+          ],
+          "rank": 107
+        },
+        {
+          "case_id": "med-01",
+          "expected": [
+            "media.control"
+          ],
+          "offered": [
+            "audio.status",
+            "media.play.query",
+            "audio.mute",
+            "media.play.exact",
+            "note.read",
+            "browser.page.read"
+          ],
+          "rank": 90
+        },
+        {
+          "case_id": "med-06",
+          "expected": [
+            "media.control"
+          ],
+          "offered": [
+            "media.play.query",
+            "audio.volume.adjust",
+            "note.search",
+            "streaming.play.named",
+            "audio.volume",
+            "media.play.exact"
+          ],
+          "rank": 31
+        },
+        {
+          "case_id": "not-01",
+          "expected": [
+            "note.create"
+          ],
+          "offered": [
+            "wifi.ensure.connected",
+            "app.installed",
+            "notification.cancel.at",
+            "browser.navigate.named",
+            "browser.navigate",
+            "audio.mute"
+          ],
+          "rank": 58
+        },
+        {
+          "case_id": "tsk-01",
+          "expected": [
+            "task.create"
+          ],
+          "offered": [
+            "system.settings.set",
+            "note.create",
+            "backup.verify",
+            "office.document.read",
+            "notification.diagnose",
+            "streaming.play.named"
+          ],
+          "rank": 82
+        },
+        {
+          "case_id": "tsk-03",
+          "expected": [
+            "task.complete",
+            "task.resolve.exact"
+          ],
+          "offered": [
+            "notification.cancel.latest",
+            "browser.navigate",
+            "browser.navigate.named",
+            "task.create",
+            "app.installed",
+            "filesystem.trash.restore"
+          ],
+          "rank": 36
+        },
+        {
+          "case_id": "fs-06",
+          "expected": [
+            "filesystem.create.directory"
+          ],
+          "offered": [
+            "backup.known.create",
+            "task.create",
+            "package.install.commit",
+            "note.create",
+            "package.install.prepare",
+            "reminder.create"
+          ],
+          "rank": 32
+        },
+        {
+          "case_id": "fs-08",
+          "expected": [
+            "filesystem.list"
+          ],
+          "offered": [
+            "filesystem.folder.open",
+            "filesystem.known.search",
+            "filesystem.file.open.latest",
+            "filesystem.known.trash.named",
+            "filesystem.path.ensure.absent",
+            "backup.known.create"
+          ],
+          "rank": 29
+        },
+        {
+          "case_id": "clp-02",
+          "expected": [
+            "clipboard.paste"
+          ],
+          "offered": [
+            "browser.page.read",
+            "browser.control",
+            "routine.read",
+            "game.install.cancel.active",
+            "note.read",
+            "reminder.resolve.exact"
+          ],
+          "rank": 88
+        },
+        {
+          "case_id": "clp-03",
+          "expected": [
+            "clipboard.read.text"
+          ],
+          "offered": [
+            "email.latest.reply",
+            "clipboard.copy",
+            "backup.list",
+            "backup.known.verify.latest",
+            "filesystem.file.open.latest",
+            "filesystem.copy"
+          ],
+          "rank": 49
+        },
+        {
+          "case_id": "inp-06",
+          "expected": [
+            "input.pointer.control"
+          ],
+          "offered": [
+            "browser.page.read",
+            "routine.read",
+            "window.resize",
+            "task.resolve.exact",
+            "browser.control",
+            "media.seek.relative"
+          ],
+          "rank": 44
+        },
+        {
+          "case_id": "cal-02",
+          "expected": [
+            "calendar.event.create"
+          ],
+          "offered": [
+            "routine.read",
+            "task.create",
+            "game.purchase.prepare",
+            "media.status",
+            "notification.cancel.at",
+            "browser.navigate"
+          ],
+          "rank": 90
+        },
+        {
+          "case_id": "app-06",
+          "expected": [
+            "app.open"
+          ],
+          "offered": [
+            "browser.navigate.named",
+            "wifi.ensure.connected",
+            "app.installed",
+            "input.keyboard.open",
+            "browser.navigate",
+            "game.install.cancel.active"
+          ],
+          "rank": 30
+        },
+        {
+          "case_id": "not-06",
+          "expected": [
+            "note.create"
+          ],
+          "offered": [
+            "wifi.ensure.connected",
+            "wifi.status",
+            "wifi.connect",
+            "wifi.connect.named",
+            "network.status",
+            "email.latest.read"
+          ],
+          "rank": 71
+        }
+      ],
+      "out_of_catalog": {
+        "max_shortlist": 28,
+        "mean_shortlist": 28,
+        "rows": 36,
+        "zero_candidate_rows": 0
+      },
+      "policy": {},
+      "prefix": "query: ",
+      "top_score": {
+        "in_catalog_median": 0.8579,
+        "out_of_catalog_median": 0.8342,
+        "separation": 0.0237
+      }
+    },
+    "B_passage": {
+      "in_catalog": {
+        "mean_shortlist": 28,
+        "median_rank": 2.0,
+        "offered_expected": 113,
+        "rate": 0.9113,
+        "recall_at": {
+          "1": 0.3871,
+          "28": 0.9113,
+          "3": 0.6371,
+          "5": 0.7097,
+          "8": 0.7419
+        },
+        "rows": 124
+      },
+      "misses": [
+        {
+          "case_id": "app-01",
+          "expected": [
+            "app.open"
+          ],
+          "offered": [
+            "note.search",
+            "note.list",
+            "note.create",
+            "notification.list.due",
+            "clipboard.read.text",
+            "office.document.read"
+          ],
+          "rank": 48
+        },
+        {
+          "case_id": "net-02",
+          "expected": [
+            "network.ping"
+          ],
+          "offered": [
+            "filesystem.search",
+            "audio.status",
+            "web.search",
+            "network.status",
+            "browser.page.read",
+            "browser.tabs.list"
+          ],
+          "rank": 116
+        },
+        {
+          "case_id": "med-01",
+          "expected": [
+            "media.control"
+          ],
+          "offered": [
+            "audio.status",
+            "audio.mute",
+            "media.play.query",
+            "media.play.exact",
+            "routine.read",
+            "media.status"
+          ],
+          "rank": 35
+        },
+        {
+          "case_id": "tsk-01",
+          "expected": [
+            "task.create"
+          ],
+          "offered": [
+            "system.settings.set",
+            "note.create",
+            "backup.verify",
+            "package.install.commit",
+            "note.update",
+            "task.resolve.exact"
+          ],
+          "rank": 101
+        },
+        {
+          "case_id": "clp-02",
+          "expected": [
+            "clipboard.paste"
+          ],
+          "offered": [
+            "browser.page.read",
+            "audio.status",
+            "reminder.list",
+            "routine.read",
+            "browser.control",
+            "window.resize"
+          ],
+          "rank": 109
+        },
+        {
+          "case_id": "clp-03",
+          "expected": [
+            "clipboard.read.text"
+          ],
+          "offered": [
+            "email.latest.reply",
+            "backup.list",
+            "clipboard.copy",
+            "backup.known.verify.latest",
+            "app.installed",
+            "filesystem.copy"
+          ],
+          "rank": 42
+        },
+        {
+          "case_id": "inp-03",
+          "expected": [
+            "input.text.type"
+          ],
+          "offered": [
+            "audio.status",
+            "app.installed",
+            "routine.read",
+            "wifi.ensure.connected",
+            "reminder.list",
+            "media.status"
+          ],
+          "rank": 55
+        },
+        {
+          "case_id": "inp-06",
+          "expected": [
+            "input.pointer.control"
+          ],
+          "offered": [
+            "audio.status",
+            "browser.page.read",
+            "routine.read",
+            "audio.mute",
+            "backup.list",
+            "window.resize"
+          ],
+          "rank": 78
+        },
+        {
+          "case_id": "cal-02",
+          "expected": [
+            "calendar.event.create"
+          ],
+          "offered": [
+            "routine.read",
+            "reminder.list",
+            "game.purchase.prepare",
+            "audio.status",
+            "media.seek.relative",
+            "task.reopen"
+          ],
+          "rank": 96
+        },
+        {
+          "case_id": "app-06",
+          "expected": [
+            "app.open"
+          ],
+          "offered": [
+            "browser.navigate.named",
+            "app.installed",
+            "browser.navigate",
+            "wifi.ensure.connected",
+            "game.launch",
+            "window.restore"
+          ],
+          "rank": 29
+        },
+        {
+          "case_id": "not-06",
+          "expected": [
+            "note.create"
+          ],
+          "offered": [
+            "wifi.connect",
+            "wifi.status",
+            "network.status",
+            "wifi.ensure.connected",
+            "wifi.profile.list",
+            "wifi.disconnect"
+          ],
+          "rank": 54
+        }
+      ],
+      "out_of_catalog": {
+        "max_shortlist": 28,
+        "mean_shortlist": 28,
+        "rows": 36,
+        "zero_candidate_rows": 0
+      },
+      "policy": {},
+      "prefix": "passage: ",
+      "top_score": {
+        "in_catalog_median": 0.8493,
+        "out_of_catalog_median": 0.8232,
+        "separation": 0.0261
+      }
+    },
+    "C_intent_document": {
+      "in_catalog": {
+        "mean_shortlist": 28,
+        "median_rank": 2.0,
+        "offered_expected": 102,
+        "rate": 0.8226,
+        "recall_at": {
+          "1": 0.3548,
+          "28": 0.8226,
+          "3": 0.5887,
+          "5": 0.621,
+          "8": 0.6774
+        },
+        "rows": 124
+      },
+      "misses": [
+        {
+          "case_id": "aud-06",
+          "expected": [
+            "audio.volume.adjust"
+          ],
+          "offered": [
+            "audio.mute",
+            "backup.verify",
+            "task.resolve.exact",
+            "window.minimize",
+            "audio.volume",
+            "audio.status"
+          ],
+          "rank": 61
+        },
+        {
+          "case_id": "app-01",
+          "expected": [
+            "app.open"
+          ],
+          "offered": [
+            "note.search",
+            "note.update",
+            "note.list",
+            "note.create",
+            "note.read",
+            "clipboard.write.text"
+          ],
+          "rank": 106
+        },
+        {
+          "case_id": "sys-04",
+          "expected": [
+            "system.power"
+          ],
+          "offered": [
+            "media.seek.relative",
+            "filesystem.move",
+            "backup.verify",
+            "system.recyclebin.empty",
+            "game.install.named",
+            "game.launch"
+          ],
+          "rank": 94
+        },
+        {
+          "case_id": "sys-11",
+          "expected": [
+            "system.status"
+          ],
+          "offered": [
+            "browser.navigate",
+            "media.seek.relative",
+            "game.install.cancel.active",
+            "app.close",
+            "browser.navigate.named",
+            "backup.verify"
+          ],
+          "rank": 49
+        },
+        {
+          "case_id": "sys-12",
+          "expected": [
+            "system.power"
+          ],
+          "offered": [
+            "browser.navigate",
+            "browser.control",
+            "app.installed",
+            "browser.navigate.named",
+            "game.launch",
+            "browser.page.read"
+          ],
+          "rank": 68
+        },
+        {
+          "case_id": "net-02",
+          "expected": [
+            "network.ping"
+          ],
+          "offered": [
+            "email.latest.reply",
+            "browser.navigate",
+            "email.latest.read",
+            "media.seek.relative",
+            "filesystem.read.text",
+            "filesystem.search"
+          ],
+          "rank": 141
+        },
+        {
+          "case_id": "med-01",
+          "expected": [
+            "media.control"
+          ],
+          "offered": [
+            "media.play.query",
+            "audio.status",
+            "streaming.navigate",
+            "audio.mute",
+            "browser.navigate",
+            "streaming.play.named"
+          ],
+          "rank": 32
+        },
+        {
+          "case_id": "med-06",
+          "expected": [
+            "media.control"
+          ],
+          "offered": [
+            "media.play.query",
+            "task.resolve.exact",
+            "message.send",
+            "note.search",
+            "notification.cancel.latest",
+            "streaming.play.named"
+          ],
+          "rank": 64
+        },
+        {
+          "case_id": "not-04",
+          "expected": [
+            "note.trash"
+          ],
+          "offered": [
+            "note.list",
+            "reminder.delete",
+            "notification.list.due",
+            "task.delete",
+            "clipboard.write.text",
+            "filesystem.list"
+          ],
+          "rank": 31
+        },
+        {
+          "case_id": "tsk-01",
+          "expected": [
+            "task.create"
+          ],
+          "offered": [
+            "backup.verify",
+            "browser.navigate",
+            "note.update",
+            "reminder.delete",
+            "notification.cancel.latest",
+            "streaming.play.named"
+          ],
+          "rank": 115
+        },
+        {
+          "case_id": "rem-01",
+          "expected": [
+            "notification.schedule",
+            "reminder.create"
+          ],
+          "offered": [
+            "browser.navigate",
+            "media.seek.relative",
+            "notification.cancel.latest",
+            "app.close",
+            "reminder.resolve.exact",
+            "browser.navigate.named"
+          ],
+          "rank": 82
+        },
+        {
+          "case_id": "fs-08",
+          "expected": [
+            "filesystem.list"
+          ],
+          "offered": [
+            "filesystem.folder.open",
+            "filesystem.file.open.latest",
+            "filesystem.known.search",
+            "filesystem.path.ensure.absent",
+            "filesystem.copy",
+            "filesystem.known.trash.named"
+          ],
+          "rank": 36
+        },
+        {
+          "case_id": "clp-02",
+          "expected": [
+            "clipboard.paste"
+          ],
+          "offered": [
+            "browser.navigate",
+            "browser.control",
+            "task.resolve.exact",
+            "browser.page.read",
+            "reminder.resolve.exact",
+            "routine.resolve.exact"
+          ],
+          "rank": 37
+        },
+        {
+          "case_id": "clp-03",
+          "expected": [
+            "clipboard.read.text"
+          ],
+          "offered": [
+            "filesystem.file.open.latest",
+            "backup.list",
+            "clipboard.copy",
+            "email.latest.read",
+            "email.latest.reply",
+            "backup.known.verify.latest"
+          ],
+          "rank": 48
+        },
+        {
+          "case_id": "inp-01",
+          "expected": [
+            "input.key.press"
+          ],
+          "offered": [
+            "browser.control",
+            "browser.navigate",
+            "network.ip.list",
+            "game.install.prepare",
+            "app.installed",
+            "game.install.commit"
+          ],
+          "rank": 37
+        },
+        {
+          "case_id": "inp-03",
+          "expected": [
+            "input.text.type"
+          ],
+          "offered": [
+            "backup.verify",
+            "wifi.connect",
+            "email.latest.reply",
+            "game.launch",
+            "wifi.status",
+            "email.latest.read"
+          ],
+          "rank": 34
+        },
+        {
+          "case_id": "inp-06",
+          "expected": [
+            "input.pointer.control"
+          ],
+          "offered": [
+            "media.seek.relative",
+            "app.close",
+            "task.resolve.exact",
+            "backup.verify",
+            "browser.control",
+            "window.active"
+          ],
+          "rank": 57
+        },
+        {
+          "case_id": "inp-07",
+          "expected": [
+            "input.visible.click"
+          ],
+          "offered": [
+            "browser.navigate",
+            "app.close",
+            "browser.control",
+            "game.install.cancel.active",
+            "email.latest.reply",
+            "backup.verify"
+          ],
+          "rank": 39
+        },
+        {
+          "case_id": "cal-01",
+          "expected": [
+            "calendar.event.list"
+          ],
+          "offered": [
+            "media.seek.relative",
+            "notification.list.due",
+            "browser.navigate",
+            "clipboard.paste",
+            "browser.control",
+            "notification.cancel.latest"
+          ],
+          "rank": 48
+        },
+        {
+          "case_id": "cal-02",
+          "expected": [
+            "calendar.event.create"
+          ],
+          "offered": [
+            "reminder.resolve.exact",
+            "browser.navigate",
+            "media.seek.relative",
+            "task.resolve.exact",
+            "game.purchase.prepare",
+            "routine.resolve.exact"
+          ],
+          "rank": 47
+        },
+        {
+          "case_id": "not-06",
+          "expected": [
+            "note.create"
+          ],
+          "offered": [
+            "wifi.connect",
+            "backup.verify",
+            "wifi.status",
+            "wifi.ensure.connected",
+            "email.latest.read",
+            "wifi.disconnect"
+          ],
+          "rank": 55
+        },
+        {
+          "case_id": "cmp-04",
+          "expected": [
+            "note.create",
+            "notification.schedule",
+            "reminder.create"
+          ],
+          "offered": [
+            "media.seek.relative",
+            "notification.list.due",
+            "email.latest.read",
+            "notification.cancel.latest",
+            "reminder.restore",
+            "browser.navigate"
+          ],
+          "rank": 65
+        }
+      ],
+      "out_of_catalog": {
+        "max_shortlist": 28,
+        "mean_shortlist": 28,
+        "rows": 36,
+        "zero_candidate_rows": 0
+      },
+      "policy": {},
+      "prefix": "passage: ",
+      "top_score": {
+        "in_catalog_median": 0.8576,
+        "out_of_catalog_median": 0.8349,
+        "separation": 0.0227
+      }
+    },
+    "D_floor": {
+      "in_catalog": {
+        "mean_shortlist": 7.98,
+        "median_rank": 2.0,
+        "offered_expected": 84,
+        "rate": 0.6774,
+        "recall_at": {
+          "1": 0.3548,
+          "28": 0.8226,
+          "3": 0.5887,
+          "5": 0.621,
+          "8": 0.6774
+        },
+        "rows": 124
+      },
+      "misses": [
+        {
+          "case_id": "aud-01",
+          "expected": [
+            "audio.volume.adjust"
+          ],
+          "offered": [
+            "notification.cancel.latest",
+            "media.seek.relative",
+            "email.latest.read",
+            "app.close",
+            "audio.volume",
+            "message.send"
+          ],
+          "rank": 12
+        },
+        {
+          "case_id": "aud-06",
+          "expected": [
+            "audio.volume.adjust"
+          ],
+          "offered": [
+            "audio.mute",
+            "backup.verify",
+            "task.resolve.exact",
+            "window.minimize",
+            "audio.volume",
+            "audio.status"
+          ],
+          "rank": 61
+        },
+        {
+          "case_id": "app-01",
+          "expected": [
+            "app.open"
+          ],
+          "offered": [
+            "note.search",
+            "note.update",
+            "note.list",
+            "note.create",
+            "note.read",
+            "clipboard.write.text"
+          ],
+          "rank": 106
+        },
+        {
+          "case_id": "app-02",
+          "expected": [
+            "app.installed"
+          ],
+          "offered": [
+            "system.status",
+            "wifi.connect",
+            "backup.verify",
+            "wifi.ensure.connected",
+            "browser.control",
+            "wifi.disconnect"
+          ],
+          "rank": 19
+        },
+        {
+          "case_id": "win-03",
+          "expected": [
+            "window.minimize"
+          ],
+          "offered": [
+            "window.move",
+            "input.keyboard.open",
+            "app.close",
+            "window.resolve",
+            "window.restore",
+            "input.key.press"
+          ],
+          "rank": 10
+        },
+        {
+          "case_id": "sys-04",
+          "expected": [
+            "system.power"
+          ],
+          "offered": [
+            "media.seek.relative",
+            "filesystem.move",
+            "backup.verify",
+            "system.recyclebin.empty",
+            "game.install.named",
+            "game.launch"
+          ],
+          "rank": 94
+        },
+        {
+          "case_id": "sys-06",
+          "expected": [
+            "system.process.terminate.named"
+          ],
+          "offered": [
+            "app.close",
+            "browser.navigate",
+            "browser.control",
+            "backup.verify",
+            "system.recyclebin.empty",
+            "game.install.named"
+          ],
+          "rank": 11
+        },
+        {
+          "case_id": "sys-10",
+          "expected": [
+            "system.identity"
+          ],
+          "offered": [
+            "wifi.connect",
+            "app.open",
+            "browser.navigate",
+            "wifi.ensure.connected",
+            "app.installed",
+            "browser.navigate.named"
+          ],
+          "rank": 28
+        },
+        {
+          "case_id": "sys-11",
+          "expected": [
+            "system.status"
+          ],
+          "offered": [
+            "browser.navigate",
+            "media.seek.relative",
+            "game.install.cancel.active",
+            "app.close",
+            "browser.navigate.named",
+            "backup.verify"
+          ],
+          "rank": 49
+        },
+        {
+          "case_id": "sys-12",
+          "expected": [
+            "system.power"
+          ],
+          "offered": [
+            "browser.navigate",
+            "browser.control",
+            "app.installed",
+            "browser.navigate.named",
+            "game.launch",
+            "browser.page.read"
+          ],
+          "rank": 68
+        },
+        {
+          "case_id": "net-02",
+          "expected": [
+            "network.ping"
+          ],
+          "offered": [
+            "email.latest.reply",
+            "browser.navigate",
+            "email.latest.read",
+            "media.seek.relative",
+            "filesystem.read.text",
+            "filesystem.search"
+          ],
+          "rank": 141
+        },
+        {
+          "case_id": "med-01",
+          "expected": [
+            "media.control"
+          ],
+          "offered": [
+            "media.play.query",
+            "audio.status",
+            "streaming.navigate",
+            "audio.mute",
+            "browser.navigate",
+            "streaming.play.named"
+          ],
+          "rank": 32
+        },
+        {
+          "case_id": "med-06",
+          "expected": [
+            "media.control"
+          ],
+          "offered": [
+            "media.play.query",
+            "task.resolve.exact",
+            "message.send",
+            "note.search",
+            "notification.cancel.latest",
+            "streaming.play.named"
+          ],
+          "rank": 64
+        },
+        {
+          "case_id": "not-01",
+          "expected": [
+            "note.create"
+          ],
+          "offered": [
+            "browser.navigate",
+            "app.close",
+            "media.seek.relative",
+            "notification.cancel.latest",
+            "app.installed",
+            "browser.navigate.named"
+          ],
+          "rank": 28
+        },
+        {
+          "case_id": "not-04",
+          "expected": [
+            "note.trash"
+          ],
+          "offered": [
+            "note.list",
+            "reminder.delete",
+            "notification.list.due",
+            "task.delete",
+            "clipboard.write.text",
+            "filesystem.list"
+          ],
+          "rank": 31
+        },
+        {
+          "case_id": "tsk-01",
+          "expected": [
+            "task.create"
+          ],
+          "offered": [
+            "backup.verify",
+            "browser.navigate",
+            "note.update",
+            "reminder.delete",
+            "notification.cancel.latest",
+            "streaming.play.named"
+          ],
+          "rank": 115
+        },
+        {
+          "case_id": "tsk-03",
+          "expected": [
+            "task.complete",
+            "task.resolve.exact"
+          ],
+          "offered": [
+            "notification.cancel.latest",
+            "app.close",
+            "browser.navigate",
+            "task.delete",
+            "app.installed",
+            "filesystem.trash.restore"
+          ],
+          "rank": 18
+        },
+        {
+          "case_id": "rem-01",
+          "expected": [
+            "notification.schedule",
+            "reminder.create"
+          ],
+          "offered": [
+            "browser.navigate",
+            "media.seek.relative",
+            "notification.cancel.latest",
+            "app.close",
+            "reminder.resolve.exact",
+            "browser.navigate.named"
+          ],
+          "rank": 82
+        },
+        {
+          "case_id": "fs-02",
+          "expected": [
+            "filesystem.known.search"
+          ],
+          "offered": [
+            "note.search",
+            "filesystem.search",
+            "backup.verify",
+            "office.document.read",
+            "filesystem.sandbox.diff.named",
+            "filesystem.file.open.latest"
+          ],
+          "rank": 15
+        },
+        {
+          "case_id": "fs-04",
+          "expected": [
+            "filesystem.known.trash.named"
+          ],
+          "offered": [
+            "note.list",
+            "filesystem.move",
+            "note.search",
+            "clipboard.write.text",
+            "reminder.delete",
+            "task.delete"
+          ],
+          "rank": 13
+        },
+        {
+          "case_id": "fs-06",
+          "expected": [
+            "filesystem.create.directory"
+          ],
+          "offered": [
+            "backup.known.create",
+            "package.install.commit",
+            "task.create",
+            "backup.create",
+            "package.install.prepare",
+            "reminder.create"
+          ],
+          "rank": 10
+        },
+        {
+          "case_id": "fs-08",
+          "expected": [
+            "filesystem.list"
+          ],
+          "offered": [
+            "filesystem.folder.open",
+            "filesystem.file.open.latest",
+            "filesystem.known.search",
+            "filesystem.path.ensure.absent",
+            "filesystem.copy",
+            "filesystem.known.trash.named"
+          ],
+          "rank": 36
+        },
+        {
+          "case_id": "clp-02",
+          "expected": [
+            "clipboard.paste"
+          ],
+          "offered": [
+            "browser.navigate",
+            "browser.control",
+            "task.resolve.exact",
+            "browser.page.read",
+            "reminder.resolve.exact",
+            "routine.resolve.exact"
+          ],
+          "rank": 37
+        },
+        {
+          "case_id": "clp-03",
+          "expected": [
+            "clipboard.read.text"
+          ],
+          "offered": [
+            "filesystem.file.open.latest",
+            "backup.list",
+            "clipboard.copy",
+            "email.latest.read",
+            "email.latest.reply",
+            "backup.known.verify.latest"
+          ],
+          "rank": 48
+        },
+        {
+          "case_id": "inp-01",
+          "expected": [
+            "input.key.press"
+          ],
+          "offered": [
+            "browser.control",
+            "browser.navigate",
+            "network.ip.list",
+            "game.install.prepare",
+            "app.installed",
+            "game.install.commit"
+          ],
+          "rank": 37
+        }
+      ],
+      "out_of_catalog": {
+        "max_shortlist": 8,
+        "mean_shortlist": 8,
+        "rows": 36,
+        "zero_candidate_rows": 0
+      },
+      "policy": {
+        "relative_floor": 0.92,
+        "top_k": 8
+      },
+      "prefix": "passage: ",
+      "top_score": {
+        "in_catalog_median": 0.8576,
+        "out_of_catalog_median": 0.8349,
+        "separation": 0.0227
+      }
+    }
+  }
+}

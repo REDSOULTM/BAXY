@@ -6,6 +6,7 @@ import json
 import sys
 
 from .router import (
+    ENCODER_PREFIXES,
     MAX_ENCODER_BATCH_SIZE,
     MAX_ENCODER_TEXT_CHARS,
     SemanticEncoder,
@@ -53,8 +54,10 @@ def main() -> int:
                 return 0
             if kind == "encode":
                 texts = request.get("texts")
+                prefix = request.get("prefix", "query")
                 if (
-                    set(request) != {"type", "id", "texts"}
+                    set(request) - {"prefix"} != {"type", "id", "texts"}
+                    or prefix not in ENCODER_PREFIXES
                     or not _valid_request_id(request_id)
                     or not isinstance(texts, list)
                     or not 1 <= len(texts) <= MAX_ENCODER_BATCH_SIZE
@@ -67,7 +70,7 @@ def main() -> int:
                 ):
                     _write_error(request_id, "invalid_request")
                     continue
-                rows = encoder.encode(tuple(texts))
+                rows = encoder.encode(tuple(texts), prefix=prefix)
                 _write(
                     {
                         "type": "encode.result",

@@ -25,7 +25,6 @@ from typing import Any
 
 SCHEMA = "baxy.registered-runtime-expectation.r281.v1"
 RESULT_PATH = "artifacts/runtime/registered_runtime_expectation_r281.json"
-NATIVE_TOOL_POLICY_TOKEN = "qwen3"
 MANIFEST_SCHEMA = "baxy-mind-runtime-v1"
 
 
@@ -60,9 +59,11 @@ def describe(manifest: dict[str, Any]) -> dict[str, Any]:
         "pythonSha256": manifest.get("python_sha256"),
         "gpuLayers": manifest.get("ngl"),
         "wakeOnStart": manifest.get("wake_on_start"),
-        "nativeToolPolicyEnabled": bool(
-            gguf_name and NATIVE_TOOL_POLICY_TOKEN in gguf_name.casefold()
-        ),
+        # El goal 03 midió el contrato forzado sobre población fresca y lo
+        # rechazó, así que ya no depende del nombre del fichero del modelo:
+        # está apagado por defecto y sólo lo enciende un override explícito,
+        # que no viaja en el manifiesto.
+        "nativeToolPolicyEnabled": False,
     }
 
 

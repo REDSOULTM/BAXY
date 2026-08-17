@@ -66,13 +66,23 @@ def test_a_manifest_without_a_schema_is_not_versioned() -> None:
     assert module.manifest_schema(None) is None
 
 
-def test_the_native_tool_policy_flag_tracks_the_model_name() -> None:
+def test_the_native_tool_policy_flag_no_longer_tracks_the_model_name() -> None:
+    """No filename turns the forced tool-call contract on.
+
+    It used to: a GGUF whose name contained ``qwen3`` got
+    ``tool_choice: "required"``, which is why R276 and V8 were not measuring the
+    same product. Goal 03 priced that contract on a fresh paraphrase population
+    -- +3 correct raw decisions of 124 against -8 honest abstentions of 36 --
+    and turned it off. Forcing a tool call when none of them serves is the
+    unsolicited effect BAXY does not allow.
+    """
+
     module = _module()
     gemma = module.describe({"gguf": "C:/m/gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"})
     qwen = module.describe({"gguf": "C:/m/qwen3-4b-instruct-q4_k_m.gguf"})
 
     assert gemma["nativeToolPolicyEnabled"] is False
-    assert qwen["nativeToolPolicyEnabled"] is True
+    assert qwen["nativeToolPolicyEnabled"] is False
 
 
 def test_the_expectation_records_identity_not_machine_paths() -> None:

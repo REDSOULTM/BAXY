@@ -23,7 +23,7 @@ from datetime import date, datetime, time as datetime_time, timedelta, timezone
 from enum import Enum
 from functools import partial
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import Any, Callable
 from urllib.parse import urlsplit
 
 # PyTorch otherwise sizes its CPU pools for the whole machine. On a 16 GiB
@@ -59,7 +59,6 @@ from .effect_intent import (
     unsupported_effect_demonstration_request,
     unsupported_live_machine_query,
 )
-from .family_classifier import FamilyClassifier
 from .llm import (
     LlmRuntime,
     _literal_recall_reference,
@@ -92,7 +91,6 @@ from .router import (
     RequestBudgetEncoder,
 )
 from .turn_evidence import TurnEvidenceService
-from .semantic_family_arbiter import SemanticFamilyArbiter
 from .voice import VoiceEngine
 
 _write_lock = threading.Lock()
@@ -1024,7 +1022,7 @@ def configure_game_catalog(value: object) -> tuple[tuple[str, str, str], ...]:
 
 def _create_planner_resources(
     tools: list[dict],
-    encoder: Callable[[Any], Any] | None = None,
+    encoder: Callable[..., Any] | None = None,
 ) -> tuple[PlannerCatalog, SkillRegistry]:
     """Build a usable lexical snapshot, optionally promoted with E5 vectors."""
 
@@ -1962,20 +1960,6 @@ def _turn_operation_contract(
     }
 
 
-def _prioritized_family_tools(
-    tools: tuple[PlannerTool, ...],
-    *family_groups: Iterable[str],
-) -> tuple[PlannerTool, ...]:
-    """Order authenticated tools by evidence priority, then catalog order."""
-
-    ordered_families = tuple(
-        dict.fromkeys(family for group in family_groups for family in group)
-    )
-    return tuple(
-        tool for family in ordered_families for tool in tools if tool.family == family
-    )
-
-
 def _shortlist_with_required_effects(
     shortlist: tuple[PlannerTool, ...],
     required_operations: tuple[str, ...],
@@ -2000,48 +1984,17 @@ def _shortlist_with_required_effects(
 def _compound_clause_shortlist(
     objective: str,
     planner_catalog: PlannerCatalog,
-    family_classifier: Any | None,
 ) -> tuple[PlannerTool, ...]:
     """Retrieve each spoken sequence clause without assigning an operation."""
 
     clauses = compound_retrieval_clauses(objective)
     if not clauses:
         return ()
-    available_families = {tool.family for tool in planner_catalog.tools}
     per_clause = min(4, max(3, 24 // len(clauses)))
     selected: list[PlannerTool] = []
     selected_names: set[str] = set()
     for clause in clauses:
-        preferred: tuple[str, ...] = ()
-        if family_classifier is not None:
-            try:
-                prediction = family_classifier.predict(
-                    clause,
-                    available_families,
-                )
-            except Exception:  # noqa: BLE001 - advisory retrieval only
-                prediction = None
-            if prediction is not None:
-                preferred = (prediction.family,)
-        if preferred:
-            family_ranked = planner_catalog.shortlist(
-                clause,
-                preferred_families=preferred,
-                restrict_to_preferred=True,
-            )
-            independent_ranked = planner_catalog.shortlist(clause)
-            independent_take = min(2, per_clause)
-            ranked = tuple(
-                {
-                    tool.name: tool
-                    for tool in (
-                        *independent_ranked[:independent_take],
-                        *family_ranked,
-                    )
-                }.values()
-            )
-        else:
-            ranked = planner_catalog.shortlist(clause)
+        ranked = planner_catalog.shortlist(clause)
         added = 0
         for tool in ranked:
             if tool.name in selected_names:
@@ -2058,8 +2011,6 @@ def _prepare_plan_prompt_resources(
     objective: str,
     expected_plan_operations: tuple[str, ...],
     planner_catalog: PlannerCatalog,
-    turn_evidence: TurnEvidenceService,
-    encoder: Callable[[Any], Any],
     skill_registry: SkillRegistry | None,
 ) -> tuple[tuple[PlannerTool, ...], str]:
     """Prepare only the retrieval context that can influence this plan."""
@@ -2077,14 +2028,7 @@ def _prepare_plan_prompt_resources(
             ),
             "",
         )
-    candidate_families = turn_evidence.candidate_families(
-        objective,
-        encoder,
-    )
-    shortlist = planner_catalog.shortlist(
-        objective,
-        preferred_families=candidate_families,
-    )
+    shortlist = planner_catalog.shortlist(objective)
     selected_skills = (
         skill_registry.select(
             objective,
@@ -5426,8 +5370,6 @@ def _prepare_turn_result(
     tool_by_name: dict[str, dict],
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
-    family_classifier: Any | None = None,
-    semantic_family_arbiter: Any | None = None,
 ) -> dict[str, Any]:
     """Prepare one side-effect-free turn result from the current request."""
 
@@ -5470,6 +5412,7 @@ def _prepare_turn_result(
                 "schema": "baxy.mind-turn-audit.v1",
                 "request_id": message.get("id"),
                 "phase": "final",
+                "decision_path": "explicit_clarification",
                 "candidate_operations": [],
                 "raw_decision": None,
                 "stages": [
@@ -5591,89 +5534,29 @@ def _prepare_turn_result(
         shortlist = ()
     else:
         evidence_query = _turn_evidence_query(routing_objective, history)
-        available_families = {
-            tool.name.split(".", 1)[0] for tool in planner_catalog.tools
-        }
-        family_prediction = (
-            family_classifier.predict(
-                routing_objective,
-                available_families,
+        # Retrieval ranks operations, not families. Ranking families and then
+        # handing out a window inside the winner is a coarser question than the
+        # one being asked, and the leaf the person meant lost its place to
+        # siblings of a family that merely scored well. Measured end to end on
+        # the fresh paraphrase corpus of goal 03 with the same decider, the
+        # expected operation reached the decider in 73 turns of 124 that way and
+        # in 102 this way. The compound contract still forces its own proved
+        # identities in below.
+        shortlist = planner_catalog.shortlist(routing_objective)
+        if unresolved_compound_effects is not None:
+            required = tuple(
+                operation
+                for sequence in unresolved_compound_effects.required_clause_sequences
+                for operation in sequence
             )
-            if family_classifier is not None
-            else None
-        )
-        if family_prediction is not None:
-            semantic_families: tuple[str, ...] = ()
-            encoder_ready = getattr(encoder, "try_ready", None)
-            if semantic_family_arbiter is not None and (
-                encoder_ready is None or encoder_ready(0.0)
-            ):
-                try:
-                    embedding = encoder([routing_objective])[0]
-                    semantic_families = tuple(
-                        prediction.family
-                        for prediction in semantic_family_arbiter.rank(
-                            embedding,
-                            available_families,
-                            count=1,
-                        )
-                    )
-                except Exception:  # noqa: BLE001 - optional advisory rank
-                    semantic_families = ()
-            primary_families = tuple(
-                dict.fromkeys((family_prediction.family, *semantic_families))
-            )
-            # The attested classifier has already closed the family boundary.
-            # Re-running the E5 family/tool rank here cannot improve that
-            # boundary, but adds an IPC round trip to every model-owned turn.
-            # Keep every authenticated leaf in the primary closed family before
-            # auxiliary literal/reference families consume the bounded budget.
-            # Catalog order alone is not a relevance order: an incidental
-            # number in a music title must not let the earlier ``audio`` family
-            # evict the classifier-owned ``media`` leaves. The native function
-            # contract still performs leaf selection and the planner later
-            # materializes technical predecessors.
-            predicted_tools = _prioritized_family_tools(
-                planner_catalog.tools,
-                primary_families,
-            )[:MAX_SHORTLIST_OPERATIONS]
-            if unresolved_compound_effects is None:
-                shortlist = predicted_tools[:MAX_SHORTLIST_OPERATIONS]
-            else:
-                # A single-label family classifier cannot represent a
-                # cross-family compound. Preserve its high-recall family, add
-                # the catalog's independent lexical ranking, and force every
-                # clause identity already proved by the conservation contract
-                # into the bounded shortlist.
-                required = tuple(
-                    operation
-                    for sequence in unresolved_compound_effects.required_clause_sequences
-                    for operation in sequence
-                )
-                lexical = (
-                    planner_catalog.shortlist(routing_objective) if not required else ()
-                )
-                combined = tuple(
-                    {tool.name: tool for tool in (*predicted_tools, *lexical)}.values()
-                )[:MAX_SHORTLIST_OPERATIONS]
-                shortlist = _shortlist_with_required_effects(
-                    combined,
-                    required,
-                    planner_catalog,
-                )
-        else:
-            candidate_families = turn_evidence.candidate_families(
-                routing_objective,
-                encoder,
-            )
-            shortlist = planner_catalog.shortlist(
-                routing_objective,
-                preferred_families=candidate_families,
+            shortlist = _shortlist_with_required_effects(
+                shortlist,
+                required,
+                planner_catalog,
             )
         clause_shortlist = _compound_clause_shortlist(
             routing_objective,
             planner_catalog,
-            family_classifier,
         )
         if clause_shortlist:
             clauses = compound_retrieval_clauses(routing_objective)
@@ -5726,9 +5609,7 @@ def _prepare_turn_result(
     ]
     evidence = (
         []
-        if explicit_intent is not None
-        or explicit_conversation_decision is not None
-        or family_classifier is not None
+        if explicit_intent is not None or explicit_conversation_decision is not None
         else turn_evidence.retrieve(
             evidence_query,
             encoder,
@@ -5747,10 +5628,24 @@ def _prepare_turn_result(
             evidence=evidence,
         )
     )
+    # Which of the three producers owned this decision. Without it a split by
+    # cause cannot tell a recogniser hit from a retrieval hit: both publish a
+    # candidate list that already contains the answer.
+    decision_path = (
+        "explicit_effects"
+        if explicit_intent is not None
+        else "explicit_conversation"
+        if explicit_conversation_decision is not None
+        else "model"
+    )
     turn_audit: dict[str, Any] = {
         "schema": "baxy.mind-turn-audit.v1",
         "request_id": message.get("id"),
         "phase": "final",
+        "decision_path": decision_path,
+        "retrieval": (
+            "semantic" if planner_catalog.ranks_semantically else "lexical"
+        ),
         "candidate_operations": [tool.name for tool in shortlist],
         "raw_decision": raw_decision,
         "stages": [],
@@ -5760,6 +5655,8 @@ def _prepare_turn_result(
             "schema": "baxy.mind-turn-audit.v1",
             "request_id": message.get("id"),
             "phase": "raw_attempt",
+            "decision_path": decision_path,
+            "retrieval": turn_audit["retrieval"],
             "candidate_operations": list(turn_audit["candidate_operations"]),
             "raw_decision": raw_decision,
             "stages": [],
@@ -6586,19 +6483,10 @@ def _run_sidecar(
     write_message = write_message or _write
     models = {"router": "intfloat/multilingual-e5-small"}
     llm = None
-    family_classifier = None
-    semantic_family_arbiter = None
     if os.environ.get("BAXY_MIND_LLM_GGUF"):
         llm = lifecycle.own_llm(LlmRuntime())
         llm.start_warmup()
         models["llm"] = Path(os.environ["BAXY_MIND_LLM_GGUF"]).name
-        if bool(getattr(llm, "native_tool_policy_enabled", False)):
-            family_classifier = FamilyClassifier()
-            semantic_family_arbiter = SemanticFamilyArbiter()
-            models["family_classifier"] = "baxy.family-classifier-manifest.v1"
-            models["semantic_family_arbiter"] = (
-                "baxy.semantic-family-arbiter-manifest.v1"
-            )
     router = lifecycle.own_router(ProcessIntentRouter())
     interactive_encoder = RequestBudgetEncoder(router)
     background_encoder = RequestBudgetEncoder(
@@ -6631,10 +6519,10 @@ def _run_sidecar(
 
         nonlocal planner_catalog, skill_registry
 
-        def promotion_encoder(texts: Any) -> Any:
+        def promotion_encoder(texts: Any, *, prefix: str = "query") -> Any:
             if planner_promotion_stop.is_set():
                 raise RuntimeError("planner promotion was cancelled")
-            encoded = background_encoder(texts)
+            encoded = background_encoder(texts, prefix=prefix)
             if planner_promotion_stop.is_set():
                 raise RuntimeError("planner promotion was cancelled")
             return encoded
@@ -6645,8 +6533,23 @@ def _run_sidecar(
                 return
         if planner_promotion_stop.is_set():
             return
-        remaining = max(0.0, deadline - time.monotonic())
-        if not router.try_ready(min(0.5, remaining)):
+        # The worker spawns 3 s after start and needs ~11 s to load E5. Polling
+        # it for 0.5 s and giving up left the catalogue lexical for the entire
+        # process: measured end to end on the fresh paraphrase corpus of goal
+        # 03, retrieval offered the expected operation in 73/124 turns that way
+        # and in 102/124 once the promotion actually lands. This thread is a
+        # daemon with its own deadline; waiting here costs no turn, because
+        # every turn until the swap keeps using the lexical snapshot already
+        # published.
+        while time.monotonic() < deadline:
+            remaining = deadline - time.monotonic()
+            if router.try_ready(min(1.0, remaining)):
+                break
+            # A permanently failed worker answers instantly, so the wait has to
+            # live here and not inside try_ready.
+            if planner_promotion_stop.wait(timeout=0.5):
+                return
+        else:
             return
         if planner_promotion_stop.is_set():
             return
@@ -6891,8 +6794,6 @@ def _run_sidecar(
                             tool_by_name=tool_by_name,
                             application_names=application_catalog,
                             game_catalog=game_catalog,
-                            family_classifier=family_classifier,
-                            semantic_family_arbiter=semantic_family_arbiter,
                         )
                     except PlannerContractError as error:
                         turn_failure_kinds.append("contract")
@@ -6977,8 +6878,6 @@ def _run_sidecar(
                     objective,
                     expected_plan_operations,
                     planner_catalog,
-                    turn_evidence,
-                    interactive_encoder,
                     skill_registry,
                 )
                 raw = (
