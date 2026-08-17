@@ -4,6 +4,11 @@
     "rows": 160,
     "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
   },
+  "decider": {
+    "gguf": "registered",
+    "gguf_sha256": null,
+    "native_tool_policy": null
+  },
   "in_catalog": {
     "by_decision_path": {
       "explicit_clarification": 3,
@@ -29,9 +34,40 @@
         "served": 10
       }
     },
+    "by_path": {
+      "explicit_clarification": {
+        "offered": 0,
+        "rows": 3,
+        "served": 2
+      },
+      "explicit_conversation": {
+        "offered": 0,
+        "rows": 5,
+        "served": 0
+      },
+      "explicit_effects": {
+        "offered": 24,
+        "rows": 30,
+        "served": 24
+      },
+      "model": {
+        "offered": 49,
+        "rows": 83,
+        "served": 17
+      },
+      "unrecorded": {
+        "offered": 0,
+        "rows": 3,
+        "served": 0
+      }
+    },
+    "by_retrieval_mode": {
+      "unrecorded": 160
+    },
     "lost_by_cause": {
       "decision": 21,
-      "retrieval": 49,
+      "recogniser": 15,
+      "retrieval": 34,
       "veto": 11
     },
     "model_path": {
@@ -461,13 +497,14 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 3.971975
     },
     {
       "candidates": 1,
       "case_id": "aud-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -478,6 +515,7 @@
         "audio.status"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.025849
     },
@@ -493,6 +531,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.378385
     },
@@ -510,6 +549,7 @@
         "audio.microphone.mute"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.050921
     },
@@ -527,6 +567,7 @@
         "audio.status"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.011435
     },
@@ -542,6 +583,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.70134
     },
@@ -557,6 +599,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.356739
     },
@@ -574,13 +617,14 @@
         "audio.volume.adjust"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.395956
     },
     {
       "candidates": 1,
       "case_id": "app-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -591,6 +635,7 @@
         "note.list"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.004038
     },
@@ -606,6 +651,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.231859
     },
@@ -621,6 +667,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.36671
     },
@@ -636,6 +683,7 @@
       "final": false,
       "final_operations": [],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.780374
     },
@@ -651,6 +699,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 1.651465
     },
@@ -666,6 +715,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.159111
     },
@@ -681,6 +731,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 3.103497
     },
@@ -696,6 +747,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.402944
     },
@@ -711,6 +763,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.607259
     },
@@ -726,6 +779,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.925212
     },
@@ -742,6 +796,7 @@
       "final": false,
       "final_operations": [],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 3.204369
     },
@@ -757,6 +812,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.750139
     },
@@ -772,6 +828,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 7.544946
     },
@@ -787,6 +844,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.92909
     },
@@ -802,6 +860,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.376551
     },
@@ -817,6 +876,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.846507
     },
@@ -834,6 +894,7 @@
         "system.power"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.928986
     },
@@ -849,6 +910,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.416841
     },
@@ -864,6 +926,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.678835
     },
@@ -881,6 +944,7 @@
         "system.recyclebin.empty"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.639342
     },
@@ -896,6 +960,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 3.44094
     },
@@ -911,13 +976,14 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 6.938229
     },
     {
       "candidates": 0,
       "case_id": "sys-10",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "unrecorded",
       "expected": [
@@ -926,6 +992,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 8.62191
     },
@@ -943,6 +1010,7 @@
         "system.status"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.008081
     },
@@ -958,6 +1026,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.63428
     },
@@ -973,13 +1042,14 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.609735
     },
     {
       "candidates": 0,
       "case_id": "net-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -988,6 +1058,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.341513
     },
@@ -1003,13 +1074,14 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 3.06523
     },
     {
       "candidates": 0,
       "case_id": "net-04",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "unrecorded",
       "expected": [
@@ -1018,6 +1090,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 12.280258
     },
@@ -1033,6 +1106,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 3.358153
     },
@@ -1049,6 +1123,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 3.633004
     },
@@ -1064,6 +1139,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.717962
     },
@@ -1079,6 +1155,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.266794
     },
@@ -1095,6 +1172,7 @@
       "final": false,
       "final_operations": [],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 5.388196
     },
@@ -1110,6 +1188,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 5.5289
     },
@@ -1125,6 +1204,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.841744
     },
@@ -1140,6 +1220,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 3.177932
     },
@@ -1158,13 +1239,14 @@
         "media.play.exact"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 4.462734
     },
     {
       "candidates": 1,
       "case_id": "med-05",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -1175,6 +1257,7 @@
         "media.play.query"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.007539
     },
@@ -1190,6 +1273,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.935405
     },
@@ -1205,6 +1289,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.862467
     },
@@ -1222,6 +1307,7 @@
         "note.list"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.016207
     },
@@ -1239,6 +1325,7 @@
         "note.search"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.009856
     },
@@ -1254,6 +1341,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.844548
     },
@@ -1271,6 +1359,7 @@
         "note.read"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.007977
     },
@@ -1286,13 +1375,14 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 1.683489
     },
     {
       "candidates": 0,
       "case_id": "tsk-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -1301,6 +1391,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.357043
     },
@@ -1317,13 +1408,14 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.412023
     },
     {
       "candidates": 0,
       "case_id": "tsk-04",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "unrecorded",
       "expected": [
@@ -1332,6 +1424,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 9.806274
     },
@@ -1350,6 +1443,7 @@
         "task.update"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.646941
     },
@@ -1368,6 +1462,7 @@
         "reminder.create"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.008458
     },
@@ -1385,6 +1480,7 @@
         "reminder.list"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.004256
     },
@@ -1403,6 +1499,7 @@
         "notification.cancel.at"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.008247
     },
@@ -1421,6 +1518,7 @@
         "notification.schedule"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.00855
     },
@@ -1438,6 +1536,7 @@
         "filesystem.folder.open"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 3.294966
     },
@@ -1453,13 +1552,14 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.920816
     },
     {
       "candidates": 1,
       "case_id": "fs-03",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -1470,6 +1570,7 @@
         "filesystem.known.search"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.004005
     },
@@ -1487,13 +1588,14 @@
         "filesystem.trash.commit"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.12638
     },
     {
       "candidates": 0,
       "case_id": "fs-05",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -1502,6 +1604,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.221312
     },
@@ -1519,6 +1622,7 @@
         "filesystem.folder.open"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.977598
     },
@@ -1538,6 +1642,7 @@
         "filesystem.hash"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.242854
     },
@@ -1553,6 +1658,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 5.445635
     },
@@ -1570,6 +1676,7 @@
         "filesystem.write.text"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.154045
     },
@@ -1585,6 +1692,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.005204
     },
@@ -1600,6 +1708,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.29841
     },
@@ -1615,6 +1724,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 5.093189
     },
@@ -1632,6 +1742,7 @@
         "clipboard.paste"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.110679
     },
@@ -1647,6 +1758,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.085671
     },
@@ -1664,6 +1776,7 @@
         "input.select.all"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.009385
     },
@@ -1679,6 +1792,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.030042
     },
@@ -1696,6 +1810,7 @@
         "input.keyboard.open"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.023419
     },
@@ -1713,6 +1828,7 @@
         "input.keyboard.layout"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.3824
     },
@@ -1728,6 +1844,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.209122
     },
@@ -1745,6 +1862,7 @@
         "input.visible.click"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.941932
     },
@@ -1760,6 +1878,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 3.097117
     },
@@ -1775,6 +1894,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 3.472148
     },
@@ -1790,6 +1910,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.055508
     },
@@ -1808,6 +1929,7 @@
         "ocr.read"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.311685
     },
@@ -1826,6 +1948,7 @@
         "vision.describe"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.706301
     },
@@ -1842,6 +1965,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 5.335998
     },
@@ -1859,6 +1983,7 @@
         "browser.page.read"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 1.768036
     },
@@ -1876,6 +2001,7 @@
         "browser.tabs.list"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.005663
     },
@@ -1891,6 +2017,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 1.300499
     },
@@ -1908,6 +2035,7 @@
         "game.catalog.list"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.004481
     },
@@ -1925,6 +2053,7 @@
         "game.launch"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.004637
     },
@@ -1940,6 +2069,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 5.10398
     },
@@ -1956,6 +2086,7 @@
       "final": false,
       "final_operations": [],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 1.682822
     },
@@ -1971,6 +2102,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.771566
     },
@@ -1988,13 +2120,14 @@
         "bluetooth.device.list"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.003869
     },
     {
       "candidates": 1,
       "case_id": "per-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -2005,6 +2138,7 @@
         "system.status"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.015156
     },
@@ -2020,6 +2154,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 1.936439
     },
@@ -2038,6 +2173,7 @@
         "backup.list"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.004306
     },
@@ -2055,6 +2191,7 @@
         "calendar.event.list"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.003337
     },
@@ -2072,6 +2209,7 @@
         "calendar.event.create"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 3.353569
     },
@@ -2089,6 +2227,7 @@
         "email.latest.read"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.004287
     },
@@ -2104,6 +2243,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.473591
     },
@@ -2122,6 +2262,7 @@
         "message.send"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.492722
     },
@@ -2139,6 +2280,7 @@
         "office.document.create"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.957343
     },
@@ -2155,6 +2297,7 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.731704
     },
@@ -2172,6 +2315,7 @@
         "streaming.play.named"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.007339
     },
@@ -2189,6 +2333,7 @@
         "web.search"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.004328
     },
@@ -2206,13 +2351,14 @@
         "routine.list"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.004479
     },
     {
       "candidates": 1,
       "case_id": "aud-09",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -2223,6 +2369,7 @@
         "audio.status"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.005622
     },
@@ -2240,6 +2387,7 @@
         "system.status"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.024058
     },
@@ -2255,13 +2403,14 @@
       "final": false,
       "final_operations": [],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.098719
     },
     {
       "candidates": 0,
       "case_id": "net-10",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -2271,6 +2420,7 @@
       "final": false,
       "final_operations": [],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.213702
     },
@@ -2288,6 +2438,7 @@
         "media.seek.relative"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.317024
     },
@@ -2305,6 +2456,7 @@
         "filesystem.folder.open"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 1.95539
     },
@@ -2322,6 +2474,7 @@
         "system.power"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 3.067594
     },
@@ -2339,6 +2492,7 @@
         "browser.navigate"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 3.125605
     },
@@ -2356,6 +2510,7 @@
         "note.read"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 2.915975
     },
@@ -2374,13 +2529,14 @@
         "task.reopen"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 2.339529
     },
     {
       "candidates": 0,
       "case_id": "cmp-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -2390,6 +2546,7 @@
       "final": false,
       "final_operations": [],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.23811
     },
@@ -2409,6 +2566,7 @@
         "capture.screenshot"
       ],
       "language": "es_en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.007625
     },
@@ -2427,13 +2585,14 @@
         "audio.mute"
       ],
       "language": "en",
+      "retrieval": "unrecorded",
       "retrieved": true,
       "seconds": 0.010171
     },
     {
       "candidates": 0,
       "case_id": "cmp-04",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_clarification",
       "expected": [
@@ -2446,6 +2605,7 @@
         "calendar.event.create"
       ],
       "language": "es",
+      "retrieval": "unrecorded",
       "retrieved": false,
       "seconds": 0.546761
     }

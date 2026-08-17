@@ -5,9 +5,12 @@ No provider is enabled and no effect is executed: the sidecar only decides.
 
 The measurement publishes three things the previous campaigns kept apart:
 
-* **the rate split by cause** — retrieval, decision, veto — because the three
-  have opposite repairs and a blended number aims the next change at the wrong
-  place;
+* **the rate split by cause** — recogniser, retrieval, decision, veto — because
+  the four have opposite repairs and a blended number aims the next change at the
+  wrong place. The recogniser is its own bucket on purpose: when the
+  deterministic path claims a row and resolves it to the wrong operation, the
+  shortlist it publishes is that wrong operation, so scoring it as a retrieval
+  miss blames the ranker for a rule's mistake;
 * **latency to the first signal**, next to accuracy, because a decider that is
   right in nine seconds does not serve anyone;
 * **the candidate count on out-of-catalog requests**, which must be zero.
@@ -301,7 +304,13 @@ def score(telemetry: list[dict[str, Any]]) -> dict[str, Any]:
         if final:
             cause = "served"
         elif not retrieved:
-            cause = "retrieval"
+            # The deterministic path does not rank anything: it publishes the
+            # operations it resolved. A miss there is the recogniser's.
+            cause = (
+                "retrieval"
+                if row["decision_path"] == "model"
+                else "recogniser"
+            )
         elif not decided:
             cause = "decision"
         else:
@@ -314,7 +323,7 @@ def score(telemetry: list[dict[str, Any]]) -> dict[str, Any]:
                 "case_id": row["case_id"],
                 "language": row["language"],
                 "decision_path": row["decision_path"],
-                "retrieval": row["retrieval"],
+                "retrieval": row.get("retrieval", "unrecorded"),
                 "expected": sorted(expected),
                 "candidates": len(row["candidate_operations"]),
                 "retrieved": retrieved,
@@ -384,9 +393,23 @@ def score(telemetry: list[dict[str, Any]]) -> dict[str, Any]:
             "retrieval_offered_expected": retrieval_hits,
             "raw_decision_chose_expected": decision_hits,
             "lost_by_cause": {
+                "recogniser": causes["recogniser"],
                 "retrieval": causes["retrieval"],
                 "decision": causes["decision"],
                 "veto": causes["veto"],
+            },
+            "by_path": {
+                path: {
+                    "rows": len(subset),
+                    "offered": sum(1 for item in subset if item["retrieved"]),
+                    "served": sum(1 for item in subset if item["final"]),
+                }
+                for path, subset in sorted(
+                    (
+                        (name, [item for item in per_row if item["decision_path"] == name])
+                        for name in {item["decision_path"] for item in per_row}
+                    )
+                )
             },
             "veto_stage_that_lost_it": dict(stage_losses),
             "by_language": by_language,
@@ -394,7 +417,7 @@ def score(telemetry: list[dict[str, Any]]) -> dict[str, Any]:
                 collections.Counter(row["decision_path"] for row in per_row)
             ),
             "by_retrieval_mode": dict(
-                collections.Counter(row["retrieval"] for row in telemetry)
+                collections.Counter(row.get("retrieval", "unrecorded") for row in telemetry)
             ),
             "model_path": {
                 "rows": len(model_path),

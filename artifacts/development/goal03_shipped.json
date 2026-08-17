@@ -33,13 +33,36 @@
         "served": 12
       }
     },
+    "by_path": {
+      "explicit_clarification": {
+        "offered": 0,
+        "rows": 3,
+        "served": 2
+      },
+      "explicit_conversation": {
+        "offered": 0,
+        "rows": 5,
+        "served": 0
+      },
+      "explicit_effects": {
+        "offered": 24,
+        "rows": 30,
+        "served": 24
+      },
+      "model": {
+        "offered": 79,
+        "rows": 86,
+        "served": 31
+      }
+    },
     "by_retrieval_mode": {
       "semantic": 157,
       "unrecorded": 3
     },
     "lost_by_cause": {
       "decision": 17,
-      "retrieval": 19,
+      "recogniser": 12,
+      "retrieval": 7,
       "veto": 31
     },
     "model_path": {
@@ -477,7 +500,7 @@
     {
       "candidates": 1,
       "case_id": "aud-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -597,7 +620,7 @@
     {
       "candidates": 1,
       "case_id": "app-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -1036,7 +1059,7 @@
     {
       "candidates": 0,
       "case_id": "net-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -1239,7 +1262,7 @@
     {
       "candidates": 1,
       "case_id": "med-05",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -1377,7 +1400,7 @@
     {
       "candidates": 0,
       "case_id": "tsk-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -1556,7 +1579,7 @@
     {
       "candidates": 1,
       "case_id": "fs-03",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -1594,7 +1617,7 @@
     {
       "candidates": 0,
       "case_id": "fs-05",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -2128,7 +2151,7 @@
     {
       "candidates": 1,
       "case_id": "per-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -2357,7 +2380,7 @@
     {
       "candidates": 1,
       "case_id": "aud-09",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -2409,7 +2432,7 @@
     {
       "candidates": 0,
       "case_id": "net-10",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -2534,7 +2557,7 @@
     {
       "candidates": 0,
       "case_id": "cmp-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -2590,7 +2613,7 @@
     {
       "candidates": 0,
       "case_id": "cmp-04",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_clarification",
       "expected": [

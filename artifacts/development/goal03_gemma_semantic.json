@@ -4,6 +4,11 @@
     "rows": 160,
     "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
   },
+  "decider": {
+    "gguf": "registered",
+    "gguf_sha256": null,
+    "native_tool_policy": null
+  },
   "in_catalog": {
     "by_decision_path": {
       "explicit_clarification": 3,
@@ -29,13 +34,41 @@
         "served": 12
       }
     },
+    "by_path": {
+      "explicit_clarification": {
+        "offered": 0,
+        "rows": 3,
+        "served": 2
+      },
+      "explicit_conversation": {
+        "offered": 0,
+        "rows": 5,
+        "served": 0
+      },
+      "explicit_effects": {
+        "offered": 24,
+        "rows": 30,
+        "served": 24
+      },
+      "model": {
+        "offered": 78,
+        "rows": 85,
+        "served": 23
+      },
+      "unrecorded": {
+        "offered": 0,
+        "rows": 1,
+        "served": 0
+      }
+    },
     "by_retrieval_mode": {
       "semantic": 156,
       "unrecorded": 4
     },
     "lost_by_cause": {
       "decision": 39,
-      "retrieval": 20,
+      "recogniser": 13,
+      "retrieval": 7,
       "veto": 16
     },
     "model_path": {
@@ -470,7 +503,7 @@
     {
       "candidates": 1,
       "case_id": "aud-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -590,7 +623,7 @@
     {
       "candidates": 1,
       "case_id": "app-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -887,7 +920,7 @@
     {
       "candidates": 0,
       "case_id": "sys-06",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "unrecorded",
       "expected": [
@@ -1021,7 +1054,7 @@
     {
       "candidates": 0,
       "case_id": "net-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -1220,7 +1253,7 @@
     {
       "candidates": 1,
       "case_id": "med-05",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -1358,7 +1391,7 @@
     {
       "candidates": 0,
       "case_id": "tsk-02",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -1537,7 +1570,7 @@
     {
       "candidates": 1,
       "case_id": "fs-03",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -1573,7 +1606,7 @@
     {
       "candidates": 0,
       "case_id": "fs-05",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -2105,7 +2138,7 @@
     {
       "candidates": 1,
       "case_id": "per-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -2338,7 +2371,7 @@
     {
       "candidates": 1,
       "case_id": "aud-09",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_effects",
       "expected": [
@@ -2390,7 +2423,7 @@
     {
       "candidates": 0,
       "case_id": "net-10",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -2514,7 +2547,7 @@
     {
       "candidates": 0,
       "case_id": "cmp-01",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_conversation",
       "expected": [
@@ -2570,7 +2603,7 @@
     {
       "candidates": 0,
       "case_id": "cmp-04",
-      "cause": "retrieval",
+      "cause": "recogniser",
       "decided": false,
       "decision_path": "explicit_clarification",
       "expected": [

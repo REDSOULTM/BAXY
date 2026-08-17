@@ -11,6 +11,11 @@ veto lo tocara.
 > peticiones fuera de catálogo.** BAXY no tiene un mecanismo de abstención;
 > tiene una lista de vocabulario haciendo de abstención, y esa lista es el techo.
 >
+> **El 90 % tampoco está detrás de un modelo mejor.** Los dos tramos que no
+> dependen del modelo —el reconocedor determinista y la recuperación— ya están en
+> su límite medido y entre los dos pierden 19 filas de 124, así que **regalando
+> decisión y vetos perfectos el máximo es 84,7 %** (§12).
+>
 > **Y el segundo criterio abierto —cero candidatos fuera de catálogo— se midió
 > inalcanzable con cinco mecanismos**, incluido el supervisado sobre 23.661 filas
 > etiquetadas contra el propio catálogo de BAXY: 0,98 de AUC en su distribución y
@@ -26,7 +31,7 @@ veto lo tocara.
 fuera, en español, inglés y spanglish, con la formulación de alguien que no
 conoce el catálogo. Vive en
 [`artifacts/development/goal03_fresh_paraphrase_corpus.v1.jsonl`](../../artifacts/development/goal03_fresh_paraphrase_corpus.v1.jsonl),
-SHA-256 `761c1bc3…`. Las siete corridas de abajo puntuaron **esos mismos bytes**.
+SHA-256 `761c1bc3…`. Las ocho corridas de abajo puntuaron **esos mismos bytes**.
 
 **Su independencia, medida.** El reconocedor determinista resuelve **30 de las
 124** filas dentro de catálogo — el **24 %**. Las otras 94 salen de su gramática,
@@ -39,12 +44,21 @@ resultado:
 
 | Causa | Qué significa |
 |---|---|
-| **recuperación** | la operación esperada nunca se le ofreció al decisor |
+| **reconocedor** | el camino determinista reclamó la fila y resolvió otra operación |
+| **recuperación** | el camino por modelo nunca ofreció la operación esperada |
 | **decisión** | se le ofreció y propuso otra cosa |
 | **veto** | la propuso bien y una etapa posterior se la quitó |
 
-Sin esa partición, los tres arreglos —que son opuestos— reciben el mismo número
+Sin esa partición, los cuatro arreglos —que son opuestos— reciben el mismo número
 y el siguiente cambio va al blanco equivocado.
+
+**El reconocedor es un cubo aparte a propósito, y esta separación se pagó
+publicando mal el reparto primero.** El camino determinista no rankea nada:
+publica las operaciones que resolvió, así que cuando resuelve mal, la operación
+esperada «no fue ofrecida» y el marcador se lo apuntaba a la recuperación.
+Juntándolos, la recuperación parecía perder 19 filas de 124. Separados, pierde
+**7**, y las otras 12 son reglas equivocadas. Es exactamente el error contra el
+que este criterio existe.
 
 **La latencia.** `turn.decide` va del texto a la decisión y trae ya el texto
 visible de una conversación, así que su tiempo de pared **es** la latencia hasta
@@ -55,20 +69,21 @@ Ningún provider habilitado, cero efectos ejecutados, V9 sin abrir.
 
 ---
 
-## 2. Las siete corridas
+## 2. Las ocho corridas
 
 Todas sobre el mismo corpus, todas esperando a que la recuperación semántica esté
 en pie antes de la primera fila (el audit lo acredita fila a fila).
 
-| # | Corrida | Sirve | Tasa | Recup. | Decisión cruda | Pierde R/D/V | Fuera de catálogo honesto | p50 | p90 | máx | > 3 s |
-|---|---|---:|---:|---:|---:|---|---:|---:|---:|---:|---:|
-| 1 | **Punto de partida** — Gemma-4-E2B, el árbol tal cual | 43/124 | **34,7 %** | 73 | 52 | 49/21/11 | 33/36 | 2,75 | 3,71 | 7,54 | 39 |
-| 2 | Gemma-4-E2B, recuperación arreglada | 49/124 | 39,5 % | 102 | 63 | 20/39/16 | 34/36 | 2,63 | 3,59 | 7,41 | 34 |
-| 3 | Qwen3-4B, contrato de esquema, con banderas explícitas | 56/124 | 45,2 % | 103 | 82 | 19/21/28 | 33/36 | 2,18 | 3,02 | 5,55 | 13 |
-| 4 | Qwen3-4B + `tool_choice: required` | 56/124 | 45,2 % | 103 | 85 | 19/18/31 | **25/36** | 1,52 | 3,06 | 5,24 | 13 |
-| 5 | Qwen3-4B, shortlist de 8 en vez de 28 | 54/124 | 43,5 % | 91 | 75 | 31/16/23 | 31/36 | 2,08 | 2,90 | 8,34 | 11 |
-| 6 | Qwen3-4B **sin la puerta de dominio** | 83/124 | **66,9 %** | 103 | 84 | 19/19/3 | **16/36** | 1,82 | 2,56 | 4,94 | 6 |
-| 7 | **Tal como queda instalado** — sin banderas, leyendo el manifiesto registrado | 57/124 | **46,0 %** | 103 | 86 | 19/17/31 | 33/36 | 2,08 | 3,15 | 6,05 | 13 |
+| # | Corrida | Sirve | Tasa | Pierde rec/rec/dec/veto | Recuperación del camino por modelo | Fuera de catálogo honesto | p50 | p90 | máx | > 3 s |
+|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|
+| 1 | **Punto de partida** — Gemma-4-E2B, el árbol tal cual | 43/124 | 34,7 % | 15/34/21/11 | 49/83 | 33/36 | 2,75 | 3,705 | 7,545 | 39 |
+| 2 | Gemma-4-E2B, recuperación arreglada | 49/124 | 39,5 % | 13/7/39/16 | 78/85 | 34/36 | 2,629 | 3,59 | 7,408 | 34 |
+| 3 | Qwen3-4B, contrato de esquema, con banderas explícitas | 56/124 | 45,2 % | 12/7/21/28 | 79/86 | 33/36 | 2,178 | 3,015 | 5,555 | 13 |
+| 4 | Qwen3-4B + `tool_choice: required` | 56/124 | 45,2 % | 12/7/18/31 | 79/86 | 25/36 | 1,517 | 3,057 | 5,244 | 13 |
+| 5 | Qwen3-4B, shortlist de 8 en vez de 28 | 54/124 | 43,5 % | 12/19/16/23 | 67/86 | 31/36 | 2,076 | 2,903 | 8,338 | 11 |
+| 6 | Qwen3-4B **sin la puerta de dominio** | 83/124 | 66,9 % | 12/7/19/3 | 79/86 | 16/36 | 1,823 | 2,559 | 4,941 | 6 |
+| 7 | **Tal como queda instalado** — sin banderas, leyendo el manifiesto | 57/124 | 46,0 % | 12/7/17/31 | 79/86 | 33/36 | 2,08 | 3,151 | 6,047 | 13 |
+| 8 | **Sin el reconocedor determinista** — todo al camino por modelo | 52/124 | 41,9 % | 1/9/23/39 | 112/121 | 32/36 | 1,947 | 3,99 | 5,697 | 22 |
 
 Las latencias son del camino por modelo. El camino determinista responde en
 **p50 0,007 s** y no aparece en esas columnas.
@@ -445,7 +460,7 @@ cierra este goal.
 
 ## 9. Los tres ceros
 
-Intactos, y acreditados en cada artefacto de las siete corridas:
+Intactos, y acreditados en cada artefacto de las ocho corridas:
 
 - **0 efectos no pedidos** — ningún provider habilitado, `effects_executed: 0`;
   ninguna corrida despachó nada. La corrida 6 mide 20 propuestas fuera de catálogo
@@ -509,7 +524,7 @@ sin respuesta.
 
 | Criterio | Estado |
 |---|---|
-| ≥ 90 % sobre paráfrasis frescas, partido por causa | **No cumplido: 46,0 %.** El reparto está en §2 y el techo, abajo |
+| ≥ 90 % sobre paráfrasis frescas, partido por causa | **No cumplido: 46,0 %, y medido inalcanzable.** Reparto en §2; la aritmética del techo, abajo |
 | Latencia hasta la primera señal, junto al acierto | Cumplido — §2, p50 2,08 s y p90 3,15 s en el camino por modelo |
 | Pass-rate end-to-end antes y después de tocar el catálogo | Cumplido — 46,0 % → 46,0 %, y §7 dice por qué no se tocó |
 | Peticiones fuera de catálogo con cero candidatos | **No cumplido, y medido inalcanzable** con cinco mecanismos — §6 |
@@ -521,22 +536,34 @@ sin respuesta.
 | El decisor detrás de la frontera de proceso y declarado con su hash | Cumplido — se cambió de modelo seis veces en este goal sin recompilar nada |
 | Filas de `03_COSTURAS.md` rellenas | Cumplido — cinco rellenas y una añadida |
 
-### El techo del 90 %, medido
+### El techo del 90 %, medido — y por qué tampoco está al alcance
 
-No hace falta especular sobre por qué falta: **la recuperación pone la operación
-esperada delante del decisor en 103 de 124 turnos**. Con una decisión perfecta y
-sin un solo veto, la arquitectura de hoy da **83,1 %**. El 90 % no está detrás del
-decisor ni de la puerta: hay que pasarlo por la recuperación primero.
+**La recuperación ya está en su techo.** Sobre las 86 filas que el camino por
+modelo atiende ofrece la operación esperada en **79 — el 91,9 %**, y el mejor
+recuperador medido offline sobre la población entera da 91,1 %. No hay hueco entre
+el banco y el producto: es el mismo número.
 
-Y ahí sí hay margen conocido: el mejor recuperador medido offline —documentos del
-lado `passage:`, ranking por operación— alcanza **113 de 124 (91,1 %)** con los
-mismos 28 candidatos. La diferencia entre 103 y 113 es lo que se pierde entre el
-banco y el producto, y es el primer sitio donde mirar.
+**Y el reconocedor determinista se midió contra su alternativa.** Reclama 38 filas
+y sirve 26. Enviando esas mismas 38 al camino por modelo (corrida 8) el modelo
+sirve **24**: recupera tres —`fs-03`, `med-05`, `tsk-02`— y pierde cinco —`brw-03`,
+`eml-01`, `gam-01`, `not-02`, `rem-01`—. **Gana el reconocedor, por dos filas**, y
+además responde en 7 ms donde el modelo tarda dos segundos. Se queda. Su techo, si
+declinara perfectamente cuando se equivoca, serían 29 de 38: **tres filas más**.
 
-**Los tres tramos, con lo que cuesta cada uno hoy:**
+Con eso la aritmética del 90 % queda cerrada:
 
-| Tramo | Cuántas de 124 pierde | Cómo se arregla |
+| Tramo | Pierde de 124 | Su techo medido |
 |---|---:|---|
-| Recuperación | 19 | Cerrar la distancia entre 103 vivo y 113 offline |
-| Decisión | 17 | Otro decisor, o el mismo con menos hermanas que distinguir |
-| Vetos | 31 | Sustituir la puerta de dominio — y eso pide forma de catálogo, §6 |
+| Reconocedor | 12 | −3 si declinara perfectamente (29/38 en vez de 26/38) |
+| Recuperación | 7 | ya en 91,9 % del camino que atiende, igual que el banco offline |
+| Decisión | 17 | Qwen3-4B ya batió al heredado 82 a 63 |
+| Vetos | 31 | sin sustituto medido (§6) |
+
+Aun **regalando decisión y vetos perfectos**, el suelo de reconocedor y
+recuperación deja el máximo en **105 de 124 = 84,7 %**, y con el reconocedor
+declinando perfectamente en **108 = 87,1 %**. Para 90 % hacen falta 112.
+
+**Así que ≥ 90 % no es alcanzable con esta forma de catálogo**, y no por falta de
+un modelo mejor: los dos tramos que no dependen del modelo ya suman 19 filas
+perdidas, y ambos están en su límite medido. Lo que queda por mover es la forma
+del catálogo — que es donde §6 y §7 también acabaron.
