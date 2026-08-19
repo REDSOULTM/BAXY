@@ -1,0 +1,2751 @@
+{
+  "corpus": {
+    "path": "artifacts\\development\\goal03_fresh_paraphrase_corpus.v1.jsonl",
+    "rows": 160,
+    "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d"
+  },
+  "decider": {
+    "gguf": "registered",
+    "gguf_sha256": null,
+    "native_tool_policy": null
+  },
+  "in_catalog": {
+    "by_decision_path": {
+      "explicit_clarification": 3,
+      "explicit_conversation": 1,
+      "explicit_effects": 28,
+      "model": 92
+    },
+    "by_language": {
+      "en": {
+        "rate": 0.6,
+        "rows": 35,
+        "served": 21
+      },
+      "es": {
+        "rate": 0.6438,
+        "rows": 73,
+        "served": 47
+      },
+      "es_en": {
+        "rate": 0.8125,
+        "rows": 16,
+        "served": 13
+      }
+    },
+    "by_path": {
+      "explicit_clarification": {
+        "offered": 0,
+        "rows": 3,
+        "served": 2
+      },
+      "explicit_conversation": {
+        "offered": 0,
+        "rows": 1,
+        "served": 0
+      },
+      "explicit_effects": {
+        "offered": 24,
+        "rows": 28,
+        "served": 24
+      },
+      "model": {
+        "offered": 85,
+        "rows": 92,
+        "served": 55
+      }
+    },
+    "by_retrieval_mode": {
+      "semantic": 157,
+      "unrecorded": 3
+    },
+    "lost_by_cause": {
+      "decision": 21,
+      "recogniser": 6,
+      "retrieval": 7,
+      "veto": 9
+    },
+    "model_path": {
+      "rate": 0.5978,
+      "rows": 92,
+      "served": 55
+    },
+    "rate": 0.6532,
+    "raw_decision_chose_expected": 85,
+    "retrieval_offered_expected": 109,
+    "rows": 124,
+    "served": 81,
+    "veto_stage_that_lost_it": {
+      "domain_grounding": 5,
+      "family_action": 1,
+      "total_recovery": 3
+    }
+  },
+  "latency_seconds": {
+    "all": {
+      "max": 9.644,
+      "over_three_seconds": 96,
+      "p50": 3.218,
+      "p90": 4.444,
+      "rows": 160
+    },
+    "deterministic_path": {
+      "max": 3.521,
+      "over_three_seconds": 1,
+      "p50": 0.237,
+      "p90": 0.68,
+      "rows": 32
+    },
+    "model_path": {
+      "max": 9.644,
+      "over_three_seconds": 95,
+      "p50": 3.486,
+      "p90": 4.572,
+      "rows": 128
+    }
+  },
+  "out_of_catalog": {
+    "honest_abstentions": 24,
+    "max_candidates": 28,
+    "rate": 0.6667,
+    "rows": 36,
+    "rows_with_candidates": 36,
+    "total_candidates": 1008
+  },
+  "out_of_catalog_rows": [
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-01",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 2.948582
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-02",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "clarify",
+      "language": "en",
+      "seconds": 6.096301
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-03",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 3.213686
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-04",
+      "decision_path": "model",
+      "final_operations": [
+        "message.send"
+      ],
+      "kind": "clarify",
+      "language": "en",
+      "seconds": 6.234218
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-05",
+      "decision_path": "model",
+      "final_operations": [
+        "message.send"
+      ],
+      "kind": "clarify",
+      "language": "es",
+      "seconds": 3.857441
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-06",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 4.618201
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-07",
+      "decision_path": "model",
+      "final_operations": [
+        "media.play.youtube"
+      ],
+      "kind": "clarify",
+      "language": "en",
+      "seconds": 3.70407
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-08",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 3.069134
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-09",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "seconds": 3.972009
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-10",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 3.548279
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-11",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es_en",
+      "seconds": 3.685948
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-12",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "seconds": 3.129566
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-13",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 4.012759
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-14",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 3.435918
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-15",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "seconds": 3.477188
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-16",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 2.793711
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-17",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 3.848229
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-18",
+      "decision_path": "model",
+      "final_operations": [
+        "wifi.connect.named"
+      ],
+      "kind": "clarify",
+      "language": "en",
+      "seconds": 3.982407
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-19",
+      "decision_path": "model",
+      "final_operations": [
+        "filesystem.copy"
+      ],
+      "kind": "clarify",
+      "language": "es",
+      "seconds": 4.708627
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-20",
+      "decision_path": "model",
+      "final_operations": [
+        "routine.read"
+      ],
+      "kind": "plan",
+      "language": "es",
+      "seconds": 3.246037
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-21",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 4.926362
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-22",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "seconds": 3.398828
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-23",
+      "decision_path": "model",
+      "final_operations": [
+        "media.seek.relative"
+      ],
+      "kind": "action",
+      "language": "es",
+      "seconds": 2.740248
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-24",
+      "decision_path": "model",
+      "final_operations": [
+        "office.document.create"
+      ],
+      "kind": "action",
+      "language": "es_en",
+      "seconds": 3.86412
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-25",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "seconds": 3.242539
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-26",
+      "decision_path": "model",
+      "final_operations": [
+        "task.resolve.exact",
+        "task.create"
+      ],
+      "kind": "action",
+      "language": "es",
+      "seconds": 3.863328
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-27",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 3.138623
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-28",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "seconds": 3.164442
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-29",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 2.746346
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-30",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es_en",
+      "seconds": 4.404087
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-31",
+      "decision_path": "model",
+      "final_operations": [
+        "system.power"
+      ],
+      "kind": "action",
+      "language": "en",
+      "seconds": 3.19568
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-32",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 6.489612
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-33",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "seconds": 3.467199
+    },
+    {
+      "acted": false,
+      "candidates": 28,
+      "case_id": "ooc-34",
+      "decision_path": "model",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "seconds": 2.242562
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-35",
+      "decision_path": "model",
+      "final_operations": [
+        "backup.known.create"
+      ],
+      "kind": "clarify",
+      "language": "es",
+      "seconds": 3.285168
+    },
+    {
+      "acted": true,
+      "candidates": 28,
+      "case_id": "ooc-36",
+      "decision_path": "model",
+      "final_operations": [
+        "wifi.disconnect"
+      ],
+      "kind": "clarify",
+      "language": "es_en",
+      "seconds": 3.959299
+    }
+  ],
+  "rows": [
+    {
+      "candidates": 28,
+      "case_id": "aud-01",
+      "cause": "served",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "audio.volume.adjust"
+      ],
+      "final": true,
+      "final_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.415712
+    },
+    {
+      "candidates": 28,
+      "case_id": "aud-02",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "audio.volume"
+      ],
+      "final": false,
+      "final_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.403113
+    },
+    {
+      "candidates": 28,
+      "case_id": "aud-03",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "audio.mute"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.065984
+    },
+    {
+      "candidates": 1,
+      "case_id": "aud-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "audio.microphone.mute"
+      ],
+      "final": true,
+      "final_operations": [
+        "audio.microphone.mute"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.426358
+    },
+    {
+      "candidates": 1,
+      "case_id": "aud-05",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "audio.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "audio.status"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.212857
+    },
+    {
+      "candidates": 28,
+      "case_id": "aud-06",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "audio.volume.adjust"
+      ],
+      "final": true,
+      "final_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.228046
+    },
+    {
+      "candidates": 28,
+      "case_id": "aud-07",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "audio.mute"
+      ],
+      "final": true,
+      "final_operations": [
+        "audio.mute"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.27977
+    },
+    {
+      "candidates": 0,
+      "case_id": "aud-08",
+      "cause": "served",
+      "decided": false,
+      "decision_path": "explicit_clarification",
+      "expected": [
+        "audio.volume.adjust"
+      ],
+      "final": true,
+      "final_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "es_en",
+      "retrieval": "unrecorded",
+      "retrieved": false,
+      "seconds": 0.680257
+    },
+    {
+      "candidates": 1,
+      "case_id": "app-01",
+      "cause": "recogniser",
+      "decided": false,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "app.open"
+      ],
+      "final": false,
+      "final_operations": [
+        "note.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 0.248965
+    },
+    {
+      "candidates": 28,
+      "case_id": "app-02",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "app.installed"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.737775
+    },
+    {
+      "candidates": 28,
+      "case_id": "app-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "app.close"
+      ],
+      "final": true,
+      "final_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.536217
+    },
+    {
+      "candidates": 28,
+      "case_id": "app-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "app.open"
+      ],
+      "final": true,
+      "final_operations": [
+        "app.open"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 6.002013
+    },
+    {
+      "candidates": 28,
+      "case_id": "app-05",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "app.installed"
+      ],
+      "final": false,
+      "final_operations": [
+        "game.installed.named"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 5.387524
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-01",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "window.active"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 9.643819
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-02",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "window.maximize"
+      ],
+      "final": false,
+      "final_operations": [
+        "window.resize"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.950858
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-03",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "window.minimize"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.801586
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "window.move"
+      ],
+      "final": true,
+      "final_operations": [
+        "window.move"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.143002
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-05",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "window.resize"
+      ],
+      "final": true,
+      "final_operations": [
+        "window.resize"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.500632
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-06",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "window.focus",
+        "window.resolve"
+      ],
+      "final": true,
+      "final_operations": [
+        "window.focus"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.029555
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-07",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "window.application.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "window.application.status"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.216202
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-08",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "window.restore"
+      ],
+      "final": false,
+      "final_operations": [
+        "window.resize"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.527851
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "system.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.236238
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "system.time"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.738891
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "system.application.crash.diagnose"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.458575
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-04",
+      "cause": "retrieval",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "system.power"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 3.669264
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-05",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "system.process.list"
+      ],
+      "final": false,
+      "final_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.5878
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-06",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "system.process.terminate.named"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.138441
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-07",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "system.recyclebin.empty"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.recyclebin.empty"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.917112
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-08",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "system.settings.adjust"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.settings.adjust"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.339811
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-09",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "system.settings.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.settings.status"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.513455
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-10",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "system.identity"
+      ],
+      "final": false,
+      "final_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.129395
+    },
+    {
+      "candidates": 1,
+      "case_id": "sys-11",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "system.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.status"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.238239
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-12",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "system.power"
+      ],
+      "final": false,
+      "final_operations": [
+        "game.install.cancel.active"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.014277
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "network.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "network.status",
+        "wifi.status",
+        "network.dns.status",
+        "network.ping"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.63709
+    },
+    {
+      "candidates": 0,
+      "case_id": "net-02",
+      "cause": "recogniser",
+      "decided": false,
+      "decision_path": "explicit_conversation",
+      "expected": [
+        "network.ping"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 3.52084
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "network.ip.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "network.ip.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.88409
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "network.dns.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "network.dns.status"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.712497
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-05",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "network.port.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "network.port.list"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.902802
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-06",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "wifi.ensure.connected",
+        "wifi.status"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.123428
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-07",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "wifi.profile.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "wifi.profile.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.485431
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-08",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "wifi.disconnect"
+      ],
+      "final": true,
+      "final_operations": [
+        "wifi.disconnect"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.374301
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-09",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "wifi.connect",
+        "wifi.connect.named"
+      ],
+      "final": true,
+      "final_operations": [
+        "wifi.connect"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.845179
+    },
+    {
+      "candidates": 28,
+      "case_id": "med-01",
+      "cause": "retrieval",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "media.control"
+      ],
+      "final": false,
+      "final_operations": [
+        "media.play.exact"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 3.486503
+    },
+    {
+      "candidates": 28,
+      "case_id": "med-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "media.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "media.status"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.938436
+    },
+    {
+      "candidates": 28,
+      "case_id": "med-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "media.seek.relative"
+      ],
+      "final": true,
+      "final_operations": [
+        "media.seek.relative"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.480054
+    },
+    {
+      "candidates": 28,
+      "case_id": "med-04",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "media.play.exact",
+        "media.play.query"
+      ],
+      "final": false,
+      "final_operations": [
+        "streaming.navigate"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.030717
+    },
+    {
+      "candidates": 1,
+      "case_id": "med-05",
+      "cause": "recogniser",
+      "decided": false,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "media.play.youtube"
+      ],
+      "final": false,
+      "final_operations": [
+        "media.play.query"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 0.212531
+    },
+    {
+      "candidates": 28,
+      "case_id": "med-06",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "media.control"
+      ],
+      "final": false,
+      "final_operations": [
+        "media.play.exact"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.147415
+    },
+    {
+      "candidates": 28,
+      "case_id": "not-01",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "note.create"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.514558
+    },
+    {
+      "candidates": 1,
+      "case_id": "not-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "note.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "note.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.21795
+    },
+    {
+      "candidates": 1,
+      "case_id": "not-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "note.search"
+      ],
+      "final": true,
+      "final_operations": [
+        "note.search"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.139863
+    },
+    {
+      "candidates": 28,
+      "case_id": "not-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "note.trash"
+      ],
+      "final": true,
+      "final_operations": [
+        "note.trash"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.213768
+    },
+    {
+      "candidates": 1,
+      "case_id": "not-05",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "note.read"
+      ],
+      "final": true,
+      "final_operations": [
+        "note.read"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.351357
+    },
+    {
+      "candidates": 28,
+      "case_id": "tsk-01",
+      "cause": "retrieval",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "task.create"
+      ],
+      "final": false,
+      "final_operations": [
+        "note.trash",
+        "note.create",
+        "note.update",
+        "note.read",
+        "note.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 3.20692
+    },
+    {
+      "candidates": 28,
+      "case_id": "tsk-02",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "task.list"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 5.821656
+    },
+    {
+      "candidates": 28,
+      "case_id": "tsk-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "task.complete",
+        "task.resolve.exact"
+      ],
+      "final": true,
+      "final_operations": [
+        "task.complete"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.606526
+    },
+    {
+      "candidates": 28,
+      "case_id": "tsk-04",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "task.search"
+      ],
+      "final": false,
+      "final_operations": [
+        "note.search"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.816499
+    },
+    {
+      "candidates": 28,
+      "case_id": "tsk-05",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "task.delete",
+        "task.resolve.exact"
+      ],
+      "final": true,
+      "final_operations": [
+        "task.delete"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.331937
+    },
+    {
+      "candidates": 1,
+      "case_id": "rem-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "final": true,
+      "final_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.311166
+    },
+    {
+      "candidates": 1,
+      "case_id": "rem-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "reminder.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "reminder.list"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.217862
+    },
+    {
+      "candidates": 1,
+      "case_id": "rem-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "notification.cancel.at",
+        "reminder.delete"
+      ],
+      "final": true,
+      "final_operations": [
+        "notification.cancel.at"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.384201
+    },
+    {
+      "candidates": 1,
+      "case_id": "rem-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "final": true,
+      "final_operations": [
+        "notification.schedule"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.266676
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.folder.open"
+      ],
+      "final": true,
+      "final_operations": [
+        "filesystem.folder.open"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.76786
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.known.search"
+      ],
+      "final": true,
+      "final_operations": [
+        "filesystem.known.search"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.968799
+    },
+    {
+      "candidates": 1,
+      "case_id": "fs-03",
+      "cause": "recogniser",
+      "decided": false,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "filesystem.known.duplicates"
+      ],
+      "final": false,
+      "final_operations": [
+        "filesystem.known.search"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 0.235395
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.known.trash.named"
+      ],
+      "final": true,
+      "final_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.222006
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-05",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.file.open.latest"
+      ],
+      "final": false,
+      "final_operations": [
+        "filesystem.known.duplicates",
+        "backup.known.verify.latest",
+        "filesystem.known.trash.named"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.443766
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-06",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.create.directory"
+      ],
+      "final": true,
+      "final_operations": [
+        "filesystem.create.directory"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.618109
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-07",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.hash",
+        "filesystem.list",
+        "filesystem.search"
+      ],
+      "final": false,
+      "final_operations": [
+        "filesystem.read.text"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.104818
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-08",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.list"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.04283
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-09",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.write.text"
+      ],
+      "final": true,
+      "final_operations": [
+        "filesystem.sandbox.append.named",
+        "filesystem.write.text"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.480735
+    },
+    {
+      "candidates": 28,
+      "case_id": "clp-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "clipboard.copy"
+      ],
+      "final": true,
+      "final_operations": [
+        "clipboard.copy"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.497143
+    },
+    {
+      "candidates": 28,
+      "case_id": "clp-02",
+      "cause": "retrieval",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "clipboard.paste"
+      ],
+      "final": false,
+      "final_operations": [
+        "browser.page.read"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 4.036205
+    },
+    {
+      "candidates": 28,
+      "case_id": "clp-03",
+      "cause": "retrieval",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "clipboard.read.text"
+      ],
+      "final": false,
+      "final_operations": [
+        "clipboard.copy",
+        "clipboard.write.text"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 3.759071
+    },
+    {
+      "candidates": 28,
+      "case_id": "clp-04",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "clipboard.write.text"
+      ],
+      "final": false,
+      "final_operations": [
+        "clipboard.copy"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.986358
+    },
+    {
+      "candidates": 28,
+      "case_id": "inp-01",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "input.key.press"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.776857
+    },
+    {
+      "candidates": 1,
+      "case_id": "inp-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "input.select.all"
+      ],
+      "final": true,
+      "final_operations": [
+        "input.select.all"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.258245
+    },
+    {
+      "candidates": 28,
+      "case_id": "inp-03",
+      "cause": "retrieval",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "input.text.type"
+      ],
+      "final": false,
+      "final_operations": [
+        "message.send"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 3.856489
+    },
+    {
+      "candidates": 28,
+      "case_id": "inp-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "input.keyboard.open"
+      ],
+      "final": true,
+      "final_operations": [
+        "input.keyboard.open"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.703539
+    },
+    {
+      "candidates": 28,
+      "case_id": "inp-05",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "input.keyboard.layout"
+      ],
+      "final": true,
+      "final_operations": [
+        "input.keyboard.layout"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.067936
+    },
+    {
+      "candidates": 28,
+      "case_id": "inp-06",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "input.pointer.control"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.732108
+    },
+    {
+      "candidates": 28,
+      "case_id": "inp-07",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "input.visible.click"
+      ],
+      "final": true,
+      "final_operations": [
+        "input.visible.click"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.634343
+    },
+    {
+      "candidates": 28,
+      "case_id": "inp-08",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "input.keyboard.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "input.keyboard.status"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.595395
+    },
+    {
+      "candidates": 28,
+      "case_id": "cap-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "capture.screenshot"
+      ],
+      "final": true,
+      "final_operations": [
+        "capture.screenshot"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.200452
+    },
+    {
+      "candidates": 28,
+      "case_id": "cap-02",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "capture.active.window"
+      ],
+      "final": false,
+      "final_operations": [
+        "window.active"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.39462
+    },
+    {
+      "candidates": 28,
+      "case_id": "cap-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "final": true,
+      "final_operations": [
+        "capture.active.window",
+        "capture.screenshot"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.109697
+    },
+    {
+      "candidates": 28,
+      "case_id": "cap-04",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "capture.screenshot",
+        "vision.describe"
+      ],
+      "final": true,
+      "final_operations": [
+        "vision.describe"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 1.736077
+    },
+    {
+      "candidates": 28,
+      "case_id": "brw-01",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "browser.navigate",
+        "browser.navigate.named"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.962433
+    },
+    {
+      "candidates": 28,
+      "case_id": "brw-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "browser.control"
+      ],
+      "final": true,
+      "final_operations": [
+        "browser.control"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.862176
+    },
+    {
+      "candidates": 1,
+      "case_id": "brw-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "browser.tabs.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "browser.tabs.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.211209
+    },
+    {
+      "candidates": 28,
+      "case_id": "brw-04",
+      "cause": "served",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "browser.page.read"
+      ],
+      "final": true,
+      "final_operations": [
+        "browser.page.read"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.711749
+    },
+    {
+      "candidates": 1,
+      "case_id": "gam-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "game.catalog.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "game.catalog.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.143069
+    },
+    {
+      "candidates": 1,
+      "case_id": "gam-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "game.launch"
+      ],
+      "final": true,
+      "final_operations": [
+        "game.launch"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.189426
+    },
+    {
+      "candidates": 28,
+      "case_id": "gam-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "game.installed.named"
+      ],
+      "final": true,
+      "final_operations": [
+        "game.installed.named"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.387504
+    },
+    {
+      "candidates": 28,
+      "case_id": "gam-04",
+      "cause": "served",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "game.install.cancel",
+        "game.install.cancel.active"
+      ],
+      "final": true,
+      "final_operations": [
+        "game.install.cancel.active",
+        "game.install.status"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.118374
+    },
+    {
+      "candidates": 28,
+      "case_id": "blu-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "bluetooth.radio.set"
+      ],
+      "final": true,
+      "final_operations": [
+        "bluetooth.radio.set"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.603475
+    },
+    {
+      "candidates": 1,
+      "case_id": "blu-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "bluetooth.device.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "bluetooth.device.list"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.218039
+    },
+    {
+      "candidates": 1,
+      "case_id": "per-01",
+      "cause": "recogniser",
+      "decided": false,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "peripheral.list"
+      ],
+      "final": false,
+      "final_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 0.208986
+    },
+    {
+      "candidates": 28,
+      "case_id": "bak-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "backup.known.create"
+      ],
+      "final": true,
+      "final_operations": [
+        "backup.known.create",
+        "backup.create"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.143047
+    },
+    {
+      "candidates": 1,
+      "case_id": "bak-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "backup.known.list",
+        "backup.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "backup.list"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.225552
+    },
+    {
+      "candidates": 1,
+      "case_id": "cal-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "calendar.event.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "calendar.event.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.256339
+    },
+    {
+      "candidates": 28,
+      "case_id": "cal-02",
+      "cause": "retrieval",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "calendar.event.create"
+      ],
+      "final": false,
+      "final_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": false,
+      "seconds": 3.7166
+    },
+    {
+      "candidates": 1,
+      "case_id": "eml-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "email.latest.read"
+      ],
+      "final": true,
+      "final_operations": [
+        "email.latest.read"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.208635
+    },
+    {
+      "candidates": 28,
+      "case_id": "eml-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "email.latest.reply"
+      ],
+      "final": true,
+      "final_operations": [
+        "email.latest.reply"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.443936
+    },
+    {
+      "candidates": 0,
+      "case_id": "msg-01",
+      "cause": "served",
+      "decided": false,
+      "decision_path": "explicit_clarification",
+      "expected": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "final": true,
+      "final_operations": [
+        "message.send"
+      ],
+      "language": "es",
+      "retrieval": "unrecorded",
+      "retrieved": false,
+      "seconds": 0.76916
+    },
+    {
+      "candidates": 28,
+      "case_id": "off-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "office.document.create"
+      ],
+      "final": true,
+      "final_operations": [
+        "office.document.create"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.457095
+    },
+    {
+      "candidates": 28,
+      "case_id": "pkg-01",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "package.install.commit",
+        "package.install.prepare"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 2.953455
+    },
+    {
+      "candidates": 1,
+      "case_id": "str-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "streaming.play.named"
+      ],
+      "final": true,
+      "final_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.220185
+    },
+    {
+      "candidates": 1,
+      "case_id": "web-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "web.search"
+      ],
+      "final": true,
+      "final_operations": [
+        "web.search"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.280463
+    },
+    {
+      "candidates": 1,
+      "case_id": "rou-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "routine.list"
+      ],
+      "final": true,
+      "final_operations": [
+        "routine.list"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.226082
+    },
+    {
+      "candidates": 28,
+      "case_id": "aud-09",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "audio.volume.adjust"
+      ],
+      "final": true,
+      "final_operations": [
+        "audio.volume.adjust"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.667443
+    },
+    {
+      "candidates": 1,
+      "case_id": "sys-13",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "system.status"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.status"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.253755
+    },
+    {
+      "candidates": 28,
+      "case_id": "win-09",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "window.minimize"
+      ],
+      "final": true,
+      "final_operations": [
+        "window.minimize"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.249793
+    },
+    {
+      "candidates": 28,
+      "case_id": "net-10",
+      "cause": "veto",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "network.ping",
+        "network.status"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 7.24411
+    },
+    {
+      "candidates": 28,
+      "case_id": "med-07",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "media.seek.relative"
+      ],
+      "final": true,
+      "final_operations": [
+        "media.seek.relative"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.575593
+    },
+    {
+      "candidates": 28,
+      "case_id": "fs-10",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "filesystem.folder.open"
+      ],
+      "final": true,
+      "final_operations": [
+        "filesystem.folder.open"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.791391
+    },
+    {
+      "candidates": 28,
+      "case_id": "sys-14",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "system.power"
+      ],
+      "final": true,
+      "final_operations": [
+        "system.power"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 4.572218
+    },
+    {
+      "candidates": 28,
+      "case_id": "app-06",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "app.open"
+      ],
+      "final": false,
+      "final_operations": [
+        "browser.navigate.named"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.714403
+    },
+    {
+      "candidates": 28,
+      "case_id": "not-06",
+      "cause": "decision",
+      "decided": false,
+      "decision_path": "model",
+      "expected": [
+        "note.create"
+      ],
+      "final": false,
+      "final_operations": [],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 5.578456
+    },
+    {
+      "candidates": 28,
+      "case_id": "tsk-06",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "task.reopen",
+        "task.resolve.exact"
+      ],
+      "final": true,
+      "final_operations": [
+        "task.reopen"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.284279
+    },
+    {
+      "candidates": 28,
+      "case_id": "cmp-01",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "model",
+      "expected": [
+        "app.open",
+        "media.play.query"
+      ],
+      "final": true,
+      "final_operations": [
+        "media.play.query",
+        "app.open"
+      ],
+      "language": "es",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 3.417862
+    },
+    {
+      "candidates": 1,
+      "case_id": "cmp-02",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "capture.screenshot",
+        "ocr.read",
+        "vision.describe"
+      ],
+      "final": true,
+      "final_operations": [
+        "capture.screenshot"
+      ],
+      "language": "es_en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.219675
+    },
+    {
+      "candidates": 1,
+      "case_id": "cmp-03",
+      "cause": "served",
+      "decided": true,
+      "decision_path": "explicit_effects",
+      "expected": [
+        "audio.mute",
+        "system.power"
+      ],
+      "final": true,
+      "final_operations": [
+        "audio.mute"
+      ],
+      "language": "en",
+      "retrieval": "semantic",
+      "retrieved": true,
+      "seconds": 0.240655
+    },
+    {
+      "candidates": 0,
+      "case_id": "cmp-04",
+      "cause": "recogniser",
+      "decided": false,
+      "decision_path": "explicit_clarification",
+      "expected": [
+        "note.create",
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "final": false,
+      "final_operations": [
+        "calendar.event.create"
+      ],
+      "language": "es",
+      "retrieval": "unrecorded",
+      "retrieved": false,
+      "seconds": 0.789283
+    }
+  ],
+  "schema": "baxy.goal03-comprehension.v1",
+  "three_zeros": {
+    "effects_executed": 0,
+    "fixed_visible_replies": 0,
+    "providers_enabled": false,
+    "unsolicited_effects": 0,
+    "unverified_successes": 0
+  }
+}

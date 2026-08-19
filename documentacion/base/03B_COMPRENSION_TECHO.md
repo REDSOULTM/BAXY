@@ -295,6 +295,60 @@ decisión**, que pasó de 17 a 21–24 filas porque ahora atiende las que el
 reconocedor le devuelve. No es un empeoramiento del decisor: es el mismo decisor
 con más trabajo.
 
+### El suelo, nombrado fila por fila
+
+El techo de §6 no es una estimación: es un conjunto concreto de filas, y son **las
+mismas trece en las seis corridas**, sin una sola variación. Ninguna llega al
+decisor con la operación correcta disponible, así que ninguna puede servirse por
+buena que sea la decisión o por mucho que se retire el veto.
+
+| Fila | Tramo | Pedido | Esperaba |
+|---|---|---|---|
+| `app-01` | reconocedor | «necesito el bloc de notas» | `app.open` |
+| `med-05` | reconocedor | «play the tiny desk concert on youtube» | `media.play.youtube` |
+| `fs-03` | reconocedor | «hay archivos repetidos en descargas» | `filesystem.known.duplicates` |
+| `per-01` | reconocedor | «qué cosas tengo conectadas al equipo» | `peripheral.list` |
+| `cmp-04` | reconocedor | «anota que hay reunión el jueves y avísame ese día» | `note.create` + `reminder.create` |
+| `sys-04` | recuperación | «tráncame el equipo que me voy» | `system.power` |
+| `net-02` | recuperación | «see if 8.8.8.8 answers» | `network.ping` |
+| `med-01` | recuperación | «para lo que está sonando» | `media.control` |
+| `tsk-01` | recuperación | «agrégame al pendiente revisar el contrato» | `task.create` |
+| `clp-02` | recuperación | «pégalo acá» | `clipboard.paste` |
+| `clp-03` | recuperación | «what did I copy last» | `clipboard.read.text` |
+| `inp-03` | recuperación | «type hello world for me» | `input.text.type` |
+| `cal-02` | recuperación | «agéndame una reunión mañana de diez a once» | `calendar.event.create` |
+
+**124 − 13 = 111, y 111 de 124 es 89,5 %.** El 90 % pide 112. Así que **≥ 90 % no
+es alcanzable en este instrumento ni con un decisor perfecto y sin un solo veto**,
+y no por poco: falta exactamente una fila, y esa fila tendría que salir de esta
+lista.
+
+### Los dos mecanismos que podrían moverlo, medidos y rechazados
+
+Las trece son de dos clases y las dos tienen un candidato obvio. Los dos se
+midieron.
+
+**1. Elegir la familia antes que la hoja — la forma paramétrica.** Cinco de las
+ocho filas de recuperación tienen su familia correcta entre las ofrecidas y sólo
+les falta la hoja; una selección en dos etapas —familia cerrada, luego hoja dentro
+de ella— las alcanzaría. Medida sobre el corpus entero: **acierta 13 de las 40
+filas perdidas y rompe 10 de 30 que ya se servían**, con 1,24 s de coste por
+turno. Cambia una hoja por otra sin ganar nada neto, y confirma de punta a punta
+lo que el goal 03 dedujo del ranking: consolidar sale caro aguas abajo.
+
+**2. Elegir la hoja dentro de la familia que el decisor ya nombró.** Es la mitad
+barata de lo mismo, y sobre las filas perdidas parecía clara: en el sondeo previo
+acertaba 9. Implementada y medida en cuatro corridas contra tres sin ella:
+
+| | Corridas | Mediana | p50 | Abstención honesta |
+|---|---|---:|---:|---|
+| Sin selección por familia | 81, 82, 84 | **82** | **2,30 s** | 26, 26, 28 |
+| Con selección por familia | 84, 80, 81, 85 | **82,5** | 2,62 s | 26, 26, 26, 27 |
+
+**La mediana no se mueve y el reloj sí.** Lo que hace es trasladar filas del tramo
+de decisión al de veto: elige mejor la hoja y luego la pierde confirmándola. Se
+retira, por la ley 2 — una capa que no paga no se queda.
+
 ---
 
 ## 7. Los tres ceros
@@ -486,7 +540,7 @@ Buscado, leído y citado; lo que no entró dice por qué.
 
 | Criterio | Estado |
 |---|---|
-| ≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa | **No cumplido: 66,1 %** (82 de 124; 81, 82, 84 en tres corridas). Reparto en §4 |
+| ≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa | **No cumplido: 66,1 %** (82 de 124; 81, 82, 84 en tres corridas), y **medido imposible**: el suelo son las mismas 13 filas en las seis corridas, así que el máximo con decisión perfecta y sin vetos es 111 de 124 = 89,5 %. Reparto en §4, suelo nombrado fila por fila en §6 |
 | El techo re-medido y **movido**, con la aritmética publicada | **Cumplido: 84,7 % → 89,5 %**, §6, con la misma fórmula del goal 03 |
 | Las 17 filas del contrato resueltas, con el estado nuevo y su prueba | **Cumplido**: el veto pierde 6 donde perdía 27, y 8 pruebas de regresión en `tests/test_turn_policy.py` |
 | Cobertura y cuenta antes y después, con el sello | **Cumplido**: 169/158/31 y `dc0a7893…` idéntico — el catálogo no se tocó |
@@ -496,6 +550,21 @@ Buscado, leído y citado; lo que no entró dice por qué.
 | Los tres ceros intactos, y ≤ 3–5 de 36 decisiones que ejecutarían | **Cumplido: 2–4 de 36**, y dos estados de máquina inventados que estaban abiertos pasan a 0 |
 | Publicado qué se heredó y qué del estado del arte, con la fuente | **Cumplido, §10**, incluido lo que se probó y no funcionó con su mecanismo |
 | Filas de `03_COSTURAS.md` rellenas | **Cumplido**: reconocedor y puerta de alcance actualizadas, y una fila nueva para el verificador de identidad |
+
+### Por qué el 90 % no se alcanza, y cómo se sabe
+
+No es que faltara tiempo. **El 90 % pide 112 filas de 124, y trece nunca llegan al
+decisor con la operación correcta disponible** — las mismas trece en las seis
+corridas, listadas una a una en §6. El máximo aritmético es 111, o sea 89,5 %:
+falta una fila, y tendría que salir de esa lista.
+
+Las dos formas de sacarla se midieron y las dos se rechazaron (§6): elegir la
+familia antes que la hoja recupera 13 filas perdidas y rompe 10 que ya servían, y
+elegir la hoja dentro de la familia que el decisor nombró deja la mediana igual y
+sube el reloj. Lo que queda por probar no es una idea suelta: es **un decisor que
+distinga hojas casi sinónimas mejor que Qwen3-4B dentro de 4 GB de VRAM**, o un
+catálogo cuyas hojas no sean casi sinónimas — y el goal 03 y éste midieron, cada
+uno por su lado, que consolidarlo cuesta más de lo que compra.
 
 ### Por qué se cierra sin el 90 %
 
