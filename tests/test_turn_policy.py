@@ -10007,3 +10007,282 @@ def test_broken_spanish_after_the_modal_is_retried_not_published(
 ) -> None:
     """BAXY talks to a person, so it may not speak broken Spanish."""
     assert _spanish_modal_is_malformed(reply) is malformed
+
+
+# --- Goal 03B: a withdrawn effect is withheld for confirmation, not denied ---
+#
+# The identity says BAXY says no only to what he cannot do. Two stages used to
+# break that from the inside: when ``information_question`` or
+# ``domain_grounding`` removed a proposed effect, the turn was published as a
+# ``conversation`` of kind ``unsupported``, and the presentation worded it as
+# "No puedo apagar el bluetooth" about an operation sitting in the catalogue.
+# On the goal 03 corpus that was 24 of the 27 rows those stages cost.
+#
+# The repair is not a new gate. It is that the verdict stopped being binary: an
+# independent verifier is asked whether the operation *is* the effect the person
+# named, and when it is, the authority is withheld until the person confirms the
+# exact invocation instead of being deleted. Nothing is dispatched either way,
+# so the invariant the gate exists for is untouched.
+
+
+_NETWORK_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "network_status",
+        "canonical_name": "network.status",
+        "description": "Read connectivity and active interfaces without changing them.",
+        "risk": "read_only",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+class _NoEvidence:
+    @staticmethod
+    def candidate_families(_text: str, _encoder: object) -> tuple[str, ...]:
+        return ()
+
+    @staticmethod
+    def retrieve(*_args: object, **_kwargs: object) -> list[object]:
+        return []
+
+
+class _WithheldEffectLlm:
+    """A decider that proposes the right operation the curated gate refuses."""
+
+    def __init__(
+        self,
+        *,
+        identifies: bool,
+        question: str = "¿Quieres que lo mire?",
+    ) -> None:
+        self._identifies = identifies
+        self._question = question
+        self.chats = 0
+        self.confirmations = 0
+        self.identity_calls: list[str] = []
+
+    def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+        return {
+            "mode": "action",
+            "operation": "network.status",
+            "question": "",
+            "conversation_kind": "",
+            "effect_count": "one",
+            "effect_operations": ["network.status"],
+            "effect_verification": "agreed",
+            "response_language": "es",
+        }
+
+    def operation_is_the_requested_effect(
+        self,
+        _text: str,
+        operation: str,
+        _contract: dict[str, object],
+    ) -> bool:
+        self.identity_calls.append(operation)
+        return self._identifies
+
+    def confirm_operation_before_acting(
+        self,
+        _text: str,
+        _effects: tuple[tuple[str, str], ...],
+        **_kwargs: object,
+    ) -> str:
+        self.confirmations += 1
+        return self._question
+
+    @staticmethod
+    def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
+        return "no_effect", "zero"
+
+    @staticmethod
+    def consume_deferred_response_language(_text: str) -> tuple[bool, str | None]:
+        return True, "es"
+
+    @staticmethod
+    def retire_deferred_response_language(_text: str) -> None:
+        return None
+
+    @staticmethod
+    def detect_response_language(_text: str) -> str:
+        return "es"
+
+    def chat(self, *_args: object, **_kwargs: object) -> tuple[str, list[object]]:
+        self.chats += 1
+        return "No puedo verificar el estado de la red.", []
+
+
+def _withheld_effect_turn(llm: _WithheldEffectLlm) -> dict[str, object]:
+    return _prepare_turn_result(
+        {"id": "turn-withheld", "text": "¿Cómo está la red neuronal?"},
+        llm=llm,
+        planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+        turn_evidence=_NoEvidence(),
+        encoder=lambda _texts: (),
+        tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
+    )
+
+
+def test_a_withdrawn_effect_is_offered_for_confirmation_not_denied() -> None:
+    llm = _WithheldEffectLlm(identifies=True)
+    result = _withheld_effect_turn(llm)
+
+    # The turn asks instead of claiming an inability, and the question is bound
+    # to the exact invocation the person would be authorizing.
+    assert result["kind"] == "clarify"
+    assert result["question"] == "¿Quieres que lo mire?"
+    assert result["intentOperations"] == ["network.status"]
+    # Nothing may be dispatched by a confirmation: that is the whole reason the
+    # withdrawal is allowed to survive as a question at all.
+    assert result["effectOperations"] == []
+    assert result["operation"] is None
+    assert llm.confirmations == 1
+    # No unsupported prose is even composed, so it cannot be published.
+    assert llm.chats == 0
+
+
+def test_the_read_only_exemption_stays_refuted_by_its_own_counterexample() -> None:
+    """A confirmation may ask about the wrong domain; it may never answer it.
+
+    Exempting ``read_only`` operations from the curated gate was measured and
+    rejected in goal 03: "¿Cómo está la red neuronal?" proposes
+    ``network.status``, and answering it reports the machine's connectivity to a
+    question about neural networks. Withholding the same proposal for
+    confirmation does not reopen that: the person is asked, and says no.
+    """
+
+    result = _withheld_effect_turn(_WithheldEffectLlm(identifies=True))
+    assert result["kind"] != "action"
+    assert result["effectOperations"] == []
+
+
+def test_an_unidentified_proposal_keeps_the_honest_unsupported_answer() -> None:
+    llm = _WithheldEffectLlm(identifies=False)
+    result = _withheld_effect_turn(llm)
+
+    assert result["kind"] == "conversation"
+    assert result["intentOperations"] == []
+    assert llm.confirmations == 0
+    assert llm.chats == 1
+
+
+def test_a_confirmation_question_the_model_will_not_write_is_not_invented() -> None:
+    """Invariant 5 holds on both sides: no fixed visible reply, ever.
+
+    A template would have made this branch deterministic and cheap. It would
+    also have put a constant on screen, which is the same product defect whether
+    the constant says "no puedo" or "¿lo hago?". When the model does not
+    return one well-formed question, the turn keeps the honest refusal.
+    """
+
+    llm = _WithheldEffectLlm(identifies=True, question="claro que sí")
+    result = _withheld_effect_turn(llm)
+
+    assert result["kind"] == "conversation"
+    assert result["intentOperations"] == []
+
+
+def test_the_second_opinion_is_asked_only_about_what_was_withdrawn() -> None:
+    llm = _WithheldEffectLlm(identifies=True)
+    _withheld_effect_turn(llm)
+    assert llm.identity_calls == ["network.status"]
+
+
+def test_a_silent_verifier_never_revives_withdrawn_authority() -> None:
+    """Every guard added here is one-sided; a failure keeps the stricter side."""
+
+    class Exploding(_WithheldEffectLlm):
+        def operation_is_the_requested_effect(
+            self,
+            _text: str,
+            _operation: str,
+            _contract: dict[str, object],
+        ) -> bool:
+            raise RuntimeError("verifier unavailable")
+
+    result = _withheld_effect_turn(Exploding(identifies=True))
+    assert result["kind"] == "conversation"
+    assert result["intentOperations"] == []
+
+
+def test_the_recogniser_declines_only_on_an_explicit_negative_verdict() -> None:
+    """The deterministic path keeps every row it resolves unless told otherwise.
+
+    It publishes the operations it resolved and ranks nothing, so a rule that
+    fires on the wrong leaf hands that leaf to every stage below. Goal 03
+    measured the cost (12 of 124) and measured that sending all 38 of its rows
+    to the model instead is worse (24 served against 26). Declining only the
+    ones an independent verifier refuses is the third option, and like every
+    other guard here it may only withdraw a claim -- never move it elsewhere.
+    """
+
+    intent = EffectIntent(
+        ("network.status",),
+        ("¿Cómo está la red neuronal?",),
+    )
+    arguments = (
+        intent,
+        "¿Cómo está la red neuronal?",
+        {"network.status": _NETWORK_STATUS_TOOL},
+    )
+
+    class Verdict:
+        def __init__(self, value: bool) -> None:
+            self.value = value
+
+        def operation_is_the_requested_effect(self, *_args: object) -> bool:
+            return self.value
+
+    class Exploding:
+        @staticmethod
+        def operation_is_the_requested_effect(*_args: object) -> bool:
+            raise RuntimeError("verifier unavailable")
+
+    assert mind_main._recogniser_identity_holds(*arguments, Verdict(True), ()) is True
+    assert mind_main._recogniser_identity_holds(*arguments, Verdict(False), ()) is False
+    # No verifier, or one that fails, leaves the recogniser exactly as it was.
+    assert mind_main._recogniser_identity_holds(*arguments, Exploding(), ()) is True
+    assert mind_main._recogniser_identity_holds(*arguments, object(), ()) is True
+
+
+def test_a_closed_refusal_asks_the_catalogue_before_it_speaks() -> None:
+    """Named-variant lists deny capabilities as soon as the wording moves.
+
+    ``open the last file I downloaded`` closes on the
+    ``filesystem.file.open.named`` clause because its exemption lists
+    ``ultimo``, ``latest``, ``reciente`` and ``newest`` but not ``last``, while
+    ``filesystem.file.open.latest`` is in the catalogue doing exactly that. Five
+    of 124 goal 03 rows died that way. The withdrawal names one operation as
+    evidence and then stands aside: the ranked path decides the turn.
+    """
+
+    catalog = PlannerCatalog([_NETWORK_STATUS_TOOL])
+
+    class Identifies:
+        @staticmethod
+        def operation_is_the_requested_effect(*_args: object) -> bool:
+            return True
+
+    class Refuses:
+        @staticmethod
+        def operation_is_the_requested_effect(*_args: object) -> bool:
+            return False
+
+    arguments = (
+        "¿Cómo está la red?",
+        "¿Cómo está la red?",
+        catalog,
+        {"network.status": _NETWORK_STATUS_TOOL},
+    )
+    assert (
+        mind_main._catalog_answers_the_request(*arguments, Identifies(), ())
+        == "network.status"
+    )
+    assert mind_main._catalog_answers_the_request(*arguments, Refuses(), ()) == ""
+    assert mind_main._catalog_answers_the_request(*arguments, object(), ()) == ""

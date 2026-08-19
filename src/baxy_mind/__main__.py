@@ -2009,7 +2009,12 @@ def _catalog_answers_the_request(
     lists ``ultimo``, ``latest``, ``reciente`` and ``newest`` but not ``last``,
     while ``filesystem.file.open.latest`` sits in the catalogue doing exactly
     what was asked. On the goal 03 corpus five of 124 rows died that way, all of
-    them capabilities the catalogue has.
+    them capabilities the catalogue has, and the ``knowledge`` verdicts of the
+    same family are the same fault wearing a politer word: ``what is on my to do
+    list`` is closed as a no-effect question and answered "I don't have access to
+    your personal to-do list" while ``task.list`` is in the catalogue. Social and
+    follow-up turns are left alone -- nobody greeting BAXY should pay for a
+    catalogue probe.
 
     So a closed refusal no longer gets to speak before the catalogue is asked.
     This ranks the request against the authenticated operations and returns the
@@ -5733,7 +5738,8 @@ def _prepare_turn_result(
     if (
         explicit_conversation_decision is not None
         and non_target_language is None
-        and explicit_conversation_decision.get("conversation_kind") == "unsupported"
+        and explicit_conversation_decision.get("conversation_kind")
+        in {"unsupported", "knowledge"}
     ):
         withdrawn_closed_refusal = _catalog_answers_the_request(
             routing_objective,
@@ -6092,16 +6098,66 @@ def _prepare_turn_result(
     turn_audit["stages"].append(
         _turn_audit_stage("conversation_presentation", decision)
     )
-    # Extending the same rule one step further was measured and rejected. When
-    # the *decider itself* answers "conversation, unsupported" -- "No puedo dar
-    # enter" with ``input.key.press`` sitting in the shortlist it was handed --
-    # asking the catalogue again there looks like the same repair. It is not:
-    # the candidates at that point are this request's own retrieval, and for an
-    # out-of-catalogue request they are its nearest plausible neighbours. On the
-    # goal 03 corpus it turned 8 of 36 honest abstentions into questions
-    # (28 -> 20) and recovered nothing in catalogue (85 -> 84).
-    # The rule stays where a stage withdrew an effect the model had already
-    # named, and where a closed rule refused before retrieval ever ran.
+    # Extending the same rule to every ``unsupported`` conversation was measured
+    # and rejected. When the *decider itself* answers "conversation,
+    # unsupported" -- "No puedo dar enter" with ``input.key.press`` sitting in
+    # the shortlist it was handed -- asking the catalogue again there looks like
+    # the same repair. It is not: the candidates at that point are this
+    # request's own retrieval, and for an out-of-catalogue request they are its
+    # nearest plausible neighbours. On the goal 03 corpus it turned 8 of 36
+    # honest abstentions into questions (28 -> 20) and recovered nothing in
+    # catalogue (85 -> 84).
+    #
+    # A verdict that answers from what the model knows -- ``knowledge`` or
+    # ``social`` -- is the one place where it is not optional, and it is not
+    # about accuracy. Answering a question about the current state of *this
+    # machine* from what the model knows is an invented observation presented as
+    # an observed one: "con que usuario estoy entrado" came back as a social
+    # reply asserting the account name, and "what does this page actually say"
+    # as knowledge asserting the page contents, both with the operation that
+    # would have observed it sitting in the shortlist. Goal 03 found three of
+    # these and closed them with the retired-effect guard; these two are the
+    # shape that guard cannot see, because no effect was ever proposed. Nothing
+    # out of catalogue reaches this branch -- an out-of-catalogue request is
+    # refused as ``unsupported``, never answered as knowledge -- so the
+    # abstention it could cost is not on this path.
+    if (
+        decision["mode"] == "conversation"
+        and decision["conversation_kind"] in {"knowledge", "social"}
+        and not decision["effect_operations"]
+        and shortlist
+    ):
+        observing = _catalog_answers_the_request(
+            routing_objective,
+            objective,
+            planner_catalog,
+            tool_by_name,
+            llm,
+            application_names,
+        )
+        question = (
+            _domain_confirmation_question(objective, (observing,), tool_by_name, llm)
+            if observing
+            else ""
+        )
+        if question:
+            decision = validate_turn_decision(
+                {
+                    "mode": "clarify",
+                    "operation": None,
+                    "question": question,
+                    "conversation_kind": "",
+                    "effect_count": "zero",
+                    "effect_operations": [],
+                    "effect_verification": "not_applicable",
+                    "response_language": decision["response_language"],
+                },
+                {tool.name for tool in shortlist},
+            )
+            intent_operations = [observing]
+            turn_audit["stages"].append(
+                _turn_audit_stage("observation_not_recital", decision)
+            )
     if (
         raw_intent_operations is not None
         and intent_operations

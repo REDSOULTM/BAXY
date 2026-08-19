@@ -1,0 +1,3256 @@
+{
+  "counts": {
+    "in_catalog.gate_allows": 65,
+    "in_catalog.no_proposal": 16,
+    "in_catalog.stays_unsupported": 7,
+    "in_catalog.would_confirm": 36,
+    "in_catalog.would_confirm_another_operation": 11,
+    "in_catalog.would_confirm_the_expected_operation": 25,
+    "out_of_catalog.gate_allows": 4,
+    "out_of_catalog.no_proposal": 11,
+    "out_of_catalog.stays_unsupported": 18,
+    "out_of_catalog.would_confirm": 3
+  },
+  "measured_at": "2026-08-19T18:12:46+00:00",
+  "rows": [
+    {
+      "case_id": "aud-01",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "gate": {
+        "audio.volume.adjust": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "audio.volume.adjust"
+      ],
+      "text": "che ponelo mas bajito que estoy en una llamada",
+      "verifier": {
+        "audio.volume.adjust": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "aud-02",
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "gate": {
+        "audio.status": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "audio.status"
+      ],
+      "text": "dejame el sonido a la mitad",
+      "verifier": {
+        "audio.status": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "aud-03",
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "gate": {
+        "audio.microphone.mute": false,
+        "audio.mute": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "audio.mute",
+        "audio.microphone.mute"
+      ],
+      "text": "kill the sound completely, I need silence",
+      "verifier": {
+        "audio.microphone.mute": true,
+        "audio.mute": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "aud-04",
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "gate": {
+        "audio.microphone.mute": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "audio.microphone.mute"
+      ],
+      "text": "mutea el mic que ya vuelvo",
+      "verifier": {
+        "audio.microphone.mute": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "aud-05",
+      "expected_operations": [
+        "audio.status"
+      ],
+      "gate": {
+        "audio.status": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "audio.status"
+      ],
+      "text": "como esta el sonido ahora mismo",
+      "verifier": {
+        "audio.status": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "aud-06",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "gate": {
+        "audio.volume.adjust": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "audio.volume.adjust"
+      ],
+      "text": "turn it up a bit, I can barely hear it",
+      "verifier": {
+        "audio.volume.adjust": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "aud-07",
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "gate": {
+        "audio.microphone.mute": false,
+        "audio.mute": false,
+        "audio.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "audio.status",
+        "audio.mute",
+        "audio.microphone.mute"
+      ],
+      "text": "quitale el silencio a los parlantes",
+      "verifier": {
+        "audio.microphone.mute": true,
+        "audio.mute": true,
+        "audio.status": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "aud-08",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [],
+      "text": "baja el volume tres puntos nomas",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "app-01",
+      "expected_operations": [
+        "app.open"
+      ],
+      "gate": {
+        "note.list": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "note.list"
+      ],
+      "text": "necesito el bloc de notas",
+      "verifier": {
+        "note.list": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "app-02",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "gate": {
+        "system.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "do I have discord on this machine",
+      "verifier": {
+        "system.status": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "app-03",
+      "expected_operations": [
+        "app.close"
+      ],
+      "gate": {
+        "app.close": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "app.close"
+      ],
+      "text": "cierrame la ventana que tengo adelante",
+      "verifier": {
+        "app.close": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "app-04",
+      "expected_operations": [
+        "app.open"
+      ],
+      "gate": {
+        "app.open": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "app.open"
+      ],
+      "text": "abrime el calculator porfa",
+      "verifier": {
+        "app.open": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "app-05",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "gate": {
+        "game.installed.named": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "game.installed.named"
+      ],
+      "text": "is steam even installed here",
+      "verifier": {
+        "game.installed.named": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "win-01",
+      "expected_operations": [
+        "window.active"
+      ],
+      "gate": {
+        "app.open": false,
+        "audio.status": false,
+        "media.play.exact": false,
+        "media.play.query": false,
+        "task.search": false,
+        "wifi.ensure.connected": false,
+        "window.active": false,
+        "window.focus": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "window.active",
+        "media.play.query",
+        "audio.status",
+        "wifi.ensure.connected",
+        "media.play.exact",
+        "window.focus",
+        "app.open",
+        "task.search"
+      ],
+      "text": "que tengo en primer plano ahora",
+      "verifier": {
+        "app.open": false,
+        "audio.status": true,
+        "media.play.exact": false,
+        "media.play.query": true,
+        "task.search": false,
+        "wifi.ensure.connected": false,
+        "window.active": true,
+        "window.focus": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "win-02",
+      "expected_operations": [
+        "window.maximize"
+      ],
+      "gate": {
+        "window.resize": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "window.resize"
+      ],
+      "text": "hazme grande esta ventana que no veo nada",
+      "verifier": {
+        "window.resize": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "win-03",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "gate": {
+        "window.move": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "window.move"
+      ],
+      "text": "send this window down to the taskbar",
+      "verifier": {
+        "window.move": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "win-04",
+      "expected_operations": [
+        "window.move"
+      ],
+      "gate": {
+        "window.move": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "window.move"
+      ],
+      "text": "corre la ventana a la esquina de arriba a la izquierda",
+      "verifier": {
+        "window.move": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "win-05",
+      "expected_operations": [
+        "window.resize"
+      ],
+      "gate": {
+        "window.resize": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "window.resize"
+      ],
+      "text": "make this window eight hundred by six hundred",
+      "verifier": {
+        "window.resize": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "win-06",
+      "expected_operations": [
+        "window.focus",
+        "window.resolve"
+      ],
+      "gate": {
+        "window.focus": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "window.focus"
+      ],
+      "text": "trae la ventana de chrome al frente",
+      "verifier": {
+        "window.focus": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "win-07",
+      "expected_operations": [
+        "window.application.status"
+      ],
+      "gate": {
+        "window.application.status": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "window.application.status"
+      ],
+      "text": "spotify tiene alguna ventana abierta",
+      "verifier": {
+        "window.application.status": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "win-08",
+      "expected_operations": [
+        "window.restore"
+      ],
+      "gate": {
+        "window.restore": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "window.restore"
+      ],
+      "text": "devuelvele el tamano normal a la ventana",
+      "verifier": {
+        "window.restore": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "sys-01",
+      "expected_operations": [
+        "system.status"
+      ],
+      "gate": {
+        "system.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "como anda la maquina en general",
+      "verifier": {
+        "system.status": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "sys-02",
+      "expected_operations": [
+        "system.time"
+      ],
+      "gate": {
+        "system.time": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "system.time"
+      ],
+      "text": "que fecha y hora tenemos",
+      "verifier": {
+        "system.time": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "sys-03",
+      "expected_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "gate": {
+        "system.application.crash.diagnose": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "text": "which apps crashed on me lately",
+      "verifier": {
+        "system.application.crash.diagnose": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "sys-04",
+      "expected_operations": [
+        "system.power"
+      ],
+      "gate": {
+        "game.install.cancel": null,
+        "game.install.cancel.active": null,
+        "task.delete": false,
+        "task.reopen": null,
+        "task.restore": null
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "game.install.cancel.active",
+        "game.install.cancel",
+        "task.delete",
+        "task.reopen",
+        "task.restore"
+      ],
+      "text": "trancame el equipo que me voy",
+      "verifier": {
+        "game.install.cancel": false,
+        "game.install.cancel.active": false,
+        "task.delete": true,
+        "task.reopen": false,
+        "task.restore": false
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "sys-05",
+      "expected_operations": [
+        "system.process.list"
+      ],
+      "gate": {
+        "system.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "que programas se estan comiendo la memoria",
+      "verifier": {
+        "system.status": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "sys-06",
+      "expected_operations": [
+        "system.process.terminate.named"
+      ],
+      "gate": {
+        "system.process.terminate.named": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "system.process.terminate.named"
+      ],
+      "text": "force quit chrome, it is frozen solid",
+      "verifier": {
+        "system.process.terminate.named": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "sys-07",
+      "expected_operations": [
+        "system.recyclebin.empty"
+      ],
+      "gate": {
+        "system.recyclebin.empty": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "system.recyclebin.empty"
+      ],
+      "text": "vaciame la papelera de reciclaje",
+      "verifier": {
+        "system.recyclebin.empty": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "sys-08",
+      "expected_operations": [
+        "system.settings.adjust"
+      ],
+      "gate": {
+        "system.settings.adjust": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "system.settings.adjust"
+      ],
+      "text": "subile un poco a la luz de la pantalla",
+      "verifier": {
+        "system.settings.adjust": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "sys-09",
+      "expected_operations": [
+        "system.settings.status"
+      ],
+      "gate": {
+        "system.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "how bright is my screen right now",
+      "verifier": {
+        "system.status": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "sys-10",
+      "expected_operations": [
+        "system.identity"
+      ],
+      "gate": {
+        "system.identity": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "system.identity"
+      ],
+      "text": "con que usuario estoy entrado",
+      "verifier": {
+        "system.identity": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "sys-11",
+      "expected_operations": [
+        "system.status"
+      ],
+      "gate": {
+        "system.status": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "cuanta ram me queda libre",
+      "verifier": {
+        "system.status": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "sys-12",
+      "expected_operations": [
+        "system.power"
+      ],
+      "gate": {
+        "browser.navigate": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "browser.navigate"
+      ],
+      "text": "apaga la compu",
+      "verifier": {
+        "browser.navigate": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "net-01",
+      "expected_operations": [
+        "network.status"
+      ],
+      "gate": {
+        "network.dns.status": null,
+        "network.ip.list": null,
+        "network.ping": null,
+        "network.status": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "network.status",
+        "network.dns.status",
+        "network.ip.list",
+        "network.ping"
+      ],
+      "text": "tengo internet o no",
+      "verifier": {
+        "network.dns.status": true,
+        "network.ip.list": true,
+        "network.ping": true,
+        "network.status": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "net-02",
+      "expected_operations": [
+        "network.ping"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [],
+      "text": "see if 8.8.8.8 answers",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "net-03",
+      "expected_operations": [
+        "network.ip.list"
+      ],
+      "gate": {
+        "network.ip.list": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "network.ip.list"
+      ],
+      "text": "cual es mi direccion ip",
+      "verifier": {
+        "network.ip.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "net-04",
+      "expected_operations": [
+        "network.dns.status"
+      ],
+      "gate": {
+        "network.dns.status": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "network.dns.status"
+      ],
+      "text": "que servidores de nombres estoy usando",
+      "verifier": {
+        "network.dns.status": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "net-05",
+      "expected_operations": [
+        "network.port.list"
+      ],
+      "gate": {
+        "network.port.list": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "network.port.list"
+      ],
+      "text": "what ports are listening on this box",
+      "verifier": {
+        "network.port.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "net-06",
+      "expected_operations": [
+        "wifi.status",
+        "wifi.ensure.connected"
+      ],
+      "gate": {
+        "network.dns.status": null,
+        "network.ip.list": null,
+        "network.status": false,
+        "wifi.ensure.connected": false,
+        "wifi.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "network.status",
+        "wifi.status",
+        "network.dns.status",
+        "network.ip.list",
+        "wifi.ensure.connected"
+      ],
+      "text": "a que red inalambrica estoy pegado",
+      "verifier": {
+        "network.dns.status": false,
+        "network.ip.list": true,
+        "network.status": true,
+        "wifi.ensure.connected": true,
+        "wifi.status": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "net-07",
+      "expected_operations": [
+        "wifi.profile.list"
+      ],
+      "gate": {
+        "wifi.profile.list": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "wifi.profile.list"
+      ],
+      "text": "mostrame las redes que tengo guardadas",
+      "verifier": {
+        "wifi.profile.list": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "net-08",
+      "expected_operations": [
+        "wifi.disconnect"
+      ],
+      "gate": {
+        "wifi.disconnect": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "wifi.disconnect"
+      ],
+      "text": "drop the wireless connection",
+      "verifier": {
+        "wifi.disconnect": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "net-09",
+      "expected_operations": [
+        "wifi.connect.named",
+        "wifi.connect"
+      ],
+      "gate": {
+        "wifi.connect": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "wifi.connect"
+      ],
+      "text": "conectate al wifi de casa",
+      "verifier": {
+        "wifi.connect": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "med-01",
+      "expected_operations": [
+        "media.control"
+      ],
+      "gate": {
+        "media.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "media.status"
+      ],
+      "text": "para lo que esta sonando",
+      "verifier": {
+        "media.status": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "med-02",
+      "expected_operations": [
+        "media.status"
+      ],
+      "gate": {
+        "media.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "media.status"
+      ],
+      "text": "que cancion es esta",
+      "verifier": {
+        "media.status": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "med-03",
+      "expected_operations": [
+        "media.seek.relative"
+      ],
+      "gate": {
+        "media.seek.relative": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "media.seek.relative"
+      ],
+      "text": "jump ahead thirty seconds",
+      "verifier": {
+        "media.seek.relative": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "med-04",
+      "expected_operations": [
+        "media.play.query",
+        "media.play.exact"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [],
+      "text": "ponme algo de bad bunny en spotify",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "med-05",
+      "expected_operations": [
+        "media.play.youtube"
+      ],
+      "gate": {
+        "media.play.query": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "media.play.query"
+      ],
+      "text": "play the tiny desk concert on youtube",
+      "verifier": {
+        "media.play.query": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "med-06",
+      "expected_operations": [
+        "media.control"
+      ],
+      "gate": {
+        "media.play.query": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "media.play.query"
+      ],
+      "text": "pasa a la siguiente cancion",
+      "verifier": {
+        "media.play.query": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "not-01",
+      "expected_operations": [
+        "note.create"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [],
+      "text": "apuntame que tengo que llamar al dentista",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "not-02",
+      "expected_operations": [
+        "note.list"
+      ],
+      "gate": {
+        "note.list": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "note.list"
+      ],
+      "text": "que apuntes tengo guardados",
+      "verifier": {
+        "note.list": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "not-03",
+      "expected_operations": [
+        "note.search"
+      ],
+      "gate": {
+        "note.search": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "note.search"
+      ],
+      "text": "find the note where I wrote the wifi password",
+      "verifier": {
+        "note.search": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "not-04",
+      "expected_operations": [
+        "note.trash"
+      ],
+      "gate": {
+        "note.trash": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "note.trash"
+      ],
+      "text": "tira a la papelera la nota de la lista del super",
+      "verifier": {
+        "note.trash": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "not-05",
+      "expected_operations": [
+        "note.read"
+      ],
+      "gate": {
+        "note.read": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "note.read"
+      ],
+      "text": "leeme la note que se llama ideas",
+      "verifier": {
+        "note.read": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "tsk-01",
+      "expected_operations": [
+        "task.create"
+      ],
+      "gate": {
+        "note.read": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "note.read"
+      ],
+      "text": "agregame al pendiente revisar el contrato",
+      "verifier": {
+        "note.read": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "tsk-02",
+      "expected_operations": [
+        "task.list"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [],
+      "text": "what is on my to do list",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "tsk-03",
+      "expected_operations": [
+        "task.complete",
+        "task.resolve.exact"
+      ],
+      "gate": {
+        "task.complete": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "task.complete"
+      ],
+      "text": "da por terminada la tarea de pagar el arriendo",
+      "verifier": {
+        "task.complete": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "tsk-04",
+      "expected_operations": [
+        "task.search"
+      ],
+      "gate": {
+        "note.search": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "note.search"
+      ],
+      "text": "busca entre mis pendientes los que hablen del banco",
+      "verifier": {
+        "note.search": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "tsk-05",
+      "expected_operations": [
+        "task.delete",
+        "task.resolve.exact"
+      ],
+      "gate": {
+        "task.delete": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "task.delete"
+      ],
+      "text": "borra el task de comprar cables",
+      "verifier": {
+        "task.delete": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "rem-01",
+      "expected_operations": [
+        "reminder.create",
+        "notification.schedule"
+      ],
+      "gate": {
+        "reminder.create": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "reminder.create"
+      ],
+      "text": "avisame manana a las nueve que tengo medico",
+      "verifier": {
+        "reminder.create": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "rem-02",
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "gate": {
+        "reminder.list": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "reminder.list"
+      ],
+      "text": "what reminders are set up",
+      "verifier": {
+        "reminder.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "rem-03",
+      "expected_operations": [
+        "notification.cancel.at",
+        "reminder.delete"
+      ],
+      "gate": {
+        "notification.cancel.at": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "notification.cancel.at"
+      ],
+      "text": "cancela la alarma de las siete de la manana",
+      "verifier": {
+        "notification.cancel.at": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "rem-04",
+      "expected_operations": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "gate": {
+        "notification.schedule": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "text": "ponme un alarm para las seis de la tarde",
+      "verifier": {
+        "notification.schedule": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "fs-01",
+      "expected_operations": [
+        "filesystem.folder.open"
+      ],
+      "gate": {
+        "filesystem.folder.open": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "filesystem.folder.open"
+      ],
+      "text": "abrime la carpeta de descargas",
+      "verifier": {
+        "filesystem.folder.open": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "fs-02",
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "gate": {
+        "filesystem.known.search": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "filesystem.known.search"
+      ],
+      "text": "look for a pdf with factura in the name in my documents",
+      "verifier": {
+        "filesystem.known.search": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "fs-03",
+      "expected_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "gate": {
+        "filesystem.known.search": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "filesystem.known.search"
+      ],
+      "text": "hay archivos repetidos en descargas",
+      "verifier": {
+        "filesystem.known.search": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "fs-04",
+      "expected_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "gate": {
+        "filesystem.known.trash.named": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "text": "manda a la papelera el archivo notas.txt de descargas",
+      "verifier": {
+        "filesystem.known.trash.named": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "fs-05",
+      "expected_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [],
+      "text": "open the last file I downloaded",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "fs-06",
+      "expected_operations": [
+        "filesystem.create.directory"
+      ],
+      "gate": {
+        "filesystem.create.directory": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "filesystem.create.directory"
+      ],
+      "text": "creame una carpeta que se llame proyectos",
+      "verifier": {
+        "filesystem.create.directory": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "fs-07",
+      "expected_operations": [
+        "filesystem.hash",
+        "filesystem.search",
+        "filesystem.list"
+      ],
+      "gate": {
+        "filesystem.read.text": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "filesystem.read.text"
+      ],
+      "text": "sacale el hash al archivo reporte.txt",
+      "verifier": {
+        "filesystem.read.text": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "fs-08",
+      "expected_operations": [
+        "filesystem.list"
+      ],
+      "gate": {
+        "filesystem.known.search": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "filesystem.known.search"
+      ],
+      "text": "que archivos tengo en la carpeta de trabajo",
+      "verifier": {
+        "filesystem.known.search": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "fs-09",
+      "expected_operations": [
+        "filesystem.write.text"
+      ],
+      "gate": {
+        "filesystem.write.text": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "filesystem.write.text"
+      ],
+      "text": "write hello into a file called saludo.txt",
+      "verifier": {
+        "filesystem.write.text": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "clp-01",
+      "expected_operations": [
+        "clipboard.copy"
+      ],
+      "gate": {
+        "clipboard.copy": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "clipboard.copy"
+      ],
+      "text": "copiame lo que tengo seleccionado",
+      "verifier": {
+        "clipboard.copy": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "clp-02",
+      "expected_operations": [
+        "clipboard.paste"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [],
+      "text": "pegalo aca",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "clp-03",
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "gate": {
+        "clipboard.copy": false,
+        "clipboard.write.text": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "clipboard.copy",
+        "clipboard.write.text"
+      ],
+      "text": "what did I copy last",
+      "verifier": {
+        "clipboard.copy": true,
+        "clipboard.write.text": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "clp-04",
+      "expected_operations": [
+        "clipboard.write.text"
+      ],
+      "gate": {
+        "clipboard.write.text": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "clipboard.write.text"
+      ],
+      "text": "deja mi correo en el portapapeles",
+      "verifier": {
+        "clipboard.write.text": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "inp-01",
+      "expected_operations": [
+        "input.key.press"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [],
+      "text": "dale enter",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "inp-02",
+      "expected_operations": [
+        "input.select.all"
+      ],
+      "gate": {
+        "input.select.all": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "input.select.all"
+      ],
+      "text": "selecciona todo lo que hay ahi",
+      "verifier": {
+        "input.select.all": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "inp-03",
+      "expected_operations": [
+        "input.text.type"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [],
+      "text": "type hello world for me",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "inp-04",
+      "expected_operations": [
+        "input.keyboard.open"
+      ],
+      "gate": {
+        "input.keyboard.open": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "input.keyboard.open"
+      ],
+      "text": "sacame el teclado de pantalla",
+      "verifier": {
+        "input.keyboard.open": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "inp-05",
+      "expected_operations": [
+        "input.keyboard.layout"
+      ],
+      "gate": {
+        "input.keyboard.layout": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "input.keyboard.layout"
+      ],
+      "text": "cambia el keyboard a espanol",
+      "verifier": {
+        "input.keyboard.layout": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "inp-06",
+      "expected_operations": [
+        "input.pointer.control"
+      ],
+      "gate": {
+        "browser.control": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "browser.control"
+      ],
+      "text": "scroll down a bit",
+      "verifier": {
+        "browser.control": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "inp-07",
+      "expected_operations": [
+        "input.visible.click"
+      ],
+      "gate": {
+        "input.visible.click": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "input.visible.click"
+      ],
+      "text": "hazle clic al boton de aceptar",
+      "verifier": {
+        "input.visible.click": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "inp-08",
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "gate": {
+        "input.keyboard.status": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "input.keyboard.status"
+      ],
+      "text": "en que idioma esta el teclado",
+      "verifier": {
+        "input.keyboard.status": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "cap-01",
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "gate": {
+        "capture.screenshot": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "capture.screenshot"
+      ],
+      "text": "sacame una foto de la pantalla",
+      "verifier": {
+        "capture.screenshot": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "cap-02",
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "gate": {
+        "capture.active.window": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "capture.active.window"
+      ],
+      "text": "captura nada mas la ventana de adelante",
+      "verifier": {
+        "capture.active.window": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "cap-03",
+      "expected_operations": [
+        "ocr.read",
+        "capture.screenshot"
+      ],
+      "gate": {
+        "capture.screenshot": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "capture.screenshot"
+      ],
+      "text": "read the text out of that screenshot",
+      "verifier": {
+        "capture.screenshot": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "cap-04",
+      "expected_operations": [
+        "vision.describe",
+        "capture.screenshot"
+      ],
+      "gate": {
+        "vision.describe": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "vision.describe"
+      ],
+      "text": "describime que se ve en la captura",
+      "verifier": {
+        "vision.describe": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "brw-01",
+      "expected_operations": [
+        "browser.navigate",
+        "browser.navigate.named"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [],
+      "text": "llevame a wikipedia",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "brw-02",
+      "expected_operations": [
+        "browser.control"
+      ],
+      "gate": {
+        "window.restore": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "window.restore"
+      ],
+      "text": "go back one page",
+      "verifier": {
+        "window.restore": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "brw-03",
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "gate": {
+        "browser.tabs.list": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "browser.tabs.list"
+      ],
+      "text": "que pestanas tengo abiertas",
+      "verifier": {
+        "browser.tabs.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "brw-04",
+      "expected_operations": [
+        "browser.page.read"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [],
+      "text": "what does this page actually say",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "gam-01",
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "gate": {
+        "game.catalog.list": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "game.catalog.list"
+      ],
+      "text": "que juegos tengo instalados",
+      "verifier": {
+        "game.catalog.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "gam-02",
+      "expected_operations": [
+        "game.launch"
+      ],
+      "gate": {
+        "game.launch": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "game.launch"
+      ],
+      "text": "launch counter strike",
+      "verifier": {
+        "game.launch": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "gam-03",
+      "expected_operations": [
+        "game.installed.named"
+      ],
+      "gate": {
+        "game.installed.named": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "game.installed.named"
+      ],
+      "text": "tengo instalado el hollow knight",
+      "verifier": {
+        "game.installed.named": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "gam-04",
+      "expected_operations": [
+        "game.install.cancel.active",
+        "game.install.cancel"
+      ],
+      "gate": {
+        "game.install.cancel.active": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "game.install.cancel.active"
+      ],
+      "text": "para la descarga que tiene steam corriendo",
+      "verifier": {
+        "game.install.cancel.active": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "blu-01",
+      "expected_operations": [
+        "bluetooth.radio.set"
+      ],
+      "gate": {
+        "bluetooth.radio.set": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "bluetooth.radio.set"
+      ],
+      "text": "apagame el bluetooth",
+      "verifier": {
+        "bluetooth.radio.set": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "blu-02",
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "gate": {
+        "bluetooth.device.list": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "bluetooth.device.list"
+      ],
+      "text": "which bluetooth devices are around",
+      "verifier": {
+        "bluetooth.device.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "per-01",
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "gate": {
+        "system.status": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "que cosas tengo conectadas al equipo",
+      "verifier": {
+        "system.status": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "bak-01",
+      "expected_operations": [
+        "backup.known.create"
+      ],
+      "gate": {
+        "backup.create": false,
+        "backup.known.create": null,
+        "backup.known.verify.latest": null,
+        "backup.verify": null
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "backup.create",
+        "backup.known.create",
+        "backup.verify",
+        "backup.known.verify.latest"
+      ],
+      "text": "hazme una copia de seguridad de documentos",
+      "verifier": {
+        "backup.create": true,
+        "backup.known.create": true,
+        "backup.known.verify.latest": true,
+        "backup.verify": false
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "bak-02",
+      "expected_operations": [
+        "backup.list",
+        "backup.known.list"
+      ],
+      "gate": {
+        "backup.list": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "backup.list"
+      ],
+      "text": "list the backups you have made",
+      "verifier": {
+        "backup.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "cal-01",
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "gate": {
+        "calendar.event.list": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "calendar.event.list"
+      ],
+      "text": "que tengo en la agenda para hoy",
+      "verifier": {
+        "calendar.event.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "cal-02",
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "gate": {
+        "notification.schedule": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "text": "agendame una reunion manana de diez a once",
+      "verifier": {
+        "notification.schedule": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "eml-01",
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "gate": {
+        "email.latest.read": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "email.latest.read"
+      ],
+      "text": "read me the last email that came in",
+      "verifier": {
+        "email.latest.read": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "eml-02",
+      "expected_operations": [
+        "email.latest.reply"
+      ],
+      "gate": {
+        "email.latest.read": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "email.latest.read"
+      ],
+      "text": "contestale al ultimo correo que ya lo vi",
+      "verifier": {
+        "email.latest.read": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "msg-01",
+      "expected_operations": [
+        "message.send",
+        "message.recipient.resolve"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [],
+      "text": "mandale un mensaje a juan diciendo que llego tarde",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "off-01",
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "gate": {
+        "office.document.create": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "office.document.create"
+      ],
+      "text": "creame un documento de word en blanco",
+      "verifier": {
+        "office.document.create": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "pkg-01",
+      "expected_operations": [
+        "package.install.prepare",
+        "package.install.commit"
+      ],
+      "gate": {
+        "game.install.named": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "game.install.named"
+      ],
+      "text": "install vlc on this machine",
+      "verifier": {
+        "game.install.named": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "str-01",
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "gate": {
+        "streaming.play.named": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "streaming.play.named"
+      ],
+      "text": "pon la casa de papel en netflix",
+      "verifier": {
+        "streaming.play.named": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "web-01",
+      "expected_operations": [
+        "web.search"
+      ],
+      "gate": {
+        "web.search": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "web.search"
+      ],
+      "text": "busca en internet cuanto mide el everest",
+      "verifier": {
+        "web.search": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "rou-01",
+      "expected_operations": [
+        "routine.list"
+      ],
+      "gate": {
+        "routine.list": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "routine.list"
+      ],
+      "text": "que rutinas tengo configuradas",
+      "verifier": {
+        "routine.list": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "aud-09",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "gate": {
+        "audio.status": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "audio.status"
+      ],
+      "text": "esta muy fuerte el audio, bajalo",
+      "verifier": {
+        "audio.status": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "sys-13",
+      "expected_operations": [
+        "system.status"
+      ],
+      "gate": {
+        "system.status": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "cuanto storage me queda en el disco",
+      "verifier": {
+        "system.status": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "win-09",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "gate": {
+        "window.minimize": false
+      },
+      "gate_refuses": true,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "window.minimize"
+      ],
+      "text": "minimize everything I have open right now",
+      "verifier": {
+        "window.minimize": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "net-10",
+      "expected_operations": [
+        "network.status",
+        "network.ping"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [],
+      "text": "chequea si el internet anda",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "med-07",
+      "expected_operations": [
+        "media.seek.relative"
+      ],
+      "gate": {
+        "media.seek.relative": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "media.seek.relative"
+      ],
+      "text": "retrocede diez segundos la cancion",
+      "verifier": {
+        "media.seek.relative": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "fs-10",
+      "expected_operations": [
+        "filesystem.folder.open"
+      ],
+      "gate": {
+        "filesystem.folder.open": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "filesystem.folder.open"
+      ],
+      "text": "abrime la carpeta de imagenes",
+      "verifier": {
+        "filesystem.folder.open": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "sys-14",
+      "expected_operations": [
+        "system.power"
+      ],
+      "gate": {
+        "system.power": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "system.power"
+      ],
+      "text": "log me out of windows",
+      "verifier": {
+        "system.power": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "app-06",
+      "expected_operations": [
+        "app.open"
+      ],
+      "gate": {
+        "browser.navigate": true,
+        "browser.navigate.named": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "browser.navigate.named",
+        "browser.navigate"
+      ],
+      "text": "arrancame el navegador",
+      "verifier": {
+        "browser.navigate": true,
+        "browser.navigate.named": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "not-06",
+      "expected_operations": [
+        "note.create"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [],
+      "text": "jot down that the router password is on the fridge",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "tsk-06",
+      "expected_operations": [
+        "task.reopen",
+        "task.resolve.exact"
+      ],
+      "gate": {
+        "task.reopen": null
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [
+        "task.reopen"
+      ],
+      "text": "volve a abrir la tarea de llamar al banco",
+      "verifier": {
+        "task.reopen": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "cmp-01",
+      "expected_operations": [
+        "app.open",
+        "media.play.query"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [],
+      "text": "abre spotify y ponme musica",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "cmp-02",
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read",
+        "vision.describe"
+      ],
+      "gate": {
+        "capture.screenshot": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es_en",
+      "raw_operations": [
+        "capture.screenshot"
+      ],
+      "text": "saca un screenshot y decime que dice",
+      "verifier": {
+        "capture.screenshot": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "cmp-03",
+      "expected_operations": [
+        "audio.mute",
+        "system.power"
+      ],
+      "gate": {
+        "audio.mute": true
+      },
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "en",
+      "raw_operations": [
+        "audio.mute"
+      ],
+      "text": "mute the audio and lock the machine",
+      "verifier": {
+        "audio.mute": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "cmp-04",
+      "expected_operations": [
+        "note.create",
+        "reminder.create",
+        "notification.schedule"
+      ],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": true,
+      "language": "es",
+      "raw_operations": [],
+      "text": "anota que hay reunion el jueves y avisame ese dia",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-01",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [],
+      "text": "pide un taxi para las ocho",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-02",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [],
+      "text": "book me a table for two tonight",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-03",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [],
+      "text": "pedime una pizza a domicilio",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-04",
+      "expected_operations": [],
+      "gate": {
+        "note.create": null,
+        "notification.cancel.at": false,
+        "reminder.resolve.exact": false,
+        "routine.phrase.create": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "notification.cancel.at",
+        "note.create",
+        "reminder.resolve.exact",
+        "routine.phrase.create"
+      ],
+      "text": "call my mother",
+      "verifier": {
+        "note.create": false,
+        "notification.cancel.at": false,
+        "reminder.resolve.exact": false,
+        "routine.phrase.create": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-05",
+      "expected_operations": [],
+      "gate": {
+        "message.send": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "message.send"
+      ],
+      "text": "transfiere cincuenta dolares a mi hermano",
+      "verifier": {
+        "message.send": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-06",
+      "expected_operations": [],
+      "gate": {
+        "window.active": false,
+        "window.focus": false,
+        "window.maximize": false,
+        "window.minimize": false,
+        "window.move": false,
+        "window.resize": false,
+        "window.resolve": false,
+        "window.restore": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "window.focus",
+        "window.resolve",
+        "window.restore",
+        "window.minimize",
+        "window.maximize",
+        "window.move",
+        "window.resize",
+        "window.active"
+      ],
+      "text": "prende las luces del living",
+      "verifier": {
+        "window.active": false,
+        "window.focus": true,
+        "window.maximize": false,
+        "window.minimize": false,
+        "window.move": false,
+        "window.resize": false,
+        "window.resolve": false,
+        "window.restore": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-07",
+      "expected_operations": [],
+      "gate": {
+        "media.play.youtube": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "media.play.youtube"
+      ],
+      "text": "upload this video to youtube",
+      "verifier": {
+        "media.play.youtube": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-08",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [],
+      "text": "formatea el pendrive",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-09",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [],
+      "text": "update the bios on this laptop",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-10",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [],
+      "text": "sacame un pasaje de avion a madrid",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-11",
+      "expected_operations": [],
+      "gate": {
+        "backup.create": false,
+        "game.install.commit": null,
+        "game.install.named": null,
+        "package.install.prepare": false,
+        "routine.list": false,
+        "routine.phrase.create": false,
+        "routine.resolve.exact": null,
+        "task.complete": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es_en",
+      "raw_operations": [
+        "package.install.prepare",
+        "game.install.named",
+        "routine.phrase.create",
+        "backup.create",
+        "task.complete",
+        "game.install.commit",
+        "routine.resolve.exact",
+        "routine.list"
+      ],
+      "text": "compilame el proyecto de rust",
+      "verifier": {
+        "backup.create": false,
+        "game.install.commit": true,
+        "game.install.named": false,
+        "package.install.prepare": true,
+        "routine.list": true,
+        "routine.phrase.create": false,
+        "routine.resolve.exact": false,
+        "task.complete": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-12",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [],
+      "text": "commit and push my changes to git",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-13",
+      "expected_operations": [],
+      "gate": {
+        "app.installed": null,
+        "backup.verify": null,
+        "filesystem.trash.commit": false,
+        "filesystem.trash.prepare": false,
+        "system.application.crash.diagnose": false,
+        "system.status": false,
+        "wifi.connect": null,
+        "window.restore": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "system.status",
+        "app.installed",
+        "filesystem.trash.prepare",
+        "backup.verify",
+        "system.application.crash.diagnose",
+        "wifi.connect",
+        "filesystem.trash.commit",
+        "window.restore"
+      ],
+      "text": "pasale el antivirus al equipo",
+      "verifier": {
+        "app.installed": false,
+        "backup.verify": false,
+        "filesystem.trash.commit": false,
+        "filesystem.trash.prepare": false,
+        "system.application.crash.diagnose": false,
+        "system.status": false,
+        "wifi.connect": false,
+        "window.restore": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-14",
+      "expected_operations": [],
+      "gate": {
+        "system.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "desfragmenta el disco duro",
+      "verifier": {
+        "system.status": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-15",
+      "expected_operations": [],
+      "gate": {
+        "game.launch": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "game.launch"
+      ],
+      "text": "spin up a virtual machine",
+      "verifier": {
+        "game.launch": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-16",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [],
+      "text": "cambiame la contrasena de windows",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-17",
+      "expected_operations": [],
+      "gate": {
+        "capture.active.window": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "capture.active.window"
+      ],
+      "text": "grabame la pantalla en video",
+      "verifier": {
+        "capture.active.window": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-18",
+      "expected_operations": [],
+      "gate": {
+        "wifi.connect.named": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "wifi.connect.named"
+      ],
+      "text": "connect to my work vpn",
+      "verifier": {
+        "wifi.connect.named": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-19",
+      "expected_operations": [],
+      "gate": {
+        "backup.known.create": null,
+        "backup.known.verify.latest": null,
+        "backup.verify": null,
+        "filesystem.copy": false,
+        "filesystem.hash": false,
+        "filesystem.sandbox.move.named": false,
+        "filesystem.search": false,
+        "filesystem.trash.commit": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "backup.known.create",
+        "filesystem.copy",
+        "filesystem.sandbox.move.named",
+        "backup.known.verify.latest",
+        "filesystem.trash.commit",
+        "backup.verify",
+        "filesystem.hash",
+        "filesystem.search"
+      ],
+      "text": "cloname el disco duro a otro",
+      "verifier": {
+        "backup.known.create": false,
+        "backup.known.verify.latest": false,
+        "backup.verify": false,
+        "filesystem.copy": true,
+        "filesystem.hash": false,
+        "filesystem.sandbox.move.named": false,
+        "filesystem.search": false,
+        "filesystem.trash.commit": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-20",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [],
+      "text": "riega las plantas del balcon",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-21",
+      "expected_operations": [],
+      "gate": {
+        "notification.schedule": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "notification.schedule"
+      ],
+      "text": "programa el aire acondicionado a veintidos grados",
+      "verifier": {
+        "notification.schedule": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-22",
+      "expected_operations": [],
+      "gate": {
+        "filesystem.copy": false,
+        "filesystem.known.duplicates": false,
+        "filesystem.sandbox.diff.named": false,
+        "filesystem.trash.restore": false,
+        "game.install.cancel": null,
+        "game.install.cancel.active": null,
+        "streaming.navigate": false,
+        "streaming.play.named": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "game.install.cancel.active",
+        "game.install.cancel",
+        "streaming.navigate",
+        "streaming.play.named",
+        "filesystem.sandbox.diff.named",
+        "filesystem.copy",
+        "filesystem.known.duplicates",
+        "filesystem.trash.restore"
+      ],
+      "text": "download this series over torrent",
+      "verifier": {
+        "filesystem.copy": false,
+        "filesystem.known.duplicates": false,
+        "filesystem.sandbox.diff.named": false,
+        "filesystem.trash.restore": false,
+        "game.install.cancel": false,
+        "game.install.cancel.active": false,
+        "streaming.navigate": false,
+        "streaming.play.named": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-23",
+      "expected_operations": [],
+      "gate": {
+        "media.seek.relative": null
+      },
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "media.seek.relative"
+      ],
+      "text": "editame el video y quitale los ultimos diez segundos",
+      "verifier": {
+        "media.seek.relative": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-24",
+      "expected_operations": [],
+      "gate": {
+        "office.document.create": true
+      },
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es_en",
+      "raw_operations": [
+        "office.document.create"
+      ],
+      "text": "convierteme este pdf a word",
+      "verifier": {
+        "office.document.create": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-25",
+      "expected_operations": [],
+      "gate": {
+        "wifi.connect": null
+      },
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "wifi.connect"
+      ],
+      "text": "order me an uber to the airport",
+      "verifier": {
+        "wifi.connect": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-26",
+      "expected_operations": [],
+      "gate": {
+        "task.create": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "task.create"
+      ],
+      "text": "reservame hora en la peluqueria",
+      "verifier": {
+        "task.create": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-27",
+      "expected_operations": [],
+      "gate": {
+        "system.settings.set": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "system.settings.set"
+      ],
+      "text": "cambiame el fondo de escritorio",
+      "verifier": {
+        "system.settings.set": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "ooc-28",
+      "expected_operations": [],
+      "gate": {
+        "backup.known.verify.latest": null,
+        "filesystem.file.open.latest": false,
+        "filesystem.hash": false,
+        "filesystem.known.duplicates": false,
+        "filesystem.move": false,
+        "filesystem.sandbox.append.named": false,
+        "input.key.press": false,
+        "task.complete": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "filesystem.hash",
+        "backup.known.verify.latest",
+        "filesystem.known.duplicates",
+        "filesystem.file.open.latest",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "task.complete",
+        "input.key.press"
+      ],
+      "text": "encrypt this whole drive with bitlocker",
+      "verifier": {
+        "backup.known.verify.latest": false,
+        "filesystem.file.open.latest": false,
+        "filesystem.hash": false,
+        "filesystem.known.duplicates": false,
+        "filesystem.move": false,
+        "filesystem.sandbox.append.named": false,
+        "input.key.press": false,
+        "task.complete": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-29",
+      "expected_operations": [],
+      "gate": {
+        "office.document.create": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "office.document.create"
+      ],
+      "text": "mandame flores a la oficina",
+      "verifier": {
+        "office.document.create": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-30",
+      "expected_operations": [],
+      "gate": {
+        "backup.verify": null,
+        "filesystem.copy": false,
+        "filesystem.move": false,
+        "game.install.cancel.active": null,
+        "game.install.prepare": false,
+        "game.launch": false,
+        "system.application.crash.diagnose": false,
+        "task.resolve.exact": null
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es_en",
+      "raw_operations": [
+        "game.install.prepare",
+        "filesystem.move",
+        "filesystem.copy",
+        "task.resolve.exact",
+        "game.launch",
+        "game.install.cancel.active",
+        "system.application.crash.diagnose",
+        "backup.verify"
+      ],
+      "text": "hazme un deploy a produccion",
+      "verifier": {
+        "backup.verify": false,
+        "filesystem.copy": false,
+        "filesystem.move": false,
+        "game.install.cancel.active": false,
+        "game.install.prepare": true,
+        "game.launch": false,
+        "system.application.crash.diagnose": false,
+        "task.resolve.exact": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-31",
+      "expected_operations": [],
+      "gate": {
+        "system.power": null
+      },
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "system.power"
+      ],
+      "text": "unlock my phone for me",
+      "verifier": {
+        "system.power": true
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-32",
+      "expected_operations": [],
+      "gate": {
+        "message.send": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "message.send"
+      ],
+      "text": "llamame un plomero para manana",
+      "verifier": {
+        "message.send": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "ooc-33",
+      "expected_operations": [],
+      "gate": {
+        "peripheral.print": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [
+        "peripheral.print"
+      ],
+      "text": "imprimeme en 3d esta figura",
+      "verifier": {
+        "peripheral.print": true
+      },
+      "verifier_revives": true
+    },
+    {
+      "case_id": "ooc-34",
+      "expected_operations": [],
+      "gate": {
+        "system.status": false
+      },
+      "gate_refuses": true,
+      "in_catalog": false,
+      "language": "en",
+      "raw_operations": [
+        "system.status"
+      ],
+      "text": "overclock the graphics card",
+      "verifier": {
+        "system.status": false
+      },
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-35",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es",
+      "raw_operations": [],
+      "text": "crea una particion nueva en el disco",
+      "verifier": {},
+      "verifier_revives": false
+    },
+    {
+      "case_id": "ooc-36",
+      "expected_operations": [],
+      "gate": {},
+      "gate_refuses": false,
+      "in_catalog": false,
+      "language": "es_en",
+      "raw_operations": [],
+      "text": "resetea el router de la casa",
+      "verifier": {},
+      "verifier_revives": false
+    }
+  ],
+  "schema": "baxy.goal03b-domain-second-opinion.v1",
+  "source": {
+    "rows": 160,
+    "sha256": "c2bf9fe13de1b84c354afbfc38329d26d54128ee89eaf4adb456ce24f845e750",
+    "telemetry": "artifacts\\development\\goal03_goal03b_before.telemetry.jsonl"
+  },
+  "verifier": "semantic_leaf",
+  "verifier_seconds": {
+    "calls": 211,
+    "max": 0.411,
+    "p50": 0.1382,
+    "p90": 0.2563
+  }
+}

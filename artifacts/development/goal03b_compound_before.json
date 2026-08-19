@@ -1,0 +1,443 @@
+{
+  "by_kind": {
+    "action": 1,
+    "clarify": 3,
+    "conversation": 8,
+    "plan": 3
+  },
+  "by_language": {
+    "en": {
+      "rows": 5,
+      "whole": 0
+    },
+    "es": {
+      "rows": 7,
+      "whole": 3
+    },
+    "es_en": {
+      "rows": 3,
+      "whole": 0
+    }
+  },
+  "corpus": {
+    "path": "artifacts\\development\\goal03b_compound_missions.v1.jsonl",
+    "rows": 15,
+    "sha256": "f66e981c454415999e1f1304b030dabde8e137300c48a237887f8b054bf3c724"
+  },
+  "latency_seconds": {
+    "max": 4.395,
+    "p50": 0.459,
+    "p90": 2.464
+  },
+  "missions": {
+    "rate": 0.2,
+    "rows": 15,
+    "whole": 3
+  },
+  "rows": [
+    {
+      "case_id": "cmp-b01",
+      "decision_path": "explicit_effects",
+      "dependency": "sequencing head",
+      "final_operations": [
+        "app.open",
+        "game.catalog.list"
+      ],
+      "kind": "plan",
+      "language": "es",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.044217,
+      "step_named": [
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "app.open"
+        ],
+        [
+          "game.catalog.list"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b02",
+      "decision_path": "explicit_effects",
+      "dependency": "elided object in the second clause",
+      "final_operations": [
+        "media.play.query"
+      ],
+      "kind": "action",
+      "language": "en",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.022444,
+      "step_named": [
+        false,
+        true
+      ],
+      "steps": [
+        [
+          "app.open"
+        ],
+        [
+          "media.play.query",
+          "media.play.exact",
+          "streaming.play.named"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b03",
+      "decision_path": "explicit_conversation",
+      "dependency": "the note body is the first step's result",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es_en",
+      "question": "",
+      "reply_text": "No puedo buscar en internet cuanto mide el Everest y guardar la información en una nota llamada Everest.",
+      "seconds": 1.087725,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "web.search"
+        ],
+        [
+          "note.create"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b04",
+      "decision_path": "model",
+      "dependency": "conditional on the first step",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "question": "",
+      "reply_text": "No puedo crear una tarea llamada \"pagar el arriendo\".",
+      "seconds": 2.119342,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "task.search",
+          "task.list",
+          "task.resolve.exact"
+        ],
+        [
+          "task.create"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b05",
+      "decision_path": "explicit_conversation",
+      "dependency": "conditional plus pronoun",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "question": "",
+      "reply_text": "You mention that Discord is installed and should be opened if it is.",
+      "seconds": 0.233264,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "app.installed",
+          "window.application.status"
+        ],
+        [
+          "app.open"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b06",
+      "decision_path": "explicit_conversation",
+      "dependency": "the second step consumes the first step's identity",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "question": "",
+      "reply_text": "No puedo sacar una captura de pantalla y decir lo que dice.",
+      "seconds": 0.689002,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "capture.screenshot",
+          "capture.active.window"
+        ],
+        [
+          "ocr.read",
+          "vision.describe"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b07",
+      "decision_path": "explicit_effects",
+      "dependency": "sequencing tail",
+      "final_operations": [
+        "network.status",
+        "system.status"
+      ],
+      "kind": "plan",
+      "language": "es",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.009204,
+      "step_named": [
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "system.status"
+        ],
+        [
+          "network.status"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b08",
+      "decision_path": "explicit_conversation",
+      "dependency": "bare anaphora on the first list",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "question": "",
+      "reply_text": "I cannot list your saved wifi profiles and tell you which one you are connected to.",
+      "seconds": 0.620561,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "wifi.profile.list"
+        ],
+        [
+          "wifi.status",
+          "wifi.ensure.connected"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b09",
+      "decision_path": "explicit_clarification",
+      "dependency": "demonstrative referring to the created note",
+      "final_operations": [
+        "calendar.event.create"
+      ],
+      "kind": "clarify",
+      "language": "es_en",
+      "question": "¿A qué hora termina la reunión?",
+      "reply_text": "",
+      "seconds": 0.459089,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "note.create"
+        ],
+        [
+          "note.read",
+          "note.list",
+          "note.search"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b10",
+      "decision_path": "model",
+      "dependency": "elided verb in the second clause",
+      "final_operations": [],
+      "kind": "clarify",
+      "language": "es",
+      "question": "¿Puedes explicarme qué significa 'bajale tres puntos al volumen' y cómo te imaginas que quedó después de hacerlo?",
+      "reply_text": "",
+      "seconds": 4.394793,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "audio.volume.adjust",
+          "audio.volume"
+        ],
+        [
+          "audio.status"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b11",
+      "decision_path": "explicit_conversation",
+      "dependency": "the read observes the write",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "question": "",
+      "reply_text": "The clipboard contains the text \"Copy what I have selected and then tell me what is on the clipboard now.\"",
+      "seconds": 0.311047,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "clipboard.copy"
+        ],
+        [
+          "clipboard.read.text"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b12",
+      "decision_path": "explicit_effects",
+      "dependency": "three read-only clauses, serial comma",
+      "final_operations": [
+        "bluetooth.device.list",
+        "peripheral.list",
+        "system.status"
+      ],
+      "kind": "plan",
+      "language": "es",
+      "question": "",
+      "reply_text": "",
+      "seconds": 0.01177,
+      "step_named": [
+        true,
+        true,
+        true
+      ],
+      "steps": [
+        [
+          "bluetooth.device.list"
+        ],
+        [
+          "peripheral.list"
+        ],
+        [
+          "system.status"
+        ]
+      ],
+      "whole": true
+    },
+    {
+      "case_id": "cmp-b13",
+      "decision_path": "explicit_conversation",
+      "dependency": "elided head plus bare ordinal",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "en",
+      "question": "",
+      "reply_text": "I cannot create a note called Rio with cauce, a note called Valle with hondo, and then read the first one.",
+      "seconds": 0.405253,
+      "step_named": [
+        false,
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "note.create"
+        ],
+        [
+          "note.create"
+        ],
+        [
+          "note.read"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b14",
+      "decision_path": "explicit_conversation",
+      "dependency": "code-switched second clause",
+      "final_operations": [],
+      "kind": "clarify",
+      "language": "es_en",
+      "question": "¿Te refieres a que me indiques la hora actual y luego configure un recordatorio para las ocho?",
+      "reply_text": "",
+      "seconds": 2.464052,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "system.time"
+        ],
+        [
+          "notification.schedule",
+          "reminder.create"
+        ]
+      ],
+      "whole": false
+    },
+    {
+      "case_id": "cmp-b15",
+      "decision_path": "explicit_conversation",
+      "dependency": "the second read observes the first effect",
+      "final_operations": [],
+      "kind": "conversation",
+      "language": "es",
+      "question": "",
+      "reply_text": "La ventana que quedó en primer plano es la que estaba detrás de la ventana minimizada.",
+      "seconds": 0.935116,
+      "step_named": [
+        false,
+        false
+      ],
+      "steps": [
+        [
+          "window.minimize"
+        ],
+        [
+          "window.active"
+        ]
+      ],
+      "whole": false
+    }
+  ],
+  "schema": "baxy.goal03b-compound-missions.v1",
+  "steps": {
+    "named": 8,
+    "rate": 0.25,
+    "total": 32
+  },
+  "three_zeros": {
+    "effects_executed": 0,
+    "providers_enabled": false
+  }
+}

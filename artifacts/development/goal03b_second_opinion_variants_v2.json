@@ -1,0 +1,3311 @@
+{
+  "candidates": {
+    "identity": {
+      "in_catalog_offered_another_operation": 12,
+      "in_catalog_offered_the_expected_operation": 24,
+      "in_catalog_still_unsupported": 7,
+      "out_of_catalog_offered": 3
+    },
+    "identity_and_not_mismatch": {
+      "in_catalog_offered_another_operation": 0,
+      "in_catalog_offered_the_expected_operation": 0,
+      "in_catalog_still_unsupported": 43,
+      "out_of_catalog_offered": 0
+    },
+    "identity_and_strict": {
+      "in_catalog_offered_another_operation": 1,
+      "in_catalog_offered_the_expected_operation": 5,
+      "in_catalog_still_unsupported": 37,
+      "out_of_catalog_offered": 0
+    },
+    "identity_bounded": {
+      "in_catalog_offered_another_operation": 9,
+      "in_catalog_offered_the_expected_operation": 21,
+      "in_catalog_still_unsupported": 13,
+      "out_of_catalog_offered": 0
+    },
+    "not_mismatch": {
+      "in_catalog_offered_another_operation": 0,
+      "in_catalog_offered_the_expected_operation": 0,
+      "in_catalog_still_unsupported": 43,
+      "out_of_catalog_offered": 2
+    },
+    "strict": {
+      "in_catalog_offered_another_operation": 1,
+      "in_catalog_offered_the_expected_operation": 5,
+      "in_catalog_still_unsupported": 37,
+      "out_of_catalog_offered": 0
+    }
+  },
+  "measured_at": "2026-08-19T18:26:55+00:00",
+  "population": {
+    "in_catalog": 43,
+    "out_of_catalog": 21,
+    "rows_the_gate_refuses": 64
+  },
+  "rows": [
+    {
+      "case_id": "aud-01",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "audio.volume.adjust"
+      ],
+      "text": "che ponelo mas bajito que estoy en una llamada",
+      "verdicts": {
+        "identity": {
+          "audio.volume.adjust": true
+        },
+        "identity_bounded": {
+          "audio.volume.adjust": true
+        },
+        "mismatch": {
+          "audio.volume.adjust": true
+        },
+        "strict": {
+          "audio.volume.adjust": false
+        }
+      }
+    },
+    {
+      "case_id": "aud-02",
+      "expected_operations": [
+        "audio.volume"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "dejame el sonido a la mitad",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "aud-03",
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "audio.mute",
+        "audio.microphone.mute"
+      ],
+      "text": "kill the sound completely, I need silence",
+      "verdicts": {
+        "identity": {
+          "audio.microphone.mute": true,
+          "audio.mute": true
+        },
+        "identity_bounded": {
+          "audio.microphone.mute": true,
+          "audio.mute": true
+        },
+        "mismatch": {
+          "audio.microphone.mute": true,
+          "audio.mute": true
+        },
+        "strict": {
+          "audio.microphone.mute": false,
+          "audio.mute": false
+        }
+      }
+    },
+    {
+      "case_id": "aud-04",
+      "expected_operations": [
+        "audio.microphone.mute"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "mutea el mic que ya vuelvo",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "aud-05",
+      "expected_operations": [
+        "audio.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "como esta el sonido ahora mismo",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "aud-06",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "audio.volume.adjust"
+      ],
+      "text": "turn it up a bit, I can barely hear it",
+      "verdicts": {
+        "identity": {
+          "audio.volume.adjust": true
+        },
+        "identity_bounded": {
+          "audio.volume.adjust": true
+        },
+        "mismatch": {
+          "audio.volume.adjust": true
+        },
+        "strict": {
+          "audio.volume.adjust": false
+        }
+      }
+    },
+    {
+      "case_id": "aud-07",
+      "expected_operations": [
+        "audio.mute"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "audio.status",
+        "audio.mute",
+        "audio.microphone.mute"
+      ],
+      "text": "quitale el silencio a los parlantes",
+      "verdicts": {
+        "identity": {
+          "audio.microphone.mute": true,
+          "audio.mute": true,
+          "audio.status": false
+        },
+        "identity_bounded": {
+          "audio.microphone.mute": true,
+          "audio.mute": true,
+          "audio.status": false
+        },
+        "mismatch": {
+          "audio.microphone.mute": true,
+          "audio.mute": true,
+          "audio.status": true
+        },
+        "strict": {
+          "audio.microphone.mute": false,
+          "audio.mute": false,
+          "audio.status": false
+        }
+      }
+    },
+    {
+      "case_id": "aud-08",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "baja el volume tres puntos nomas",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "app-01",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "note.list"
+      ],
+      "text": "necesito el bloc de notas",
+      "verdicts": {
+        "identity": {
+          "note.list": true
+        },
+        "identity_bounded": {
+          "note.list": true
+        },
+        "mismatch": {
+          "note.list": true
+        },
+        "strict": {
+          "note.list": false
+        }
+      }
+    },
+    {
+      "case_id": "app-02",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "system.status"
+      ],
+      "text": "do I have discord on this machine",
+      "verdicts": {
+        "identity": {
+          "system.status": false
+        },
+        "identity_bounded": {
+          "system.status": false
+        },
+        "mismatch": {
+          "system.status": true
+        },
+        "strict": {
+          "system.status": false
+        }
+      }
+    },
+    {
+      "case_id": "app-03",
+      "expected_operations": [
+        "app.close"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "cierrame la ventana que tengo adelante",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "app-04",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "app.open"
+      ],
+      "text": "abrime el calculator porfa",
+      "verdicts": {
+        "identity": {
+          "app.open": true
+        },
+        "identity_bounded": {
+          "app.open": true
+        },
+        "mismatch": {
+          "app.open": true
+        },
+        "strict": {
+          "app.open": false
+        }
+      }
+    },
+    {
+      "case_id": "app-05",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "is steam even installed here",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "win-01",
+      "expected_operations": [
+        "window.active"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "window.active",
+        "media.play.query",
+        "audio.status",
+        "wifi.ensure.connected",
+        "media.play.exact",
+        "window.focus",
+        "app.open",
+        "task.search"
+      ],
+      "text": "que tengo en primer plano ahora",
+      "verdicts": {
+        "identity": {
+          "app.open": true,
+          "audio.status": true,
+          "media.play.exact": false,
+          "media.play.query": true,
+          "task.search": false,
+          "wifi.ensure.connected": false,
+          "window.active": true,
+          "window.focus": true
+        },
+        "identity_bounded": {
+          "app.open": false,
+          "audio.status": false,
+          "media.play.exact": false,
+          "media.play.query": true,
+          "task.search": false,
+          "wifi.ensure.connected": false,
+          "window.active": true,
+          "window.focus": true
+        },
+        "mismatch": {
+          "app.open": true,
+          "audio.status": true,
+          "media.play.exact": true,
+          "media.play.query": true,
+          "task.search": true,
+          "wifi.ensure.connected": true,
+          "window.active": true,
+          "window.focus": true
+        },
+        "strict": {
+          "app.open": false,
+          "audio.status": false,
+          "media.play.exact": false,
+          "media.play.query": false,
+          "task.search": false,
+          "wifi.ensure.connected": false,
+          "window.active": false,
+          "window.focus": false
+        }
+      }
+    },
+    {
+      "case_id": "win-02",
+      "expected_operations": [
+        "window.maximize"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "window.resize"
+      ],
+      "text": "hazme grande esta ventana que no veo nada",
+      "verdicts": {
+        "identity": {
+          "window.resize": true
+        },
+        "identity_bounded": {
+          "window.resize": true
+        },
+        "mismatch": {
+          "window.resize": true
+        },
+        "strict": {
+          "window.resize": false
+        }
+      }
+    },
+    {
+      "case_id": "win-03",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "window.move"
+      ],
+      "text": "send this window down to the taskbar",
+      "verdicts": {
+        "identity": {
+          "window.move": true
+        },
+        "identity_bounded": {
+          "window.move": true
+        },
+        "mismatch": {
+          "window.move": true
+        },
+        "strict": {
+          "window.move": false
+        }
+      }
+    },
+    {
+      "case_id": "win-04",
+      "expected_operations": [
+        "window.move"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "window.move"
+      ],
+      "text": "corre la ventana a la esquina de arriba a la izquierda",
+      "verdicts": {
+        "identity": {
+          "window.move": true
+        },
+        "identity_bounded": {
+          "window.move": true
+        },
+        "mismatch": {
+          "window.move": true
+        },
+        "strict": {
+          "window.move": false
+        }
+      }
+    },
+    {
+      "case_id": "win-05",
+      "expected_operations": [
+        "window.resize"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "window.resize"
+      ],
+      "text": "make this window eight hundred by six hundred",
+      "verdicts": {
+        "identity": {
+          "window.resize": true
+        },
+        "identity_bounded": {
+          "window.resize": true
+        },
+        "mismatch": {
+          "window.resize": true
+        },
+        "strict": {
+          "window.resize": false
+        }
+      }
+    },
+    {
+      "case_id": "win-06",
+      "expected_operations": [
+        "window.focus",
+        "window.resolve"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "trae la ventana de chrome al frente",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "win-07",
+      "expected_operations": [
+        "window.application.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "spotify tiene alguna ventana abierta",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "win-08",
+      "expected_operations": [
+        "window.restore"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "devuelvele el tamano normal a la ventana",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "sys-01",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "system.status"
+      ],
+      "text": "como anda la maquina en general",
+      "verdicts": {
+        "identity": {
+          "system.status": true
+        },
+        "identity_bounded": {
+          "system.status": true
+        },
+        "mismatch": {
+          "system.status": true
+        },
+        "strict": {
+          "system.status": false
+        }
+      }
+    },
+    {
+      "case_id": "sys-02",
+      "expected_operations": [
+        "system.time"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "system.time"
+      ],
+      "text": "que fecha y hora tenemos",
+      "verdicts": {
+        "identity": {
+          "system.time": true
+        },
+        "identity_bounded": {
+          "system.time": true
+        },
+        "mismatch": {
+          "system.time": true
+        },
+        "strict": {
+          "system.time": true
+        }
+      }
+    },
+    {
+      "case_id": "sys-03",
+      "expected_operations": [
+        "system.application.crash.diagnose"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "which apps crashed on me lately",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "sys-04",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "task.delete"
+      ],
+      "text": "trancame el equipo que me voy",
+      "verdicts": {
+        "identity": {
+          "task.delete": true
+        },
+        "identity_bounded": {
+          "task.delete": false
+        },
+        "mismatch": {
+          "task.delete": true
+        },
+        "strict": {
+          "task.delete": false
+        }
+      }
+    },
+    {
+      "case_id": "sys-05",
+      "expected_operations": [
+        "system.process.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "system.status"
+      ],
+      "text": "que programas se estan comiendo la memoria",
+      "verdicts": {
+        "identity": {
+          "system.status": true
+        },
+        "identity_bounded": {
+          "system.status": true
+        },
+        "mismatch": {
+          "system.status": true
+        },
+        "strict": {
+          "system.status": false
+        }
+      }
+    },
+    {
+      "case_id": "sys-06",
+      "expected_operations": [
+        "system.process.terminate.named"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "system.process.terminate.named"
+      ],
+      "text": "force quit chrome, it is frozen solid",
+      "verdicts": {
+        "identity": {
+          "system.process.terminate.named": true
+        },
+        "identity_bounded": {
+          "system.process.terminate.named": true
+        },
+        "mismatch": {
+          "system.process.terminate.named": true
+        },
+        "strict": {
+          "system.process.terminate.named": false
+        }
+      }
+    },
+    {
+      "case_id": "sys-07",
+      "expected_operations": [
+        "system.recyclebin.empty"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "vaciame la papelera de reciclaje",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "sys-08",
+      "expected_operations": [
+        "system.settings.adjust"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "system.settings.adjust"
+      ],
+      "text": "subile un poco a la luz de la pantalla",
+      "verdicts": {
+        "identity": {
+          "system.settings.adjust": true
+        },
+        "identity_bounded": {
+          "system.settings.adjust": true
+        },
+        "mismatch": {
+          "system.settings.adjust": true
+        },
+        "strict": {
+          "system.settings.adjust": false
+        }
+      }
+    },
+    {
+      "case_id": "sys-09",
+      "expected_operations": [
+        "system.settings.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "system.status"
+      ],
+      "text": "how bright is my screen right now",
+      "verdicts": {
+        "identity": {
+          "system.status": false
+        },
+        "identity_bounded": {
+          "system.status": false
+        },
+        "mismatch": {
+          "system.status": true
+        },
+        "strict": {
+          "system.status": false
+        }
+      }
+    },
+    {
+      "case_id": "sys-10",
+      "expected_operations": [
+        "system.identity"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "con que usuario estoy entrado",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "sys-11",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "cuanta ram me queda libre",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "sys-12",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "browser.navigate"
+      ],
+      "text": "apaga la compu",
+      "verdicts": {
+        "identity": {
+          "browser.navigate": false
+        },
+        "identity_bounded": {
+          "browser.navigate": false
+        },
+        "mismatch": {
+          "browser.navigate": true
+        },
+        "strict": {
+          "browser.navigate": false
+        }
+      }
+    },
+    {
+      "case_id": "net-01",
+      "expected_operations": [
+        "network.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "tengo internet o no",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "net-02",
+      "expected_operations": [
+        "network.ping"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "see if 8.8.8.8 answers",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "net-03",
+      "expected_operations": [
+        "network.ip.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "cual es mi direccion ip",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "net-04",
+      "expected_operations": [
+        "network.dns.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "que servidores de nombres estoy usando",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "net-05",
+      "expected_operations": [
+        "network.port.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "what ports are listening on this box",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "net-06",
+      "expected_operations": [
+        "wifi.status",
+        "wifi.ensure.connected"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "network.status",
+        "wifi.status",
+        "wifi.ensure.connected"
+      ],
+      "text": "a que red inalambrica estoy pegado",
+      "verdicts": {
+        "identity": {
+          "network.status": true,
+          "wifi.ensure.connected": true,
+          "wifi.status": true
+        },
+        "identity_bounded": {
+          "network.status": true,
+          "wifi.ensure.connected": false,
+          "wifi.status": false
+        },
+        "mismatch": {
+          "network.status": true,
+          "wifi.ensure.connected": true,
+          "wifi.status": true
+        },
+        "strict": {
+          "network.status": false,
+          "wifi.ensure.connected": false,
+          "wifi.status": false
+        }
+      }
+    },
+    {
+      "case_id": "net-07",
+      "expected_operations": [
+        "wifi.profile.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "wifi.profile.list"
+      ],
+      "text": "mostrame las redes que tengo guardadas",
+      "verdicts": {
+        "identity": {
+          "wifi.profile.list": true
+        },
+        "identity_bounded": {
+          "wifi.profile.list": true
+        },
+        "mismatch": {
+          "wifi.profile.list": true
+        },
+        "strict": {
+          "wifi.profile.list": false
+        }
+      }
+    },
+    {
+      "case_id": "net-08",
+      "expected_operations": [
+        "wifi.disconnect"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "wifi.disconnect"
+      ],
+      "text": "drop the wireless connection",
+      "verdicts": {
+        "identity": {
+          "wifi.disconnect": true
+        },
+        "identity_bounded": {
+          "wifi.disconnect": true
+        },
+        "mismatch": {
+          "wifi.disconnect": true
+        },
+        "strict": {
+          "wifi.disconnect": false
+        }
+      }
+    },
+    {
+      "case_id": "net-09",
+      "expected_operations": [
+        "wifi.connect.named",
+        "wifi.connect"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "conectate al wifi de casa",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "med-01",
+      "expected_operations": [
+        "media.control"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "media.status"
+      ],
+      "text": "para lo que esta sonando",
+      "verdicts": {
+        "identity": {
+          "media.status": true
+        },
+        "identity_bounded": {
+          "media.status": false
+        },
+        "mismatch": {
+          "media.status": true
+        },
+        "strict": {
+          "media.status": false
+        }
+      }
+    },
+    {
+      "case_id": "med-02",
+      "expected_operations": [
+        "media.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "media.status"
+      ],
+      "text": "que cancion es esta",
+      "verdicts": {
+        "identity": {
+          "media.status": true
+        },
+        "identity_bounded": {
+          "media.status": false
+        },
+        "mismatch": {
+          "media.status": true
+        },
+        "strict": {
+          "media.status": false
+        }
+      }
+    },
+    {
+      "case_id": "med-03",
+      "expected_operations": [
+        "media.seek.relative"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "jump ahead thirty seconds",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "med-04",
+      "expected_operations": [
+        "media.play.query",
+        "media.play.exact"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "ponme algo de bad bunny en spotify",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "med-05",
+      "expected_operations": [
+        "media.play.youtube"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "play the tiny desk concert on youtube",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "med-06",
+      "expected_operations": [
+        "media.control"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "media.play.query"
+      ],
+      "text": "pasa a la siguiente cancion",
+      "verdicts": {
+        "identity": {
+          "media.play.query": true
+        },
+        "identity_bounded": {
+          "media.play.query": true
+        },
+        "mismatch": {
+          "media.play.query": true
+        },
+        "strict": {
+          "media.play.query": false
+        }
+      }
+    },
+    {
+      "case_id": "not-01",
+      "expected_operations": [
+        "note.create"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "apuntame que tengo que llamar al dentista",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "not-02",
+      "expected_operations": [
+        "note.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "note.list"
+      ],
+      "text": "que apuntes tengo guardados",
+      "verdicts": {
+        "identity": {
+          "note.list": true
+        },
+        "identity_bounded": {
+          "note.list": true
+        },
+        "mismatch": {
+          "note.list": true
+        },
+        "strict": {
+          "note.list": false
+        }
+      }
+    },
+    {
+      "case_id": "not-03",
+      "expected_operations": [
+        "note.search"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "find the note where I wrote the wifi password",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "not-04",
+      "expected_operations": [
+        "note.trash"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "tira a la papelera la nota de la lista del super",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "not-05",
+      "expected_operations": [
+        "note.read"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "leeme la note que se llama ideas",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "tsk-01",
+      "expected_operations": [
+        "task.create"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "agregame al pendiente revisar el contrato",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "tsk-02",
+      "expected_operations": [
+        "task.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "what is on my to do list",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "tsk-03",
+      "expected_operations": [
+        "task.complete",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "task.complete"
+      ],
+      "text": "da por terminada la tarea de pagar el arriendo",
+      "verdicts": {
+        "identity": {
+          "task.complete": true
+        },
+        "identity_bounded": {
+          "task.complete": true
+        },
+        "mismatch": {
+          "task.complete": true
+        },
+        "strict": {
+          "task.complete": false
+        }
+      }
+    },
+    {
+      "case_id": "tsk-04",
+      "expected_operations": [
+        "task.search"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "busca entre mis pendientes los que hablen del banco",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "tsk-05",
+      "expected_operations": [
+        "task.delete",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "borra el task de comprar cables",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "rem-01",
+      "expected_operations": [
+        "reminder.create",
+        "notification.schedule"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "avisame manana a las nueve que tengo medico",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "rem-02",
+      "expected_operations": [
+        "reminder.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "what reminders are set up",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "rem-03",
+      "expected_operations": [
+        "notification.cancel.at",
+        "reminder.delete"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "cancela la alarma de las siete de la manana",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "rem-04",
+      "expected_operations": [
+        "notification.schedule",
+        "reminder.create"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "ponme un alarm para las seis de la tarde",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "fs-01",
+      "expected_operations": [
+        "filesystem.folder.open"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "abrime la carpeta de descargas",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "fs-02",
+      "expected_operations": [
+        "filesystem.known.search"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "filesystem.known.search"
+      ],
+      "text": "look for a pdf with factura in the name in my documents",
+      "verdicts": {
+        "identity": {
+          "filesystem.known.search": true
+        },
+        "identity_bounded": {
+          "filesystem.known.search": true
+        },
+        "mismatch": {
+          "filesystem.known.search": true
+        },
+        "strict": {
+          "filesystem.known.search": true
+        }
+      }
+    },
+    {
+      "case_id": "fs-03",
+      "expected_operations": [
+        "filesystem.known.duplicates"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "filesystem.known.search"
+      ],
+      "text": "hay archivos repetidos en descargas",
+      "verdicts": {
+        "identity": {
+          "filesystem.known.search": true
+        },
+        "identity_bounded": {
+          "filesystem.known.search": true
+        },
+        "mismatch": {
+          "filesystem.known.search": true
+        },
+        "strict": {
+          "filesystem.known.search": false
+        }
+      }
+    },
+    {
+      "case_id": "fs-04",
+      "expected_operations": [
+        "filesystem.known.trash.named"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "manda a la papelera el archivo notas.txt de descargas",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "fs-05",
+      "expected_operations": [
+        "filesystem.file.open.latest"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "open the last file I downloaded",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "fs-06",
+      "expected_operations": [
+        "filesystem.create.directory"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "creame una carpeta que se llame proyectos",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "fs-07",
+      "expected_operations": [
+        "filesystem.hash",
+        "filesystem.search",
+        "filesystem.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "sacale el hash al archivo reporte.txt",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "fs-08",
+      "expected_operations": [
+        "filesystem.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "filesystem.known.search"
+      ],
+      "text": "que archivos tengo en la carpeta de trabajo",
+      "verdicts": {
+        "identity": {
+          "filesystem.known.search": true
+        },
+        "identity_bounded": {
+          "filesystem.known.search": true
+        },
+        "mismatch": {
+          "filesystem.known.search": true
+        },
+        "strict": {
+          "filesystem.known.search": false
+        }
+      }
+    },
+    {
+      "case_id": "fs-09",
+      "expected_operations": [
+        "filesystem.write.text"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "write hello into a file called saludo.txt",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "clp-01",
+      "expected_operations": [
+        "clipboard.copy"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "clipboard.copy"
+      ],
+      "text": "copiame lo que tengo seleccionado",
+      "verdicts": {
+        "identity": {
+          "clipboard.copy": true
+        },
+        "identity_bounded": {
+          "clipboard.copy": true
+        },
+        "mismatch": {
+          "clipboard.copy": true
+        },
+        "strict": {
+          "clipboard.copy": true
+        }
+      }
+    },
+    {
+      "case_id": "clp-02",
+      "expected_operations": [
+        "clipboard.paste"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "pegalo aca",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "clp-03",
+      "expected_operations": [
+        "clipboard.read.text"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "clipboard.copy",
+        "clipboard.write.text"
+      ],
+      "text": "what did I copy last",
+      "verdicts": {
+        "identity": {
+          "clipboard.copy": true,
+          "clipboard.write.text": false
+        },
+        "identity_bounded": {
+          "clipboard.copy": true,
+          "clipboard.write.text": false
+        },
+        "mismatch": {
+          "clipboard.copy": true,
+          "clipboard.write.text": true
+        },
+        "strict": {
+          "clipboard.copy": false,
+          "clipboard.write.text": false
+        }
+      }
+    },
+    {
+      "case_id": "clp-04",
+      "expected_operations": [
+        "clipboard.write.text"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "clipboard.write.text"
+      ],
+      "text": "deja mi correo en el portapapeles",
+      "verdicts": {
+        "identity": {
+          "clipboard.write.text": true
+        },
+        "identity_bounded": {
+          "clipboard.write.text": true
+        },
+        "mismatch": {
+          "clipboard.write.text": true
+        },
+        "strict": {
+          "clipboard.write.text": true
+        }
+      }
+    },
+    {
+      "case_id": "inp-01",
+      "expected_operations": [
+        "input.key.press"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "dale enter",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "inp-02",
+      "expected_operations": [
+        "input.select.all"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "selecciona todo lo que hay ahi",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "inp-03",
+      "expected_operations": [
+        "input.text.type"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "type hello world for me",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "inp-04",
+      "expected_operations": [
+        "input.keyboard.open"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "sacame el teclado de pantalla",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "inp-05",
+      "expected_operations": [
+        "input.keyboard.layout"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "cambia el keyboard a espanol",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "inp-06",
+      "expected_operations": [
+        "input.pointer.control"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "browser.control"
+      ],
+      "text": "scroll down a bit",
+      "verdicts": {
+        "identity": {
+          "browser.control": true
+        },
+        "identity_bounded": {
+          "browser.control": true
+        },
+        "mismatch": {
+          "browser.control": true
+        },
+        "strict": {
+          "browser.control": true
+        }
+      }
+    },
+    {
+      "case_id": "inp-07",
+      "expected_operations": [
+        "input.visible.click"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "hazle clic al boton de aceptar",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "inp-08",
+      "expected_operations": [
+        "input.keyboard.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "en que idioma esta el teclado",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "cap-01",
+      "expected_operations": [
+        "capture.screenshot"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "capture.screenshot"
+      ],
+      "text": "sacame una foto de la pantalla",
+      "verdicts": {
+        "identity": {
+          "capture.screenshot": true
+        },
+        "identity_bounded": {
+          "capture.screenshot": true
+        },
+        "mismatch": {
+          "capture.screenshot": true
+        },
+        "strict": {
+          "capture.screenshot": false
+        }
+      }
+    },
+    {
+      "case_id": "cap-02",
+      "expected_operations": [
+        "capture.active.window"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "capture.active.window"
+      ],
+      "text": "captura nada mas la ventana de adelante",
+      "verdicts": {
+        "identity": {
+          "capture.active.window": true
+        },
+        "identity_bounded": {
+          "capture.active.window": true
+        },
+        "mismatch": {
+          "capture.active.window": true
+        },
+        "strict": {
+          "capture.active.window": false
+        }
+      }
+    },
+    {
+      "case_id": "cap-03",
+      "expected_operations": [
+        "ocr.read",
+        "capture.screenshot"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "read the text out of that screenshot",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "cap-04",
+      "expected_operations": [
+        "vision.describe",
+        "capture.screenshot"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "describime que se ve en la captura",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "brw-01",
+      "expected_operations": [
+        "browser.navigate",
+        "browser.navigate.named"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "llevame a wikipedia",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "brw-02",
+      "expected_operations": [
+        "browser.control"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "window.restore"
+      ],
+      "text": "go back one page",
+      "verdicts": {
+        "identity": {
+          "window.restore": false
+        },
+        "identity_bounded": {
+          "window.restore": false
+        },
+        "mismatch": {
+          "window.restore": true
+        },
+        "strict": {
+          "window.restore": false
+        }
+      }
+    },
+    {
+      "case_id": "brw-03",
+      "expected_operations": [
+        "browser.tabs.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "que pestanas tengo abiertas",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "brw-04",
+      "expected_operations": [
+        "browser.page.read"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "what does this page actually say",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "gam-01",
+      "expected_operations": [
+        "game.catalog.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "que juegos tengo instalados",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "gam-02",
+      "expected_operations": [
+        "game.launch"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "launch counter strike",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "gam-03",
+      "expected_operations": [
+        "game.installed.named"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "tengo instalado el hollow knight",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "gam-04",
+      "expected_operations": [
+        "game.install.cancel.active",
+        "game.install.cancel"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "para la descarga que tiene steam corriendo",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "blu-01",
+      "expected_operations": [
+        "bluetooth.radio.set"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "bluetooth.radio.set"
+      ],
+      "text": "apagame el bluetooth",
+      "verdicts": {
+        "identity": {
+          "bluetooth.radio.set": true
+        },
+        "identity_bounded": {
+          "bluetooth.radio.set": true
+        },
+        "mismatch": {
+          "bluetooth.radio.set": true
+        },
+        "strict": {
+          "bluetooth.radio.set": false
+        }
+      }
+    },
+    {
+      "case_id": "blu-02",
+      "expected_operations": [
+        "bluetooth.device.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "which bluetooth devices are around",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "per-01",
+      "expected_operations": [
+        "peripheral.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "que cosas tengo conectadas al equipo",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "bak-01",
+      "expected_operations": [
+        "backup.known.create"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "backup.create"
+      ],
+      "text": "hazme una copia de seguridad de documentos",
+      "verdicts": {
+        "identity": {
+          "backup.create": true
+        },
+        "identity_bounded": {
+          "backup.create": true
+        },
+        "mismatch": {
+          "backup.create": true
+        },
+        "strict": {
+          "backup.create": false
+        }
+      }
+    },
+    {
+      "case_id": "bak-02",
+      "expected_operations": [
+        "backup.list",
+        "backup.known.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "list the backups you have made",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "cal-01",
+      "expected_operations": [
+        "calendar.event.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "que tengo en la agenda para hoy",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "cal-02",
+      "expected_operations": [
+        "calendar.event.create"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "notification.schedule"
+      ],
+      "text": "agendame una reunion manana de diez a once",
+      "verdicts": {
+        "identity": {
+          "notification.schedule": true
+        },
+        "identity_bounded": {
+          "notification.schedule": false
+        },
+        "mismatch": {
+          "notification.schedule": true
+        },
+        "strict": {
+          "notification.schedule": false
+        }
+      }
+    },
+    {
+      "case_id": "eml-01",
+      "expected_operations": [
+        "email.latest.read"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "email.latest.read"
+      ],
+      "text": "read me the last email that came in",
+      "verdicts": {
+        "identity": {
+          "email.latest.read": true
+        },
+        "identity_bounded": {
+          "email.latest.read": true
+        },
+        "mismatch": {
+          "email.latest.read": true
+        },
+        "strict": {
+          "email.latest.read": true
+        }
+      }
+    },
+    {
+      "case_id": "eml-02",
+      "expected_operations": [
+        "email.latest.reply"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "contestale al ultimo correo que ya lo vi",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "msg-01",
+      "expected_operations": [
+        "message.send",
+        "message.recipient.resolve"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "mandale un mensaje a juan diciendo que llego tarde",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "off-01",
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "creame un documento de word en blanco",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "pkg-01",
+      "expected_operations": [
+        "package.install.prepare",
+        "package.install.commit"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "install vlc on this machine",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "str-01",
+      "expected_operations": [
+        "streaming.play.named"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "pon la casa de papel en netflix",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "web-01",
+      "expected_operations": [
+        "web.search"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "busca en internet cuanto mide el everest",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "rou-01",
+      "expected_operations": [
+        "routine.list"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "que rutinas tengo configuradas",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "aud-09",
+      "expected_operations": [
+        "audio.volume.adjust"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "esta muy fuerte el audio, bajalo",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "sys-13",
+      "expected_operations": [
+        "system.status"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "cuanto storage me queda en el disco",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "win-09",
+      "expected_operations": [
+        "window.minimize"
+      ],
+      "in_catalog": true,
+      "refused_operations": [
+        "window.minimize"
+      ],
+      "text": "minimize everything I have open right now",
+      "verdicts": {
+        "identity": {
+          "window.minimize": true
+        },
+        "identity_bounded": {
+          "window.minimize": false
+        },
+        "mismatch": {
+          "window.minimize": true
+        },
+        "strict": {
+          "window.minimize": false
+        }
+      }
+    },
+    {
+      "case_id": "net-10",
+      "expected_operations": [
+        "network.status",
+        "network.ping"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "chequea si el internet anda",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "med-07",
+      "expected_operations": [
+        "media.seek.relative"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "retrocede diez segundos la cancion",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "fs-10",
+      "expected_operations": [
+        "filesystem.folder.open"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "abrime la carpeta de imagenes",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "sys-14",
+      "expected_operations": [
+        "system.power"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "log me out of windows",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "app-06",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "arrancame el navegador",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "not-06",
+      "expected_operations": [
+        "note.create"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "jot down that the router password is on the fridge",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "tsk-06",
+      "expected_operations": [
+        "task.reopen",
+        "task.resolve.exact"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "volve a abrir la tarea de llamar al banco",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "cmp-01",
+      "expected_operations": [
+        "app.open",
+        "media.play.query"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "abre spotify y ponme musica",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "cmp-02",
+      "expected_operations": [
+        "capture.screenshot",
+        "ocr.read",
+        "vision.describe"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "saca un screenshot y decime que dice",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "cmp-03",
+      "expected_operations": [
+        "audio.mute",
+        "system.power"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "mute the audio and lock the machine",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "cmp-04",
+      "expected_operations": [
+        "note.create",
+        "reminder.create",
+        "notification.schedule"
+      ],
+      "in_catalog": true,
+      "refused_operations": [],
+      "text": "anota que hay reunion el jueves y avisame ese dia",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-01",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "pide un taxi para las ocho",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-02",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "book me a table for two tonight",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-03",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "pedime una pizza a domicilio",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-04",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "notification.cancel.at",
+        "reminder.resolve.exact",
+        "routine.phrase.create"
+      ],
+      "text": "call my mother",
+      "verdicts": {
+        "identity": {
+          "notification.cancel.at": false,
+          "reminder.resolve.exact": false,
+          "routine.phrase.create": false
+        },
+        "identity_bounded": {
+          "notification.cancel.at": false,
+          "reminder.resolve.exact": false,
+          "routine.phrase.create": false
+        },
+        "mismatch": {
+          "notification.cancel.at": true,
+          "reminder.resolve.exact": true,
+          "routine.phrase.create": true
+        },
+        "strict": {
+          "notification.cancel.at": false,
+          "reminder.resolve.exact": false,
+          "routine.phrase.create": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-05",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "message.send"
+      ],
+      "text": "transfiere cincuenta dolares a mi hermano",
+      "verdicts": {
+        "identity": {
+          "message.send": false
+        },
+        "identity_bounded": {
+          "message.send": false
+        },
+        "mismatch": {
+          "message.send": true
+        },
+        "strict": {
+          "message.send": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-06",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "window.focus",
+        "window.resolve",
+        "window.restore",
+        "window.minimize",
+        "window.maximize",
+        "window.move",
+        "window.resize",
+        "window.active"
+      ],
+      "text": "prende las luces del living",
+      "verdicts": {
+        "identity": {
+          "window.active": false,
+          "window.focus": true,
+          "window.maximize": false,
+          "window.minimize": false,
+          "window.move": false,
+          "window.resize": false,
+          "window.resolve": false,
+          "window.restore": false
+        },
+        "identity_bounded": {
+          "window.active": false,
+          "window.focus": false,
+          "window.maximize": false,
+          "window.minimize": false,
+          "window.move": false,
+          "window.resize": false,
+          "window.resolve": false,
+          "window.restore": false
+        },
+        "mismatch": {
+          "window.active": true,
+          "window.focus": true,
+          "window.maximize": true,
+          "window.minimize": true,
+          "window.move": true,
+          "window.resize": true,
+          "window.resolve": true,
+          "window.restore": true
+        },
+        "strict": {
+          "window.active": false,
+          "window.focus": false,
+          "window.maximize": false,
+          "window.minimize": false,
+          "window.move": false,
+          "window.resize": false,
+          "window.resolve": false,
+          "window.restore": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-07",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "media.play.youtube"
+      ],
+      "text": "upload this video to youtube",
+      "verdicts": {
+        "identity": {
+          "media.play.youtube": false
+        },
+        "identity_bounded": {
+          "media.play.youtube": false
+        },
+        "mismatch": {
+          "media.play.youtube": true
+        },
+        "strict": {
+          "media.play.youtube": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-08",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "formatea el pendrive",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-09",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "update the bios on this laptop",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-10",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "sacame un pasaje de avion a madrid",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-11",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "package.install.prepare",
+        "routine.phrase.create",
+        "backup.create",
+        "task.complete",
+        "routine.list"
+      ],
+      "text": "compilame el proyecto de rust",
+      "verdicts": {
+        "identity": {
+          "backup.create": false,
+          "package.install.prepare": true,
+          "routine.list": true,
+          "routine.phrase.create": false,
+          "task.complete": true
+        },
+        "identity_bounded": {
+          "backup.create": false,
+          "package.install.prepare": false,
+          "routine.list": false,
+          "routine.phrase.create": false,
+          "task.complete": false
+        },
+        "mismatch": {
+          "backup.create": true,
+          "package.install.prepare": true,
+          "routine.list": true,
+          "routine.phrase.create": true,
+          "task.complete": true
+        },
+        "strict": {
+          "backup.create": false,
+          "package.install.prepare": false,
+          "routine.list": false,
+          "routine.phrase.create": false,
+          "task.complete": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-12",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "commit and push my changes to git",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-13",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "system.status",
+        "filesystem.trash.prepare",
+        "system.application.crash.diagnose",
+        "filesystem.trash.commit",
+        "window.restore"
+      ],
+      "text": "pasale el antivirus al equipo",
+      "verdicts": {
+        "identity": {
+          "filesystem.trash.commit": false,
+          "filesystem.trash.prepare": false,
+          "system.application.crash.diagnose": false,
+          "system.status": false,
+          "window.restore": false
+        },
+        "identity_bounded": {
+          "filesystem.trash.commit": false,
+          "filesystem.trash.prepare": false,
+          "system.application.crash.diagnose": false,
+          "system.status": false,
+          "window.restore": false
+        },
+        "mismatch": {
+          "filesystem.trash.commit": true,
+          "filesystem.trash.prepare": true,
+          "system.application.crash.diagnose": true,
+          "system.status": true,
+          "window.restore": true
+        },
+        "strict": {
+          "filesystem.trash.commit": false,
+          "filesystem.trash.prepare": false,
+          "system.application.crash.diagnose": false,
+          "system.status": false,
+          "window.restore": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-14",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "system.status"
+      ],
+      "text": "desfragmenta el disco duro",
+      "verdicts": {
+        "identity": {
+          "system.status": false
+        },
+        "identity_bounded": {
+          "system.status": false
+        },
+        "mismatch": {
+          "system.status": false
+        },
+        "strict": {
+          "system.status": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-15",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "game.launch"
+      ],
+      "text": "spin up a virtual machine",
+      "verdicts": {
+        "identity": {
+          "game.launch": false
+        },
+        "identity_bounded": {
+          "game.launch": false
+        },
+        "mismatch": {
+          "game.launch": true
+        },
+        "strict": {
+          "game.launch": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-16",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "cambiame la contrasena de windows",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-17",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "capture.active.window"
+      ],
+      "text": "grabame la pantalla en video",
+      "verdicts": {
+        "identity": {
+          "capture.active.window": false
+        },
+        "identity_bounded": {
+          "capture.active.window": false
+        },
+        "mismatch": {
+          "capture.active.window": true
+        },
+        "strict": {
+          "capture.active.window": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-18",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "wifi.connect.named"
+      ],
+      "text": "connect to my work vpn",
+      "verdicts": {
+        "identity": {
+          "wifi.connect.named": false
+        },
+        "identity_bounded": {
+          "wifi.connect.named": false
+        },
+        "mismatch": {
+          "wifi.connect.named": true
+        },
+        "strict": {
+          "wifi.connect.named": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-19",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "filesystem.copy",
+        "filesystem.sandbox.move.named",
+        "filesystem.trash.commit",
+        "filesystem.hash",
+        "filesystem.search"
+      ],
+      "text": "cloname el disco duro a otro",
+      "verdicts": {
+        "identity": {
+          "filesystem.copy": true,
+          "filesystem.hash": false,
+          "filesystem.sandbox.move.named": false,
+          "filesystem.search": false,
+          "filesystem.trash.commit": false
+        },
+        "identity_bounded": {
+          "filesystem.copy": true,
+          "filesystem.hash": false,
+          "filesystem.sandbox.move.named": false,
+          "filesystem.search": false,
+          "filesystem.trash.commit": false
+        },
+        "mismatch": {
+          "filesystem.copy": true,
+          "filesystem.hash": true,
+          "filesystem.sandbox.move.named": true,
+          "filesystem.search": true,
+          "filesystem.trash.commit": true
+        },
+        "strict": {
+          "filesystem.copy": false,
+          "filesystem.hash": false,
+          "filesystem.sandbox.move.named": false,
+          "filesystem.search": false,
+          "filesystem.trash.commit": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-20",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "riega las plantas del balcon",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-21",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "notification.schedule"
+      ],
+      "text": "programa el aire acondicionado a veintidos grados",
+      "verdicts": {
+        "identity": {
+          "notification.schedule": false
+        },
+        "identity_bounded": {
+          "notification.schedule": false
+        },
+        "mismatch": {
+          "notification.schedule": true
+        },
+        "strict": {
+          "notification.schedule": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-22",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "streaming.navigate",
+        "streaming.play.named",
+        "filesystem.sandbox.diff.named",
+        "filesystem.copy",
+        "filesystem.known.duplicates",
+        "filesystem.trash.restore"
+      ],
+      "text": "download this series over torrent",
+      "verdicts": {
+        "identity": {
+          "filesystem.copy": false,
+          "filesystem.known.duplicates": false,
+          "filesystem.sandbox.diff.named": false,
+          "filesystem.trash.restore": false,
+          "streaming.navigate": false,
+          "streaming.play.named": false
+        },
+        "identity_bounded": {
+          "filesystem.copy": false,
+          "filesystem.known.duplicates": false,
+          "filesystem.sandbox.diff.named": false,
+          "filesystem.trash.restore": false,
+          "streaming.navigate": false,
+          "streaming.play.named": false
+        },
+        "mismatch": {
+          "filesystem.copy": true,
+          "filesystem.known.duplicates": true,
+          "filesystem.sandbox.diff.named": true,
+          "filesystem.trash.restore": true,
+          "streaming.navigate": true,
+          "streaming.play.named": true
+        },
+        "strict": {
+          "filesystem.copy": false,
+          "filesystem.known.duplicates": false,
+          "filesystem.sandbox.diff.named": false,
+          "filesystem.trash.restore": false,
+          "streaming.navigate": false,
+          "streaming.play.named": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-23",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "editame el video y quitale los ultimos diez segundos",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-24",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "convierteme este pdf a word",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-25",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "order me an uber to the airport",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-26",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "task.create"
+      ],
+      "text": "reservame hora en la peluqueria",
+      "verdicts": {
+        "identity": {
+          "task.create": false
+        },
+        "identity_bounded": {
+          "task.create": false
+        },
+        "mismatch": {
+          "task.create": true
+        },
+        "strict": {
+          "task.create": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-27",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "system.settings.set"
+      ],
+      "text": "cambiame el fondo de escritorio",
+      "verdicts": {
+        "identity": {
+          "system.settings.set": true
+        },
+        "identity_bounded": {
+          "system.settings.set": false
+        },
+        "mismatch": {
+          "system.settings.set": true
+        },
+        "strict": {
+          "system.settings.set": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-28",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "filesystem.hash",
+        "filesystem.known.duplicates",
+        "filesystem.file.open.latest",
+        "filesystem.sandbox.append.named",
+        "filesystem.move",
+        "task.complete",
+        "input.key.press"
+      ],
+      "text": "encrypt this whole drive with bitlocker",
+      "verdicts": {
+        "identity": {
+          "filesystem.file.open.latest": false,
+          "filesystem.hash": false,
+          "filesystem.known.duplicates": false,
+          "filesystem.move": false,
+          "filesystem.sandbox.append.named": false,
+          "input.key.press": false,
+          "task.complete": false
+        },
+        "identity_bounded": {
+          "filesystem.file.open.latest": false,
+          "filesystem.hash": false,
+          "filesystem.known.duplicates": false,
+          "filesystem.move": false,
+          "filesystem.sandbox.append.named": false,
+          "input.key.press": false,
+          "task.complete": false
+        },
+        "mismatch": {
+          "filesystem.file.open.latest": true,
+          "filesystem.hash": true,
+          "filesystem.known.duplicates": true,
+          "filesystem.move": true,
+          "filesystem.sandbox.append.named": true,
+          "input.key.press": true,
+          "task.complete": true
+        },
+        "strict": {
+          "filesystem.file.open.latest": false,
+          "filesystem.hash": false,
+          "filesystem.known.duplicates": false,
+          "filesystem.move": false,
+          "filesystem.sandbox.append.named": false,
+          "input.key.press": false,
+          "task.complete": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-29",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "office.document.create"
+      ],
+      "text": "mandame flores a la oficina",
+      "verdicts": {
+        "identity": {
+          "office.document.create": false
+        },
+        "identity_bounded": {
+          "office.document.create": false
+        },
+        "mismatch": {
+          "office.document.create": true
+        },
+        "strict": {
+          "office.document.create": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-30",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "game.install.prepare",
+        "filesystem.move",
+        "filesystem.copy",
+        "game.launch",
+        "system.application.crash.diagnose"
+      ],
+      "text": "hazme un deploy a produccion",
+      "verdicts": {
+        "identity": {
+          "filesystem.copy": false,
+          "filesystem.move": false,
+          "game.install.prepare": true,
+          "game.launch": false,
+          "system.application.crash.diagnose": false
+        },
+        "identity_bounded": {
+          "filesystem.copy": false,
+          "filesystem.move": false,
+          "game.install.prepare": false,
+          "game.launch": false,
+          "system.application.crash.diagnose": false
+        },
+        "mismatch": {
+          "filesystem.copy": true,
+          "filesystem.move": true,
+          "game.install.prepare": true,
+          "game.launch": true,
+          "system.application.crash.diagnose": true
+        },
+        "strict": {
+          "filesystem.copy": false,
+          "filesystem.move": false,
+          "game.install.prepare": false,
+          "game.launch": false,
+          "system.application.crash.diagnose": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-31",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "unlock my phone for me",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-32",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "message.send"
+      ],
+      "text": "llamame un plomero para manana",
+      "verdicts": {
+        "identity": {
+          "message.send": true
+        },
+        "identity_bounded": {
+          "message.send": false
+        },
+        "mismatch": {
+          "message.send": true
+        },
+        "strict": {
+          "message.send": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-33",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "peripheral.print"
+      ],
+      "text": "imprimeme en 3d esta figura",
+      "verdicts": {
+        "identity": {
+          "peripheral.print": true
+        },
+        "identity_bounded": {
+          "peripheral.print": false
+        },
+        "mismatch": {
+          "peripheral.print": true
+        },
+        "strict": {
+          "peripheral.print": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-34",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [
+        "system.status"
+      ],
+      "text": "overclock the graphics card",
+      "verdicts": {
+        "identity": {
+          "system.status": false
+        },
+        "identity_bounded": {
+          "system.status": false
+        },
+        "mismatch": {
+          "system.status": false
+        },
+        "strict": {
+          "system.status": false
+        }
+      }
+    },
+    {
+      "case_id": "ooc-35",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "crea una particion nueva en el disco",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    },
+    {
+      "case_id": "ooc-36",
+      "expected_operations": [],
+      "in_catalog": false,
+      "refused_operations": [],
+      "text": "resetea el router de la casa",
+      "verdicts": {
+        "identity": {},
+        "identity_bounded": {},
+        "mismatch": {},
+        "strict": {}
+      }
+    }
+  ],
+  "schema": "baxy.goal03b-second-opinion-variants.v1",
+  "seconds": {
+    "identity": {
+      "calls": 113,
+      "p50": 0.1556
+    },
+    "identity_bounded": {
+      "calls": 113,
+      "p50": 0.1533
+    },
+    "mismatch": {
+      "calls": 113,
+      "p50": 0.181
+    },
+    "strict": {
+      "calls": 113,
+      "p50": 0.2357
+    }
+  },
+  "source": {
+    "rows": 160,
+    "sha256": "c2bf9fe13de1b84c354afbfc38329d26d54128ee89eaf4adb456ce24f845e750",
+    "telemetry": "artifacts\\development\\goal03_goal03b_before.telemetry.jsonl"
+  }
+}

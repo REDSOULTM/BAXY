@@ -65,7 +65,7 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # path where the veto deleted the capability; that path is gone.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "03144e0ed66b71d8ce70a1967ba707db2458b4f35c801c3033ab75e14d1738f6"
+        "a9625bac2fbf2e4cf94d4c413a131d9714aabdb7d569b267586147146a3742f9"
     ),
     "src/baxy_mind/llm.py": (
         "b62e058ca2b89533995332276b4a5a1af3dbd69ac8f957b49094a0e7d24bb536"

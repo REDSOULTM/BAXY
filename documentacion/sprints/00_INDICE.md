@@ -17,6 +17,12 @@ regalando decisión y vetos perfectos, la arquitectura de hoy topa en 84,7 %. El
 03B no es «volver a intentarlo»: es mover el techo, y por eso su salida honesta es
 más estrecha —sólo vale si el techo cambió—. Va después del 03 y antes del 04.
 
+**Cerrado el 2026-08-19**, y el techo se movió: 84,7 % → 89,5 %, con la
+comprensión en 66,1 % (era 45,2 %). Lo que cambió es que la puerta de dominio dejó
+de borrar la capacidad y pasó a retenerla hasta que la persona confirma. Lo medido,
+lo rechazado y lo que queda abierto están en
+[`documentacion/base/03B_COMPRENSION_TECHO.md`](../base/03B_COMPRENSION_TECHO.md).
+
 La conversión a Opus no es un cambio de nombre de modelo: `reasoning.effort` no
 existe en Claude Code, el harness pide permisos y compacta sesiones largas, y Opus
 5 tiene cuatro tendencias medidas —verificar de más, ampliar el encargo, delegar
