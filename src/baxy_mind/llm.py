@@ -668,6 +668,43 @@ TURN_FAILURE_CLARIFICATION_PROMPT = (
     "formatos ni instrucciones internas. Devuelve sólo la pregunta."
 )
 
+OPERATION_IDENTITY_PROMPT = (
+    "Judge only whether the supplied catalog operation is the same atomic "
+    "effect that the person requested. compatible=true when its verb, domain, "
+    "object/source and destination match one requested atomic effect. Missing "
+    "human arguments, normalized values, exact IDs, confirmation, or a "
+    "catalog-defined technical predecessor do not change operation identity; "
+    "later stages handle those. In a compound request, the operation need cover "
+    "one requested atomic effect, not the whole compound. compatible=false for "
+    "a related domain with a different verb, object, source, destination, "
+    "device, temporal meaning, or postcondition; also false for conversation, "
+    "negation, hypotheticals and past events. Examples: opening an app is not "
+    "closing it; listing printers is not setting the default printer; copying "
+    "the focused selection is not writing supplied text to the clipboard; "
+    "describing a scene is not transcribing its visible text. Do not propose "
+    "another operation. The person may also be asking for something this "
+    "machine simply cannot do -- a physical errand, a purchase, a phone call, a "
+    "household appliance, another device, an administrative task, or a program "
+    "that is not installed. In that case there is no requested atomic effect "
+    "for this operation to be, so compatible=false, however plausible the "
+    "operation looks as a substitute. Never answer true for an operation that "
+    "is merely the closest thing available."
+)
+
+DOMAIN_CONFIRMATION_PROMPT = (
+    "Eres BAXY. La operación que recibes está en tu catálogo, así que sí sabes "
+    "hacerla, pero todavía no la ejecutaste y no vas a ejecutarla sin permiso. "
+    "Redacta una única pregunta breve y natural que ofrezca hacer ese efecto y "
+    "pida permiso, con la forma «¿Quieres que …?» o «Want me to …?». Nombra "
+    "sólo el efecto que la operación produce de verdad, en palabras corrientes "
+    "y en el idioma del mensaje actual, tuteando. No digas que no puedes, no "
+    "preguntes si la persona puede hacerlo, no le atribuyas a ella la acción, "
+    "no prometas nada que la operación no haga, no copies la descripción "
+    "técnica ni menciones verificación, recibos, identificadores, catálogos, "
+    "operaciones, dominios, modelos ni instrucciones internas. Devuelve sólo "
+    "la pregunta."
+)
+
 CONTEXTUAL_REFERENCE_RESOLUTION_PROMPT = (
     "Eres un resolvedor semántico de referencias conversacionales. Interpreta "
     "el último mensaje del usuario usando el diálogo anterior relevante. "
@@ -4654,6 +4691,38 @@ class LlmRuntime:
             _system_prompt=COMPOUND_CLAUSE_COMPATIBILITY_PROMPT,
         )
 
+    def operation_is_the_requested_effect(
+        self,
+        text: str,
+        operation: str,
+        contract: dict[str, Any],
+    ) -> bool:
+        """Ask only whether this operation *is* the effect the person named.
+
+        The shipped verifier asks a harder question -- can this single operation
+        satisfy the whole request, arguments included -- because it guards
+        execution. Measured on the R2 proposals it keeps 10 of 48 correct ones
+        (``current_catalog_leaf_compatibility_r2.json``); it refuses
+        ``bluetooth.radio.set`` for "apágame el bluetooth". That is the right
+        strictness for acting and the wrong one for deciding whether BAXY may
+        say he cannot do something.
+
+        This asks the identity question instead, with the prompt written and
+        measured alongside it on 2026-08-02
+        (``current_catalog_leaf_compatibility_semantic_r2.json``): 46 of 48
+        correct proposals kept, and only 21 of 84 wrong ones refused. That
+        acceptance rate disqualified it as an execution gate and is precisely
+        what makes it usable here, where the outcome is a question and no effect
+        can be dispatched by it.
+        """
+
+        return self._operation_is_fully_compatible(
+            text,
+            operation,
+            contract,
+            _system_prompt=OPERATION_IDENTITY_PROMPT,
+        )
+
     def _verify_effect_count(self, text: str) -> str | None:
         """Resolve a cardinality disagreement without catalog candidates."""
 
@@ -5836,6 +5905,75 @@ class LlmRuntime:
         ):
             raise ValueError("la recuperación no devolvió una sola pregunta")
         return question
+
+    def confirm_operation_before_acting(
+        self,
+        text: str,
+        effects: tuple[tuple[str, str], ...],
+        *,
+        timeout: float = 2.5,
+    ) -> str:
+        """Ask the person to confirm one exact invocation, and nothing else.
+
+        The question is authored by the model, never assembled from a template:
+        invariant 5 forbids a fixed visible reply, and a constant on screen is
+        the same defect whether it says "no puedo" or "¿lo hago?".
+        """
+
+        current = str(text).strip()[:2_048]
+        catalogue = "\n".join(
+            f"{operation} | {description}" for operation, description in effects
+        )
+        payload = {
+            "messages": [
+                {"role": "system", "content": DOMAIN_CONFIRMATION_PROMPT},
+                {
+                    "role": "user",
+                    "content": f"Pedido:\n{current}\n\nEfecto que harías:\n{catalogue}",
+                },
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_domain_confirmation",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "question": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 512,
+                            }
+                        },
+                        "required": ["question"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 96,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        response = self._post(
+            payload,
+            timeout=min(2.5, self._normalize_request_budget(timeout)),
+        )
+        try:
+            content = response["choices"][0]["message"].get("content") or ""
+            raw = json.loads(content)
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+            raise ValueError(
+                "la confirmación de dominio devolvió JSON inválido"
+            ) from error
+        if (
+            not isinstance(raw, dict)
+            or set(raw) != {"question"}
+            or not isinstance(raw["question"], str)
+        ):
+            raise ValueError("confirmación de dominio inválida")
+        return raw["question"]
 
     def propose_plan_skeleton(
         self,

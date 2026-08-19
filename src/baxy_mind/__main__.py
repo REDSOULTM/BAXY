@@ -1988,6 +1988,166 @@ def _turn_operation_contract(
     }
 
 
+def _catalog_answers_the_request(
+    routing_objective: str,
+    objective: str,
+    planner_catalog: PlannerCatalog,
+    tool_by_name: dict[str, dict],
+    llm: object,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+    *,
+    depth: int = 4,
+) -> str:
+    """Name a catalogue operation that *is* what a closed refusal denied.
+
+    Several deterministic paths close a turn with ``unsupported`` before any
+    retrieval runs: the known-missing-variant list, the unavailable-application
+    rule, and the unresolved-compound contract. Each is a hand-maintained
+    vocabulary, and each therefore denies capabilities BAXY has as soon as the
+    person words the request outside it. ``open the last file I downloaded``
+    closes on the ``filesystem.file.open.named`` clause because its exemption
+    lists ``ultimo``, ``latest``, ``reciente`` and ``newest`` but not ``last``,
+    while ``filesystem.file.open.latest`` sits in the catalogue doing exactly
+    what was asked. On the goal 03 corpus five of 124 rows died that way, all of
+    them capabilities the catalogue has.
+
+    So a closed refusal no longer gets to speak before the catalogue is asked.
+    This ranks the request against the authenticated operations and returns the
+    first one the independent verifier identifies as the requested effect. It
+    selects nothing: naming one is only the evidence that withdraws the
+    refusal, after which the ordinary ranked path decides the turn.
+    """
+
+    identifies = getattr(llm, "operation_is_the_requested_effect", None)
+    if not callable(identifies):
+        return ""
+    for tool in planner_catalog.shortlist(routing_objective)[:depth]:
+        contract = _turn_operation_contract(
+            tool_by_name.get(tool.name),
+            tool.name,
+            objective,
+            application_names,
+        )
+        if contract is None:
+            continue
+        try:
+            if identifies(objective, tool.name, contract):
+                return tool.name
+        except Exception:  # noqa: BLE001 - a silent verifier keeps the refusal
+            return ""
+    return ""
+
+
+def _recogniser_identity_holds(
+    explicit_intent: EffectIntent,
+    objective: str,
+    tool_by_name: dict[str, dict],
+    llm: object,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> bool:
+    """Let the deterministic recogniser decline the rows it resolved wrong.
+
+    One-sided in the same direction as every other guard here: it can only
+    withdraw the recogniser's claim, never move it to another operation. When it
+    withdraws, the row is not refused -- it falls through to the ranked model
+    path, which is the alternative goal 03 already measured for these exact
+    rows.
+
+    A silent or unavailable verifier keeps the recogniser exactly as it was.
+    """
+
+    identifies = getattr(llm, "operation_is_the_requested_effect", None)
+    if not callable(identifies):
+        return True
+    for operation in explicit_intent.operations:
+        contract = _turn_operation_contract(
+            tool_by_name.get(operation),
+            operation,
+            objective,
+            application_names,
+        )
+        if contract is None:
+            return True
+        try:
+            if not identifies(objective, operation, contract):
+                return False
+        except Exception:  # noqa: BLE001 - a silent verifier never withdraws
+            return True
+    return True
+
+
+def _withheld_invocation_operations(
+    operations: tuple[str, ...],
+    objective: str,
+    tool_by_name: dict[str, dict],
+    llm: object,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> tuple[str, ...]:
+    """Name the invocation a withdrawal may still offer to confirm.
+
+    Every withdrawn operation has to be independently identified as the effect
+    the person named. A single unidentified member keeps the whole turn
+    ``unsupported``: a confirmation must bind to one exact invocation, never to
+    a set with a stranger inside it.
+    """
+
+    identifies = getattr(llm, "operation_is_the_requested_effect", None)
+    if not callable(identifies) or not operations:
+        return ()
+    for operation in operations:
+        if not isinstance(operation, str):
+            return ()
+        contract = _turn_operation_contract(
+            tool_by_name.get(operation),
+            operation,
+            objective,
+            application_names,
+        )
+        if contract is None:
+            return ()
+        try:
+            if not identifies(objective, operation, contract):
+                return ()
+        except Exception:  # noqa: BLE001 - a silent verifier never revives authority
+            return ()
+    return tuple(operations)
+
+
+def _domain_confirmation_question(
+    objective: str,
+    operations: tuple[str, ...],
+    tool_by_name: dict[str, dict],
+    llm: object,
+) -> str:
+    """Ask the person to confirm the exact invocation, in the model's words."""
+
+    compose = getattr(llm, "confirm_operation_before_acting", None)
+    if not callable(compose):
+        return ""
+    effects: list[tuple[str, str]] = []
+    for operation in operations:
+        contract = _turn_operation_contract(
+            tool_by_name.get(operation),
+            operation,
+            objective,
+            (),
+        )
+        if contract is None:
+            return ""
+        effects.append((operation, str(contract["description"])))
+    try:
+        question = str(
+            compose(
+                objective,
+                tuple(effects),
+                timeout=TURN_DECIDE_RECOVERY_BUDGET_SECONDS,
+            )
+        )
+    except Exception:  # noqa: BLE001 - a failed question is an honest refusal
+        return ""
+    return question if _recovery_question_is_valid(question) else ""
+
+
 def _shortlist_with_required_effects(
     shortlist: tuple[PlannerTool, ...],
     required_operations: tuple[str, ...],
@@ -5514,6 +5674,26 @@ def _prepare_turn_result(
             game_catalog,
         )
     )
+    if explicit_intent is not None and not _recogniser_identity_holds(
+        explicit_intent,
+        objective,
+        tool_by_name,
+        llm,
+        application_names,
+    ):
+        # The deterministic recogniser publishes the operations it resolved; it
+        # ranks nothing, so when a rule fires on the wrong leaf the shortlist it
+        # hands downstream *is* that wrong leaf and every later stage inherits
+        # it. Goal 03 measured the cost -- 12 of 124 -- and measured that
+        # sending all 38 of its rows to the model instead is worse, 24 served
+        # against 26. What it never had was the third option: keep the rows it
+        # gets right and decline the ones it does not. That is what this is, and
+        # it is the same one-sided contract verifier the domain refusal already
+        # uses, so no new mechanism enters the tree.
+        recogniser_declined = list(explicit_intent.operations)
+        explicit_intent = None
+    else:
+        recogniser_declined = []
     catalog_unavailable_decision = _catalog_unavailable_turn_decision(
         objective,
         explicit_intent,
@@ -5549,6 +5729,22 @@ def _prepare_turn_result(
         or _explicit_nonunderstanding_turn_decision(objective, history)
         or stable_no_effect_decision
     )
+    withdrawn_closed_refusal = ""
+    if (
+        explicit_conversation_decision is not None
+        and non_target_language is None
+        and explicit_conversation_decision.get("conversation_kind") == "unsupported"
+    ):
+        withdrawn_closed_refusal = _catalog_answers_the_request(
+            routing_objective,
+            objective,
+            planner_catalog,
+            tool_by_name,
+            llm,
+            application_names,
+        )
+        if withdrawn_closed_refusal:
+            explicit_conversation_decision = None
     if explicit_intent is not None:
         shortlist = _shortlist_with_required_effects(
             (),
@@ -5676,7 +5872,30 @@ def _prepare_turn_result(
         ),
         "candidate_operations": [tool.name for tool in shortlist],
         "raw_decision": raw_decision,
-        "stages": [],
+        "stages": [
+            stage
+            for stage in (
+                {
+                    "name": "recogniser_declined",
+                    "mode": "",
+                    "operation": None,
+                    "effect_operations": list(recogniser_declined),
+                    "effect_verification": "not_applicable",
+                }
+                if recogniser_declined
+                else None,
+                {
+                    "name": "closed_refusal_withdrawn",
+                    "mode": "",
+                    "operation": None,
+                    "effect_operations": [withdrawn_closed_refusal],
+                    "effect_verification": "not_applicable",
+                }
+                if withdrawn_closed_refusal
+                else None,
+            )
+            if stage is not None
+        ],
     }
     _append_turn_audit(
         {
@@ -5742,12 +5961,6 @@ def _prepare_turn_result(
         {tool.name for tool in shortlist},
     )
     turn_audit["stages"].append(_turn_audit_stage("information_question", decision))
-    if (
-        effects_before_information_veto
-        and not decision["effect_operations"]
-        and decision["mode"] == "conversation"
-    ):
-        intent_operations = []
     effects_before_domain_grounding = tuple(decision["effect_operations"])
     decision = apply_operation_domain_grounding_veto(
         decision,
@@ -5762,17 +5975,72 @@ def _prepare_turn_result(
         {tool.name for tool in shortlist},
     )
     turn_audit["stages"].append(_turn_audit_stage("domain_grounding", decision))
+    withdrawn_effects = (
+        effects_before_information_veto or effects_before_domain_grounding
+    )
     if (
-        effects_before_domain_grounding
+        withdrawn_effects
         and not decision["effect_operations"]
         and decision["mode"] == "conversation"
-        and decision["conversation_kind"] == "unsupported"
     ):
-        # A literal-domain mismatch disproves the proposed operation identity;
-        # it is not a missing argument. Preserve the raw proposal only in the
-        # opt-in audit and do not ask the person for fields of an unrelated
-        # capability (for example scheduling a notification for a taxi order).
-        intent_operations = []
+        # Two stages withdraw an effect the model proposed, and both of them
+        # publish the withdrawal as a *conversation* -- which the presentation
+        # then words as "no puedo". Neither stage is entitled to that claim.
+        # The curated gate is one-sided and lexical: it can only tell that the
+        # request does not *name* the domain this operation consumes. The
+        # information-question veto only knows that the sentence was phrased as
+        # a question. Publishing either as an inability is how "No puedo apagar
+        # el bluetooth" and "No puedo proporcionar tu dirección IP" reached the
+        # screen about capabilities that are in the catalogue -- 24 of the 27
+        # rows these stages cost on the goal 03 corpus, and the identity's
+        # inverse fault: BAXY says no only to what he cannot do. It is also why
+        # the turn kept dying: the presentation contract for ``unsupported``
+        # demands a sentence the model will not write about something it can do,
+        # and 22 of 160 turns fell through to total recovery that way.
+        #
+        # So the verdict stops being binary. A second, independent opinion is
+        # asked -- does this operation *identify* the effect the person named --
+        # and when it does, the authority is not deleted, it is withheld until
+        # the person confirms the exact invocation. No effect is dispatched
+        # either way, so the invariant these stages exist for is untouched; what
+        # changes is that BAXY asks instead of lying.
+        confirmable = _withheld_invocation_operations(
+            withdrawn_effects,
+            objective,
+            tool_by_name,
+            llm,
+            application_names,
+        )
+        question = (
+            _domain_confirmation_question(objective, confirmable, tool_by_name, llm)
+            if confirmable
+            else ""
+        )
+        if question:
+            decision = {
+                "mode": "clarify",
+                "operation": None,
+                "question": question,
+                "conversation_kind": "",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": decision["response_language"],
+            }
+            decision = validate_turn_decision(
+                decision,
+                {tool.name for tool in shortlist},
+            )
+            intent_operations = list(confirmable)
+            turn_audit["stages"].append(
+                _turn_audit_stage("domain_confirmation", decision)
+            )
+        else:
+            # Both one-sided guards refused. Now "unsupported" is the honest
+            # word, and the raw proposal stays only in the opt-in audit: nobody
+            # is asked for fields of an unrelated capability (for example
+            # scheduling a notification for a taxi order).
+            intent_operations = []
     decision = apply_compound_effect_conservation_veto(
         decision,
         unresolved_compound_effects,
@@ -5824,6 +6092,16 @@ def _prepare_turn_result(
     turn_audit["stages"].append(
         _turn_audit_stage("conversation_presentation", decision)
     )
+    # Extending the same rule one step further was measured and rejected. When
+    # the *decider itself* answers "conversation, unsupported" -- "No puedo dar
+    # enter" with ``input.key.press`` sitting in the shortlist it was handed --
+    # asking the catalogue again there looks like the same repair. It is not:
+    # the candidates at that point are this request's own retrieval, and for an
+    # out-of-catalogue request they are its nearest plausible neighbours. On the
+    # goal 03 corpus it turned 8 of 36 honest abstentions into questions
+    # (28 -> 20) and recovered nothing in catalogue (85 -> 84).
+    # The rule stays where a stage withdrew an effect the model had already
+    # named, and where a closed rule refused before retrieval ever ran.
     if (
         raw_intent_operations is not None
         and intent_operations

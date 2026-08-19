@@ -58,12 +58,17 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # on a fresh paraphrase population (artifacts/development/goal03_*.json) and
 # both move these files by construction. Anything drifting that is not listed
 # here still turns this red.
+#
+# Goal 03B moved the same two files again, and the reason is of the same kind:
+# a veto that removed a proposed effect used to publish it as ``unsupported``,
+# and now withholds it for confirmation instead. V8 priced veto damage on the
+# path where the veto deleted the capability; that path is gone.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "dd422531619907e544f52c211d5ae4a921d8d8d8ba54cd977feeb70d33cd2906"
+        "03144e0ed66b71d8ce70a1967ba707db2458b4f35c801c3033ab75e14d1738f6"
     ),
     "src/baxy_mind/llm.py": (
-        "ac73372b1211a8fb0e98e18415be4607cb5aea4d08feb40f76cc9650b4ca959d"
+        "b62e058ca2b89533995332276b4a5a1af3dbd69ac8f957b49094a0e7d24bb536"
     ),
 }
 
