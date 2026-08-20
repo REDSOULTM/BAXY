@@ -1028,3 +1028,19 @@ y el repositorio conserva rutas, hashes, receta y conteos. El siguiente escalón
 es una sola LoRA desde el base FunctionGemma fijado, pérdida sólo en el nombre,
 muestreo 2:1 y evaluación primero en esa validación; el corte fresco no decide
 hiperparámetros.
+
+El primer arranque de esa LoRA no llegó al modelo porque el límite heredado de
+1.024 tokens era menor que el máximo medido del corpus, **1.392**. El segundo,
+con 1.536 y la atención por defecto del checkpoint, avanzó más de **61,4 min**
+pero terminó en OOM durante `backward`; no creó directorio de salida, informe ni
+pesos parciales (`goal03_functiongemma_current_union_train_v27.json`). No se
+cuenta como modelo ni se cambia una sola muestra por ese fallo.
+
+La causa se aisló sobre el ejemplo máximo, no mediante otra época: la ruta SDPA
+nativa completa forward y backward de sus **1.392 tokens** con **4.748,8 MiB**
+asignados y **5.586,0 MiB** reservados, pérdida 0,014474 y cero efectos. Es una
+implementación equivalente de atención, no un hiperparámetro de aprendizaje.
+El único reintento permitido conserva corpus, orden determinista, LoRA r16,
+alpha 32, lr 2e-4, semilla 5601, una época y mezcla 2:1; sólo fija SDPA y el
+límite mecánico mínimo de 1.408. La cota de 4 GB del goal sigue pendiente de la
+inferencia real: esta preprueba de entrenamiento no pretende satisfacerla.

@@ -18,7 +18,12 @@ from peft import LoraConfig, get_peft_model
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer, get_cosine_schedule_with_warmup
 
-from selector_common import assistant_selection, read_jsonl, sha256
+from selector_common import (
+    NO_ACTION_OPERATION,
+    assistant_selection,
+    read_jsonl,
+    sha256,
+)
 
 EXPECTED_BASE_SHA256 = (
     "af4f8a7c4c5eb82291759fd828720c7bcfcb92a5274556d13dde3caccf5f427b"
@@ -101,13 +106,17 @@ def _source_priority(source: str) -> int:
 
 
 def _balanced_rows(
-    rows: list[EncodedRow], per_operation: int, seed: int
+    rows: list[EncodedRow],
+    per_operation: int,
+    seed: int,
+    no_action_ratio: float | None = None,
 ) -> list[EncodedRow]:
     grouped: dict[str, list[EncodedRow]] = collections.defaultdict(list)
     for row in rows:
         grouped[row.balance_key].append(row)
     rng = random.Random(seed)
     balanced: list[EncodedRow] = []
+    no_action_pool = grouped.pop(NO_ACTION_OPERATION, [])
     for operation in sorted(grouped):
         pool = grouped[operation]
         rng.shuffle(pool)
@@ -118,6 +127,21 @@ def _balanced_rows(
             selected = [pool[index % len(pool)] for index in range(per_operation)]
             rng.shuffle(selected)
         balanced.extend(selected)
+    if no_action_ratio is None:
+        target_no_action = per_operation
+    else:
+        if not math.isfinite(no_action_ratio) or not 0.0 <= no_action_ratio <= 2.0:
+            raise ValueError("no_action_ratio must be finite and between 0 and 2")
+        target_no_action = round(len(balanced) * no_action_ratio)
+    if target_no_action and not no_action_pool:
+        raise ValueError("no-action sampling requested but the corpus has no no-action rows")
+    if no_action_pool:
+        rng.shuffle(no_action_pool)
+        selected_no_action = [
+            no_action_pool[index % len(no_action_pool)]
+            for index in range(target_no_action)
+        ]
+        balanced.extend(selected_no_action)
     rng.shuffle(balanced)
     return balanced
 
@@ -158,7 +182,12 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     tokenizer = AutoTokenizer.from_pretrained(args.model, local_files_only=True)
     source_rows = read_jsonl(args.cases)
     encoded = [_encode_row(tokenizer, row, args.max_length) for row in source_rows]
-    balanced = _balanced_rows(encoded, args.per_operation, args.seed)
+    balanced = _balanced_rows(
+        encoded,
+        args.per_operation,
+        args.seed,
+        no_action_ratio=args.no_action_ratio,
+    )
     loader_generator = torch.Generator().manual_seed(args.seed)
     loader = DataLoader(
         SelectionDataset(balanced),
@@ -169,7 +198,10 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     )
 
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, local_files_only=True, torch_dtype=torch.bfloat16
+        args.model,
+        local_files_only=True,
+        torch_dtype=torch.bfloat16,
+        attn_implementation=args.attention_implementation,
     )
     model.config.use_cache = False
     if args.gradient_checkpointing:
@@ -193,6 +225,35 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     model = get_peft_model(model, config).to("cuda")
     trainable = sum(parameter.numel() for parameter in model.parameters() if parameter.requires_grad)
     total = sum(parameter.numel() for parameter in model.parameters())
+    if args.preflight_longest_only:
+        longest = max(balanced, key=lambda row: len(row.input_ids))
+        batch = _collate(tokenizer, [longest])
+        batch = {key: value.to("cuda") for key, value in batch.items()}
+        model.train()
+        with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+            loss = model(**batch).loss
+        loss.backward()
+        torch.cuda.synchronize()
+        print(
+            json.dumps(
+                {
+                    "schema": "baxy.functiongemma-lora-memory-preflight.v1",
+                    "attention_implementation": args.attention_implementation,
+                    "tokens": len(longest.input_ids),
+                    "operation": longest.operation,
+                    "loss": round(float(loss.detach().cpu()), 6),
+                    "peak_allocated_mib": round(
+                        torch.cuda.max_memory_allocated() / 2**20, 1
+                    ),
+                    "peak_reserved_mib": round(
+                        torch.cuda.max_memory_reserved() / 2**20, 1
+                    ),
+                    "effects_executed": 0,
+                },
+                sort_keys=True,
+            )
+        )
+        return {}
     optimizer = torch.optim.AdamW(
         (parameter for parameter in model.parameters() if parameter.requires_grad),
         lr=args.learning_rate,
@@ -263,6 +324,8 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         "gradient_accumulation": args.gradient_accumulation,
         "updates": updates,
         "learning_rate": args.learning_rate,
+        "attention_implementation": args.attention_implementation,
+        "no_action_ratio": args.no_action_ratio,
         "rank": args.rank,
         "alpha": args.alpha,
         "trainable_parameters": trainable,
@@ -282,6 +345,12 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    if args.report_copy is not None:
+        args.report_copy.parent.mkdir(parents=True, exist_ok=True)
+        args.report_copy.write_text(
+            json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
     return report
 
@@ -293,10 +362,17 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--epochs", type=int, default=4)
     parser.add_argument("--per-operation", type=int, default=48)
+    parser.add_argument(
+        "--no-action-ratio",
+        type=float,
+        default=None,
+        help="sample this many no-action rows per balanced positive row",
+    )
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--gradient-accumulation", type=int, default=4)
     parser.add_argument("--max-length", type=int, default=1024)
     parser.add_argument("--learning-rate", type=float, default=2e-4)
+    parser.add_argument("--attention-implementation", default=None)
     parser.add_argument("--weight-decay", type=float, default=0.01)
     parser.add_argument("--warmup-ratio", type=float, default=0.05)
     parser.add_argument("--max-grad-norm", type=float, default=1.0)
@@ -304,6 +380,8 @@ def main() -> int:
     parser.add_argument("--alpha", type=int, default=32)
     parser.add_argument("--dropout", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=5601)
+    parser.add_argument("--report-copy", type=Path)
+    parser.add_argument("--preflight-longest-only", action="store_true")
     parser.add_argument(
         "--gradient-checkpointing", action=argparse.BooleanOptionalAction, default=True
     )
@@ -311,6 +389,8 @@ def main() -> int:
     args.model = args.model.resolve(strict=True)
     args.cases = args.cases.resolve(strict=True)
     args.output = args.output.resolve()
+    if args.report_copy is not None:
+        args.report_copy = args.report_copy.resolve()
     train(args)
     return 0
 

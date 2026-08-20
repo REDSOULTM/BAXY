@@ -1,0 +1,49 @@
+{
+  "schema": "baxy.goal03.functiongemma-current-union-training-attempt.v1",
+  "base_model_sha256": "af4f8a7c4c5eb82291759fd828720c7bcfcb92a5274556d13dde3caccf5f427b",
+  "train_corpus": "D:\\BAXYRuntime\\experiments\\functiongemma-current-union-v1\\train.jsonl",
+  "train_corpus_sha256": "69e8bcde6760258a6e8d750caa3c648fc85695c0cccd7f6ad6926a92935b8bad",
+  "trainer_sha256_after_memory_preflight_support": "9b81871f494745a44f46e9e43b58f740fd392fbefd87dbf229facee23eabbd19",
+  "preregistered_training": {
+    "epochs": 1,
+    "per_operation": 8,
+    "batch_size": 1,
+    "gradient_accumulation": 8,
+    "no_action_ratio": 0.5,
+    "learning_rate": 0.0002,
+    "rank": 16,
+    "alpha": 32,
+    "seed": 5601
+  },
+  "attempts": [
+    {
+      "max_length": 1024,
+      "attention_implementation": null,
+      "result": "rejected_before_model_load",
+      "reason": "at least one encoded row exceeded max_length; full-corpus preflight measured a maximum of 1392 tokens"
+    },
+    {
+      "max_length": 1536,
+      "attention_implementation": null,
+      "result": "cuda_out_of_memory_during_backward",
+      "elapsed_observed_lower_bound_seconds": 3684,
+      "output_directory_created": false,
+      "report_created": false,
+      "effects_executed": 0
+    }
+  ],
+  "longest_row_memory_preflight": {
+    "max_length": 1408,
+    "attention_implementation": "sdpa",
+    "tokens": 1392,
+    "operation": "__no_action__",
+    "loss": 0.014474,
+    "peak_allocated_mib": 4748.8,
+    "peak_reserved_mib": 5586.0,
+    "backward_completed": true,
+    "optimizer_step_executed": false,
+    "effects_executed": 0
+  },
+  "decision": "repeat the single preregistered epoch with max_length 1408 and native SDPA; do not change data, order, objective, LoRA hyperparameters, or seed",
+  "runtime_manifest_changed": false
+}
