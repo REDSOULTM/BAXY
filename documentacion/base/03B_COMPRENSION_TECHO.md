@@ -659,3 +659,13 @@ top-28; abstiene **25/36**. Restringirlo a la unión de 16 o 28 candidatos no
 cambia el top-1: 57/124. El cabezal tarda **0,904 ms** para las 160 filas una vez
 obtenidos los embeddings, pero el cambio de distribución vuelve a impedir darle
 autoridad.
+
+Qwen3-8B UD-IQ2_M sí mejora simultáneamente ambas caras del selector mínimo
+(`goal03_qwen3_8b_iq2_minimal_v5.json`, **3.110.897.472 bytes**, SHA-256
+`1dfd67f311a5a82f57ecc1763b54884066ccf1727c45cbe1a619f85ac96368b2`).
+Sobre el shortlist E5 congelado selecciona una operación esperada en **90/124**
+y abstiene honestamente en **29/36**, con p50 **0,817 s** / p90 **0,866 s**.
+Contra Qwen3-4B con el mismo centinela son +8 aciertos y +12 abstenciones; contra
+Qwen3.5-4B conserva casi todo el acierto y gana 20 abstenciones. No se promueve
+aún porque el shortlist sólo ofrece 109 hojas esperadas: la siguiente medida es
+el mismo selector sobre la unión ranker+E5 de 16 y 28 candidatos.
