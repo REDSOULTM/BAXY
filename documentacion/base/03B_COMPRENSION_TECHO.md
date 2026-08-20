@@ -985,3 +985,13 @@ provider no verificado en éxito, y el narrador sólo declara éxito cuando
 `Succeeded && Verified`. Copiar además el reply-validator antiguo duplicaría
 la misma responsabilidad y violaría la ley 2. Los bancos quedan agotados para
 03B: confirman recuperación y grounding ya cubiertos, no resuelven selección.
+
+La memoria de exemplars nombrada por el goal queda además separada del planner
+en `goal03_inherited_exemplar_router_v25.json`. Con su artefacto coordinado,
+top-5, suelo 0,92, margen de abstención 0,05 y banda 0,15, sólo produce match en
+**1/160**: `inp-05` («cambia el keyboard a español») a familia `input`, score
+0,9463. No abstiene ninguna de las 36 negativas ni ninguna positiva y, como
+guard del selector oficial, deja sin cambio **110/124** y **18/36**. Cuesta p50
+**2,527 ms**, p90 2,921 ms. Bajar el suelo ahora sería calibrar contra el examen;
+copiar un store que no reconoce 159 frases tampoco compra conducta. La pieza
+queda agotada junto al planner que ya la servía indirectamente.
