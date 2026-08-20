@@ -649,3 +649,13 @@ que sus errores no son los mismos. La unión simétrica ranker+E5 recupera
 primera vez el techo de recuperación supera las 112 filas sin tocar el corpus,
 el catálogo ni una regla por caso. No se promueve todavía: falta demostrar que
 un selector puede convertir esa cobertura en acierto sin perder abstención.
+
+Entrenar sólo un cabezal lineal sobre el E5 vigente tampoco cobra esa cobertura
+(`goal03_semantic_operation_classifier_v1.json`). Usa **4.740** paráfrasis
+heredadas de FunctionGemma, 170 clases y **cero solapamientos exactos
+normalizados** con el corpus fresco. Aunque valida a **98,50 %** sobre 948 filas
+del mismo origen, en el corte fresco acierta **57/124** a top-1 y **117/124** a
+top-28; abstiene **25/36**. Restringirlo a la unión de 16 o 28 candidatos no
+cambia el top-1: 57/124. El cabezal tarda **0,904 ms** para las 160 filas una vez
+obtenidos los embeddings, pero el cambio de distribución vuelve a impedir darle
+autoridad.
